@@ -1,5 +1,6 @@
 package org.opencds.cqf.provider;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -15,8 +16,10 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
+import org.cqframework.cql.cql2elm.DefaultLibrarySourceProvider;
+import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.elm.execution.Library;
-import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.*;
 import org.opencds.cqf.cql.data.fhir.FhirMeasureEvaluator;
 import org.opencds.cqf.cql.data.fhir.FhirDataProvider;
 
@@ -28,10 +31,7 @@ import org.hl7.fhir.dstu3.model.MeasureReport;
 import org.testng.annotations.Test;
 
 import javax.xml.bind.JAXB;
-import java.io.FileReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
+import javax.xml.bind.JAXBException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -62,9 +62,14 @@ public class MeasureResourceProvider implements IResourceProvider {
       Path path = currentRelativePath.toAbsolutePath();
       // TODO: Need naming convention here...
       File xmlFile = new File(path.resolve(theId.getIdPart() + ".elm.xml").toString());
-      Library library = JAXB.unmarshal(xmlFile, Library.class);
-
+      Library library = CqlLibraryReader.read(xmlFile);
       Context context = new Context(library);
+
+      // Register a library loader that loads library out of the current path
+      LibraryManager libraryManager = new LibraryManager();
+      libraryManager.getLibrarySourceLoader().registerProvider(new DefaultLibrarySourceProvider(path));
+      LibraryLoader libraryLoader = new EngineLibraryLoader(libraryManager);
+      context.registerLibraryLoader(libraryLoader);
 
       FhirDataProvider provider = new FhirDataProvider().withEndpoint(source);
       context.registerDataProvider("http://hl7.org/fhir", provider);
@@ -92,7 +97,11 @@ public class MeasureResourceProvider implements IResourceProvider {
       }
     }
     catch (FileNotFoundException e) {
-      e.printStackTrace();
+      throw new InternalErrorException("Errors occurred reading measure logic.", e);
+    } catch (JAXBException e) {
+      throw new InternalErrorException("Errors occurred reading measure logic.", e);
+    } catch (IOException e) {
+      throw new InternalErrorException("Errors occurred reading measure logic.", e);
     }
     return report;
   }
