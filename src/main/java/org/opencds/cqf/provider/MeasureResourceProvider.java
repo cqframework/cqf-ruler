@@ -35,6 +35,12 @@ import javax.xml.bind.JAXBException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import java.util.Date;
+
+// for meaningful error reporting
+import java.io.StringWriter;
+import java.io.PrintWriter;
+
 public class MeasureResourceProvider implements IResourceProvider {
 
   private Map<String, Measure> myMeasures = new HashMap<String, Measure>();
@@ -50,7 +56,8 @@ public class MeasureResourceProvider implements IResourceProvider {
 
   @Operation(name = "$evaluate", idempotent = true)
   public MeasureReport evaluateMeasure(@IdParam IdType theId, @OptionalParam(name="source") String source,
-                                       @RequiredParam(name="patient") String patientId) throws InternalErrorException
+                                       @RequiredParam(name="patient") String patientId, @RequiredParam(name="start") String startPeriod,
+                                       @RequiredParam(name="end") String endPeriod) throws InternalErrorException
   {
     if (source == null) {
       source = "http://wildfhir.aegis.net/fhir";
@@ -58,9 +65,12 @@ public class MeasureResourceProvider implements IResourceProvider {
     MeasureReport report = new MeasureReport();
 
     try {
-      Path currentRelativePath = Paths.get("");
+      Path currentRelativePath = Paths.get("../resources/");
       Path path = currentRelativePath.toAbsolutePath();
-      // TODO: Need naming convention here...
+
+      // NOTE: I am using a naming convention here:
+      //        <id>.elm.xml == library
+      //        <id>.xml == measure
       File xmlFile = new File(path.resolve(theId.getIdPart() + ".elm.xml").toString());
       Library library = CqlLibraryReader.read(xmlFile);
       Context context = new Context(library);
@@ -85,8 +95,16 @@ public class MeasureResourceProvider implements IResourceProvider {
 
       context.setContextValue("Patient", patient.getId());
 
+      if (startPeriod == null || endPeriod == null) {
+        throw new InternalErrorException("The start and end dates of the measurement period must be specified in request.");
+      }
+
+      // this is deprecated, but I don't care
+      Date periodStart = new Date(startPeriod);
+      Date periodEnd = new Date(endPeriod);
+
       FhirMeasureEvaluator evaluator = new FhirMeasureEvaluator();
-      report = evaluator.evaluate(provider.getFhirClient(), context, measure, patient);
+      report = evaluator.evaluate(provider.getFhirClient(), context, measure, patient, periodStart, periodEnd);
 
       if (report == null) {
         throw new InternalErrorException("MeasureReport is null");
@@ -97,11 +115,19 @@ public class MeasureResourceProvider implements IResourceProvider {
       }
     }
     catch (FileNotFoundException e) {
-      throw new InternalErrorException("Errors occurred reading measure logic.", e);
-    } catch (JAXBException e) {
-      throw new InternalErrorException("Errors occurred reading measure logic.", e);
-    } catch (IOException e) {
-      throw new InternalErrorException("Errors occurred reading measure logic.", e);
+      StringWriter errors = new StringWriter();
+      e.printStackTrace(new PrintWriter(errors));
+      throw new InternalErrorException(errors.toString(), e);
+    }
+    catch (JAXBException e) {
+      StringWriter errors = new StringWriter();
+      e.printStackTrace(new PrintWriter(errors));
+      throw new InternalErrorException(errors.toString(), e);
+    }
+    catch (IOException e) {
+      StringWriter errors = new StringWriter();
+      e.printStackTrace(new PrintWriter(errors));
+      throw new InternalErrorException(errors.toString(), e);
     }
     return report;
   }
