@@ -1,45 +1,31 @@
 package org.opencds.cqf.provider;
 
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.ResourceParam;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Create;
-import ca.uhn.fhir.rest.annotation.Read;
+import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.api.ValidationModeEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
-import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.cqframework.cql.cql2elm.DefaultLibrarySourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.elm.execution.Library;
-import org.opencds.cqf.cql.execution.*;
-import org.opencds.cqf.cql.data.fhir.FhirMeasureEvaluator;
-import org.opencds.cqf.cql.data.fhir.FhirDataProvider;
-
-import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.MeasureReport;
+import org.hl7.fhir.dstu3.model.Patient;
+import org.opencds.cqf.cql.data.fhir.FhirDataProvider;
+import org.opencds.cqf.cql.data.fhir.FhirMeasureEvaluator;
+import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.CqlLibraryReader;
+import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 
-import org.testng.annotations.Test;
-
-import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBException;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import java.util.Date;
+import java.util.*;
 
 // for meaningful error reporting
-import java.io.StringWriter;
-import java.io.PrintWriter;
 
 public class MeasureResourceProvider implements IResourceProvider {
 
@@ -56,16 +42,16 @@ public class MeasureResourceProvider implements IResourceProvider {
 
   @Operation(name = "$evaluate", idempotent = true)
   public MeasureReport evaluateMeasure(@IdParam IdType theId, @OptionalParam(name="source") String source,
-                                       @RequiredParam(name="patient") String patientId, @RequiredParam(name="start") String startPeriod,
-                                       @RequiredParam(name="end") String endPeriod) throws InternalErrorException
+                                       @RequiredParam(name="patient") String patientId, @RequiredParam(name="startPeriod") String startPeriod,
+                                       @RequiredParam(name="endPeriod") String endPeriod) throws InternalErrorException
   {
     if (source == null) {
-      source = "http://wildfhir.aegis.net/fhir";
+      source = "https://api2.hspconsortium.org/payerextract/open";
     }
-    MeasureReport report = new MeasureReport();
+    MeasureReport report;
 
     try {
-      Path currentRelativePath = Paths.get("../resources/");
+      Path currentRelativePath = Paths.get("src/main/java/org/opencds/cqf/resources");
       Path path = currentRelativePath.toAbsolutePath();
 
       // NOTE: I am using a naming convention here:
@@ -78,10 +64,15 @@ public class MeasureResourceProvider implements IResourceProvider {
       // Register a library loader that loads library out of the current path
       LibraryManager libraryManager = new LibraryManager();
       libraryManager.getLibrarySourceLoader().registerProvider(new DefaultLibrarySourceProvider(path));
-      LibraryLoader libraryLoader = new EngineLibraryLoader(libraryManager);
+      LibraryLoader libraryLoader = new MeasureLibraryLoader(libraryManager);
       context.registerLibraryLoader(libraryLoader);
 
       FhirDataProvider provider = new FhirDataProvider().withEndpoint(source);
+      FhirTerminologyProvider terminologyProvider = new FhirTerminologyProvider()
+              .withBasicAuth("brhodes", "apelon123!")
+              .withEndpoint("http://fhir.ext.apelon.com/dtsserverws/fhir");
+      provider.setTerminologyProvider(terminologyProvider);
+      provider.setExpandValueSets(true);
       context.registerDataProvider("http://hl7.org/fhir", provider);
 
       xmlFile = new File(path.resolve(theId.getIdPart() + ".xml").toString());
@@ -93,15 +84,14 @@ public class MeasureResourceProvider implements IResourceProvider {
         throw new InternalErrorException("Patient is null");
       }
 
-      context.setContextValue("Patient", patient.getId());
+      context.setContextValue("Patient", patientId);
 
       if (startPeriod == null || endPeriod == null) {
         throw new InternalErrorException("The start and end dates of the measurement period must be specified in request.");
       }
 
-      // this is deprecated, but I don't care
-      Date periodStart = new Date(startPeriod);
-      Date periodEnd = new Date(endPeriod);
+      Date periodStart = resolveRequestDate(startPeriod, true);
+      Date periodEnd = resolveRequestDate(endPeriod, false);
 
       FhirMeasureEvaluator evaluator = new FhirMeasureEvaluator();
       report = evaluator.evaluate(provider.getFhirClient(), context, measure, patient, periodStart, periodEnd);
@@ -113,18 +103,7 @@ public class MeasureResourceProvider implements IResourceProvider {
       if (report.getEvaluatedResources() == null) {
         throw new InternalErrorException("EvaluatedResources is null");
       }
-    }
-    catch (FileNotFoundException e) {
-      StringWriter errors = new StringWriter();
-      e.printStackTrace(new PrintWriter(errors));
-      throw new InternalErrorException(errors.toString(), e);
-    }
-    catch (JAXBException e) {
-      StringWriter errors = new StringWriter();
-      e.printStackTrace(new PrintWriter(errors));
-      throw new InternalErrorException(errors.toString(), e);
-    }
-    catch (IOException e) {
+    } catch (JAXBException | IOException e) {
       StringWriter errors = new StringWriter();
       e.printStackTrace(new PrintWriter(errors));
       throw new InternalErrorException(errors.toString(), e);
@@ -156,4 +135,40 @@ public class MeasureResourceProvider implements IResourceProvider {
 	public Class<Measure> getResourceType() {
 		return Measure.class;
 	}
+
+  // Helper class to resolve period dates
+  public static Date resolveRequestDate(String date, boolean start) {
+    // split it up - support dashes or slashes
+    String[] dissect = date.contains("-") ? date.split("-") : date.split("/");
+    List<Integer> dateVals = new ArrayList<>();
+    for (String dateElement : dissect) {
+      dateVals.add(Integer.parseInt(dateElement));
+    }
+
+    if (dateVals.isEmpty())
+      throw new IllegalArgumentException("Invalid date");
+
+    // for now support dates up to day precision
+    Calendar calendar = Calendar.getInstance();
+    calendar.clear();
+    calendar.set(Calendar.YEAR, dateVals.get(0));
+    if (dateVals.size() > 1) {
+      // java.util.Date months are zero based, hence the negative 1 -- 2014-01 == February 2014
+      calendar.set(Calendar.MONTH, dateVals.get(1) - 1);
+    }
+    if (dateVals.size() > 2)
+      calendar.set(Calendar.DAY_OF_MONTH, dateVals.get(2));
+    else {
+      if (start) {
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+      }
+      else {
+        // get last day of month for end period
+        calendar.add(Calendar.MONTH, 1);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.add(Calendar.DATE, -1);
+      }
+    }
+    return calendar.getTime();
+  }
 }
