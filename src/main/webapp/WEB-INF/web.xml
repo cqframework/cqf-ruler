@@ -47,8 +47,13 @@
 	</servlet>
 
 	<servlet-mapping>
+<<<<<<< HEAD
 		<servlet-name>measureProcessingServlet</servlet-name>
 		<url-pattern>/baseDstu3/*</url-pattern>
+=======
+		<servlet-name>fhirServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+>>>>>>> 16c51f9b5d8dbde65e3e838518776aabb8c73660
 	</servlet-mapping>
 
 	<servlet-mapping>
