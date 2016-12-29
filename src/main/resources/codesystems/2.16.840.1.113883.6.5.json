@@ -1,0 +1,33 @@
+{
+  "resourceType": "CodeSystem",
+  "id": "2.16.840.1.113883.6.5",
+  "meta": {
+    "versionId": "2",
+    "lastUpdated": "2016-09-20T21:25:23.000+00:00"
+  },
+  "url": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+  "status": "active",
+  "_status": {
+    "fhir_comments": [
+      "\n  <version value=\"\"/>\n  <name value=\"\"/>\n  "
+    ]
+  },
+  "date": "2016-09-19",
+  "concept": [
+    {
+      "fhir_comments": [
+        " <content value=\"fragment\" /> "
+      ],
+      "code": "G0104",
+      "display": "Colorectal cancer screening; flexible sigmoidoscopy"
+    },
+    {
+      "code": "G0105",
+      "display": "Colorectal cancer screening; colonoscopy on individual at high risk"
+    },
+    {
+      "code": "G0121",
+      "display": "Colorectal cancer screening; colonoscopy on individual not meeting criteria for high risk"
+    }
+  ]
+}
