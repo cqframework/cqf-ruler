@@ -1,4 +1,4 @@
-package org.opencds.cqf.providers;
+package org.opencds.cqf.helpers;
 
 import ca.uhn.fhir.model.primitive.IdDt;
 import org.hl7.fhir.dstu3.model.ValueSet;
@@ -12,7 +12,7 @@ import java.awt.event.WindowEvent;
 /**
  * Created by Christopher on 12/18/2016.
  */
-public class ValueSetLoader {
+public class ValueSetHelper {
 
     // containers
     private Frame mainFrame;
@@ -32,7 +32,7 @@ public class ValueSetLoader {
     // buttons
     private Button loadBtn;
 
-    public ValueSetLoader() {
+    public ValueSetHelper() {
         mainFrame = new Frame("Cql Evaluation");
         mainFrame.setSize(500, 600);
         mainFrame.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -116,6 +116,6 @@ public class ValueSetLoader {
     }
 
     public static void main(String[] args) {
-        new ValueSetLoader();
+        new ValueSetHelper();
     }
 }
