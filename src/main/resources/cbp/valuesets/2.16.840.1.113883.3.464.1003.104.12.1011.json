@@ -1,0 +1,128 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.104.12.1011",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "2016-09-17T21:03:42.000+00:00"
+  },
+  "url": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Valueset/2.16.840.1.113883.3.464.1003.104.12.1011",
+  "name": "Essential Hypertension eMeasure",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2015.09.15AA",
+        "filter": {
+          "property": "concept",
+          "op": "is-a",
+          "value": "38341003"
+        }
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2015.09.15AA",
+        "filter": {
+          "property": "concept",
+          "op": "is-a",
+          "value": "78975002"
+        }
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2015.09.15AA",
+        "filter": {
+          "property": "concept",
+          "op": "is-a",
+          "value": "276789009"
+        }
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2016-09-17T17:02:20.064-04:00",
+    "total": 16,
+    "offset": 0,
+    "contains": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-9-cm",
+        "code": "401.1",
+        "display": "Benign essential hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "1201005",
+        "display": "Benign essential hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "10725009",
+        "display": "Benign hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "48146000",
+        "display": "Diastolic hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "59621000",
+        "display": "Essential hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "65518004",
+        "display": "Labile diastolic hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "371125006",
+        "display": "Labile essential hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "276789009",
+        "display": "Labile hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "46481004",
+        "display": "Low-renin essential hypertension"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-9-cm",
+        "code": "401.0",
+        "display": "Malignant essential hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "78975002",
+        "display": "Malignant essential hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "59720008",
+        "display": "Sustained diastolic hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "429457004",
+        "display": "Systolic essential hypertension"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "56218007",
+        "display": "Systolic hypertension"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-9-cm",
+        "code": "401.9",
+        "display": "Unspecified essential hypertension"
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-us",
+        "code": "I10",
+        "display": "Essential (primary) hypertension"
+      }
+    ]
+  }
+}

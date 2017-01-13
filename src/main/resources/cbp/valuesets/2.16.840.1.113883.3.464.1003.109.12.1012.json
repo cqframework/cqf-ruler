@@ -1,0 +1,158 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.109.12.1012",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "2016-09-17T21:06:30.000+00:00"
+  },
+  "url": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Valueset/2.16.840.1.113883.3.464.1003.109.12.1012",
+  "name": "Kidney Transplant eMeasure",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "2016.1.15AA",
+        "filter": {
+          "property": "concept",
+          "op": "is-a",
+          "value": "X1019386"
+        }
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+        "version": "2016.1.15AB",
+        "concept": {
+          "code": "S2065"
+        }
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2015.09.15AA",
+        "filter": {
+          "property": "concept",
+          "op": "is-a",
+          "value": "70536003"
+        }
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2015.09.15AA",
+        "filter": {
+          "property": "concept",
+          "op": "is-a",
+          "value": "88930008"
+        }
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2015.09.15AA",
+        "filter": {
+          "property": "concept",
+          "op": "is-a",
+          "value": "48994000"
+        }
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2015.09.15AA",
+        "filter": {
+          "property": "concept",
+          "op": "is-a",
+          "value": "175902000"
+        }
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2016-09-17T17:05:20.625-04:00",
+    "total": 17,
+    "offset": 0,
+    "contains": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "175899003",
+        "display": "Autotransplantation of kidney"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "175902000",
+        "display": "Cadaveric renal transplant"
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "code": "50300",
+        "display": "Donor nephrectomy (including cold preservation); from cadaver donor, unilateral or bilateral"
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "code": "50320",
+        "display": "Donor nephrectomy (including cold preservation); open, from living donor"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "313030004",
+        "display": "Donor renal transplantation"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "175901007",
+        "display": "Live donor renal transplant"
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "code": "50340",
+        "display": "Recipient nephrectomy (separate procedure)"
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "code": "50370",
+        "display": "Removal of transplanted renal allograft"
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "code": "50365",
+        "display": "Renal allotransplantation, implantation of graft; with recipient nephrectomy"
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "code": "50360",
+        "display": "Renal allotransplantation, implantation of graft; without recipient nephrectomy"
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "code": "50380",
+        "display": "Renal autotransplantation, reimplantation of kidney"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "52213001",
+        "display": "Renal homotransplantation excluding donor and recipient nephrectomy"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "48994000",
+        "display": "Renal homotransplantation with unilateral recipient nephrectomy"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+        "code": "S2065",
+        "display": "Simultaneous pancreas kidney transplantation"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "88930008",
+        "display": "Recipient nephrectomy"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "70536003",
+        "display": "Transplant of kidney"
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "code": "236138007",
+        "display": "Xenograft renal transplant"
+      }
+    ]
+  }
+}

@@ -2,7 +2,6 @@ package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.PatientResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -13,16 +12,19 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
+import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.data.fhir.FhirMeasureEvaluator;
 import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
 import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.JpaFhirTerminologyProvider;
 import org.opencds.cqf.helpers.LibraryHelper;
 
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -31,17 +33,36 @@ import java.util.*;
 public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
 
     private JpaFhirDataProvider provider;
-    private LibraryManager libraryManager;
-    private ModelManager modelManager;
 
     public MeasureResourceProvider(Collection<IResourceProvider> providers) {
         this.provider = new JpaFhirDataProvider(providers).withEndpoint("http://localhost:8080/cql-measure-processor/baseDstu3");
-        resolveManagers();
     }
 
-    private void resolveManagers() {
-        modelManager = new ModelManager();
-        libraryManager = new LibraryManager(modelManager);
+    private ModelManager modelManager;
+    private ModelManager getModelManager() {
+        if (modelManager == null) {
+            modelManager = new ModelManager();
+        }
+
+        return modelManager;
+    }
+
+    private LibraryManager libraryManager;
+    private LibraryManager getLibraryManager() {
+        if (libraryManager == null) {
+            libraryManager = new LibraryManager(getModelManager());
+            libraryManager.getLibrarySourceLoader().clearProviders();
+            libraryManager.getLibrarySourceLoader().registerProvider(new MeasureLibrarySourceProvider(provider));
+        }
+        return libraryManager;
+    }
+
+    private LibraryLoader libraryLoader;
+    private LibraryLoader getLibraryLoader() {
+        if (libraryLoader == null) {
+            libraryLoader = new MeasureLibraryLoader(provider, new LibraryHelper(getLibraryManager(), getModelManager()));
+        }
+        return libraryLoader;
     }
 
     @Operation(name = "$evaluate", idempotent = true)
@@ -55,13 +76,10 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         MeasureReport report;
 
         Measure measure = ((MeasureResourceProvider) provider.resolveResourceProvider("Measure")).getDao().read(theId);
-        org.hl7.fhir.dstu3.model.Library lib = ((LibraryResourceProvider) provider.resolveResourceProvider("Library"))
-                .getDao().read(new IdType(measure.getLibraryFirstRep().getReference()));
-
-        String contentType = lib.getContentFirstRep().getContentType();
-        byte[] data = lib.getContentFirstRep().getData();
-        LibraryHelper helper = new LibraryHelper(libraryManager, modelManager);
-        org.cqframework.cql.elm.execution.Library library = helper.resolveLibrary(contentType, data);
+        MeasureLibrarySourceProvider libraryProvider = new MeasureLibrarySourceProvider(provider);
+        InputStream is = libraryProvider.getLibrarySource(new VersionedIdentifier().withId(measure.getLibraryFirstRep().getReference()));
+        LibraryHelper helper = new LibraryHelper(getLibraryManager(), getModelManager());
+        org.cqframework.cql.elm.execution.Library library = helper.resolveLibrary(libraryProvider.getContentType(), is);
 
         Patient patient = ((PatientResourceProvider) provider.resolveResourceProvider("Patient")).getDao().read(new IdType(patientId));
 
@@ -71,6 +89,7 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
 
         Context context = new Context(library);
         context.setContextValue("Patient", patientId);
+        context.registerLibraryLoader(getLibraryLoader());
 
         if (startPeriod == null || endPeriod == null) {
             throw new InternalErrorException("The start and end dates of the measurement period must be specified in request.");
@@ -79,16 +98,15 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         Date periodStart = resolveRequestDate(startPeriod, true);
         Date periodEnd = resolveRequestDate(endPeriod, false);
 
-        JpaResourceProviderDstu3<ValueSet> vs = (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet");
-        JpaResourceProviderDstu3<CodeSystem> cs = (CodeSystemResourceProvider) provider.resolveResourceProvider("CodeSystem");
-
         TerminologyProvider terminologyProvider;
         if (source == null) {
+            JpaResourceProviderDstu3<ValueSet> vs = (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet");
+            JpaResourceProviderDstu3<CodeSystem> cs = (CodeSystemResourceProvider) provider.resolveResourceProvider("CodeSystem");
             terminologyProvider = new JpaFhirTerminologyProvider(vs, cs);
         }
         else {
             terminologyProvider = user == null || pass == null ? new FhirTerminologyProvider().withEndpoint(source)
-                    : new FhirTerminologyProvider().withEndpoint(source).withBasicAuth("user", "pass");
+                    : new FhirTerminologyProvider().withEndpoint(source).withBasicAuth(user, pass);
         }
         provider.setTerminologyProvider(terminologyProvider);
         provider.setExpandValueSets(true);

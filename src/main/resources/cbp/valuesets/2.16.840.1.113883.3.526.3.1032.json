@@ -1,0 +1,38 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.526.3.1032",
+  "meta": {
+    "versionId": "6",
+    "lastUpdated": "2016-09-20T20:59:26.000+00:00"
+  },
+  "url": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Valueset/2.16.840.1.113883.3.526.3.1032",
+  "name": "Systolic Blood Pressure eMeasure",
+  "compose": {
+    "include": [
+      {
+        "system": "http://loinc.org",
+        "version": "2.44.13AA",
+        "concept": [
+          {
+            "code": "8480-6"
+          },
+          {
+            "code": "8480-6"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2016-09-20T16:56:22.029-04:00",
+    "total": 1,
+    "offset": 0,
+    "contains": [
+      {
+        "system": "http://loinc.org",
+        "code": "8480-6",
+        "display": "Systolic blood pressure"
+      }
+    ]
+  }
+}

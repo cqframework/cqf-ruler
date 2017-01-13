@@ -1,0 +1,639 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1004.1395",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "2016-09-17T21:07:36.000+00:00"
+  },
+  "url": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Valueset/2.16.840.1.113883.3.464.1004.1395",
+  "name": "Inpatient Stay (RevCode)",
+  "compose": {
+    "include": [
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "010X"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "011X"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "012X"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "013X"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "014X"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "015X"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "016X"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "020X"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "021X"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "019X"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "017X"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "100X"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2016-09-17T17:06:10.391-04:00",
+    "total": 81,
+    "offset": 0,
+    "contains": [
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0100",
+        "display": "All-inclusive room and board plus ancillary"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0101",
+        "display": "All-inclusive room and board"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0110",
+        "display": "General"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0111",
+        "display": "Medical/surgical/GYN"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0112",
+        "display": "Obstetrics (OB)"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0113",
+        "display": "Pediatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0114",
+        "display": "Psychiatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0116",
+        "display": "Detoxification"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0117",
+        "display": "Oncology"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0118",
+        "display": "Rehabilitation"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0119",
+        "display": "Other"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0120",
+        "display": "General"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0121",
+        "display": "Medical/surgical/GYN"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0122",
+        "display": "OB"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0123",
+        "display": "Pediatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0124",
+        "display": "Psychiatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0126",
+        "display": "Detoxification"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0127",
+        "display": "Oncology"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0128",
+        "display": "Rehabilitation"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0129",
+        "display": "Other"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0130",
+        "display": "General"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0131",
+        "display": "Medical/surgical/GYN"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0132",
+        "display": "OB"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0133",
+        "display": "Pediatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0134",
+        "display": "Psychiatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0136",
+        "display": "Detoxification"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0137",
+        "display": "Oncology"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0138",
+        "display": "Rehabilitation"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0139",
+        "display": "Other"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0140",
+        "display": "General"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0141",
+        "display": "Medical/surgical/GYN"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0142",
+        "display": "OB"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0143",
+        "display": "Pediatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0144",
+        "display": "Psychiatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0146",
+        "display": "Detoxification"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0147",
+        "display": "Oncology"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0148",
+        "display": "Rehabilitation"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0149",
+        "display": "Other"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0150",
+        "display": "General"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0151",
+        "display": "Medical/surgical/GYN"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0152",
+        "display": "OB"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0153",
+        "display": "Pediatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0154",
+        "display": "Psychiatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0156",
+        "display": "Detoxification"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0157",
+        "display": "Oncology"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0158",
+        "display": "Rehabilitation"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0159",
+        "display": "Other"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0160",
+        "display": "General"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0164",
+        "display": "Sterile environment"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0167",
+        "display": "Self-care"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0169",
+        "display": "Other"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0170",
+        "display": "General"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0171",
+        "display": "Newborn-Level I"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0172",
+        "display": "Newborn-Level II"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0173",
+        "display": "Newborn-Level III"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0174",
+        "display": "Newborn-Level IV"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0179",
+        "display": "Other Nursery"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0190",
+        "display": "General"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0191",
+        "display": "Subacute care-Level I"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0192",
+        "display": "Subacute care-Level II"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0193",
+        "display": "Subacute care-Level III"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0194",
+        "display": "Subacute care-Level IV"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0199",
+        "display": "Other subacute care"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0200",
+        "display": "General"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0201",
+        "display": "Surgical"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0202",
+        "display": "Medical"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0203",
+        "display": "Pediatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0204",
+        "display": "Psychiatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0206",
+        "display": "Intermediate intensive care unit (ICU)"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0207",
+        "display": "Burn care"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0208",
+        "display": "Trauma"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0209",
+        "display": "Other intensive care"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0210",
+        "display": "General"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0211",
+        "display": "Myocardial infarction"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0212",
+        "display": "Pulmonary care"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0213",
+        "display": "Heart transplant"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0214",
+        "display": "Intermediate coronary care unit (CCU)"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "0219",
+        "display": "Other coronary care"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "1000",
+        "display": "General"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "1001",
+        "display": "Residential treatment-psychiatric"
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "version": "2012.05",
+        "code": "1002",
+        "display": "Residential treatment-chemical dependency"
+      }
+    ]
+  }
+}

@@ -28,16 +28,10 @@ public class LibraryHelper {
         this.libraryManager = libraryManager;
     }
 
-    public Library resolveLibrary(String contentType, byte[] data) {
-        if (data == null || data.length == 0) {
-            throw new IllegalArgumentException("Library does not contain any data");
-        }
-        // No need to check contentType as it is required if data is present
-        // http://build.fhir.org/datatypes-definitions.html#attachment
-        InputStream is = new ByteArrayInputStream(data);
+    public Library resolveLibrary(String contentType, InputStream is) {
         switch (contentType) {
             case "text/cql":
-                return translate(new String(data));
+                return translate(is.toString());
             case "application/fhir+xml":
                 return readLibrary(is);
             default:
