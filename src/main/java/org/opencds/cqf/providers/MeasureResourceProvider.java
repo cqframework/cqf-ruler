@@ -2,6 +2,7 @@ package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.PatientResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -11,6 +12,7 @@ import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.*;
@@ -24,8 +26,12 @@ import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.JpaFhirTerminologyProvider;
 import org.opencds.cqf.helpers.LibraryHelper;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.*;
+
+import static org.opencds.cqf.helpers.LibraryHelper.readLibrary;
+import static org.opencds.cqf.helpers.LibraryHelper.translateLibrary;
 
 /**
  * Created by Chris Schuler on 12/11/2016.
@@ -43,7 +49,6 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         if (modelManager == null) {
             modelManager = new ModelManager();
         }
-
         return modelManager;
     }
 
@@ -52,7 +57,7 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         if (libraryManager == null) {
             libraryManager = new LibraryManager(getModelManager());
             libraryManager.getLibrarySourceLoader().clearProviders();
-            libraryManager.getLibrarySourceLoader().registerProvider(new MeasureLibrarySourceProvider(provider));
+            libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
         }
         return libraryManager;
     }
@@ -60,9 +65,21 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
     private LibraryLoader libraryLoader;
     private LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
-            libraryLoader = new MeasureLibraryLoader(provider, new LibraryHelper(getLibraryManager(), getModelManager()));
+            libraryLoader = new MeasureLibraryLoader(getLibraryResourceProvider(), getModelManager(), getLibraryManager());
         }
         return libraryLoader;
+    }
+
+    private MeasureLibrarySourceProvider librarySourceProvider;
+    private MeasureLibrarySourceProvider getLibrarySourceProvider() {
+        if (librarySourceProvider == null) {
+            librarySourceProvider = new MeasureLibrarySourceProvider(getLibraryResourceProvider());
+        }
+        return librarySourceProvider;
+    }
+
+    private LibraryResourceProvider getLibraryResourceProvider() {
+        return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
     }
 
     @Operation(name = "$evaluate", idempotent = true)
@@ -75,11 +92,27 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
             throws InternalErrorException, FHIRException {
         MeasureReport report;
 
-        Measure measure = ((MeasureResourceProvider) provider.resolveResourceProvider("Measure")).getDao().read(theId);
-        MeasureLibrarySourceProvider libraryProvider = new MeasureLibrarySourceProvider(provider);
-        InputStream is = libraryProvider.getLibrarySource(new VersionedIdentifier().withId(measure.getLibraryFirstRep().getReference()));
-        LibraryHelper helper = new LibraryHelper(getLibraryManager(), getModelManager());
-        org.cqframework.cql.elm.execution.Library library = helper.resolveLibrary(libraryProvider.getContentType(), is);
+        Measure measure = this.getDao().read(theId);
+
+        // NOTE: This assumes there is only one library and it is the primary library for the measure.
+        Library libraryResource = getLibraryResourceProvider().getDao().read(new IdType(measure.getLibraryFirstRep().getReference()));
+        org.cqframework.cql.elm.execution.Library library = null;
+        for (Attachment content : libraryResource.getContent()) {
+            switch (content.getContentType()) {
+                case "text/cql":
+                    library = translateLibrary(new ByteArrayInputStream(content.getData()), getModelManager(), getLibraryManager());
+                    break;
+
+                case "application/elm+xml":
+                    library = readLibrary(new ByteArrayInputStream(content.getData()));
+                    break;
+
+            }
+        }
+
+        if (library == null) {
+            throw new IllegalArgumentException(String.format("Could not load library source for library %s.", libraryResource.getId()));
+        }
 
         Patient patient = ((PatientResourceProvider) provider.resolveResourceProvider("Patient")).getDao().read(new IdType(patientId));
 

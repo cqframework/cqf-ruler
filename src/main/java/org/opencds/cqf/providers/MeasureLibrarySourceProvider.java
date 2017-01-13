@@ -4,7 +4,6 @@ import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -14,29 +13,24 @@ import java.io.InputStream;
  */
 public class MeasureLibrarySourceProvider implements LibrarySourceProvider {
 
-    private JpaFhirDataProvider provider;
-    private String contentType;
+    private LibraryResourceProvider provider;
 
-    public MeasureLibrarySourceProvider(JpaFhirDataProvider provider) {
+    public MeasureLibrarySourceProvider(LibraryResourceProvider provider) {
         this.provider = provider;
-    }
-
-    public String getContentType() {
-        return this.contentType;
     }
 
     @Override
     public InputStream getLibrarySource(VersionedIdentifier versionedIdentifier) {
         IdType id = new IdType(versionedIdentifier.getId());
-        org.hl7.fhir.dstu3.model.Library lib = ((LibraryResourceProvider) provider.resolveResourceProvider("Library"))
-                .getDao().read(id);
-        contentType = lib.getContentFirstRep().getContentType();
-        byte[] data = lib.getContentFirstRep().getData();
-
-        if (data == null || data.length == 0) {
-            throw new IllegalArgumentException("Library does not contain any data");
+        org.hl7.fhir.dstu3.model.Library lib = provider.getDao().read(id);
+        for (org.hl7.fhir.dstu3.model.Attachment content : lib.getContent()) {
+            if (content.getContentType() == "text/cql") {
+                return new ByteArrayInputStream(content.getData());
+            }
         }
 
-        return new ByteArrayInputStream(data);
+        throw new IllegalArgumentException(String.format("Library %s%s does not contain CQL source content.",
+                versionedIdentifier.getId(), versionedIdentifier.getVersion() != null ?
+                        ("-" + versionedIdentifier.getVersion()) : ""));
     }
 }

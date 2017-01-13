@@ -20,26 +20,7 @@ import java.util.ArrayList;
  */
 public class LibraryHelper {
 
-    private LibraryManager libraryManager;
-    private ModelManager modelManager;
-
-    public LibraryHelper(LibraryManager libraryManager, ModelManager modelManager) {
-        this.modelManager = modelManager;
-        this.libraryManager = libraryManager;
-    }
-
-    public Library resolveLibrary(String contentType, InputStream is) {
-        switch (contentType) {
-            case "text/cql":
-                return translate(is.toString());
-            case "application/fhir+xml":
-                return readLibrary(is);
-            default:
-                throw new IllegalArgumentException("Invalid library content type: " + contentType);
-        }
-    }
-
-    public Library readLibrary(InputStream xmlStream) {
+    public static Library readLibrary(InputStream xmlStream) {
         try {
             return CqlLibraryReader.read(xmlStream);
         } catch (IOException | JAXBException e) {
@@ -47,28 +28,35 @@ public class LibraryHelper {
         }
     }
 
-    public Library translate(String cql) {
+    public static String errorsToString(Iterable<CqlTranslatorException> exceptions) {
+        ArrayList<String> errors = new ArrayList<>();
+        for (CqlTranslatorException error : exceptions) {
+            TrackBack tb = error.getLocator();
+            String lines = tb == null ? "[n/a]" : String.format("%s[%d:%d, %d:%d]",
+                    (tb.getLibrary() != null ? tb.getLibrary().getId() + (tb.getLibrary().getVersion() != null
+                            ? ("-" + tb.getLibrary().getVersion()) : "") : ""),
+                    tb.getStartLine(), tb.getStartChar(), tb.getEndLine(), tb.getEndChar());
+            errors.add(lines + error.getMessage());
+        }
+
+        return errors.toString();
+    }
+
+    public static Library translateLibrary(InputStream cqlStream, ModelManager modelManager, LibraryManager libraryManager) {
         ArrayList<CqlTranslator.Options> options = new ArrayList<>();
         options.add(CqlTranslator.Options.EnableDateRangeOptimization);
-        CqlTranslator translator = CqlTranslator.fromText(cql, modelManager, libraryManager, options.toArray(new CqlTranslator.Options[options.size()]));
+        CqlTranslator translator = null;
+        try {
+            translator = CqlTranslator.fromStream(cqlStream, modelManager, libraryManager,
+                    options.toArray(new CqlTranslator.Options[options.size()]));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(String.format("Errors occurred translating library: %s", e.getMessage()));
+        }
 
         if (translator.getErrors().size() > 0) {
-            ArrayList<String> errors = new ArrayList<>();
-            for (CqlTranslatorException error : translator.getErrors()) {
-                TrackBack tb = error.getLocator();
-                String lines = tb == null ? "[n/a]" : String.format("[%d:%d, %d:%d]",
-                        tb.getStartLine(), tb.getStartChar(), tb.getEndLine(), tb.getEndChar());
-                errors.add(lines + error.getMessage());
-            }
-            throw new IllegalArgumentException(errors.toString());
+            throw new IllegalArgumentException(errorsToString(translator.getErrors()));
         }
 
         return readLibrary(new ByteArrayInputStream(translator.toXml().getBytes(StandardCharsets.UTF_8)));
-    }
-
-    public static Library translateDefault(String cql) {
-        ModelManager mm = new ModelManager();
-        LibraryHelper helper = new LibraryHelper(new LibraryManager(mm), mm);
-        return helper.translate(cql);
     }
 }
