@@ -63,7 +63,7 @@ public class MeasureLibraryLoader implements LibraryLoader {
         org.hl7.fhir.dstu3.model.Library library = provider.getDao().read(id);
 
         for (org.hl7.fhir.dstu3.model.Attachment content : library.getContent()) {
-            if (content.getContentType() == "application/elm+xml") {
+            if (content.getContentType().equals("application/elm+xml")) {
                 return readLibrary(new ByteArrayInputStream(content.getData()));
             }
         }

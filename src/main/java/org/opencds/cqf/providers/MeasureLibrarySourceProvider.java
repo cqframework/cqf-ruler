@@ -24,7 +24,7 @@ public class MeasureLibrarySourceProvider implements LibrarySourceProvider {
         IdType id = new IdType(versionedIdentifier.getId());
         org.hl7.fhir.dstu3.model.Library lib = provider.getDao().read(id);
         for (org.hl7.fhir.dstu3.model.Attachment content : lib.getContent()) {
-            if (content.getContentType() == "text/cql") {
+            if (content.getContentType().equals("text/cql")) {
                 return new ByteArrayInputStream(content.getData());
             }
         }
