@@ -42,6 +42,10 @@ public class LibraryHelper {
         return errors.toString();
     }
 
+    public static Library translateLibrary(String cql, ModelManager modelManager, LibraryManager libraryManager) {
+        return translateLibrary(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), modelManager, libraryManager);
+    }
+
     public static Library translateLibrary(InputStream cqlStream, ModelManager modelManager, LibraryManager libraryManager) {
         ArrayList<CqlTranslator.Options> options = new ArrayList<>();
         options.add(CqlTranslator.Options.EnableDateRangeOptimization);

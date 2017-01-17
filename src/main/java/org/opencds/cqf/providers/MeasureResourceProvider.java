@@ -41,7 +41,7 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
     private JpaFhirDataProvider provider;
 
     public MeasureResourceProvider(Collection<IResourceProvider> providers) {
-        this.provider = new JpaFhirDataProvider(providers).withEndpoint("http://localhost:8080/cql-measure-processor/baseDstu3");
+        this.provider = new JpaFhirDataProvider(providers);
     }
 
     private ModelManager modelManager;
