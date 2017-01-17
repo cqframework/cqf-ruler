@@ -9,6 +9,8 @@ import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
@@ -36,19 +38,26 @@ public class MeasureLibraryLoader implements LibraryLoader {
         this.provider = provider;
     }
 
+    private Logger logger = LoggerFactory.getLogger(MeasureLibraryLoader.class);
+
     private Library resolveLibrary(VersionedIdentifier libraryIdentifier) {
         if (libraryIdentifier == null) {
+            logger.error("Library identifier is null.");
             throw new IllegalArgumentException("Library identifier is null.");
         }
 
         if (libraryIdentifier.getId() == null) {
+            logger.error("Library identifier id null.");
             throw new IllegalArgumentException("Library identifier id is null.");
         }
 
         Library library = libraries.get(libraryIdentifier.getId());
-        if (library != null && libraryIdentifier.getVersion() != null && !libraryIdentifier.getVersion().equals(library.getIdentifier().getVersion())) {
-            throw new IllegalArgumentException(String.format("Could not load library %s, version %s because version %s is already loaded.",
-                    libraryIdentifier.getId(), libraryIdentifier.getVersion(), library.getIdentifier().getVersion()));
+        if (library != null && libraryIdentifier.getVersion() != null
+                && !libraryIdentifier.getVersion().equals(library.getIdentifier().getVersion())) {
+            String error = String.format("Could not load library %s, version %s because version %s is already loaded.",
+                    libraryIdentifier.getId(), libraryIdentifier.getVersion(), library.getIdentifier().getVersion());
+            logger.error(error);
+            throw new IllegalArgumentException(error);
         }
         else {
             library = loadLibrary(libraryIdentifier);
@@ -77,14 +86,17 @@ public class MeasureLibraryLoader implements LibraryLoader {
         org.hl7.elm.r1.Library translatedLibrary = libraryManager.resolveLibrary(identifier, errors).getLibrary();
 
         if (errors.size() > 0) {
+            logger.error(errorsToString(errors));
             throw new IllegalArgumentException(errorsToString(errors));
         }
 
         try {
             return readLibrary(new ByteArrayInputStream(CqlTranslator.convertToXML(translatedLibrary).getBytes(StandardCharsets.UTF_8)));
         } catch (JAXBException e) {
-            throw new IllegalArgumentException(String.format("Errors occurred translating library %s%s.",
-                    identifier.getId(), identifier.getVersion() != null ? ("-" + identifier.getVersion()) : ""));
+            String error = String.format("Errors occurred translating library %s%s.",
+                    identifier.getId(), identifier.getVersion() != null ? ("-" + identifier.getVersion()) : "");
+            logger.error(error);
+            throw new IllegalArgumentException(error);
         }
     }
 

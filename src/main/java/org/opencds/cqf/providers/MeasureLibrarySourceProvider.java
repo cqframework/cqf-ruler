@@ -4,6 +4,8 @@ import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -19,6 +21,8 @@ public class MeasureLibrarySourceProvider implements LibrarySourceProvider {
         this.provider = provider;
     }
 
+    private Logger logger = LoggerFactory.getLogger(MeasureLibrarySourceProvider.class);
+
     @Override
     public InputStream getLibrarySource(VersionedIdentifier versionedIdentifier) {
         IdType id = new IdType(versionedIdentifier.getId());
@@ -29,8 +33,9 @@ public class MeasureLibrarySourceProvider implements LibrarySourceProvider {
             }
         }
 
-        throw new IllegalArgumentException(String.format("Library %s%s does not contain CQL source content.",
-                versionedIdentifier.getId(), versionedIdentifier.getVersion() != null ?
-                        ("-" + versionedIdentifier.getVersion()) : ""));
+        String error = String.format("Library %s%s does not contain CQL source content.", versionedIdentifier.getId(),
+                versionedIdentifier.getVersion() != null ? ("-" + versionedIdentifier.getVersion()) : "");
+        logger.error(error);
+        throw new IllegalArgumentException(error);
     }
 }
