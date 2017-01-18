@@ -7,8 +7,6 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.tracking.TrackBack;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
@@ -22,13 +20,10 @@ import java.util.ArrayList;
  */
 public class LibraryHelper {
 
-    private static Logger logger = LoggerFactory.getLogger(LibraryHelper.class);
-
     public static Library readLibrary(InputStream xmlStream) {
         try {
             return CqlLibraryReader.read(xmlStream);
         } catch (IOException | JAXBException e) {
-            logger.error("Error encountered while reading ELM xml: " + e.getMessage());
             throw new IllegalArgumentException("Error encountered while reading ELM xml: " + e.getMessage());
         }
     }
@@ -59,12 +54,10 @@ public class LibraryHelper {
             translator = CqlTranslator.fromStream(cqlStream, modelManager, libraryManager,
                     options.toArray(new CqlTranslator.Options[options.size()]));
         } catch (IOException e) {
-            logger.error(String.format("Errors occurred translating library: %s", e.getMessage()));
             throw new IllegalArgumentException(String.format("Errors occurred translating library: %s", e.getMessage()));
         }
 
         if (translator.getErrors().size() > 0) {
-            logger.error(errorsToString(translator.getErrors()));
             throw new IllegalArgumentException(errorsToString(translator.getErrors()));
         }
 

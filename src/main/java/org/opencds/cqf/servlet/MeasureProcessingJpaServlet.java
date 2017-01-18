@@ -13,6 +13,7 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.providers.MeasureResourceProvider;
@@ -102,6 +103,18 @@ public class MeasureProcessingJpaServlet extends RestfulServer {
         }
 
         registerProvider(provider);
+
+        // Now register the logging interceptor
+        LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+        registerInterceptor(loggingInterceptor);
+
+        // The SLF4j logger "test.accesslog" will receive the logging events
+        loggingInterceptor.setLoggerName("logging.accesslog");
+
+        // This is the format for each line. A number of substitution variables may
+        // be used here. See the JavaDoc for LoggingInterceptor for information on
+        // what is available.
+        loggingInterceptor.setMessageFormat("Source[${remoteAddr}] Operation[${operationType} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}]");
 
         //setServerAddressStrategy(new HardcodedServerAddressStrategy("http://mydomain.com/fhir/baseDstu2"));
         //registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));

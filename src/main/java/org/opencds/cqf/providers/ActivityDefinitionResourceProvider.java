@@ -10,8 +10,6 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
@@ -27,8 +25,6 @@ public class ActivityDefinitionResourceProvider extends JpaResourceProviderDstu3
         this.provider = new JpaFhirDataProvider(providers);
         this.executionProvider = new CqlExecutionProvider(providers);
     }
-
-    private Logger logger = LoggerFactory.getLogger(MeasureLibrarySourceProvider.class);
 
     @Operation(name = "$apply", idempotent = true)
     public Resource apply(@IdParam IdType theId, @RequiredParam(name="patient") String patientId,
@@ -82,9 +78,7 @@ public class ActivityDefinitionResourceProvider extends JpaResourceProviderDstu3
                 break;
             case OTHER:
             default:
-                String error = String.format("Unknown or unimplemented activity definition category %s.", activityDefinition.getCategory());
-                logger.error(error);
-                throw new RuntimeException(error);
+                throw new RuntimeException(String.format("Unknown or unimplemented activity definition category %s.", activityDefinition.getCategory()));
         }
 
         // TODO: Apply metadata, code, timing, location, participants, product, quantity, dosageInstruction, bodySite, etc....

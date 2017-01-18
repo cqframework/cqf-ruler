@@ -22,8 +22,6 @@ import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.JpaFhirTerminologyProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.util.*;
@@ -41,8 +39,6 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
     public MeasureResourceProvider(Collection<IResourceProvider> providers) {
         this.provider = new JpaFhirDataProvider(providers);
     }
-
-    private Logger logger = LoggerFactory.getLogger(MeasureResourceProvider.class);
 
     private ModelManager modelManager;
     private ModelManager getModelManager() {
@@ -91,8 +87,6 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
                                          @OptionalParam(name="pass") String pass)
             throws InternalErrorException, FHIRException {
         MeasureReport report;
-        logger.info(String.format("\nMeasure evaluation request info: \nMeasureId: %s\n" +
-                "PatientId: %s\nStartPeriod: %s\nEndPeriod: %s", theId.getId(), patientId, startPeriod, endPeriod));
         Measure measure = this.getDao().read(theId);
 
         // NOTE: This assumes there is only one library and it is the primary library for the measure.
@@ -112,14 +106,12 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         }
 
         if (library == null) {
-            logger.error(String.format("Could not load library source for library %s.", libraryResource.getId()));
             throw new IllegalArgumentException(String.format("Could not load library source for library %s.", libraryResource.getId()));
         }
 
         Patient patient = ((PatientResourceProvider) provider.resolveResourceProvider("Patient")).getDao().read(new IdType(patientId));
 
         if (patient == null) {
-            logger.error("Patient is null");
             throw new InternalErrorException("Patient is null");
         }
 
@@ -128,7 +120,6 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         context.registerLibraryLoader(getLibraryLoader());
 
         if (startPeriod == null || endPeriod == null) {
-            logger.error("The start and end dates of the measurement period must be specified in request.");
             throw new InternalErrorException("The start and end dates of the measurement period must be specified in request.");
         }
 
@@ -153,12 +144,10 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         report = evaluator.evaluate(provider.getFhirClient(), context, measure, patient, periodStart, periodEnd);
 
         if (report == null) {
-            logger.error("MeasureReport is null");
             throw new InternalErrorException("MeasureReport is null");
         }
 
         if (report.getEvaluatedResources() == null) {
-            logger.error("EvaluatedResources is null");
             throw new InternalErrorException("EvaluatedResources is null");
         }
 
@@ -175,7 +164,6 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         }
 
         if (dateVals.isEmpty()) {
-            logger.error("Invalid date");
             throw new IllegalArgumentException("Invalid date");
         }
 
