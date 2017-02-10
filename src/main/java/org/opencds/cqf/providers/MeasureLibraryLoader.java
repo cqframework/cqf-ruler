@@ -74,7 +74,7 @@ public class MeasureLibraryLoader implements LibraryLoader {
                 .withSystem(libraryIdentifier.getSystem())
                 .withVersion(libraryIdentifier.getVersion());
 
-        ArrayList<CqlTranslatorException> errors = new ArrayList<CqlTranslatorException>();
+        ArrayList<CqlTranslatorException> errors = new ArrayList<>();
         org.hl7.elm.r1.Library translatedLibrary = libraryManager.resolveLibrary(identifier, errors).getLibrary();
 
         if (errors.size() > 0) {

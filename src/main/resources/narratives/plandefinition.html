@@ -1,0 +1,130 @@
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <!--  style="padding-left: 25px; padding-top: 25px; padding-right: 25px; word-wrap: break-word; max-width: 50%;" -->
+    <div th:if="${resource.hasId()}">
+        <b>id: </b>
+        <span th:narrative="${resource.id}"></span>
+    </div>
+
+    <br th:if="${resource.hasId()}" />
+
+    <div th:each="ident : ${resource.identifier}">
+        <b>identifier:</b>
+        <span th:if="${ident.hasSystem()}">
+            <b>, system: </b>
+            <span th:narrative="${ident.system}"></span>
+        </span>
+        <span th:if="${ident.hasValue()}">
+            <span><b>, value: </b></span>
+            <span th:narrative="${ident.value}"></span>
+        </span>
+    </div>
+
+    <br th:if="${resource.hasIdentifier()}" />
+
+    <div th:if="${resource.hasTitle()}">
+        <b>title: </b>
+        <span th:narrative="${resource.title}"></span>
+    </div>
+
+    <br th:if="${resource.hasTitle()}" />
+
+    <div th:if="${not resource.status.toCode().empty}">
+        <b>status: </b>
+        <span th:narrative="${resource.status.toCode()}"></span>
+    </div>
+
+    <br th:if="${not resource.status.toCode().empty}" />
+
+    <div th:if="${not resource.type.coding.empty}">
+        <b>type: </b>
+        <span th:narrative="${resource.type.coding[0].code}"></span>
+    </div>
+
+    <br th:if="${not resource.type.coding.empty}" />
+
+    <div th:if="${resource.hasPurpose()}">
+        <b>purpose: </b>
+        <span th:narrative="${resource.purpose}"></span>
+    </div>
+
+    <br th:if="${resource.hasPurpose()}" />
+
+    <div th:if="${resource.hasUsage()}">
+        <b>usage: </b>
+        <span th:narrative="${resource.usage}"></span>
+    </div>
+
+    <br th:if="${resource.hasUsage()}" />
+
+    <div th:each="context : ${resource.useContext}">
+        <b>context: </b>
+        <span th:if="${context.code.hasSystem()}">
+            <b>, system: </b>
+            <span th:narrative="${context.code.system}"></span>
+        </span>
+        <span th:if="${context.code.hasCode()}">
+            <b>, code: </b>
+            <span th:narrative="${context.code.code}"></span>
+        </span>
+        <span th:if="${context.code.hasDisplay()}">
+            <b>, display: </b>
+            <span th:narrative="${context.code.display}"></span>
+        </span>
+        <span th:narrative="${context.valueCodeableConcept}"></span>
+        <span th:if="${context.hasValueQuantity()}">
+            <b>, quantity: </b>
+            <span th:if="${context.valueQuantity.hasComparator()}">
+                <span th:narrative="${context.valueQuantity.comparator}"></span>
+            </span>
+            <span th:if="${context.valueQuantity.hasValue()}">
+                <span th:narrative="${context.valueQuantity.value}"></span>
+            </span>
+            <span th:if="${context.valueQuantity.hasUnit()}">
+                <span th:narrative="${context.valueQuantity.unit}"></span>
+            </span>
+        </span>
+        <span th:if="${context.hasValueRange()}">
+            <b>, range: </b>
+            <span th:if="${context.valueRange.hasLow()}">
+                <span th:narrative="${context.valueRange.low}"></span>
+            </span>
+            <span th:if="${context.valueRange.hasHigh()}">
+                <span th:narrative="${context.valueRange.high}"></span>
+            </span>
+        </span>
+    </div>
+
+    <br th:if="${resource.hasUseContext()}" />
+
+    <div th:each="topics : ${resource.topic}">
+        <b>topic: </b>
+        <span th:narrative="${topics}"></span>
+    </div>
+
+    <br th:if="${resource.hasTopic()}" />
+
+    <div th:each="contrib : ${resource.contributor}">
+        <b><span th:narrative="${contrib.type.toCode()}"></span>:, display: </b>
+        <span th:narrative="${contrib.name}"></span>
+    </div>
+
+    <br th:if="${resource.hasContributor()}" />
+
+    <div th:each="lib : ${resource.library}">
+        <b>library: </b>
+        <span th:if="${lib.hasDisplay()}">
+            <b>, display: </b>
+            <span th:narrative="${lib.display}"></span>
+        </span>
+        <span th:if="${lib.hasReference()}">
+            <b>, reference: </b>
+            <span th:narrative="${lib.reference}"></span>
+        </span>
+    </div>
+
+    <br th:if="${resource.hasLibrary()}" />
+
+    <!-- STEPS -->
+    <div th:include="PlandefActiondefComp :: actionDefFrag(${resource.actionDefinition}, ${resource.contained})"></div>
+
+</div>

@@ -1,0 +1,20 @@
+<th:block th:if="${not resource.empty}">
+    <span th:if="${resource.hasText()}">
+        <b>, text: </b>
+        <span th:text="${resource.text}"></span>
+    </span>
+    <span th:each="codings : ${resource.coding}">
+        <span th:if="${codings.hasSystem()}">
+            <b>, system: </b>
+            <span th:text="${codings.system}"></span>
+        </span>
+        <span th:if="${codings.hasCode()}">
+            <b>, code: </b>
+            <span th:text="${codings.code}"></span>
+        </span>
+        <span th:if="${codings.hasDisplay()}">
+            <b>, display: </b>
+            <span th:text="${codings.display}"></span>
+        </span>
+    </span>
+</th:block>

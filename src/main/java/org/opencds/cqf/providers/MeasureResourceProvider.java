@@ -85,7 +85,8 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
                                          @OptionalParam(name="source") String source,
                                          @OptionalParam(name="user") String user,
                                          @OptionalParam(name="pass") String pass)
-            throws InternalErrorException, FHIRException {
+            throws InternalErrorException, FHIRException
+    {
         MeasureReport report;
         Measure measure = this.getDao().read(theId);
 
@@ -141,7 +142,7 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         context.registerDataProvider("http://hl7.org/fhir", provider);
 
         FhirMeasureEvaluator evaluator = new FhirMeasureEvaluator();
-        report = evaluator.evaluate(provider.getFhirClient(), context, measure, patient, periodStart, periodEnd);
+        report = evaluator.evaluate(context, measure, patient, periodStart, periodEnd);
 
         if (report == null) {
             throw new InternalErrorException("MeasureReport is null");
@@ -189,6 +190,35 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
             }
         }
         return calendar.getTime();
+    }
+
+    @Operation(name = "$data-requirements", idempotent = true)
+    public Library dataRequirements(@IdParam IdType theId, @RequiredParam(name="startPeriod") String startPeriod,
+                                    @RequiredParam(name="endPeriod") String endPeriod) throws InternalErrorException, FHIRException
+    {
+        Measure measure = this.getDao().read(theId);
+
+        // NOTE: This assumes there is only one library and it is the primary library for the measure.
+        Library libraryResource = getLibraryResourceProvider().getDao().read(new IdType(measure.getLibraryFirstRep().getReference()));
+
+        // TODO: what are the period params for? Library.effectivePeriod?
+
+        List<RelatedArtifact> dependencies = new ArrayList<>();
+        for (RelatedArtifact dependency : libraryResource.getRelatedArtifact()) {
+            if (dependency.getType().toCode().equals("depends-on")) {
+                dependencies.add(dependency);
+            }
+        }
+
+        List<Coding> typeCoding = new ArrayList<>();
+        typeCoding.add(new Coding().setCode("module-definition"));
+        Library library = new Library().setType(new CodeableConcept().setCoding(typeCoding));
+
+        if (!dependencies.isEmpty()) {
+            library.setRelatedArtifact(dependencies);
+        }
+
+        return library.setDataRequirement(libraryResource.getDataRequirement()).setParameter(libraryResource.getParameter());
     }
 
     public Class getResourceType() {

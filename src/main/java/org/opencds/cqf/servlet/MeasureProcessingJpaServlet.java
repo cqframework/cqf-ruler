@@ -104,9 +104,9 @@ public class MeasureProcessingJpaServlet extends RestfulServer {
 
         registerProvider(provider);
 
-        // Now register the logging interceptor
+        // Register the logging interceptor
         LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
-        registerInterceptor(loggingInterceptor);
+        this.registerInterceptor(loggingInterceptor);
 
         // The SLF4j logger "test.accesslog" will receive the logging events
         loggingInterceptor.setLoggerName("logging.accesslog");
