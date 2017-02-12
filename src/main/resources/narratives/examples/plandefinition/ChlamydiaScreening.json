@@ -11,7 +11,7 @@
   "title": "Chalmydia Screening CDS Example Using Common",
   "status": "draft",
   "description": "Chlamydia Screening CDS Example Using Common",
-  "publicationDate": "2015-07-22",
+  "approvalDate": "2015-07-22",
   "topic": [
     {
       "text": "Chlamydia Screeening"
@@ -25,10 +25,12 @@
   "actionDefinition": [
     {
       "title": "Patient has not had chlamydia screening within the recommended timeframe...",
-      "condition": {
+      "condition": [
+        {
         "kind": "applicability",
         "expression": "NoScreening"
-      },
+        }
+      ],
       "dynamicValue": [
         {
           "path": "~",

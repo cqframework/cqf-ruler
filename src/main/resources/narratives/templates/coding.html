@@ -1,0 +1,14 @@
+<th:block th:if="${not resource.empty}">
+    <div th:if="${resource.hasSystem()}">
+        <b>system: </b>
+        <span th:text="${resource.system}"></span>
+    </div>
+    <div th:if="${resource.hasCode()}">
+        <b>code: </b>
+        <span th:text="${resource.code}"></span>
+    </div>
+    <div th:if="${resource.hasDisplay()}">
+        <b>display: </b>
+        <span th:text="${resource.display}"></span>
+    </div>
+</th:block>

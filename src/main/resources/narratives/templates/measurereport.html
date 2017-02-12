@@ -1,0 +1,150 @@
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <!--  style="padding-left: 25px; padding-top: 25px; padding-right: 25px; word-wrap: break-word; max-width: 50%;" -->
+    <div th:if="${resource.hasId()}">
+        <b>id: </b>
+        <span th:narrative="${resource.id}"></span>
+    </div>
+
+    <br th:if="${resource.hasId()}" />
+
+    <div>
+        <b>measure: </b>
+        <div style="padding-left: 25px;" th:narrative="${resource.measure}"></div>
+    </div>
+
+    <br />
+
+    <div>
+        <b>type: </b>
+        <span th:narrative="${resource.type.toCode()}"></span>
+    </div>
+
+    <br />
+
+    <div th:if="${resource.hasPatient()}">
+        <b>patient: </b>
+        <div style="padding-left: 25px;" th:narrative="${resource.patient}"></div>
+    </div>
+
+    <br th:if="${resource.hasPatient()}" />
+
+    <div>
+        <b>period: </b>
+        <div style="padding-left: 25px;" th:if="${resource.period.hasStart()}">
+            <b>start: </b>
+            <span th:narrative="${resource.period.start}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${resource.period.hasEnd()}">
+            <b>end: </b>
+            <span th:narrative="${resource.period.end}"></span>
+        </div>
+    </div>
+
+    <br />
+
+    <div>
+        <b>status: </b>
+        <span th:narrative="${resource.status.toCode()}"></span>
+    </div>
+
+    <br />
+
+    <div th:if="${resource.hasReportingOrganization()}">
+        <b>reporting organization: </b>
+        <div style="padding-left: 25px;" th:if="${resource.reportingOrganization.hasReference()}">
+            <div th:if="${resource.reportingOrganization.reference.contains(&quot;#&quot;)}">
+                <div th:each="contain : ${resource.contained}">
+                    <div th:if="${resource.reportingOrganization.reference.contains(contain.id)}">
+                        <div th:if="${contain.hasName()}">
+                            <b>name: </b>
+                            <span th:narrative="${contain.name}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--<div style="padding-left: 25px;" th:narrative="${resource.reportingOrganization}"></div>-->
+    </div>
+
+    <br />
+
+    <div th:each="group1 : ${resource.group}">
+        <b>group:</b>
+        <div style="padding-left: 25px;" th:narrative="${group1.identifier}"></div>
+        <div style="padding-left: 25px;" th:each="pop : ${group1.population}">
+            <b>population: </b>
+            <div style="padding-left: 25px;">
+                <b>type: </b>
+                <span th:narrative="${pop.type}"></span>
+            </div>
+            <div style="padding-left: 25px;" th:if="${pop.hasCount()}">
+                <b>count: </b>
+                <span th:narrative="${pop.count}"></span>
+            </div>
+            <div style="padding-left: 25px;" th:if="${pop.hasPatients()}">
+                <b>patients: </b>
+                <span th:narrative="${pop.patients}"></span>
+            </div>
+        </div>
+        <div style="padding-left: 25px;" th:if="${group1.hasMeasureScore()}">
+            <b>measure score: </b>
+            <span th:narrative="${group1.measureScore}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:each="strats : ${group1.stratifier}">
+            <b>stratifier:</b>
+            <div style="padding-left: 25px;" th:narrative="${strats.identifier}"></div>
+            <div style="padding-left: 25px;" th:each="group2 : ${strats.group}">
+                <b>group:</b>
+                <div style="padding-left: 25px;">
+                    <b>value: </b>
+                    <span th:narrative="${group2.value}"></span>
+                </div>
+                <div style="padding-left: 25px;" th:each="pops : ${group2.population}">
+                    <b>population:</b>
+                    <div style="padding-left: 25px;">
+                        <b>type: </b>
+                        <span th:narrative="${pops.type}"></span>
+                    </div>
+                    <div style="padding-left: 25px;" th:if="${pops.hasCount()}">
+                        <b>count: </b>
+                        <span th:narrative="${pops.count}"></span>
+                    </div>
+                    <div style="padding-left: 25px;" th:if="${pops.hasPatients()}">
+                        <b>patients: </b>
+                        <span th:narrative="${pops.patients}"></span>
+                    </div>
+                </div>
+                <div style="padding-left: 25px;" th:if="${group2.hasMeasureScore()}">
+                    <b>measure score:</b>
+                    <span th:narrative="${group2.measureScore}"></span>
+                </div>
+            </div>
+        </div>
+        <div style="padding-left: 25px;" th:each="supples : ${group1.supplementalData}">
+            <b>supplemental:</b>
+            <div style="padding-left: 25px;" th:narrative="${supples.identifier}"></div>
+            <div style="padding-left: 25px;" th:each="group3 : ${supples.group}">
+                <b>group:</b>
+                <div style="padding-left: 25px;">
+                    <b>value: </b>
+                    <span th:narrative="${group3.value}"></span>
+                </div>
+                <div style="padding-left: 25px;" th:if="${group3.hasCount()}">
+                    <b>count: </b>
+                    <span th:narrative="${group3.count}"></span>
+                </div>
+                <div style="padding-left: 25px;" th:if="${group3.hasPatients()}">
+                    <b>patients: </b>
+                    <span th:narrative="${group3.patients}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br th:if="${resource.hasGroup()}" />
+
+    <div th:if="${resource.hasEvaluatedResources()}">
+        <b>evaluated resources: </b>
+        <div style="padding-left: 25px;" th:narrative="${resource.evaluatedResources}"></div>
+    </div>
+</div>

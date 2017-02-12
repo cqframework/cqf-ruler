@@ -1,0 +1,140 @@
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <!--  style="padding-left: 25px; padding-top: 25px; padding-right: 25px; word-wrap: break-word; max-width: 50%;" -->
+    <div th:if="${resource.hasId()}">
+        <b>id: </b>
+        <span th:narrative="${resource.id}"></span>
+    </div>
+
+    <br th:if="${resource.hasId()}" />
+
+    <div th:each="ident : ${resource.identifier}">
+        <span th:narrative="${ident}"></span>
+    </div>
+
+    <br th:if="${resource.hasIdentifier()}" />
+
+    <div th:if="${resource.hasVersion()}">
+        <b>version: </b>
+        <span th:narrative="${resource.version}"></span>
+    </div>
+
+    <br th:if="${resource.hasVersion()}" />
+
+    <div th:if="${resource.hasTitle()}">
+        <b>title: </b>
+        <span th:narrative="${resource.title}"></span>
+    </div>
+
+    <br th:if="${resource.hasTitle()}" />
+
+    <div>
+        <b>type: </b>
+        <div style="padding-left: 25px;" th:narrative="${resource.type}"></div>
+    </div>
+
+    <br />
+
+    <div th:if="${not resource.status.toCode().empty}">
+        <b>status: </b>
+        <span th:narrative="${resource.status.toCode()}"></span>
+    </div>
+
+    <br th:if="${not resource.status.toCode().empty}" />
+
+    <div th:if="${resource.hasDescription()}">
+        <b>description: </b>
+        <span th:narrative="${resource.description}"></span>
+    </div>
+
+    <br th:if="${resource.hasDescription()}" />
+
+    <div th:if="${resource.hasPurpose()}">
+        <b>purpose: </b>
+        <span th:narrative="${resource.purpose}"></span>
+    </div>
+
+    <br th:if="${resource.hasPurpose()}" />
+
+    <div th:if="${resource.hasUsage()}">
+        <b>usage: </b>
+        <div style="padding-left: 25px;" th:narrative="${resource.usage}"></div>
+    </div>
+
+    <br th:if="${resource.hasUsage()}" />
+
+    <div th:each="context : ${resource.useContext}">
+        <div th:narrative="${context}"></div>
+    </div>
+
+    <br th:if="${resource.hasUseContext()}" />
+
+    <div th:each="topics : ${resource.topic}">
+        <b>topic: </b>
+        <div style="padding-left: 25px;" th:narrative="${topics}"></div>
+    </div>
+
+    <br th:if="${resource.hasTopic()}" />
+
+    <div th:each="contrib : ${resource.contributor}">
+        <div>
+            <b><span th:narrative="${contrib.type.toCode()}"></span>: </b>
+            <div style="padding-left: 25px;">
+                <b>display: </b>
+                <span th:narrative="${contrib.name}"></span>
+            </div>
+        </div>
+    </div>
+
+    <br th:if="${resource.hasContributor()}" />
+
+    <div th:each="related : ${resource.relatedArtifact}">
+        <b>related:</b>
+        <div style="padding-left: 25px;" th:narrative="${related}"></div>
+    </div>
+
+    <br th:if="${resource.hasRelatedArtifact()}" />
+
+    <div th:each="param : ${resource.parameter}">
+        <b>parameter:</b>
+        <div style="padding-left: 25px;" th:if="${param.hasName()}">
+            <b>name: </b>
+            <span th:narrative="${param.name}"></span>
+        </div>
+        <div style="padding-left: 25px;">
+            <b>use: </b>
+            <span th:narrative="${param.use.toCode()}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${param.hasMin()}">
+            <b>minimum cardinality: </b>
+            <span th:narrative="${param.min}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${param.hasMax()}">
+            <b>maximum cardinality: </b>
+            <span th:narrative="${param.max}"></span>
+        </div>
+        <div style="padding-left: 25px;">
+            <b>type: </b>
+            <span th:narrative="${param.type}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${param.hasDocumentation()}">
+            <b>documentation: </b>
+            <span th:narrative="${param.documentation}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${param.hasProfile()}">
+            <b>profile: </b>
+            <span th:narrative="${param.profile}"></span>
+        </div>
+    </div>
+
+    <br th:if="${resource.hasParameter()}" />
+
+    <div th:each="dataReq : ${resource.dataRequirement}">
+        <b>date requirements:</b>
+        <div style="padding-left: 25px;" th:narrative="${dataReq}"></div>
+    </div>
+
+    <div th:each="con : ${resource.content}">
+        <b>content:</b>
+        <div style="padding-left: 25px;" th:narrative="${con}"></div>
+    </div>
+</div>

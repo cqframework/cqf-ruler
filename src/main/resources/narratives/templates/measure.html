@@ -1,0 +1,225 @@
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <!--  style="padding-left: 25px; padding-top: 25px; padding-right: 25px; word-wrap: break-word; max-width: 50%;" -->
+    <div th:if="${resource.hasId()}">
+        <b>id: </b>
+        <span th:narrative="${resource.id}"></span>
+    </div>
+
+    <br th:if="${resource.hasId()}" />
+
+    <div th:each="ident : ${resource.identifier}">
+        <span th:narrative="${ident}"></span>
+    </div>
+
+    <br th:if="${resource.hasIdentifier()}" />
+
+    <div th:if="${resource.hasTitle()}">
+        <b>title: </b>
+        <span th:narrative="${resource.title}"></span>
+    </div>
+
+    <br th:if="${resource.hasTitle()}" />
+
+    <div>
+        <b>status: </b>
+        <span th:narrative="${resource.status.toCode()}"></span>
+    </div>
+
+    <br />
+
+    <div th:if="${resource.hasDescription()}">
+        <b>description: </b>
+        <span th:narrative="${resource.description}"></span>
+    </div>
+
+    <br th:if="${resource.hasDescription()}" />
+
+    <div th:if="${resource.hasPurpose()}">
+        <b>purpose: </b>
+        <span th:narrative="${resource.purpose}"></span>
+    </div>
+
+    <br th:if="${resource.hasPurpose()}" />
+
+    <div th:if="${resource.hasUsage()}">
+        <b>usage: </b>
+        <span th:narrative="${resource.usage}"></span>
+    </div>
+
+    <br th:if="${resource.hasUsage()}" />
+
+    <div th:each="context : ${resource.useContext}">
+        <span th:narrative="${context}"></span>
+    </div>
+
+    <br th:if="${resource.hasUseContext()}" />
+
+    <div th:each="topics : ${resource.topic}">
+        <b>topic: </b>
+        <div style="padding-left: 25px;" th:narrative="${topics}"></div>
+    </div>
+
+    <br th:if="${resource.hasTopic()}" />
+
+    <div th:each="contrib : ${resource.contributor}">
+        <b><span th:narrative="${contrib.type.toCode()}"></span>:, display: </b>
+        <span th:narrative="${contrib.name}"></span>
+    </div>
+
+    <br th:if="${resource.hasContributor()}" />
+
+    <div th:each="related : ${resource.relatedArtifact}">
+        <b>related:</b>
+        <div style="padding-left: 25px;" th:narrative="${related}"></div>
+    </div>
+
+    <br th:if="${resource.hasRelatedArtifact()}" />
+
+    <div th:each="lib : ${resource.library}">
+        <b>library:</b>
+        <div style="padding-left: 25px;" th:narrative="${lib}"></div>
+    </div>
+
+    <br th:if="${resource.hasLibrary()}" />
+
+    <div th:if="${resource.hasDisclaimer()}">
+        <b>disclaimer: </b>
+        <span th:narrative="${resource.disclaimer}"></span>
+    </div>
+
+    <br th:if="${resource.hasDisclaimer()}" />
+
+    <div th:if="${resource.hasScoring()}">
+        <b>scoring: </b>
+        <span th:narrative="${resource.scoring.toCode()}"></span>
+    </div>
+
+    <br th:if="${resource.hasScoring()}" />
+
+    <div th:if="${resource.hasCompositeScoring()}">
+        <b>composite scoring: </b>
+        <span th:narrative="${resource.compositeScoring.toCode()}"></span>
+    </div>
+
+    <br th:if="${resource.hasCompositeScoring()}" />
+
+    <div th:each="types : ${resource.type}">
+        <b>type: </b>
+        <span th:narrative="${types.getValue().toCode()}"></span>
+    </div>
+
+    <br th:if="${not resource.type.empty}" />
+
+    <div th:if="${resource.hasRiskAdjustment()}">
+        <b>risk adjustment: </b>
+        <span th:narrative="${resource.riskAdjustment}"></span>
+    </div>
+
+    <br th:if="${resource.hasRiskAdjustment()}" />
+
+    <div th:if="${resource.hasRateAggregation()}">
+        <b>rate aggregation: </b>
+        <span th:narrative="${resource.rateAggregation}"></span>
+    </div>
+
+    <br th:if="${resource.hasRateAggregation()}" />
+
+    <div th:if="${resource.hasRationale()}">
+        <b>rationale: </b>
+        <span th:narrative="${resource.rationale}"></span>
+    </div>
+
+    <br th:if="${resource.hasRationale()}" />
+
+    <div th:if="${resource.hasClinicalRecommendationStatement()}">
+        <b>clinical recommendation: </b>
+        <span th:narrative="${resource.clinicalRecommendationStatement}"></span>
+    </div>
+
+    <br th:if="${resource.hasClinicalRecommendationStatement()}" />
+
+    <div th:if="${resource.hasDefinition()}">
+        <b>definition: </b>
+        <span th:narrative="${resource.definition}"></span>
+    </div>
+
+    <br th:if="${resource.hasDefinition()}" />
+
+    <div th:if="${resource.hasGuidance()}">
+        <b>guidance: </b>
+        <span th:narrative="${resource.guidance}"></span>
+    </div>
+
+    <br th:if="${resource.hasGuidance()}" />
+
+    <div th:if="${resource.hasSet()}">
+        <b>set: </b>
+        <span th:narrative="${resource.set}"></span>
+    </div>
+
+    <br th:if="${resource.hasSet()}" />
+
+    <div th:each="groups : ${resource.group}">
+        <b>group:</b>
+        <div style="padding-left: 25px;" th:narrative="${groups.identifier}"></div>
+        <div style="padding-left: 25px;" th:if="${groups.hasName()}">
+            <b>name: </b>
+            <span th:narrative="${groups.name}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${groups.hasDescription()}">
+            <b>description: </b>
+            <span th:narrative="${groups.description}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:each="pops : ${groups.population}">
+            <b>population: </b>
+            <div style="padding-left: 25px;">
+                <b>type: </b>
+                <span th:narrative="${pops.type.toCode()}"></span>
+            </div>
+            <div style="padding-left: 25px;" th:narrative="${pops.identifier}"></div>
+            <div style="padding-left: 25px;" th:if="${pops.hasName()}">
+                <b>name: </b>
+                <span th:narrative="${pops.name}"></span>
+            </div>
+            <div style="padding-left: 25px;" th:if="${pops.hasDescription()}">
+                <b>description: </b>
+                <span th:narrative="${pops.description}"></span>
+            </div>
+            <div style="padding-left: 25px;">
+                <b>criteria: </b>
+                <span th:narrative="${pops.criteria}"></span>
+            </div>
+        </div>
+        <div style="padding-left: 25px;" th:each="strats : ${groups.stratifier}">
+            <b>stratifier:, </b>
+            <div style="padding-left: 25px;" th:narrative="${strats.identifier}"></div>
+            <div style="padding-left: 25px;" th:if="${strats.hasCriteria()}">
+                <b>criteria: </b>
+                <span th:narrative="${strats.criteria}"></span>
+            </div>
+            <div style="padding-left: 25px;" th:if="${strats.hasPath()}">
+                <b>path: </b>
+                <span th:narrative="${strats.path}"></span>
+            </div>
+        </div>
+
+        <br />
+    </div>
+
+    <div th:each="supples : ${resource.supplementalData}">
+        <b>supplemental data:</b>
+        <div style="padding-left: 25px;" th:narrative="${supples.identifier}"></div>
+        <div style="padding-left: 25px;" th:each="uses : ${supples.usage}">
+            <b>usage: </b>
+            <span th:narrative="${uses.getValue().toCode()}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${supples.hasCriteria()}">
+            <b>criteria: </b>
+            <span th:narrative="${supples.criteria}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${supples.hasPath()}">
+            <b>path: </b>
+            <span th:narrative="${supples.path}"></span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,91 @@
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <!--  style="padding-left: 25px; padding-top: 25px; padding-right: 25px; word-wrap: break-word; max-width: 50%;" -->
+    <div th:if="${resource.hasId()}">
+        <b>id: </b>
+        <span th:narrative="${resource.id}"></span>
+    </div>
+
+    <br th:if="${resource.hasId()}" />
+
+    <div th:each="ident : ${resource.identifier}">
+        <span th:narrative="${ident}"></span>
+    </div>
+
+    <br th:if="${resource.hasIdentifier()}" />
+
+    <div th:if="${resource.hasTitle()}">
+        <b>title: </b>
+        <span th:narrative="${resource.title}"></span>
+    </div>
+
+    <br th:if="${resource.hasTitle()}" />
+
+    <div>
+        <b>status: </b>
+        <span th:narrative="${resource.status.toCode()}"></span>
+    </div>
+
+    <br />
+
+    <div th:if="${resource.hasDescription()}">
+        <b>description: </b>
+        <span th:narrative="${resource.description}"></span>
+    </div>
+
+    <br th:if="${resource.hasDescription()}" />
+
+    <div th:if="${resource.hasPurpose()}">
+        <b>purpose: </b>
+        <span th:narrative="${resource.purpose}"></span>
+    </div>
+
+    <br th:if="${resource.hasPurpose()}" />
+
+    <div th:if="${resource.hasUsage()}">
+        <b>usage: </b>
+        <span th:narrative="${resource.usage}"></span>
+    </div>
+
+    <br th:if="${resource.hasUsage()}" />
+
+    <div th:each="context : ${resource.useContext}">
+        <span th:narrative="${context}"></span>
+    </div>
+
+    <br th:if="${resource.hasUseContext()}" />
+
+    <div th:each="topics : ${resource.topic}">
+        <b>topic: </b>
+        <div style="padding-left: 25px;" th:narrative="${topics}"></div>
+    </div>
+
+    <br th:if="${resource.hasTopic()}" />
+
+    <div th:each="contrib : ${resource.contributor}">
+        <b><span th:narrative="${contrib.type.toCode()}"></span>:, display: </b>
+        <span th:narrative="${contrib.name}"></span>
+    </div>
+
+    <br th:if="${resource.hasContributor()}" />
+
+    <div th:each="related : ${resource.relatedArtifact}">
+        <b>related:</b>
+        <div style="padding-left: 25px;" th:narrative="${related}"></div>
+    </div>
+
+    <br th:if="${resource.hasRelatedArtifact()}" />
+
+    <!-- TODO: Trigger Definitions -->
+
+    <div th:each="req : ${resource.dataRequirement}">
+        <b>data requirement:</b>
+        <div style="padding-left: 25px;" th:narrative="${req}"></div>
+    </div>
+
+    <br th:if="${resource.hasDataRequirement()}" />
+
+    <div th:if="${resource.hasOperationDefinition()}">
+        <b>operation definition:</b>
+        <div style="padding-left: 25px;" th:narrative="${resource.operationDefinition}"></div>
+    </div>
+</div>

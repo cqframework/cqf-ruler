@@ -1,0 +1,13 @@
+<th:block th:if="${not resource.empty}">
+    <div th:if="${resource.hasReference()}">
+        <b>reference: </b>
+        <span th:narrative="${resource.reference}"></span>
+    </div>
+    <div th:if="${resource.hasIdentifier()}">
+        <span th:narrative="${resource.identifier}"></span>
+    </div>
+    <div th:if="${resource.hasDisplay()}">
+        <b>display: </b>
+        <span th:narrative="${resource.display}"></span>
+    </div>
+</th:block>

@@ -1,0 +1,203 @@
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <!--  style="padding-left: 25px; padding-top: 25px; padding-right: 25px; word-wrap: break-word; max-width: 50%;" -->
+    <div th:if="${resource.hasId()}">
+        <b>id: </b>
+        <span th:narrative="${resource.id}"></span>
+    </div>
+
+    <br th:if="${resource.hasId()}" />
+
+    <div th:each="ident : ${resource.identifier}">
+        <span th:narrative="${ident}"></span>
+    </div>
+
+    <br th:if="${resource.hasIdentifier()}" />
+
+    <div th:if="${resource.hasTitle()}">
+        <b>title: </b>
+        <span th:narrative="${resource.title}"></span>
+    </div>
+
+    <br th:if="${resource.hasTitle()}" />
+
+    <div>
+        <b>status: </b>
+        <span th:narrative="${resource.status.toCode()}"></span>
+    </div>
+
+    <br />
+
+    <div th:if="${resource.hasDescription()}">
+        <b>description: </b>
+        <span th:narrative="${resource.description}"></span>
+    </div>
+
+    <br th:if="${resource.hasDescription()}" />
+
+    <div th:if="${resource.hasPurpose()}">
+        <b>purpose: </b>
+        <span th:narrative="${resource.purpose}"></span>
+    </div>
+
+    <br th:if="${resource.hasPurpose()}" />
+
+    <div th:if="${resource.hasUsage()}">
+        <b>usage: </b>
+        <span th:narrative="${resource.usage}"></span>
+    </div>
+
+    <br th:if="${resource.hasUsage()}" />
+
+    <div th:each="context : ${resource.useContext}">
+        <span th:narrative="${context}"></span>
+    </div>
+
+    <br th:if="${resource.hasUseContext()}" />
+
+    <div th:each="topics : ${resource.topic}">
+        <b>topic: </b>
+        <div style="padding-left: 25px;" th:narrative="${topics}"></div>
+    </div>
+
+    <br th:if="${resource.hasTopic()}" />
+
+    <div th:each="contrib : ${resource.contributor}">
+        <b><span th:narrative="${contrib.type.toCode()}"></span>:, display: </b>
+        <span th:narrative="${contrib.name}"></span>
+    </div>
+
+    <br th:if="${resource.hasContributor()}" />
+
+    <div th:each="related : ${resource.relatedArtifact}">
+        <b>related:</b>
+        <div style="padding-left: 25px;" th:narrative="${related}"></div>
+    </div>
+
+    <br th:if="${resource.hasRelatedArtifact()}" />
+
+    <div th:each="lib : ${resource.library}">
+        <b>library:</b>
+        <div style="padding-left: 25px;" th:if="${lib.hasDisplay()}">
+            <b>display: </b>
+            <span th:narrative="${lib.display}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${lib.hasReference()}">
+            <b>reference: </b>
+            <span th:narrative="${lib.reference}"></span>
+        </div>
+    </div>
+
+    <br th:if="${resource.hasLibrary()}" />
+
+    <div th:if="${resource.hasCategory()}">
+        <b>category: </b>
+        <span th:narrative="${resource.category.toCode()}"></span>
+    </div>
+
+    <br th:if="${resource.hasCategory()}" />
+
+    <div th:if="${resource.hasCode()}">
+        <b>code: </b>
+        <div style="padding-left: 25px;" th:narrative="${resource.code}"></div>
+    </div>
+
+    <br th:if="${resource.hasCode()}" />
+
+    <!-- TODO: add timingTiming? -->
+    <div th:if="${resource.hasTimingCodeableConcept()}">
+        <b>timing: </b>
+        <div style="padding-left: 25px;" th:narrative="${resource.timingCodeableConcept}"></div>
+    </div>
+
+    <br th:if="${resource.hasTimingCodeableConcept()}" />
+
+    <div th:if="${resource.hasLocation()}">
+        <b>location: </b>
+        <div style="padding-left: 25px;" th:narrative="${resource.location}"></div>
+    </div>
+
+    <br th:if="${resource.hasLocation()}" />
+
+    <div th:each="participant : ${resource.participantType}">
+        <b>participant: </b>
+        <span th:narrative="${participant.getValue().toCode()}"></span>
+    </div>
+
+    <br th:if="${resource.hasParticipantType()}" />
+
+    <div th:if="${resource.hasProductReference()}">
+        <b>product reference: </b>
+        <div style="padding-left: 25px;" th:if="${resource.productReference.hasReference()}">
+            <div th:if="${resource.productReference.reference.contains(&quot;#&quot;)}">
+                <div th:if="${resource.hasContained()}">
+                    <div th:each="inline : ${resource.contained}">
+                        <div th:if="${inline.hasId()}">
+                            <div th:if="${resource.productReference.reference.contains(inline.id)}">
+                                <!-- Not worried about resolving references from the contained resources for now -->
+                                <div th:if="${inline.fhirType().equals(&quot;Medication&quot;)}">
+                                    <b>medication:</b>
+                                    <div style="padding-left: 25px;" th:narrative="${inline}"></div>
+                                </div>
+                                <div th:if="${inline.fhirType().equals(&quot;Substance&quot;)}">
+                                    <b>substance:</b>
+                                    <div style="padding-left: 25px;" th:narrative="${inline}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding-left: 25px;" th:unless="${resource.productReference.hasReference()}">
+            <div th:if="${resource.productReference.hasIdentifier()}">
+                <span th:narrative="${resource.productReference.identifier}"></span>
+            </div>
+            <div th:if="${resource.productReference.hasDisplay()}">
+                <b>display: </b>
+                <span th:narrative="${resource.productReference.display}"></span>
+            </div>
+        </div>
+    </div>
+
+    <br th:if="${resource.hasProductReference()}" />
+
+    <div th:if="${resource.hasProductCodeableConcept()}">
+        <b>product concept:</b>
+        <div style="padding-left: 25px;" th:narrative="${resource.productCodeableConcept}"></div>
+    </div>
+
+    <br th:if="${resource.hasProductCodeableConcept()}" />
+
+    <div th:if="${resource.hasQuantity()}">
+        <b>quantity: </b>
+        <span th:narrative="${resource.quantity}"></span>
+    </div>
+
+    <br th:if="${resource.hasProductCodeableConcept()}" />
+
+    <!-- TODO: this is very naive -->
+    <div th:each="dose : ${resource.dosageInstruction}">
+        <b>dosage instruction:</b>
+        <div style="padding-left: 25px;" th:if="${dose.hasSequence()}">
+            <b>sequence order: </b>
+            <span th:narrative="${dose.sequence}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${dose.hasText()}">
+            <b>text: </b>
+            <span th:narrative="${dose.text}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:each="addInst : ${dose.additionalInstructions}">
+            <b>additional instructions: </b>
+            <div style="padding-left: 25px;" th:narrative="${addInst}"></div>
+        </div>
+    </div>
+
+    <br th:if="${resource.hasDosageInstruction()}" />
+
+    <div th:each="site : ${resource.bodySite}">
+        <b>site:</b>
+        <div style="padding-left: 25px;" th:narrative="${site}"></div>
+    </div>
+
+    <br th:if="${resource.hasBodySite()}" />
+</div>

@@ -1,0 +1,95 @@
+<div th:fragment="actionDefFrag(actions, contained)" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <div th:each="res : ${actions}">
+        <b>step: </b>
+        <div style="padding-left: 25px;" th:if="${res.hasLabel()}">
+            <b>name: </b>
+            <span th:narrative="${res.label}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${res.hasTitle()}">
+            <b>title: </b>
+            <span th:narrative="${res.title}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${res.hasDescription()}">
+            <b>description: </b>
+            <span th:narrative="${res.description}"></span>
+        </div>
+        <div style="padding-left: 25px;" th:if="${res.hasTextEquivalent()}">
+            <b>text: </b>
+            <span th:narrative="${res.textEquivalent}"></span>
+        </div>
+
+        <!-- Conditions -->
+        <div style="padding-left: 25px;" th:each="con : ${res.condition}">
+            <b>condition: </b>
+            <div style="padding-left: 25px;">
+                <b>type: </b>
+                <span th:narrative="${con.kind.toCode()}"></span>
+            </div>
+            <div style="padding-left: 25px;" th:if="${con.hasDescription()}">
+                <b>description: </b>
+                <span th:narrative="${con.description}"></span>
+            </div>
+            <div style="padding-left: 25px;" th:if="${con.hasExpression()}">
+                <b>expression: </b>
+                <span th:narrative="${con.expression}"></span>
+            </div>
+        </div>
+
+        <!-- Activity Definitions -->
+        <div style="padding-left: 25px;" th:if="${res.hasActivityDefinition()}">
+            <b>condition: </b>
+            <div style="padding-left: 25px;" th:if="${res.activityDefinition.hasReference()}">
+                <b>reference: </b>
+                <span th:narrative="${res.activityDefinition.reference}"></span>
+                <span th:each="inline : ${contained}">
+                    <div style="padding-left: 25px;" th:if="${res.activityDefinition.reference.contains(inline.id)}">
+                        <div th:if="${inline.hasName()}">
+                            <b>name: </b>
+                            <span th:narrative="${inline.name}"></span>
+                        </div>
+                        <div th:if="${inline.hasTitle()}">
+                            <b>title: </b>
+                            <span th:narrative="${inline.title}"></span>
+                        </div>
+                        <div th:if="${inline.hasDescription()}">
+                            <b>description: </b>
+                            <span th:narrative="${inline.description}"></span>
+                        </div>
+                        <div th:if="${inline.hasPurpose()}">
+                            <b>purpose: </b>
+                            <span th:narrative="${inline.purpose}"></span>
+                        </div>
+                        <div th:if="${inline.hasUsage()}">
+                            <b>usage: </b>
+                            <span th:narrative="${inline.usage}"></span>
+                        </div>
+                        <div th:each="related : ${inline.relatedArtifact}">
+                            <b>related:</b>
+                            <div style="padding-left: 25px;">
+                                <b>type: </b>
+                                <span th:narrative="${related.type.toCode()}"></span>
+                            </div>
+                            <div style="padding-left: 25px;" th:if="${related.hasDisplay()}">
+                                <b>display: </b>
+                                <span th:narrative="${related.display}"></span>
+                            </div>
+                        </div>
+                        <div style="padding-left: 25px;" th:if="${inline.hasCategory()}">
+                            <b>category: </b>
+                            <span th:narrative="${inline.category.toCode()}"></span>
+                        </div>
+                    </div>
+                </span>
+            </div>
+        </div>
+
+        <!-- Action Definitions (Sub actions) -->
+        <div style="padding-left: 25px;" th:include="actiondefcomponent :: actionDefFrag(${res.actionDefinition}, ${contained})"></div>
+
+        <!-- Trigger Definitions? -->
+
+        <!-- Timing? -->
+
+        <!-- Code? -->
+    </div>
+</div>
