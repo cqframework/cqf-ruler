@@ -9,11 +9,11 @@
         </tr>
     </table>
 
-    <p th:if="${resource.hasId() and not resource.hasIdentifier()}"></p>
+    <p/>
 
     <table th:each="ident : ${resource.identifier}" class="grid dict">
         <tr>
-            <td><br/><b>Identifier: </b></td>
+            <td><b>Identifier: </b></td>
         </tr>
         <tr th:if="${ident.hasSystem()}">
             <td style="padding-left: 25px; padding-right: 25px;">
@@ -40,7 +40,22 @@
 
     <p th:if="${resource.hasTitle()}"></p>
 
-    <table class="grid dict">
+    <table th:if="${not resource.type.empty}" class="grid dict">
+        <tr>
+            <td><b>Type: </b></td>
+        </tr>
+        <tr th:if="${resource.hasText()}">
+            <td><b>text: </b></td>
+            <td style="padding-left: 25px; padding-right: 25px;" th:text="${resource.text}"></td>
+        </tr>
+        <tr th:each="codings : ${resource.coding}">
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${codings}"></td>
+        </tr>
+    </table>
+
+    <p th:if="${not resource.type.empty}"></p>
+
+    <table th:if="${resource.hasStatus()}" class="grid dict">
         <tr>
             <td><b>Status: </b></td>
         </tr>
@@ -49,7 +64,7 @@
         </tr>
     </table>
 
-    <p></p>
+    <p th:if="${resource.hasStatus()}"></p>
 
     <table th:if="${resource.hasDescription()}" class="grid dict">
         <tr>
@@ -86,21 +101,21 @@
 
     <table th:each="context : ${resource.useContext}" class="grid dict">
         <tr>
-            <td><b>Use Context: </b></td>
+            <td><b>Context: </b></td>
         </tr>
-        <tr>
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${context}"></td>
+        <tr style="vertical-align: top;">
+            <td style="padding-right: 25px;" th:narrative="${context}"></td>
         </tr>
     </table>
 
     <p th:if="${resource.hasUseContext()}"></p>
 
-    <table th:each="topics : ${resource.topic}" class="grid dict">
+    <table th:each="top : ${resource.topic}" class="grid dict">
         <tr>
             <td><b>Topic: </b></td>
         </tr>
         <tr>
-            <td style="padding-right: 25px;" th:narrative="${topics}"></td>
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${top}"></td>
         </tr>
     </table>
 
@@ -129,7 +144,7 @@
         </tr>
     </table>
 
-    <p th:if="${resource.hasRelatedArtifact()}"></p>
+    <p th:if="${resource.hasRelated()}"></p>
 
     <table th:each="lib : ${resource.library}" class="grid dict">
         <tr>
@@ -157,80 +172,9 @@
 
     <p th:if="${resource.hasLibrary()}"></p>
 
-    <table th:if="${resource.hasCategory()}" class="grid dict">
-        <tr>
-            <td><b>Category: </b></td>
-        </tr>
-        <tr>
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.category.toCode()}"></td>
-        </tr>
-    </table>
+    <h2>Actions</h2>
 
-    <p th:if="${resource.hasCategory()}"></p>
+    <p th:include="actiondefcomponent :: actionDefFrag(${resource.actionDefinition}, ${resource.contained}, 1)" style="width: 100%;" class="hierarchy"></p>
 
-    <table th:if="${resource.hasCode()}" class="grid dict">
-        <tr>
-            <td><b>Code: </b></td>
-        </tr>
-        <tr>
-            <td style="padding-right: 25px;" th:narrative="${resource.code}"></td>
-        </tr>
-    </table>
 
-    <p th:if="${resource.hasCode()}"></p>
-
-    <table th:if="${resource.hasTimingCodeableConcept()}" class="grid dict">
-        <tr>
-            <td><b>Timing: </b></td>
-        </tr>
-        <tr>
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.timingCodeableConcept}"></td>
-        </tr>
-    </table>
-
-    <p th:if="${resource.hasTimingCodeableConcept()}"></p>
-
-    <table th:if="${resource.hasLocation()}" class="grid dict">
-        <tr>
-            <td><b>Location: </b></td>
-        </tr>
-        <tr>
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.location}"></td>
-        </tr>
-    </table>
-
-    <p th:if="${resource.hasLocation()}"></p>
-
-    <table th:each="participant : ${resource.participantType}" class="grid dict">
-        <tr>
-            <td><b>Participant: </b></td>
-        </tr>
-        <tr style="vertical-align: top;">
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${participant.getValue().toCode()}"></td>
-        </tr>
-    </table>
-
-    <p th:if="${resource.hasParticipantType()}"></p>
-
-    <table th:if="${resource.hasProductCodeableConcept()}" class="grid dict">
-        <tr>
-            <td><b>Product Concept: </b></td>
-        </tr>
-        <tr>
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.productCodeableConcept}"></td>
-        </tr>
-    </table>
-
-    <p th:if="${resource.hasProductCodeableConcept()}"></p>
-
-    <table th:if="${resource.hasQuantity()}" class="grid dict">
-        <tr>
-            <td><b>Quantity: </b></td>
-        </tr>
-        <tr>
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.quantity}"></td>
-        </tr>
-    </table>
-
-    <p th:if="${resource.hasQuantity()}"></p>
 </div>

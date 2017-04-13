@@ -2,10 +2,6 @@ package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.narrative.CustomThymeleafNarrativeGenerator;
-import org.hl7.fhir.dstu3.model.DomainResource;
-import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.Medication;
-import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import java.io.*;
@@ -32,12 +28,12 @@ public class NarrativeGenerator {
 
         try {
             IBaseResource res = ctx.newJsonParser().parseResource(new FileReader(pathToResource.toFile()));
-            String resource = ctx.newJsonParser()
-                    .encodeResourceToString(ctx.newJsonParser().parseResource(new FileReader(pathToResource.toFile())));
+            String resource = ctx.newXmlParser().setPrettyPrint(true)
+                    .encodeResourceToString(ctx.newJsonParser().setPrettyPrint(true).parseResource(new FileReader(pathToResource.toFile())));
 
             try {
                 PrintWriter writer = new PrintWriter(new File(pathToResources.resolve("scratch.xml").toString()), "UTF-8");
-                writer.println(((DomainResource) ctx.newJsonParser().parseResource(resource)).getText().getDiv().getValue());
+                writer.println(resource);
                 writer.println();
                 writer.close();
             } catch (UnsupportedEncodingException e) {

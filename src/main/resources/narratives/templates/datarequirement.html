@@ -1,92 +1,88 @@
 <div xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <!--  style="padding-left: 25px; padding-top: 25px; padding-right: 25px; word-wrap: break-word; max-width: 50%;" -->
-    <div th:if="${resource.hasId()}">
+    <p style="margin-bottom: 5px;" th:if="${resource.hasId()}">
         <b>id: </b>
         <span th:narrative="${resource.id}"></span>
-    </div>
+    </p>
 
-    <br th:if="${resource.hasId()}" />
-
-    <div>
+    <p style="margin-bottom: 5px;">
         <b>type: </b>
         <span th:narrative="${resource.type}"></span>
-    </div>
+    </p>
 
-    <br />
-
-    <div th:each="pro : ${resource.profile}">
+    <p style="margin-bottom: 5px;" th:each="pro : ${resource.profile}">
         <b>profile: </b>
         <span th:narrative="${pro}"></span>
-    </div>
+    </p>
 
-    <br th:if="${resource.hasProfile()}" />
-
-    <div th:each="must : ${resource.mustSupport}">
+    <p style="margin-bottom: 5px;" th:each="must : ${resource.mustSupport}">
         <b>must support: </b>
         <span th:narrative="${must}"></span>
-    </div>
+    </p>
 
-    <br th:if="${resource.hasMustSupport()}" />
-
-    <div th:each="cFilter : ${resource.codeFilter}">
+    <p style="margin-bottom: 5px;" th:each="cFilter : ${resource.codeFilter}">
         <b>code filter:</b>
-        <div style="padding-left: 25px;">
+        <br/>
+        <span style="padding-left: 25px;">
             <b>path: </b>
             <span th:narrative="${cFilter.path}"></span>
-        </div>
-        <div style="padding-left: 25px;" th:if="${cFilter.hasValueSetStringType()}">
+        </span>
+        <br  th:if="${cFilter.hasValueSetStringType() or cFilter.hasValueSetReference()}" />
+        <span style="padding-left: 25px;" th:if="${cFilter.hasValueSetStringType()}">
             <b>valueset: </b>
             <span th:narrative="${cFilter.valueSetStringType}"></span>
-        </div>
-        <div style="padding-left: 25px;" th:if="${cFilter.hasValueSetReference()}">
+        </span>
+        <span style="padding-left: 25px;" th:if="${cFilter.hasValueSetReference()}">
             <b>valueset: </b>
             <span th:narrative="${cFilter.valueSetReference}"></span>
-        </div>
-        <div style="padding-left: 25px;" th:each="codes : ${cFilter.valueCode}">
+        </span>
+        <br th:if="${cFilter.hasValueCode()}" />
+        <span style="padding-left: 25px;" th:each="codes : ${cFilter.valueCode}">
             <b>code:</b>
             <span th:narrative="${codes}"></span>
-        </div>
-        <div style="padding-left: 25px;" th:each="codings : ${cFilter.valueCoding}">
+        </span>
+        <br th:if="${cFilter.hasValueCoding()}" />
+        <span style="padding-left: 25px;" th:each="codings : ${cFilter.valueCoding}">
+            <br />
             <b>coding:</b>
-            <div style="padding-left: 25px;" th:narrative="${codings}"></div>
-        </div>
-        <div style="padding-left: 25px;" th:each="concepts : ${cFilter.valueCodeableConcept}">
+            <span style="padding-left: 25px;" th:narrative="${codings}"></span>
+        </span>
+        <br th:if="${cFilter.hasValueCodeableConcept()}" />
+        <span style="padding-left: 25px;" th:each="concepts : ${cFilter.valueCodeableConcept}">
             <b>concept:</b>
-            <div style="padding-left: 25px;" th:narrative="${concepts}"></div>
-        </div>
-    </div>
+            <span style="padding-left: 25px;" th:narrative="${concepts}"></span>
+        </span>
+    </p>
 
-    <br th:if="${resource.hasCodeFilter()}" />
-
-    <div th:each="dFilter : ${resource.dateFilter}">
+    <p style="margin-bottom: 5px;" th:each="dFilter : ${resource.dateFilter}">
         <b>date filter:</b>
-        <div style="padding-left: 25px;">
+        <span style="padding-left: 25px;">
             <b>path: </b>
             <span th:narrative="${dFilter.path}"></span>
-        </div>
-        <div th:if="${dFilter.hasValueDateTime()}">
+        </span>
+        <br/>
+        <span th:if="${dFilter.hasValueDateTime()}">
             <b>date time: </b>
             <span th:narrative="${dFilter.valueDateTime}"></span>
-        </div>
-        <div th:if="${dFilter.hasValuePeriod()}">
+        </span>
+        <span th:if="${dFilter.hasValuePeriod()}">
             <b>date period: </b>
-            <div style="padding-left: 25px;" th:if="${dFilter.valuePeriod.hasStart()}">
+            <span style="padding-left: 25px;" th:if="${dFilter.valuePeriod.hasStart()}">
+                <br/>
                 <b>start: </b>
                 <span th:narrative="${dFilter.valuePeriod.start}"></span>
-            </div>
-            <div style="padding-left: 25px;" th:if="${dFilter.valuePeriod.hasEnd()}">
+            </span>
+            <span style="padding-left: 25px;" th:if="${dFilter.valuePeriod.hasEnd()}">
                 <b>end: </b>
                 <span th:narrative="${dFilter.valuePeriod.end}"></span>
-            </div>
-        </div>
-        <div th:if="${dFilter.hasValueDuration()}">
+            </span>
+        </span>
+        <span th:if="${dFilter.hasValueDuration()}">
             <b>date duration: </b>
-            <div style="padding-left: 25px;">
+            <br/>
+            <span style="padding-left: 25px;">
                 <b>duration: </b>
                 <span th:narrative="${dFilter.valueDuration}"></span>
-            </div>
-        </div>
-    </div>
-
-    <br th:if="${resource.hasDateFilter()}" />
+            </span>
+        </span>
+    </p>
 </div>

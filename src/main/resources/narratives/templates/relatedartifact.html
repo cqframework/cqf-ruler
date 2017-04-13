@@ -1,22 +1,23 @@
 <th:block th:if="${not resource.empty}">
-    <div>
+    <p style="margin-bottom: 5px;">
         <b>type: </b>
         <span th:narrative="${resource.type.toCode()}"></span>
-    </div>
-    <div th:if="${resource.hasDisplay()}">
+    </p>
+    <p style="margin-bottom: 5px;" th:if="${resource.hasDisplay()}">
         <b>display: </b>
         <span th:narrative="${resource.display}"></span>
-    </div>
-    <div th:if="${resource.hasUrl()}">
+    </p>
+    <p style="margin-bottom: 5px;" th:if="${resource.hasUrl()}">
         <b>url: </b>
         <span th:narrative="${resource.url}"></span>
-    </div>
-    <div th:if="${resource.hasDocument()}">
+    </p>
+    <p style="margin-bottom: 5px;" th:if="${resource.hasDocument()}">
         <b>document: </b>
         <span th:narrative="${resource.document}"></span>
-    </div>
-    <div th:if="${resource.hasResource()}">
-        <b>resource: </b>
-        <div style="padding-left: 25px;" th:narrative="${resource.getResource()}"></div>
-    </div>
+    </p>
+    <p style="margin-bottom: 5px;" th:if="${resource.hasResource()}">
+        <b>Resource: </b>
+        <br/>
+        <span th:narrative="${resource.getResource()}"></span>
+    </p>
 </th:block>

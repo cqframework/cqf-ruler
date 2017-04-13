@@ -1,140 +1,215 @@
 <div xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <!--  style="padding-left: 25px; padding-top: 25px; padding-right: 25px; word-wrap: break-word; max-width: 50%;" -->
-    <div th:if="${resource.hasId()}">
-        <b>id: </b>
-        <span th:narrative="${resource.id}"></span>
-    </div>
 
-    <br th:if="${resource.hasId()}" />
+    <table th:if="${resource.hasId()}" class="grid dict">
+        <tr>
+            <td><b>Id: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.id}"></td>
+        </tr>
+    </table>
 
-    <div th:each="ident : ${resource.identifier}">
-        <span th:narrative="${ident}"></span>
-    </div>
+    <p th:if="${resource.hasId() and not resource.hasIdentifier()}"></p>
 
-    <br th:if="${resource.hasIdentifier()}" />
+    <table th:each="ident : ${resource.identifier}" class="grid dict">
+        <tr>
+            <td><b>Identifier: </b></td>
+        </tr>
+        <tr th:if="${ident.hasSystem()}">
+            <td style="padding-left: 25px; padding-right: 25px;">
+                <b>system: </b> <span th:narrative="${ident.system}"></span>
+            </td>
+        </tr>
+        <tr th:if="${ident.hasValue()}">
+            <td style="padding-left: 25px; padding-right: 25px;">
+                <b>value: </b> <span th:narrative="${ident.value}"></span>
+            </td>
+        </tr>
+    </table>
 
-    <div th:if="${resource.hasVersion()}">
-        <b>version: </b>
-        <span th:narrative="${resource.version}"></span>
-    </div>
+    <p th:if="${resource.hasIdentifier()}"></p>
 
-    <br th:if="${resource.hasVersion()}" />
+    <table th:if="${resource.hasVersion()}" class="grid dict">
+        <tr>
+            <td><b>Version: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.version}"></td>
+        </tr>
+    </table>
 
-    <div th:if="${resource.hasTitle()}">
-        <b>title: </b>
-        <span th:narrative="${resource.title}"></span>
-    </div>
+    <p th:if="${resource.hasVersion()}"></p>
 
-    <br th:if="${resource.hasTitle()}" />
+    <table th:if="${resource.hasTitle()}" class="grid dict">
+        <tr>
+            <td><b>Title: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.title}"></td>
+        </tr>
+    </table>
 
-    <div>
-        <b>type: </b>
-        <div style="padding-left: 25px;" th:narrative="${resource.type}"></div>
-    </div>
+    <p th:if="${resource.hasTitle()}"></p>
 
-    <br />
+    <table class="grid dict">
+        <tr>
+            <td><b>Type: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-right: 25px;" th:narrative="${resource.type}"></td>
+        </tr>
+    </table>
 
-    <div th:if="${not resource.status.toCode().empty}">
-        <b>status: </b>
-        <span th:narrative="${resource.status.toCode()}"></span>
-    </div>
+    <p></p>
 
-    <br th:if="${not resource.status.toCode().empty}" />
+    <table th:if="${not resource.status.toCode().empty}" class="grid dict">
+        <tr>
+            <td><b>Status: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.status.toCode()}"></td>
+        </tr>
+    </table>
 
-    <div th:if="${resource.hasDescription()}">
-        <b>description: </b>
-        <span th:narrative="${resource.description}"></span>
-    </div>
+    <p th:if="${not resource.status.toCode().empty}"></p>
 
-    <br th:if="${resource.hasDescription()}" />
+    <table th:if="${resource.hasDescription()}" class="grid dict">
+        <tr>
+            <td><b>Description: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.description}"></td>
+        </tr>
+    </table>
 
-    <div th:if="${resource.hasPurpose()}">
-        <b>purpose: </b>
-        <span th:narrative="${resource.purpose}"></span>
-    </div>
+    <p th:if="${resource.hasDescription()}"></p>
 
-    <br th:if="${resource.hasPurpose()}" />
+    <table th:if="${resource.hasPurpose()}" class="grid dict">
+        <tr>
+            <td><b>Purpose: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.purpose}"></td>
+        </tr>
+    </table>
 
-    <div th:if="${resource.hasUsage()}">
-        <b>usage: </b>
-        <div style="padding-left: 25px;" th:narrative="${resource.usage}"></div>
-    </div>
+    <p th:if="${resource.hasPurpose()}"></p>
 
-    <br th:if="${resource.hasUsage()}" />
+    <table th:if="${resource.hasUsage()}" class="grid dict">
+        <tr>
+            <td><b>Usage: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.usage}"></td>
+        </tr>
+    </table>
 
-    <div th:each="context : ${resource.useContext}">
-        <div th:narrative="${context}"></div>
-    </div>
+    <p th:if="${resource.hasUsage()}"></p>
 
-    <br th:if="${resource.hasUseContext()}" />
+    <table th:each="context : ${resource.useContext}" class="grid dict">
+        <tr>
+            <td><b>Use Context: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${context}"></td>
+        </tr>
+    </table>
 
-    <div th:each="topics : ${resource.topic}">
-        <b>topic: </b>
-        <div style="padding-left: 25px;" th:narrative="${topics}"></div>
-    </div>
+    <p th:if="${resource.hasUseContext()}"></p>
 
-    <br th:if="${resource.hasTopic()}" />
+    <table th:each="topics : ${resource.topic}" class="grid dict">
+        <tr>
+            <td><b>Topic: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-right: 25px;" th:narrative="${topics}"></td>
+        </tr>
+    </table>
 
-    <div th:each="contrib : ${resource.contributor}">
-        <div>
-            <b><span th:narrative="${contrib.type.toCode()}"></span>: </b>
-            <div style="padding-left: 25px;">
-                <b>display: </b>
-                <span th:narrative="${contrib.name}"></span>
-            </div>
-        </div>
-    </div>
+    <p th:if="${resource.hasTopic()}"></p>
 
-    <br th:if="${resource.hasContributor()}" />
+    <table th:each="cont : ${resource.contributor}" class="grid dict">
+        <tr>
+            <td><b>Contributor: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 25px; padding-right: 25px;"><b><span th:narrative="${cont.type.toCode()}"></span>: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 50px; padding-right: 25px;" th:narrative="${cont.name}"></td>
+        </tr>
+    </table>
 
-    <div th:each="related : ${resource.relatedArtifact}">
-        <b>related:</b>
-        <div style="padding-left: 25px;" th:narrative="${related}"></div>
-    </div>
+    <p th:if="${resource.hasContributor()}"></p>
 
-    <br th:if="${resource.hasRelatedArtifact()}" />
+    <table th:each="related : ${resource.relatedArtifact}" class="grid dict">
+        <tr>
+            <td><b>Related: </b></td>
+        </tr>
+        <tr style="vertical-align: top;">
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${related}"></td>
+        </tr>
+    </table>
 
-    <div th:each="param : ${resource.parameter}">
-        <b>parameter:</b>
-        <div style="padding-left: 25px;" th:if="${param.hasName()}">
-            <b>name: </b>
-            <span th:narrative="${param.name}"></span>
-        </div>
-        <div style="padding-left: 25px;">
-            <b>use: </b>
-            <span th:narrative="${param.use.toCode()}"></span>
-        </div>
-        <div style="padding-left: 25px;" th:if="${param.hasMin()}">
-            <b>minimum cardinality: </b>
-            <span th:narrative="${param.min}"></span>
-        </div>
-        <div style="padding-left: 25px;" th:if="${param.hasMax()}">
-            <b>maximum cardinality: </b>
-            <span th:narrative="${param.max}"></span>
-        </div>
-        <div style="padding-left: 25px;">
-            <b>type: </b>
-            <span th:narrative="${param.type}"></span>
-        </div>
-        <div style="padding-left: 25px;" th:if="${param.hasDocumentation()}">
-            <b>documentation: </b>
-            <span th:narrative="${param.documentation}"></span>
-        </div>
-        <div style="padding-left: 25px;" th:if="${param.hasProfile()}">
-            <b>profile: </b>
-            <span th:narrative="${param.profile}"></span>
-        </div>
-    </div>
+    <table th:each="param : ${resource.parameter}" class="grid dict">
+        <tr>
+            <td><b>Parameter: </b></td>
+        </tr>
+        <tr style="vertical-align: top;">
+            <td style="padding-left: 25px; padding-right: 25px;">
+                <span th:if="${param.hasName()}">
+                    <b>name: </b>
+                    <span th:narrative="${param.name}"></span>
+                    <br/>
+                </span>
+                <b>use: </b>
+                <span th:narrative="${param.use.toCode()}"></span>
+                <br/>
+                <span th:if="${param.hasMin()}">
+                    <b>minimum cardinality: </b>
+                    <span th:narrative="${param.min}"></span>
+                    <br/>
+                </span>
+                <span th:if="${param.hasMax()}">
+                    <b>maximum cardinality: </b>
+                    <span th:narrative="${param.max}"></span>
+                    <br/>
+                </span>
+                <b>type: </b>
+                <span th:narrative="${param.type}"></span>
+                <br/>
+                <span th:if="${param.hasDocumentation()}">
+                    <b>documentation: </b>
+                    <span th:narrative="${param.documentation}"></span>
+                    <br/>
+                </span>
+                <span th:if="${param.hasProfile()}">
+                    <b>profile: </b>
+                    <span th:narrative="${param.profile}"></span>
+                    <br/>
+                </span>
+                <p style="margin-bottom: 5px;"></p>
+            </td>
+        </tr>
+    </table>
 
-    <br th:if="${resource.hasParameter()}" />
+    <table th:each="dataReq : ${resource.dataRequirement}" class="grid dict">
+        <tr>
+            <td><b>Data Requirements: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${dataReq}"></td>
+        </tr>
+    </table>
 
-    <div th:each="dataReq : ${resource.dataRequirement}">
-        <b>date requirements:</b>
-        <div style="padding-left: 25px;" th:narrative="${dataReq}"></div>
-    </div>
+    <table th:each="con : ${resource.content}" class="grid dict">
+        <tr>
+            <td><b>Content: </b></td>
+        </tr>
+        <tr>
+            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${con}"></td>
+        </tr>
+    </table>
 
-    <div th:each="con : ${resource.content}">
-        <b>content:</b>
-        <div style="padding-left: 25px;" th:narrative="${con}"></div>
-    </div>
+    <p th:if="${resource.hasContent()}"></p>
 </div>

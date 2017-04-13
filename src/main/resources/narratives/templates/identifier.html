@@ -1,13 +1,12 @@
 <th:block th:if="${not resource.empty}">
-    <div th:each="ident : ${resource}">
-        <b>identifier:</b>
-        <div style="padding-left: 25px;" th:if="${ident.hasSystem()}">
-            <b>system: </b>
-            <span th:narrative="${ident.system}"></span>
-        </div>
-        <div style="padding-left: 25px;" th:if="${ident.hasValue()}">
-            <span><b>value: </b></span>
-            <span th:narrative="${ident.value}"></span>
-        </div>
-    </div>
+    <b>Identifier:</b>
+    <br/>
+    <span style="padding-left: 25px;" th:if="${resource.hasSystem()}">
+        <b>system: </b> <span th:narrative="${resource.system}"></span>
+        <br/>
+    </span>
+    <span style="padding-left: 25px;" th:if="${resource.hasValue()}">
+        <b>value: </b> <span th:narrative="${resource.value}"></span>
+        <br/>
+    </span>
 </th:block>

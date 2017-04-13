@@ -1,9 +1,10 @@
 <th:block th:if="${not resource.empty}">
-    <div th:if="${resource.hasText()}">
+    <span style="padding-left: 25px;" th:if="${resource.hasText()}">
         <b>text: </b>
         <span th:text="${resource.text}"></span>
-    </div>
-    <div th:each="codings : ${resource.coding}">
-        <div th:narrative="${codings}"></div>
-    </div>
+    </span>
+    <span th:each="codings : ${resource.coding}">
+        <br th:if="${resource.hasText()}" />
+        <span th:narrative="${codings}"></span>
+    </span>
 </th:block>
