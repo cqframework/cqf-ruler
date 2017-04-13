@@ -1,5 +1,6 @@
 package org.opencds.cqf.helpers;
 
+import ca.uhn.fhir.context.FhirContext;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -11,6 +12,7 @@ import org.hl7.fhir.exceptions.FHIRException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -108,13 +110,23 @@ public class ValueSetFromXlsx {
         return convert(workbook);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         if (args.length < 1) {
             System.err.println("Path to excel file is required");
             return;
         }
 
-        convert(args[0]);
+        Bundle temp = convert(args[0]);
+        FhirContext context = FhirContext.forDstu3();
+        for (Bundle.BundleEntryComponent component : temp.getEntry()) {
+            File f = new File("src/main/resources/valuesets/" + component.getResource().getId() + ".json");
+            if (f.createNewFile()) {
+                PrintWriter writer = new PrintWriter(f);
+                writer.println(context.newJsonParser().setPrettyPrint(true).encodeResourceToString(component.getResource()));
+                writer.println();
+                writer.close();
+            }
+        }
     }
 
 }

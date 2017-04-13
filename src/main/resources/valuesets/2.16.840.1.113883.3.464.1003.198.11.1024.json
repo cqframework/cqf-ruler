@@ -1,0 +1,26 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.198.11.1024",
+  "status": "draft",
+  "expansion": {
+    "id": "urn:oid:2.16.840.1.113883.3.464.1003.198.11.1024",
+    "contains": [
+      {
+        "system": "LOINC",
+        "version": "17856-6",
+        "code": "Hemoglobin A1c/Hemoglobin.total in Blood by HPLC"
+      },
+      {
+        "system": "LOINC",
+        "version": "4548-4",
+        "code": "Hemoglobin A1c/Hemoglobin.total in Blood"
+      },
+      {
+        "system": "LOINC",
+        "version": "4549-2",
+        "code": "Hemoglobin A1c/Hemoglobin.total in Blood by Electrophoresis"
+      }
+    ]
+  }
+}
+
