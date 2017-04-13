@@ -302,7 +302,7 @@
                 </executions>
                 <configuration>
                     <executable>maven</executable>
-                    <mainClass>org.opencds.cqf.helpers.ResourceLoaderGUI</mainClass>
+                    <mainClass>org.opencds.cqf.helpers.ValueSetFromXlsx</mainClass>
                 </configuration>
             </plugin>
 
