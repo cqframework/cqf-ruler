@@ -8,8 +8,11 @@ CQL Measure Processing Component
  - Tester page: http://localhost:XXXX/cql-measure-processor/tester/
  - This server specializes in Measure processing. To access this functionality you will need to follow the following steps:
    - Load all the resources you'll need to run the measure into the JPA server
+     - To use the XlsxToValueSet converter (excel spreadsheet to FHIR ValueSet resource):
+       - run `$ mvn exec:java -Dexec.args="File/Path/To/Xlsx/Spreadsheet"`
+       - The output will be in the src/main/resources/valuesets directory. The file name will be the oid of the ValueSet.
      - There is a GUI for resource loading
-       - run `$ mvn exec:java`
+       - run `$ mvn exec:java -Dexec.mainClass="org.opencds.cqf.helpers.ResourceLoaderGUI"`
      - For example, if you wanted to load a condition with an ID of 1058 (JSON or XML formatted), use Postman (or other REST client) with the following request:
        - PUT http://localhost:XXXX/cql-measure-processor/baseDstu3/Condition/1058
        - OR POST http://localhost:XXXX/cql-measure-processor/baseDstu3/Condition if ID isn't specified (one will be provided at creation)

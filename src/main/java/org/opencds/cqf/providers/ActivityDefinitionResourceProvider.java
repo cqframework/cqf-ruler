@@ -36,50 +36,54 @@ public class ActivityDefinitionResourceProvider extends JpaResourceProviderDstu3
                           @OptionalParam(name="userTaskContext") String userTaskContext,
                           @OptionalParam(name="setting") String setting,
                           @OptionalParam(name="settingContext") String settingContext)
-            throws InternalErrorException, FHIRException {
+            throws InternalErrorException, FHIRException, ClassNotFoundException, IllegalAccessException, InstantiationException
+    {
         ActivityDefinition activityDefinition = this.getDao().read(theId);
-        Resource result = null;
-        switch (activityDefinition.getCategory()) {
-            case COMMUNICATION:
-                result = new CommunicationRequest();
-                break;
-            case DEVICE:
-                result = new DeviceUseRequest();
-                break;
-            case DIAGNOSTIC:
-                result = new DiagnosticRequest();
-                break;
-            case DIET:
-                result = new NutritionRequest();
-                break;
-            case DRUG:
-                result = new MedicationRequest();
-                break;
-            case ENCOUNTER:
-                result = new Appointment();
-                break;
-            case IMMUNIZATION:
-                result = new ImmunizationRecommendation();
-                break;
-            case OBSERVATION:
-                result = new Observation();
-                break;
-            case PROCEDURE:
-                result = new ProcedureRequest();
-                break;
-            case REFERRAL:
-                result = new ReferralRequest();
-                break;
-            case SUPPLY:
-                result = new SupplyRequest();
-                break;
-            case VISION:
-                result = new VisionPrescription();
-                break;
-            case OTHER:
-            default:
-                throw new RuntimeException(String.format("Unknown or unimplemented activity definition category %s.", activityDefinition.getCategory()));
-        }
+
+        // TODO: the method I am employing to get the result is untested -- CRS 4/22/2017
+        Resource result = (Resource) Class.forName("org.hl7.fhir.dstu3.model." + activityDefinition.getKind().toCode()).newInstance();
+//        Resource result = activityDefinition.getKind();
+//        switch (activityDefinition.getCategory()) {
+//            case COMMUNICATION:
+//                result = new CommunicationRequest();
+//                break;
+//            case DEVICE:
+//                result = new DeviceUseRequest();
+//                break;
+//            case DIAGNOSTIC:
+//                result = new DiagnosticRequest();
+//                break;
+//            case DIET:
+//                result = new NutritionRequest();
+//                break;
+//            case DRUG:
+//                result = new MedicationRequest();
+//                break;
+//            case ENCOUNTER:
+//                result = new Appointment();
+//                break;
+//            case IMMUNIZATION:
+//                result = new ImmunizationRecommendation();
+//                break;
+//            case OBSERVATION:
+//                result = new Observation();
+//                break;
+//            case PROCEDURE:
+//                result = new ProcedureRequest();
+//                break;
+//            case REFERRAL:
+//                result = new ReferralRequest();
+//                break;
+//            case SUPPLY:
+//                result = new SupplyRequest();
+//                break;
+//            case VISION:
+//                result = new VisionPrescription();
+//                break;
+//            case OTHER:
+//            default:
+//                throw new RuntimeException(String.format("Unknown or unimplemented activity definition category %s.", activityDefinition.getCategory()));
+//        }
 
         // TODO: Apply metadata, code, timing, location, participants, product, quantity, dosageInstruction, bodySite, etc....
         // TODO: Apply expression extensions on any element?
