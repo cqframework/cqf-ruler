@@ -93,11 +93,11 @@ public class MeasureProcessingJpaServlet extends RestfulServer {
 
         // TODO: this is all very hacky
         MeasureResourceProvider provider = new MeasureResourceProvider(getResourceProviders());
-        provider.setDao(((ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider) getResourceProviders().toArray()[61]).getDao());
-        provider.setContext(((ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider) getResourceProviders().toArray()[61]).getContext());
+        provider.setDao(((ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider) getResourceProviders().toArray()[63]).getDao());
+        provider.setContext(((ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider) getResourceProviders().toArray()[63]).getContext());
 
         try {
-            unregisterProvider(getResourceProviders().toArray()[61]);
+            unregisterProvider(getResourceProviders().toArray()[63]);
         } catch (Exception e) {
             e.printStackTrace();
         }
