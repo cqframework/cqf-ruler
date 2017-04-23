@@ -92,6 +92,7 @@ public class ResourceLoaderGUI {
         loadButton.addActionListener(e -> helper.loadBundle(helper.resolveBundle(fromFileText.getText())));
 
         bundleResourcePanel.add(fromFilePanel);
+        bundleResourcePanel.add(buttonPanel);
         frame.add(bundleResourcePanel);
         frame.setVisible(true);
     }
