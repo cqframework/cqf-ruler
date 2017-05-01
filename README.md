@@ -1,5 +1,5 @@
-# cql_measure_processor
-CQL Measure Processing Component
+# cqf-ruler
+CQF Ruler
 
 ## Usage 
  - `$ mvn install`
