@@ -100,7 +100,7 @@ public class MedicationRequestResourceProvider extends JpaResourceProviderDstu3<
         // this goes against the spirit of a JPA server, but creating resources with the DAO is a bummer...
         // TODO: change server base string when depoloying
         IIdType id = provider.getFhirContext()
-                .newRestfulGenericClient("http://localhost:8080/cql-measure-processor/baseDstu3/")
+                .newRestfulGenericClient("http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/")
                 .create().resource(issue).execute().getId();
 
         // There is an issue here with Reference being returned with base URL stripped ... giving up
