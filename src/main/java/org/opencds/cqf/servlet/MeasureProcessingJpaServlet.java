@@ -17,6 +17,7 @@ import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.providers.MeasureResourceProvider;
+import org.opencds.cqf.providers.MedicationRequestResourceProvider;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
@@ -57,7 +58,7 @@ public class MeasureProcessingJpaServlet extends RestfulServer {
         IFhirSystemDao<Bundle, Meta> systemDao = myAppCtx.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
         JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao,
                 myAppCtx.getBean(DaoConfig.class));
-        confProvider.setImplementationDescription("Example Server");
+        confProvider.setImplementationDescription("Measure and Opioid Processing Server");
         setServerConformanceProvider(confProvider);
 
         FhirContext ctx = getFhirContext();
@@ -91,18 +92,28 @@ public class MeasureProcessingJpaServlet extends RestfulServer {
             this.registerInterceptor(interceptor);
         }
 
-        // TODO: this is all very hacky
-        MeasureResourceProvider provider = new MeasureResourceProvider(getResourceProviders());
-        provider.setDao(((ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider) getResourceProviders().toArray()[63]).getDao());
-        provider.setContext(((ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider) getResourceProviders().toArray()[63]).getContext());
+        // Measure processing
+        MeasureResourceProvider measureProvider = new MeasureResourceProvider(getResourceProviders());
+        ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider jpaMeasureProvider = (ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider) getProvider("Measure");
+        measureProvider.setDao(jpaMeasureProvider.getDao());
+        measureProvider.setContext(jpaMeasureProvider.getContext());
+
+        // Opioid processing
+        MedicationRequestResourceProvider medReqProvider = new MedicationRequestResourceProvider(getResourceProviders());
+        ca.uhn.fhir.jpa.rp.dstu3.MedicationRequestResourceProvider jpaMedReqProvider =
+                (ca.uhn.fhir.jpa.rp.dstu3.MedicationRequestResourceProvider) getProvider("MedicationRequest");
+        medReqProvider.setDao(jpaMedReqProvider.getDao());
+        medReqProvider.setContext(jpaMedReqProvider.getContext());
 
         try {
-            unregisterProvider(getResourceProviders().toArray()[63]);
+            unregisterProvider(jpaMeasureProvider);
+            unregisterProvider(jpaMedReqProvider);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        registerProvider(provider);
+        registerProvider(measureProvider);
+        registerProvider(medReqProvider);
 
         // Register the logging interceptor
         LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
@@ -118,5 +129,16 @@ public class MeasureProcessingJpaServlet extends RestfulServer {
 
         //setServerAddressStrategy(new HardcodedServerAddressStrategy("http://mydomain.com/fhir/baseDstu2"));
         //registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
+    }
+
+    private IResourceProvider getProvider(String name) {
+
+        for (IResourceProvider res : getResourceProviders()) {
+            if (res.getResourceType().getSimpleName().equals(name)) {
+                return res;
+            }
+        }
+
+        throw new IllegalArgumentException("This should never happen!");
     }
 }

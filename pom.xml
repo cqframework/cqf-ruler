@@ -28,19 +28,25 @@
         <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>cql-engine</artifactId>
-            <version>1.2.4-SNAPSHOT</version>
+            <version>1.2.8-SNAPSHOT</version>
         </dependency>
         
         <dependency>
 			<groupId>org.opencds.cqf</groupId>
 			<artifactId>cql-engine-fhir</artifactId>
-			<version>1.2.4-SNAPSHOT</version>
+			<version>1.2.8-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>info.cqframework</groupId>
             <artifactId>cql-to-elm</artifactId>
             <version>1.2.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sf.ucanaccess</groupId>
+            <artifactId>ucanaccess</artifactId>
+            <version>4.0.1</version>
         </dependency>
 
         <dependency>

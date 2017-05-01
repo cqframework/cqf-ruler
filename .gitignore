@@ -1,5 +1,3 @@
-target/
-
 # Created by https://www.gitignore.io
 
 # log files
@@ -126,3 +124,8 @@ local.properties
 # TeXlipse plugin
 .texlipse
 
+.data
+.lck
+.properties
+.script
+/*.tmp

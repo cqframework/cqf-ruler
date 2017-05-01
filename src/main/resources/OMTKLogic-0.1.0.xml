@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="urn:hl7-org:elm:r1" xmlns:t="urn:hl7-org:elm-types:r1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:fhir="http://hl7.org/fhir" xmlns:a="urn:hl7-org:cql-annotations:r1">
+   <identifier id="OMTKLogic" version="0.1.0"/>
+   <schemaIdentifier id="urn:hl7-org:elm" version="r1"/>
+   <usings>
+      <def localIdentifier="System" uri="urn:hl7-org:elm-types:r1"/>
+      <def localIdentifier="OMTK" uri="http://org.opencds/opioid-cds" version="0.1.0"/>
+   </usings>
+   <parameters>
+      <def name="RxNormCode" accessLevel="Public">
+         <default code="197696" xsi:type="Code">
+            <system name="RxNorm"/>
+         </default>
+      </def>
+      <def name="RxQuantity" accessLevel="Public">
+         <default valueType="t:Integer" value="30" xsi:type="Literal"/>
+      </def>
+      <def name="RxDaysSupply" accessLevel="Public">
+         <default valueType="t:Integer" value="30" xsi:type="Literal"/>
+      </def>
+   </parameters>
+   <codeSystems>
+      <def name="RxNorm" id="http://www.nlm.nih.gov/research/umls/rxnorm" accessLevel="Public"/>
+   </codeSystems>
+   <statements>
+      <def name="ToUCUM" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression xsi:type="Case">
+            <comparand name="unit" xsi:type="OperandRef"/>
+            <caseItem>
+               <when valueType="t:String" value="MG" xsi:type="Literal"/>
+               <then valueType="t:String" value="mg" xsi:type="Literal"/>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:String" value="MG/ACTUAT" xsi:type="Literal"/>
+               <then valueType="t:String" value="mg/{actuat}" xsi:type="Literal"/>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:String" value="MG/HR" xsi:type="Literal"/>
+               <then valueType="t:String" value="mg/h" xsi:type="Literal"/>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:String" value="MG/ML" xsi:type="Literal"/>
+               <then valueType="t:String" value="mg/mL" xsi:type="Literal"/>
+            </caseItem>
+            <else xsi:type="Add">
+               <operand xsi:type="Add">
+                  <operand valueType="t:String" value="unknown{" xsi:type="Literal"/>
+                  <operand name="unit" xsi:type="OperandRef"/>
+               </operand>
+               <operand valueType="t:String" value="}" xsi:type="Literal"/>
+            </else>
+         </expression>
+         <operand name="unit">
+            <operandTypeSpecifier name="t:String" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+      </def>
+      <def name="GetConversionFactor" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression xsi:type="Case">
+            <comparand xsi:type="ToInteger">
+               <operand path="code" xsi:type="Property">
+                  <source name="ingredientCode" xsi:type="OperandRef"/>
+               </operand>
+            </comparand>
+            <caseItem>
+               <when valueType="t:Integer" value="161" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="1191" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="1223" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="1767" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="1819" xsi:type="Literal"/>
+               <then xsi:type="Case">
+                  <caseItem>
+                     <when xsi:type="Equal">
+                        <operand xsi:type="ToInteger">
+                           <operand path="code" xsi:type="Property">
+                              <source name="doseFormCode" xsi:type="OperandRef"/>
+                           </operand>
+                        </operand>
+                        <operand valueType="t:Integer" value="316987" xsi:type="Literal"/>
+                     </when>
+                     <then valueType="t:Decimal" value="12.6" xsi:type="Literal"/>
+                  </caseItem>
+                  <else xsi:type="ToDecimal">
+                     <operand valueType="t:Integer" value="30" xsi:type="Literal"/>
+                  </else>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="1841" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="7" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="1886" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="2101" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="2354" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="2400" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="2670" xsi:type="Literal"/>
+               <then valueType="t:Decimal" value="0.15" xsi:type="Literal"/>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="3423" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="4" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="3498" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="4337" xsi:type="Literal"/>
+               <then xsi:type="Case">
+                  <caseItem>
+                     <when xsi:type="In">
+                        <operand xsi:type="ToInteger">
+                           <operand path="code" xsi:type="Property">
+                              <source name="doseFormCode" xsi:type="OperandRef"/>
+                           </operand>
+                        </operand>
+                        <operand xsi:type="List">
+                           <element valueType="t:Integer" value="970789" xsi:type="Literal"/>
+                           <element valueType="t:Integer" value="317007" xsi:type="Literal"/>
+                           <element valueType="t:Integer" value="316992" xsi:type="Literal"/>
+                        </operand>
+                     </when>
+                     <then valueType="t:Decimal" value="0.13" xsi:type="Literal"/>
+                  </caseItem>
+                  <caseItem>
+                     <when xsi:type="Equal">
+                        <operand xsi:type="ToInteger">
+                           <operand path="code" xsi:type="Property">
+                              <source name="doseFormCode" xsi:type="OperandRef"/>
+                           </operand>
+                        </operand>
+                        <operand valueType="t:Integer" value="346163" xsi:type="Literal"/>
+                     </when>
+                     <then valueType="t:Decimal" value="0.18" xsi:type="Literal"/>
+                  </caseItem>
+                  <caseItem>
+                     <when xsi:type="In">
+                        <operand xsi:type="ToInteger">
+                           <operand path="code" xsi:type="Property">
+                              <source name="doseFormCode" xsi:type="OperandRef"/>
+                           </operand>
+                        </operand>
+                        <operand xsi:type="List">
+                           <element valueType="t:Integer" value="126542" xsi:type="Literal"/>
+                           <element valueType="t:Integer" value="346163" xsi:type="Literal"/>
+                        </operand>
+                     </when>
+                     <then valueType="t:Decimal" value="0.16" xsi:type="Literal"/>
+                  </caseItem>
+                  <caseItem>
+                     <when xsi:type="Equal">
+                        <operand xsi:type="ToInteger">
+                           <operand path="code" xsi:type="Property">
+                              <source name="doseFormCode" xsi:type="OperandRef"/>
+                           </operand>
+                        </operand>
+                        <operand valueType="t:Integer" value="316987" xsi:type="Literal"/>
+                     </when>
+                     <then valueType="t:Decimal" value="7.2" xsi:type="Literal"/>
+                  </caseItem>
+                  <else xsi:type="ToDecimal">
+                     <operand valueType="t:Integer" value="1000" xsi:type="Literal"/>
+                  </else>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="5032" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="5489" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="1" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="5640" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="6102" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="6378" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="11" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="6754" xsi:type="Literal"/>
+               <then valueType="t:Decimal" value="0.1" xsi:type="Literal"/>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="6813" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand xsi:type="Case">
+                     <caseItem>
+                        <when xsi:type="And">
+                           <operand xsi:type="GreaterOrEqual">
+                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand xsi:type="ToDecimal">
+                                 <operand valueType="t:Integer" value="1" xsi:type="Literal"/>
+                              </operand>
+                           </operand>
+                           <operand xsi:type="LessOrEqual">
+                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand xsi:type="ToDecimal">
+                                 <operand valueType="t:Integer" value="20" xsi:type="Literal"/>
+                              </operand>
+                           </operand>
+                        </when>
+                        <then valueType="t:Integer" value="4" xsi:type="Literal"/>
+                     </caseItem>
+                     <caseItem>
+                        <when xsi:type="And">
+                           <operand xsi:type="GreaterOrEqual">
+                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand xsi:type="ToDecimal">
+                                 <operand valueType="t:Integer" value="21" xsi:type="Literal"/>
+                              </operand>
+                           </operand>
+                           <operand xsi:type="LessOrEqual">
+                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand xsi:type="ToDecimal">
+                                 <operand valueType="t:Integer" value="40" xsi:type="Literal"/>
+                              </operand>
+                           </operand>
+                        </when>
+                        <then valueType="t:Integer" value="8" xsi:type="Literal"/>
+                     </caseItem>
+                     <caseItem>
+                        <when xsi:type="And">
+                           <operand xsi:type="GreaterOrEqual">
+                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand xsi:type="ToDecimal">
+                                 <operand valueType="t:Integer" value="41" xsi:type="Literal"/>
+                              </operand>
+                           </operand>
+                           <operand xsi:type="LessOrEqual">
+                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand xsi:type="ToDecimal">
+                                 <operand valueType="t:Integer" value="60" xsi:type="Literal"/>
+                              </operand>
+                           </operand>
+                        </when>
+                        <then valueType="t:Integer" value="10" xsi:type="Literal"/>
+                     </caseItem>
+                     <caseItem>
+                        <when xsi:type="GreaterOrEqual">
+                           <operand name="dailyDose" xsi:type="OperandRef"/>
+                           <operand xsi:type="ToDecimal">
+                              <operand valueType="t:Integer" value="61" xsi:type="Literal"/>
+                           </operand>
+                        </when>
+                        <then valueType="t:Integer" value="12" xsi:type="Literal"/>
+                     </caseItem>
+                     <else valueType="t:Integer" value="1000" xsi:type="Literal"/>
+                  </operand>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="7052" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="1" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="7242" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="7243" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="7804" xsi:type="Literal"/>
+               <then valueType="t:Decimal" value="1.5" xsi:type="Literal"/>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="7814" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="3" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="8001" xsi:type="Literal"/>
+               <then valueType="t:Decimal" value="0.37" xsi:type="Literal"/>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="8163" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="8175" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="8745" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="8896" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="9009" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="10689" xsi:type="Literal"/>
+               <then valueType="t:Decimal" value="0.1" xsi:type="Literal"/>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="10849" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="19759" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="19860" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="22696" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="22697" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="23088" xsi:type="Literal"/>
+               <then valueType="t:Decimal" value="0.25" xsi:type="Literal"/>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="27084" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="35780" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="237005" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="8" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="636827" xsi:type="Literal"/>
+               <then xsi:type="ToDecimal">
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:Integer" value="787390" xsi:type="Literal"/>
+               <then valueType="t:Decimal" value="0.4" xsi:type="Literal"/>
+            </caseItem>
+            <else xsi:type="ToDecimal">
+               <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+            </else>
+         </expression>
+         <operand name="ingredientCode">
+            <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="dailyDose">
+            <operandTypeSpecifier name="t:Decimal" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="doseFormCode">
+            <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+      </def>
+      <def name="GetIngredients" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression xsi:type="Query">
+            <source alias="C">
+               <expression xsi:type="Query">
+                  <source alias="SD">
+                     <expression xmlns:ns0="http://org.opencds/opioid-cds" dataType="ns0:MED_SCDC_FOR_DRUG" codeProperty="DRUG_RXCUI" xsi:type="Retrieve">
+                        <codes name="rxNormCode" xsi:type="OperandRef"/>
+                     </expression>
+                  </source>
+                  <where xsi:type="Exists">
+                     <operand xmlns:ns1="http://org.opencds/opioid-cds" dataType="ns1:NON_SURGICAL_OPIOID_TO_INCLUDE" codeProperty="DRUG_RXCUI" xsi:type="Retrieve">
+                        <codes path="DRUG_RXCUI" scope="SD" xsi:type="Property"/>
+                     </operand>
+                  </where>
+                  <return>
+                     <expression xsi:type="Tuple">
+                        <element name="rxNormCode">
+                           <value name="rxNormCode" xsi:type="OperandRef"/>
+                        </element>
+                        <element name="component">
+                           <value xsi:type="SingletonFrom">
+                              <operand xmlns:ns2="http://org.opencds/opioid-cds" dataType="ns2:MED_SCDC" codeProperty="SCDC_RXCUI" xsi:type="Retrieve">
+                                 <codes path="SCDC_RXCUI" scope="SD" xsi:type="Property"/>
+                              </operand>
+                           </value>
+                        </element>
+                        <element name="ingredientCode">
+                           <value path="INGREDIENT_RXCUI" xsi:type="Property">
+                              <source xsi:type="SingletonFrom">
+                                 <operand xmlns:ns3="http://org.opencds/opioid-cds" dataType="ns3:MED_INGREDIENT_FOR_SCDC" codeProperty="SCDC_RXCUI" xsi:type="Retrieve">
+                                    <codes path="SCDC_RXCUI" scope="SD" xsi:type="Property"/>
+                                 </operand>
+                              </source>
+                           </value>
+                        </element>
+                        <element name="doseFormCode">
+                           <value path="DOSE_FORM_RXCUI" xsi:type="Property">
+                              <source xsi:type="SingletonFrom">
+                                 <operand xmlns:ns4="http://org.opencds/opioid-cds" dataType="ns4:MED_DRUG_DOSE_FORM" codeProperty="DRUG_RXCUI" xsi:type="Retrieve">
+                                    <codes path="DRUG_RXCUI" scope="SD" xsi:type="Property"/>
+                                 </operand>
+                              </source>
+                           </value>
+                        </element>
+                     </expression>
+                  </return>
+               </expression>
+            </source>
+            <let identifier="ingredient">
+               <expression xsi:type="SingletonFrom">
+                  <operand xmlns:ns5="http://org.opencds/opioid-cds" dataType="ns5:MED_INGREDIENT" codeProperty="INGREDIENT_RXCUI" xsi:type="Retrieve">
+                     <codes path="ingredientCode" scope="C" xsi:type="Property"/>
+                  </operand>
+               </expression>
+            </let>
+            <where xsi:type="Exists">
+               <operand xsi:type="Query">
+                  <source alias="IT">
+                     <expression xmlns:ns6="http://org.opencds/opioid-cds" dataType="ns6:MED_INGREDIENT_TYPE" codeProperty="INGREDIENT_RXCUI" xsi:type="Retrieve">
+                        <codes path="ingredientCode" scope="C" xsi:type="Property"/>
+                     </expression>
+                  </source>
+                  <where xsi:type="Equal">
+                     <operand path="INGREDIENT_TYPE" scope="IT" xsi:type="Property"/>
+                     <operand valueType="t:String" value="NonSurgicalOpioid" xsi:type="Literal"/>
+                  </where>
+               </operand>
+            </where>
+            <return>
+               <expression xsi:type="Tuple">
+                  <element name="rxNormCode">
+                     <value name="rxNormCode" xsi:type="OperandRef"/>
+                  </element>
+                  <element name="doseFormCode">
+                     <value path="doseFormCode" scope="C" xsi:type="Property"/>
+                  </element>
+                  <element name="ingredientCode">
+                     <value path="ingredientCode" scope="C" xsi:type="Property"/>
+                  </element>
+                  <element name="ingredientName">
+                     <value path="INGREDIENT_NAME" xsi:type="Property">
+                        <source name="ingredient" xsi:type="QueryLetRef"/>
+                     </value>
+                  </element>
+                  <element name="strength">
+                     <value classType="t:Quantity" xsi:type="Instance">
+                        <element name="value">
+                           <value path="STRENGTH_VALUE" xsi:type="Property">
+                              <source path="component" scope="C" xsi:type="Property"/>
+                           </value>
+                        </element>
+                        <element name="unit">
+                           <value name="ToUCUM" xsi:type="FunctionRef">
+                              <operand path="STRENGTH_UNIT" xsi:type="Property">
+                                 <source path="component" scope="C" xsi:type="Property"/>
+                              </operand>
+                           </value>
+                        </element>
+                     </value>
+                  </element>
+               </expression>
+            </return>
+         </expression>
+         <operand name="rxNormCode">
+            <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+      </def>
+      <def name="CalculateMMEs" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression xsi:type="Flatten">
+            <operand xsi:type="Query">
+               <source alias="M">
+                  <expression name="medications" xsi:type="OperandRef"/>
+               </source>
+               <let identifier="Ingredients">
+                  <expression name="GetIngredients" xsi:type="FunctionRef">
+                     <operand path="rxNormCode" scope="M" xsi:type="Property"/>
+                  </expression>
+               </let>
+               <return>
+                  <expression xsi:type="Query">
+                     <source alias="I">
+                        <expression name="Ingredients" xsi:type="QueryLetRef"/>
+                     </source>
+                     <let identifier="factor">
+                        <expression name="GetConversionFactor" xsi:type="FunctionRef">
+                           <operand path="ingredientCode" scope="I" xsi:type="Property"/>
+                           <operand path="value" xsi:type="Property">
+                              <source path="strength" scope="I" xsi:type="Property"/>
+                           </operand>
+                           <operand path="doseFormCode" scope="I" xsi:type="Property"/>
+                        </expression>
+                     </let>
+                     <return>
+                        <expression xsi:type="Tuple">
+                           <element name="rxNormCode">
+                              <value path="rxNormCode" scope="M" xsi:type="Property"/>
+                           </element>
+                           <element name="doseFormCode">
+                              <value path="doseFormCode" scope="I" xsi:type="Property"/>
+                           </element>
+                           <element name="quantity">
+                              <value path="quantity" scope="M" xsi:type="Property"/>
+                           </element>
+                           <element name="daysSupply">
+                              <value path="daysSupply" scope="M" xsi:type="Property"/>
+                           </element>
+                           <element name="ingredientCode">
+                              <value path="ingredientCode" scope="I" xsi:type="Property"/>
+                           </element>
+                           <element name="ingredientName">
+                              <value path="ingredientName" scope="I" xsi:type="Property"/>
+                           </element>
+                           <element name="strength">
+                              <value path="strength" scope="I" xsi:type="Property"/>
+                           </element>
+                           <element name="conversionFactor">
+                              <value name="factor" xsi:type="QueryLetRef"/>
+                           </element>
+                           <element name="mme">
+                              <value classType="t:Quantity" xsi:type="Instance">
+                                 <element name="value">
+                                    <value xsi:type="Multiply">
+                                       <operand xsi:type="Divide">
+                                          <operand xsi:type="Multiply">
+                                             <operand path="value" xsi:type="Property">
+                                                <source path="strength" scope="I" xsi:type="Property"/>
+                                             </operand>
+                                             <operand xsi:type="ToDecimal">
+                                                <operand path="quantity" scope="M" xsi:type="Property"/>
+                                             </operand>
+                                          </operand>
+                                          <operand xsi:type="ToDecimal">
+                                             <operand path="daysSupply" scope="M" xsi:type="Property"/>
+                                          </operand>
+                                       </operand>
+                                       <operand name="factor" xsi:type="QueryLetRef"/>
+                                    </value>
+                                 </element>
+                                 <element name="unit">
+                                    <value xsi:type="Add">
+                                       <operand path="unit" xsi:type="Property">
+                                          <source path="strength" scope="I" xsi:type="Property"/>
+                                       </operand>
+                                       <operand valueType="t:String" value="/d" xsi:type="Literal"/>
+                                    </value>
+                                 </element>
+                              </value>
+                           </element>
+                        </expression>
+                     </return>
+                  </expression>
+               </return>
+            </operand>
+         </expression>
+         <operand name="medications">
+            <operandTypeSpecifier xsi:type="ListTypeSpecifier">
+               <elementType xsi:type="TupleTypeSpecifier">
+                  <element name="rxNormCode">
+                     <type name="t:Code" xsi:type="NamedTypeSpecifier"/>
+                  </element>
+                  <element name="quantity">
+                     <type name="t:Integer" xsi:type="NamedTypeSpecifier"/>
+                  </element>
+                  <element name="daysSupply">
+                     <type name="t:Integer" xsi:type="NamedTypeSpecifier"/>
+                  </element>
+               </elementType>
+            </operandTypeSpecifier>
+         </operand>
+      </def>
+      <def name="TestCalculateMMEs" context="Patient" accessLevel="Public">
+         <expression name="CalculateMMEs" xsi:type="FunctionRef">
+            <operand xsi:type="List">
+               <element xsi:type="Tuple">
+                  <element name="rxNormCode">
+                     <value name="RxNormCode" xsi:type="ParameterRef"/>
+                  </element>
+                  <element name="quantity">
+                     <value name="RxQuantity" xsi:type="ParameterRef"/>
+                  </element>
+                  <element name="daysSupply">
+                     <value name="RxDaysSupply" xsi:type="ParameterRef"/>
+                  </element>
+               </element>
+            </operand>
+         </expression>
+      </def>
+   </statements>
+</library>
