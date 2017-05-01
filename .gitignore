@@ -124,8 +124,9 @@ local.properties
 # TeXlipse plugin
 .texlipse
 
-.data
-.lck
-.properties
-.script
+*.data
+*.lck
+*.properties
+*.script
 /*.tmp
+*.txt

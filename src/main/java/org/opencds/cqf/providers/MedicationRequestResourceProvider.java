@@ -82,12 +82,12 @@ public class MedicationRequestResourceProvider extends JpaResourceProviderDstu3<
         BigDecimal mme = ((org.opencds.cqf.cql.runtime.Quantity)tuple.getElements().get("mme")).getValue();
 
         if (mme.compareTo(new BigDecimal("50")) >= 0 && mme.compareTo(new BigDecimal("90")) < 0) {
-            String detail = String.format("High risk for opioid overdose – consider tapering.\nTotal morphine milligram equivalent (MME) is %s mg/day. Taper to < 50.", mme.toString());
+            String detail = String.format("High risk for opioid overdose - consider tapering. Total morphine milligram equivalent (MME) is %s mg/day. Taper to < 50.", mme.toString());
             return attachIssue(request, detail);
         }
 
         else if (mme.compareTo(new BigDecimal("90")) > 0) {
-            String detail = String.format("High risk for opioid overdose – taper now.\nTotal morphine milligram equivalent (MME) is %s mg/day. Taper to < 50.", mme.toString());
+            String detail = String.format("High risk for opioid overdose - taper now. Total morphine milligram equivalent (MME) is %s mg/day. Taper to < 50.", mme.toString());
             return attachIssue(request, detail);
         }
 
