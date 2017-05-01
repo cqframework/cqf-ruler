@@ -59,6 +59,7 @@ public class MedicationRequestResourceProvider extends JpaResourceProviderDstu3<
         context.setParameter(null, "RxDaysSupply", rxDaysSupply);
 
         // 5. resolve data provider
+        // *** NOTE *** you must provide this file!
         String path = Paths.get("src/main/resources/OpioidManagementTerminologyKnowledge.accdb").toAbsolutePath().toString().replace("\\", "/");
         String connString = "jdbc:ucanaccess://" + path + ";memory=false;keepMirror=true";
         OmtkDataProvider provider = new OmtkDataProvider(connString);

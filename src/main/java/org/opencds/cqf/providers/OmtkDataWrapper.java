@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Created by Christopher Schuler on 4/29/2017.
+ * Created by Bryn on 4/24/2017.
  */
 public class OmtkDataWrapper implements Iterable<Object> {
 

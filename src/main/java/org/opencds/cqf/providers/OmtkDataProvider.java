@@ -9,7 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * Created by Christopher Schuler on 4/29/2017.
+ * Created by Bryn on 4/24/2017.
  */
 public class OmtkDataProvider implements DataProvider {
 
