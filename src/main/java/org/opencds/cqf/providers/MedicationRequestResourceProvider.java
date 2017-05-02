@@ -1,5 +1,6 @@
 package org.opencds.cqf.providers;
 
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.model.api.Include;
@@ -8,6 +9,7 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -97,14 +99,10 @@ public class MedicationRequestResourceProvider extends JpaResourceProviderDstu3<
     private MedicationRequest attachIssue(MedicationRequest request, String detail) {
         DetectedIssue issue = new DetectedIssue().setDetail(detail);
 
-        // this goes against the spirit of a JPA server, but creating resources with the DAO is a bummer...
-        // TODO: change server base string when depoloying
-        IIdType id = provider.getFhirContext()
-                .newRestfulGenericClient("http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/")
-                .create().resource(issue).execute().getId();
+        IIdType id = ((IFhirResourceDao<DetectedIssue>) provider.resolveResourceProvider("DetectedIssue").getDao()).create(issue).getId();
 
         // There is an issue here with Reference being returned with base URL stripped ... giving up
-        Reference ref = new Reference().setReference(id.getValue());
+        Reference ref = new Reference(id.getValue());
         List<Reference> list = request.hasDetectedIssue() ? request.getDetectedIssue() : new ArrayList<>();
         list.add(ref);
         return request.setDetectedIssue(list);

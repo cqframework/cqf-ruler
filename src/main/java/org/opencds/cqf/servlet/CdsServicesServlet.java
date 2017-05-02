@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.opencds.cqf.helpers.CdsHooksHelper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,31 +26,6 @@ public class CdsServicesServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-
-        JSONObject jsonResponse = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
-
-        JSONObject medicationPrescribe = new JSONObject();
-        medicationPrescribe.put("hook", "medication-prescribe");
-        medicationPrescribe.put("name", "Opioid Morphine Milligram Equivalence (MME) Guidance Service");
-        medicationPrescribe.put("description", "CDS Service that finds the MME of an opioid medication and provides guidance to the prescriber if the MME exceeds the recommended range.");
-        medicationPrescribe.put("id", "opioid-mme-guidance");
-
-        JSONObject prefetchContent = new JSONObject();
-        prefetchContent.put("patient", "Patient/{{Patient.id}}");
-        prefetchContent.put("medication", "MedicationRequest?patient={{Patient.id}}");
-
-        medicationPrescribe.put("prefetch", prefetchContent);
-
-        jsonArray.add(medicationPrescribe);
-        jsonResponse.put("services", jsonArray);
-
-        // using gson for pretty print ...
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonParser parser = new JsonParser();
-        JsonElement element = parser.parse(jsonResponse.toJSONString());
-
-        response.getWriter().println(gson.toJson(element));
+        CdsHooksHelper.DisplayDiscovery(response);
     }
 }

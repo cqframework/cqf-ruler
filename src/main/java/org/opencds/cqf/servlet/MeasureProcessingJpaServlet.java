@@ -34,8 +34,6 @@ public class MeasureProcessingJpaServlet extends RestfulServer {
 
     private static final long serialVersionUID = 1L;
 
-    private WebApplicationContext myAppCtx;
-
     @SuppressWarnings("unchecked")
     @Override
     protected void initialize() throws ServletException {
@@ -46,7 +44,7 @@ public class MeasureProcessingJpaServlet extends RestfulServer {
         setFhirContext(new FhirContext(fhirVersion));
 
         // Get the spring context from the web container (it's declared in web.xml)
-        myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
+        WebApplicationContext myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
 
         String resourceProviderBeanName = "myResourceProvidersDstu3";
         List<IResourceProvider> beans = myAppCtx.getBean(resourceProviderBeanName, List.class);

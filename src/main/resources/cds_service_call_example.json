@@ -1,0 +1,56 @@
+{
+  "hookInstance" : "d1577c69-dfbe-44ad-ba6d-3e05e953b2ea",
+  "fhirServer" : "http://hooks.smarthealthit.org:9080",
+  "hook" : "patient-view",
+  "redirect" : "http://hooks2.smarthealthit.org/service-done.html",
+  "user" : "Practitioner/example",
+  "context" : [],
+  "patient" : "1288992",
+  "prefetch" : {
+    "medication" : {
+      "response" : {
+        "status" : "200 OK"
+      },
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "opioid1",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2017-04-30T17:29:20.991-06:00"
+        },
+        "status": "draft",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "197696"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/pat1"
+        },
+        "authoredOn": "2017-04-29",
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2017-04-15",
+            "end": "2017-04-30"
+          },
+          "quantity": {
+            "value": 3000,
+            "unit": "mg",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg"
+          },
+          "expectedSupplyDuration": {
+            "value": 30,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
+        }
+      }
+    }
+  }
+}

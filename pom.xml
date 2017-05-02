@@ -247,7 +247,7 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <configuration>
                     <webApp>
-                        <contextPath>/cql-measure-processor</contextPath>
+                        <contextPath>/cqf-ruler</contextPath>
                         <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
                     </webApp>
                 </configuration>
