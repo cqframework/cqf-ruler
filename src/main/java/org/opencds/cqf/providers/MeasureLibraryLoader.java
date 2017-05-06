@@ -4,7 +4,7 @@ import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
+//import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -26,13 +26,13 @@ import static org.opencds.cqf.helpers.LibraryHelper.translateLibrary;
  */
 public class MeasureLibraryLoader implements LibraryLoader {
 
-    private ModelManager modelManager;
+//    private ModelManager modelManager;
     private LibraryManager libraryManager;
     private LibraryResourceProvider provider;
     private Map<String, Library> libraries = new HashMap<>();
 
-    public MeasureLibraryLoader(LibraryResourceProvider provider, ModelManager modelManager, LibraryManager libraryManager) {
-        this.modelManager = modelManager;
+    public MeasureLibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager) {
+//        this.modelManager = modelManager;
         this.libraryManager = libraryManager;
         this.provider = provider;
     }
@@ -69,7 +69,7 @@ public class MeasureLibraryLoader implements LibraryLoader {
                 return readLibrary(new ByteArrayInputStream(content.getData()));
             }
             else if (content.getContentType().equals("text/cql")) {
-                return translateLibrary(new ByteArrayInputStream(content.getData()), modelManager, libraryManager);
+                return translateLibrary(new ByteArrayInputStream(content.getData()), libraryManager);
             }
         }
 

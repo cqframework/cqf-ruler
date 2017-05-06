@@ -19,7 +19,6 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelInfoLoader;
 import org.cqframework.cql.cql2elm.ModelInfoProvider;
-import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.ExpressionDef;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.elm.r1.VersionedIdentifier;
@@ -54,25 +53,30 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         this.executionProvider = new CqlExecutionProvider(providers);
     }
 
-    private ModelManager modelManager;
-    private ModelManager getModelManager() {
-        if (modelManager == null) {
-            modelManager = new ModelManager();
+//    private ModelManager modelManager;
+//    private ModelManager getModelManager() {
+//        if (modelManager == null) {
+//            modelManager = new ModelManager();
+//            ModelInfoProvider infoProvider = () -> {
+//                Path p = Paths.get("src/main/resources/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
+//                return JAXB.unmarshal(new File(p.toString()), ModelInfo.class);
+//            };
+//            ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("OMTK").withVersion("0.1.0"), infoProvider);
+//        }
+//        return modelManager;
+//    }
+
+    private LibraryManager libraryManager;
+    private LibraryManager getLibraryManager() {
+        if (libraryManager == null) {
+            libraryManager = new LibraryManager();
+            libraryManager.getLibrarySourceLoader().clearProviders();
+            libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
             ModelInfoProvider infoProvider = () -> {
                 Path p = Paths.get("src/main/resources/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
                 return JAXB.unmarshal(new File(p.toString()), ModelInfo.class);
             };
             ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("OMTK").withVersion("0.1.0"), infoProvider);
-        }
-        return modelManager;
-    }
-
-    private LibraryManager libraryManager;
-    private LibraryManager getLibraryManager() {
-        if (libraryManager == null) {
-            libraryManager = new LibraryManager(getModelManager());
-            libraryManager.getLibrarySourceLoader().clearProviders();
-            libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
         }
         return libraryManager;
     }
@@ -80,7 +84,7 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
     private LibraryLoader libraryLoader;
     private LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
-            libraryLoader = new MeasureLibraryLoader(getLibraryResourceProvider(), getModelManager(), getLibraryManager());
+            libraryLoader = new MeasureLibraryLoader(getLibraryResourceProvider(), getLibraryManager());
         }
         return libraryLoader;
     }

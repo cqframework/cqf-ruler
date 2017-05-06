@@ -40,7 +40,7 @@
         <dependency>
             <groupId>info.cqframework</groupId>
             <artifactId>cql-to-elm</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>1.1.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -229,7 +229,7 @@
     <build>
 
         <!-- Tells Maven to name the generated WAR file as cql-measure-processor.war -->
-        <finalName>cql-measure-processor</finalName>
+        <finalName>cqf-ruler</finalName>
 
         <plugins>
             <!-- Tell Maven which Java source version you want to use -->

@@ -3,7 +3,6 @@ package org.opencds.cqf.helpers;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.tracking.TrackBack;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
@@ -42,16 +41,16 @@ public class LibraryHelper {
         return errors.toString();
     }
 
-    public static Library translateLibrary(String cql, ModelManager modelManager, LibraryManager libraryManager) {
-        return translateLibrary(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), modelManager, libraryManager);
+    public static Library translateLibrary(String cql, LibraryManager libraryManager) {
+        return translateLibrary(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), libraryManager);
     }
 
-    public static Library translateLibrary(InputStream cqlStream, ModelManager modelManager, LibraryManager libraryManager) {
+    public static Library translateLibrary(InputStream cqlStream, LibraryManager libraryManager) {
         ArrayList<CqlTranslator.Options> options = new ArrayList<>();
         options.add(CqlTranslator.Options.EnableDateRangeOptimization);
         CqlTranslator translator = null;
         try {
-            translator = CqlTranslator.fromStream(cqlStream, modelManager, libraryManager,
+            translator = CqlTranslator.fromStream(cqlStream, libraryManager,
                     options.toArray(new CqlTranslator.Options[options.size()]));
         } catch (IOException e) {
             throw new IllegalArgumentException(String.format("Errors occurred translating library: %s", e.getMessage()));
