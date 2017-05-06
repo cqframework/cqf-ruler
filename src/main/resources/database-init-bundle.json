@@ -14676,6 +14676,7 @@
           "reference": "Patient/P123456"
         },
         "effectiveDateTime": "2016-10-10T00:00:00",
+        "issued": "2015-07-09T08:00:00-04:00",
         "valueCodeableConcept": {
           "coding": [
             {
@@ -14999,6 +15000,58 @@
       "search": {
         "mode": "match"
       }
+    },
+    {
+      "resourceType": "Procedure",
+      "id": "Procedure-20",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2017-05-04T04:00:59.869+00:00"
+      },
+      "status": "completed",
+      "category": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "387713003",
+            "display": "Surgical Procedure"
+          }
+        ]
+      },
+      "code": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "447395005"
+          }
+        ],
+        "text": "Procedure, Performed: Primary Tka Procedure"
+      },
+      "subject": {
+        "reference": "Patient/Patient-12214",
+        "display": "2  N Geriatric Jr"
+      },
+      "performedPeriod": {
+        "start": "2015-06-22T08:00:00-04:00",
+        "end": "2015-06-22T10:15:00-04:00"
+      },
+      "performer": [
+        {
+          "role": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/ValueSet/performer-role",
+                "code": "112247003",
+                "display": "Medical doctor (occupation)"
+              }
+            ]
+          },
+          "actor": {
+            "reference": "Practitioner/Practitioner-12208",
+            "display": "Jay McCann Sawyer MD"
+          }
+        }
+      ]
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Procedure/Procedure-7",

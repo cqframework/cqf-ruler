@@ -1,8 +1,7 @@
 {
   "hookInstance" : "d1577c69-dfbe-44ad-ba6d-3e05e953b2ea",
-  "fhirServer" : "http://hooks.smarthealthit.org:9080",
-  "hook" : "patient-view",
-  "redirect" : "http://hooks2.smarthealthit.org/service-done.html",
+  "fhirServer" : "http://measure.eval.kanvix/cqf-ruler/baseDstu2",
+  "hook" : "medication-prescribe",
   "user" : "Practitioner/example",
   "context" : [],
   "patient" : "1288992",

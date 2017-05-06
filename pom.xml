@@ -2,12 +2,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.opencds.cqf</groupId>
-    <artifactId>cql-measure-processor</artifactId>
+    <artifactId>cqf-ruler</artifactId>
     <version>1.1.0-SNAPSHOT</version>
 
     <packaging>war</packaging>
 
-    <name>CQL_Measure_Processor</name>
+    <name>CQF Ruler</name>
 
     <repositories>
         <repository>
@@ -28,13 +28,13 @@
         <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>cql-engine</artifactId>
-            <version>1.2.8-SNAPSHOT</version>
+            <version>1.2.9-SNAPSHOT</version>
         </dependency>
         
         <dependency>
 			<groupId>org.opencds.cqf</groupId>
 			<artifactId>cql-engine-fhir</artifactId>
-			<version>1.2.8-SNAPSHOT</version>
+			<version>1.2.9-SNAPSHOT</version>
         </dependency>
 
         <dependency>

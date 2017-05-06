@@ -6,19 +6,6 @@
       <def localIdentifier="System" uri="urn:hl7-org:elm-types:r1"/>
       <def localIdentifier="OMTK" uri="http://org.opencds/opioid-cds" version="0.1.0"/>
    </usings>
-   <parameters>
-      <def name="RxNormCode" accessLevel="Public">
-         <default code="197696" xsi:type="Code">
-            <system name="RxNorm"/>
-         </default>
-      </def>
-      <def name="RxQuantity" accessLevel="Public">
-         <default valueType="t:Integer" value="30" xsi:type="Literal"/>
-      </def>
-      <def name="RxDaysSupply" accessLevel="Public">
-         <default valueType="t:Integer" value="30" xsi:type="Literal"/>
-      </def>
-   </parameters>
    <codeSystems>
       <def name="RxNorm" id="http://www.nlm.nih.gov/research/umls/rxnorm" accessLevel="Public"/>
    </codeSystems>
@@ -52,6 +39,19 @@
          </expression>
          <operand name="unit">
             <operandTypeSpecifier name="t:String" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+      </def>
+      <def name="IsPatch" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression xsi:type="Equal">
+            <operand xsi:type="ToInteger">
+               <operand path="code" xsi:type="Property">
+                  <source name="doseFormCode" xsi:type="OperandRef"/>
+               </operand>
+            </operand>
+            <operand valueType="t:Integer" value="316987" xsi:type="Literal"/>
+         </expression>
+         <operand name="doseFormCode">
+            <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
          </operand>
       </def>
       <def name="GetConversionFactor" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
@@ -194,13 +194,8 @@
                      <then valueType="t:Decimal" value="0.16" xsi:type="Literal"/>
                   </caseItem>
                   <caseItem>
-                     <when xsi:type="Equal">
-                        <operand xsi:type="ToInteger">
-                           <operand path="code" xsi:type="Property">
-                              <source name="doseFormCode" xsi:type="OperandRef"/>
-                           </operand>
-                        </operand>
-                        <operand valueType="t:Integer" value="316987" xsi:type="Literal"/>
+                     <when name="IsPatch" xsi:type="FunctionRef">
+                        <operand name="doseFormCode" xsi:type="OperandRef"/>
                      </when>
                      <then valueType="t:Decimal" value="7.2" xsi:type="Literal"/>
                   </caseItem>
@@ -250,13 +245,17 @@
                      <caseItem>
                         <when xsi:type="And">
                            <operand xsi:type="GreaterOrEqual">
-                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand path="value" xsi:type="Property">
+                                 <source name="dailyDose" xsi:type="OperandRef"/>
+                              </operand>
                               <operand xsi:type="ToDecimal">
                                  <operand valueType="t:Integer" value="1" xsi:type="Literal"/>
                               </operand>
                            </operand>
                            <operand xsi:type="LessOrEqual">
-                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand path="value" xsi:type="Property">
+                                 <source name="dailyDose" xsi:type="OperandRef"/>
+                              </operand>
                               <operand xsi:type="ToDecimal">
                                  <operand valueType="t:Integer" value="20" xsi:type="Literal"/>
                               </operand>
@@ -267,13 +266,17 @@
                      <caseItem>
                         <when xsi:type="And">
                            <operand xsi:type="GreaterOrEqual">
-                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand path="value" xsi:type="Property">
+                                 <source name="dailyDose" xsi:type="OperandRef"/>
+                              </operand>
                               <operand xsi:type="ToDecimal">
                                  <operand valueType="t:Integer" value="21" xsi:type="Literal"/>
                               </operand>
                            </operand>
                            <operand xsi:type="LessOrEqual">
-                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand path="value" xsi:type="Property">
+                                 <source name="dailyDose" xsi:type="OperandRef"/>
+                              </operand>
                               <operand xsi:type="ToDecimal">
                                  <operand valueType="t:Integer" value="40" xsi:type="Literal"/>
                               </operand>
@@ -284,13 +287,17 @@
                      <caseItem>
                         <when xsi:type="And">
                            <operand xsi:type="GreaterOrEqual">
-                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand path="value" xsi:type="Property">
+                                 <source name="dailyDose" xsi:type="OperandRef"/>
+                              </operand>
                               <operand xsi:type="ToDecimal">
                                  <operand valueType="t:Integer" value="41" xsi:type="Literal"/>
                               </operand>
                            </operand>
                            <operand xsi:type="LessOrEqual">
-                              <operand name="dailyDose" xsi:type="OperandRef"/>
+                              <operand path="value" xsi:type="Property">
+                                 <source name="dailyDose" xsi:type="OperandRef"/>
+                              </operand>
                               <operand xsi:type="ToDecimal">
                                  <operand valueType="t:Integer" value="60" xsi:type="Literal"/>
                               </operand>
@@ -300,7 +307,9 @@
                      </caseItem>
                      <caseItem>
                         <when xsi:type="GreaterOrEqual">
-                           <operand name="dailyDose" xsi:type="OperandRef"/>
+                           <operand path="value" xsi:type="Property">
+                              <source name="dailyDose" xsi:type="OperandRef"/>
+                           </operand>
                            <operand xsi:type="ToDecimal">
                               <operand valueType="t:Integer" value="61" xsi:type="Literal"/>
                            </operand>
@@ -447,10 +456,58 @@
             <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
          </operand>
          <operand name="dailyDose">
-            <operandTypeSpecifier name="t:Decimal" xsi:type="NamedTypeSpecifier"/>
+            <operandTypeSpecifier name="t:Quantity" xsi:type="NamedTypeSpecifier"/>
          </operand>
          <operand name="doseFormCode">
             <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+      </def>
+      <def name="EnsureMicrogramQuantity" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression xsi:type="If">
+            <condition xsi:type="And">
+               <operand xsi:type="Less">
+                  <operand path="value" xsi:type="Property">
+                     <source name="strength" xsi:type="OperandRef"/>
+                  </operand>
+                  <operand valueType="t:Decimal" value="0.1" xsi:type="Literal"/>
+               </operand>
+               <operand xsi:type="Equal">
+                  <operand xsi:type="PositionOf">
+                     <pattern valueType="t:String" value="mg" xsi:type="Literal"/>
+                     <string path="unit" xsi:type="Property">
+                        <source name="strength" xsi:type="OperandRef"/>
+                     </string>
+                  </operand>
+                  <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+               </operand>
+            </condition>
+            <then classType="t:Quantity" xsi:type="Instance">
+               <element name="value">
+                  <value xsi:type="Multiply">
+                     <operand path="value" xsi:type="Property">
+                        <source name="strength" xsi:type="OperandRef"/>
+                     </operand>
+                     <operand xsi:type="ToDecimal">
+                        <operand valueType="t:Integer" value="1000" xsi:type="Literal"/>
+                     </operand>
+                  </value>
+               </element>
+               <element name="unit">
+                  <value xsi:type="Add">
+                     <operand valueType="t:String" value="mcg" xsi:type="Literal"/>
+                     <operand xsi:type="Substring">
+                        <stringToSub path="unit" xsi:type="Property">
+                           <source name="strength" xsi:type="OperandRef"/>
+                        </stringToSub>
+                        <startIndex valueType="t:Integer" value="2" xsi:type="Literal"/>
+                     </operand>
+                  </value>
+               </element>
+            </then>
+            <else name="strength" xsi:type="OperandRef"/>
+         </expression>
+         <operand name="strength">
+            <operandTypeSpecifier name="t:Quantity" xsi:type="NamedTypeSpecifier"/>
          </operand>
       </def>
       <def name="GetIngredients" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
@@ -508,10 +565,17 @@
                   </operand>
                </expression>
             </let>
+            <let identifier="doseForm">
+               <expression xsi:type="SingletonFrom">
+                  <operand xmlns:ns6="http://org.opencds/opioid-cds" dataType="ns6:MED_DOSE_FORM" codeProperty="DOSE_FORM_RXCUI" xsi:type="Retrieve">
+                     <codes path="doseFormCode" scope="C" xsi:type="Property"/>
+                  </operand>
+               </expression>
+            </let>
             <where xsi:type="Exists">
                <operand xsi:type="Query">
                   <source alias="IT">
-                     <expression xmlns:ns6="http://org.opencds/opioid-cds" dataType="ns6:MED_INGREDIENT_TYPE" codeProperty="INGREDIENT_RXCUI" xsi:type="Retrieve">
+                     <expression xmlns:ns7="http://org.opencds/opioid-cds" dataType="ns7:MED_INGREDIENT_TYPE" codeProperty="INGREDIENT_RXCUI" xsi:type="Retrieve">
                         <codes path="ingredientCode" scope="C" xsi:type="Property"/>
                      </expression>
                   </source>
@@ -529,6 +593,11 @@
                   <element name="doseFormCode">
                      <value path="doseFormCode" scope="C" xsi:type="Property"/>
                   </element>
+                  <element name="doseFormName">
+                     <value path="DOSE_FORM_NAME" xsi:type="Property">
+                        <source name="doseForm" xsi:type="QueryLetRef"/>
+                     </value>
+                  </element>
                   <element name="ingredientCode">
                      <value path="ingredientCode" scope="C" xsi:type="Property"/>
                   </element>
@@ -538,19 +607,21 @@
                      </value>
                   </element>
                   <element name="strength">
-                     <value classType="t:Quantity" xsi:type="Instance">
-                        <element name="value">
-                           <value path="STRENGTH_VALUE" xsi:type="Property">
-                              <source path="component" scope="C" xsi:type="Property"/>
-                           </value>
-                        </element>
-                        <element name="unit">
-                           <value name="ToUCUM" xsi:type="FunctionRef">
-                              <operand path="STRENGTH_UNIT" xsi:type="Property">
+                     <value name="EnsureMicrogramQuantity" xsi:type="FunctionRef">
+                        <operand classType="t:Quantity" xsi:type="Instance">
+                           <element name="value">
+                              <value path="STRENGTH_VALUE" xsi:type="Property">
                                  <source path="component" scope="C" xsi:type="Property"/>
-                              </operand>
-                           </value>
-                        </element>
+                              </value>
+                           </element>
+                           <element name="unit">
+                              <value name="ToUCUM" xsi:type="FunctionRef">
+                                 <operand path="STRENGTH_UNIT" xsi:type="Property">
+                                    <source path="component" scope="C" xsi:type="Property"/>
+                                 </operand>
+                              </value>
+                           </element>
+                        </operand>
                      </value>
                   </element>
                </expression>
@@ -558,6 +629,344 @@
          </expression>
          <operand name="rxNormCode">
             <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+      </def>
+      <def name="GetDailyDose" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression xsi:type="Case">
+            <caseItem>
+               <when name="IsPatch" xsi:type="FunctionRef">
+                  <operand name="doseFormCode" xsi:type="OperandRef"/>
+               </when>
+               <then xsi:type="If">
+                  <condition xsi:type="In">
+                     <operand xsi:type="ToInteger">
+                        <operand path="code" xsi:type="Property">
+                           <source name="ingredientCode" xsi:type="OperandRef"/>
+                        </operand>
+                     </operand>
+                     <operand xsi:type="List">
+                        <element valueType="t:Integer" value="1819" xsi:type="Literal"/>
+                        <element valueType="t:Integer" value="4337" xsi:type="Literal"/>
+                     </operand>
+                  </condition>
+                  <then classType="t:Quantity" xsi:type="Instance">
+                     <element name="value">
+                        <value xsi:type="Multiply">
+                           <operand path="value" xsi:type="Property">
+                              <source name="doseQuantity" xsi:type="OperandRef"/>
+                           </operand>
+                           <operand path="value" xsi:type="Property">
+                              <source name="strength" xsi:type="OperandRef"/>
+                           </operand>
+                        </value>
+                     </element>
+                     <element name="unit">
+                        <value path="unit" xsi:type="Property">
+                           <source name="strength" xsi:type="OperandRef"/>
+                        </value>
+                     </element>
+                  </then>
+                  <else asType="t:Quantity" xsi:type="As">
+                     <operand xsi:type="Null"/>
+                     <asTypeSpecifier name="t:Quantity" xsi:type="NamedTypeSpecifier"/>
+                  </else>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when xsi:type="In">
+                  <operand path="unit" xsi:type="Property">
+                     <source name="doseQuantity" xsi:type="OperandRef"/>
+                  </operand>
+                  <operand xsi:type="List">
+                     <element valueType="t:String" value="mg" xsi:type="Literal"/>
+                     <element valueType="t:String" value="mcg" xsi:type="Literal"/>
+                  </operand>
+               </when>
+               <then classType="t:Quantity" xsi:type="Instance">
+                  <element name="value">
+                     <value xsi:type="Multiply">
+                        <operand name="dosesPerDay" xsi:type="OperandRef"/>
+                        <operand path="value" xsi:type="Property">
+                           <source name="doseQuantity" xsi:type="OperandRef"/>
+                        </operand>
+                     </value>
+                  </element>
+                  <element name="unit">
+                     <value path="unit" xsi:type="Property">
+                        <source name="doseQuantity" xsi:type="OperandRef"/>
+                     </value>
+                  </element>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when xsi:type="And">
+                  <operand xsi:type="Equal">
+                     <operand path="unit" xsi:type="Property">
+                        <source name="doseQuantity" xsi:type="OperandRef"/>
+                     </operand>
+                     <operand valueType="t:String" value="mL" xsi:type="Literal"/>
+                  </operand>
+                  <operand xsi:type="Equal">
+                     <operand xsi:type="PositionOf">
+                        <pattern valueType="t:String" value="/mL" xsi:type="Literal"/>
+                        <string path="unit" xsi:type="Property">
+                           <source name="strength" xsi:type="OperandRef"/>
+                        </string>
+                     </operand>
+                     <operand xsi:type="Subtract">
+                        <operand xsi:type="Length">
+                           <operand path="unit" xsi:type="Property">
+                              <source name="strength" xsi:type="OperandRef"/>
+                           </operand>
+                        </operand>
+                        <operand valueType="t:Integer" value="3" xsi:type="Literal"/>
+                     </operand>
+                  </operand>
+               </when>
+               <then classType="t:Quantity" xsi:type="Instance">
+                  <element name="value">
+                     <value xsi:type="Multiply">
+                        <operand xsi:type="Multiply">
+                           <operand name="dosesPerDay" xsi:type="OperandRef"/>
+                           <operand path="value" xsi:type="Property">
+                              <source name="doseQuantity" xsi:type="OperandRef"/>
+                           </operand>
+                        </operand>
+                        <operand path="value" xsi:type="Property">
+                           <source name="strength" xsi:type="OperandRef"/>
+                        </operand>
+                     </value>
+                  </element>
+                  <element name="unit">
+                     <value xsi:type="Substring">
+                        <stringToSub path="unit" xsi:type="Property">
+                           <source name="strength" xsi:type="OperandRef"/>
+                        </stringToSub>
+                        <startIndex valueType="t:Integer" value="0" xsi:type="Literal"/>
+                        <length xsi:type="PositionOf">
+                           <pattern valueType="t:String" value="/" xsi:type="Literal"/>
+                           <string path="unit" xsi:type="Property">
+                              <source name="strength" xsi:type="OperandRef"/>
+                           </string>
+                        </length>
+                     </value>
+                  </element>
+               </then>
+            </caseItem>
+            <else classType="t:Quantity" xsi:type="Instance">
+               <element name="value">
+                  <value xsi:type="Multiply">
+                     <operand xsi:type="Multiply">
+                        <operand name="dosesPerDay" xsi:type="OperandRef"/>
+                        <operand path="value" xsi:type="Property">
+                           <source name="doseQuantity" xsi:type="OperandRef"/>
+                        </operand>
+                     </operand>
+                     <operand path="value" xsi:type="Property">
+                        <source name="strength" xsi:type="OperandRef"/>
+                     </operand>
+                  </value>
+               </element>
+               <element name="unit">
+                  <value xsi:type="Substring">
+                     <stringToSub path="unit" xsi:type="Property">
+                        <source name="strength" xsi:type="OperandRef"/>
+                     </stringToSub>
+                     <startIndex valueType="t:Integer" value="0" xsi:type="Literal"/>
+                     <length xsi:type="PositionOf">
+                        <pattern valueType="t:String" value="/" xsi:type="Literal"/>
+                        <string path="unit" xsi:type="Property">
+                           <source name="strength" xsi:type="OperandRef"/>
+                        </string>
+                     </length>
+                  </value>
+               </element>
+            </else>
+         </expression>
+         <operand name="ingredientCode">
+            <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="strength">
+            <operandTypeSpecifier name="t:Quantity" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="doseFormCode">
+            <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="doseQuantity">
+            <operandTypeSpecifier name="t:Quantity" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="dosesPerDay">
+            <operandTypeSpecifier name="t:Decimal" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+      </def>
+      <def name="GetMedicationName" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression path="DRUG_NAME" xsi:type="Property">
+            <source xsi:type="SingletonFrom">
+               <operand xmlns:ns8="http://org.opencds/opioid-cds" dataType="ns8:MED_DRUG" codeProperty="DRUG_RXCUI" xsi:type="Retrieve">
+                  <codes name="rxNormCode" xsi:type="OperandRef"/>
+               </operand>
+            </source>
+         </expression>
+         <operand name="rxNormCode">
+            <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+      </def>
+      <def name="GetDailyDoseDescription" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression xsi:type="Case">
+            <caseItem>
+               <when name="IsPatch" xsi:type="FunctionRef">
+                  <operand name="doseFormCode" xsi:type="OperandRef"/>
+               </when>
+               <then xsi:type="If">
+                  <condition xsi:type="In">
+                     <operand xsi:type="ToInteger">
+                        <operand path="code" xsi:type="Property">
+                           <source name="ingredientCode" xsi:type="OperandRef"/>
+                        </operand>
+                     </operand>
+                     <operand xsi:type="List">
+                        <element valueType="t:Integer" value="1819" xsi:type="Literal"/>
+                        <element valueType="t:Integer" value="4337" xsi:type="Literal"/>
+                     </operand>
+                  </condition>
+                  <then xsi:type="Add">
+                     <operand xsi:type="Add">
+                        <operand xsi:type="Add">
+                           <operand xsi:type="Add">
+                              <operand xsi:type="Add">
+                                 <operand xsi:type="Add">
+                                    <operand name="ingredientName" xsi:type="OperandRef"/>
+                                    <operand valueType="t:String" value=" patch: " xsi:type="Literal"/>
+                                 </operand>
+                                 <operand xsi:type="ToString">
+                                    <operand path="value" xsi:type="Property">
+                                       <source name="doseQuantity" xsi:type="OperandRef"/>
+                                    </operand>
+                                 </operand>
+                              </operand>
+                              <operand valueType="t:String" value=" * " xsi:type="Literal"/>
+                           </operand>
+                           <operand xsi:type="ToString">
+                              <operand name="strength" xsi:type="OperandRef"/>
+                           </operand>
+                        </operand>
+                        <operand valueType="t:String" value=" = " xsi:type="Literal"/>
+                     </operand>
+                     <operand xsi:type="ToString">
+                        <operand name="dailyDose" xsi:type="OperandRef"/>
+                     </operand>
+                  </then>
+                  <else asType="t:String" xsi:type="As">
+                     <operand xsi:type="Null"/>
+                     <asTypeSpecifier name="t:String" xsi:type="NamedTypeSpecifier"/>
+                  </else>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when xsi:type="In">
+                  <operand path="unit" xsi:type="Property">
+                     <source name="doseQuantity" xsi:type="OperandRef"/>
+                  </operand>
+                  <operand xsi:type="List">
+                     <element valueType="t:String" value="mg" xsi:type="Literal"/>
+                     <element valueType="t:String" value="mcg" xsi:type="Literal"/>
+                  </operand>
+               </when>
+               <then xsi:type="Add">
+                  <operand xsi:type="Add">
+                     <operand xsi:type="Add">
+                        <operand xsi:type="Add">
+                           <operand xsi:type="Add">
+                              <operand xsi:type="Add">
+                                 <operand xsi:type="Add">
+                                    <operand xsi:type="Add">
+                                       <operand name="ingredientName" xsi:type="OperandRef"/>
+                                       <operand valueType="t:String" value=" " xsi:type="Literal"/>
+                                    </operand>
+                                    <operand name="doseFormName" xsi:type="OperandRef"/>
+                                 </operand>
+                                 <operand valueType="t:String" value=": " xsi:type="Literal"/>
+                              </operand>
+                              <operand xsi:type="ToString">
+                                 <operand name="dosesPerDay" xsi:type="OperandRef"/>
+                              </operand>
+                           </operand>
+                           <operand valueType="t:String" value="/d * " xsi:type="Literal"/>
+                        </operand>
+                        <operand xsi:type="ToString">
+                           <operand name="doseQuantity" xsi:type="OperandRef"/>
+                        </operand>
+                     </operand>
+                     <operand valueType="t:String" value=" = " xsi:type="Literal"/>
+                  </operand>
+                  <operand xsi:type="ToString">
+                     <operand name="dailyDose" xsi:type="OperandRef"/>
+                  </operand>
+               </then>
+            </caseItem>
+            <else xsi:type="Add">
+               <operand xsi:type="Add">
+                  <operand xsi:type="Add">
+                     <operand xsi:type="Add">
+                        <operand xsi:type="Add">
+                           <operand xsi:type="Add">
+                              <operand xsi:type="Add">
+                                 <operand xsi:type="Add">
+                                    <operand xsi:type="Add">
+                                       <operand xsi:type="Add">
+                                          <operand name="ingredientName" xsi:type="OperandRef"/>
+                                          <operand valueType="t:String" value=" " xsi:type="Literal"/>
+                                       </operand>
+                                       <operand name="doseFormName" xsi:type="OperandRef"/>
+                                    </operand>
+                                    <operand valueType="t:String" value=": " xsi:type="Literal"/>
+                                 </operand>
+                                 <operand xsi:type="ToString">
+                                    <operand name="dosesPerDay" xsi:type="OperandRef"/>
+                                 </operand>
+                              </operand>
+                              <operand valueType="t:String" value="/d * " xsi:type="Literal"/>
+                           </operand>
+                           <operand xsi:type="ToString">
+                              <operand name="doseQuantity" xsi:type="OperandRef"/>
+                           </operand>
+                        </operand>
+                        <operand valueType="t:String" value=" * " xsi:type="Literal"/>
+                     </operand>
+                     <operand xsi:type="ToString">
+                        <operand name="strength" xsi:type="OperandRef"/>
+                     </operand>
+                  </operand>
+                  <operand valueType="t:String" value=" = " xsi:type="Literal"/>
+               </operand>
+               <operand xsi:type="ToString">
+                  <operand name="dailyDose" xsi:type="OperandRef"/>
+               </operand>
+            </else>
+         </expression>
+         <operand name="ingredientCode">
+            <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="ingredientName">
+            <operandTypeSpecifier name="t:String" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="strength">
+            <operandTypeSpecifier name="t:Quantity" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="doseFormCode">
+            <operandTypeSpecifier name="t:Code" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="doseFormName">
+            <operandTypeSpecifier name="t:String" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="doseQuantity">
+            <operandTypeSpecifier name="t:Quantity" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="dosesPerDay">
+            <operandTypeSpecifier name="t:Decimal" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="dailyDose">
+            <operandTypeSpecifier name="t:Quantity" xsi:type="NamedTypeSpecifier"/>
          </operand>
       </def>
       <def name="CalculateMMEs" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
@@ -576,12 +985,24 @@
                      <source alias="I">
                         <expression name="Ingredients" xsi:type="QueryLetRef"/>
                      </source>
+                     <let identifier="adjustedDoseQuantity">
+                        <expression name="EnsureMicrogramQuantity" xsi:type="FunctionRef">
+                           <operand path="doseQuantity" scope="M" xsi:type="Property"/>
+                        </expression>
+                     </let>
+                     <let identifier="dailyDose">
+                        <expression name="GetDailyDose" xsi:type="FunctionRef">
+                           <operand path="ingredientCode" scope="I" xsi:type="Property"/>
+                           <operand path="strength" scope="I" xsi:type="Property"/>
+                           <operand path="doseFormCode" scope="I" xsi:type="Property"/>
+                           <operand name="adjustedDoseQuantity" xsi:type="QueryLetRef"/>
+                           <operand path="dosesPerDay" scope="M" xsi:type="Property"/>
+                        </expression>
+                     </let>
                      <let identifier="factor">
                         <expression name="GetConversionFactor" xsi:type="FunctionRef">
                            <operand path="ingredientCode" scope="I" xsi:type="Property"/>
-                           <operand path="value" xsi:type="Property">
-                              <source path="strength" scope="I" xsi:type="Property"/>
-                           </operand>
+                           <operand name="dailyDose" xsi:type="QueryLetRef"/>
                            <operand path="doseFormCode" scope="I" xsi:type="Property"/>
                         </expression>
                      </let>
@@ -593,11 +1014,11 @@
                            <element name="doseFormCode">
                               <value path="doseFormCode" scope="I" xsi:type="Property"/>
                            </element>
-                           <element name="quantity">
-                              <value path="quantity" scope="M" xsi:type="Property"/>
+                           <element name="doseQuantity">
+                              <value name="adjustedDoseQuantity" xsi:type="QueryLetRef"/>
                            </element>
-                           <element name="daysSupply">
-                              <value path="daysSupply" scope="M" xsi:type="Property"/>
+                           <element name="dosesPerDay">
+                              <value path="dosesPerDay" scope="M" xsi:type="Property"/>
                            </element>
                            <element name="ingredientCode">
                               <value path="ingredientCode" scope="I" xsi:type="Property"/>
@@ -608,6 +1029,21 @@
                            <element name="strength">
                               <value path="strength" scope="I" xsi:type="Property"/>
                            </element>
+                           <element name="dailyDose">
+                              <value name="dailyDose" xsi:type="QueryLetRef"/>
+                           </element>
+                           <element name="dailyDoseDescription">
+                              <value name="GetDailyDoseDescription" xsi:type="FunctionRef">
+                                 <operand path="ingredientCode" scope="I" xsi:type="Property"/>
+                                 <operand path="ingredientName" scope="I" xsi:type="Property"/>
+                                 <operand path="strength" scope="I" xsi:type="Property"/>
+                                 <operand path="doseFormCode" scope="I" xsi:type="Property"/>
+                                 <operand path="doseFormName" scope="I" xsi:type="Property"/>
+                                 <operand name="adjustedDoseQuantity" xsi:type="QueryLetRef"/>
+                                 <operand path="dosesPerDay" scope="M" xsi:type="Property"/>
+                                 <operand name="dailyDose" xsi:type="QueryLetRef"/>
+                              </value>
+                           </element>
                            <element name="conversionFactor">
                               <value name="factor" xsi:type="QueryLetRef"/>
                            </element>
@@ -615,18 +1051,8 @@
                               <value classType="t:Quantity" xsi:type="Instance">
                                  <element name="value">
                                     <value xsi:type="Multiply">
-                                       <operand xsi:type="Divide">
-                                          <operand xsi:type="Multiply">
-                                             <operand path="value" xsi:type="Property">
-                                                <source path="strength" scope="I" xsi:type="Property"/>
-                                             </operand>
-                                             <operand xsi:type="ToDecimal">
-                                                <operand path="quantity" scope="M" xsi:type="Property"/>
-                                             </operand>
-                                          </operand>
-                                          <operand xsi:type="ToDecimal">
-                                             <operand path="daysSupply" scope="M" xsi:type="Property"/>
-                                          </operand>
+                                       <operand path="value" xsi:type="Property">
+                                          <source name="dailyDose" xsi:type="QueryLetRef"/>
                                        </operand>
                                        <operand name="factor" xsi:type="QueryLetRef"/>
                                     </value>
@@ -634,7 +1060,7 @@
                                  <element name="unit">
                                     <value xsi:type="Add">
                                        <operand path="unit" xsi:type="Property">
-                                          <source path="strength" scope="I" xsi:type="Property"/>
+                                          <source name="dailyDose" xsi:type="QueryLetRef"/>
                                        </operand>
                                        <operand valueType="t:String" value="/d" xsi:type="Literal"/>
                                     </value>
@@ -653,11 +1079,11 @@
                   <element name="rxNormCode">
                      <type name="t:Code" xsi:type="NamedTypeSpecifier"/>
                   </element>
-                  <element name="quantity">
-                     <type name="t:Integer" xsi:type="NamedTypeSpecifier"/>
+                  <element name="doseQuantity">
+                     <type name="t:Quantity" xsi:type="NamedTypeSpecifier"/>
                   </element>
-                  <element name="daysSupply">
-                     <type name="t:Integer" xsi:type="NamedTypeSpecifier"/>
+                  <element name="dosesPerDay">
+                     <type name="t:Decimal" xsi:type="NamedTypeSpecifier"/>
                   </element>
                </elementType>
             </operandTypeSpecifier>
@@ -668,13 +1094,24 @@
             <operand xsi:type="List">
                <element xsi:type="Tuple">
                   <element name="rxNormCode">
-                     <value name="RxNormCode" xsi:type="ParameterRef"/>
+                     <value code="388508" xsi:type="Code">
+                        <system name="RxNorm"/>
+                     </value>
                   </element>
-                  <element name="quantity">
-                     <value name="RxQuantity" xsi:type="ParameterRef"/>
+                  <element name="doseQuantity">
+                     <value classType="t:Quantity" xsi:type="Instance">
+                        <element name="value">
+                           <value xsi:type="ToDecimal">
+                              <operand valueType="t:Integer" value="1" xsi:type="Literal"/>
+                           </value>
+                        </element>
+                        <element name="unit">
+                           <value valueType="t:String" value="patch" xsi:type="Literal"/>
+                        </element>
+                     </value>
                   </element>
-                  <element name="daysSupply">
-                     <value name="RxDaysSupply" xsi:type="ParameterRef"/>
+                  <element name="dosesPerDay">
+                     <value valueType="t:Decimal" value="0.33" xsi:type="Literal"/>
                   </element>
                </element>
             </operand>

@@ -6,6 +6,7 @@ import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
+import org.opencds.cqf.providers.PlanDefinitionResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.server.EncodingEnum;
@@ -17,7 +18,6 @@ import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.providers.MeasureResourceProvider;
-import org.opencds.cqf.providers.MedicationRequestResourceProvider;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
@@ -97,21 +97,21 @@ public class MeasureProcessingJpaServlet extends RestfulServer {
         measureProvider.setContext(jpaMeasureProvider.getContext());
 
         // Opioid processing
-        MedicationRequestResourceProvider medReqProvider = new MedicationRequestResourceProvider(getResourceProviders());
-        ca.uhn.fhir.jpa.rp.dstu3.MedicationRequestResourceProvider jpaMedReqProvider =
-                (ca.uhn.fhir.jpa.rp.dstu3.MedicationRequestResourceProvider) getProvider("MedicationRequest");
-        medReqProvider.setDao(jpaMedReqProvider.getDao());
-        medReqProvider.setContext(jpaMedReqProvider.getContext());
+        PlanDefinitionResourceProvider planDefProvider = new PlanDefinitionResourceProvider(getResourceProviders());
+        ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider jpaPlanDefProvider =
+                (ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider) getProvider("PlanDefinition");
+        planDefProvider.setDao(jpaPlanDefProvider.getDao());
+        planDefProvider.setContext(jpaPlanDefProvider.getContext());
 
         try {
             unregisterProvider(jpaMeasureProvider);
-            unregisterProvider(jpaMedReqProvider);
+            unregisterProvider(jpaPlanDefProvider);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         registerProvider(measureProvider);
-        registerProvider(medReqProvider);
+        registerProvider(planDefProvider);
 
         // Register the logging interceptor
         LoggingInterceptor loggingInterceptor = new LoggingInterceptor();

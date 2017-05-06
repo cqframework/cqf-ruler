@@ -39,7 +39,6 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
     private JpaFhirDataProvider provider;
 
     public MeasureResourceProvider(Collection<IResourceProvider> providers) {
-        super();
         this.provider = new JpaFhirDataProvider(providers);
     }
 

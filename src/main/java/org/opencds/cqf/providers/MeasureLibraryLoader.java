@@ -19,6 +19,7 @@ import java.util.Map;
 
 import static org.opencds.cqf.helpers.LibraryHelper.errorsToString;
 import static org.opencds.cqf.helpers.LibraryHelper.readLibrary;
+import static org.opencds.cqf.helpers.LibraryHelper.translateLibrary;
 
 /**
  * Created by Christopher on 1/11/2017.
@@ -66,6 +67,9 @@ public class MeasureLibraryLoader implements LibraryLoader {
         for (org.hl7.fhir.dstu3.model.Attachment content : library.getContent()) {
             if (content.getContentType().equals("application/elm+xml")) {
                 return readLibrary(new ByteArrayInputStream(content.getData()));
+            }
+            else if (content.getContentType().equals("text/cql")) {
+                return translateLibrary(new ByteArrayInputStream(content.getData()), modelManager, libraryManager);
             }
         }
 
