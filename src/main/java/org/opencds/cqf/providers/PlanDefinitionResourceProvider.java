@@ -15,7 +15,6 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelInfoLoader;
 import org.cqframework.cql.cql2elm.ModelInfoProvider;
@@ -101,26 +100,26 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
     }
 
-    @Operation(name = "$apply", idempotent = false)
+//    @Operation(name = "$apply", idempotent = false)
+//    public CarePlan apply(@IdParam IdType theId, @RequiredParam(name="patient") String patientId,
+//                          @OptionalParam(name="encounter") String encounterId,
+//                          @OptionalParam(name="practitioner") String practitionerId,
+//                          @OptionalParam(name="organization") String organizationId,
+//                          @OptionalParam(name="userType") String userType,
+//                          @OptionalParam(name="userLanguage") String userLanguage,
+//                          @OptionalParam(name="userTaskContext") String userTaskContext,
+//                          @OptionalParam(name="setting") String setting,
+//                          @OptionalParam(name="settingContext") String settingContext)
+//            throws InternalErrorException, FHIRException {
+//        PlanDefinition planDefinition = this.getDao().read(theId);
+//
+//        CarePlan result = new CarePlan();
+//        return result;
+//    }
+
+    // TODO: include the params in the apply op above where to put source?
+    @Operation(name = "$apply", idempotent = true)
     public CarePlan apply(@IdParam IdType theId, @RequiredParam(name="patient") String patientId,
-                          @OptionalParam(name="encounter") String encounterId,
-                          @OptionalParam(name="practitioner") String practitionerId,
-                          @OptionalParam(name="organization") String organizationId,
-                          @OptionalParam(name="userType") String userType,
-                          @OptionalParam(name="userLanguage") String userLanguage,
-                          @OptionalParam(name="userTaskContext") String userTaskContext,
-                          @OptionalParam(name="setting") String setting,
-                          @OptionalParam(name="settingContext") String settingContext)
-            throws InternalErrorException, FHIRException {
-        PlanDefinition planDefinition = this.getDao().read(theId);
-
-        CarePlan result = new CarePlan();
-        return result;
-    }
-
-    // NOTE: This is intended for use with the cdc-opioid project
-    @Operation(name = "$evaluate", idempotent = true)
-    public CarePlan evaluate(@IdParam IdType theId, @RequiredParam(name="patient") String patientId,
                            @OptionalParam(name="source") String fhirEndpoint) throws IOException, JAXBException, FHIRException
     {
         PlanDefinition planDefinition = this.getDao().read(theId);

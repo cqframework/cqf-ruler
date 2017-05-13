@@ -13308,12 +13308,12 @@
                 }
               ]
             },
-            "description": "Total morphine milligram equivalent (MME) exceeds recommended amount. Taper to < 50.",
+            "description": "Total morphine milligram equivalent (MME) exceeds recommended amount. Taper to less than 50.",
             "_description": {
               "extension": [
                 {
                   "url": "http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression",
-                  "valueString": "'Total morphine milligram equivalent (MME) is ' + ToString(MME) + '. Taper to < 50.'"
+                  "valueString": "'Total morphine milligram equivalent (MME) is ' + ToString(MME) + '. Taper to less than 50.'"
                 }
               ]
             },

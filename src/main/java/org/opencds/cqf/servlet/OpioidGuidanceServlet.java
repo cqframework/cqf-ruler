@@ -1,8 +1,6 @@
 package org.opencds.cqf.servlet;
 
-import org.hl7.fhir.dstu3.model.Annotation;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.CarePlan;
+import org.hl7.fhir.dstu3.model.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -55,10 +53,18 @@ public class OpioidGuidanceServlet extends HttpServlet {
         FhirDataProvider dstu3Provider = new FhirDataProvider().withEndpoint("http://localhost:8080/cqf-ruler/baseDstu3");
 
         String patient = requestBody.get("patient").toString();
-        String searchUrl = String.format("http://localhost:8080/cqf-ruler/baseDstu3/PlanDefinition/cdc-opioid-05/$evaluate?patient=%s&source=%s", patient, fhirEndpoint);
-        Bundle opResponse = dstu3Provider.getFhirClient().search().byUrl(searchUrl).returnBundle(Bundle.class).execute();
-
-        CarePlan careplan = getCarePlan(opResponse);
+//        String searchUrl = String.format("http://localhost:8080/cqf-ruler/baseDstu3/PlanDefinition/cdc-opioid-05/$evaluate?patient=%s&source=%s", patient, fhirEndpoint);
+        Parameters inParams = new Parameters();
+        inParams.addParameter().setName("patient").setValue(new StringType(patient));
+        inParams.addParameter().setName("source").setValue(new StringType(fhirEndpoint));
+        Parameters careplanParams = dstu3Provider.getFhirClient()
+                .operation()
+                .onInstance(new IdType("PlanDefinition", "cdc-opioid-05"))
+                .named("$apply")
+                .withParameters(inParams)
+                .useHttpGet()
+                .execute();
+        CarePlan careplan = (CarePlan) careplanParams.getParameterFirstRep().getResource();
 
         CdsCard card = new CdsCard();
         for (CarePlan.CarePlanActivityComponent activity : careplan.getActivity()) {

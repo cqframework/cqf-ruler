@@ -67,11 +67,15 @@
                 </let>
                 <let identifier="frequency">
                     <expression xsi:type="Coalesce">
-                        <operand path="frequencyMax" xsi:type="Property">
-                            <source name="repeat" xsi:type="QueryLetRef"/>
+                        <operand path="value" xsi:type="Property">
+                            <source path="frequencyMax" xsi:type="Property">
+                                <source name="repeat" xsi:type="QueryLetRef"/>
+                            </source>
                         </operand>
-                        <operand path="frequency" xsi:type="Property">
-                            <source name="repeat" xsi:type="QueryLetRef"/>
+                        <operand path="value" xsi:type="Property">
+                            <source path="frequency" xsi:type="Property">
+                                <source name="repeat" xsi:type="QueryLetRef"/>
+                            </source>
                         </operand>
                     </expression>
                 </let>
@@ -181,7 +185,7 @@
                         </element>
                         <element name="isDraft">
                             <value xsi:type="Equal">
-                                <operand path="value" xsi:type="Property">
+                                <operand name="ToString" libraryName="FHIRHelpers" xsi:type="FunctionRef">
                                     <operand path="status" scope="O" xsi:type="Property"/>
                                 </operand>
                                 <operand valueType="t:String" value="draft" xsi:type="Literal"/>
@@ -255,9 +259,7 @@
                         <element name="dosesPerDay">
                             <value xsi:type="Coalesce">
                                 <operand name="ToDaily" libraryName="OMTKLogic" xsi:type="FunctionRef">
-                                    <operand name="ToInteger" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                                        <operand name="frequency" xsi:type="QueryLetRef"/>
-                                    </operand>
+                                    <operand name="frequency" xsi:type="QueryLetRef"/>
                                     <operand name="period" xsi:type="QueryLetRef"/>
                                 </operand>
                                 <operand valueType="t:Decimal" value="1.0" xsi:type="Literal"/>
@@ -367,3 +369,4 @@
         </def>
     </statements>
 </library>
+
