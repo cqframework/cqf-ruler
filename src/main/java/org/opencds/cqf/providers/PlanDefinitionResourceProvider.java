@@ -157,7 +157,7 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         String path = Paths.get("src/main/resources/OpioidManagementTerminologyKnowledge.accdb").toAbsolutePath().toString().replace("\\", "/");
         String connString = "jdbc:ucanaccess://" + path + ";memory=false;keepMirror=true";
         OmtkDataProvider omtkProvider = new OmtkDataProvider(connString);
-        FhirDataProvider dstu3Provider = new FhirDataProvider().withEndpoint("http://localhost:8080/cqf-ruler/baseDstu3");
+        FhirDataProvider dstu3Provider = new FhirDataProvider().withEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
         Bundle bundle = FhirContext.forDstu2().newRestfulGenericClient(fhirEndpoint).search().byUrl("MedicationOrder?patient=" + patientId).returnBundle(Bundle.class).execute();
 
         List<MedicationRequest> requests = convertFromDstu2(bundle);

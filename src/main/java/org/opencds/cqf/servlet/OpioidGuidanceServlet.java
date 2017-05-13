@@ -50,10 +50,10 @@ public class OpioidGuidanceServlet extends HttpServlet {
 
         // get the fhir server info.
         String fhirEndpoint = requestBody.get("fhirServer").toString();
-        FhirDataProvider dstu3Provider = new FhirDataProvider().withEndpoint("http://localhost:8080/cqf-ruler/baseDstu3");
+        FhirDataProvider dstu3Provider = new FhirDataProvider().withEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
 
         String patient = requestBody.get("patient").toString();
-//        String searchUrl = String.format("http://localhost:8080/cqf-ruler/baseDstu3/PlanDefinition/cdc-opioid-05/$evaluate?patient=%s&source=%s", patient, fhirEndpoint);
+//        String searchUrl = String.format("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/PlanDefinition/cdc-opioid-05/$evaluate?patient=%s&source=%s", patient, fhirEndpoint);
         Parameters inParams = new Parameters();
         inParams.addParameter().setName("patient").setValue(new StringType(patient));
         inParams.addParameter().setName("source").setValue(new StringType(fhirEndpoint));
