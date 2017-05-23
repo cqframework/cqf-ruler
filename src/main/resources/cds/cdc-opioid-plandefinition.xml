@@ -91,6 +91,14 @@
         </condition>
         <groupingBehavior value="visual-group"/>
         <selectionBehavior value="exactly-one"/>
+        <dynamicValue>
+            <description value="Dynamic title generation" />
+            <expression value="DynamicTitle" />
+        </dynamicValue>
+        <dynamicValue>
+            <description value="Dynamic description generation" />
+            <expression value="DynamicDescription" />
+        </dynamicValue>
         <!-- Will reduce dosage -->
         <action>
             <description value="Will reduce dosage"/>

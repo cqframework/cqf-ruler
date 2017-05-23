@@ -367,6 +367,64 @@
                 <operand value="50" unit="mg/d" xsi:type="Quantity"/>
             </expression>
         </def>
+        <def name="DynamicTitle" context="Patient" accessLevel="Public">
+            <expression xsi:type="If">
+                <condition name="IsMME50OrMore" xsi:type="ExpressionRef"/>
+                <then xsi:type="Add">
+                    <operand valueType="t:String" value="High risk for opioid overdose - " xsi:type="Literal"/>
+                    <operand xsi:type="Case">
+                        <caseItem>
+                            <when xsi:type="GreaterOrEqual">
+                                <operand path="value" xsi:type="Property">
+                                    <source path="mme" xsi:type="Property">
+                                        <source xsi:type="First">
+                                            <source name="MME" xsi:type="ExpressionRef"/>
+                                        </source>
+                                    </source>
+                                </operand>
+                                <operand xsi:type="ToDecimal">
+                                    <operand valueType="t:Integer" value="90" xsi:type="Literal"/>
+                                </operand>
+                            </when>
+                            <then valueType="t:String" value="taper now" xsi:type="Literal"/>
+                        </caseItem>
+                        <else valueType="t:String" value="consider tapering" xsi:type="Literal"/>
+                    </operand>
+                </then>
+                <else valueType="t:String" value="MME is within the recommended range." xsi:type="Literal"/>
+            </expression>
+        </def>
+        <def name="DynamicDescription" context="Patient" accessLevel="Public">
+            <expression xsi:type="If">
+                <condition name="IsMME50OrMore" xsi:type="ExpressionRef"/>
+                <then xsi:type="Add">
+                    <operand xsi:type="Add">
+                        <operand valueType="t:String" value="Total morphine milligram equivalent (MME) is " xsi:type="Literal"/>
+                        <operand xsi:type="ToString">
+                            <operand path="mme" xsi:type="Property">
+                                <source xsi:type="First">
+                                    <source name="MME" xsi:type="ExpressionRef"/>
+                                </source>
+                            </operand>
+                        </operand>
+                    </operand>
+                    <operand valueType="t:String" value=". Taper to less than 50." xsi:type="Literal"/>
+                </then>
+                <else xsi:type="Add">
+                    <operand xsi:type="Add">
+                        <operand valueType="t:String" value="Total morphine milligram equivalent (MME) is " xsi:type="Literal"/>
+                        <operand xsi:type="ToString">
+                            <operand path="mme" xsi:type="Property">
+                                <source xsi:type="First">
+                                    <source name="MME" xsi:type="ExpressionRef"/>
+                                </source>
+                            </operand>
+                        </operand>
+                    </operand>
+                    <operand valueType="t:String" value=". This falls within the accepted range." xsi:type="Literal"/>
+                </else>
+            </expression>
+        </def>
     </statements>
 </library>
 

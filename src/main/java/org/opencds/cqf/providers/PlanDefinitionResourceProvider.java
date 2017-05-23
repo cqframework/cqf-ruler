@@ -90,6 +90,7 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
     }
 
+    // TODO: Generify this logic to run any plan definition...
     @Operation(name = "$apply", idempotent = true)
     public CarePlan apply(@IdParam IdType theId, @RequiredParam(name="patient") String patientId,
                           @OptionalParam(name="encounter") String encounterId,
@@ -184,10 +185,12 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         // walk through plandefintion actions
         // TODO: implement for suggestions and source and dynamicValue
         CarePlan careplan = new CarePlan();
+        String title;
+        String description;
         for (PlanDefinition.PlanDefinitionActionComponent action : planDefinition.getAction())
         {
-            String title = action.hasTitle() ? action.getTitle() : null;
-            String description = action.hasDescription() ? action.getDescription() : null;
+            title = action.hasTitle() ? action.getTitle() : null;
+            description = action.hasDescription() ? action.getDescription() : null;
 
             if (action.hasCondition()) {
                 for (PlanDefinition.PlanDefinitionActionConditionComponent condition : action.getCondition()) {
@@ -241,6 +244,34 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
                             careplan.setIntent(CarePlan.CarePlanIntent.ORDER);
                             if (title != null) careplan.setTitle(title);
                             if (description != null) careplan.setDescription(description);
+                        }
+                    }
+                }
+            }
+
+            if (action.hasDynamicValue()) {
+                for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamic : action.getDynamicValue()) {
+                    // using dynamic values to define title and description values through CQL expressions
+                    // TODO: this is pretty hacky...
+                    if (dynamic.hasDescription() && dynamic.getDescription().contains("description")
+                            && dynamic.hasExpression())
+                    {
+                        ExpressionDef def = context.resolveExpressionRef(dynamic.getExpression());
+                        Object result = def.getExpression().evaluate(context);
+                        if (result instanceof String) {
+                            description = result.toString();
+                            careplan.setDescription(description);
+                        }
+                    }
+
+                    else if (dynamic.hasDescription() && dynamic.getDescription().contains("title")
+                            && dynamic.hasExpression())
+                    {
+                        ExpressionDef def = context.resolveExpressionRef(dynamic.getExpression());
+                        Object result = def.getExpression().evaluate(context);
+                        if (result instanceof String) {
+                            title = result.toString();
+                            careplan.setTitle(title);
                         }
                     }
                 }
