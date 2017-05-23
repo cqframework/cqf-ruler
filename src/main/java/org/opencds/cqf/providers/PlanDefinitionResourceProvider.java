@@ -1,19 +1,9 @@
 package org.opencds.cqf.providers;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-import ca.uhn.fhir.model.dstu2.composite.QuantityDt;
-import ca.uhn.fhir.model.dstu2.resource.Bundle;
-import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
-import ca.uhn.fhir.model.primitive.BooleanDt;
 import ca.uhn.fhir.model.primitive.UriDt;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelInfoLoader;
@@ -57,7 +47,7 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
 //        if (modelManager == null) {
 //            modelManager = new ModelManager();
 //            ModelInfoProvider infoProvider = () -> {
-//                Path p = Paths.get("src/main/resources/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
+//                Path p = Paths.get("src/main/resources/cds/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
 //                return JAXB.unmarshal(new File(p.toString()), ModelInfo.class);
 //            };
 //            ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("OMTK").withVersion("0.1.0"), infoProvider);
@@ -72,7 +62,7 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
             libraryManager.getLibrarySourceLoader().clearProviders();
             libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
             ModelInfoProvider infoProvider = () -> {
-                Path p = Paths.get("src/main/resources/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
+                Path p = Paths.get("src/main/resources/cds/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
                 return JAXB.unmarshal(new File(p.toString()), ModelInfo.class);
             };
             ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("OMTK").withVersion("0.1.0"), infoProvider);
@@ -100,35 +90,44 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
     }
 
-//    @Operation(name = "$apply", idempotent = false)
-//    public CarePlan apply(@IdParam IdType theId, @RequiredParam(name="patient") String patientId,
-//                          @OptionalParam(name="encounter") String encounterId,
-//                          @OptionalParam(name="practitioner") String practitionerId,
-//                          @OptionalParam(name="organization") String organizationId,
-//                          @OptionalParam(name="userType") String userType,
-//                          @OptionalParam(name="userLanguage") String userLanguage,
-//                          @OptionalParam(name="userTaskContext") String userTaskContext,
-//                          @OptionalParam(name="setting") String setting,
-//                          @OptionalParam(name="settingContext") String settingContext)
-//            throws InternalErrorException, FHIRException {
-//        PlanDefinition planDefinition = this.getDao().read(theId);
-//
-//        CarePlan result = new CarePlan();
-//        return result;
-//    }
-
-    // TODO: include the params in the apply op above where to put source?
     @Operation(name = "$apply", idempotent = true)
     public CarePlan apply(@IdParam IdType theId, @RequiredParam(name="patient") String patientId,
-                           @OptionalParam(name="source") String fhirEndpoint) throws IOException, JAXBException, FHIRException
+                          @OptionalParam(name="encounter") String encounterId,
+                          @OptionalParam(name="practitioner") String practitionerId,
+                          @OptionalParam(name="organization") String organizationId,
+                          @OptionalParam(name="userType") String userType,
+                          @OptionalParam(name="userLanguage") String userLanguage,
+                          @OptionalParam(name="userTaskContext") String userTaskContext,
+                          @OptionalParam(name="setting") String setting,
+                          @OptionalParam(name="settingContext") String settingContext,
+                          @ResourceParam Parameters contextParams)
+            throws IOException, JAXBException, FHIRException
     {
         PlanDefinition planDefinition = this.getDao().read(theId);
 
-        org.cqframework.cql.elm.execution.Library library;
+        // fetch params
+        Bundle prefetch = null;
+        Bundle medicationReqs = null;
+        String source = null;
+        for (Parameters.ParametersParameterComponent param : contextParams.getParameter()) {
+            if (param.getName().equals("patient")) {
+                patientId = param.getValue().toString();
+            }
+            else if (param.getName().equals("context")) {
+                for (Parameters.ParametersParameterComponent component : ((Parameters) param.getResource()).getParameter()) {
+                    switch (component.getName()) {
+                        case "prefetch": prefetch = (Bundle) component.getResource(); break;
+                        case "contextResources": medicationReqs = (Bundle) component.getResource(); break;
+                        case "source": source = component.getValue().primitiveValue(); break;
+                    }
+                }
+            }
+        }
 
+        org.cqframework.cql.elm.execution.Library library;
         if (planDefinition.getLibrary() == null || planDefinition.getLibrary().isEmpty()) {
             // get default
-            library = CqlLibraryReader.read(new File(Paths.get("src/main/resources/OpioidCDS_STU3-0.1.0.xml").toAbsolutePath().toString()));
+            library = CqlLibraryReader.read(new File(Paths.get("src/main/resources/cds/OpioidCDS_STU3-0.1.0.xml").toAbsolutePath().toString()));
         }
 
         else {
@@ -153,14 +152,11 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
             }
         }
 
-        // resolve data provider
-        String path = Paths.get("src/main/resources/OpioidManagementTerminologyKnowledge.db").toAbsolutePath().toString().replace("\\", "/");
+        // resolve data providers
+        String path = Paths.get("src/main/resources/cds/OpioidManagementTerminologyKnowledge.db").toAbsolutePath().toString().replace("\\", "/");
         String connString = "jdbc:sqlite://" + path;
         OmtkDataProvider omtkProvider = new OmtkDataProvider(connString);
         FhirDataProvider dstu3Provider = new FhirDataProvider().withEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
-        Bundle bundle = FhirContext.forDstu2().newRestfulGenericClient(fhirEndpoint).search().byUrl("MedicationOrder?patient=" + patientId).returnBundle(Bundle.class).execute();
-
-        List<MedicationRequest> requests = convertFromDstu2(bundle);
 
         Context context = new Context(library);
         context.registerLibraryLoader(getLibraryLoader());
@@ -168,6 +164,23 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         context.registerDataProvider("http://hl7.org/fhir", dstu3Provider);
         context.setExpressionCaching(true);
 
+        // prepare List of MedicationRequests
+        List<MedicationRequest> requests = new ArrayList<>();
+        if (prefetch != null) {
+            for (Bundle.BundleEntryComponent entry : prefetch.getEntry()) {
+                requests.add((MedicationRequest) entry.getResource());
+            }
+        }
+        if (medicationReqs != null) {
+            for (Bundle.BundleEntryComponent entry : medicationReqs.getEntry()) {
+                requests.add((MedicationRequest) entry.getResource());
+            }
+        }
+
+        return resolveOpioidMedicationPlanDefinition(context, requests, planDefinition);
+    }
+
+    private CarePlan resolveOpioidMedicationPlanDefinition(Context context, List<MedicationRequest> requests, PlanDefinition planDefinition) {
         // walk through plandefintion actions
         // TODO: implement for suggestions and source and dynamicValue
         CarePlan careplan = new CarePlan();
@@ -234,76 +247,5 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
             }
         }
         return careplan;
-    }
-
-    private List<MedicationRequest> convertFromDstu2(Bundle bundle) throws FHIRException {
-        List<MedicationRequest> requests = new ArrayList<>();
-
-        for (Bundle.Entry entry : bundle.getEntry()) {
-            MedicationOrder order = (MedicationOrder) entry.getResource();
-            requests.add(convertToMedicationRequest(order));
-        }
-
-        return requests;
-    }
-
-    private MedicationRequest convertToMedicationRequest(MedicationOrder order) throws FHIRException {
-        /*
-        * Required fields:
-        * MedicationOrder -> MedicationRequest
-        * medication -> medication
-        * dispenseRequest (Backbone) -> Dosage (Element)
-        * */
-        return new MedicationRequest()
-                .setStatus(MedicationRequest.MedicationRequestStatus.fromCode(order.getStatus()))
-                .setMedication(convertToCodeableConcept((CodeableConceptDt) order.getMedication()))
-                .setDosageInstruction(convertToDosage(order.getDosageInstruction()));
-    }
-
-    private CodeableConcept convertToCodeableConcept(CodeableConceptDt conceptDt) {
-        CodeableConcept concept = new CodeableConcept().setText(conceptDt.getText());
-        concept.setId(conceptDt.getElementSpecificId());
-        List<Coding> codes = new ArrayList<>();
-        for (CodingDt code : conceptDt.getCoding()) {
-            codes.add(new Coding()
-                        .setCode(code.getCode())
-                        .setSystem(code.getSystem())
-                        .setDisplay(code.getDisplay())
-                        .setVersion(code.getVersion())
-            );
-        }
-        return concept.setCoding(codes);
-    }
-
-    public List<Dosage> convertToDosage(List<MedicationOrder.DosageInstruction> instructions) throws FHIRException {
-        List<Dosage> dosages = new ArrayList<>();
-
-        for (MedicationOrder.DosageInstruction dosageInstruction : instructions) {
-            Dosage dosage = new Dosage();
-            dosage.setText(dosageInstruction.getText());
-            dosage.setAsNeeded(new BooleanType(((BooleanDt) dosageInstruction.getAsNeeded()).getValue()));
-
-            Timing timing = new Timing();
-            Timing.TimingRepeatComponent repeat = new Timing.TimingRepeatComponent()
-                    .setFrequency(dosageInstruction.getTiming().getRepeat().getFrequency())
-                    .setFrequencyMax(dosageInstruction.getTiming().getRepeat().getFrequencyMax())
-                    .setPeriod(dosageInstruction.getTiming().getRepeat().getPeriod())
-                    .setPeriodUnit(Timing.UnitsOfTime.fromCode(dosageInstruction.getTiming().getRepeat().getPeriodUnits()));
-
-            timing.setRepeat(repeat);
-            dosage.setTiming(timing);
-
-            QuantityDt quantityDt = (QuantityDt) dosageInstruction.getDose();
-            dosage.setDose(new Quantity()
-                            .setValue(quantityDt.getValue())
-                            .setUnit(quantityDt.getUnit())
-                            .setCode(quantityDt.getCode())
-                            .setSystem(quantityDt.getSystem())
-            );
-
-            dosages.add(dosage);
-        }
-
-        return dosages;
     }
 }

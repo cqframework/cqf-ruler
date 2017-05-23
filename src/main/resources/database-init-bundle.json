@@ -15972,6 +15972,306 @@
       "search": {
         "mode": "match"
       }
+    },
+    {
+      "resourceType": "Substance",
+      "id": "amoxicillin-1",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2017-05-21T20:05:26.933+00:00"
+      },
+      "contained": [
+        {
+          "resourceType": "Substance",
+          "id": "ingr1",
+          "code": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "372687004",
+                "display": "Amoxicillin (substance)"
+              }
+            ]
+          }
+        },
+        {
+          "resourceType": "Substance",
+          "id": "ingr2",
+          "code": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "395938000",
+                "display": "Clavulanate potassium (substance)"
+              }
+            ]
+          }
+        }
+      ],
+      "category": [
+        {
+          "coding": [
+            {
+              "system": "http://hl7.org.fhir/substance-category",
+              "code": "drug",
+              "display": "Drug or Medicament"
+            }
+          ]
+        }
+      ],
+      "code": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "392259005",
+            "display": "Amoxicillin + clavulanate potassium 875mg/125mg tablet (product)"
+          }
+        ]
+      },
+      "description": "Augmentin 875",
+      "ingredient": [
+        {
+          "quantity": {
+            "numerator": {
+              "value": 875,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            },
+            "denominator": {
+              "value": 1000,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            }
+          },
+          "substanceReference": {
+            "reference": "#ingr1"
+          }
+        },
+        {
+          "quantity": {
+            "numerator": {
+              "value": 125,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            },
+            "denominator": {
+              "value": 1000,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            }
+          },
+          "substanceReference": {
+            "reference": "#ingr2"
+          }
+        }
+      ],
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "resourceType": "Substance",
+      "id": "amoxicillin-2",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2017-05-21T20:05:26.933+00:00"
+      },
+      "contained": [
+        {
+          "resourceType": "Substance",
+          "id": "ingr1",
+          "code": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "372687004",
+                "display": "Amoxicillin (substance)"
+              }
+            ]
+          }
+        },
+        {
+          "resourceType": "Substance",
+          "id": "ingr2",
+          "code": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "395938000",
+                "display": "Clavulanate potassium (substance)"
+              }
+            ]
+          }
+        }
+      ],
+      "category": [
+        {
+          "coding": [
+            {
+              "system": "http://hl7.org.fhir/substance-category",
+              "code": "drug",
+              "display": "Drug or Medicament"
+            }
+          ]
+        }
+      ],
+      "code": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "392259005",
+            "display": "Amoxicillin + clavulanate potassium 875mg/125mg tablet (product)"
+          }
+        ]
+      },
+      "description": "Augmentin 875",
+      "ingredient": [
+        {
+          "quantity": {
+            "numerator": {
+              "value": 800,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            },
+            "denominator": {
+              "value": 1000,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            }
+          },
+          "substanceReference": {
+            "reference": "#ingr1"
+          }
+        },
+        {
+          "quantity": {
+            "numerator": {
+              "value": 125,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            },
+            "denominator": {
+              "value": 1000,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            }
+          },
+          "substanceReference": {
+            "reference": "#ingr2"
+          }
+        }
+      ],
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "resourceType": "Substance",
+      "id": "amoxicillin-3",
+      "meta": {
+        "versionId": "1",
+        "lastUpdated": "2017-05-21T20:05:26.933+00:00"
+      },
+      "contained": [
+        {
+          "resourceType": "Substance",
+          "id": "ingr1",
+          "code": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "372687004",
+                "display": "Amoxicillin (substance)"
+              }
+            ]
+          }
+        },
+        {
+          "resourceType": "Substance",
+          "id": "ingr2",
+          "code": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "395938000",
+                "display": "Clavulanate potassium (substance)"
+              }
+            ]
+          }
+        }
+      ],
+      "category": [
+        {
+          "coding": [
+            {
+              "system": "http://hl7.org.fhir/substance-category",
+              "code": "drug",
+              "display": "Drug or Medicament"
+            }
+          ]
+        }
+      ],
+      "code": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "392259005",
+            "display": "Amoxicillin + clavulanate potassium 875mg/125mg tablet (product)"
+          }
+        ]
+      },
+      "description": "Augmentin 875",
+      "ingredient": [
+        {
+          "quantity": {
+            "numerator": {
+              "value": 750,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            },
+            "denominator": {
+              "value": 1000,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            }
+          },
+          "substanceReference": {
+            "reference": "#ingr1"
+          }
+        },
+        {
+          "quantity": {
+            "numerator": {
+              "value": 125,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            },
+            "denominator": {
+              "value": 1000,
+              "unit": "mg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mg"
+            }
+          },
+          "substanceReference": {
+            "reference": "#ingr2"
+          }
+        }
+      ],
+      "search": {
+        "mode": "match"
+      }
     }
   ]
 }

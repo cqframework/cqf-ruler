@@ -1,12 +1,15 @@
 package org.opencds.cqf.servlet;
 
+import ca.uhn.fhir.context.FhirContext;
 import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.opencds.cqf.cql.data.fhir.FhirDataProvider;
 import org.opencds.cqf.helpers.CdsCard;
 import org.opencds.cqf.helpers.CdsHooksHelper;
+import org.opencds.cqf.helpers.CdsRequest;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -30,8 +33,7 @@ public class OpioidGuidanceServlet extends HttpServlet {
             throw new ServletException(String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
         }
 
-        // parse the body
-        // prefetch is optional -- for now, to ensure functionality, assume it won't be included in request...
+        // get the request body
         JSONObject requestBody;
         try {
             requestBody = (JSONObject) new JSONParser().parse(request.getReader());
@@ -40,32 +42,49 @@ public class OpioidGuidanceServlet extends HttpServlet {
             return;
         }
 
-//        JSONObject prefetch = (JSONObject) requestBody.get("prefetch");
-//        JSONObject medication = (JSONObject) prefetch.get("medication");
-//        JSONObject medicationRequestJson = (JSONObject) medication.get("resource");
-//
-//        // create resource
-//        FhirContext fhirContext = FhirContext.forDstu3();
-//        MedicationRequest medicationRequest = (MedicationRequest) fhirContext.newJsonParser().parseResource(medicationRequestJson.toJSONString());
+        // parse request
+        CdsRequest cdsRequest = new CdsRequest(requestBody);
 
-        // get the fhir server info.
-        String fhirEndpoint = requestBody.get("fhirServer").toString();
-        FhirDataProvider dstu3Provider = new FhirDataProvider().withEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
+        if (cdsRequest.getPrefetch().getEntry().isEmpty()) {
+            String searchUrl = String.format("MedicationOrder?patient=%s&status=active", cdsRequest.getPatient());
+            ca.uhn.fhir.model.dstu2.resource.Bundle postfetch = FhirContext.forDstu2()
+                    .newRestfulGenericClient(cdsRequest.getFhirServer())
+                    .search()
+                    .byUrl(searchUrl)
+                    .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
+                    .execute();
+            try {
+                cdsRequest.setPrefetch(postfetch);
+            } catch (FHIRException e) {
+                response.getWriter().println(e.getMessage());
+            }
+        }
 
-        String patient = requestBody.get("patient").toString();
-//        String searchUrl = String.format("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/PlanDefinition/cdc-opioid-05/$evaluate?patient=%s&source=%s", patient, fhirEndpoint);
+        // prepare PlanDefinition $apply operation call
+        // TODO: remove HTTP call and call implementation ... somehow
+        Parameters contextParams = new Parameters();
+        contextParams.addParameter().setName("contextResources").setResource(cdsRequest.getContext());
+        contextParams.addParameter().setName("prefetch").setResource(cdsRequest.getPrefetch());
+        contextParams.addParameter().setName("source").setValue(new StringType(cdsRequest.getFhirServer()));
+
         Parameters inParams = new Parameters();
-        inParams.addParameter().setName("patient").setValue(new StringType(patient));
-        inParams.addParameter().setName("source").setValue(new StringType(fhirEndpoint));
+        inParams.addParameter().setName("patient").setValue(new StringType(cdsRequest.getPatient()));
+        inParams.addParameter().setName("context").setResource(contextParams);
+
+        FhirDataProvider dstu3Provider = new FhirDataProvider()
+                .withEndpoint("http://localhost:8080/cqf-ruler/baseDstu3");
+
         Parameters careplanParams = dstu3Provider.getFhirClient()
                 .operation()
                 .onInstance(new IdType("PlanDefinition", "cdc-opioid-05"))
                 .named("$apply")
                 .withParameters(inParams)
-                .useHttpGet()
                 .execute();
+
         CarePlan careplan = (CarePlan) careplanParams.getParameterFirstRep().getResource();
 
+        // create the response -- info cards for now
+        // TODO: response in form of suggestion -- Resource with more appropriate values
         CdsCard card = new CdsCard();
         for (CarePlan.CarePlanActivityComponent activity : careplan.getActivity()) {
             card.setSummary(careplan.getTitle());
@@ -81,18 +100,13 @@ public class OpioidGuidanceServlet extends HttpServlet {
 
         card.setLinks(links);
 
+        String responseCard = CdsHooksHelper.getPrettyJson(card.toJson().toJSONString());
+        boolean success = responseCard.isEmpty() || responseCard.equals("{}");
 
-        response.getWriter().println(CdsHooksHelper.getPrettyJson(card.toJson().toJSONString()));
+        response.getWriter().println(success ? CdsHooksHelper.getPrettyJson(card.returnSuccess().toJSONString()) : responseCard);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        CdsHooksHelper.DisplayDiscovery(response);
-    }
-
-    private CarePlan getCarePlan(Bundle bundle) {
-        for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-            return (CarePlan) entry.getResource();
-        }
-        return null;
+        throw new ServletException("This servlet is not configured to handle GET requests.");
     }
 }

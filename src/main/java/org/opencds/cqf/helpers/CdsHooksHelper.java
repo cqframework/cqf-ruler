@@ -28,9 +28,7 @@ public class CdsHooksHelper {
         medicationPrescribe.put("id", "opioid-mme-guidance");
 
         JSONObject prefetchContent = new JSONObject();
-        // Don't really think I need the patient info...
-//        prefetchContent.put("patient", "Patient/{{Patient.id}}");
-        prefetchContent.put("medication", "MedicationRequest?patient={{Patient.id}}");
+        prefetchContent.put("medication", "MedicationRequest?patient={{Patient.id}}&status=active");
 
         medicationPrescribe.put("prefetch", prefetchContent);
 

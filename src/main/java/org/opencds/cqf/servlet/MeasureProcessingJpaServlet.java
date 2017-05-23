@@ -6,9 +6,9 @@ import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
-import org.opencds.cqf.providers.PlanDefinitionResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
+import ca.uhn.fhir.rest.method.BaseMethodBinding;
 import ca.uhn.fhir.rest.server.EncodingEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
@@ -18,11 +18,13 @@ import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.providers.MeasureResourceProvider;
+import org.opencds.cqf.providers.PlanDefinitionResourceProvider;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
 import javax.servlet.ServletException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -42,6 +44,7 @@ public class MeasureProcessingJpaServlet extends RestfulServer {
 
         FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU3;
         setFhirContext(new FhirContext(fhirVersion));
+        List<BaseMethodBinding> bindings = new ArrayList<>();
 
         // Get the spring context from the web container (it's declared in web.xml)
         WebApplicationContext myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();

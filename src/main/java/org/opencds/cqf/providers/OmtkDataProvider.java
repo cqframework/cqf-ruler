@@ -109,7 +109,7 @@ public class OmtkDataProvider implements DataProvider {
 
         if (target instanceof OmtkRow) {
             OmtkRow row = (OmtkRow)target;
-            return mapType(row.getValue(path));
+            return mapType(row.getValue(path), path);
         }
 
         throw new UnsupportedOperationException(String.format("Could not retrieve value of property %s from object of type %s.",
@@ -136,7 +136,12 @@ public class OmtkDataProvider implements DataProvider {
         throw new UnsupportedOperationException("OmtkProvider does not support write.");
     }
 
-    private Object mapType(Object type) {
+    private Object mapType(Object type, String path) {
+        // not all integers are codes
+        if (path.equals("STRENGTH_VALUE")) {
+            return new BigDecimal(type.toString());
+        }
+
         if (type instanceof Double) {
             return new BigDecimal((Double) type);
         }

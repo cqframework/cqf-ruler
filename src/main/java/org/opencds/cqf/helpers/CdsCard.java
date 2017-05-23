@@ -16,7 +16,7 @@ public class CdsCard {
     private String indicator;
 
     public boolean hasSummary() {
-        return !this.summary.isEmpty();
+        return this.summary != null && !this.summary.isEmpty();
     }
     public String getSummary() {
         return this.summary;
@@ -27,7 +27,7 @@ public class CdsCard {
     }
 
     public boolean hasDetail() {
-        return !this.detail.isEmpty();
+        return this.detail != null && !this.detail.isEmpty();
     }
     public String getDetail() {
         return this.detail;
@@ -38,7 +38,7 @@ public class CdsCard {
     }
 
     public boolean hasIndicator() {
-        return !this.indicator.isEmpty();
+        return this.indicator != null && !this.indicator.isEmpty();
     }
     public String getIndicator() {
         return this.detail;
@@ -55,7 +55,7 @@ public class CdsCard {
         private String url;
 
         public boolean hasLabel() {
-            return !this.label.isEmpty();
+            return this.label != null && !this.label.isEmpty();
         }
         public String getLabel() {
             return this.label;
@@ -66,7 +66,7 @@ public class CdsCard {
         }
 
         public boolean hasUrl() {
-            return !this.url.isEmpty();
+            return this.url != null && !this.url.isEmpty();
         }
         public String getUrl() {
             return this.url;
@@ -77,7 +77,7 @@ public class CdsCard {
         }
     }
     public boolean hasSource() {
-        return source.hasLabel() || source.hasUrl();
+        return  source.hasLabel() || source.hasUrl();
     }
     public Source getSource() {
         return this.source;
@@ -96,7 +96,7 @@ public class CdsCard {
         private List<String> delete;
 
         public boolean hasLabel() {
-            return !this.label.isEmpty();
+            return this.label != null && !this.label.isEmpty();
         }
         public String getLabel() {
             return this.label;
@@ -107,7 +107,7 @@ public class CdsCard {
         }
 
         public boolean hasUuid() {
-            return !this.uuid.isEmpty();
+            return this.uuid != null && !this.uuid.isEmpty();
         }
         public String getUuid() {
             return this.uuid;
@@ -118,7 +118,7 @@ public class CdsCard {
         }
 
         public boolean hasCreate() {
-            return !this.create.isEmpty();
+            return this.create != null && !this.create.isEmpty();
         }
         public List<String> getCreate() {
             return this.create;
@@ -129,7 +129,7 @@ public class CdsCard {
         }
 
         public boolean hasDelete() {
-            return !this.delete.isEmpty();
+            return this.delete != null && !this.delete.isEmpty();
         }
         public List<String> getDelete() {
             return this.delete;
@@ -140,7 +140,7 @@ public class CdsCard {
         }
     }
     public boolean hasSuggestions() {
-        return !this.suggestions.isEmpty();
+        return this.suggestions != null && !this.suggestions.isEmpty();
     }
     public List<Suggestions> getSuggestions() {
         return this.suggestions;
@@ -158,7 +158,7 @@ public class CdsCard {
         private String type;
 
         public boolean hasLabel() {
-            return !this.label.isEmpty();
+            return this.label != null && !this.label.isEmpty();
         }
         public String getLabel() {
             return this.label;
@@ -169,7 +169,7 @@ public class CdsCard {
         }
 
         public boolean hasUrl() {
-            return !this.url.isEmpty();
+            return this.url != null && !this.url.isEmpty();
         }
         public String getUrl() {
             return this.url;
@@ -180,7 +180,7 @@ public class CdsCard {
         }
 
         public boolean hasType() {
-            return !this.type.isEmpty();
+            return this.type != null && !this.type.isEmpty();
         }
         public String getType() {
             return this.type;
@@ -191,7 +191,7 @@ public class CdsCard {
         }
     }
     public boolean hasLinks() {
-        return !this.links.isEmpty();
+        return this.links != null && !this.links.isEmpty();
     }
     public List<Links> getLinks() {
         return this.links;
@@ -239,5 +239,13 @@ public class CdsCard {
             card.put("links", linksArray);
         }
         return card;
+    }
+
+    public JSONObject returnSuccess() {
+        JSONObject success = new JSONObject();
+        success.put("summary", "Success");
+        success.put("indicator", "success");
+        success.put("detail", "The MME is within the recommended range.");
+        return success;
     }
 }
