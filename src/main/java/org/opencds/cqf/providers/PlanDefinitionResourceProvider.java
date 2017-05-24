@@ -19,6 +19,7 @@ import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
 import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.cql.runtime.Tuple;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBException;
@@ -205,7 +206,13 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
                         context.setParameter(null, "Orders", requests);
                         Object result = def.getExpression().evaluate(context);
 
-                        if (!(result instanceof Boolean)) {
+                        if (result instanceof Tuple) {
+                            title = (String) ((Tuple) result).getElement("title");
+                            description = (String) ((Tuple) result).getElement("description");
+                            result = ((Tuple) result).getElement("mmeOver50");
+                        }
+
+                        else {
                             result = false;
                         }
 
@@ -249,33 +256,33 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
                 }
             }
 
-            if (action.hasDynamicValue()) {
-                for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamic : action.getDynamicValue()) {
-                    // using dynamic values to define title and description values through CQL expressions
-                    // TODO: this is pretty hacky...
-                    if (dynamic.hasDescription() && dynamic.getDescription().contains("description")
-                            && dynamic.hasExpression())
-                    {
-                        ExpressionDef def = context.resolveExpressionRef(dynamic.getExpression());
-                        Object result = def.getExpression().evaluate(context);
-                        if (result instanceof String) {
-                            description = result.toString();
-                            careplan.setDescription(description);
-                        }
-                    }
-
-                    else if (dynamic.hasDescription() && dynamic.getDescription().contains("title")
-                            && dynamic.hasExpression())
-                    {
-                        ExpressionDef def = context.resolveExpressionRef(dynamic.getExpression());
-                        Object result = def.getExpression().evaluate(context);
-                        if (result instanceof String) {
-                            title = result.toString();
-                            careplan.setTitle(title);
-                        }
-                    }
-                }
-            }
+//            if (action.hasDynamicValue()) {
+//                for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamic : action.getDynamicValue()) {
+//                    // using dynamic values to define title and description values through CQL expressions
+//                    // TODO: this is pretty hacky...
+//                    if (dynamic.hasDescription() && dynamic.getDescription().contains("description")
+//                            && dynamic.hasExpression())
+//                    {
+//                        ExpressionDef def = context.resolveExpressionRef(dynamic.getExpression());
+//                        Object result = def.getExpression().evaluate(context);
+//                        if (result instanceof String) {
+//                            description = result.toString();
+//                            careplan.setDescription(description);
+//                        }
+//                    }
+//
+//                    else if (dynamic.hasDescription() && dynamic.getDescription().contains("title")
+//                            && dynamic.hasExpression())
+//                    {
+//                        ExpressionDef def = context.resolveExpressionRef(dynamic.getExpression());
+//                        Object result = def.getExpression().evaluate(context);
+//                        if (result instanceof String) {
+//                            title = result.toString();
+//                            careplan.setTitle(title);
+//                        }
+//                    }
+//                }
+//            }
         }
         return careplan;
     }
