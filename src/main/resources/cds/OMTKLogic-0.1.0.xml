@@ -41,6 +41,165 @@
             <operandTypeSpecifier name="t:String" xsi:type="NamedTypeSpecifier"/>
          </operand>
       </def>
+      <def name="ToDaily" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression xsi:type="Case">
+            <comparand path="unit" xsi:type="Property">
+               <source name="period" xsi:type="OperandRef"/>
+            </comparand>
+            <caseItem>
+               <when valueType="t:String" value="h" xsi:type="Literal"/>
+               <then xsi:type="Multiply">
+                  <operand xsi:type="ToDecimal">
+                     <operand name="frequency" xsi:type="OperandRef"/>
+                  </operand>
+                  <operand xsi:type="Divide">
+                     <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
+                     <operand path="value" xsi:type="Property">
+                        <source name="period" xsi:type="OperandRef"/>
+                     </operand>
+                  </operand>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:String" value="min" xsi:type="Literal"/>
+               <then xsi:type="Multiply">
+                  <operand xsi:type="Multiply">
+                     <operand xsi:type="ToDecimal">
+                        <operand name="frequency" xsi:type="OperandRef"/>
+                     </operand>
+                     <operand xsi:type="Divide">
+                        <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
+                        <operand path="value" xsi:type="Property">
+                           <source name="period" xsi:type="OperandRef"/>
+                        </operand>
+                     </operand>
+                  </operand>
+                  <operand xsi:type="ToDecimal">
+                     <operand valueType="t:Integer" value="60" xsi:type="Literal"/>
+                  </operand>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:String" value="s" xsi:type="Literal"/>
+               <then xsi:type="Multiply">
+                  <operand xsi:type="Multiply">
+                     <operand xsi:type="Multiply">
+                        <operand xsi:type="ToDecimal">
+                           <operand name="frequency" xsi:type="OperandRef"/>
+                        </operand>
+                        <operand xsi:type="Divide">
+                           <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
+                           <operand path="value" xsi:type="Property">
+                              <source name="period" xsi:type="OperandRef"/>
+                           </operand>
+                        </operand>
+                     </operand>
+                     <operand xsi:type="ToDecimal">
+                        <operand valueType="t:Integer" value="60" xsi:type="Literal"/>
+                     </operand>
+                  </operand>
+                  <operand xsi:type="ToDecimal">
+                     <operand valueType="t:Integer" value="60" xsi:type="Literal"/>
+                  </operand>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:String" value="d" xsi:type="Literal"/>
+               <then xsi:type="Divide">
+                  <operand xsi:type="Multiply">
+                     <operand xsi:type="ToDecimal">
+                        <operand name="frequency" xsi:type="OperandRef"/>
+                     </operand>
+                     <operand xsi:type="Divide">
+                        <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
+                        <operand path="value" xsi:type="Property">
+                           <source name="period" xsi:type="OperandRef"/>
+                        </operand>
+                     </operand>
+                  </operand>
+                  <operand xsi:type="ToDecimal">
+                     <operand valueType="t:Integer" value="24" xsi:type="Literal"/>
+                  </operand>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:String" value="wk" xsi:type="Literal"/>
+               <then xsi:type="Divide">
+                  <operand xsi:type="Multiply">
+                     <operand xsi:type="ToDecimal">
+                        <operand name="frequency" xsi:type="OperandRef"/>
+                     </operand>
+                     <operand xsi:type="Divide">
+                        <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
+                        <operand path="value" xsi:type="Property">
+                           <source name="period" xsi:type="OperandRef"/>
+                        </operand>
+                     </operand>
+                  </operand>
+                  <operand xsi:type="ToDecimal">
+                     <operand xsi:type="Multiply">
+                        <operand valueType="t:Integer" value="24" xsi:type="Literal"/>
+                        <operand valueType="t:Integer" value="7" xsi:type="Literal"/>
+                     </operand>
+                  </operand>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:String" value="mo" xsi:type="Literal"/>
+               <then xsi:type="Divide">
+                  <operand xsi:type="Multiply">
+                     <operand xsi:type="ToDecimal">
+                        <operand name="frequency" xsi:type="OperandRef"/>
+                     </operand>
+                     <operand xsi:type="Divide">
+                        <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
+                        <operand path="value" xsi:type="Property">
+                           <source name="period" xsi:type="OperandRef"/>
+                        </operand>
+                     </operand>
+                  </operand>
+                  <operand xsi:type="ToDecimal">
+                     <operand xsi:type="Multiply">
+                        <operand valueType="t:Integer" value="24" xsi:type="Literal"/>
+                        <operand valueType="t:Integer" value="30" xsi:type="Literal"/>
+                     </operand>
+                  </operand>
+               </then>
+            </caseItem>
+            <caseItem>
+               <when valueType="t:String" value="a" xsi:type="Literal"/>
+               <then xsi:type="Divide">
+                  <operand xsi:type="Multiply">
+                     <operand xsi:type="ToDecimal">
+                        <operand name="frequency" xsi:type="OperandRef"/>
+                     </operand>
+                     <operand xsi:type="Divide">
+                        <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
+                        <operand path="value" xsi:type="Property">
+                           <source name="period" xsi:type="OperandRef"/>
+                        </operand>
+                     </operand>
+                  </operand>
+                  <operand xsi:type="ToDecimal">
+                     <operand xsi:type="Multiply">
+                        <operand valueType="t:Integer" value="24" xsi:type="Literal"/>
+                        <operand valueType="t:Integer" value="365" xsi:type="Literal"/>
+                     </operand>
+                  </operand>
+               </then>
+            </caseItem>
+            <else asType="t:Decimal" xsi:type="As">
+               <operand xsi:type="Null"/>
+               <asTypeSpecifier name="t:Decimal" xsi:type="NamedTypeSpecifier"/>
+            </else>
+         </expression>
+         <operand name="frequency">
+            <operandTypeSpecifier name="t:Integer" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+         <operand name="period">
+            <operandTypeSpecifier name="t:Quantity" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+      </def>
       <def name="IsPatch" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
          <expression xsi:type="Equal">
             <operand xsi:type="ToInteger">
@@ -1119,3 +1278,4 @@
       </def>
    </statements>
 </library>
+

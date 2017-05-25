@@ -72,7 +72,7 @@ public class OpioidGuidanceServlet extends HttpServlet {
         inParams.addParameter().setName("context").setResource(contextParams);
 
         FhirDataProvider dstu3Provider = new FhirDataProvider()
-                .withEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
+                .withEndpoint("http://localhost:8080/cqf-ruler/baseDstu3");
 
         Parameters careplanParams = dstu3Provider.getFhirClient()
                 .operation()

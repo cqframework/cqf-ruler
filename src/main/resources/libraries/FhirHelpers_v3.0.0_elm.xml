@@ -1,0 +1,1579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="urn:hl7-org:elm:r1" xmlns:t="urn:hl7-org:elm-types:r1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:fhir="http://hl7.org/fhir" xmlns:a="urn:hl7-org:cql-annotations:r1">
+    <identifier id="FHIRHelpers" version="3.0.0"/>
+    <schemaIdentifier id="urn:hl7-org:elm" version="r1"/>
+    <usings>
+        <def localIdentifier="System" uri="urn:hl7-org:elm-types:r1"/>
+        <def localId="1" localIdentifier="FHIR" uri="http://hl7.org/fhir" version="3.0.0"/>
+    </usings>
+    <statements>
+        <def localId="10" name="ToInterval" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            <expression localId="9" lowClosed="true" highClosed="true" xsi:type="Interval">
+                <low localId="5" path="value" xsi:type="Property">
+                    <source localId="4" path="start" xsi:type="Property">
+                        <source localId="3" name="period" xsi:type="OperandRef"/>
+                    </source>
+                </low>
+                <high localId="8" path="value" xsi:type="Property">
+                    <source localId="7" path="end" xsi:type="Property">
+                        <source localId="6" name="period" xsi:type="OperandRef"/>
+                    </source>
+                </high>
+            </expression>
+            <operand name="period">
+                <operandTypeSpecifier localId="2" name="fhir:Period" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="19" name="ToQuantity" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            <expression localId="18" classType="t:Quantity" xsi:type="Instance">
+                <element name="value">
+                    <value localId="14" path="value" xsi:type="Property">
+                        <source localId="13" path="value" xsi:type="Property">
+                            <source localId="12" name="quantity" xsi:type="OperandRef"/>
+                        </source>
+                    </value>
+                </element>
+                <element name="unit">
+                    <value localId="17" path="value" xsi:type="Property">
+                        <source localId="16" path="unit" xsi:type="Property">
+                            <source localId="15" name="quantity" xsi:type="OperandRef"/>
+                        </source>
+                    </value>
+                </element>
+            </expression>
+            <operand name="quantity">
+                <operandTypeSpecifier localId="11" name="fhir:Quantity" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="28" name="ToInterval" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            <expression localId="27" lowClosed="true" highClosed="true" xsi:type="Interval">
+                <low localId="23" name="ToQuantity" xsi:type="FunctionRef">
+                    <operand localId="22" path="low" xsi:type="Property">
+                        <source localId="21" name="range" xsi:type="OperandRef"/>
+                    </operand>
+                </low>
+                <high localId="26" name="ToQuantity" xsi:type="FunctionRef">
+                    <operand localId="25" path="high" xsi:type="Property">
+                        <source localId="24" name="range" xsi:type="OperandRef"/>
+                    </operand>
+                </high>
+            </expression>
+            <operand name="range">
+                <operandTypeSpecifier localId="20" name="fhir:Range" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="43" name="ToCode" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            <expression localId="42" classType="t:Code" xsi:type="Instance">
+                <element name="code">
+                    <value localId="32" path="value" xsi:type="Property">
+                        <source localId="31" path="code" xsi:type="Property">
+                            <source localId="30" name="coding" xsi:type="OperandRef"/>
+                        </source>
+                    </value>
+                </element>
+                <element name="system">
+                    <value localId="35" path="value" xsi:type="Property">
+                        <source localId="34" path="system" xsi:type="Property">
+                            <source localId="33" name="coding" xsi:type="OperandRef"/>
+                        </source>
+                    </value>
+                </element>
+                <element name="version">
+                    <value localId="38" path="value" xsi:type="Property">
+                        <source localId="37" path="version" xsi:type="Property">
+                            <source localId="36" name="coding" xsi:type="OperandRef"/>
+                        </source>
+                    </value>
+                </element>
+                <element name="display">
+                    <value localId="41" path="value" xsi:type="Property">
+                        <source localId="40" path="display" xsi:type="Property">
+                            <source localId="39" name="coding" xsi:type="OperandRef"/>
+                        </source>
+                    </value>
+                </element>
+            </expression>
+            <operand name="coding">
+                <operandTypeSpecifier localId="29" name="fhir:Coding" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="55" name="ToConcept" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            <expression localId="54" classType="t:Concept" xsi:type="Instance">
+                <element name="codes">
+                    <value localId="50" xsi:type="Query">
+                        <source localId="46" alias="C">
+                            <expression localId="45" path="coding" xsi:type="Property">
+                                <source name="concept" xsi:type="OperandRef"/>
+                            </expression>
+                        </source>
+                        <return localId="49">
+                            <expression localId="48" name="ToCode" xsi:type="FunctionRef">
+                                <operand localId="47" name="C" xsi:type="AliasRef"/>
+                            </expression>
+                        </return>
+                    </value>
+                </element>
+                <element name="display">
+                    <value localId="53" path="value" xsi:type="Property">
+                        <source localId="52" path="text" xsi:type="Property">
+                            <source localId="51" name="concept" xsi:type="OperandRef"/>
+                        </source>
+                    </value>
+                </element>
+            </expression>
+            <operand name="concept">
+                <operandTypeSpecifier localId="44" name="fhir:CodeableConcept" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="59" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="58" path="value" xsi:type="Property">
+                <source localId="57" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="56" name="fhir:uuid" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="63" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="62" path="value" xsi:type="Property">
+                <source localId="61" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="60" name="fhir:ProvenanceEntityRole" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="67" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="66" path="value" xsi:type="Property">
+                <source localId="65" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="64" name="fhir:UnitsOfTime" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="71" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="70" path="value" xsi:type="Property">
+                <source localId="69" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="68" name="fhir:AddressType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="75" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="74" path="value" xsi:type="Property">
+                <source localId="73" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="72" name="fhir:AllergyIntoleranceCategory" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="79" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="78" path="value" xsi:type="Property">
+                <source localId="77" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="76" name="fhir:SpecimenStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="83" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="82" path="value" xsi:type="Property">
+                <source localId="81" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="80" name="fhir:RestfulCapabilityMode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="87" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="86" path="value" xsi:type="Property">
+                <source localId="85" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="84" name="fhir:DetectedIssueSeverity" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="91" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="90" path="value" xsi:type="Property">
+                <source localId="89" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="88" name="fhir:IssueSeverity" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="95" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="94" path="value" xsi:type="Property">
+                <source localId="93" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="92" name="fhir:DataElementStringency" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="99" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="98" path="value" xsi:type="Property">
+                <source localId="97" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="96" name="fhir:EncounterStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="103" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="102" path="value" xsi:type="Property">
+                <source localId="101" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="100" name="fhir:StructureDefinitionKind" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="107" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="106" path="value" xsi:type="Property">
+                <source localId="105" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="104" name="fhir:PublicationStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="111" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="110" path="value" xsi:type="Property">
+                <source localId="109" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="108" name="fhir:ConsentDataMeaning" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="115" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="114" path="value" xsi:type="Property">
+                <source localId="113" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="112" name="fhir:QuestionnaireResponseStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="119" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="118" path="value" xsi:type="Property">
+                <source localId="117" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="116" name="fhir:SearchComparator" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="123" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="122" path="value" xsi:type="Property">
+                <source localId="121" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="120" name="fhir:AllergyIntoleranceType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="127" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="126" path="value" xsi:type="Property">
+                <source localId="125" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="124" name="fhir:DocumentRelationshipType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="131" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="130" path="value" xsi:type="Property">
+                <source localId="129" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="128" name="fhir:AllergyIntoleranceClinicalStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="135" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="134" path="value" xsi:type="Property">
+                <source localId="133" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="132" name="fhir:CarePlanActivityStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="139" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="138" path="value" xsi:type="Property">
+                <source localId="137" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="136" name="fhir:ActionList" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="143" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="142" path="value" xsi:type="Property">
+                <source localId="141" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="140" name="fhir:ParticipationStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="147" name="ToDateTime" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="146" path="value" xsi:type="Property">
+                <source localId="145" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="144" name="fhir:instant" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="151" name="ToDateTime" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="150" path="value" xsi:type="Property">
+                <source localId="149" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="148" name="fhir:dateTime" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="155" name="ToDateTime" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="154" path="value" xsi:type="Property">
+                <source localId="153" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="152" name="fhir:date" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="159" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="158" path="value" xsi:type="Property">
+                <source localId="157" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="156" name="fhir:DocumentMode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="163" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="162" path="value" xsi:type="Property">
+                <source localId="161" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="160" name="fhir:AssertionOperatorType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="167" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="166" path="value" xsi:type="Property">
+                <source localId="165" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="164" name="fhir:DaysOfWeek" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="171" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="170" path="value" xsi:type="Property">
+                <source localId="169" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="168" name="fhir:IssueType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="175" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="174" path="value" xsi:type="Property">
+                <source localId="173" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="172" name="fhir:ContentType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="179" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="178" path="value" xsi:type="Property">
+                <source localId="177" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="176" name="fhir:StructureMapContextType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="183" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="182" path="value" xsi:type="Property">
+                <source localId="181" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="180" name="fhir:FamilyHistoryStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="187" name="ToInteger" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="186" path="value" xsi:type="Property">
+                <source localId="185" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="184" name="fhir:positiveInt" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="191" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="190" path="value" xsi:type="Property">
+                <source localId="189" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="188" name="fhir:ClinicalImpressionStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="195" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="194" path="value" xsi:type="Property">
+                <source localId="193" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="192" name="fhir:AssertionResponseTypes" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="199" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="198" path="value" xsi:type="Property">
+                <source localId="197" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="196" name="fhir:NarrativeStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="203" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="202" path="value" xsi:type="Property">
+                <source localId="201" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="200" name="fhir:MeasmntPrinciple" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="207" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="206" path="value" xsi:type="Property">
+                <source localId="205" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="204" name="fhir:ConsentExceptType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="211" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="210" path="value" xsi:type="Property">
+                <source localId="209" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="208" name="fhir:string" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="215" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="214" path="value" xsi:type="Property">
+                <source localId="213" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="212" name="fhir:EndpointStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="219" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="218" path="value" xsi:type="Property">
+                <source localId="217" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="216" name="fhir:GuidePageKind" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="223" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="222" path="value" xsi:type="Property">
+                <source localId="221" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="220" name="fhir:GuideDependencyType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="227" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="226" path="value" xsi:type="Property">
+                <source localId="225" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="224" name="fhir:ResourceVersionPolicy" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="231" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="230" path="value" xsi:type="Property">
+                <source localId="229" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="228" name="fhir:MedicationRequestStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="235" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="234" path="value" xsi:type="Property">
+                <source localId="233" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="232" name="fhir:MedicationAdministrationStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="239" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="238" path="value" xsi:type="Property">
+                <source localId="237" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="236" name="fhir:NamingSystemIdentifierType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="243" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="242" path="value" xsi:type="Property">
+                <source localId="241" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="240" name="fhir:AccountStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="247" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="246" path="value" xsi:type="Property">
+                <source localId="245" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="244" name="fhir:MedicationDispenseStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="251" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="250" path="value" xsi:type="Property">
+                <source localId="249" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="248" name="fhir:IdentifierUse" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="255" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="254" path="value" xsi:type="Property">
+                <source localId="253" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="252" name="fhir:DigitalMediaType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="259" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="258" path="value" xsi:type="Property">
+                <source localId="257" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="256" name="fhir:TestReportParticipantType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="263" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="262" path="value" xsi:type="Property">
+                <source localId="261" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="260" name="fhir:BindingStrength" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="267" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="266" path="value" xsi:type="Property">
+                <source localId="265" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="264" name="fhir:ParticipantRequired" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="271" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="270" path="value" xsi:type="Property">
+                <source localId="269" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="268" name="fhir:XPathUsageType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="275" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="274" path="value" xsi:type="Property">
+                <source localId="273" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="272" name="fhir:StructureMapInputMode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="279" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="278" path="value" xsi:type="Property">
+                <source localId="277" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="276" name="fhir:InstanceAvailability" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="283" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="282" path="value" xsi:type="Property">
+                <source localId="281" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="280" name="fhir:id" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="287" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="286" path="value" xsi:type="Property">
+                <source localId="285" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="284" name="fhir:LinkageType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="291" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="290" path="value" xsi:type="Property">
+                <source localId="289" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="288" name="fhir:ReferenceHandlingPolicy" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="295" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="294" path="value" xsi:type="Property">
+                <source localId="293" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="292" name="fhir:FilterOperator" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="299" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="298" path="value" xsi:type="Property">
+                <source localId="297" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="296" name="fhir:NamingSystemType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="303" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="302" path="value" xsi:type="Property">
+                <source localId="301" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="300" name="fhir:ResearchStudyStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="307" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="306" path="value" xsi:type="Property">
+                <source localId="305" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="304" name="fhir:ExtensionContext" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="311" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="310" path="value" xsi:type="Property">
+                <source localId="309" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="308" name="fhir:AuditEventOutcome" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="315" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="314" path="value" xsi:type="Property">
+                <source localId="313" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="312" name="fhir:ConstraintSeverity" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="319" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="318" path="value" xsi:type="Property">
+                <source localId="317" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="316" name="fhir:EventCapabilityMode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="323" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="322" path="value" xsi:type="Property">
+                <source localId="321" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="320" name="fhir:ResearchSubjectStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="327" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="326" path="value" xsi:type="Property">
+                <source localId="325" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="324" name="fhir:StructureMapTransform" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="331" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="330" path="value" xsi:type="Property">
+                <source localId="329" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="328" name="fhir:ResponseType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="335" name="ToDecimal" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="334" path="value" xsi:type="Property">
+                <source localId="333" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="332" name="fhir:decimal" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="339" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="338" path="value" xsi:type="Property">
+                <source localId="337" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="336" name="fhir:AggregationMode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="343" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="342" path="value" xsi:type="Property">
+                <source localId="341" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="340" name="fhir:CapabilityStatementKind" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="347" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="346" path="value" xsi:type="Property">
+                <source localId="345" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="344" name="fhir:AllergyIntoleranceVerificationStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="351" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="350" path="value" xsi:type="Property">
+                <source localId="349" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="348" name="fhir:EventTiming" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="355" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="354" path="value" xsi:type="Property">
+                <source localId="353" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="352" name="fhir:GoalStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="359" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="358" path="value" xsi:type="Property">
+                <source localId="357" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="356" name="fhir:SearchParamType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="363" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="362" path="value" xsi:type="Property">
+                <source localId="361" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="360" name="fhir:SystemRestfulInteraction" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="367" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="366" path="value" xsi:type="Property">
+                <source localId="365" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="364" name="fhir:StructureMapModelMode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="371" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="370" path="value" xsi:type="Property">
+                <source localId="369" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="368" name="fhir:TaskStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="375" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="374" path="value" xsi:type="Property">
+                <source localId="373" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="372" name="fhir:SubscriptionChannelType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="379" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="378" path="value" xsi:type="Property">
+                <source localId="377" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="376" name="fhir:AssertionDirectionType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="383" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="382" path="value" xsi:type="Property">
+                <source localId="381" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="380" name="fhir:SlicingRules" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="387" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="386" path="value" xsi:type="Property">
+                <source localId="385" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="384" name="fhir:ExplanationOfBenefitStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="391" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="390" path="value" xsi:type="Property">
+                <source localId="389" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="388" name="fhir:LinkType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="395" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="394" path="value" xsi:type="Property">
+                <source localId="393" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="392" name="fhir:AllergyIntoleranceCriticality" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="399" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="398" path="value" xsi:type="Property">
+                <source localId="397" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="396" name="fhir:PropertyRepresentation" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="403" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="402" path="value" xsi:type="Property">
+                <source localId="401" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="400" name="fhir:AuditEventAction" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="407" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="406" path="value" xsi:type="Property">
+                <source localId="405" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="404" name="fhir:TriggerType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="411" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="410" path="value" xsi:type="Property">
+                <source localId="409" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="408" name="fhir:SearchModifierCode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="415" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="414" path="value" xsi:type="Property">
+                <source localId="413" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="412" name="fhir:CompositionStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="419" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="418" path="value" xsi:type="Property">
+                <source localId="417" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="416" name="fhir:AppointmentStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="423" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="422" path="value" xsi:type="Property">
+                <source localId="421" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="420" name="fhir:OperationParameterUse" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="427" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="426" path="value" xsi:type="Property">
+                <source localId="425" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="424" name="fhir:ListMode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="431" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="430" path="value" xsi:type="Property">
+                <source localId="429" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="428" name="fhir:ObservationStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="435" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="434" path="value" xsi:type="Property">
+                <source localId="433" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="432" name="fhir:qualityType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="439" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="438" path="value" xsi:type="Property">
+                <source localId="437" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="436" name="fhir:AdministrativeGender" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="443" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="442" path="value" xsi:type="Property">
+                <source localId="441" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="440" name="fhir:ResourceType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="447" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="446" path="value" xsi:type="Property">
+                <source localId="445" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="444" name="fhir:QuestionnaireItemType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="451" name="ToBoolean" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="450" path="value" xsi:type="Property">
+                <source localId="449" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="448" name="fhir:boolean" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="455" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="454" path="value" xsi:type="Property">
+                <source localId="453" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="452" name="fhir:DeviceMetricCalibrationType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="459" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="458" path="value" xsi:type="Property">
+                <source localId="457" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="456" name="fhir:code" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="463" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="462" path="value" xsi:type="Property">
+                <source localId="461" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="460" name="fhir:SupplyRequestStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="467" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="466" path="value" xsi:type="Property">
+                <source localId="465" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="464" name="fhir:EncounterLocationStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="471" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="470" path="value" xsi:type="Property">
+                <source localId="469" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="468" name="fhir:SupplyDeliveryStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="475" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="474" path="value" xsi:type="Property">
+                <source localId="473" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="472" name="fhir:DiagnosticReportStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="479" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="478" path="value" xsi:type="Property">
+                <source localId="477" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="476" name="fhir:FlagStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="483" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="482" path="value" xsi:type="Property">
+                <source localId="481" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="480" name="fhir:CarePlanStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="487" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="486" path="value" xsi:type="Property">
+                <source localId="485" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="484" name="fhir:ListStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="491" name="Tobase64Binary" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="490" path="value" xsi:type="Property">
+                <source localId="489" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="488" name="fhir:base64Binary" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="495" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="494" path="value" xsi:type="Property">
+                <source localId="493" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="492" name="fhir:AuditEventAgentNetworkType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="499" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="498" path="value" xsi:type="Property">
+                <source localId="497" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="496" name="fhir:AddressUse" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="503" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="502" path="value" xsi:type="Property">
+                <source localId="501" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="500" name="fhir:ConditionalDeleteStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="507" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="506" path="value" xsi:type="Property">
+                <source localId="505" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="504" name="fhir:ContactPointUse" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="511" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="510" path="value" xsi:type="Property">
+                <source localId="509" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="508" name="fhir:DeviceMetricOperationalStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="515" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="514" path="value" xsi:type="Property">
+                <source localId="513" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="512" name="fhir:NutritionOrderStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="519" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="518" path="value" xsi:type="Property">
+                <source localId="517" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="516" name="fhir:uri" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="523" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="522" path="value" xsi:type="Property">
+                <source localId="521" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="520" name="fhir:ContributorType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="527" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="526" path="value" xsi:type="Property">
+                <source localId="525" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="524" name="fhir:ReferenceVersionRules" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="531" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="530" path="value" xsi:type="Property">
+                <source localId="529" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="528" name="fhir:Use" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="535" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="534" path="value" xsi:type="Property">
+                <source localId="533" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="532" name="fhir:IdentityAssuranceLevel" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="539" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="538" path="value" xsi:type="Property">
+                <source localId="537" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="536" name="fhir:MeasureReportStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="543" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="542" path="value" xsi:type="Property">
+                <source localId="541" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="540" name="fhir:DeviceMetricColor" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="547" name="ToTime" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="546" path="value" xsi:type="Property">
+                <source localId="545" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="544" name="fhir:time" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="551" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="550" path="value" xsi:type="Property">
+                <source localId="549" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="548" name="fhir:ConditionalReadStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="555" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="554" path="value" xsi:type="Property">
+                <source localId="553" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="552" name="fhir:ConditionVerificationStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="559" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="558" path="value" xsi:type="Property">
+                <source localId="557" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="556" name="fhir:AllergyIntoleranceSeverity" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="563" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="562" path="value" xsi:type="Property">
+                <source localId="561" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="560" name="fhir:OperationKind" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="567" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="566" path="value" xsi:type="Property">
+                <source localId="565" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="564" name="fhir:ObservationRelationshipType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="571" name="ToInteger" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="570" path="value" xsi:type="Property">
+                <source localId="569" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="568" name="fhir:unsignedInt" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="575" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="574" path="value" xsi:type="Property">
+                <source localId="573" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="572" name="fhir:NameUse" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="579" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="578" path="value" xsi:type="Property">
+                <source localId="577" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="576" name="fhir:SubscriptionStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="583" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="582" path="value" xsi:type="Property">
+                <source localId="581" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="580" name="fhir:LocationMode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="587" name="ToInteger" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="586" path="value" xsi:type="Property">
+                <source localId="585" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="584" name="fhir:integer" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="591" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="590" path="value" xsi:type="Property">
+                <source localId="589" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="588" name="fhir:repositoryType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="595" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="594" path="value" xsi:type="Property">
+                <source localId="593" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="592" name="fhir:LocationStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="599" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="598" path="value" xsi:type="Property">
+                <source localId="597" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="596" name="fhir:UnknownContentCode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="603" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="602" path="value" xsi:type="Property">
+                <source localId="601" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="600" name="fhir:NoteType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="607" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="606" path="value" xsi:type="Property">
+                <source localId="605" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="604" name="fhir:TestReportStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="611" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="610" path="value" xsi:type="Property">
+                <source localId="609" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="608" name="fhir:HTTPVerb" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="615" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="614" path="value" xsi:type="Property">
+                <source localId="613" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="612" name="fhir:CodeSystemContentMode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="619" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="618" path="value" xsi:type="Property">
+                <source localId="617" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="616" name="fhir:EpisodeOfCareStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="623" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="622" path="value" xsi:type="Property">
+                <source localId="621" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="620" name="fhir:RemittanceOutcome" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="627" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="626" path="value" xsi:type="Property">
+                <source localId="625" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="624" name="fhir:ContactPointSystem" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="631" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="630" path="value" xsi:type="Property">
+                <source localId="629" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="628" name="fhir:SlotStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="635" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="634" path="value" xsi:type="Property">
+                <source localId="633" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="632" name="fhir:PropertyType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="639" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="638" path="value" xsi:type="Property">
+                <source localId="637" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="636" name="fhir:markdown" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="643" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="642" path="value" xsi:type="Property">
+                <source localId="641" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="640" name="fhir:TypeDerivationRule" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="647" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="646" path="value" xsi:type="Property">
+                <source localId="645" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="644" name="fhir:MedicationStatementStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="651" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="650" path="value" xsi:type="Property">
+                <source localId="649" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="648" name="fhir:GuidanceResponseStatus" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="655" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="654" path="value" xsi:type="Property">
+                <source localId="653" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="652" name="fhir:QuantityComparator" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="659" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="658" path="value" xsi:type="Property">
+                <source localId="657" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="656" name="fhir:RelatedArtifactType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="663" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="662" path="value" xsi:type="Property">
+                <source localId="661" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="660" name="fhir:oid" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="667" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="666" path="value" xsi:type="Property">
+                <source localId="665" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="664" name="fhir:MeasureReportType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="671" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="670" path="value" xsi:type="Property">
+                <source localId="669" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="668" name="fhir:CompartmentType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="675" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="674" path="value" xsi:type="Property">
+                <source localId="673" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="672" name="fhir:CompositionAttestationMode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="679" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="678" path="value" xsi:type="Property">
+                <source localId="677" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="676" name="fhir:DeviceMetricCalibrationState" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="683" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="682" path="value" xsi:type="Property">
+                <source localId="681" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="680" name="fhir:GroupType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="687" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="686" path="value" xsi:type="Property">
+                <source localId="685" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="684" name="fhir:TypeRestfulInteraction" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="691" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="690" path="value" xsi:type="Property">
+                <source localId="689" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="688" name="fhir:CodeSystemHierarchyMeaning" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="695" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="694" path="value" xsi:type="Property">
+                <source localId="693" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="692" name="fhir:BundleType" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+        <def localId="699" name="ToString" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+            
+            <expression localId="698" path="value" xsi:type="Property">
+                <source localId="697" name="value" xsi:type="OperandRef"/>
+            </expression>
+            <operand name="value">
+                <operandTypeSpecifier localId="696" name="fhir:SystemVersionProcessingMode" xsi:type="NamedTypeSpecifier"/>
+            </operand>
+        </def>
+    </statements>
+</library>
+
