@@ -10,24 +10,12 @@
 			org.springframework.web.context.support.AnnotationConfigWebApplicationContext
 		</param-value>
 	</context-param>
-	<!--<context-param>-->
-		<!--<param-name>contextClassDstu2</param-name>-->
-		<!--<param-value>-->
-			<!--org.springframework.web.context.support.AnnotationConfigWebApplicationContext-->
-		<!--</param-value>-->
-	<!--</context-param>-->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			org.opencds.cqf.config.FhirServerConfigDstu3
 		</param-value>
 	</context-param>
-	<!--<context-param>-->
-		<!--<param-name>contextConfigLocationDstu2</param-name>-->
-		<!--<param-value>-->
-			<!--org.opencds.cqf.config.FhirServerConfigDstu2-->
-		<!--</param-value>-->
-	<!--</context-param>-->
 
 	<!-- Servlets -->
 	<servlet>
@@ -41,20 +29,6 @@
 		<servlet-class>org.opencds.cqf.servlet.CdsServicesServlet</servlet-class>
 		<load-on-startup>3</load-on-startup>
 	</servlet>
-
-	<!--<servlet>-->
-		<!--<servlet-name>springDstu2</servlet-name>-->
-		<!--<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>-->
-		<!--<init-param>-->
-			<!--<param-name>contextClassDstu2</param-name>-->
-			<!--<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>-->
-		<!--</init-param>-->
-		<!--<init-param>-->
-			<!--<param-name>contextConfigLocationDstu2</param-name>-->
-			<!--<param-value>org.opencds.cqf.config.FhirTesterConfigDstu2</param-value>-->
-		<!--</init-param>-->
-		<!--<load-on-startup>4</load-on-startup>-->
-	<!--</servlet>-->
 
 	<servlet>
 		<servlet-name>spring</servlet-name>
@@ -70,23 +44,10 @@
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 
-	<!--<servlet>-->
-		<!--<servlet-name>fhirDstu2Servlet</servlet-name>-->
-		<!--<servlet-class>org.opencds.cqf.servlet.FhirDstu2Servlet</servlet-class>-->
-		<!--<init-param>-->
-			<!--<param-name>ImplementationDescription</param-name>-->
-			<!--<param-value>FHIR Dstu2 JPA Server</param-value>-->
-		<!--</init-param>-->
-		<!--<init-param>-->
-			<!--<param-name>FhirVersion</param-name>-->
-			<!--<param-value>DSTU2</param-value>-->
-		<!--</init-param>-->
-		<!--<load-on-startup>2</load-on-startup>-->
-	<!--</servlet>-->
 
 	<servlet>
 		<servlet-name>measureProcessingServlet</servlet-name>
-		<servlet-class>org.opencds.cqf.servlet.MeasureProcessingJpaServlet</servlet-class>
+		<servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>
 		<init-param>
 			<param-name>ImplementationDescription</param-name>
 			<param-value>FHIR Measure Processing JPA Server</param-value>
@@ -103,20 +64,10 @@
 		<url-pattern>/baseDstu3/*</url-pattern>
 	</servlet-mapping>
 
-	<!--<servlet-mapping>-->
-		<!--<servlet-name>fhirDstu2Servlet</servlet-name>-->
-		<!--<url-pattern>/baseDstu2/*</url-pattern>-->
-	<!--</servlet-mapping>-->
-
 	<servlet-mapping>
 		<servlet-name>spring</servlet-name>
 		<url-pattern>/tester/*</url-pattern>
 	</servlet-mapping>
-
-	<!--<servlet-mapping>-->
-		<!--<servlet-name>springDstu2</servlet-name>-->
-		<!--<url-pattern>/browse/*</url-pattern>-->
-	<!--</servlet-mapping>-->
 
 	<servlet-mapping>
 		<servlet-name>cdsServicesServlet</servlet-name>

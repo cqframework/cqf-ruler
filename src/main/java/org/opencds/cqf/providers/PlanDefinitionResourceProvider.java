@@ -112,10 +112,7 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         Bundle medicationReqs = null;
         String source = null;
         for (Parameters.ParametersParameterComponent param : contextParams.getParameter()) {
-            if (param.getName().equals("patient")) {
-                patientId = param.getValue().toString();
-            }
-            else if (param.getName().equals("context")) {
+            if (param.getName().equals("context")) {
                 for (Parameters.ParametersParameterComponent component : ((Parameters) param.getResource()).getParameter()) {
                     switch (component.getName()) {
                         case "prefetch": prefetch = (Bundle) component.getResource(); break;

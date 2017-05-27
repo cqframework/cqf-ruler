@@ -6,16 +6,16 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.opencds.cqf.cql.data.fhir.FhirDataProvider;
 import org.opencds.cqf.helpers.CdsCard;
 import org.opencds.cqf.helpers.CdsHooksHelper;
 import org.opencds.cqf.helpers.CdsRequest;
+import org.opencds.cqf.providers.PlanDefinitionResourceProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
  * Created by Christopher Schuler on 5/1/2017.
  */
 @WebServlet(name = "opioid-guidance-servlet")
-public class OpioidGuidanceServlet extends HttpServlet {
+public class OpioidGuidanceServlet extends BaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -45,6 +45,9 @@ public class OpioidGuidanceServlet extends HttpServlet {
         // parse request
         CdsRequest cdsRequest = new CdsRequest(requestBody);
 
+        // If the EHR did not provide the prefetch resources, fetch them
+        // Assuming DSTU2 resources here...
+        // This is a big drag on performance.
         if (cdsRequest.getPrefetch().getEntry().isEmpty()) {
             String searchUrl = String.format("MedicationOrder?patient=%s&status=active", cdsRequest.getPatient());
             ca.uhn.fhir.model.dstu2.resource.Bundle postfetch = FhirContext.forDstu2()
@@ -61,27 +64,21 @@ public class OpioidGuidanceServlet extends HttpServlet {
         }
 
         // prepare PlanDefinition $apply operation call
-        // TODO: remove HTTP call and call implementation ... somehow
         Parameters contextParams = new Parameters();
         contextParams.addParameter().setName("contextResources").setResource(cdsRequest.getContext());
         contextParams.addParameter().setName("prefetch").setResource(cdsRequest.getPrefetch());
         contextParams.addParameter().setName("source").setValue(new StringType(cdsRequest.getFhirServer()));
 
         Parameters inParams = new Parameters();
-        inParams.addParameter().setName("patient").setValue(new StringType(cdsRequest.getPatient()));
         inParams.addParameter().setName("context").setResource(contextParams);
 
-        FhirDataProvider dstu3Provider = new FhirDataProvider()
-                .withEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
-
-        Parameters careplanParams = dstu3Provider.getFhirClient()
-                .operation()
-                .onInstance(new IdType("PlanDefinition", "cdc-opioid-05"))
-                .named("$apply")
-                .withParameters(inParams)
-                .execute();
-
-        CarePlan careplan = (CarePlan) careplanParams.getParameterFirstRep().getResource();
+        PlanDefinitionResourceProvider provider = (PlanDefinitionResourceProvider) getProvider("PlanDefinition");
+        CarePlan careplan = new CarePlan();
+        try {
+            careplan = provider.apply(new IdType("cdc-opioid-05"), cdsRequest.getPatient(), null, null, null, null, null, null, null, null, inParams);
+        } catch (JAXBException | FHIRException e) {
+            throw new IllegalArgumentException("Error occurred during PlanDefinition $apply operation: " + e.getMessage());
+        }
 
         // create the response -- info cards for now
         // TODO: response in form of suggestion -- Resource with more appropriate values

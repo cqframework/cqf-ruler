@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Created by Chris Schuler on 12/11/2016.
  */
-public class MeasureProcessingJpaServlet extends RestfulServer {
+public class BaseServlet extends RestfulServer {
 
     private static final long serialVersionUID = 1L;
 
@@ -132,7 +132,7 @@ public class MeasureProcessingJpaServlet extends RestfulServer {
         //registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
     }
 
-    private IResourceProvider getProvider(String name) {
+    public IResourceProvider getProvider(String name) {
 
         for (IResourceProvider res : getResourceProviders()) {
             if (res.getResourceType().getSimpleName().equals(name)) {

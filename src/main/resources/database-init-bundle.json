@@ -13221,10 +13221,6 @@
       "resource": {
         "resourceType": "PlanDefinition",
         "id": "cdc-opioid-05",
-        "meta": {
-          "versionId": "3",
-          "lastUpdated": "2017-05-23T16:40:50.277-06:00"
-        },
         "text": {
           "status": "generated",
           "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">CDC Opioid Prescribing Guideline Recommendation #5</div>"
@@ -13343,7 +13339,7 @@
                 "kind": "applicability",
                 "description": "Is total MME >= 50?",
                 "language": "text/cql",
-                "expression": "IsMME50OrMore"
+                "expression": "Results"
               }
             ],
             "groupingBehavior": "visual-group",
@@ -13407,10 +13403,6 @@
       "resource": {
         "resourceType": "Claim",
         "id": "Claim-10033",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-14T22:08:51.978+00:00"
-        },
         "identifier": [
           {
             "id": "CLAIM_ID",
@@ -13473,10 +13465,6 @@
       "resource": {
         "resourceType": "Claim",
         "id": "Claim-10034",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-14T22:09:39.712+00:00"
-        },
         "identifier": [
           {
             "id": "CLAIM_ID",
@@ -13539,10 +13527,6 @@
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-5",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:31:10.612+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -13594,10 +13578,6 @@
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-6",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:31:30.143+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -13649,10 +13629,6 @@
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-8",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:31:59.064+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -13704,10 +13680,6 @@
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-11",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:32:14.767+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -13759,10 +13731,6 @@
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-12",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:32:39.517+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -13814,10 +13782,6 @@
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-13",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:32:58.547+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -13869,10 +13833,6 @@
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-14",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:33:17.891+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -13924,10 +13884,6 @@
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-18",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:33:35.234+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -13979,10 +13935,6 @@
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-19",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:33:51.703+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -14034,10 +13986,6 @@
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-4",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:34:17.218+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -14089,10 +14037,6 @@
       "resource": {
         "resourceType": "Library",
         "id": "col-logic",
-        "meta": {
-          "versionId": "2",
-          "lastUpdated": "2017-01-13T21:37:36.283+00:00"
-        },
         "type": {
           "coding": [
             {
@@ -14117,10 +14061,6 @@
       "resource": {
         "resourceType": "Library",
         "id": "cbp-logic",
-        "meta": {
-          "versionId": "2",
-          "lastUpdated": "2017-01-13T21:41:40.185+00:00"
-        },
         "type": {
           "coding": [
             {
@@ -14145,10 +14085,6 @@
       "resource": {
         "resourceType": "Library",
         "id": "fhir-model-definition",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-14T18:32:12.606+00:00"
-        },
         "text": {
           "status": "generated",
           "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">FHIR Model Definition</div>"
@@ -14195,10 +14131,6 @@
       "resource": {
         "resourceType": "Library",
         "id": "zika-virus-intervention-logic",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-14T18:32:38.997+00:00"
-        },
         "text": {
           "status": "generated",
           "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Zika Virus Intervention Logic</div>"
@@ -14301,10 +14233,6 @@
       "resource": {
         "resourceType": "Library",
         "id": "Library-10023",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-14T20:59:52.872+00:00"
-        },
         "status": "active",
         "content": [
           {
@@ -14323,10 +14251,6 @@
       "resource": {
         "resourceType": "Library",
         "id": "Library-10024",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-14T21:03:03.432+00:00"
-        },
         "status": "active",
         "content": [
           {
@@ -14345,10 +14269,6 @@
       "resource": {
         "resourceType": "Library",
         "id": "LIB-10023",
-        "meta": {
-          "versionId": "2",
-          "lastUpdated": "2017-01-15T15:02:53.014+00:00"
-        },
         "status": "active",
         "content": [
           {
@@ -14367,10 +14287,6 @@
       "resource": {
         "resourceType": "Library",
         "id": "Library-10053",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-15T05:20:42.708+00:00"
-        },
         "status": "active",
         "content": [
           {
@@ -14389,10 +14305,6 @@
       "resource": {
         "resourceType": "Library",
         "id": "pvs-logic",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-04-12T15:05:01.633+00:00"
-        },
         "text": {
           "status": "generated",
           "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Cohort Definition for Controlling Blood Pressure Measure</div>"
@@ -14446,10 +14358,6 @@
       "resource": {
         "resourceType": "Observation",
         "id": "Observation-10",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:40:31.103+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -14497,10 +14405,6 @@
       "resource": {
         "resourceType": "Observation",
         "id": "Observation-16",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:41:00.009+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -14548,10 +14452,6 @@
       "resource": {
         "resourceType": "Observation",
         "id": "Observation-20",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:41:17.290+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
@@ -14599,10 +14499,6 @@
       "resource": {
         "resourceType": "Observation",
         "id": "Observation-61",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:42:33.101+00:00"
-        },
         "extension": [
           {
             "url": "http://mihin.org/fhir/templateId",
