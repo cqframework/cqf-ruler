@@ -2,7 +2,9 @@
 CQF Ruler
 
 Base URL: http://measure.eval.kanvix.com/cqf-ruler/baseDstu3
+
 Tester URL: http://measure.eval.kanvix.com/cqf-ruler/tester/
+
 CDS Discovery URL: http://measure.eval.kanvix.com/cqf-ruler/cds-services
 
 ## Usage 
@@ -30,65 +32,68 @@ CDS Discovery URL: http://measure.eval.kanvix.com/cqf-ruler/cds-services
             Base/Measure/[MeasureID]/$evaluate?patient=[PatientID]&startperiod=[Start date of Measure]&endPeriod=[End date of Measure]&source=(URL of Data/Temrinology provider)&user=(username for provider auth)&pass=(password for provider auth)
 
 ### Clinical Reasoning Operations
-  - CDC Opioid Guidelines using PlanDefinition $apply operation
-    - ***NOTE*** In order to use this operation for the opioid guidelines, you must obtain a copy of the RxNorm local data. This data is represented as a SQLite database file.
-    - This operation is accessed via a CDS Hooks request
-    - Example:
-    POST http://measure.eval.kanvix.com/cqf-ruler/cds-services/cdc-opioid-guidance
-    `{
-       "hookInstance" : "d1577c69-dfbe-44ad-ba6d-3e05e953b2ea",
-       "fhirServer" : "http://fhirtest.uhn.ca/baseDstu2",
-       "hook" : "medication-prescribe",
-       "user" : "Practitioner/example",
-       "context" : [
-       	{
-     	  "resourceType": "MedicationOrder",
-     	  "id": "medrx001",
-     	  "dateWritten": "2017-05-05",
-     	  "status": "draft",
-     	  "patient": {
-     	    "reference": "Patient/Patient-12214"
-     	  },
-     	  "medicationCodeableConcept": {
-     	    "coding": [
-     	      {
-     	        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-     	        "code": "197696"
-     	      }
-     	    ]
-     	  },
-     	  "dosageInstruction": [
-     	    {
-     	      "text": "Take 40mg three times daily",
-     	      "timing": {
-     	        "repeat": {
-     	          "frequency": 3,
-     	          "frequencyMax": 3,
-     	          "period": 1,
-     	          "unit": "d"
-     	        }
-     	      },
-     	      "asNeededBoolean": false,
-     	      "doseQuantity": {
-     	        "value": 40,
-     	        "unit": "mg",
-     	        "system": "http://unitsofmeasure.org",
-     	        "code": "mg"
-     	      }
-     	    }
-     	  ],
-     	  "dispenseRequest": {
-     	    "quantity": {
-     	      "value": 3000,
-     	      "unit": "mg",
-     	      "system": "http://unitsofmeasure.org",
-     	      "code": "mg"
-     	    }
-     	  }
-     	}
-       ],
-       "patient": "Patient/Patient-12214",
-       "prefetch": {}
-     }`
-
-     - The response will be a CDS Hooks info card
+ - CDC Opioid Guidelines using PlanDefinition $apply operation
+  - ***NOTE*** In order to use this operation for the opioid guidelines, you must obtain a copy of the RxNorm local data. This data is represented as a SQLite database file.
+  - This operation is accessed via a CDS Hooks request
+   - Example:
+    
+   POST http://measure.eval.kanvix.com/cqf-ruler/cds-services/cdc-opioid-guidance
+    
+```
+{
+   "hookInstance" : "d1577c69-dfbe-44ad-ba6d-3e05e953b2ea",
+   "fhirServer" : "http://fhirtest.uhn.ca/baseDstu2",
+   "hook" : "medication-prescribe",
+   "user" : "Practitioner/example",
+   "context" : [
+    {
+    "resourceType": "MedicationOrder",
+    "id": "medrx001",
+    "dateWritten": "2017-05-05",
+    "status": "draft",
+    "patient": {
+      "reference": "Patient/Patient-12214"
+    },
+    "medicationCodeableConcept": {
+      "coding": [
+        {
+          "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+          "code": "197696"
+        }
+      ]
+    },
+    "dosageInstruction": [
+      {
+        "text": "Take 40mg three times daily",
+        "timing": {
+          "repeat": {
+            "frequency": 3,
+            "frequencyMax": 3,
+            "period": 1,
+            "unit": "d"
+          }
+        },
+        "asNeededBoolean": false,
+        "doseQuantity": {
+          "value": 40,
+          "unit": "mg",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg"
+        }
+      }
+    ],
+    "dispenseRequest": {
+      "quantity": {
+        "value": 3000,
+        "unit": "mg",
+        "system": "http://unitsofmeasure.org",
+        "code": "mg"
+      }
+    }
+  }
+   ],
+   "patient": "Patient/Patient-12214",
+   "prefetch": {}
+ }
+```
+  - The response will be a CDS Hooks info card
