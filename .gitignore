@@ -1,5 +1,8 @@
 # Created by https://www.gitignore.io
 
+# RxNorm data
+src/main/resources/cds/OpioidManagementTerminologyKnowledge.db
+
 # log files
 *.log
 

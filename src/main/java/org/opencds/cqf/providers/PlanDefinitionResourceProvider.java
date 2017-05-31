@@ -2,14 +2,12 @@ package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.model.primitive.UriDt;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelInfoLoader;
 import org.cqframework.cql.cql2elm.ModelInfoProvider;
 import org.cqframework.cql.elm.execution.ExpressionDef;
-import org.cqframework.cql.elm.execution.Library;
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.elm_modelinfo.r1.ModelInfo;
 import org.hl7.fhir.dstu3.model.*;
@@ -105,9 +103,7 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
                           @ResourceParam Parameters contextParams)
             throws IOException, JAXBException, FHIRException
     {
-        PlanDefinition planDefinition = this.getDao().read(theId);
-
-        // fetch params
+        // parse params
         Bundle prefetch = null;
         Bundle medicationReqs = null;
         String source = null;
@@ -123,35 +119,14 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
             }
         }
 
-        org.cqframework.cql.elm.execution.Library library;
-        if (planDefinition.getLibrary() == null || planDefinition.getLibrary().isEmpty()) {
-            // get default
-            library = CqlLibraryReader.read(new File(Paths.get("src/main/resources/cds/OpioidCDS_STU3-0.1.0.xml").toAbsolutePath().toString()));
-        }
-
-        else {
-            // TODO: fix this...
-            // fetch it
-            String ref = planDefinition.getLibrary().get(0).getReference();
-
-            if (ref.contains("http://") || ref.contains("https://")) {
-                // full url reference
-                library = (Library) provider.getFhirClient().read(new UriDt(ref));
-            }
-
-            else if (ref.contains("Library/")) {
-                // Id with resource
-                library = (Library) provider.getFhirClient()
-                        .read(new UriDt("http://fhirtest.uhn.ca/baseDstu2" + ref));
-            }
-
-            else {
-                library = (Library) provider.getFhirClient()
-                        .read(new UriDt("http://fhirtest.uhn.ca/baseDstu2/Library/" + ref));
-            }
-        }
+        // read opioid library
+        org.cqframework.cql.elm.execution.Library library =
+                CqlLibraryReader.read(new File(
+                        Paths.get("src/main/resources/cds/OpioidCDS_STU3-0.1.0.xml").toAbsolutePath().toString()
+                ));
 
         // resolve data providers
+        // the db file is issued to properly licensed implementers -- see README for more info
         String path = Paths.get("src/main/resources/cds/OpioidManagementTerminologyKnowledge.db").toAbsolutePath().toString().replace("\\", "/");
         String connString = "jdbc:sqlite://" + path;
         OmtkDataProvider omtkProvider = new OmtkDataProvider(connString);
@@ -175,6 +150,9 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
                 requests.add((MedicationRequest) entry.getResource());
             }
         }
+
+        // fetch PlanDefinition
+        PlanDefinition planDefinition = this.getDao().read(theId);
 
         return resolveOpioidMedicationPlanDefinition(context, requests, planDefinition);
     }
@@ -252,34 +230,6 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
                     }
                 }
             }
-
-//            if (action.hasDynamicValue()) {
-//                for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamic : action.getDynamicValue()) {
-//                    // using dynamic values to define title and description values through CQL expressions
-//                    // TODO: this is pretty hacky...
-//                    if (dynamic.hasDescription() && dynamic.getDescription().contains("description")
-//                            && dynamic.hasExpression())
-//                    {
-//                        ExpressionDef def = context.resolveExpressionRef(dynamic.getExpression());
-//                        Object result = def.getExpression().evaluate(context);
-//                        if (result instanceof String) {
-//                            description = result.toString();
-//                            careplan.setDescription(description);
-//                        }
-//                    }
-//
-//                    else if (dynamic.hasDescription() && dynamic.getDescription().contains("title")
-//                            && dynamic.hasExpression())
-//                    {
-//                        ExpressionDef def = context.resolveExpressionRef(dynamic.getExpression());
-//                        Object result = def.getExpression().evaluate(context);
-//                        if (result instanceof String) {
-//                            title = result.toString();
-//                            careplan.setTitle(title);
-//                        }
-//                    }
-//                }
-//            }
         }
         return careplan;
     }

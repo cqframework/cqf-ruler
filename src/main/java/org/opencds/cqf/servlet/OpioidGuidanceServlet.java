@@ -46,7 +46,7 @@ public class OpioidGuidanceServlet extends BaseServlet {
         CdsRequest cdsRequest = new CdsRequest(requestBody);
 
         // If the EHR did not provide the prefetch resources, fetch them
-        // Assuming DSTU2 resources here...
+        // Assuming EHR is using DSTU2 resources here...
         // This is a big drag on performance.
         if (cdsRequest.getPrefetch().getEntry().isEmpty()) {
             String searchUrl = String.format("MedicationOrder?patient=%s&status=active", cdsRequest.getPatient());
@@ -73,7 +73,7 @@ public class OpioidGuidanceServlet extends BaseServlet {
         inParams.addParameter().setName("context").setResource(contextParams);
 
         PlanDefinitionResourceProvider provider = (PlanDefinitionResourceProvider) getProvider("PlanDefinition");
-        CarePlan careplan = new CarePlan();
+        CarePlan careplan;
         try {
             careplan = provider.apply(new IdType("cdc-opioid-05"), cdsRequest.getPatient(), null, null, null, null, null, null, null, null, inParams);
         } catch (JAXBException | FHIRException e) {

@@ -119,7 +119,7 @@ public class CdsRequest {
         *   Required fields:
         *   MedicationOrder -> MedicationRequest
         *   medication -> medication
-        *   dispenseRequest (Backbone) -> Dosage (Element)
+        *   dosageInstruction (Backbone) -> Dosage (Element)
         */
         return new MedicationRequest()
                 .setStatus(MedicationRequest.MedicationRequestStatus.fromCode(order.getStatus()))
