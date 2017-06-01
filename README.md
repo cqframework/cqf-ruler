@@ -33,7 +33,8 @@ CDS Discovery URL: http://measure.eval.kanvix.com/cqf-ruler/cds-services
 
 ### Clinical Reasoning Operations
  - CDC Opioid Guidelines using PlanDefinition $apply operation
-  - ***NOTE*** In order to use this operation for the opioid guidelines, you must obtain a copy of the RxNorm local data. This data is represented as a SQLite database file.
+  - ***NOTE*** In order to fully use this operation for the opioid guidelines, you must obtain a copy of the RxNorm local data. This data is represented as a SQLite database file.
+    - To obtain a copy of the RxNorm local data, specify your request in the form provided [here](http://www.opencds.org/ContactUs.aspx)
   - This operation is accessed via a CDS Hooks request
    - Example:
     
