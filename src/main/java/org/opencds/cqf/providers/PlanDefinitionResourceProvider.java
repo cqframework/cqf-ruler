@@ -89,6 +89,7 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
     }
 
+    // This is basically designed to run the cdc opioid plan definition
     // TODO: Generify this logic to run any plan definition...
     @Operation(name = "$apply", idempotent = true)
     public CarePlan apply(@IdParam IdType theId, @RequiredParam(name="patient") String patientId,

@@ -1,9 +1,9 @@
 {
   "resourceType": "Bundle",
   "id": "database-init",
+  "type": "transaction",
   "entry": [
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Practitioner/Practitioner-12208",
       "resource": {
         "resourceType": "Practitioner",
         "id": "Practitioner-12208",
@@ -179,10 +179,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Practitioner/Practitioner-12208"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Patient/Patient-12214",
       "resource": {
         "resourceType": "Patient",
         "id": "Patient-12214",
@@ -295,10 +298,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-12214"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Patient/Patient-12217",
       "resource": {
         "resourceType": "Patient",
         "id": "Patient-12217",
@@ -411,10 +417,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-12217"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Patient/Patient-10003",
       "resource": {
         "resourceType": "Patient",
         "id": "Patient-10003",
@@ -434,10 +443,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-10003"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Patient/Patient-10004",
       "resource": {
         "resourceType": "Patient",
         "id": "Patient-10004",
@@ -457,10 +469,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-10004"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Patient/PAT-00001",
       "resource": {
         "resourceType": "Patient",
         "id": "PAT-00001",
@@ -484,10 +499,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/PAT-00001"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Patient/P123456",
       "resource": {
         "resourceType": "Patient",
         "id": "P123456",
@@ -504,10 +522,972 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/P123456"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.11.1001",
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.1",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2017-03-07T04:41:55.689+00:00"
+        },
+        "url": "http://loinc.org",
+        "status": "active",
+        "date": "2016-09-19",
+        "concept": [
+          {
+            "code": "8480-6",
+            "display": "Systolic blood pressure"
+          },
+          {
+            "code": "8462-4",
+            "display": "Diastolic blood pressure"
+          },
+          {
+            "code": "27396-1",
+            "display": "Hemoglobin.gastrointestinal [Mass/mass] in Stool"
+          },
+          {
+            "code": "58453-2",
+            "display": "Hemoglobin.gastrointestinal [Mass/volume] in Stool by Immunologic method"
+          },
+          {
+            "code": "2335-8",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool"
+          },
+          {
+            "code": "14563-1",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --1st specimen"
+          },
+          {
+            "code": "14564-9",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --2nd specimen"
+          },
+          {
+            "code": "14565-6",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --3rd specimen"
+          },
+          {
+            "code": "12503-9",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --4th specimen"
+          },
+          {
+            "code": "12504-7",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --5th specimen"
+          },
+          {
+            "code": "27401-9",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --6th specimen"
+          },
+          {
+            "code": "27925-7",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --7th specimen"
+          },
+          {
+            "code": "27926-5",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --8th specimen"
+          },
+          {
+            "code": "29771-3",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method"
+          },
+          {
+            "code": "57905-2",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --1st specimen"
+          },
+          {
+            "code": "56490-6",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --2nd specimen"
+          },
+          {
+            "code": "56491-4",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --3rd specimen"
+          },
+          {
+            "code": "51419-0",
+            "display": "Pregnant"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.1"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.5",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-01-13T20:14:49.283+00:00"
+        },
+        "url": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+        "status": "active",
+        "_status": {
+          "fhir_comments": [
+            "\n  <version value=\"\"/>\n  <name value=\"\"/>\n  "
+          ]
+        },
+        "date": "2016-09-19",
+        "concept": [
+          {
+            "fhir_comments": [
+              " <content value=\"fragment\" /> "
+            ],
+            "code": "G0104",
+            "display": "Colorectal cancer screening; flexible sigmoidoscopy"
+          },
+          {
+            "code": "G0105",
+            "display": "Colorectal cancer screening; colonoscopy on individual at high risk"
+          },
+          {
+            "code": "G0121",
+            "display": "Colorectal cancer screening; colonoscopy on individual not meeting criteria for high risk"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.5"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.12",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-01-13T20:15:20.846+00:00"
+        },
+        "url": "http://www.ama-assn.org/go/cpt ",
+        "status": "active",
+        "_status": {
+          "fhir_comments": [
+            "\n  <version value=\"\"/>\n  <name value=\"\"/>\n  "
+          ]
+        },
+        "date": "2016-09-19",
+        "concept": [
+          {
+            "fhir_comments": [
+              " <content value=\"fragment\" /> "
+            ],
+            "code": "99420",
+            "display": "Administration and interpretation of health risk assessment instrument (eg, health hazard appraisal)"
+          },
+          {
+            "code": "99345",
+            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the patient is unstable or has developed a significant new problem requiring immediate physician attention. Typically, 75 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99344",
+            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99343",
+            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A detailed history; A detailed examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 45 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99341",
+            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A problem focused history; A problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low severity. Typically, 20 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99342",
+            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; and Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99350",
+            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A comprehensive interval history; A comprehensive examination; Medical decision making of moderate to high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. The patient may be unstable or may have developed a significant new problem requiring immediate physician attention. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99349",
+            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A detailed interval history; A detailed examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are moderate to high severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99347",
+            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A problem focused interval history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 15 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99348",
+            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: An expanded problem focused interval history; An expanded problem focused examination; Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 25 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99385",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 18-39 years"
+          },
+          {
+            "code": "99386",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 40-64 years"
+          },
+          {
+            "code": "99387",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 65 years and older"
+          },
+          {
+            "code": "99384",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; adolescent (age 12 through 17 years)"
+          },
+          {
+            "code": "99382",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; early childhood (age 1 through 4 years)"
+          },
+          {
+            "code": "99381",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; infant (age younger than 1 year)"
+          },
+          {
+            "code": "99383",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; late childhood (age 5 through 11 years)"
+          },
+          {
+            "code": "99245",
+            "display": "Office consultation for a new or established patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 80 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99244",
+            "display": "Office consultation for a new or established patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99243",
+            "display": "Office consultation for a new or established patient, which requires these 3 key components: A detailed history; A detailed examination; and Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99241",
+            "display": "Office consultation for a new or established patient, which requires these 3 key components: A problem focused history; A problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 15 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99242",
+            "display": "Office consultation for a new or established patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99205",
+            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99204",
+            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 45 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99203",
+            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A detailed history; A detailed examination; Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99201",
+            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A problem focused history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 10 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99202",
+            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 20 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99211",
+            "display": "Office or other outpatient visit for the evaluation and management of an established patient, that may not require the presence of a physician or other qualified health care professional. Usually, the presenting problem(s) are minimal. Typically, 5 minutes are spent performing or supervising these services."
+          },
+          {
+            "code": "99215",
+            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99214",
+            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A detailed history; A detailed examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 25 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99212",
+            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A problem focused history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 10 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99213",
+            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: An expanded problem focused history; An expanded problem focused examination; Medical decision making of low complexity. Counseling and coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 15 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99395",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 18-39 years"
+          },
+          {
+            "code": "99396",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 40-64 years"
+          },
+          {
+            "code": "99397",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 65 years and older"
+          },
+          {
+            "code": "99394",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; adolescent (age 12 through 17 years)"
+          },
+          {
+            "code": "99392",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; early childhood (age 1 through 4 years)"
+          },
+          {
+            "code": "99391",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; infant (age younger than 1 year)"
+          },
+          {
+            "code": "99393",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; late childhood (age 5 through 11 years)"
+          },
+          {
+            "code": "99401",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 15 minutes"
+          },
+          {
+            "code": "99402",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 30 minutes"
+          },
+          {
+            "code": "99403",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 45 minutes"
+          },
+          {
+            "code": "99404",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 60 minutes"
+          },
+          {
+            "code": "99411",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to individuals in a group setting (separate procedure); approximately 30 minutes"
+          },
+          {
+            "code": "99412",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to individuals in a group setting (separate procedure); approximately 60 minutes"
+          },
+          {
+            "code": "99429",
+            "display": "Unlisted preventive medicine service"
+          },
+          {
+            "code": "99456",
+            "display": "Work related or medical disability examination by other than the treating physician that includes: Completion of a medical history commensurate with the patient's condition; Performance of an examination commensurate with the patient's condition; Formulation of a diagnosis, assessment of capabilities and stability, and calculation of impairment; Development of future medical treatment plan; and Completion of necessary documentation/certificates and report."
+          },
+          {
+            "code": "99455",
+            "display": "Work related or medical disability examination by the treating physician that includes: Completion of a medical history commensurate with the patient's condition; Performance of an examination commensurate with the patient's condition; Formulation of a diagnosis, assessment of capabilities and stability, and calculation of impairment; Development of future medical treatment plan; and Completion of necessary documentation/certificates and report."
+          },
+          {
+            "code": "44388",
+            "display": "Colonoscopy through stoma; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+          },
+          {
+            "code": "44401",
+            "display": "Colonoscopy through stoma; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre-and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "44393",
+            "display": "Colonoscopy through stoma; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
+          },
+          {
+            "code": "44389",
+            "display": "Colonoscopy through stoma; with biopsy, single or multiple"
+          },
+          {
+            "code": "44391",
+            "display": "Colonoscopy through stoma; with control of bleeding, any method"
+          },
+          {
+            "code": "44408",
+            "display": "Colonoscopy through stoma; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
+          },
+          {
+            "code": "44404",
+            "display": "Colonoscopy through stoma; with directed submucosal injection(s), any substance"
+          },
+          {
+            "code": "44403",
+            "display": "Colonoscopy through stoma; with endoscopic mucosal resection"
+          },
+          {
+            "code": "44402",
+            "display": "Colonoscopy through stoma; with endoscopic stent placement (including pre- and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "44406",
+            "display": "Colonoscopy through stoma; with endoscopic ultrasound examination, limited to the sigmoid, descending, transverse, or ascending colon and cecum and adjacent structures"
+          },
+          {
+            "code": "44390",
+            "display": "Colonoscopy through stoma; with removal of foreign body(s)"
+          },
+          {
+            "code": "44392",
+            "display": "Colonoscopy through stoma; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
+          },
+          {
+            "code": "44394",
+            "display": "Colonoscopy through stoma; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
+          },
+          {
+            "code": "44405",
+            "display": "Colonoscopy through stoma; with transendoscopic balloon dilation"
+          },
+          {
+            "code": "44397",
+            "display": "Colonoscopy through stoma; with transendoscopic stent placement (includes predilation)"
+          },
+          {
+            "code": "44407",
+            "display": "Colonoscopy through stoma; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s), includes endoscopic ultrasound examination limited to the sigmoid, descending, transverse, or ascending colon and cecum and adjacent structures"
+          },
+          {
+            "code": "45383",
+            "display": "Colonoscopy, flexible, proximal to splenic flexure; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
+          },
+          {
+            "code": "45387",
+            "display": "Colonoscopy, flexible, proximal to splenic flexure; with transendoscopic stent placement (includes predilation)"
+          },
+          {
+            "code": "45378",
+            "display": "Colonoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+          },
+          {
+            "code": "45388",
+            "display": "Colonoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "45398",
+            "display": "Colonoscopy, flexible; with band ligation(s) (eg, hemorrhoids)"
+          },
+          {
+            "code": "45380",
+            "display": "Colonoscopy, flexible; with biopsy, single or multiple"
+          },
+          {
+            "code": "45382",
+            "display": "Colonoscopy, flexible; with control of bleeding, any method"
+          },
+          {
+            "code": "45393",
+            "display": "Colonoscopy, flexible; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
+          },
+          {
+            "code": "45381",
+            "display": "Colonoscopy, flexible; with directed submucosal injection(s), any substance"
+          },
+          {
+            "code": "45390",
+            "display": "Colonoscopy, flexible; with endoscopic mucosal resection"
+          },
+          {
+            "code": "45389",
+            "display": "Colonoscopy, flexible; with endoscopic stent placement (includes pre- and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "45391",
+            "display": "Colonoscopy, flexible; with endoscopic ultrasound examination limited to the rectum, sigmoid, descending, transverse, or ascending colon and cecum, and adjacent structures"
+          },
+          {
+            "code": "45379",
+            "display": "Colonoscopy, flexible; with removal of foreign body(s)"
+          },
+          {
+            "code": "45384",
+            "display": "Colonoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
+          },
+          {
+            "code": "45385",
+            "display": "Colonoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
+          },
+          {
+            "code": "45386",
+            "display": "Colonoscopy, flexible; with transendoscopic balloon dilation"
+          },
+          {
+            "code": "45392",
+            "display": "Colonoscopy, flexible; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s), includes endoscopic ultrasound examination limited to the rectum, sigmoid, descending, transverse, or ascending colon and cecum, and adjacent structures"
+          },
+          {
+            "code": "45355",
+            "display": "Colonoscopy, rigid or flexible, transabdominal via colotomy, single or multiple"
+          },
+          {
+            "code": "45330",
+            "display": "Sigmoidoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+          },
+          {
+            "code": "45346",
+            "display": "Sigmoidoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "45339",
+            "display": "Sigmoidoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
+          },
+          {
+            "code": "45350",
+            "display": "Sigmoidoscopy, flexible; with band ligation(s) (eg, hemorrhoids)"
+          },
+          {
+            "code": "45331",
+            "display": "Sigmoidoscopy, flexible; with biopsy, single or multiple"
+          },
+          {
+            "code": "45334",
+            "display": "Sigmoidoscopy, flexible; with control of bleeding, any method"
+          },
+          {
+            "code": "45337",
+            "display": "Sigmoidoscopy, flexible; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
+          },
+          {
+            "code": "45335",
+            "display": "Sigmoidoscopy, flexible; with directed submucosal injection(s), any substance"
+          },
+          {
+            "code": "45349",
+            "display": "Sigmoidoscopy, flexible; with endoscopic mucosal resection"
+          },
+          {
+            "code": "45341",
+            "display": "Sigmoidoscopy, flexible; with endoscopic ultrasound examination"
+          },
+          {
+            "code": "45347",
+            "display": "Sigmoidoscopy, flexible; with placement of endoscopic stent (includes pre- and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "45332",
+            "display": "Sigmoidoscopy, flexible; with removal of foreign body(s)"
+          },
+          {
+            "code": "45333",
+            "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
+          },
+          {
+            "code": "45338",
+            "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
+          },
+          {
+            "code": "45340",
+            "display": "Sigmoidoscopy, flexible; with transendoscopic balloon dilation"
+          },
+          {
+            "code": "45345",
+            "display": "Sigmoidoscopy, flexible; with transendoscopic stent placement (includes predilation)"
+          },
+          {
+            "code": "45342",
+            "display": "Sigmoidoscopy, flexible; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s)"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.12"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.96",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-01-13T20:15:46.126+00:00"
+        },
+        "url": "http://snomed.info/sct",
+        "status": "active",
+        "_status": {
+          "fhir_comments": [
+            "\n  <version value=\"\"/>\n  <name value=\"\"/>\n  "
+          ]
+        },
+        "date": "2016-09-19",
+        "concept": [
+          {
+            "fhir_comments": [
+              " <content value=\"fragment\" /> "
+            ],
+            "code": "401.1",
+            "display": "Benign essential hypertension"
+          },
+          {
+            "code": "1201005",
+            "display": "Benign essential hypertension"
+          },
+          {
+            "code": "10725009",
+            "display": "Benign hypertension"
+          },
+          {
+            "code": "48146000",
+            "display": "Diastolic hypertension"
+          },
+          {
+            "code": "59621000",
+            "display": "Essential hypertension"
+          },
+          {
+            "code": "65518004",
+            "display": "Labile diastolic hypertension"
+          },
+          {
+            "code": "371125006",
+            "display": "Labile essential hypertension"
+          },
+          {
+            "code": "276789009",
+            "display": "Labile hypertension"
+          },
+          {
+            "code": "46481004",
+            "display": "Low-renin essential hypertension"
+          },
+          {
+            "code": "401.0",
+            "display": "Malignant essential hypertension"
+          },
+          {
+            "code": "78975002",
+            "display": "Malignant essential hypertension"
+          },
+          {
+            "code": "59720008",
+            "display": "Sustained diastolic hypertension"
+          },
+          {
+            "code": "429457004",
+            "display": "Systolic essential hypertension"
+          },
+          {
+            "code": "56218007",
+            "display": "Systolic hypertension"
+          },
+          {
+            "code": "401.9",
+            "display": "Unspecified essential hypertension"
+          },
+          {
+            "code": "I10",
+            "display": "Essential (primary) hypertension"
+          },
+          {
+            "code": "303401008",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Parks panproctocolectomy, anastomosis of ileum to anus and creation of pouch"
+          },
+          {
+            "code": "235331003",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Restorative proctocolectomy"
+          },
+          {
+            "code": "36192008",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total abdominal colectomy with ileoproctostomy"
+          },
+          {
+            "code": "456004",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total abdominal colectomy with ileostomy"
+          },
+          {
+            "code": "44751009",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total abdominal colectomy with proctectomy and continent ileostomy"
+          },
+          {
+            "code": "31130001",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total abdominal colectomy with proctectomy and ileostomy"
+          },
+          {
+            "code": "80294005",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total abdominal colectomy with rectal mucosectomy and ileoanal anastomosis"
+          },
+          {
+            "code": "26390003",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total colectomy"
+          },
+          {
+            "code": "307666008",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total colectomy and ileostomy"
+          },
+          {
+            "code": "307669001",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total colectomy, ileostomy and closure of rectal stump"
+          },
+          {
+            "code": "307667004",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total colectomy, ileostomy and rectal mucous fistula"
+          },
+          {
+            "code": "310634005",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Check colonoscopy"
+          },
+          {
+            "code": "73761001",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy"
+          },
+          {
+            "code": "446745002",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy and biopsy of colon"
+          },
+          {
+            "code": "446521004",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy and excision of mucosa of colon"
+          },
+          {
+            "code": "447021001",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy and tattooing"
+          },
+          {
+            "code": "443998000",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy through colostomy with endoscopic biopsy of colon"
+          },
+          {
+            "code": "12350003",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy with rigid sigmoidoscope through colotomy"
+          },
+          {
+            "code": "427459009",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Diagnostic endoscopic examination of colonic pouch and biopsy of colonic pouch using colonoscope"
+          },
+          {
+            "code": "174184006",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Diagnostic endoscopic examination on colon"
+          },
+          {
+            "code": "367535003",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Fiberoptic colonoscopy"
+          },
+          {
+            "code": "8180007",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Fiberoptic colonoscopy through colostomy"
+          },
+          {
+            "code": "25732003",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Fiberoptic colonoscopy with biopsy"
+          },
+          {
+            "code": "34264006",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Intraoperative colonoscopy"
+          },
+          {
+            "code": "235151005",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Limited colonoscopy"
+          },
+          {
+            "code": "174158000",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Open colonoscopy"
+          },
+          {
+            "code": "444783004",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Screening colonoscopy"
+          },
+          {
+            "code": "303587008",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Therapeutic colonoscopy"
+          },
+          {
+            "code": "235150006",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Total colonoscopy"
+          },
+          {
+            "code": "425634007",
+            "display": "Diagnostic endoscopic examination of lower bowel and sampling for bacterial overgrowth using fiberoptic sigmoidoscope"
+          },
+          {
+            "code": "44441009",
+            "display": "Flexible fiberoptic sigmoidoscopy"
+          },
+          {
+            "code": "112870002",
+            "display": "Flexible fiberoptic sigmoidoscopy for removal of foreign body"
+          },
+          {
+            "code": "396226005",
+            "display": "Flexible fiberoptic sigmoidoscopy with biopsy"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.96"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.42",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-03-07T04:38:50.082+00:00"
+        },
+        "url": "http://hl7.org/fhir/sid/icd-9-cm",
+        "status": "active",
+        "date": "2017-03-06",
+        "concept": [
+          {
+            "code": "428.41",
+            "display": "Something sodium relatedy"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.42"
+      }
+    },
+    {
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1003.108.11.1001",
@@ -926,10 +1906,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.11.1001"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1001",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1003.108.12.1001",
@@ -1329,10 +2312,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1001"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1020",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1003.108.12.1020",
@@ -1756,10 +2742,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1020"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1010",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1003.198.12.1010",
@@ -1970,10 +2959,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1010"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1011",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1003.198.12.1011",
@@ -2123,10 +3115,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1011"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1019",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1003.198.12.1019",
@@ -2310,10 +3305,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1019"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.104.12.1011",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1003.104.12.1011",
@@ -2450,10 +3448,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.104.12.1011"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.109.12.1012",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1003.109.12.1012",
@@ -2626,10 +3627,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.109.12.1012"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1203",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1203",
@@ -3446,10 +4450,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1203"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1395",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1395",
@@ -4091,655 +5098,13 @@
       },
       "search": {
         "mode": "match"
-      }
-    },
-    {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1395",
-      "resource": {
-        "resourceType": "ValueSet",
-        "id": "2.16.840.1.113883.3.464.1004.1395",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:48:22.205+00:00"
-        },
-        "url": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Valueset/2.16.840.1.113883.3.464.1004.1395",
-        "name": "Inpatient Stay (RevCode)",
-        "compose": {
-          "include": [
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "010X"
-                }
-              ]
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "011X"
-                }
-              ]
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "012X"
-                }
-              ]
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "013X"
-                }
-              ]
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "014X"
-                }
-              ]
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "015X"
-                }
-              ]
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "016X"
-                }
-              ]
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "020X"
-                }
-              ]
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "021X"
-                }
-              ]
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "019X"
-                }
-              ]
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "017X"
-                }
-              ]
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "filter": [
-                {
-                  "property": "concept",
-                  "op": "is-a",
-                  "value": "100X"
-                }
-              ]
-            }
-          ]
-        },
-        "expansion": {
-          "timestamp": "2016-09-17T17:06:10.391-04:00",
-          "total": 81,
-          "offset": 0,
-          "contains": [
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0100",
-              "display": "All-inclusive room and board plus ancillary"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0101",
-              "display": "All-inclusive room and board"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0110",
-              "display": "General"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0111",
-              "display": "Medical/surgical/GYN"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0112",
-              "display": "Obstetrics (OB)"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0113",
-              "display": "Pediatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0114",
-              "display": "Psychiatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0116",
-              "display": "Detoxification"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0117",
-              "display": "Oncology"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0118",
-              "display": "Rehabilitation"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0119",
-              "display": "Other"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0120",
-              "display": "General"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0121",
-              "display": "Medical/surgical/GYN"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0122",
-              "display": "OB"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0123",
-              "display": "Pediatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0124",
-              "display": "Psychiatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0126",
-              "display": "Detoxification"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0127",
-              "display": "Oncology"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0128",
-              "display": "Rehabilitation"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0129",
-              "display": "Other"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0130",
-              "display": "General"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0131",
-              "display": "Medical/surgical/GYN"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0132",
-              "display": "OB"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0133",
-              "display": "Pediatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0134",
-              "display": "Psychiatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0136",
-              "display": "Detoxification"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0137",
-              "display": "Oncology"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0138",
-              "display": "Rehabilitation"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0139",
-              "display": "Other"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0140",
-              "display": "General"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0141",
-              "display": "Medical/surgical/GYN"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0142",
-              "display": "OB"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0143",
-              "display": "Pediatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0144",
-              "display": "Psychiatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0146",
-              "display": "Detoxification"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0147",
-              "display": "Oncology"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0148",
-              "display": "Rehabilitation"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0149",
-              "display": "Other"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0150",
-              "display": "General"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0151",
-              "display": "Medical/surgical/GYN"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0152",
-              "display": "OB"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0153",
-              "display": "Pediatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0154",
-              "display": "Psychiatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0156",
-              "display": "Detoxification"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0157",
-              "display": "Oncology"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0158",
-              "display": "Rehabilitation"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0159",
-              "display": "Other"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0160",
-              "display": "General"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0164",
-              "display": "Sterile environment"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0167",
-              "display": "Self-care"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0169",
-              "display": "Other"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0170",
-              "display": "General"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0171",
-              "display": "Newborn-Level I"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0172",
-              "display": "Newborn-Level II"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0173",
-              "display": "Newborn-Level III"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0174",
-              "display": "Newborn-Level IV"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0179",
-              "display": "Other Nursery"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0190",
-              "display": "General"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0191",
-              "display": "Subacute care-Level I"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0192",
-              "display": "Subacute care-Level II"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0193",
-              "display": "Subacute care-Level III"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0194",
-              "display": "Subacute care-Level IV"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0199",
-              "display": "Other subacute care"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0200",
-              "display": "General"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0201",
-              "display": "Surgical"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0202",
-              "display": "Medical"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0203",
-              "display": "Pediatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0204",
-              "display": "Psychiatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0206",
-              "display": "Intermediate intensive care unit (ICU)"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0207",
-              "display": "Burn care"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0208",
-              "display": "Trauma"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0209",
-              "display": "Other intensive care"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0210",
-              "display": "General"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0211",
-              "display": "Myocardial infarction"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0212",
-              "display": "Pulmonary care"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0213",
-              "display": "Heart transplant"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0214",
-              "display": "Intermediate coronary care unit (CCU)"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "0219",
-              "display": "Other coronary care"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "1000",
-              "display": "General"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "1001",
-              "display": "Residential treatment-psychiatric"
-            },
-            {
-              "system": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
-              "version": "2012.05",
-              "code": "1002",
-              "display": "Residential treatment-chemical dependency"
-            }
-          ]
-        }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1395"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.526.3.353",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.526.3.353",
@@ -4829,10 +5194,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.526.3.353"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.526.3.1032",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.526.3.1032",
@@ -4873,10 +5241,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.526.3.1032"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.526.3.1033",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.526.3.1033",
@@ -4917,10 +5288,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.526.3.1033"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/2.16.840.1.113883.3.600.1622",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.600.1622",
@@ -11567,10 +11941,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.600.1622"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/zika-affected-areas",
       "resource": {
         "resourceType": "ValueSet",
         "id": "zika-affected-areas",
@@ -11611,10 +11988,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/zika-affected-areas"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/33.1.16",
       "resource": {
         "resourceType": "ValueSet",
         "id": "33.1.16",
@@ -11650,10 +12030,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/33.1.16"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/33.6.13",
       "resource": {
         "resourceType": "ValueSet",
         "id": "33.6.13",
@@ -11689,10 +12072,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/33.6.13"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ValueSet/33.6.31",
       "resource": {
         "resourceType": "ValueSet",
         "id": "33.6.31",
@@ -11728,954 +12114,13 @@
       },
       "search": {
         "mode": "match"
-      }
-    },
-    {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/CodeSystem/2.16.840.1.113883.6.1",
-      "resource": {
-        "resourceType": "CodeSystem",
-        "id": "2.16.840.1.113883.6.1",
-        "meta": {
-          "versionId": "2",
-          "lastUpdated": "2017-03-07T04:41:55.689+00:00"
-        },
-        "url": "http://loinc.org",
-        "status": "active",
-        "date": "2016-09-19",
-        "concept": [
-          {
-            "code": "8480-6",
-            "display": "Systolic blood pressure"
-          },
-          {
-            "code": "8462-4",
-            "display": "Diastolic blood pressure"
-          },
-          {
-            "code": "27396-1",
-            "display": "Hemoglobin.gastrointestinal [Mass/mass] in Stool"
-          },
-          {
-            "code": "58453-2",
-            "display": "Hemoglobin.gastrointestinal [Mass/volume] in Stool by Immunologic method"
-          },
-          {
-            "code": "2335-8",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool"
-          },
-          {
-            "code": "14563-1",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --1st specimen"
-          },
-          {
-            "code": "14564-9",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --2nd specimen"
-          },
-          {
-            "code": "14565-6",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --3rd specimen"
-          },
-          {
-            "code": "12503-9",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --4th specimen"
-          },
-          {
-            "code": "12504-7",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --5th specimen"
-          },
-          {
-            "code": "27401-9",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --6th specimen"
-          },
-          {
-            "code": "27925-7",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --7th specimen"
-          },
-          {
-            "code": "27926-5",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --8th specimen"
-          },
-          {
-            "code": "29771-3",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method"
-          },
-          {
-            "code": "57905-2",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --1st specimen"
-          },
-          {
-            "code": "56490-6",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --2nd specimen"
-          },
-          {
-            "code": "56491-4",
-            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --3rd specimen"
-          },
-          {
-            "code": "51419-0",
-            "display": "Pregnant"
-          }
-        ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/33.6.31"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/CodeSystem/2.16.840.1.113883.6.5",
-      "resource": {
-        "resourceType": "CodeSystem",
-        "id": "2.16.840.1.113883.6.5",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:14:49.283+00:00"
-        },
-        "url": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
-        "status": "active",
-        "_status": {
-          "fhir_comments": [
-            "\n  <version value=\"\"/>\n  <name value=\"\"/>\n  "
-          ]
-        },
-        "date": "2016-09-19",
-        "concept": [
-          {
-            "fhir_comments": [
-              " <content value=\"fragment\" /> "
-            ],
-            "code": "G0104",
-            "display": "Colorectal cancer screening; flexible sigmoidoscopy"
-          },
-          {
-            "code": "G0105",
-            "display": "Colorectal cancer screening; colonoscopy on individual at high risk"
-          },
-          {
-            "code": "G0121",
-            "display": "Colorectal cancer screening; colonoscopy on individual not meeting criteria for high risk"
-          }
-        ]
-      },
-      "search": {
-        "mode": "match"
-      }
-    },
-    {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/CodeSystem/2.16.840.1.113883.6.12",
-      "resource": {
-        "resourceType": "CodeSystem",
-        "id": "2.16.840.1.113883.6.12",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:15:20.846+00:00"
-        },
-        "url": "http://www.ama-assn.org/go/cpt ",
-        "status": "active",
-        "_status": {
-          "fhir_comments": [
-            "\n  <version value=\"\"/>\n  <name value=\"\"/>\n  "
-          ]
-        },
-        "date": "2016-09-19",
-        "concept": [
-          {
-            "fhir_comments": [
-              " <content value=\"fragment\" /> "
-            ],
-            "code": "99420",
-            "display": "Administration and interpretation of health risk assessment instrument (eg, health hazard appraisal)"
-          },
-          {
-            "code": "99345",
-            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the patient is unstable or has developed a significant new problem requiring immediate physician attention. Typically, 75 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99344",
-            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99343",
-            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A detailed history; A detailed examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 45 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99341",
-            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A problem focused history; A problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low severity. Typically, 20 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99342",
-            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; and Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99350",
-            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A comprehensive interval history; A comprehensive examination; Medical decision making of moderate to high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. The patient may be unstable or may have developed a significant new problem requiring immediate physician attention. Typically, 60 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99349",
-            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A detailed interval history; A detailed examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are moderate to high severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99347",
-            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A problem focused interval history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 15 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99348",
-            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: An expanded problem focused interval history; An expanded problem focused examination; Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 25 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99385",
-            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 18-39 years"
-          },
-          {
-            "code": "99386",
-            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 40-64 years"
-          },
-          {
-            "code": "99387",
-            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 65 years and older"
-          },
-          {
-            "code": "99384",
-            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; adolescent (age 12 through 17 years)"
-          },
-          {
-            "code": "99382",
-            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; early childhood (age 1 through 4 years)"
-          },
-          {
-            "code": "99381",
-            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; infant (age younger than 1 year)"
-          },
-          {
-            "code": "99383",
-            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; late childhood (age 5 through 11 years)"
-          },
-          {
-            "code": "99245",
-            "display": "Office consultation for a new or established patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 80 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99244",
-            "display": "Office consultation for a new or established patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99243",
-            "display": "Office consultation for a new or established patient, which requires these 3 key components: A detailed history; A detailed examination; and Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99241",
-            "display": "Office consultation for a new or established patient, which requires these 3 key components: A problem focused history; A problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 15 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99242",
-            "display": "Office consultation for a new or established patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99205",
-            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99204",
-            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 45 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99203",
-            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A detailed history; A detailed examination; Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99201",
-            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A problem focused history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 10 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99202",
-            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 20 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99211",
-            "display": "Office or other outpatient visit for the evaluation and management of an established patient, that may not require the presence of a physician or other qualified health care professional. Usually, the presenting problem(s) are minimal. Typically, 5 minutes are spent performing or supervising these services."
-          },
-          {
-            "code": "99215",
-            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99214",
-            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A detailed history; A detailed examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 25 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99212",
-            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A problem focused history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 10 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99213",
-            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: An expanded problem focused history; An expanded problem focused examination; Medical decision making of low complexity. Counseling and coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 15 minutes are spent face-to-face with the patient and/or family."
-          },
-          {
-            "code": "99395",
-            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 18-39 years"
-          },
-          {
-            "code": "99396",
-            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 40-64 years"
-          },
-          {
-            "code": "99397",
-            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 65 years and older"
-          },
-          {
-            "code": "99394",
-            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; adolescent (age 12 through 17 years)"
-          },
-          {
-            "code": "99392",
-            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; early childhood (age 1 through 4 years)"
-          },
-          {
-            "code": "99391",
-            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; infant (age younger than 1 year)"
-          },
-          {
-            "code": "99393",
-            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; late childhood (age 5 through 11 years)"
-          },
-          {
-            "code": "99401",
-            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 15 minutes"
-          },
-          {
-            "code": "99402",
-            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 30 minutes"
-          },
-          {
-            "code": "99403",
-            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 45 minutes"
-          },
-          {
-            "code": "99404",
-            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 60 minutes"
-          },
-          {
-            "code": "99411",
-            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to individuals in a group setting (separate procedure); approximately 30 minutes"
-          },
-          {
-            "code": "99412",
-            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to individuals in a group setting (separate procedure); approximately 60 minutes"
-          },
-          {
-            "code": "99429",
-            "display": "Unlisted preventive medicine service"
-          },
-          {
-            "code": "99456",
-            "display": "Work related or medical disability examination by other than the treating physician that includes: Completion of a medical history commensurate with the patient's condition; Performance of an examination commensurate with the patient's condition; Formulation of a diagnosis, assessment of capabilities and stability, and calculation of impairment; Development of future medical treatment plan; and Completion of necessary documentation/certificates and report."
-          },
-          {
-            "code": "99455",
-            "display": "Work related or medical disability examination by the treating physician that includes: Completion of a medical history commensurate with the patient's condition; Performance of an examination commensurate with the patient's condition; Formulation of a diagnosis, assessment of capabilities and stability, and calculation of impairment; Development of future medical treatment plan; and Completion of necessary documentation/certificates and report."
-          },
-          {
-            "code": "44388",
-            "display": "Colonoscopy through stoma; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
-          },
-          {
-            "code": "44401",
-            "display": "Colonoscopy through stoma; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre-and post-dilation and guide wire passage, when performed)"
-          },
-          {
-            "code": "44393",
-            "display": "Colonoscopy through stoma; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
-          },
-          {
-            "code": "44389",
-            "display": "Colonoscopy through stoma; with biopsy, single or multiple"
-          },
-          {
-            "code": "44391",
-            "display": "Colonoscopy through stoma; with control of bleeding, any method"
-          },
-          {
-            "code": "44408",
-            "display": "Colonoscopy through stoma; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
-          },
-          {
-            "code": "44404",
-            "display": "Colonoscopy through stoma; with directed submucosal injection(s), any substance"
-          },
-          {
-            "code": "44403",
-            "display": "Colonoscopy through stoma; with endoscopic mucosal resection"
-          },
-          {
-            "code": "44402",
-            "display": "Colonoscopy through stoma; with endoscopic stent placement (including pre- and post-dilation and guide wire passage, when performed)"
-          },
-          {
-            "code": "44406",
-            "display": "Colonoscopy through stoma; with endoscopic ultrasound examination, limited to the sigmoid, descending, transverse, or ascending colon and cecum and adjacent structures"
-          },
-          {
-            "code": "44390",
-            "display": "Colonoscopy through stoma; with removal of foreign body(s)"
-          },
-          {
-            "code": "44392",
-            "display": "Colonoscopy through stoma; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
-          },
-          {
-            "code": "44394",
-            "display": "Colonoscopy through stoma; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
-          },
-          {
-            "code": "44405",
-            "display": "Colonoscopy through stoma; with transendoscopic balloon dilation"
-          },
-          {
-            "code": "44397",
-            "display": "Colonoscopy through stoma; with transendoscopic stent placement (includes predilation)"
-          },
-          {
-            "code": "44407",
-            "display": "Colonoscopy through stoma; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s), includes endoscopic ultrasound examination limited to the sigmoid, descending, transverse, or ascending colon and cecum and adjacent structures"
-          },
-          {
-            "code": "45383",
-            "display": "Colonoscopy, flexible, proximal to splenic flexure; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
-          },
-          {
-            "code": "45387",
-            "display": "Colonoscopy, flexible, proximal to splenic flexure; with transendoscopic stent placement (includes predilation)"
-          },
-          {
-            "code": "45378",
-            "display": "Colonoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
-          },
-          {
-            "code": "45388",
-            "display": "Colonoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
-          },
-          {
-            "code": "45398",
-            "display": "Colonoscopy, flexible; with band ligation(s) (eg, hemorrhoids)"
-          },
-          {
-            "code": "45380",
-            "display": "Colonoscopy, flexible; with biopsy, single or multiple"
-          },
-          {
-            "code": "45382",
-            "display": "Colonoscopy, flexible; with control of bleeding, any method"
-          },
-          {
-            "code": "45393",
-            "display": "Colonoscopy, flexible; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
-          },
-          {
-            "code": "45381",
-            "display": "Colonoscopy, flexible; with directed submucosal injection(s), any substance"
-          },
-          {
-            "code": "45390",
-            "display": "Colonoscopy, flexible; with endoscopic mucosal resection"
-          },
-          {
-            "code": "45389",
-            "display": "Colonoscopy, flexible; with endoscopic stent placement (includes pre- and post-dilation and guide wire passage, when performed)"
-          },
-          {
-            "code": "45391",
-            "display": "Colonoscopy, flexible; with endoscopic ultrasound examination limited to the rectum, sigmoid, descending, transverse, or ascending colon and cecum, and adjacent structures"
-          },
-          {
-            "code": "45379",
-            "display": "Colonoscopy, flexible; with removal of foreign body(s)"
-          },
-          {
-            "code": "45384",
-            "display": "Colonoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
-          },
-          {
-            "code": "45385",
-            "display": "Colonoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
-          },
-          {
-            "code": "45386",
-            "display": "Colonoscopy, flexible; with transendoscopic balloon dilation"
-          },
-          {
-            "code": "45392",
-            "display": "Colonoscopy, flexible; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s), includes endoscopic ultrasound examination limited to the rectum, sigmoid, descending, transverse, or ascending colon and cecum, and adjacent structures"
-          },
-          {
-            "code": "45355",
-            "display": "Colonoscopy, rigid or flexible, transabdominal via colotomy, single or multiple"
-          },
-          {
-            "code": "45330",
-            "display": "Sigmoidoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
-          },
-          {
-            "code": "45346",
-            "display": "Sigmoidoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
-          },
-          {
-            "code": "45339",
-            "display": "Sigmoidoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
-          },
-          {
-            "code": "45350",
-            "display": "Sigmoidoscopy, flexible; with band ligation(s) (eg, hemorrhoids)"
-          },
-          {
-            "code": "45331",
-            "display": "Sigmoidoscopy, flexible; with biopsy, single or multiple"
-          },
-          {
-            "code": "45334",
-            "display": "Sigmoidoscopy, flexible; with control of bleeding, any method"
-          },
-          {
-            "code": "45337",
-            "display": "Sigmoidoscopy, flexible; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
-          },
-          {
-            "code": "45335",
-            "display": "Sigmoidoscopy, flexible; with directed submucosal injection(s), any substance"
-          },
-          {
-            "code": "45349",
-            "display": "Sigmoidoscopy, flexible; with endoscopic mucosal resection"
-          },
-          {
-            "code": "45341",
-            "display": "Sigmoidoscopy, flexible; with endoscopic ultrasound examination"
-          },
-          {
-            "code": "45347",
-            "display": "Sigmoidoscopy, flexible; with placement of endoscopic stent (includes pre- and post-dilation and guide wire passage, when performed)"
-          },
-          {
-            "code": "45332",
-            "display": "Sigmoidoscopy, flexible; with removal of foreign body(s)"
-          },
-          {
-            "code": "45333",
-            "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
-          },
-          {
-            "code": "45338",
-            "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
-          },
-          {
-            "code": "45340",
-            "display": "Sigmoidoscopy, flexible; with transendoscopic balloon dilation"
-          },
-          {
-            "code": "45345",
-            "display": "Sigmoidoscopy, flexible; with transendoscopic stent placement (includes predilation)"
-          },
-          {
-            "code": "45342",
-            "display": "Sigmoidoscopy, flexible; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s)"
-          }
-        ]
-      },
-      "search": {
-        "mode": "match"
-      }
-    },
-    {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/CodeSystem/2.16.840.1.113883.6.96",
-      "resource": {
-        "resourceType": "CodeSystem",
-        "id": "2.16.840.1.113883.6.96",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-01-13T20:15:46.126+00:00"
-        },
-        "url": "http://snomed.info/sct",
-        "status": "active",
-        "_status": {
-          "fhir_comments": [
-            "\n  <version value=\"\"/>\n  <name value=\"\"/>\n  "
-          ]
-        },
-        "date": "2016-09-19",
-        "concept": [
-          {
-            "fhir_comments": [
-              " <content value=\"fragment\" /> "
-            ],
-            "code": "401.1",
-            "display": "Benign essential hypertension"
-          },
-          {
-            "code": "1201005",
-            "display": "Benign essential hypertension"
-          },
-          {
-            "code": "10725009",
-            "display": "Benign hypertension"
-          },
-          {
-            "code": "48146000",
-            "display": "Diastolic hypertension"
-          },
-          {
-            "code": "59621000",
-            "display": "Essential hypertension"
-          },
-          {
-            "code": "65518004",
-            "display": "Labile diastolic hypertension"
-          },
-          {
-            "code": "371125006",
-            "display": "Labile essential hypertension"
-          },
-          {
-            "code": "276789009",
-            "display": "Labile hypertension"
-          },
-          {
-            "code": "46481004",
-            "display": "Low-renin essential hypertension"
-          },
-          {
-            "code": "401.0",
-            "display": "Malignant essential hypertension"
-          },
-          {
-            "code": "78975002",
-            "display": "Malignant essential hypertension"
-          },
-          {
-            "code": "59720008",
-            "display": "Sustained diastolic hypertension"
-          },
-          {
-            "code": "429457004",
-            "display": "Systolic essential hypertension"
-          },
-          {
-            "code": "56218007",
-            "display": "Systolic hypertension"
-          },
-          {
-            "code": "401.9",
-            "display": "Unspecified essential hypertension"
-          },
-          {
-            "code": "I10",
-            "display": "Essential (primary) hypertension"
-          },
-          {
-            "code": "303401008",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2015.09.15AA\"/> "
-              ]
-            },
-            "display": "Parks panproctocolectomy, anastomosis of ileum to anus and creation of pouch"
-          },
-          {
-            "code": "235331003",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2015.09.15AA\"/> "
-              ]
-            },
-            "display": "Restorative proctocolectomy"
-          },
-          {
-            "code": "36192008",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2015.09.15AA\"/> "
-              ]
-            },
-            "display": "Total abdominal colectomy with ileoproctostomy"
-          },
-          {
-            "code": "456004",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2015.09.15AA\"/> "
-              ]
-            },
-            "display": "Total abdominal colectomy with ileostomy"
-          },
-          {
-            "code": "44751009",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2015.09.15AA\"/> "
-              ]
-            },
-            "display": "Total abdominal colectomy with proctectomy and continent ileostomy"
-          },
-          {
-            "code": "31130001",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2015.09.15AA\"/> "
-              ]
-            },
-            "display": "Total abdominal colectomy with proctectomy and ileostomy"
-          },
-          {
-            "code": "80294005",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2015.09.15AA\"/> "
-              ]
-            },
-            "display": "Total abdominal colectomy with rectal mucosectomy and ileoanal anastomosis"
-          },
-          {
-            "code": "26390003",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2015.09.15AA\"/> "
-              ]
-            },
-            "display": "Total colectomy"
-          },
-          {
-            "code": "307666008",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2015.09.15AA\"/> "
-              ]
-            },
-            "display": "Total colectomy and ileostomy"
-          },
-          {
-            "code": "307669001",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2015.09.15AA\"/> "
-              ]
-            },
-            "display": "Total colectomy, ileostomy and closure of rectal stump"
-          },
-          {
-            "code": "307667004",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2015.09.15AA\"/> "
-              ]
-            },
-            "display": "Total colectomy, ileostomy and rectal mucous fistula"
-          },
-          {
-            "code": "310634005",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Check colonoscopy"
-          },
-          {
-            "code": "73761001",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Colonoscopy"
-          },
-          {
-            "code": "446745002",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Colonoscopy and biopsy of colon"
-          },
-          {
-            "code": "446521004",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Colonoscopy and excision of mucosa of colon"
-          },
-          {
-            "code": "447021001",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Colonoscopy and tattooing"
-          },
-          {
-            "code": "443998000",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Colonoscopy through colostomy with endoscopic biopsy of colon"
-          },
-          {
-            "code": "12350003",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Colonoscopy with rigid sigmoidoscope through colotomy"
-          },
-          {
-            "code": "427459009",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Diagnostic endoscopic examination of colonic pouch and biopsy of colonic pouch using colonoscope"
-          },
-          {
-            "code": "174184006",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Diagnostic endoscopic examination on colon"
-          },
-          {
-            "code": "367535003",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Fiberoptic colonoscopy"
-          },
-          {
-            "code": "8180007",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Fiberoptic colonoscopy through colostomy"
-          },
-          {
-            "code": "25732003",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Fiberoptic colonoscopy with biopsy"
-          },
-          {
-            "code": "34264006",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Intraoperative colonoscopy"
-          },
-          {
-            "code": "235151005",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Limited colonoscopy"
-          },
-          {
-            "code": "174158000",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Open colonoscopy"
-          },
-          {
-            "code": "444783004",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Screening colonoscopy"
-          },
-          {
-            "code": "303587008",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Therapeutic colonoscopy"
-          },
-          {
-            "code": "235150006",
-            "_code": {
-              "fhir_comments": [
-                " <version value=\"2014.07.14AA\"/> "
-              ]
-            },
-            "display": "Total colonoscopy"
-          },
-          {
-            "code": "425634007",
-            "display": "Diagnostic endoscopic examination of lower bowel and sampling for bacterial overgrowth using fiberoptic sigmoidoscope"
-          },
-          {
-            "code": "44441009",
-            "display": "Flexible fiberoptic sigmoidoscopy"
-          },
-          {
-            "code": "112870002",
-            "display": "Flexible fiberoptic sigmoidoscopy for removal of foreign body"
-          },
-          {
-            "code": "396226005",
-            "display": "Flexible fiberoptic sigmoidoscopy with biopsy"
-          }
-        ]
-      },
-      "search": {
-        "mode": "match"
-      }
-    },
-    {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/CodeSystem/2.16.840.1.113883.6.42",
-      "resource": {
-        "resourceType": "CodeSystem",
-        "id": "2.16.840.1.113883.6.42",
-        "meta": {
-          "versionId": "1",
-          "lastUpdated": "2017-03-07T04:38:50.082+00:00"
-        },
-        "url": "http://hl7.org/fhir/sid/icd-9-cm",
-        "status": "active",
-        "date": "2017-03-06",
-        "concept": [
-          {
-            "code": "428.41",
-            "display": "Something sodium relatedy"
-          }
-        ]
-      },
-      "search": {
-        "mode": "match"
-      }
-    },
-    {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Claim/Claim-10007",
       "resource": {
         "resourceType": "Claim",
         "id": "Claim-10007",
@@ -12773,10 +12218,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10007"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Claim/Claim-10020",
       "resource": {
         "resourceType": "Claim",
         "id": "Claim-10020",
@@ -12839,10 +12287,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10020"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Claim/Claim-10021",
       "resource": {
         "resourceType": "Claim",
         "id": "Claim-10021",
@@ -12905,10 +12356,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10021"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Claim/Claim-10022",
       "resource": {
         "resourceType": "Claim",
         "id": "Claim-10022",
@@ -12971,10 +12425,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10022"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Claim/Claim-10030",
       "resource": {
         "resourceType": "Claim",
         "id": "Claim-10030",
@@ -13036,10 +12493,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10030"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Claim/Claim-10031",
       "resource": {
         "resourceType": "Claim",
         "id": "Claim-10031",
@@ -13101,10 +12561,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10031"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Claim/Claim-10032",
       "resource": {
         "resourceType": "Claim",
         "id": "Claim-10032",
@@ -13167,6 +12630,10 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10032"
       }
     },
     {
@@ -13191,6 +12658,10 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/FHIRHelpers"
       }
     },
     {
@@ -13215,6 +12686,10 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/OMTKLogic"
       }
     },
     {
@@ -13396,10 +12871,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/PlanDefinition/cdc-opioid-05"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Claim/Claim-10033",
       "resource": {
         "resourceType": "Claim",
         "id": "Claim-10033",
@@ -13458,10 +12936,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10033"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Claim/Claim-10034",
       "resource": {
         "resourceType": "Claim",
         "id": "Claim-10034",
@@ -13520,10 +13001,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10034"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Condition/Condition-5",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-5",
@@ -13571,10 +13055,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-5"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Condition/Condition-6",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-6",
@@ -13622,10 +13109,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-6"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Condition/Condition-8",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-8",
@@ -13673,10 +13163,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-8"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Condition/Condition-11",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-11",
@@ -13724,10 +13217,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-11"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Condition/Condition-12",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-12",
@@ -13775,10 +13271,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-12"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Condition/Condition-13",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-13",
@@ -13826,10 +13325,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-13"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Condition/Condition-14",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-14",
@@ -13877,10 +13379,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-14"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Condition/Condition-18",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-18",
@@ -13928,10 +13433,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-18"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Condition/Condition-19",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-19",
@@ -13979,10 +13487,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-19"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Condition/Condition-4",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-4",
@@ -14030,10 +13541,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-4"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Library/col-logic",
       "resource": {
         "resourceType": "Library",
         "id": "col-logic",
@@ -14054,10 +13568,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/col-logic"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Library/cbp-logic",
       "resource": {
         "resourceType": "Library",
         "id": "cbp-logic",
@@ -14078,10 +13595,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/cbp-logic"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Library/fhir-model-definition",
       "resource": {
         "resourceType": "Library",
         "id": "fhir-model-definition",
@@ -14124,10 +13644,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/fhir-model-definition"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Library/zika-virus-intervention-logic",
       "resource": {
         "resourceType": "Library",
         "id": "zika-virus-intervention-logic",
@@ -14226,10 +13749,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/zika-virus-intervention-logic"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Library/Library-10023",
       "resource": {
         "resourceType": "Library",
         "id": "Library-10023",
@@ -14244,10 +13770,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/Library-10023"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Library/Library-10024",
       "resource": {
         "resourceType": "Library",
         "id": "Library-10024",
@@ -14262,10 +13791,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/Library-10024"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Library/LIB-10023",
       "resource": {
         "resourceType": "Library",
         "id": "LIB-10023",
@@ -14280,10 +13812,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/LIB-10023"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Library/Library-10053",
       "resource": {
         "resourceType": "Library",
         "id": "Library-10053",
@@ -14298,10 +13833,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/Library-10053"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Library/pvs-logic",
       "resource": {
         "resourceType": "Library",
         "id": "pvs-logic",
@@ -14351,10 +13889,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/pvs-logic"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Observation/Observation-10",
       "resource": {
         "resourceType": "Observation",
         "id": "Observation-10",
@@ -14398,10 +13939,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-10"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Observation/Observation-16",
       "resource": {
         "resourceType": "Observation",
         "id": "Observation-16",
@@ -14445,10 +13989,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-16"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Observation/Observation-20",
       "resource": {
         "resourceType": "Observation",
         "id": "Observation-20",
@@ -14492,10 +14039,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-20"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Observation/Observation-61",
       "resource": {
         "resourceType": "Observation",
         "id": "Observation-61",
@@ -14539,10 +14089,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-61"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Observation/Observation-62",
       "resource": {
         "resourceType": "Observation",
         "id": "Observation-62",
@@ -14595,10 +14148,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-62"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Observation/Observation-63",
       "resource": {
         "resourceType": "Observation",
         "id": "Observation-63",
@@ -14651,10 +14207,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-63"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Observation/Observation-64",
       "resource": {
         "resourceType": "Observation",
         "id": "Observation-64",
@@ -14707,10 +14266,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-64"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Observation/O123456",
       "resource": {
         "resourceType": "Observation",
         "id": "O123456",
@@ -14742,11 +14304,14 @@
         }
       },
       "search": {
-        "mode": "match"
+      "mode": "match"
+    },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/O123456"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ActivityDefinition/administer-zika-virus-exposure-assessment",
       "resource": {
         "resourceType": "ActivityDefinition",
         "id": "administer-zika-virus-exposure-assessment",
@@ -14793,10 +14358,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/administer-zika-virus-exposure-assessment"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ActivityDefinition/consider-igm-antibody-testing",
       "resource": {
         "resourceType": "ActivityDefinition",
         "id": "consider-igm-antibody-testing",
@@ -14837,10 +14405,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/consider-igm-antibody-testing"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ActivityDefinition/serum-urine-rrt-pcr-test",
       "resource": {
         "resourceType": "ActivityDefinition",
         "id": "serum-urine-rrt-pcr-test",
@@ -14889,10 +14460,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/serum-urine-rrt-pcr-test"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ActivityDefinition/serum-zika-dengue-virus-igm",
       "resource": {
         "resourceType": "ActivityDefinition",
         "id": "serum-zika-dengue-virus-igm",
@@ -14941,10 +14515,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/serum-zika-dengue-virus-igm"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ActivityDefinition/provide-contraception-advice",
       "resource": {
         "resourceType": "ActivityDefinition",
         "id": "provide-contraception-advice",
@@ -14997,10 +14574,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/provide-contraception-advice"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/ActivityDefinition/provide-mosquito-prevention-advice",
       "resource": {
         "resourceType": "ActivityDefinition",
         "id": "provide-mosquito-prevention-advice",
@@ -15054,6 +14634,10 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/provide-mosquito-prevention-advice"
       }
     },
     {
@@ -15111,10 +14695,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Procedure/Procedure-20"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Procedure/Procedure-7",
       "resource": {
         "resourceType": "Procedure",
         "id": "Procedure-7",
@@ -15185,10 +14772,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Procedure/Procedure-7"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Procedure/Procedure-9",
       "resource": {
         "resourceType": "Procedure",
         "id": "Procedure-9",
@@ -15259,10 +14849,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Procedure/Procedure-9"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Procedure/Procedure-17",
       "resource": {
         "resourceType": "Procedure",
         "id": "Procedure-17",
@@ -15328,10 +14921,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Procedure/Procedure-17"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/PlanDefinition/zika-virus-intervention",
       "resource": {
         "resourceType": "PlanDefinition",
         "id": "zika-virus-intervention",
@@ -15451,10 +15047,13 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/PlanDefinition/zika-virus-intervention"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Questionnaire/zika-virus-exposure-assessment",
       "resource": {
         "resourceType": "Questionnaire",
         "id": "zika-virus-exposure-assessment",
@@ -15610,6 +15209,10 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Questionnaire/zika-virus-exposure-assessment"
       }
     },
     {
@@ -15655,6 +15258,10 @@
     },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/MedicationRequest/opioid1"
       }
     },
     {
@@ -15818,6 +15425,10 @@
       },
       "search": {
         "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Measure/col"
       }
     },
     {
@@ -15903,306 +15514,10 @@
       },
       "search": {
         "mode": "match"
-      }
-    },
-    {
-      "resourceType": "Substance",
-      "id": "amoxicillin-1",
-      "meta": {
-        "versionId": "1",
-        "lastUpdated": "2017-05-21T20:05:26.933+00:00"
       },
-      "contained": [
-        {
-          "resourceType": "Substance",
-          "id": "ingr1",
-          "code": {
-            "coding": [
-              {
-                "system": "http://snomed.info/sct",
-                "code": "372687004",
-                "display": "Amoxicillin (substance)"
-              }
-            ]
-          }
-        },
-        {
-          "resourceType": "Substance",
-          "id": "ingr2",
-          "code": {
-            "coding": [
-              {
-                "system": "http://snomed.info/sct",
-                "code": "395938000",
-                "display": "Clavulanate potassium (substance)"
-              }
-            ]
-          }
-        }
-      ],
-      "category": [
-        {
-          "coding": [
-            {
-              "system": "http://hl7.org.fhir/substance-category",
-              "code": "drug",
-              "display": "Drug or Medicament"
-            }
-          ]
-        }
-      ],
-      "code": {
-        "coding": [
-          {
-            "system": "http://snomed.info/sct",
-            "code": "392259005",
-            "display": "Amoxicillin + clavulanate potassium 875mg/125mg tablet (product)"
-          }
-        ]
-      },
-      "description": "Augmentin 875",
-      "ingredient": [
-        {
-          "quantity": {
-            "numerator": {
-              "value": 875,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            },
-            "denominator": {
-              "value": 1000,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            }
-          },
-          "substanceReference": {
-            "reference": "#ingr1"
-          }
-        },
-        {
-          "quantity": {
-            "numerator": {
-              "value": 125,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            },
-            "denominator": {
-              "value": 1000,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            }
-          },
-          "substanceReference": {
-            "reference": "#ingr2"
-          }
-        }
-      ],
-      "search": {
-        "mode": "match"
-      }
-    },
-    {
-      "resourceType": "Substance",
-      "id": "amoxicillin-2",
-      "meta": {
-        "versionId": "1",
-        "lastUpdated": "2017-05-21T20:05:26.933+00:00"
-      },
-      "contained": [
-        {
-          "resourceType": "Substance",
-          "id": "ingr1",
-          "code": {
-            "coding": [
-              {
-                "system": "http://snomed.info/sct",
-                "code": "372687004",
-                "display": "Amoxicillin (substance)"
-              }
-            ]
-          }
-        },
-        {
-          "resourceType": "Substance",
-          "id": "ingr2",
-          "code": {
-            "coding": [
-              {
-                "system": "http://snomed.info/sct",
-                "code": "395938000",
-                "display": "Clavulanate potassium (substance)"
-              }
-            ]
-          }
-        }
-      ],
-      "category": [
-        {
-          "coding": [
-            {
-              "system": "http://hl7.org.fhir/substance-category",
-              "code": "drug",
-              "display": "Drug or Medicament"
-            }
-          ]
-        }
-      ],
-      "code": {
-        "coding": [
-          {
-            "system": "http://snomed.info/sct",
-            "code": "392259005",
-            "display": "Amoxicillin + clavulanate potassium 875mg/125mg tablet (product)"
-          }
-        ]
-      },
-      "description": "Augmentin 875",
-      "ingredient": [
-        {
-          "quantity": {
-            "numerator": {
-              "value": 800,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            },
-            "denominator": {
-              "value": 1000,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            }
-          },
-          "substanceReference": {
-            "reference": "#ingr1"
-          }
-        },
-        {
-          "quantity": {
-            "numerator": {
-              "value": 125,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            },
-            "denominator": {
-              "value": 1000,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            }
-          },
-          "substanceReference": {
-            "reference": "#ingr2"
-          }
-        }
-      ],
-      "search": {
-        "mode": "match"
-      }
-    },
-    {
-      "resourceType": "Substance",
-      "id": "amoxicillin-3",
-      "meta": {
-        "versionId": "1",
-        "lastUpdated": "2017-05-21T20:05:26.933+00:00"
-      },
-      "contained": [
-        {
-          "resourceType": "Substance",
-          "id": "ingr1",
-          "code": {
-            "coding": [
-              {
-                "system": "http://snomed.info/sct",
-                "code": "372687004",
-                "display": "Amoxicillin (substance)"
-              }
-            ]
-          }
-        },
-        {
-          "resourceType": "Substance",
-          "id": "ingr2",
-          "code": {
-            "coding": [
-              {
-                "system": "http://snomed.info/sct",
-                "code": "395938000",
-                "display": "Clavulanate potassium (substance)"
-              }
-            ]
-          }
-        }
-      ],
-      "category": [
-        {
-          "coding": [
-            {
-              "system": "http://hl7.org.fhir/substance-category",
-              "code": "drug",
-              "display": "Drug or Medicament"
-            }
-          ]
-        }
-      ],
-      "code": {
-        "coding": [
-          {
-            "system": "http://snomed.info/sct",
-            "code": "392259005",
-            "display": "Amoxicillin + clavulanate potassium 875mg/125mg tablet (product)"
-          }
-        ]
-      },
-      "description": "Augmentin 875",
-      "ingredient": [
-        {
-          "quantity": {
-            "numerator": {
-              "value": 750,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            },
-            "denominator": {
-              "value": 1000,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            }
-          },
-          "substanceReference": {
-            "reference": "#ingr1"
-          }
-        },
-        {
-          "quantity": {
-            "numerator": {
-              "value": 125,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            },
-            "denominator": {
-              "value": 1000,
-              "unit": "mg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mg"
-            }
-          },
-          "substanceReference": {
-            "reference": "#ingr2"
-          }
-        }
-      ],
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Measure/cbp"
       }
     }
   ]
