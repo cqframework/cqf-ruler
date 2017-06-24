@@ -16,6 +16,8 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.opencds.cqf.config.STU3LibraryLoader;
+import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.data.fhir.FhirMeasureEvaluator;
 import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
 import org.opencds.cqf.cql.execution.Context;
@@ -62,15 +64,15 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
     private LibraryLoader libraryLoader;
     private LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
-            libraryLoader = new MeasureLibraryLoader(getLibraryResourceProvider(), getLibraryManager());
+            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager());
         }
         return libraryLoader;
     }
 
-    private MeasureLibrarySourceProvider librarySourceProvider;
-    private MeasureLibrarySourceProvider getLibrarySourceProvider() {
+    private STU3LibrarySourceProvider librarySourceProvider;
+    private STU3LibrarySourceProvider getLibrarySourceProvider() {
         if (librarySourceProvider == null) {
-            librarySourceProvider = new MeasureLibrarySourceProvider(getLibraryResourceProvider());
+            librarySourceProvider = new STU3LibrarySourceProvider(getLibraryResourceProvider());
         }
         return librarySourceProvider;
     }
@@ -411,7 +413,7 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
             paramMap.setIncludes(theIncludes);
             paramMap.setSort(theSort);
             paramMap.setCount(theCount);
-            paramMap.setRequestDetails(theRequestDetails);
+//            paramMap.setRequestDetails(theRequestDetails);
 
             getDao().translateRawParameters(theAdditionalRawParams, paramMap);
 

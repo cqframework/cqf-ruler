@@ -1,4 +1,4 @@
-package org.opencds.cqf.providers;
+package org.opencds.cqf.omtk;
 
 import java.util.HashMap;
 import java.util.Map;

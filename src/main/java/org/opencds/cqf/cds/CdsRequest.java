@@ -1,4 +1,4 @@
-package org.opencds.cqf.helpers;
+package org.opencds.cqf.cds;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;

@@ -1,4 +1,4 @@
-package org.opencds.cqf.helpers;
+package org.opencds.cqf.operations;
 
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
@@ -17,7 +17,7 @@ import java.util.*;
 public class PlanDefinitionApply {
 
     /*
-    *   TODO: Add the standard parameters and logic for $apply operation
+    *   TODO: Add the standard parameters for $apply operation
     */
 
     private String status;
@@ -38,6 +38,7 @@ public class PlanDefinitionApply {
         this.actions = new ArrayList<>();
         this.actions.add(new HashMap<>());
         this.triggerEvent = "";
+        this.planDefinition = new PlanDefinition();
     }
 
     public PlanDefinitionApply(LibraryLoader libraryLoader, PlanDefinition planDefinition) {
@@ -124,7 +125,7 @@ public class PlanDefinitionApply {
                         .evaluate(context);
 
                 if ((Boolean) result) {
-
+                    // TODO
                 }
             }
         }

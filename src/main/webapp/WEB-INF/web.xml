@@ -19,6 +19,12 @@
 
 	<!-- Servlets -->
 	<servlet>
+		<servlet-name>executionServiceServlet</servlet-name>
+		<servlet-class>org.opencds.cqf.servlet.ExecutionServiceServlet</servlet-class>
+		<load-on-startup>5</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>cdsOpioidGuidanceServlet</servlet-name>
 		<servlet-class>org.opencds.cqf.servlet.OpioidGuidanceServlet</servlet-class>
 		<load-on-startup>4</load-on-startup>
@@ -77,6 +83,11 @@
 	<servlet-mapping>
 		<servlet-name>cdsOpioidGuidanceServlet</servlet-name>
 		<url-pattern>/cds-services/cdc-opioid-guidance</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>executionServiceServlet</servlet-name>
+		<url-pattern>/cql/evaluate</url-pattern>
 	</servlet-mapping>
 
 </web-app>

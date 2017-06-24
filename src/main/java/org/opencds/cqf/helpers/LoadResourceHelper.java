@@ -4,7 +4,8 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.primitive.IdDt;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.cql.data.fhir.FhirDataProvider;
+import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
+import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,13 +16,13 @@ import java.io.Reader;
  */
 public class LoadResourceHelper {
 
-    private FhirDataProvider GETProvider;
-    private FhirDataProvider POSTProvider;
+    private BaseFhirDataProvider GETProvider;
+    private BaseFhirDataProvider POSTProvider;
 
     LoadResourceHelper(String getURL, String postURL) {
-        this.GETProvider = new FhirDataProvider().withEndpoint(getURL);
+        this.GETProvider = new FhirDataProviderStu3().setEndpoint(getURL);
         this.GETProvider.setExpandValueSets(true);
-        this.POSTProvider = new FhirDataProvider().withEndpoint(postURL);
+        this.POSTProvider = new FhirDataProviderStu3().setEndpoint(postURL);
     }
 
     public Bundle resolveBundle(String filePath) {

@@ -1,4 +1,4 @@
-package org.opencds.cqf.helpers;
+package org.opencds.cqf.cds;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

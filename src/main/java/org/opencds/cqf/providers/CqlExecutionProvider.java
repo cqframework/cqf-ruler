@@ -4,6 +4,8 @@ import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.hl7.fhir.dstu3.model.*;
+import org.opencds.cqf.config.STU3LibraryLoader;
+import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
@@ -45,15 +47,15 @@ public class CqlExecutionProvider {
     private LibraryLoader libraryLoader;
     private LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
-            libraryLoader = new MeasureLibraryLoader(getLibraryResourceProvider(), getLibraryManager());
+            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager());
         }
         return libraryLoader;
     }
 
-    private MeasureLibrarySourceProvider librarySourceProvider;
-    private MeasureLibrarySourceProvider getLibrarySourceProvider() {
+    private STU3LibrarySourceProvider librarySourceProvider;
+    private STU3LibrarySourceProvider getLibrarySourceProvider() {
         if (librarySourceProvider == null) {
-            librarySourceProvider = new MeasureLibrarySourceProvider(getLibraryResourceProvider());
+            librarySourceProvider = new STU3LibrarySourceProvider(getLibraryResourceProvider());
         }
         return librarySourceProvider;
     }

@@ -9,7 +9,6 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
-import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -18,6 +17,7 @@ import org.opencds.cqf.cql.execution.CqlLibraryReader;
 import org.opencds.cqf.cql.runtime.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
+import org.opencds.cqf.omtk.OmtkDataProvider;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -328,7 +328,7 @@ public class MedicationRequestResourceProvider extends JpaResourceProviderDstu3<
             paramMap.setIncludes(theIncludes);
             paramMap.setSort(theSort);
             paramMap.setCount(theCount);
-            paramMap.setRequestDetails(theRequestDetails);
+//            paramMap.setRequestDetails(theRequestDetails);
 
             getDao().translateRawParameters(theAdditionalRawParams, paramMap);
 

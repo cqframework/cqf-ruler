@@ -41,14 +41,16 @@ public class LibraryHelper {
         return errors.toString();
     }
 
-    public static Library translateLibrary(String cql, LibraryManager libraryManager) {
-        return translateLibrary(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), libraryManager);
+    public static CqlTranslator getTranslator(String cql, LibraryManager libraryManager) {
+        return getTranslator(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), libraryManager);
     }
 
-    public static Library translateLibrary(InputStream cqlStream, LibraryManager libraryManager) {
+    public static CqlTranslator getTranslator(InputStream cqlStream, LibraryManager libraryManager) {
         ArrayList<CqlTranslator.Options> options = new ArrayList<>();
         options.add(CqlTranslator.Options.EnableDateRangeOptimization);
-        CqlTranslator translator = null;
+        options.add(CqlTranslator.Options.EnableAnnotations);
+        options.add(CqlTranslator.Options.EnableDetailedErrors);
+        CqlTranslator translator;
         try {
             translator = CqlTranslator.fromStream(cqlStream, libraryManager,
                     options.toArray(new CqlTranslator.Options[options.size()]));
@@ -60,6 +62,19 @@ public class LibraryHelper {
             throw new IllegalArgumentException(errorsToString(translator.getErrors()));
         }
 
+        return translator;
+    }
+
+    public static Library translateLibrary(String cql, LibraryManager libraryManager) {
+        return translateLibrary(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), libraryManager);
+    }
+
+    public static Library translateLibrary(InputStream cqlStream, LibraryManager libraryManager) {
+        CqlTranslator translator = getTranslator(cqlStream, libraryManager);
+        return readLibrary(new ByteArrayInputStream(translator.toXml().getBytes(StandardCharsets.UTF_8)));
+    }
+
+    public static Library translateLibrary(CqlTranslator translator) {
         return readLibrary(new ByteArrayInputStream(translator.toXml().getBytes(StandardCharsets.UTF_8)));
     }
 }

@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 /**
  * Created by Christopher on 2/4/2017.
  */
-public class NarrativeGenerator {
+public class NarrativeProvider {
 
     // args[0] == relative path to json resource -> i.e. measure/cms146.json
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package org.opencds.cqf.providers;
+package org.opencds.cqf.omtk;
 
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.runtime.Code;
@@ -44,9 +44,6 @@ public class OmtkDataProvider implements DataProvider {
 
     private java.sql.Connection getNewConnection() {
         try {
-            // TODO: This takes a ridiculous amount of time to open because the "ucanaccess" driver is creating an entire copy of the access database on open
-            // The keepMirror connection parameter at least allows you to keep that copy around, but it still takes a horrendous amount of time to open a connection
-            // TODO: Look at using jackcess to speed up time (to avoid the shadow copy required by ucanaccess)
             return DriverManager.getConnection(connectionString);
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -98,7 +95,12 @@ public class OmtkDataProvider implements DataProvider {
 
     @Override
     public String getPackageName() {
-        return "org.opencds.cqf.providers";
+        return "org.opencds.cqf.omtk";
+    }
+
+    @Override
+    public void setPackageName(String s) {
+
     }
 
     @Override

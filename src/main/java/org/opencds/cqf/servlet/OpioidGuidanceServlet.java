@@ -6,9 +6,9 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.opencds.cqf.helpers.CdsCard;
-import org.opencds.cqf.helpers.CdsHooksHelper;
-import org.opencds.cqf.helpers.CdsRequest;
+import org.opencds.cqf.cds.CdsCard;
+import org.opencds.cqf.cds.CdsHooksHelper;
+import org.opencds.cqf.cds.CdsRequest;
 import org.opencds.cqf.providers.PlanDefinitionResourceProvider;
 
 import javax.servlet.ServletException;

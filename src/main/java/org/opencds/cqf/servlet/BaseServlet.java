@@ -110,7 +110,7 @@ public class BaseServlet extends RestfulServer {
             unregisterProvider(jpaMeasureProvider);
             unregisterProvider(jpaPlanDefProvider);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
         }
 
         registerProvider(measureProvider);

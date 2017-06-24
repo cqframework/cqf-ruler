@@ -1,4 +1,4 @@
-package org.opencds.cqf.providers;
+package org.opencds.cqf.config;
 
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import org.cqframework.cql.cql2elm.CqlTranslator;
@@ -24,14 +24,14 @@ import static org.opencds.cqf.helpers.LibraryHelper.translateLibrary;
 /**
  * Created by Christopher on 1/11/2017.
  */
-public class MeasureLibraryLoader implements LibraryLoader {
+public class STU3LibraryLoader implements LibraryLoader {
 
 //    private ModelManager modelManager;
     private LibraryManager libraryManager;
     private LibraryResourceProvider provider;
     private Map<String, Library> libraries = new HashMap<>();
 
-    public MeasureLibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager) {
+    public STU3LibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager) {
 //        this.modelManager = modelManager;
         this.libraryManager = libraryManager;
         this.provider = provider;

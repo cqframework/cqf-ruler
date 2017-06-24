@@ -1,4 +1,4 @@
-package org.opencds.cqf.providers;
+package org.opencds.cqf.config;
 
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
@@ -11,11 +11,11 @@ import java.io.InputStream;
 /**
  * Created by Christopher on 1/12/2017.
  */
-public class MeasureLibrarySourceProvider implements LibrarySourceProvider {
+public class STU3LibrarySourceProvider implements LibrarySourceProvider {
 
     private LibraryResourceProvider provider;
 
-    public MeasureLibrarySourceProvider(LibraryResourceProvider provider) {
+    public STU3LibrarySourceProvider(LibraryResourceProvider provider) {
         this.provider = provider;
     }
 

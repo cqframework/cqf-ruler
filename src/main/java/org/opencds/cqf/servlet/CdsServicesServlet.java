@@ -1,12 +1,6 @@
 package org.opencds.cqf.servlet;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.opencds.cqf.helpers.CdsHooksHelper;
+import org.opencds.cqf.cds.CdsHooksHelper;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
