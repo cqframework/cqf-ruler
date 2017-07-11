@@ -3,6 +3,7 @@ package org.opencds.cqf.helpers;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.tracking.TrackBack;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Christopher on 1/11/2017.
@@ -41,18 +43,18 @@ public class LibraryHelper {
         return errors.toString();
     }
 
-    public static CqlTranslator getTranslator(String cql, LibraryManager libraryManager) {
-        return getTranslator(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), libraryManager);
+    public static CqlTranslator getTranslator(String cql, LibraryManager libraryManager, ModelManager modelManager) {
+        return getTranslator(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), libraryManager, modelManager);
     }
 
-    public static CqlTranslator getTranslator(InputStream cqlStream, LibraryManager libraryManager) {
+    public static CqlTranslator getTranslator(InputStream cqlStream, LibraryManager libraryManager, ModelManager modelManager) {
         ArrayList<CqlTranslator.Options> options = new ArrayList<>();
         options.add(CqlTranslator.Options.EnableDateRangeOptimization);
         options.add(CqlTranslator.Options.EnableAnnotations);
         options.add(CqlTranslator.Options.EnableDetailedErrors);
         CqlTranslator translator;
         try {
-            translator = CqlTranslator.fromStream(cqlStream, libraryManager,
+            translator = CqlTranslator.fromStream(cqlStream, modelManager, libraryManager,
                     options.toArray(new CqlTranslator.Options[options.size()]));
         } catch (IOException e) {
             throw new IllegalArgumentException(String.format("Errors occurred translating library: %s", e.getMessage()));
@@ -65,12 +67,12 @@ public class LibraryHelper {
         return translator;
     }
 
-    public static Library translateLibrary(String cql, LibraryManager libraryManager) {
-        return translateLibrary(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), libraryManager);
+    public static Library translateLibrary(String cql, LibraryManager libraryManager, ModelManager modelManager) {
+        return translateLibrary(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), libraryManager, modelManager);
     }
 
-    public static Library translateLibrary(InputStream cqlStream, LibraryManager libraryManager) {
-        CqlTranslator translator = getTranslator(cqlStream, libraryManager);
+    public static Library translateLibrary(InputStream cqlStream, LibraryManager libraryManager, ModelManager modelManager) {
+        CqlTranslator translator = getTranslator(cqlStream, libraryManager, modelManager);
         return readLibrary(new ByteArrayInputStream(translator.toXml().getBytes(StandardCharsets.UTF_8)));
     }
 

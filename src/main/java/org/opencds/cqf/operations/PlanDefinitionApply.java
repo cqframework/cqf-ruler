@@ -1,6 +1,7 @@
 package org.opencds.cqf.operations;
 
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
@@ -12,43 +13,36 @@ import java.time.Instant;
 import java.util.*;
 
 /**
- * Created by Christopher on 6/6/2017.
+ * Created by Christopher Schuler on 6/6/2017.
  */
 public class PlanDefinitionApply {
 
-    /*
-    *   TODO: Add the standard parameters for $apply operation
-    */
+    // Official $apply parameters
+    private String encounterId = "";
+    private String practitionerId = "";
+    private String organizationId = "";
+    private String userType = "";
+    private String userLanguage = "";
+    private String userTaskContext = "";
+    private String setting = "";
+    private String settingContext = "";
 
-    private String status;
-    private Period effectivePeriod;
-    private org.cqframework.cql.elm.execution.Library library;
-    private List<Map<String, Object> > actions;
-    private String triggerEvent;
+    // Structure content
+    private String status = "";
+    private Period effectivePeriod = new Period();
+    private Library library = new Library();
+    private List<Map<String, Object> > actions = new ArrayList<>();
+    private String triggerEvent = "";
 
-    private PlanDefinition planDefinition;
-
+    private PlanDefinition planDefinition = new PlanDefinition();
     private LibraryLoader libraryLoader;
 
     public PlanDefinitionApply(LibraryLoader libraryLoader) {
         this.libraryLoader = libraryLoader;
-        this.status = "";
-        this.effectivePeriod = new Period();
-        this.library = new org.cqframework.cql.elm.execution.Library();
-        this.actions = new ArrayList<>();
-        this.actions.add(new HashMap<>());
-        this.triggerEvent = "";
-        this.planDefinition = new PlanDefinition();
     }
 
     public PlanDefinitionApply(LibraryLoader libraryLoader, PlanDefinition planDefinition) {
         this.libraryLoader = libraryLoader;
-        this.status = "";
-        this.effectivePeriod = new Period();
-        this.library = new org.cqframework.cql.elm.execution.Library();
-        this.actions = new ArrayList<>();
-        this.actions.add(new HashMap<>());
-        this.triggerEvent = "";
         this.planDefinition = planDefinition;
     }
 

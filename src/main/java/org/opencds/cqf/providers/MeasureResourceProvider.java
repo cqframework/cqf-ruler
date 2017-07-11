@@ -14,6 +14,7 @@ import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.config.STU3LibraryLoader;
@@ -43,18 +44,18 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         this.provider = new JpaFhirDataProvider(providers);
     }
 
-//    private ModelManager modelManager;
-//    private ModelManager getModelManager() {
-//        if (modelManager == null) {
-//            modelManager = new ModelManager();
-//        }
-//        return modelManager;
-//    }
+    private ModelManager modelManager;
+    private ModelManager getModelManager() {
+        if (modelManager == null) {
+            modelManager = new ModelManager();
+        }
+        return modelManager;
+    }
 
     private LibraryManager libraryManager;
     private LibraryManager getLibraryManager() {
         if (libraryManager == null) {
-            libraryManager = new LibraryManager();
+            libraryManager = new LibraryManager(getModelManager());
             libraryManager.getLibrarySourceLoader().clearProviders();
             libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
         }
@@ -64,7 +65,7 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
     private LibraryLoader libraryLoader;
     private LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
-            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager());
+            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager(), getModelManager());
         }
         return libraryLoader;
     }
@@ -99,7 +100,7 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         for (Attachment content : libraryResource.getContent()) {
             switch (content.getContentType()) {
                 case "text/cql":
-                    library = translateLibrary(new ByteArrayInputStream(content.getData()), getLibraryManager());
+                    library = translateLibrary(new ByteArrayInputStream(content.getData()), getLibraryManager(), getModelManager());
                     break;
 
                 case "application/elm+xml":

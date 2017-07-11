@@ -40,7 +40,13 @@
         <dependency>
             <groupId>info.cqframework</groupId>
             <artifactId>cql-to-elm</artifactId>
-            <version>1.1.2-SNAPSHOT</version>
+            <version>1.2.8-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>info.cqframework</groupId>
+            <artifactId>cql-formatter</artifactId>
+            <version>1.2.8-SNAPSHOT</version>
         </dependency>
 
         <dependency>

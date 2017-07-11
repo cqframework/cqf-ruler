@@ -2,8 +2,7 @@ package org.opencds.cqf.servlet;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import org.cqframework.cql.cql2elm.CqlTranslator;
-import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.*;
 import org.cqframework.cql.elm.execution.ExpressionDef;
 import org.cqframework.cql.elm.execution.Library;
 import org.json.simple.JSONArray;
@@ -27,17 +26,25 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Created by Christopher on 6/22/2017.
+ * Created by Christopher Schuler on 6/22/2017.
  */
 @WebServlet(name="evaluate")
 public class ExecutionServiceServlet extends BaseServlet {
 
     private Map<String, List<Integer>> locations = new HashMap<>();
 
+    private ModelManager modelManager;
+    private ModelManager getModelManager() {
+        if (modelManager == null) {
+            modelManager = new ModelManager();
+        }
+        return modelManager;
+    }
+
     private LibraryManager libraryManager;
     private LibraryManager getLibraryManager() {
         if (libraryManager == null) {
-            libraryManager = new LibraryManager();
+            libraryManager = new LibraryManager(getModelManager());
             libraryManager.getLibrarySourceLoader().clearProviders();
             libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
         }
@@ -47,7 +54,7 @@ public class ExecutionServiceServlet extends BaseServlet {
     private LibraryLoader libraryLoader;
     private LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
-            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager());
+            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager(), getModelManager());
         }
         return libraryLoader;
     }
@@ -123,6 +130,8 @@ public class ExecutionServiceServlet extends BaseServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.addHeader("Access-Control-Allow-Origin", "*");
+
         // validate that we are dealing with JSON or plain text
         if (!request.getContentType().equals("application/json") && !request.getContentType().equals("text/plain"))
         {
@@ -146,7 +155,7 @@ public class ExecutionServiceServlet extends BaseServlet {
         String dataPass = (String) json.get("dataPass");
         String patientId = (String) json.get("patientId");
 
-        CqlTranslator translator = LibraryHelper.getTranslator(code, getLibraryManager());
+        CqlTranslator translator = LibraryHelper.getTranslator(code, getLibraryManager(), getModelManager());
         setExpressionLocations(translator.getTranslatedLibrary().getLibrary());
 
         Library library;

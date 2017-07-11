@@ -12,6 +12,7 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelInfoLoader;
 import org.cqframework.cql.cql2elm.ModelInfoProvider;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.ExpressionDef;
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.elm_modelinfo.r1.ModelInfo;
@@ -48,23 +49,23 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         this.executionProvider = new CqlExecutionProvider(providers);
     }
 
-//    private ModelManager modelManager;
-//    private ModelManager getModelManager() {
-//        if (modelManager == null) {
-//            modelManager = new ModelManager();
-//            ModelInfoProvider infoProvider = () -> {
-//                Path p = Paths.get("src/main/resources/cds/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
-//                return JAXB.unmarshal(new File(p.toString()), ModelInfo.class);
-//            };
-//            ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("OMTK").withVersion("0.1.0"), infoProvider);
-//        }
-//        return modelManager;
-//    }
+    private ModelManager modelManager;
+    private ModelManager getModelManager() {
+        if (modelManager == null) {
+            modelManager = new ModelManager();
+            ModelInfoProvider infoProvider = () -> {
+                Path p = Paths.get("src/main/resources/cds/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
+                return JAXB.unmarshal(new File(p.toString()), ModelInfo.class);
+            };
+            ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("OMTK").withVersion("0.1.0"), infoProvider);
+        }
+        return modelManager;
+    }
 
     private LibraryManager libraryManager;
     private LibraryManager getLibraryManager() {
         if (libraryManager == null) {
-            libraryManager = new LibraryManager();
+            libraryManager = new LibraryManager(getModelManager());
             libraryManager.getLibrarySourceLoader().clearProviders();
             libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
             ModelInfoProvider infoProvider = () -> {
@@ -79,7 +80,7 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
     private LibraryLoader libraryLoader;
     private LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
-            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager());
+            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager(), getModelManager());
         }
         return libraryLoader;
     }

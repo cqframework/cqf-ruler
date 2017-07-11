@@ -3,6 +3,7 @@ package org.opencds.cqf.providers;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.hl7.fhir.dstu3.model.*;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
@@ -26,18 +27,18 @@ public class CqlExecutionProvider {
         this.provider = new JpaFhirDataProvider(providers);
     }
 
-//    private ModelManager modelManager;
-//    private ModelManager getModelManager() {
-//        if (modelManager == null) {
-//            modelManager = new ModelManager();
-//        }
-//        return modelManager;
-//    }
+    private ModelManager modelManager;
+    private ModelManager getModelManager() {
+        if (modelManager == null) {
+            modelManager = new ModelManager();
+        }
+        return modelManager;
+    }
 
     private LibraryManager libraryManager;
     private LibraryManager getLibraryManager() {
         if (libraryManager == null) {
-            libraryManager = new LibraryManager();
+            libraryManager = new LibraryManager(getModelManager());
             libraryManager.getLibrarySourceLoader().clearProviders();
             libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
         }
@@ -47,7 +48,7 @@ public class CqlExecutionProvider {
     private LibraryLoader libraryLoader;
     private LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
-            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager());
+            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager(), getModelManager());
         }
         return libraryLoader;
     }
@@ -123,7 +124,7 @@ public class CqlExecutionProvider {
         String source = String.format("library LocalLibrary using FHIR version '1.8' include FHIRHelpers version '1.8' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
                 buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
 
-        org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source, getLibraryManager());
+        org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source, getLibraryManager(), getModelManager());
         Context context = new Context(library);
         context.setParameter(null, instance.fhirType(), instance);
         context.setParameter(null, "%context", instance);

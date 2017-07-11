@@ -4,7 +4,7 @@ import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
-//import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -28,12 +28,14 @@ public class STU3LibraryLoader implements LibraryLoader {
 
 //    private ModelManager modelManager;
     private LibraryManager libraryManager;
+    private ModelManager modelManager;
     private LibraryResourceProvider provider;
     private Map<String, Library> libraries = new HashMap<>();
 
-    public STU3LibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager) {
+    public STU3LibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager, ModelManager modelManager) {
 //        this.modelManager = modelManager;
         this.libraryManager = libraryManager;
+        this.modelManager = modelManager;
         this.provider = provider;
     }
 
@@ -69,7 +71,7 @@ public class STU3LibraryLoader implements LibraryLoader {
                 return readLibrary(new ByteArrayInputStream(content.getData()));
             }
             else if (content.getContentType().equals("text/cql")) {
-                return translateLibrary(new ByteArrayInputStream(content.getData()), libraryManager);
+                return translateLibrary(new ByteArrayInputStream(content.getData()), libraryManager, modelManager);
             }
         }
 
