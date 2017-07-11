@@ -20,7 +20,7 @@ CQL Formatter Service: http://measure.eval.kanvix.com/cqf-ruler/format
 
 ### Measure Processing
  - The process for processing Measures includes the following:
-    - [Load Resources](https://github.com/DBCG/cqf-ruler/tree/master/src/main/resources/load_resources.md) into FHIR server    
+    - [Load Resources](https://github.com/DBCG/cqf-ruler/tree/master/src/main/resources/md/load_resources.md) into FHIR server    
     - After everything is loaded into the database you may run the measure like so:
         - GET [base]/baseDstu3/Measure/col/$evaluate?patient=Patient-12214&startPeriod=2014-01&endPeriod=2014-12
         - Format:
