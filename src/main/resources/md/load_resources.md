@@ -2,7 +2,7 @@
 
 ## Methods
  
-### [GUI Resource Loader](https://github.com/DBCG/cqf-ruler/blob/master/src/main/java/org/opencds/cqf/helpers/ResourceLoaderGUI.java)
+### [Resource Loader GUI](https://github.com/DBCG/cqf-ruler/blob/master/src/main/java/org/opencds/cqf/helpers/ResourceLoaderGUI.java)
 
 This project provides an interface to load resources. To access it, run the following command:
 
@@ -11,24 +11,24 @@ $ mvn exec:java -Dexec.mainClass="org.opencds.cqf.helpers.ResourceLoaderGUI"
 ```
     
 The following dialog box should appear:
-![alt text](https://github.com/DBCG/cqf-ruler/tree/master/src/main/resources/img/load_resource_gui.png "Load Resources GUI")
+![Resource Loader GUI](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/load_resource_gui.png)
 
 As you can see, there are 3 different methods provided for loading resources.
 1. Single Resource - moves a single resource from one data provider to another.
    - Specify "Source URL" and "Destination URL" and select "Single resource" from the dropdown menu.
-   ![alt text](https://github.com/DBCG/cqf-ruler/tree/master/src/main/resources/img/single_resource_specify_url.png "Load Single Resource - Specify URLs")
+   ![Single Resource Home](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/single_resource_specify_url.png)
    - Specify the "Resource ID" and the "Resource Type" and click "Load".
-   ![alt text](https://github.com/DBCG/cqf-ruler/tree/master/src/main/resources/img/single_resource_load.png "Load Single Resource")
+   ![Single Resource Load](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/single_resource_load.png)
 2. List of Resources - moves a list of resources for one data provider to another.
    - Specify "Source URL" and "Destination URL" and select "List of resources" from the dropdown menu.
-   ![alt text](https://github.com/DBCG/cqf-ruler/tree/master/src/main/resources/img/list_resources_specify_url.png "Load List of Resources - Specify URLs")
+   ![List Resources Home](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/list_resources_specify_url.png)
    - Specify resources as a comma separated list with the resource ID followed by the resource type and click "Load".
-   ![alt text](https://github.com/DBCG/cqf-ruler/tree/master/src/main/resources/img/list_resources_load.png "Load List of Resources")
+   ![List Resources Load](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/list_resources_load.png)
 3. Bundle from File - loads a Bundle of resources from a JSON file into a data provider.
    - Specify "Destination URL" and select "Bundle from file".
-   ![alt text](https://github.com/DBCG/cqf-ruler/tree/master/src/main/resources/img/bundle_specify_url.png "Load Bundle from File - Specify URL")
+   ![Bundle Home](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/bundle_specify_url.png)
    - Specify absolute file path to Bundle JSON file and click "Load".
-   ![alt text](https://github.com/DBCG/cqf-ruler/tree/master/src/main/resources/img/bundle_load.png "Load Bundle from File")
+   ![Bundle Load](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/bundle_load.png)
 
 The console will display any errors that occur.
 
