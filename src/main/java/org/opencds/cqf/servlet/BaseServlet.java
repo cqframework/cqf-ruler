@@ -69,23 +69,6 @@ public class BaseServlet extends RestfulServer {
         setPagingProvider(myAppCtx.getBean(DatabaseBackedPagingProvider.class));
 
         /*
-		 * Enable CORS
-		 */
-        CorsConfiguration config = new CorsConfiguration();
-        CorsInterceptor corsInterceptor = new CorsInterceptor(config);
-        config.addAllowedHeader("Origin");
-        config.addAllowedHeader("Accept");
-        config.addAllowedHeader("X-Requested-With");
-        config.addAllowedHeader("Content-Type");
-        config.addAllowedHeader("Access-Control-Request-Method");
-        config.addAllowedHeader("Access-Control-Request-Headers");
-        config.addAllowedOrigin("*");
-        config.addExposedHeader("Location");
-        config.addExposedHeader("Content-Location");
-        config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
-        registerInterceptor(corsInterceptor);
-
-        /*
 		 * Load interceptors for the server from Spring (these are defined in FhirServerConfig.java)
 		 */
         Collection<IServerInterceptor> interceptorBeans = myAppCtx.getBeansOfType(IServerInterceptor.class).values();
