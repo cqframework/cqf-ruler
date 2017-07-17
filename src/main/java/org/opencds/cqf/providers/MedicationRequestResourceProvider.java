@@ -16,7 +16,6 @@ import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
 import org.opencds.cqf.cql.runtime.*;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
 import org.opencds.cqf.omtk.OmtkDataProvider;
 
 import javax.xml.bind.JAXBException;
@@ -31,10 +30,10 @@ import java.util.*;
  */
 public class MedicationRequestResourceProvider extends JpaResourceProviderDstu3<MedicationRequest> {
 
-    private JpaFhirDataProvider provider;
+    private JpaDataProvider provider;
 
     public MedicationRequestResourceProvider(Collection<IResourceProvider> providers) {
-        this.provider = new JpaFhirDataProvider(providers);
+        this.provider = new JpaDataProvider(providers);
     }
 
     @Operation(name = "$evaluate", idempotent = true)
@@ -328,7 +327,7 @@ public class MedicationRequestResourceProvider extends JpaResourceProviderDstu3<
             paramMap.setIncludes(theIncludes);
             paramMap.setSort(theSort);
             paramMap.setCount(theCount);
-//            paramMap.setRequestDetails(theRequestDetails);
+            paramMap.setRequestDetails(theRequestDetails);
 
             getDao().translateRawParameters(theAdditionalRawParams, paramMap);
 

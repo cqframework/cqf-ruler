@@ -22,7 +22,6 @@ import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
-import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
 import org.opencds.cqf.cql.execution.LibraryLoader;
@@ -41,11 +40,11 @@ import java.util.*;
  * Created by Bryn on 1/16/2017.
  */
 public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<PlanDefinition> {
-    private JpaFhirDataProvider provider;
+    private JpaDataProvider provider;
     private CqlExecutionProvider executionProvider;
 
     public PlanDefinitionResourceProvider(Collection<IResourceProvider> providers) {
-        this.provider = new JpaFhirDataProvider(providers);
+        this.provider = new JpaDataProvider(providers);
         this.executionProvider = new CqlExecutionProvider(providers);
     }
 
@@ -372,9 +371,11 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
             paramMap.setIncludes(theIncludes);
             paramMap.setSort(theSort);
             paramMap.setCount(theCount);
+            paramMap.setRequestDetails(theRequestDetails);
+
             getDao().translateRawParameters(theAdditionalRawParams, paramMap);
-            ca.uhn.fhir.rest.server.IBundleProvider retVal = getDao().search(paramMap, theRequestDetails);
-            return retVal;
+
+            return getDao().search(paramMap);
         } finally {
             endRequest(theServletRequest);
         }

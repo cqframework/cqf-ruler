@@ -20,12 +20,10 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.data.fhir.FhirMeasureEvaluator;
-import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
-import org.opencds.cqf.cql.terminology.fhir.JpaFhirTerminologyProvider;
 
 import java.io.ByteArrayInputStream;
 import java.util.*;
@@ -38,10 +36,10 @@ import static org.opencds.cqf.helpers.LibraryHelper.translateLibrary;
  */
 public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
 
-    private JpaFhirDataProvider provider;
+    private JpaDataProvider provider;
 
     public MeasureResourceProvider(Collection<IResourceProvider> providers) {
-        this.provider = new JpaFhirDataProvider(providers);
+        this.provider = new JpaDataProvider(providers);
     }
 
     private ModelManager modelManager;
@@ -135,7 +133,7 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         if (source == null) {
             JpaResourceProviderDstu3<ValueSet> vs = (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet");
             JpaResourceProviderDstu3<CodeSystem> cs = (CodeSystemResourceProvider) provider.resolveResourceProvider("CodeSystem");
-            terminologyProvider = new JpaFhirTerminologyProvider(vs, cs);
+            terminologyProvider = new JpaTerminologyProvider(vs, cs);
         }
         else {
             terminologyProvider = user == null || pass == null ? new FhirTerminologyProvider().withEndpoint(source)
@@ -414,7 +412,7 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
             paramMap.setIncludes(theIncludes);
             paramMap.setSort(theSort);
             paramMap.setCount(theCount);
-//            paramMap.setRequestDetails(theRequestDetails);
+            paramMap.setRequestDetails(theRequestDetails);
 
             getDao().translateRawParameters(theAdditionalRawParams, paramMap);
 

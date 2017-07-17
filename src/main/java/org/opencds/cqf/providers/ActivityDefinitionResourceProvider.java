@@ -18,11 +18,11 @@ import java.util.Collection;
  */
 public class ActivityDefinitionResourceProvider extends JpaResourceProviderDstu3<ActivityDefinition> {
 
-    private JpaFhirDataProvider provider;
+    private JpaDataProvider provider;
     private CqlExecutionProvider executionProvider;
 
     public ActivityDefinitionResourceProvider(Collection<IResourceProvider> providers) {
-        this.provider = new JpaFhirDataProvider(providers);
+        this.provider = new JpaDataProvider(providers);
         this.executionProvider = new CqlExecutionProvider(providers);
     }
 

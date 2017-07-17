@@ -7,7 +7,6 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.hl7.fhir.dstu3.model.*;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
-import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.helpers.LibraryHelper;
@@ -15,16 +14,14 @@ import org.opencds.cqf.helpers.LibraryHelper;
 import java.util.ArrayList;
 import java.util.Collection;
 
-//import org.cqframework.cql.cql2elm.ModelManager;
-
 /**
  * Created by Bryn on 1/16/2017.
  */
 public class CqlExecutionProvider {
-    private JpaFhirDataProvider provider;
+    private JpaDataProvider provider;
 
     public CqlExecutionProvider(Collection<IResourceProvider> providers) {
-        this.provider = new JpaFhirDataProvider(providers);
+        this.provider = new JpaDataProvider(providers);
     }
 
     private ModelManager modelManager;
