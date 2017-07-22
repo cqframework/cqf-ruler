@@ -8,7 +8,7 @@ import ca.uhn.fhir.rest.server.IBundleProvider;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
+import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Created by Christopher Schuler on 7/17/2017.
  */
-public class JpaDataProvider extends BaseFhirDataProvider {
+public class JpaDataProvider extends FhirDataProviderStu3 {
 
     // need these to access the dao
     private HashMap<String, IResourceProvider> providers;
@@ -35,21 +35,6 @@ public class JpaDataProvider extends BaseFhirDataProvider {
         // NOTE: Defaults to STU3
         setPackageName("org.hl7.fhir.dstu3.model");
         setFhirContext(FhirContext.forDstu3());
-    }
-
-    @Override
-    protected String resolveClassName(String s) {
-        return null;
-    }
-
-    @Override
-    protected Object fromJavaPrimitive(Object o, Object o1) {
-        return null;
-    }
-
-    @Override
-    protected Object toJavaPrimitive(Object o, Object o1) {
-        return null;
     }
 
     public Iterable<Object> retrieve(String context, Object contextValue, String dataType, String templateId,
@@ -109,14 +94,16 @@ public class JpaDataProvider extends BaseFhirDataProvider {
             else if (high == null && low != null) {
                 rangeParam = new DateRangeParam(low);
             }
-            else
+            else {
                 rangeParam = new DateRangeParam(high, low);
+            }
+
             map.add(convertPathToSearchParam(datePath), rangeParam);
         }
 
         JpaResourceProviderDstu3<? extends IAnyResource> jpaResProvider = resolveResourceProvider(dataType);
         IBundleProvider bundleProvider = jpaResProvider.getDao().search(map);
-        List<IBaseResource> resourceList = bundleProvider.getResources(0, 10);
+        List<IBaseResource> resourceList = bundleProvider.getResources(0, 50);
         return resolveResourceList(resourceList);
     }
 

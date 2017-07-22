@@ -18,23 +18,6 @@
 	</context-param>
 
 	<!-- Servlets -->
-	<servlet>
-		<servlet-name>formatterServlet</servlet-name>
-		<servlet-class>org.opencds.cqf.servlet.CqlFormatterServlet</servlet-class>
-		<load-on-startup>6</load-on-startup>
-	</servlet>
-
-	<servlet>
-		<servlet-name>executionServiceServlet</servlet-name>
-		<servlet-class>org.opencds.cqf.servlet.ExecutionServiceServlet</servlet-class>
-		<load-on-startup>5</load-on-startup>
-	</servlet>
-
-	<servlet>
-		<servlet-name>cdsOpioidGuidanceServlet</servlet-name>
-		<servlet-class>org.opencds.cqf.servlet.OpioidGuidanceServlet</servlet-class>
-		<load-on-startup>4</load-on-startup>
-	</servlet>
 
 	<servlet>
 		<servlet-name>cdsServicesServlet</servlet-name>
@@ -58,11 +41,11 @@
 
 
 	<servlet>
-		<servlet-name>measureProcessingServlet</servlet-name>
+		<servlet-name>baseServlet</servlet-name>
 		<servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>
 		<init-param>
 			<param-name>ImplementationDescription</param-name>
-			<param-value>FHIR Measure Processing JPA Server</param-value>
+			<param-value>FHIR CQF Ruler-of-All-Knowledge JPA Server</param-value>
 		</init-param>
 		<init-param>
 			<param-name>FhirVersion</param-name>
@@ -72,7 +55,7 @@
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>measureProcessingServlet</servlet-name>
+		<servlet-name>baseServlet</servlet-name>
 		<url-pattern>/baseDstu3/*</url-pattern>
 	</servlet-mapping>
 
@@ -87,18 +70,8 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
-		<servlet-name>cdsOpioidGuidanceServlet</servlet-name>
+		<servlet-name>cdsServicesServlet</servlet-name>
 		<url-pattern>/cds-services/cdc-opioid-guidance</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>executionServiceServlet</servlet-name>
-		<url-pattern>/cql/evaluate</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>formatterServlet</servlet-name>
-		<url-pattern>/format</url-pattern>
 	</servlet-mapping>
 
 </web-app>
