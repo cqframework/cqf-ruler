@@ -20,6 +20,18 @@
 	<!-- Servlets -->
 
 	<servlet>
+		<servlet-name>formatterServlet</servlet-name>
+		<servlet-class>org.opencds.cqf.servlet.CqlFormatterServlet</servlet-class>
+		<load-on-startup>5</load-on-startup>
+	</servlet>
+
+	<servlet>
+		<servlet-name>executionServiceServlet</servlet-name>
+		<servlet-class>org.opencds.cqf.servlet.ExecutionServiceServlet</servlet-class>
+		<load-on-startup>4</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>cdsServicesServlet</servlet-name>
 		<servlet-class>org.opencds.cqf.servlet.CdsServicesServlet</servlet-class>
 		<load-on-startup>3</load-on-startup>
@@ -72,6 +84,16 @@
 	<servlet-mapping>
 		<servlet-name>cdsServicesServlet</servlet-name>
 		<url-pattern>/cds-services/cdc-opioid-guidance</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>executionServiceServlet</servlet-name>
+		<url-pattern>/cql/evaluate</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>formatterServlet</servlet-name>
+		<url-pattern>/format</url-pattern>
 	</servlet-mapping>
 
 </web-app>
