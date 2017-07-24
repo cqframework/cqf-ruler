@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import org.cqframework.cql.cql2elm.*;
 import org.cqframework.cql.elm.execution.ExpressionDef;
+import org.cqframework.cql.elm.execution.FunctionDef;
 import org.cqframework.cql.elm.execution.Library;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -122,8 +123,8 @@ public class ExecutionServiceServlet extends BaseServlet {
 
     private void setExpressionLocations(org.hl7.elm.r1.Library library) {
         for (org.hl7.elm.r1.ExpressionDef def : library.getStatements().getDef()) {
-            int startLine = def.getTrackbacks().isEmpty() ? 0 : def.getExpression().getTrackbacks().get(0).getStartLine();
-            int startChar = def.getTrackbacks().isEmpty() ? 0 : def.getExpression().getTrackbacks().get(0).getStartChar();
+            int startLine = def.getTrackbacks().isEmpty() ? 0 : def.getTrackbacks().get(0).getStartLine();
+            int startChar = def.getTrackbacks().isEmpty() ? 0 : def.getTrackbacks().get(0).getStartChar();
             List<Integer> loc = Arrays.asList(startLine, startChar);
             locations.put(def.getName(), loc);
         }
@@ -185,7 +186,7 @@ public class ExecutionServiceServlet extends BaseServlet {
                 String location = String.format("[%d:%d]", locations.get(def.getName()).get(0), locations.get(def.getName()).get(1));
                 result.put("location", location);
 
-                Object res = def.getExpression().evaluate(context);
+                Object res = def instanceof FunctionDef ? "Definition successfully validated" : def.getExpression().evaluate(context);
 
                 if (res instanceof Iterable) {
                     performRetrieve((Iterable) res, result);
