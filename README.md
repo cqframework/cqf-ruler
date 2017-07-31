@@ -10,10 +10,6 @@ CDS Discovery URL: http://measure.eval.kanvix.com/cqf-ruler/cds-services
 
 CDC Opioid Guidance: http://measure.eval.kanvix.com/cqf-ruler/cds-services/cdc-opioid-guidance
 
-CQL Execution Service: http://measure.eval.kanvix.com/cqf-ruler/cql/evaluate
-
-CQL Formatter Service: http://measure.eval.kanvix.com/cqf-ruler/format
-
 ## Usage 
  - `$ mvn install`
  - `$ mvn -Djetty.http.port=XXXX jetty:run`
@@ -164,50 +160,4 @@ CQL Formatter Service: http://measure.eval.kanvix.com/cqf-ruler/format
       "detail": "Total morphine milligram equivalent (MME) is 20200.700mg/d. Taper to less than 50."
     }
     ```
-  
-### Execution Service
- - POST the following to [base]/cql/evaluate:
-    ```
-    {
-        "code": "Your CQL code",
-        "fhirServiceUri": "Terminology Service Endpoint",
-        "fhirUser": "Username for authentication",
-        "fhirPass": "Password for authentication",
-        "dataServiceUri": "Fhir Data Provider Endpoint",
-        "dataUser": "Username for authentication",
-        "dataPass": "Password for authentication",
-        "patientId": "The patient you want to run the library against"
-    }
-    ```
- - This Request will produce a JSON Response in the following format:
  
-    ```
-    [
-        {
-            "translator-error": "Translation error message (is the only element returned)",
-            "name": "CQL Expression name",
-            "location": "[row:col]",
-            "resultType": "CQL Type being returned",
-            "error": "Runtime error output (this may cause the omission of resultType)"
-        }
-    ]
-    ```
- - This service is used by the [cql-runner](https://github.com/DBCG/cql_runner)
-
-### CQL Formatter
- - POST the following to [base]/format:
-    ```
-    {
-        "code": "Unformatted CQL code"
-    }
-    ```
- - This Request will produce a JSON Response in the following format:
-    ```
-    [
-        {
-            "formatted-cql": "The formatted CQL code"
-        }
-    ]
-    ```
-
- - This service is used by the [cql-runner](https://github.com/DBCG/cql_runner)
