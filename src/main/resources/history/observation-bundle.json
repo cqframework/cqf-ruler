@@ -1,0 +1,2376 @@
+{
+  "resourceType": "Bundle",
+  "id": "2c3b5331-dd75-49f3-b80a-a5cbf3926cef",
+  "meta": {
+    "lastUpdated": "2017-09-06T21:15:30.582+00:00"
+  },
+  "type": "searchset",
+  "total": 205,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation?_count=205&_pretty=true"
+    },
+    {
+      "relation": "next",
+      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3?_getpages=17a811bf-0e69-4e11-8273-0e280237f00d&_getpagesoffset=50&_count=50&_pretty=true&_bundletype=searchset"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-10",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "Observation-10",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-17T16:34:10.814+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.22.4.69"
+          },
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.24.3.69"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/identifier",
+            "value": "1.3.6.1.4.1.115:579f4eb5aeac500a550c5c7d"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "282145008"
+            }
+          ],
+          "text": "Risk Category Assessment: Patient Not Ambulatory"
+        },
+        "subject": {
+          "reference": "Patient/Patient-12214",
+          "display": "2  N Geriatric Jr"
+        },
+        "issued": "2015-06-22T11:00:00-04:00",
+        "performer": [
+          {
+            "reference": "Practitioner/Practitioner-12208",
+            "display": "Jay McCann Sawyer MD"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-16",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "Observation-16",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-17T16:34:10.814+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.22.4.69"
+          },
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.24.3.69"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/identifier",
+            "value": "1.3.6.1.4.1.115:579f4eb5aeac500a550c5c7f"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "71722-3"
+            }
+          ],
+          "text": "Risk Category Assessment: Standardized Tools For Assessment Of Cognition"
+        },
+        "subject": {
+          "reference": "Patient/Patient-12214",
+          "display": "2  N Geriatric Jr"
+        },
+        "issued": "2015-09-28T08:00:00-04:00",
+        "performer": [
+          {
+            "reference": "Practitioner/Practitioner-12208",
+            "display": "Jay McCann Sawyer MD"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-20",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "Observation-20",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-17T16:34:10.814+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.22.4.69"
+          },
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.24.3.69"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/identifier",
+            "value": "1.3.6.1.4.1.115:579f4eb5aeac500a550c5c7e"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "310578008"
+            }
+          ],
+          "text": "Risk Category Assessment: History Of Pneumococcal Vaccine"
+        },
+        "subject": {
+          "reference": "Patient/Patient-12214",
+          "display": "2  N Geriatric Jr"
+        },
+        "issued": "2015-09-28T08:00:00-04:00",
+        "performer": [
+          {
+            "reference": "Practitioner/Practitioner-12208",
+            "display": "Jay McCann Sawyer MD"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-61",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "Observation-61",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-17T16:34:10.814+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.22.4.13"
+          },
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.24.3.59"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/identifier",
+            "value": "1.3.6.1.4.1.115:579f4eb5aeac500a550c5b47"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "39156-5"
+            }
+          ],
+          "text": "Physical Exam, Performed: Bmi Loinc Value"
+        },
+        "subject": {
+          "reference": "Patient/Patietn-12217",
+          "display": "1 N  N GP Adult Jr"
+        },
+        "issued": "2015-09-11T08:00:00-04:00",
+        "performer": [
+          {
+            "reference": "Practitioner/Practitioner-12208",
+            "display": "Jay McCann Sawyer MD"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-62",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "Observation-62",
+        "meta": {
+          "versionId": "3",
+          "lastUpdated": "2017-07-25T09:54:33.579+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/Patient-6",
+          "display": "Manuel Dave Snyder"
+        },
+        "context": {
+          "reference": "Encounter/Encounter-25",
+          "display": "Happy Valley Clinic"
+        },
+        "effectivePeriod": {
+          "start": "2016-08-08T05:54:33-04:00",
+          "end": "2016-08-08T05:54:33-04:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-63",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "Observation-63",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-17T16:34:10.814+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.22.4.13"
+          },
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.24.3.59"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/identifier",
+            "value": "1.3.6.1.4.1.115:579f4eb5aeac500a550c5b42"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8480-6"
+            }
+          ],
+          "text": "Physical Exam, Performed: Systolic Blood Pressure"
+        },
+        "subject": {
+          "reference": "Patient/Patietn-12217",
+          "display": "1 N  N GP Adult Jr"
+        },
+        "effectiveDateTime": "2014-07-21",
+        "issued": "2015-09-11T08:00:00-04:00",
+        "performer": [
+          {
+            "reference": "Practitioner/Practitioner-12208",
+            "display": "Jay McCann Sawyer MD"
+          }
+        ],
+        "valueQuantity": {
+          "value": 120,
+          "unit": "mm[Hg]"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/Observation-64",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "Observation-64",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-17T16:34:10.814+00:00"
+        },
+        "extension": [
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.22.4.13"
+          },
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.24.3.59"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/identifier",
+            "value": "1.3.6.1.4.1.115:579f4eb5aeac500a550c5b3e"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8462-4"
+            }
+          ],
+          "text": "Physical Exam, Performed: Diastolic Blood Pressure"
+        },
+        "subject": {
+          "reference": "Patient/Patietn-12217",
+          "display": "1 N  N GP Adult Jr"
+        },
+        "effectiveDateTime": "2014-02-15",
+        "issued": "2015-07-09T08:00:00-04:00",
+        "performer": [
+          {
+            "reference": "Practitioner/Practitioner-12208",
+            "display": "Jay McCann Sawyer MD"
+          }
+        ],
+        "valueQuantity": {
+          "value": 80,
+          "unit": "mm[Hg]"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/O123456",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "O123456",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-17T16:34:10.814+00:00"
+        },
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "LOINC",
+              "code": "4548-4"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P123456"
+        },
+        "effectiveDateTime": "2016-10-10T00:00:00",
+        "issued": "2015-07-09T08:00:00-04:00",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "441773004"
+            }
+          ]
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/114",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "114",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:14.115+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "0cc5c15e-888d-4e0d-895e-585e425db8ed"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "14564-9",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --2nd specimen"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/110",
+          "display": "Mattie Hanson Church"
+        },
+        "context": {
+          "reference": "Encounter/111",
+          "display": "Happy Valley Clinic"
+        },
+        "effectiveDateTime": "2020-01-15T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "POSITIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/115",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "115",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:14.365+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/110",
+          "display": "Mattie Hanson Church"
+        },
+        "context": {
+          "reference": "Encounter/111",
+          "display": "Happy Valley Clinic"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/119",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "119",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:18.599+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "e3396d8f-ec06-4dbf-a885-c37cce3a76f6"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45330",
+              "display": "Sigmoidoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/110",
+          "display": "Mattie Hanson Church"
+        },
+        "context": {
+          "reference": "Encounter/116",
+          "display": "Happy Valley Hospital"
+        },
+        "effectiveDateTime": "2020-01-21T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "NEGATIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/120",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "120",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:18.818+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/110",
+          "display": "Mattie Hanson Church"
+        },
+        "context": {
+          "reference": "Encounter/116",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-22T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/123",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "123",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:20.130+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/110",
+          "display": "Mattie Hanson Church"
+        },
+        "context": {
+          "reference": "Encounter/121",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-29T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/132",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "132",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:24.583+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "a31ee8eb-5172-4a01-9046-818a1f1d980d"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "27926-5",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --8th specimen"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/124",
+          "display": "Ross Blevins Cook"
+        },
+        "context": {
+          "reference": "Encounter/125",
+          "display": "Happy Valley Clinic"
+        },
+        "effectiveDateTime": "2020-01-15T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "POSITIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/133",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "133",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:24.880+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/124",
+          "display": "Ross Blevins Cook"
+        },
+        "context": {
+          "reference": "Encounter/125",
+          "display": "Happy Valley Clinic"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/136",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "136",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:27.208+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "42d3354d-c563-4cc8-b9c6-4b7b35de4da0"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45383",
+              "display": "Colonoscopy, flexible, proximal to splenic flexure; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/124",
+          "display": "Ross Blevins Cook"
+        },
+        "context": {
+          "reference": "Encounter/134",
+          "display": "Happy Valley Hospital"
+        },
+        "effectiveDateTime": "2020-01-23T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "NEGATIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/137",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "137",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:28.115+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/124",
+          "display": "Ross Blevins Cook"
+        },
+        "context": {
+          "reference": "Encounter/134",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-29T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/140",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "140",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:28.708+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/124",
+          "display": "Ross Blevins Cook"
+        },
+        "context": {
+          "reference": "Encounter/138",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-29T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/145",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "145",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:31.802+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "8e726a63-0d52-48a9-8614-7f436b56779c"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "56490-6",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --2nd specimen"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/141",
+          "display": "Leroy Justin Valencia"
+        },
+        "context": {
+          "reference": "Encounter/142",
+          "display": "Happy Valley Clinic"
+        },
+        "effectiveDateTime": "2020-01-15T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "POSITIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/146",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "146",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:32.005+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/141",
+          "display": "Leroy Justin Valencia"
+        },
+        "context": {
+          "reference": "Encounter/142",
+          "display": "Happy Valley Clinic"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/150",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "150",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:33.411+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "d29cca4f-68f3-439c-af82-32c11d51aa46"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45345",
+              "display": "Sigmoidoscopy, flexible; with transendoscopic stent placement (includes predilation)"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/141",
+          "display": "Leroy Justin Valencia"
+        },
+        "context": {
+          "reference": "Encounter/147",
+          "display": "Happy Valley Hospital"
+        },
+        "effectiveDateTime": "2020-01-21T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "NEGATIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/151",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "151",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:33.958+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/141",
+          "display": "Leroy Justin Valencia"
+        },
+        "context": {
+          "reference": "Encounter/147",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-22T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/154",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "154",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:36.599+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/141",
+          "display": "Leroy Justin Valencia"
+        },
+        "context": {
+          "reference": "Encounter/152",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-29T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/159",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "159",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:38.490+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "0a4d869f-c62d-4ca8-8920-d22bef354ce0"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "12504-7",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --5th specimen"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/155",
+          "display": "Rosemary Flowers Estes"
+        },
+        "context": {
+          "reference": "Encounter/156",
+          "display": "Happy Valley Clinic"
+        },
+        "effectiveDateTime": "2020-01-15T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "POSITIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/160",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "160",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:38.927+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/155",
+          "display": "Rosemary Flowers Estes"
+        },
+        "context": {
+          "reference": "Encounter/156",
+          "display": "Happy Valley Clinic"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/163",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "163",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:41.818+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "108f7cc8-bb3d-4f83-afba-e94080923764"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45382",
+              "display": "Colonoscopy, flexible; with control of bleeding, any method"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/155",
+          "display": "Rosemary Flowers Estes"
+        },
+        "context": {
+          "reference": "Encounter/161",
+          "display": "Happy Valley Hospital"
+        },
+        "effectiveDateTime": "2020-01-22T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "NEGATIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/164",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "164",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:42.224+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/155",
+          "display": "Rosemary Flowers Estes"
+        },
+        "context": {
+          "reference": "Encounter/161",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-22T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/167",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "167",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:42.755+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/155",
+          "display": "Rosemary Flowers Estes"
+        },
+        "context": {
+          "reference": "Encounter/165",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-02-05T00:00:00-05:00",
+          "end": "2020-02-05T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/172",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "172",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:45.880+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "7b3636b5-c170-4c1e-8e89-d4e0f9360587"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "58453-2",
+              "display": "Hemoglobin.gastrointestinal [Mass/volume] in Stool by Immunologic method"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/168",
+          "display": "Freddie Willie Galvan III"
+        },
+        "context": {
+          "reference": "Encounter/169",
+          "display": "Happy Valley Clinic"
+        },
+        "effectiveDateTime": "2020-01-15T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "POSITIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/173",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "173",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:46.193+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/168",
+          "display": "Freddie Willie Galvan III"
+        },
+        "context": {
+          "reference": "Encounter/169",
+          "display": "Happy Valley Clinic"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/177",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "177",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:47.614+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "1956b840-593f-4761-80ec-73a22ef005c6"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45345",
+              "display": "Sigmoidoscopy, flexible; with transendoscopic stent placement (includes predilation)"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/168",
+          "display": "Freddie Willie Galvan III"
+        },
+        "context": {
+          "reference": "Encounter/174",
+          "display": "Happy Valley Hospital"
+        },
+        "effectiveDateTime": "2020-01-21T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "NEGATIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/178",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "178",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:48.083+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/168",
+          "display": "Freddie Willie Galvan III"
+        },
+        "context": {
+          "reference": "Encounter/174",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-22T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/184",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "184",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:51.396+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "f7d48e61-9935-420d-adc4-2499eac928e5"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "12503-9",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --4th specimen"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/179",
+          "display": "Kay Marilyn Morrison"
+        },
+        "context": {
+          "reference": "Encounter/180",
+          "display": "Happy Valley Clinic"
+        },
+        "effectiveDateTime": "2020-01-15T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "POSITIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/185",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "185",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:51.599+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/179",
+          "display": "Kay Marilyn Morrison"
+        },
+        "context": {
+          "reference": "Encounter/180",
+          "display": "Happy Valley Clinic"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/188",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "188",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:53.302+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "1fbf91ad-559a-4fee-9164-5b79b9ee4f86"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45381",
+              "display": "Colonoscopy, flexible; with directed submucosal injection(s), any substance"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/179",
+          "display": "Kay Marilyn Morrison"
+        },
+        "context": {
+          "reference": "Encounter/186",
+          "display": "Happy Valley Hospital"
+        },
+        "effectiveDateTime": "2020-01-24T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "NEGATIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/189",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "189",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:53.677+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/179",
+          "display": "Kay Marilyn Morrison"
+        },
+        "context": {
+          "reference": "Encounter/186",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-29T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/194",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "194",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:57.614+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "b47ab7bd-72a7-4c56-a8af-2310818a7353"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "27401-9",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --6th specimen"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/190",
+          "display": "Terri Mathis Christensen"
+        },
+        "context": {
+          "reference": "Encounter/191",
+          "display": "Happy Valley Clinic"
+        },
+        "effectiveDateTime": "2020-01-15T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "POSITIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/195",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "195",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:57.755+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/190",
+          "display": "Terri Mathis Christensen"
+        },
+        "context": {
+          "reference": "Encounter/191",
+          "display": "Happy Valley Clinic"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/198",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "198",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:58.958+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "06a8f91c-bc12-430a-a3c7-fb671d01c9c4"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "303587008",
+              "display": "Therapeutic colonoscopy"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/190",
+          "display": "Terri Mathis Christensen"
+        },
+        "context": {
+          "reference": "Encounter/196",
+          "display": "Happy Valley Hospital"
+        },
+        "effectiveDateTime": "2020-01-24T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "NEGATIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/199",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "199",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:00.505+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/190",
+          "display": "Terri Mathis Christensen"
+        },
+        "context": {
+          "reference": "Encounter/196",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-29T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/204",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "204",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:03.130+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "8f591c48-4ed4-4fd0-92d8-30ab542e95be"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "14564-9",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --2nd specimen"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/200",
+          "display": "Maureen Hunter Frye"
+        },
+        "context": {
+          "reference": "Encounter/201",
+          "display": "Happy Valley Clinic"
+        },
+        "effectiveDateTime": "2020-01-15T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "POSITIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/205",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "205",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:03.302+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/200",
+          "display": "Maureen Hunter Frye"
+        },
+        "context": {
+          "reference": "Encounter/201",
+          "display": "Happy Valley Clinic"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/208",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "208",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:05.708+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "970018a8-22c5-4b4c-8d2c-6addadb91583"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "446521004",
+              "display": "Colonoscopy and excision of mucosa of colon"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/200",
+          "display": "Maureen Hunter Frye"
+        },
+        "context": {
+          "reference": "Encounter/206",
+          "display": "Happy Valley Hospital"
+        },
+        "effectiveDateTime": "2020-01-26T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "NEGATIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/209",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "209",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:05.880+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/200",
+          "display": "Maureen Hunter Frye"
+        },
+        "context": {
+          "reference": "Encounter/206",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-29T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/212",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "212",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:06.989+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/200",
+          "display": "Maureen Hunter Frye"
+        },
+        "context": {
+          "reference": "Encounter/210",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-02-05T00:00:00-05:00",
+          "end": "2020-02-05T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/225",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "225",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:13.036+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "dd0b28de-ad23-414e-97c2-99c7532afb53"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "14563-1",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --1st specimen"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/213",
+          "display": "Albert Glen Vaughan"
+        },
+        "context": {
+          "reference": "Encounter/214",
+          "display": "Happy Valley Clinic"
+        },
+        "effectiveDateTime": "2020-01-15T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "POSITIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/226",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "226",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:15.192+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/213",
+          "display": "Albert Glen Vaughan"
+        },
+        "context": {
+          "reference": "Encounter/214",
+          "display": "Happy Valley Clinic"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/230",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "230",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:16.176+00:00"
+        },
+        "identifier": [
+          {
+            "system": "mihin.org/fhir/sid/elementId",
+            "value": "7fb8f0e2-35fc-4930-a25a-9fa3471332b9"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45338",
+              "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/213",
+          "display": "Albert Glen Vaughan"
+        },
+        "context": {
+          "reference": "Encounter/227",
+          "display": "Happy Valley Hospital"
+        },
+        "effectiveDateTime": "2020-01-18T00:00:00-05:00",
+        "performer": [
+          {
+            "reference": "Practitioner/105",
+            "display": "Bryan Colon Meyer MD"
+          }
+        ],
+        "valueString": "NEGATIVE"
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/231",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "231",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:17.036+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/213",
+          "display": "Albert Glen Vaughan"
+        },
+        "context": {
+          "reference": "Encounter/227",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-22T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Observation/234",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "234",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:17.504+00:00"
+        },
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/observation-category",
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8716-3",
+              "display": "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/213",
+          "display": "Albert Glen Vaughan"
+        },
+        "context": {
+          "reference": "Encounter/232",
+          "display": "Happy Valley Hospital"
+        },
+        "effectivePeriod": {
+          "start": "2020-01-29T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}

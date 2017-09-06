@@ -1,0 +1,373 @@
+{
+  "resourceType": "Bundle",
+  "id": "0ac91817-426f-4332-884c-23bbb28ab0a4",
+  "meta": {
+    "lastUpdated": "2017-09-06T22:16:08.790+00:00"
+  },
+  "type": "searchset",
+  "total": 6,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Location?_pretty=true"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Location/107",
+      "resource": {
+        "resourceType": "Location",
+        "id": "107",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:07.959+00:00"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://www.hl7.org/oid/",
+            "value": "1.2.3.4.2359"
+          }
+        ],
+        "status": "active",
+        "name": "Happy Valley Clinic",
+        "mode": "instance",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(248) 555-6287",
+            "use": "work"
+          }
+        ],
+        "address": {
+          "use": "work",
+          "type": "physical",
+          "line": [
+            "725 W Lake Place",
+            "#68"
+          ],
+          "city": "Rochester",
+          "district": "Oakland County",
+          "state": "MI",
+          "postalCode": "48307"
+        },
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/location-physical-type",
+              "code": "bu",
+              "display": "Building"
+            }
+          ]
+        },
+        "position": {
+          "longitude": -83.11672022091109,
+          "latitude": 42.69347549282856
+        },
+        "managingOrganization": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Location/109",
+      "resource": {
+        "resourceType": "Location",
+        "id": "109",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:09.506+00:00"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://www.hl7.org/oid/",
+            "value": "1.2.3.4.2360"
+          }
+        ],
+        "status": "active",
+        "name": "Happy Valley Hospital",
+        "mode": "instance",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(269) 555-5895",
+            "use": "work"
+          }
+        ],
+        "address": {
+          "use": "work",
+          "type": "physical",
+          "line": [
+            "853 SW Pecan Drive"
+          ],
+          "city": "Kalamazoo",
+          "district": "Kalamazoo County",
+          "state": "MI",
+          "postalCode": "49007"
+        },
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/location-physical-type",
+              "code": "bu",
+              "display": "Building"
+            }
+          ]
+        },
+        "position": {
+          "longitude": -85.57675646115139,
+          "latitude": 42.27653769466987
+        },
+        "managingOrganization": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Location/Location-2359",
+      "resource": {
+        "resourceType": "Location",
+        "id": "Location-2359",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2017-07-25T09:54:33.579+00:00"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://www.hl7.org/oid/",
+            "value": "1.2.3.4.2359"
+          }
+        ],
+        "status": "active",
+        "name": "Happy Valley Clinic",
+        "mode": "instance",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(248) 555-6509",
+            "use": "work"
+          }
+        ],
+        "address": {
+          "use": "work",
+          "type": "physical",
+          "line": [
+            "725 W Lake Place",
+            "#68"
+          ],
+          "city": "Rochester",
+          "district": "Oakland County",
+          "state": "MI",
+          "postalCode": "48307"
+        },
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/location-physical-type",
+              "code": "bu",
+              "display": "Building"
+            }
+          ]
+        },
+        "position": {
+          "longitude": -83.11067010499791,
+          "latitude": 42.68559063006035
+        },
+        "managingOrganization": {
+          "reference": "Organization/Organization-3013",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Location/Location-2360",
+      "resource": {
+        "resourceType": "Location",
+        "id": "Location-2360",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2017-07-25T09:54:33.579+00:00"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://www.hl7.org/oid/",
+            "value": "1.2.3.4.2360"
+          }
+        ],
+        "status": "active",
+        "name": "Happy Valley Hospital",
+        "mode": "instance",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(989) 555-0001",
+            "use": "work"
+          }
+        ],
+        "address": {
+          "use": "work",
+          "type": "physical",
+          "line": [
+            "755 SW Walnut Place"
+          ],
+          "city": "Roscommon",
+          "district": "Roscommon County",
+          "state": "MI",
+          "postalCode": "48653"
+        },
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/location-physical-type",
+              "code": "bu",
+              "display": "Building"
+            }
+          ]
+        },
+        "position": {
+          "longitude": -84.56675732000173,
+          "latitude": 44.49375724974506
+        },
+        "managingOrganization": {
+          "reference": "Organization/Organization-3014",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Location/Location-1101",
+      "resource": {
+        "resourceType": "Location",
+        "id": "Location-1101",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2017-09-02T02:48:46.055+00:00"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://www.hl7.org/oid/",
+            "value": "1.2.3.4.1101"
+          }
+        ],
+        "status": "active",
+        "name": "McKinley Health Center",
+        "mode": "instance",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(734) 555-3131",
+            "use": "work"
+          }
+        ],
+        "address": {
+          "use": "work",
+          "type": "physical",
+          "line": [
+            "428 E Eighth Drive"
+          ],
+          "city": "Southfield",
+          "district": "Oakland County",
+          "state": "MI",
+          "postalCode": "48037"
+        },
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/location-physical-type",
+              "code": "bu",
+              "display": "Building"
+            }
+          ]
+        },
+        "position": {
+          "longitude": -83.72731866148872,
+          "latitude": 42.2814465218414
+        },
+        "managingOrganization": {
+          "reference": "Organization/Organization-1101",
+          "display": "McKinley Health Center"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Location/Location-1106",
+      "resource": {
+        "resourceType": "Location",
+        "id": "Location-1106",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-02T02:54:06.722+00:00"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://www.hl7.org/oid/",
+            "value": "1.2.3.4.1106"
+          }
+        ],
+        "status": "active",
+        "name": "Cranston Family Medical",
+        "mode": "instance",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(616) 555-1930",
+            "use": "work"
+          }
+        ],
+        "address": {
+          "use": "work",
+          "type": "physical",
+          "line": [
+            "910 SE Columbia Avenue"
+          ],
+          "city": "Dearborn",
+          "district": "Wayne County",
+          "state": "MI",
+          "postalCode": "48126"
+        },
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/location-physical-type",
+              "code": "bu",
+              "display": "Building"
+            }
+          ]
+        },
+        "position": {
+          "longitude": -85.6343800035714,
+          "latitude": 42.97765947569625
+        },
+        "managingOrganization": {
+          "reference": "Organization/Organization-1106",
+          "display": "Cranston Family Medical"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}

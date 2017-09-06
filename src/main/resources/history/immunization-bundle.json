@@ -1,0 +1,318 @@
+{
+  "resourceType": "Bundle",
+  "id": "58d698ab-a23a-4f23-b5aa-8c40cef50716",
+  "meta": {
+    "lastUpdated": "2017-09-06T22:06:16.346+00:00"
+  },
+  "type": "searchset",
+  "total": 7,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Immunization?_pretty=true"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Immunization/Immunization-227389",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "Immunization-227389",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-02T02:37:37.331+00:00"
+        },
+        "status": "completed",
+        "notGiven": false,
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "140",
+              "display": "Influenza, seasonal, injectable, preservative free"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "Patient/Patient-1137",
+          "display": "Aiden Michael Jones"
+        },
+        "date": "2027-05-25T09:36:36-04:00",
+        "primarySource": true,
+        "location": {
+          "reference": "Location/Location-1101",
+          "display": "McKinley Health Center"
+        },
+        "practitioner": [
+          {
+            "actor": {
+              "reference": "Practitioner/Practitioner-2534",
+              "display": "Pearl Rita Dawson MD"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Immunization/Immunization-227390",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "Immunization-227390",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-02T02:37:37.331+00:00"
+        },
+        "status": "completed",
+        "notGiven": false,
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "62",
+              "display": "HPV, quadrivalent"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "Patient/Patient-1137",
+          "display": "Aiden Michael Jones"
+        },
+        "date": "2027-05-25T09:36:36-04:00",
+        "primarySource": true,
+        "location": {
+          "reference": "Location/Location-1101",
+          "display": "McKinley Health Center"
+        },
+        "practitioner": [
+          {
+            "actor": {
+              "reference": "Practitioner/Practitioner-2534",
+              "display": "Pearl Rita Dawson MD"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Immunization/Immunization-227391",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "Immunization-227391",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-02T02:37:37.331+00:00"
+        },
+        "status": "completed",
+        "notGiven": false,
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "114",
+              "display": "meningococcal MCV4P"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "Patient/Patient-1137",
+          "display": "Aiden Michael Jones"
+        },
+        "date": "2027-05-25T09:36:36-04:00",
+        "primarySource": true,
+        "location": {
+          "reference": "Location/Location-1101",
+          "display": "McKinley Health Center"
+        },
+        "practitioner": [
+          {
+            "actor": {
+              "reference": "Practitioner/Practitioner-2534",
+              "display": "Pearl Rita Dawson MD"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Immunization/Immunization-227392",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "Immunization-227392",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-02T02:37:37.331+00:00"
+        },
+        "status": "completed",
+        "notGiven": false,
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "115",
+              "display": "Tdap"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "Patient/Patient-1137",
+          "display": "Aiden Michael Jones"
+        },
+        "date": "2027-05-25T09:36:36-04:00",
+        "primarySource": true,
+        "location": {
+          "reference": "Location/Location-1101",
+          "display": "McKinley Health Center"
+        },
+        "practitioner": [
+          {
+            "actor": {
+              "reference": "Practitioner/Practitioner-2534",
+              "display": "Pearl Rita Dawson MD"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Immunization/Immunization-201647",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "Immunization-201647",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-02T02:48:46.055+00:00"
+        },
+        "status": "completed",
+        "notGiven": false,
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "140",
+              "display": "Influenza, seasonal, injectable, preservative free"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "Patient/Patient-6557",
+          "display": "Mabel Haynes James"
+        },
+        "date": "2026-05-26T09:36:36-04:00",
+        "primarySource": true,
+        "location": {
+          "reference": "Location/Location-1101",
+          "display": "McKinley Health Center"
+        },
+        "practitioner": [
+          {
+            "actor": {
+              "reference": "Practitioner/Practitioner-2534",
+              "display": "Pearl Rita Dawson MD"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Immunization/Immunization-201648",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "Immunization-201648",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-02T02:48:46.055+00:00"
+        },
+        "status": "completed",
+        "notGiven": false,
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "113",
+              "display": "Td (adult) preservative free"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "Patient/Patient-6557",
+          "display": "Mabel Haynes James"
+        },
+        "date": "2026-05-26T09:36:36-04:00",
+        "primarySource": true,
+        "location": {
+          "reference": "Location/Location-1101",
+          "display": "McKinley Health Center"
+        },
+        "practitioner": [
+          {
+            "actor": {
+              "reference": "Practitioner/Practitioner-2534",
+              "display": "Pearl Rita Dawson MD"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Immunization/Immunization-84943",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "Immunization-84943",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-02T02:54:06.722+00:00"
+        },
+        "status": "completed",
+        "notGiven": false,
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "140",
+              "display": "Influenza, seasonal, injectable, preservative free"
+            }
+          ]
+        },
+        "patient": {
+          "reference": "Patient/Patient-1125",
+          "display": "Ryan Arthur Paulson"
+        },
+        "date": "2022-11-09T09:36:36-05:00",
+        "primarySource": true,
+        "location": {
+          "reference": "Location/Location-1106",
+          "display": "Cranston Family Medical"
+        },
+        "practitioner": [
+          {
+            "actor": {
+              "reference": "Practitioner/Practitioner-2521",
+              "display": "Heather Fuentes Guerra MD"
+            }
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}

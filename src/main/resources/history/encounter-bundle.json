@@ -1,0 +1,2621 @@
+{
+  "resourceType": "Bundle",
+  "id": "ca101188-2c50-4c3f-90e5-eaa474247124",
+  "meta": {
+    "lastUpdated": "2017-09-06T21:28:19.663+00:00"
+  },
+  "type": "searchset",
+  "total": 109,
+  "link": [
+    {
+      "relation": "self",
+      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter?_count=109&_pretty=true"
+    },
+    {
+      "relation": "next",
+      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3?_getpages=fb091c20-655b-4a8d-ba91-d619d06ea759&_getpagesoffset=50&_count=50&_pretty=true&_bundletype=searchset"
+    }
+  ],
+  "entry": [
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/111",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "111",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:13.459+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/110",
+          "display": "Mattie Hanson Church"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/116",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "116",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:15.521+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/110",
+          "display": "Mattie Hanson Church"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-21T00:00:00-05:00",
+              "end": "2020-01-22T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-21T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/121",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "121",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:18.990+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/110",
+          "display": "Mattie Hanson Church"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-25T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-25T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/125",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "125",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:20.677+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/124",
+          "display": "Ross Blevins Cook"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/134",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "134",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:25.037+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/124",
+          "display": "Ross Blevins Cook"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-23T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-23T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/138",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "138",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:28.333+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/124",
+          "display": "Ross Blevins Cook"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-28T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-28T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/142",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "142",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:29.068+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/141",
+          "display": "Leroy Justin Valencia"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/147",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "147",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:32.193+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/141",
+          "display": "Leroy Justin Valencia"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-21T00:00:00-05:00",
+              "end": "2020-01-22T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-21T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/152",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "152",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:34.568+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/141",
+          "display": "Leroy Justin Valencia"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-28T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-28T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/156",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "156",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:37.943+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/155",
+          "display": "Rosemary Flowers Estes"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/161",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "161",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:39.114+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/155",
+          "display": "Rosemary Flowers Estes"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-22T00:00:00-05:00",
+              "end": "2020-01-22T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-22T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/165",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "165",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:42.396+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/155",
+          "display": "Rosemary Flowers Estes"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-30T00:00:00-05:00",
+              "end": "2020-02-05T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-30T00:00:00-05:00",
+          "end": "2020-02-05T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/169",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "169",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:43.771+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/168",
+          "display": "Freddie Willie Galvan III"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/174",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "174",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:46.411+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/168",
+          "display": "Freddie Willie Galvan III"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-21T00:00:00-05:00",
+              "end": "2020-01-22T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-21T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/180",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "180",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:48.739+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/179",
+          "display": "Kay Marilyn Morrison"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/186",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "186",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:52.755+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/179",
+          "display": "Kay Marilyn Morrison"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-24T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-24T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/191",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "191",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:56.020+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/190",
+          "display": "Terri Mathis Christensen"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/196",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "196",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:35:58.005+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/190",
+          "display": "Terri Mathis Christensen"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-24T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-24T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/201",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "201",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:01.411+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/200",
+          "display": "Maureen Hunter Frye"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/206",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "206",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:03.458+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/200",
+          "display": "Maureen Hunter Frye"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-26T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-26T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/210",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "210",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:06.598+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/200",
+          "display": "Maureen Hunter Frye"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-30T00:00:00-05:00",
+              "end": "2020-02-05T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-30T00:00:00-05:00",
+          "end": "2020-02-05T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/214",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "214",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:08.255+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/213",
+          "display": "Albert Glen Vaughan"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/227",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "227",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:15.458+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/213",
+          "display": "Albert Glen Vaughan"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-18T00:00:00-05:00",
+              "end": "2020-01-22T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-18T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/232",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "232",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:17.176+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/213",
+          "display": "Albert Glen Vaughan"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-25T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-25T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/236",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "236",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:19.895+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/235",
+          "display": "Amy Sawyer Osborn"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/241",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "241",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:21.473+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/235",
+          "display": "Amy Sawyer Osborn"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-19T00:00:00-05:00",
+              "end": "2020-01-22T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-19T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/246",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "246",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:24.223+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/235",
+          "display": "Amy Sawyer Osborn"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-24T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-24T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/250",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "250",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:24.942+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/249",
+          "display": "Megan McLaughlin Moss"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/255",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "255",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:28.536+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/249",
+          "display": "Megan McLaughlin Moss"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-24T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-24T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/259",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "259",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:29.192+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/249",
+          "display": "Megan McLaughlin Moss"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-31T00:00:00-05:00",
+              "end": "2020-02-05T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-31T00:00:00-05:00",
+          "end": "2020-02-05T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/263",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "263",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:31.957+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/262",
+          "display": "Rosa Kathleen Jefferson"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/269",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "269",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:33.598+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/262",
+          "display": "Rosa Kathleen Jefferson"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-28T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-28T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/273",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "273",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:36.707+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/262",
+          "display": "Rosa Kathleen Jefferson"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-02-01T00:00:00-05:00",
+              "end": "2020-02-05T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-02-01T00:00:00-05:00",
+          "end": "2020-02-05T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/277",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "277",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:38.020+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/276",
+          "display": "Andrea Montgomery Woodard"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/282",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "282",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:40.989+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/276",
+          "display": "Andrea Montgomery Woodard"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-23T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-23T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/286",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "286",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:42.332+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/276",
+          "display": "Andrea Montgomery Woodard"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-28T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-28T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/290",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "290",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:45.082+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/289",
+          "display": "Kevin Mahoney Mooney"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/304",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "304",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:50.785+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/289",
+          "display": "Kevin Mahoney Mooney"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-24T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-24T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/308",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "308",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:53.316+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/289",
+          "display": "Kevin Mahoney Mooney"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-30T00:00:00-05:00",
+              "end": "2020-02-05T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-30T00:00:00-05:00",
+          "end": "2020-02-05T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/312",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "312",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:54.598+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/311",
+          "display": "Misty Katie Mayo"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/317",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "317",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:57.957+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/311",
+          "display": "Misty Katie Mayo"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-27T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-27T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/321",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "321",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:36:59.332+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/311",
+          "display": "Misty Katie Mayo"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-02-05T00:00:00-05:00",
+              "end": "2020-02-05T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-02-05T00:00:00-05:00",
+          "end": "2020-02-05T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/325",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "325",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:37:02.144+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/324",
+          "display": "Eleanor Naomi Crosby"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/330",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "330",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:37:03.660+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/324",
+          "display": "Eleanor Naomi Crosby"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-18T00:00:00-05:00",
+              "end": "2020-01-22T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-18T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/335",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "335",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:37:07.238+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/324",
+          "display": "Eleanor Naomi Crosby"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-22T00:00:00-05:00",
+              "end": "2020-01-22T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-22T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/339",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "339",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:37:08.113+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/338",
+          "display": "Beth Maynard McPherson"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/344",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "344",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:37:11.722+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/338",
+          "display": "Beth Maynard McPherson"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-26T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-26T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/348",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "348",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:37:13.301+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/338",
+          "display": "Beth Maynard McPherson"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-29T00:00:00-05:00",
+              "end": "2020-01-29T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-29T00:00:00-05:00",
+          "end": "2020-01-29T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/352",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "352",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:37:16.129+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/351",
+          "display": "Duane Kennedy Andrade"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-15T00:00:00-05:00",
+              "end": "2020-01-15T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-15T00:00:00-05:00",
+          "end": "2020-01-15T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/107",
+              "display": "Happy Valley Clinic"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/106",
+          "display": "Happy Valley Clinic"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/357",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "357",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-07-24T19:37:17.832+00:00"
+        },
+        "status": "finished",
+        "class": {
+          "system": "http://hl7.org/fhir/encounter-class",
+          "code": "other",
+          "display": "Other"
+        },
+        "subject": {
+          "reference": "Patient/351",
+          "display": "Duane Kennedy Andrade"
+        },
+        "participant": [
+          {
+            "period": {
+              "start": "2020-01-20T00:00:00-05:00",
+              "end": "2020-01-22T00:00:00-05:00"
+            },
+            "individual": {
+              "reference": "Practitioner/105",
+              "display": "Bryan Colon Meyer MD"
+            }
+          }
+        ],
+        "period": {
+          "start": "2020-01-20T00:00:00-05:00",
+          "end": "2020-01-22T00:00:00-05:00"
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/109",
+              "display": "Happy Valley Hospital"
+            }
+          }
+        ],
+        "serviceProvider": {
+          "reference": "Organization/108",
+          "display": "Happy Valley Hospital"
+        }
+      },
+      "search": {
+        "mode": "match"
+      }
+    }
+  ]
+}
