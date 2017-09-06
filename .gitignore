@@ -1,5 +1,7 @@
 # Created by https://www.gitignore.io
 
+.DS_Store
+
 # RxNorm data
 src/main/resources/cds/OpioidManagementTerminologyKnowledge.db
 

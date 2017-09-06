@@ -7,6 +7,9 @@ import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.SortSpec;
+import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.api.Constants;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.cqframework.cql.elm.execution.Library;
@@ -148,29 +151,29 @@ public class MedicationRequestResourceProvider extends JpaResourceProviderDstu3<
     }
 
     @Search(allowUnknownParams=true)
-    public ca.uhn.fhir.rest.server.IBundleProvider search(
+    public IBundleProvider search(
             javax.servlet.http.HttpServletRequest theServletRequest,
 
-            ca.uhn.fhir.rest.method.RequestDetails theRequestDetails,
+            RequestDetails theRequestDetails,
 
             @Description(shortDefinition="Search the contents of the resource's data using a fulltext search")
-            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_CONTENT)
+            @OptionalParam(name=Constants.PARAM_CONTENT)
                     StringAndListParam theFtContent,
 
             @Description(shortDefinition="Search the contents of the resource's narrative using a fulltext search")
-            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_TEXT)
+            @OptionalParam(name=Constants.PARAM_TEXT)
                     StringAndListParam theFtText,
 
             @Description(shortDefinition="Search for resources which have the given tag")
-            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_TAG)
+            @OptionalParam(name=Constants.PARAM_TAG)
                     TokenAndListParam theSearchForTag,
 
             @Description(shortDefinition="Search for resources which have the given security labels")
-            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_SECURITY)
+            @OptionalParam(name=Constants.PARAM_SECURITY)
                     TokenAndListParam theSearchForSecurity,
 
             @Description(shortDefinition="Search for resources which have the given profile")
-            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_PROFILE)
+            @OptionalParam(name=Constants.PARAM_PROFILE)
                     UriAndListParam theSearchForProfile,
 
             @Description(shortDefinition="Return resources linked to by the given target")
@@ -300,11 +303,11 @@ public class MedicationRequestResourceProvider extends JpaResourceProviderDstu3<
         startRequest(theServletRequest);
         try {
             SearchParameterMap paramMap = new SearchParameterMap();
-            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_CONTENT, theFtContent);
-            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_TEXT, theFtText);
-            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_TAG, theSearchForTag);
-            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_SECURITY, theSearchForSecurity);
-            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_PROFILE, theSearchForProfile);
+            paramMap.add(Constants.PARAM_CONTENT, theFtContent);
+            paramMap.add(Constants.PARAM_TEXT, theFtText);
+            paramMap.add(Constants.PARAM_TAG, theSearchForTag);
+            paramMap.add(Constants.PARAM_SECURITY, theSearchForSecurity);
+            paramMap.add(Constants.PARAM_PROFILE, theSearchForProfile);
             paramMap.add("_has", theHas);
             paramMap.add("_id", the_id);
             paramMap.add("_language", the_language);
@@ -327,11 +330,11 @@ public class MedicationRequestResourceProvider extends JpaResourceProviderDstu3<
             paramMap.setIncludes(theIncludes);
             paramMap.setSort(theSort);
             paramMap.setCount(theCount);
-            paramMap.setRequestDetails(theRequestDetails);
+//            paramMap.setRequestDetails(theRequestDetails);
 
             getDao().translateRawParameters(theAdditionalRawParams, paramMap);
 
-            return getDao().search(paramMap);
+            return getDao().search(paramMap, theRequestDetails);
         } finally {
             endRequest(theServletRequest);
         }

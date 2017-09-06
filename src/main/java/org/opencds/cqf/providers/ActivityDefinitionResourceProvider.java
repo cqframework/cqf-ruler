@@ -9,7 +9,6 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.cql.data.fhir.JpaFhirDataProvider;
 
 import java.util.Collection;
 
