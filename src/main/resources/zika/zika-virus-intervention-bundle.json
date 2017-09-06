@@ -1,0 +1,645 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Library",
+        "id": "zika-virus-intervention-logic",
+        "version": "1.0.1",
+        "type": {
+          "coding": [
+            {
+              "code": "logic-library"
+            }
+          ]
+        },
+        "status": "draft",
+        "content": [
+          {
+            "contentType": "text/cql",
+            "data": "bGlicmFyeSAiemlrYS12aXJ1cy1pbnRlcnZlbnRpb24tbG9naWMiIHZlcnNpb24gJzEuMC4xJw0KDQp1c2luZyBGSElSIHZlcnNpb24gJzMuMC4wJw0KDQppbmNsdWRlIEZISVJIZWxwZXJzIHZlcnNpb24gJzMuMC4wJyBjYWxsZWQgRkhJUkhlbHBlcnMNCg0KY29kZXN5c3RlbSAiRXhhbXBsZSBRdWVzdGlvbm5haXJlcyI6ICdodHRwOi8vZXhhbXBsZS5vcmcvcXVlc3Rpb25uYWlyZXMnDQoNCnZhbHVlc2V0ICJQcmVnbmFuY3kiOiAndXJuOm9pZDpYLlkuWicNCnZhbHVlc2V0ICJaaWthIEFmZmVjdGVkIEFyZWFzIjogJ3VybjpvaWQ6Mi4xNi44NDAuMS4xMTQyMjIuNC4xMS43NDU3JyAvLyBWYWx1ZSBzZXQgaGFzIGJlZW4gY3JlYXRlZCBiYXNlZCB1cG9uIEphbiAyNnRoLCAyMDE2IHRyYXZlbCBub3RpY2UgZnJvbSBDREMgWmlrYSB2aXJ1cyBkaXNlYXNlIHdlYnNpdGUJaHR0cHM6Ly9waGludmFkcy5jZGMuZ292L3ZhZHMvVmlld1ZhbHVlU2V0LmFjdGlvbj9vaWQ9Mi4xNi44NDAuMS4xMTQyMjIuNC4xMS43NDU3DQp2YWx1ZXNldCAiWmlrYSBWaXJ1cyBTaWducyBhbmQgU3ltcHRvbXMiOgknMi4xNi44NDAuMS4xMTQyMjIuNC4xMS43NDU5JyAvLyBodHRwczovL3BoaW52YWRzLmNkYy5nb3YvdmFkcy9WaWV3VmFsdWVTZXQuYWN0aW9uP29pZD0yLjE2Ljg0MC4xLjExNDIyMi40LjExLjc0NTkNCnZhbHVlc2V0ICJHZW5lcmFsIEFyYm92aXJ1cyBTaWducyBhbmQgU3ltcHRvbXMiOiAnMi4xNi44NDAuMS4xMTQyMjIuNC4xMS43NDYwJyAvLyBTaWducyBhbmQgU3ltcHRvbXMgb2YgQXJib3ZpcmFsIGRpc2Vhc2VzLiBUaGlzIHZhbHVlIHNldCB3b3VsZCBiZSB1c2VkIGZvciBwdWJsaWMgaGVhbHRoIGNhc2Ugbm90aWZpY2F0aW9uIGFuZCBpbmNsdWRlcyBzaWducyBhbmQgc3ltcHRvbXMgb2YgRGVuZ3VlLCBDaGlrdW5ndW55YSBhbmQgWmlrYS4JaHR0cHM6Ly9waGludmFkcy5jZGMuZ292L3ZhZHMvVmlld1ZhbHVlU2V0LmFjdGlvbj9vaWQ9Mi4xNi44NDAuMS4xMTQyMjIuNC4xMS43NDYwDQp2YWx1ZXNldCAiWmlrYSBWaXJ1cyBUZXN0cyI6ICcyLjE2Ljg0MC4xLjExNDIyMi40LjExLjc0ODAnCS8vIGh0dHBzOi8vcGhpbnZhZHMuY2RjLmdvdi92YWRzL1ZpZXdWYWx1ZVNldC5hY3Rpb24/b2lkPTIuMTYuODQwLjEuMTE0MjIyLjQuMTEuNzQ4MA0KdmFsdWVzZXQgIkFyYm92aXJ1cyBUZXN0cyI6ICcyLjE2Ljg0MC4xLjExNDIyMi40LjExLjQxMjAnIC8vIGh0dHBzOi8vcGhpbnZhZHMuY2RjLmdvdi92YWRzL1ZpZXdWYWx1ZVNldC5hY3Rpb24/b2lkPTIuMTYuODQwLjEuMTE0MjIyLjQuMTEuNDEyMA0KdmFsdWVzZXQgIkNoaWt1bmd1bnlhIFRlc3RzIjogJzIuMTYuODQwLjEuMTE0MjIyLjQuMTEuNzMzOScgLy8gaHR0cHM6Ly9waGludmFkcy5jZGMuZ292L3ZhZHMvVmlld1ZhbHVlU2V0LmFjdGlvbj9vaWQ9Mi4xNi44NDAuMS4xMTQyMjIuNC4xMS43MzM5DQp2YWx1ZXNldCAiRGVuZ3VlIFRlc3RzIjogJzIuMTYuODQwLjEuMTE0MjIyLjQuMTEuNDE0MScgLy8JaHR0cHM6Ly9waGludmFkcy5jZGMuZ292L3ZhZHMvVmlld1ZhbHVlU2V0LmFjdGlvbj9vaWQ9Mi4xNi44NDAuMS4xMTQyMjIuNC4xMS40MTQxDQp2YWx1ZXNldCAiWmlrYSBWaXJ1cyBJZ00gRUxJU0EgUmVzdWx0cyI6ICcyLjE2Ljg0MC4xLjExNDIyMi40LjExLjc0NzYnIC8vIFRoaXMgdmFsdWUgc2V0IGlzIGludGVuZGVkIGZvciB1c2UgaW4gZWxlY3Ryb25pYyBsYWJvcmF0b3J5IHJlcG9ydGluZyBiYXNlZCBvbiB0aGUgcmVzdWx0cyByZWNlaXZlZCBmcm9tIHRoZSBsYWJvcmF0b3J5LiAgVGhlIGxhYm9yYXRvcnkgbWF5IGFsc28gcmVwb3J0IGEgcXVhbnRpdGF0aXZlIHRpdGVyIGlmIGFwcGxpY2FibGUuCWh0dHBzOi8vcGhpbnZhZHMuY2RjLmdvdi92YWRzL1ZpZXdWYWx1ZVNldC5hY3Rpb24/b2lkPTIuMTYuODQwLjEuMTE0MjIyLjQuMTEuNzQ3Ng0KdmFsdWVzZXQgIlppa2EgVmlydXMgTmV1dHJhbGl6aW5nIEFudGlib2R5IFJlc3VsdHMiOiAnMi4xNi44NDAuMS4xMTQyMjIuNC4xMS43NDc3JyAvLyBUaGlzIHZhbHVlIHNldCBpcyBpbnRlbmRlZCBmb3IgdXNlIGluIGVsZWN0cm9uaWMgbGFib3JhdG9yeSByZXBvcnRpbmcgYmFzZWQgb24gdGhlIHJlc3VsdHMgcmVjZWl2ZWQgZnJvbSB0aGUgbGFib3JhdG9yeS4gIFRoZSBsYWJvcmF0b3J5IG1heSBhbHNvIHJlcG9ydCBhIHF1YW50aXRhdGl2ZSB0aXRlciBpZiBhcHBsaWNhYmxlLglodHRwczovL3BoaW52YWRzLmNkYy5nb3YvdmFkcy9WaWV3VmFsdWVTZXQuYWN0aW9uP29pZD0yLjE2Ljg0MC4xLjExNDIyMi40LjExLjc0NzcNCnZhbHVlc2V0ICJBcmJvdmlydXMgVGVzdCBSZXN1bHRzIjogJzIuMTYuODQwLjEuMTE0MjIyLjQuMTEuNDAwMycgLy8JaHR0cHM6Ly9waGludmFkcy5jZGMuZ292L3ZhZHMvVmlld1ZhbHVlU2V0LmFjdGlvbj9vaWQ9Mi4xNi44NDAuMS4xMTQyMjIuNC4xMS40MDAzDQp2YWx1ZXNldCAiQ2hpa3VuZ3VueWEgVGVzdCBSZXN1bHRzIjogJzIuMTYuODQwLjEuMTE0MjIyLjQuMTEuNzM0MycgLy8gVGhpcyB2YWx1ZSBzZXQgaXMgaW50ZW5kZWQgZm9yIHVzZSBpbiBlbGVjdHJvbmljIGxhYm9yYXRvcnkgcmVwb3J0aW5nIGJhc2VkIG9uIHRoZSByZXN1bHRzIHJlY2VpdmVkIGZyb20gdGhlIGxhYm9yYXRvcnkuICBUaGUgbGFib3JhdG9yeSBtYXkgYWxzbyByZXBvcnQgYSBxdWFudGl0YXRpdmUgdGl0ZXIgaWYgYXBwbGljYWJsZS4JaHR0cHM6Ly9waGludmFkcy5jZGMuZ292L3ZhZHMvVmlld1ZhbHVlU2V0LmFjdGlvbj9vaWQ9Mi4xNi44NDAuMS4xMTQyMjIuNC4xMS43MzQzDQp2YWx1ZXNldCAiRGVuZ3VlIFRlc3QgUmVzdWx0cyI6ICcyLjE2Ljg0MC4xLjExNDIyMi40LjExLjQwMjUnIC8vIFRoaXMgdmFsdWUgc2V0IGlzIGludGVuZGVkIGZvciB1c2UgaW4gZWxlY3Ryb25pYyBsYWJvcmF0b3J5IHJlcG9ydGluZyBiYXNlZCBvbiB0aGUgcmVzdWx0cyByZWNlaXZlZCBmcm9tIHRoZSBsYWJvcmF0b3J5LiAgVGhlIGxhYm9yYXRvcnkgbWF5IGFsc28gcmVwb3J0IGEgcXVhbnRpdGF0aXZlIHRpdGVyIGlmIGFwcGxpY2FibGUuCWh0dHBzOi8vcGhpbnZhZHMuY2RjLmdvdi92YWRzL1ZpZXdWYWx1ZVNldC5hY3Rpb24/b2lkPTIuMTYuODQwLjEuMTE0MjIyLjQuMTEuNDAyNQ0KDQpjb2RlICJDREU6IFJlc2lkZW50IG9mIG9yIEZyZXF1ZW50IFRyYXZlbGVyIHRvIFppa2EgQXJlYSI6ICdDREU6IFJlc2lkZW50IG9mIG9yIEZyZXF1ZW50IFRyYXZlbGVyIHRvIFppa2EgQXJlYScgZnJvbSAiRXhhbXBsZSBRdWVzdGlvbm5haXJlcyINCmNvZGUgIkNERTogUmVjZW50IFRyYXZlbCB0byBaaWthIEFyZWEiOiAnQ0RFOiBSZWNlbnQgVHJhdmVsIHRvIFppa2EgQXJlYScgZnJvbSAiRXhhbXBsZSBRdWVzdGlvbm5haXJlcyINCmNvZGUgIkNERTogVGltZSBTaW5jZSBSZXR1cm5lZCBGcm9tIFRyYXZlbCI6ICdDREU6IFRpbWUgU2luY2UgUmV0dXJuZWQgRnJvbSBUcmF2ZWwnIGZyb20gIkV4YW1wbGUgUXVlc3Rpb25uYWlyZXMiDQpjb2RlICJDREU6IFJlY2VudCBTZXh1YWwgRW5jb3VudGVyIFdpdGggVHJhdmVsZXIgdG8gWmlrYSBBcmVhIjogJ0NERTogUmVjZW50IFNleHVhbCBFbmNvdW50ZXIgV2l0aCBUcmF2ZWxlciB0byBaaWthIEFyZWEnIGZyb20gIkV4YW1wbGUgUXVlc3Rpb25uYWlyZXMiDQpjb2RlICJDREU6IFRpbWUgU2luY2UgU2V4dWFsIEVuY291bnRlciI6ICdDREU6IFRpbWUgU2luY2UgU2V4dWFsIEVuY291bnRlcicgZnJvbSAiRXhhbXBsZSBRdWVzdGlvbm5haXJlcyINCmNvZGUgIkNERTogUGxhbm5lZCBUcmF2ZWwgdG8gWmlrYSBBcmVhIjogJ0NERTogUGxhbm5lZCBUcmF2ZWwgdG8gWmlrYSBBcmVhJyBmcm9tICJFeGFtcGxlIFF1ZXN0aW9ubmFpcmVzIg0KDQpwYXJhbWV0ZXIgIkN1cnJlbnQgRW5jb3VudGVyIiBFbmNvdW50ZXINCg0KY29udGV4dCBQYXRpZW50DQoNCmRlZmluZSAiUHJlZ25hbmN5IENvbmRpdGlvbnMiOg0KICBbQ29uZGl0aW9uOiAiUHJlZ25hbmN5Il0gQw0KICAgIHdoZXJlIEMuY2xpbmljYWxTdGF0dXMgPSAnYWN0aXZlJw0KICAgICAgYW5kIEMudmVyaWZpY2F0aW9uU3RhdHVzID0gJ2NvbmZpcm1lZCcNCiAgICAgIC8vIHdlbGwsIHRoaXMgaXMgdWdseS4uLi4NCiAgICAgIGFuZCBJbnRlcnZhbFtDLm9uc2V0IGFzIGRhdGVUaW1lLCBDLmFiYXRlbWVudCBhcyBkYXRlVGltZV0gaW5jbHVkZXMgVG9kYXkoKQ0KDQpkZWZpbmUgIklzIFBhdGllbnQgUHJlZ25hbnQiOg0KICBQYXRpZW50LmdlbmRlciA9ICdmZW1hbGUnDQogICAgYW5kIGV4aXN0cyAoIlByZWduYW5jeSBDb25kaXRpb25zIikNCg0KZGVmaW5lICJaaWthIEV4cG9zdXJlIEFzc2Vzc21lbnQiOg0KICBDb2RlICdaaWthIFZpcnVzIEV4cG9zdXJlIEFzc2Vzc21lbnQnIGZyb20gIkV4YW1wbGUgUXVlc3Rpb25uYWlyZXMiDQoNCmRlZmluZSAiWmlrYSBFeHBvc3VyZSBBc3Nlc3NtZW50IFJlc3VsdCI6DQogIEZpcnN0KA0KICAgIFtPYnNlcnZhdGlvbjogIlppa2EgRXhwb3N1cmUgQXNzZXNzbWVudCJdIE8NCiAgICAgIHdoZXJlIE8uc3RhdHVzID0gJ2ZpbmFsJw0KICAgIAlhbmQgTy4iY29udGV4dCIucmVmZXJlbmNlID0gIkN1cnJlbnQgRW5jb3VudGVyIi5pZCAvLyBUT0RPOiBmaXgNCiAgICAgIHNvcnQgYnkgZWZmZWN0aXZlIGRlc2MNCiAgKQ0KDQpkZWZpbmUgIkhhcyBaaWthIEV4cG9zdXJlIEFzc2Vzc21lbnQiOg0KICAiWmlrYSBFeHBvc3VyZSBBc3Nlc3NtZW50IFJlc3VsdCIgaXMgbm90IG51bGwNCg0KZGVmaW5lICJaaWthIFN5bXB0b21zIjoNCiAgW0NvbmRpdGlvbjogIlppa2EgVmlydXMgU2lnbnMgYW5kIFN5bXB0b21zIl0gQw0KICAgIHdoZXJlIEMuY2xpbmljYWxTdGF0dXMgPSAnYWN0aXZlJw0KICAgICAgYW5kIEMudmVyaWZpY2F0aW9uU3RhdHVzID0gJ2NvbmZpcm1lZCcNCiAgICAgIGFuZCBDLiJjb250ZXh0Ii5yZWZlcmVuY2UgPSAiQ3VycmVudCBFbmNvdW50ZXIiLmlkIC8vIFRPRE86IGZpeA0KDQpkZWZpbmUgIkhhcyBaaWthIFN5bXB0b21zIjoNCiAgZXhpc3RzICJaaWthIFN5bXB0b21zIg0KDQpkZWZpbmUgIk5vIFppa2EgU3ltcHRvbXMiOg0KICBub3QgIkhhcyBaaWthIFN5bXB0b21zIg0KDQpkZWZpbmUgIlllcyI6IHsgJ1llcycgfQ0KDQpkZWZpbmUgIlJlc2lkZW50IG9mIG9yIEZyZXF1ZW50IFRyYXZlbGVyIHRvIFppa2EgQXJlYSI6DQogIGV4aXN0cyAoDQogICAgIlppa2EgRXhwb3N1cmUgQXNzZXNzbWVudCBSZXN1bHQiLmNvbXBvbmVudCBDDQogICAgICAvLyBUT0RPOiBOZWVkIHRvIHN0cmVhbWxpbmUsIHRoaXMgb3VnaHQgdG8gaGF2ZSB3b3JrZWQsIG5vdCBzdXJlIHdoeSBpdCBkaWRuJ3QgKHdpdGhvdXQgdGhlIGNvZGluZ1swXSBhY2Nlc3MpDQogICAgICB3aGVyZSBDLmNvZGUuY29kaW5nWzBdID0gIkNERTogUmVzaWRlbnQgb2Ygb3IgRnJlcXVlbnQgVHJhdmVsZXIgdG8gWmlrYSBBcmVhIg0KICAgICAgICBhbmQgQy52YWx1ZSBpbiAiWWVzIg0KICApDQoNCmRlZmluZSAiUmVjZW50IFRyYXZlbCB0byBaaWthIEFyZWEiOg0KICBleGlzdHMgKA0KICAgICJaaWthIEV4cG9zdXJlIEFzc2Vzc21lbnQgUmVzdWx0Ii5jb21wb25lbnQgQw0KICAgICAgd2hlcmUgQy5jb2RlLmNvZGluZ1swXSA9ICJDREU6IFJlY2VudCBUcmF2ZWwgdG8gWmlrYSBBcmVhIg0KICAgICAgICBhbmQgQy52YWx1ZSBpbiAiWWVzIg0KICApDQoNCmRlZmluZSAiVGltZSBTaW5jZSBSZXR1cm5lZCBGcm9tIFRyYXZlbCI6DQogIHNpbmdsZXRvbiBmcm9tICgNCiAgICAiWmlrYSBFeHBvc3VyZSBBc3Nlc3NtZW50IFJlc3VsdCIuY29tcG9uZW50IEMNCiAgICAgIHdoZXJlIEMuY29kZS5jb2RpbmdbMF0gPSAiQ0RFOiBUaW1lIFNpbmNlIFJldHVybmVkIEZyb20gVHJhdmVsIg0KICAgICAgcmV0dXJuIEMudmFsdWUgYXMgUXVhbnRpdHkNCiAgKQ0KDQpkZWZpbmUgIlJlY2VudCBTZXh1YWwgRW5jb3VudGVyIFdpdGggVHJhdmVsZXIgdG8gWmlrYSBBcmVhIjoNCiAgZXhpc3RzICgNCiAgICAiWmlrYSBFeHBvc3VyZSBBc3Nlc3NtZW50IFJlc3VsdCIuY29tcG9uZW50IEMNCiAgICAgIHdoZXJlIEMuY29kZS5jb2RpbmdbMF0gPSAiQ0RFOiBSZWNlbnQgU2V4dWFsIEVuY291bnRlciBXaXRoIFRyYXZlbGVyIHRvIFppa2EgQXJlYSINCiAgICAgICAgYW5kIEMudmFsdWUgaW4gIlllcyINCiAgKQ0KDQpkZWZpbmUgIlRpbWUgU2luY2UgU2V4dWFsIEVuY291bnRlciI6DQogIHNpbmdsZXRvbiBmcm9tICgNCiAgICAiWmlrYSBFeHBvc3VyZSBBc3Nlc3NtZW50IFJlc3VsdCIuY29tcG9uZW50IEMNCiAgICAgIHdoZXJlIEMuY29kZS5jb2RpbmdbMF0gPSAiQ0RFOiBUaW1lIFNpbmNlIFNleHVhbCBFbmNvdW50ZXIiDQogICAgICByZXR1cm4gQy52YWx1ZSBhcyBRdWFudGl0eQ0KICApDQoNCmRlZmluZSAiVGltZSBTaW5jZSBQb3NzaWJsZSBFeHBvc3VyZSI6DQogIENvYWxlc2NlKCJUaW1lIFNpbmNlIFJldHVybmVkIEZyb20gVHJhdmVsIiwgIlRpbWUgU2luY2UgU2V4dWFsIEVuY291bnRlciIpDQoNCmRlZmluZSAiUGxhbm5lZCBUcmF2ZWwgdG8gWmlrYSBBcmVhIjoNCiAgZXhpc3RzICgNCiAgICAiWmlrYSBFeHBvc3VyZSBBc3Nlc3NtZW50IFJlc3VsdCIuY29tcG9uZW50IEMNCiAgICAgIHdoZXJlIEMuY29kZS5jb2RpbmdbMF0gPSAiQ0RFOiBQbGFubmVkIFRyYXZlbCB0byBaaWthIEFyZWEiDQogICAgICAgIGFuZCBDLnZhbHVlIGluICJZZXMiDQogICkNCg0KZGVmaW5lICJIYXMgUG9zc2libGUgWmlrYSBFeHBvc3VyZSI6DQogICJSZXNpZGVudCBvZiBvciBGcmVxdWVudCBUcmF2ZWxlciB0byBaaWthIEFyZWEiDQogICAgb3IgIlJlY2VudCBUcmF2ZWwgdG8gWmlrYSBBcmVhIg0KICAgIG9yICJSZWNlbnQgU2V4dWFsIEVuY291bnRlciBXaXRoIFRyYXZlbGVyIHRvIFppa2EgQXJlYSINCg0KZGVmaW5lICJaaWthIFN5bXB0b20gT25zZXQiOg0KICBGaXJzdCgNCiAgICAiWmlrYSBTeW1wdG9tcyIgUw0KICAgICAgc29ydCBieSAob25zZXQgYXMgZGF0ZVRpbWUpDQogICkub25zZXQNCg0KZGVmaW5lICJUaW1lIFNpbmNlIFN5bXB0b20gT25zZXQiOg0KICBTeXN0ZW0uUXVhbnRpdHkgeyB2YWx1ZTogd2Vla3MgYmV0d2VlbiAiWmlrYSBTeW1wdG9tIE9uc2V0IiBhbmQgVG9kYXkoKSwgdW5pdDogJ3drJyB9DQoNCmRlZmluZSAiU2hvdWxkIEFkbWluaXN0ZXIgWmlrYSBFeHBvc3VyZSBBc3Nlc3NtZW50IjoNCiAgbm90ICgiSGFzIFppa2EgRXhwb3N1cmUgQXNzZXNzbWVudCIpDQoNCmRlZmluZSAiU2hvdWxkIE9yZGVyIFNlcnVtICsgVXJpbmUgclJULVBDUiBUZXN0IjoNCiAgKCJIYXMgUG9zc2libGUgWmlrYSBFeHBvc3VyZSIgYW5kICJIYXMgWmlrYSBTeW1wdG9tcyIgYW5kICJUaW1lIFNpbmNlIFN5bXB0b20gT25zZXQiIDwgMiB3ZWVrcykNCiAgICBvciAoIk5vIFppa2EgU3ltcHRvbXMiIGFuZCAiVGltZSBTaW5jZSBQb3NzaWJsZSBFeHBvc3VyZSIgPCAyIHdlZWtzKQ0KDQpkZWZpbmUgIlNob3VsZCBPcmRlciBTZXJ1bSBaaWthIFZpcnVzIElnTSArIERlbmd1ZSBWaXJ1cyBJZ00iOg0KICAoIkhhcyBQb3NzaWJsZSBaaWthIEV4cG9zdXJlIiBhbmQgIkhhcyBaaWthIFN5bXB0b21zIiBhbmQgIlRpbWUgU2luY2UgU3ltcHRvbSBPbnNldCIgaW4gSW50ZXJ2YWxbMiB3ZWVrcywgMTIgd2Vla3MpKQ0KICAgIG9yICgiUmVzaWRlbnQgb2Ygb3IgRnJlcXVlbnQgVHJhdmVsZXIgdG8gWmlrYSBBcmVhIiBhbmQgIk5vIFppa2EgU3ltcHRvbXMiKQ0KICAgIG9yICgiTm8gWmlrYSBTeW1wdG9tcyIgYW5kICJUaW1lIFNpbmNlIFBvc3NpYmxlIEV4cG9zdXJlIiBpbiBJbnRlcnZhbFsyIHdlZWtzLCAxMiB3ZWVrcykpDQoNCmRlZmluZSAiU2hvdWxkIENvbnNpZGVyIElnTSBBbnRpYm9keSBUZXN0aW5nIjoNCiAgKCJIYXMgUG9zc2libGUgWmlrYSBFeHBvc3VyZSIgYW5kICJIYXMgWmlrYSBTeW1wdG9tcyIgYW5kICJUaW1lIFNpbmNlIFN5bXB0b20gT25zZXQiID49IDEyIHdlZWtzKQ0KICAgIG9yICgiTm8gWmlrYSBTeW1wdG9tcyIgYW5kICJUaW1lIFNpbmNlIFBvc3NpYmxlIEV4cG9zdXJlIiA+PSAxMiB3ZWVrcykNCg0KZGVmaW5lICJTaG91bGQgUHJvdmlkZSBNb3NxdWl0byBQcmV2ZW50aW9uIGFuZCBDb250cmFjZXB0aW9uIEFkdmljZSI6DQogICJQbGFubmVkIFRyYXZlbCB0byBaaWthIEFyZWEiDQo="
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Library/zika-virus-intervention-logic"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ActivityDefinition",
+        "id": "administer-zika-virus-exposure-assessment",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Aminister Zika Virus Exposure Assessment</div>"
+        },
+        "timingTiming": {
+          "_event": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/cqif-basic-cqlExpression",
+                  "valueString": "Now()"
+                }
+              ]
+            }
+          ]
+        },
+        "url": "http://example.org/ActivityDefinition/administer-zika-virus-exposure-assessment",
+        "status": "draft",
+        "description": "Administer Zika Virus Exposure Assessment",
+        "kind": "Procedure",
+        "code": {
+          "coding": [
+            {
+              "system": "http://example.org/questionnaires",
+              "code": "zika-virus-exposure-assessment"
+            }
+          ]
+        },
+        "participant": [
+          {
+            "type": "practitioner"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ActivityDefinition/administer-zika-virus-exposure-assessment"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ActivityDefinition",
+        "id": "consider-igm-antibody-testing",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Consider IgM Antibody Testing</div>"
+        },
+        "timingTiming": {
+          "_event": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/cqif-basic-cqlExpression",
+                  "valueString": "Now()"
+                }
+              ]
+            }
+          ]
+        },
+        "url": "http://example.org/ActivityDefinition/consider-igm-antibody-testing",
+        "status": "draft",
+        "description": "Consider IgM Antibody Testing",
+        "kind": "ProcedureRequest",
+        "code": {
+          "text": "IgM Antibody testing might be considered. Consult with local health department"
+        },
+        "participant": [
+          {
+            "type": "practitioner"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ActivityDefinition/consider-igm-antibody-testing"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ActivityDefinition",
+        "id": "serum-urine-rrt-pcr-test",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Order Serum + Urine rRT-PCR Test</div>"
+        },
+        "timingTiming": {
+          "_event": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/cqif-basic-cqlExpression",
+                  "valueString": "Now()"
+                }
+              ]
+            }
+          ]
+        },
+        "url": "http://example.org/ActivityDefinition/serum-urine-rrt-pcr-test",
+        "status": "draft",
+        "description": "Order Serum + Urine rRT-PCR Test",
+        "relatedArtifact": [
+          {
+            "type": "documentation",
+            "display": "Explanation of diagnostic tests for Zika virus and which to use based on the patient’s clinical and exposure history.",
+            "url": "http://www.cdc.gov/zika/hc-providers/diagnostic.html"
+          }
+        ],
+        "kind": "DiagnosticReport",
+        "code": {
+          "text": "Serum + Urine rRT-PCR Test"
+        },
+        "participant": [
+          {
+            "type": "practitioner"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ActivityDefinition/serum-urine-rrt-pcr-test"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ActivityDefinition",
+        "id": "serum-zika-dengue-virus-igm",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Order Serum Zika and Dengue Virus IgM</div>"
+        },
+        "timingTiming": {
+          "_event": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/cqif-basic-cqlExpression",
+                  "valueString": "Now()"
+                }
+              ]
+            }
+          ]
+        },
+        "url": "http://example.org/ActivityDefinition/serum-zika-dengue-virus-igm",
+        "status": "draft",
+        "description": "Order Serum Zika and Dengue Virus IgM",
+        "relatedArtifact": [
+          {
+            "type": "documentation",
+            "display": "Explanation of diagnostic tests for Zika virus and which to use based on the patient’s clinical and exposure history.",
+            "url": "http://www.cdc.gov/zika/hc-providers/diagnostic.html"
+          }
+        ],
+        "kind": "DiagnosticReport",
+        "code": {
+          "text": "Serum Zika and Dengue Virus IgM"
+        },
+        "participant": [
+          {
+            "type": "practitioner"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ActivityDefinition/serum-zika-dengue-virus-igm"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ActivityDefinition",
+        "id": "provide-contraception-advice",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Provide Contraception Advice</div>"
+        },
+        "timingTiming": {
+          "_event": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/cqif-basic-cqlExpression",
+                  "valueString": "Now()"
+                }
+              ]
+            }
+          ]
+        },
+        "url": "http://example.org/ActivityDefinition/provide-contraception-advice",
+        "status": "draft",
+        "description": "Provide contraception advice",
+        "relatedArtifact": [
+          {
+            "type": "documentation",
+            "display": "The most current interim guidelines for prevention of sexual transmission of Zika virus.",
+            "url": "http://www.cdc.gov/zika/transmission/index.html"
+          },
+          {
+            "type": "documentation",
+            "url": "http://www.cdc.gov/mmwr/volumes/65/wr/mm6512e3.htm"
+          }
+        ],
+        "kind": "Communication",
+        "code": {
+          "text": "Provide Contraception Advice"
+        },
+        "participant": [
+          {
+            "type": "practitioner"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ActivityDefinition/provide-contraception-advice"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ActivityDefinition",
+        "id": "provide-mosquito-prevention-advice",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Provide Mosquito Prevention Advice</div>"
+        },
+        "timingTiming": {
+          "_event": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/StructureDefinition/cqif-basic-cqlExpression",
+                  "valueString": "Now()"
+                }
+              ]
+            }
+          ]
+        },
+        "url": "http://example.org/ActivityDefinition/provide-mosquito-prevention-advice",
+        "status": "draft",
+        "description": "Provide mosquito prevention advice",
+        "relatedArtifact": [
+          {
+            "type": "documentation",
+            "display": "Advice for patients about how to avoid Mosquito bites.",
+            "url": "http://www.cdc.gov/zika/prevention/index.html"
+          },
+          {
+            "type": "documentation",
+            "display": "Advice for patients about which mosquito repellents are effective and safe to use in pregnancy. [DEET, IF3535 and Picardin are safe during]",
+            "url": "https://www.epa.gov/insect-repellents/find-insect-repellent-right-you"
+          }
+        ],
+        "kind": "Communication",
+        "code": {
+          "text": "Provide Mosquito Prevention Advice"
+        },
+        "participant": [
+          {
+            "type": "practitioner"
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ActivityDefinition/provide-mosquito-prevention-advice"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "PlanDefinition",
+        "id": "zika-virus-intervention",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Zika Virus Intervention</div>"
+        },
+        "url": "http://example.org/PlanDefinition/zika-virus-intervention",
+        "identifier": [
+          {
+            "use": "official",
+            "value": "zika-virus-intervention"
+          }
+        ],
+        "version": "1.0.0",
+        "title": "Example Zika Virus Intervention",
+        "status": "active",
+        "date": "2016-11-14",
+        "description": "Zika Virus Management intervention describing the CDC Guidelines for Zika Virus Reporting and Management.",
+        "topic": [
+          {
+            "text": "Zika Virus Management"
+          }
+        ],
+        "library": [
+          {
+            "reference": "Library/zika-virus-intervention-logic"
+          }
+        ],
+        "action": [
+          {
+            "title": "Zika Virus Assessment",
+            "triggerDefinition": [
+              {
+                "type": "named-event",
+                "eventName": "patient-view"
+              }
+            ],
+            "condition": [
+              {
+                "kind": "applicability",
+                "expression": "Is Patient Pregnant"
+              }
+            ],
+            "action": [
+              {
+                "condition": [
+                  {
+                    "kind": "applicability",
+                    "expression": "Should Administer Zika Virus Exposure Assessment"
+                  }
+                ],
+                "definition": {
+                  "reference": "ActivityDefinition/administer-zika-virus-exposure-assessment"
+                }
+              },
+              {
+                "condition": [
+                  {
+                    "kind": "applicability",
+                    "expression": "Should Order Serum + Urine rRT-PCR Test"
+                  }
+                ],
+                "definition": {
+                  "reference": "ActivityDefinition/order-serum-urine-rrt-pcr-test"
+                }
+              },
+              {
+                "condition": [
+                  {
+                    "kind": "applicability",
+                    "expression": "Should Order Serum Zika Virus IgM + Dengue Virus IgM"
+                  }
+                ],
+                "definition": {
+                  "reference": "ActivityDefinition/order-serum-zika-dengue-virus-igm"
+                }
+              },
+              {
+                "condition": [
+                  {
+                    "kind": "applicability",
+                    "expression": "Should Consider IgM Antibody Testing"
+                  }
+                ],
+                "definition": {
+                  "reference": "ActivityDefinition/consider-igm-antibody-testing"
+                }
+              },
+              {
+                "condition": [
+                  {
+                    "kind": "applicability",
+                    "expression": "Should Provide Mosquito Prevention and Contraception Advice"
+                  }
+                ],
+                "action": [
+                  {
+                    "definition": {
+                      "reference": "ActivityDefinition/provide-mosquito-prevention-advice"
+                    }
+                  },
+                  {
+                    "definition": {
+                      "reference": "ActivityDefinition/provide-contraception-advice"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/PlanDefinition/zika-virus-intervention"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Questionnaire",
+        "id": "zika-virus-exposure-assessment",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">\n      <pre>\n      </pre>\n    </div>"
+        },
+        "url": "http://example.org/Questionnaire/zika-virus-exposure-assessment",
+        "title": "Example Zika Virus Exposure Assessment",
+        "status": "draft",
+        "date": "2016-11-14",
+        "subjectType": [
+          "Patient"
+        ],
+        "item": [
+          {
+            "extension": [
+              {
+                "url": "http://example.org/additional-information",
+                "valueAttachment": {
+                  "url": "http://www.cdc.gov/zika/geo/index.html",
+                  "title": "Areas with active Zika virus transmission/exposure risk"
+                }
+              }
+            ],
+            "linkId": "1",
+            "code": [
+              {
+                "system": "http://example.org/questionnaires",
+                "code": "CDE: Resident of or Frequent Traveler to Zika Area"
+              }
+            ],
+            "text": "Are you a resident of, or do you travel frequently to, an area with active Zika transmission?",
+            "type": "boolean"
+          },
+          {
+            "extension": [
+              {
+                "url": "http://example.org/additional-information",
+                "valueAttachment": {
+                  "url": "http://www.cdc.gov/zika/geo/index.html",
+                  "title": "Areas with active Zika virus transmission/exposure risk"
+                }
+              }
+            ],
+            "linkId": "2",
+            "code": [
+              {
+                "system": "http://example.org/questionnaires",
+                "code": "CDE: Recent Travel to Zika Area"
+              }
+            ],
+            "text": "Have you recently traveled to a an area with active Zika transmission?",
+            "type": "boolean",
+            "enableWhen": [
+              {
+                "question": "1",
+                "answerBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "3",
+            "code": [
+              {
+                "system": "http://example.org/questionnaires",
+                "code": "CDE: Time Since Returned From Travel"
+              }
+            ],
+            "text": "How long has it been since you returned?",
+            "type": "quantity",
+            "enableWhen": [
+              {
+                "question": "2",
+                "answerBoolean": true
+              }
+            ]
+          },
+          {
+            "extension": [
+              {
+                "url": "http://example.org/additional-information",
+                "valueAttachment": {
+                  "url": "http://www.cdc.gov/zika/geo/index.html",
+                  "title": "Areas with active Zika virus transmission/exposure risk"
+                }
+              }
+            ],
+            "linkId": "4",
+            "code": [
+              {
+                "system": "http://example.org/questionnaires",
+                "code": "CDE: Recent Sexual Encounter with Traveler to Zika Area"
+              }
+            ],
+            "text": "Have you recently had condomless sex with a partner that has travelled in an area with active Zika transmission?",
+            "type": "boolean",
+            "enableWhen": [
+              {
+                "question": "2",
+                "answerBoolean": false
+              }
+            ]
+          },
+          {
+            "linkId": "5",
+            "code": [
+              {
+                "system": "http://example.org/questionnaires",
+                "code": "CDE: Time Since Sexual Encounter"
+              }
+            ],
+            "text": "How long has it been since your last condomless sexual encounter?",
+            "type": "quantity",
+            "enableWhen": [
+              {
+                "question": "4",
+                "answerBoolean": true
+              }
+            ]
+          },
+          {
+            "extension": [
+              {
+                "url": "http://example.org/additional-information",
+                "valueAttachment": {
+                  "url": "http://www.cdc.gov/zika/geo/index.html",
+                  "title": "Areas with active Zika virus transmission/exposure risk"
+                }
+              }
+            ],
+            "linkId": "6",
+            "code": [
+              {
+                "system": "http://example.org/questionnaires",
+                "code": "CDE: Planned Travel to Zika Area"
+              }
+            ],
+            "text": "Do you plan to travel to an area with active Zika transmission?",
+            "type": "boolean",
+            "enableWhen": [
+              {
+                "question": "4",
+                "answerBoolean": false
+              }
+            ]
+          }
+        ]
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Questionnaire/zika-virus-exposure-assessment"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "zika-affected-areas",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Zika Affected Areas</div>"
+        },
+        "url": "urn:oid:2.16.840.1.114222.4.11.7459",
+        "identifier": [
+          {
+            "use": "official",
+            "value": "Zika Affected Areas"
+          },
+          {
+            "use": "official",
+            "system": "oid",
+            "value": "2.16.840.1.114222.4.11.7457"
+          }
+        ],
+        "version": "1.0.0",
+        "name": "zika-affected-areas",
+        "title": "Zika Affected Areas",
+        "status": "active",
+        "publisher": "PHINVADS",
+        "compose": {
+          "include": [
+            {
+              "valueSet": [
+                "https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=2.16.840.1.114222.4.11.7457"
+              ]
+            }
+          ]
+        }
+      },
+      "search": {
+        "mode": "match"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/zika-affected-areas"
+      }
+    }
+  ]
+}
