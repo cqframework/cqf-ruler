@@ -139,7 +139,7 @@ public class MeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
         }
         else {
             terminologyProvider = user == null || pass == null ? new FhirTerminologyProvider().withEndpoint(source)
-                    : new FhirTerminologyProvider().withEndpoint(source).withBasicAuth(user, pass);
+                    : new FhirTerminologyProvider().withBasicAuth(user, pass).withEndpoint(source);
         }
         provider.setTerminologyProvider(terminologyProvider);
         provider.setExpandValueSets(true);
