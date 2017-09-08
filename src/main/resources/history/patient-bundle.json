@@ -1,17 +1,6 @@
 {
   "resourceType": "Bundle",
-  "id": "bed58633-9ece-42b3-b4e1-566126f310df",
-  "meta": {
-    "lastUpdated": "2017-09-06T21:29:09.709+00:00"
-  },
-  "type": "searchset",
-  "total": 49,
-  "link": [
-    {
-      "relation": "self",
-      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient?_count=49&_pretty=true"
-    }
-  ],
+  "type": "transaction",
   "entry": [
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-12214",
@@ -129,15 +118,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-12214"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patietn-12217",
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-12217",
       "resource": {
         "resourceType": "Patient",
-        "id": "Patietn-12217",
+        "id": "Patient-12217",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-17T16:34:10.814+00:00"
@@ -249,8 +239,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-12217"
       }
     },
     {
@@ -276,8 +267,9 @@
         "gender": "male",
         "birthDate": "1943-01-15"
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-10003"
       }
     },
     {
@@ -303,8 +295,9 @@
         "gender": "male",
         "birthDate": "1943-01-15"
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-10004"
       }
     },
     {
@@ -330,8 +323,9 @@
         "gender": "male",
         "birthDate": "1943-01-15"
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/PAT-00001"
       }
     },
     {
@@ -350,15 +344,16 @@
         "gender": "male",
         "birthDate": "1983-10-30"
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/PAT-123456"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/110",
       "resource": {
         "resourceType": "Patient",
-        "id": "110",
+        "id": "Patient-110",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:12.146+00:00"
@@ -476,15 +471,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-110"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/124",
       "resource": {
         "resourceType": "Patient",
-        "id": "124",
+        "id": "Patient-124",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:20.427+00:00"
@@ -601,15 +597,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-124"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/141",
       "resource": {
         "resourceType": "Patient",
-        "id": "141",
+        "id": "Patient-141",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:28.865+00:00"
@@ -727,15 +724,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-141"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/155",
       "resource": {
         "resourceType": "Patient",
-        "id": "155",
+        "id": "Patient-155",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:37.005+00:00"
@@ -852,15 +850,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-155"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/168",
       "resource": {
         "resourceType": "Patient",
-        "id": "168",
+        "id": "Patient-168",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:42.927+00:00"
@@ -980,15 +979,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-168"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/179",
       "resource": {
         "resourceType": "Patient",
-        "id": "179",
+        "id": "Patient-179",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:48.349+00:00"
@@ -1105,15 +1105,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-179"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/190",
       "resource": {
         "resourceType": "Patient",
-        "id": "190",
+        "id": "Patient-190",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:55.817+00:00"
@@ -1230,15 +1231,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-190"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/200",
       "resource": {
         "resourceType": "Patient",
-        "id": "200",
+        "id": "Patient-200",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:36:00.755+00:00"
@@ -1355,15 +1357,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-200"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/213",
       "resource": {
         "resourceType": "Patient",
-        "id": "213",
+        "id": "Patient-213",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:36:07.192+00:00"
@@ -1481,15 +1484,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-213"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/235",
       "resource": {
         "resourceType": "Patient",
-        "id": "235",
+        "id": "Patient-235",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:36:19.051+00:00"
@@ -1607,15 +1611,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-235"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/249",
       "resource": {
         "resourceType": "Patient",
-        "id": "249",
+        "id": "Patient-249",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:36:24.770+00:00"
@@ -1732,15 +1737,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-249"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/262",
       "resource": {
         "resourceType": "Patient",
-        "id": "262",
+        "id": "Patient-262",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:36:31.739+00:00"
@@ -1857,15 +1863,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-262"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/276",
       "resource": {
         "resourceType": "Patient",
-        "id": "276",
+        "id": "Patient-276",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:36:37.848+00:00"
@@ -1982,15 +1989,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-276"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/289",
       "resource": {
         "resourceType": "Patient",
-        "id": "289",
+        "id": "Patient-289",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:36:44.817+00:00"
@@ -2107,15 +2115,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-289"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/311",
       "resource": {
         "resourceType": "Patient",
-        "id": "311",
+        "id": "Patient-311",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:36:54.410+00:00"
@@ -2232,15 +2241,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-311"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/324",
       "resource": {
         "resourceType": "Patient",
-        "id": "324",
+        "id": "Patient-324",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:37:00.582+00:00"
@@ -2357,15 +2367,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-324"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/338",
       "resource": {
         "resourceType": "Patient",
-        "id": "338",
+        "id": "Patient-338",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:37:07.879+00:00"
@@ -2482,15 +2493,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-338"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/351",
       "resource": {
         "resourceType": "Patient",
-        "id": "351",
+        "id": "Patient-351",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:37:13.832+00:00"
@@ -2607,15 +2619,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-351"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/362",
       "resource": {
         "resourceType": "Patient",
-        "id": "362",
+        "id": "Patient-362",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:37:21.316+00:00"
@@ -2732,15 +2745,16 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-362"
       }
     },
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/380",
       "resource": {
         "resourceType": "Patient",
-        "id": "380",
+        "id": "Patient-380",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:37:29.738+00:00"
@@ -2861,8 +2875,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-380"
       }
     },
     {
@@ -2986,8 +3001,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-2"
       }
     },
     {
@@ -3115,8 +3131,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-3"
       }
     },
     {
@@ -3240,8 +3257,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-4"
       }
     },
     {
@@ -3350,8 +3368,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-1137"
       }
     },
     {
@@ -3476,8 +3495,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-5"
       }
     },
     {
@@ -3601,8 +3621,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-6"
       }
     },
     {
@@ -3727,8 +3748,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-7"
       }
     },
     {
@@ -3856,8 +3878,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-8"
       }
     },
     {
@@ -3981,8 +4004,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-9"
       }
     },
     {
@@ -4109,8 +4133,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-10"
       }
     },
     {
@@ -4234,8 +4259,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-11"
       }
     },
     {
@@ -4359,8 +4385,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-12"
       }
     },
     {
@@ -4484,8 +4511,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-13"
       }
     },
     {
@@ -4610,8 +4638,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-14"
       }
     },
     {
@@ -4735,8 +4764,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-15"
       }
     },
     {
@@ -4861,8 +4891,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-16"
       }
     },
     {
@@ -4986,8 +5017,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-17"
       }
     },
     {
@@ -5111,8 +5143,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-18"
       }
     },
     {
@@ -5236,8 +5269,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-19"
       }
     },
     {
@@ -5361,8 +5395,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-20"
       }
     },
     {
@@ -5486,8 +5521,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-21"
       }
     },
     {
@@ -5596,8 +5632,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-6557"
       }
     },
     {
@@ -5706,8 +5743,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Patient/Patient-1125"
       }
     }
   ]

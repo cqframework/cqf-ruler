@@ -1,17 +1,6 @@
 {
   "resourceType": "Bundle",
-  "id": "6c81c15a-4fd8-43a8-ac59-f6771af22a69",
-  "meta": {
-    "lastUpdated": "2017-09-06T21:54:30.763+00:00"
-  },
-  "type": "searchset",
-  "total": 11,
-  "link": [
-    {
-      "relation": "self",
-      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library?_count=11&_pretty=true"
-    }
-  ],
+  "type": "transaction",
   "entry": [
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/zika-virus-intervention-logic",
@@ -115,8 +104,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/zika-virus-intervention-logic"
       }
     },
     {
@@ -144,8 +134,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/FHIRHelpers"
       }
     },
     {
@@ -173,8 +164,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/OMTKLogic"
       }
     },
     {
@@ -201,8 +193,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/col-logic"
       }
     },
     {
@@ -229,8 +222,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/cbp-logic"
       }
     },
     {
@@ -279,8 +273,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/fhir-model-definition"
       }
     },
     {
@@ -301,8 +296,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/Library-10023"
       }
     },
     {
@@ -323,8 +319,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/Library-10024"
       }
     },
     {
@@ -345,8 +342,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/LIB-10023"
       }
     },
     {
@@ -367,8 +365,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/Library-10053"
       }
     },
     {
@@ -424,8 +423,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/pvs-logic"
       }
     }
   ]

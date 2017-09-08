@@ -1,17 +1,6 @@
 {
   "resourceType": "Bundle",
-  "id": "21d432e8-ae4c-4d06-9dc0-78a56696766c",
-  "meta": {
-    "lastUpdated": "2017-09-06T22:17:30.757+00:00"
-  },
-  "type": "searchset",
-  "total": 5,
-  "link": [
-    {
-      "relation": "self",
-      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem?_pretty=true"
-    }
-  ],
+  "type": "transaction",
   "entry": [
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.1",
@@ -100,8 +89,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.1"
       }
     },
     {
@@ -139,8 +129,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.5"
       }
     },
     {
@@ -562,8 +553,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.12"
       }
     },
     {
@@ -930,8 +922,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.962"
       }
     },
     {
@@ -953,8 +946,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.42"
       }
     }
   ]

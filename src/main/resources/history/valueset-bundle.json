@@ -1,17 +1,6 @@
 {
   "resourceType": "Bundle",
-  "id": "dad8d97a-e932-4130-ba22-905db5013ccd",
-  "meta": {
-    "lastUpdated": "2017-09-06T21:31:50.426+00:00"
-  },
-  "type": "searchset",
-  "total": 20,
-  "link": [
-    {
-      "relation": "self",
-      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet?_count=20&_pretty=true"
-    }
-  ],
+  "type": "transaction",
   "entry": [
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.11.1001",
@@ -431,8 +420,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.11.1001"
       }
     },
     {
@@ -834,8 +824,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1001"
       }
     },
     {
@@ -1261,8 +1252,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1020"
       }
     },
     {
@@ -1475,8 +1467,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1010"
       }
     },
     {
@@ -1628,8 +1621,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1011"
       }
     },
     {
@@ -1815,8 +1809,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1019"
       }
     },
     {
@@ -1955,8 +1950,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.104.12.1011"
       }
     },
     {
@@ -2131,8 +2127,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.109.12.1012"
       }
     },
     {
@@ -2951,8 +2948,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1203"
       }
     },
     {
@@ -3596,8 +3594,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1395"
       }
     },
     {
@@ -3689,8 +3688,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.526.3.353"
       }
     },
     {
@@ -3733,8 +3733,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.526.3.1032"
       }
     },
     {
@@ -3777,8 +3778,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.526.3.103"
       }
     },
     {
@@ -10427,8 +10429,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.600.1622"
       }
     },
     {
@@ -10471,8 +10474,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/zika-affected-areas"
       }
     },
     {
@@ -10510,8 +10514,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/33.1.16"
       }
     },
     {
@@ -10549,8 +10554,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/33.6.13"
       }
     },
     {
@@ -10588,8 +10594,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/33.6.31"
       }
     },
     {
@@ -10743,8 +10750,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/test"
       }
     },
     {
@@ -10780,8 +10788,9 @@
           ]
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/3.3.722"
       }
     }
   ]

@@ -1,17 +1,6 @@
 {
   "resourceType": "Bundle",
-  "id": "9f79f691-c65c-4acb-a6c0-f950c299e863",
-  "meta": {
-    "lastUpdated": "2017-09-06T22:19:37.739+00:00"
-  },
-  "type": "searchset",
-  "total": 2,
-  "link": [
-    {
-      "relation": "self",
-      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Measure?_pretty=true"
-    }
-  ],
+  "type": "transaction",
   "entry": [
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Measure/col",
@@ -173,8 +162,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Measure/col"
       }
     },
     {
@@ -259,8 +249,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Measure/cbp"
       }
     }
   ]
