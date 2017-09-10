@@ -1,0 +1,88 @@
+{
+  "resourceType": "Measure",
+  "id": "measure-bcs",
+  "text": {
+    "status": "generated"
+  },
+  "identifier": [
+    {
+      "use": "official",
+      "system": "http://hl7.org/fhir/cqi/ecqm/Measure/Identifier/payer-extract",
+      "value": "BCS"
+    }
+  ],
+  "version": "1.0.0",
+  "title": "Breast Cancer Screening Cohort Definition",
+  "status": "active",
+  "experimental": true,
+  "date": "2017-09-08",
+  "description": "Breast Cancer Screening HEDIS Measure",
+  "topic": [
+    {
+      "coding": {
+        "system": "http://hl7.org/fhir/c80-doc-typecodes",
+        "code": "57024-2"
+      }
+    }
+  ],
+  "library": [
+    {
+      "reference": "Library/library-bcs-logic"
+    }
+  ],
+  "scoring": {
+    "coding": [
+      {
+        "code": "cohort"
+      }
+    ]
+  },
+  "group": [
+    {
+      "identifier": {
+        "value": "BCS-hedis"
+      },
+      "population": [
+        {
+          "identifier": {
+            "value": "initial-population-identifier"
+          },
+          "code": {
+            "coding": [
+              {
+                "code": "initial-population"
+              }
+            ]
+          },
+          "criteria": "BCS.&quot;Initial Population&quot;"
+        },
+        {
+          "identifier": {
+            "value": "numerator-identifier"
+          },
+          "code": {
+            "coding": [
+              {
+                "code": "numerator"
+              }
+            ]
+          },
+          "criteria": "BCS.&quot;Numerator&quot;"
+        },
+        {
+          "identifier": {
+            "value": "denominator-identifier"
+          },
+          "code": {
+            "coding": [
+              {
+                "code": "denominator"
+              }
+            ]
+          },
+          "criteria": "BCS.&quot;Denominator&quot;"
+        }
+      ]
+    }
+  ]
+}

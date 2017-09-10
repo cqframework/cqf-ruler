@@ -74,7 +74,7 @@ public class ValueSetFromXlsx {
 
         Bundle temp = new Bundle();
         for (String key : valuesets.keySet())
-                temp.addEntry(new Bundle.BundleEntryComponent().setResource(valuesets.get(key)));
+            temp.addEntry(new Bundle.BundleEntryComponent().setResource(valuesets.get(key)));
 
         return temp;
     }

@@ -16,7 +16,7 @@ import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
-import org.opencds.cqf.providers.MeasureResourceProvider;
+import org.opencds.cqf.providers.FHIRMeasureResourceProvider;
 import org.opencds.cqf.providers.PlanDefinitionResourceProvider;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -89,7 +89,7 @@ public class BaseServlet extends RestfulServer {
         }
 
         // Measure processing
-        MeasureResourceProvider measureProvider = new MeasureResourceProvider(getResourceProviders());
+        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(getResourceProviders());
         ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider jpaMeasureProvider = (ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider) getProvider("Measure");
         measureProvider.setDao(jpaMeasureProvider.getDao());
         measureProvider.setContext(jpaMeasureProvider.getContext());

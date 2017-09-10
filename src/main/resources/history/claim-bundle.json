@@ -1,17 +1,6 @@
 {
   "resourceType": "Bundle",
-  "id": "f990fb8c-ed1c-48c7-a298-4d553061bfde",
-  "meta": {
-    "lastUpdated": "2017-09-06T22:05:47.596+00:00"
-  },
-  "type": "searchset",
-  "total": 9,
-  "link": [
-    {
-      "relation": "self",
-      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim?_pretty=true"
-    }
-  ],
+  "type": "transaction",
   "entry": [
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10007",
@@ -110,8 +99,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10"
       }
     },
     {
@@ -176,8 +166,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10020"
       }
     },
     {
@@ -242,8 +233,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10021"
       }
     },
     {
@@ -308,8 +300,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10022"
       }
     },
     {
@@ -373,8 +366,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10030"
       }
     },
     {
@@ -438,8 +432,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10031"
       }
     },
     {
@@ -504,8 +499,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10032"
       }
     },
     {
@@ -570,8 +566,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10033"
       }
     },
     {
@@ -636,8 +633,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Claim/Claim-10034"
       }
     }
   ]

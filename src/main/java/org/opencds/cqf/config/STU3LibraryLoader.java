@@ -32,6 +32,10 @@ public class STU3LibraryLoader implements LibraryLoader {
     private LibraryResourceProvider provider;
     private Map<String, Library> libraries = new HashMap<>();
 
+    public Map<String, Library> getLibraries() {
+        return this.libraries;
+    }
+
     public STU3LibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager, ModelManager modelManager) {
 //        this.modelManager = modelManager;
         this.libraryManager = libraryManager;

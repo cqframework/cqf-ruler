@@ -1,27 +1,12 @@
 {
   "resourceType": "Bundle",
-  "id": "ca101188-2c50-4c3f-90e5-eaa474247124",
-  "meta": {
-    "lastUpdated": "2017-09-06T21:28:19.663+00:00"
-  },
-  "type": "searchset",
-  "total": 109,
-  "link": [
-    {
-      "relation": "self",
-      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter?_count=109&_pretty=true"
-    },
-    {
-      "relation": "next",
-      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3?_getpages=fb091c20-655b-4a8d-ba91-d619d06ea759&_getpagesoffset=50&_count=50&_pretty=true&_bundletype=searchset"
-    }
-  ],
+  "type": "transaction",
   "entry": [
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/111",
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/Encounter-111",
       "resource": {
         "resourceType": "Encounter",
-        "id": "111",
+        "id": "Encounter-111",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:13.459+00:00"
@@ -65,15 +50,16 @@
           "display": "Happy Valley Clinic"
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/Encounter-111"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/116",
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/Encounter-116",
       "resource": {
         "resourceType": "Encounter",
-        "id": "116",
+        "id": "Encounter-116",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:15.521+00:00"
@@ -117,15 +103,16 @@
           "display": "Happy Valley Hospital"
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/Encounter-116"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/121",
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/Encounter-121",
       "resource": {
         "resourceType": "Encounter",
-        "id": "121",
+        "id": "Encounter-121",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:18.990+00:00"
@@ -169,15 +156,16 @@
           "display": "Happy Valley Hospital"
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/Encounter-121"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/125",
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/Encounter-125",
       "resource": {
         "resourceType": "Encounter",
-        "id": "125",
+        "id": "Encounter-125",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:20.677+00:00"
@@ -221,15 +209,16 @@
           "display": "Happy Valley Clinic"
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/Encounter-125"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/134",
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/Encounter-134",
       "resource": {
         "resourceType": "Encounter",
-        "id": "134",
+        "id": "Encounter-134",
         "meta": {
           "versionId": "1",
           "lastUpdated": "2017-07-24T19:35:25.037+00:00"
@@ -241,7 +230,7 @@
           "display": "Other"
         },
         "subject": {
-          "reference": "Patient/124",
+          "reference": "Patient/Patient-124",
           "display": "Ross Blevins Cook"
         },
         "participant": [
@@ -251,7 +240,7 @@
               "end": "2020-01-29T00:00:00-05:00"
             },
             "individual": {
-              "reference": "Practitioner/105",
+              "reference": "Practitioner/Practitioner-105",
               "display": "Bryan Colon Meyer MD"
             }
           }
@@ -273,8 +262,9 @@
           "display": "Happy Valley Hospital"
         }
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/Encounter-134"
       }
     },
     {

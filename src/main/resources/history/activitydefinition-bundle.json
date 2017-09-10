@@ -1,17 +1,6 @@
 {
   "resourceType": "Bundle",
-  "id": "c6bbe609-96b9-4b9c-b5ea-5d9152c30baf",
-  "meta": {
-    "lastUpdated": "2017-09-06T22:15:43.603+00:00"
-  },
-  "type": "searchset",
-  "total": 6,
-  "link": [
-    {
-      "relation": "self",
-      "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition?_pretty=true"
-    }
-  ],
+  "type": "transaction",
   "entry": [
     {
       "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/administer-zika-virus-exposure-assessment",
@@ -59,8 +48,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/administer-zika-virus-exposure-assessment"
       }
     },
     {
@@ -103,8 +93,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/consider-igm-antibody-testing"
       }
     },
     {
@@ -155,8 +146,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/serum-urine-rrt-pcr-test"
       }
     },
     {
@@ -207,8 +199,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/serum-zika-dengue-virus-igm"
       }
     },
     {
@@ -263,8 +256,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/provide-contraception-advice"
       }
     },
     {
@@ -320,8 +314,9 @@
           }
         ]
       },
-      "search": {
-        "mode": "match"
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ActivityDefinition/provide-mosquito-prevention-advice"
       }
     }
   ]
