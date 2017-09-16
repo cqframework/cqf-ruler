@@ -141,9 +141,6 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
             VersionedIdentifier vid = new VersionedIdentifier().withId(ref.getReference());
             Library temp = getLibraryLoader().load(vid);
 
-            String t = measure.getIdElement().getIdPart();
-            String tt = measure.getId();
-
             if (vid.getId().equals(measure.getIdElement().getIdPart() + "-logic")
                     || vid.getId().equals("Library/" + measure.getIdElement().getIdPart() + "-logic")
                     || (primaryLibraryName != null && temp.getIdentifier().getId().equals(primaryLibraryName)))
@@ -242,7 +239,7 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
         List<Patient> patients = new ArrayList<>();
         patientList.forEach(x -> patients.add((Patient) x));
 
-        context.setContextValue("Population", patients);
+//        context.setContextValue("Population", patients);
 
         report = evaluator.evaluate(context, measure, patients, measurementPeriod, MeasureReport.MeasureReportType.PATIENTLIST);
         validateReport();
@@ -259,8 +256,6 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
 
         List<Patient> patients = new ArrayList<>();
         population.forEach(x -> patients.add((Patient) x));
-
-        context.setContextValue("Population", patients);
 
         report = evaluator.evaluate(context, measure, patients, measurementPeriod, MeasureReport.MeasureReportType.SUMMARY);
         validateReport();

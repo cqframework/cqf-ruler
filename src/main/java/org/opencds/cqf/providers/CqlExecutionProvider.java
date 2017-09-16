@@ -63,7 +63,7 @@ public class CqlExecutionProvider {
     }
 
     public static Iterable<Reference> getLibraryReferences(DomainResource instance) {
-        ArrayList<Reference> references = new ArrayList<Reference>();
+        ArrayList<Reference> references = new ArrayList<>();
         if (instance instanceof ActivityDefinition) {
             references.addAll(((ActivityDefinition)instance).getLibrary());
         }
@@ -74,7 +74,8 @@ public class CqlExecutionProvider {
             references.addAll(((Measure)instance).getLibrary());
         }
 
-        for (Extension extension : instance.getExtensionsByUrl("http://hl7.org/fhir/StructureDefinition/cqif-library")) {
+        for (Extension extension : instance.getExtensionsByUrl("http://hl7.org/fhir/StructureDefinition/cqif-library"))
+        {
             Type value = extension.getValue();
             if (value instanceof Reference) {
                 references.add((Reference)value);
@@ -113,7 +114,7 @@ public class CqlExecutionProvider {
 
     /* Evaluates the given CQL expression in the context of the given resource */
     /* If the resource has a library extension, or a library element, that library is loaded into the context for the expression */
-    public Object evaluateInContext(DomainResource instance, String cql) {
+    public Object evaluateInContext(DomainResource instance, String cql, String patientId) {
         Iterable<Reference> libraries = getLibraryReferences(instance);
 
         // Provide the instance as the value of the '%context' parameter, as well as the value of a parameter named the same as the resource
@@ -125,7 +126,9 @@ public class CqlExecutionProvider {
         Context context = new Context(library);
         context.setParameter(null, instance.fhirType(), instance);
         context.setParameter(null, "%context", instance);
+        context.setExpressionCaching(true);
         context.registerLibraryLoader(getLibraryLoader());
+        context.setContextValue("Patient", patientId);
         return context.resolveExpressionRef("Expression").evaluate(context);
     }
 }

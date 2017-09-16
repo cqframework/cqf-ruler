@@ -90,7 +90,7 @@ public class ActivityDefinitionResourceProvider extends JpaResourceProviderDstu3
         for (ActivityDefinition.ActivityDefinitionDynamicValueComponent dynamicValue : activityDefinition.getDynamicValue()) {
             if (dynamicValue.getExpression() != null) {
                 // TODO: Passing the activityDefinition as context here because that's what will have the libraries, but perhaps the "context" here should be the result resource?
-                Object value = executionProvider.evaluateInContext(activityDefinition, dynamicValue.getExpression());
+                Object value = executionProvider.evaluateInContext(activityDefinition, dynamicValue.getExpression(), patientId);
                 this.provider.setValue(result, dynamicValue.getPath(), value);
             }
         }
