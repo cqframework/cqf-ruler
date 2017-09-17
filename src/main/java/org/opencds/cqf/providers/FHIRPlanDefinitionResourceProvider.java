@@ -1,30 +1,16 @@
 package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
-import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelInfoLoader;
-import org.cqframework.cql.cql2elm.ModelInfoProvider;
-import org.cqframework.cql.cql2elm.ModelManager;
-import org.hl7.elm.r1.VersionedIdentifier;
-import org.hl7.elm_modelinfo.r1.ModelInfo;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.builders.CarePlanBuilder;
 import org.opencds.cqf.builders.JavaDateBuilder;
-import org.opencds.cqf.config.STU3LibraryLoader;
-import org.opencds.cqf.config.STU3LibrarySourceProvider;
-import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.runtime.DateTime;
 
-import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 
 public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3<PlanDefinition> {
@@ -37,54 +23,6 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         this.executionProvider = new CqlExecutionProvider(providers);
     }
 
-    private ModelManager modelManager;
-    private ModelManager getModelManager() {
-        if (modelManager == null) {
-            modelManager = new ModelManager();
-            ModelInfoProvider infoProvider = () -> {
-                Path p = Paths.get("src/main/resources/cds/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
-                return JAXB.unmarshal(new File(p.toString()), ModelInfo.class);
-            };
-            ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("OMTK").withVersion("0.1.0"), infoProvider);
-        }
-        return modelManager;
-    }
-
-    private LibraryManager libraryManager;
-    private LibraryManager getLibraryManager() {
-        if (libraryManager == null) {
-            libraryManager = new LibraryManager(getModelManager());
-            libraryManager.getLibrarySourceLoader().clearProviders();
-            libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
-            ModelInfoProvider infoProvider = () -> {
-                Path p = Paths.get("src/main/resources/cds/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
-                return JAXB.unmarshal(new File(p.toString()), ModelInfo.class);
-            };
-            ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("OMTK").withVersion("0.1.0"), infoProvider);
-        }
-        return libraryManager;
-    }
-
-    private LibraryLoader libraryLoader;
-    private LibraryLoader getLibraryLoader() {
-        if (libraryLoader == null) {
-            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager(), getModelManager());
-        }
-        return libraryLoader;
-    }
-
-    private STU3LibrarySourceProvider librarySourceProvider;
-    private STU3LibrarySourceProvider getLibrarySourceProvider() {
-        if (librarySourceProvider == null) {
-            librarySourceProvider = new STU3LibrarySourceProvider(getLibraryResourceProvider());
-        }
-        return librarySourceProvider;
-    }
-
-    private LibraryResourceProvider getLibraryResourceProvider() {
-        return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
-    }
-
     @Operation(name = "$apply", idempotent = true)
     public CarePlan apply(@IdParam IdType theId,
                           @RequiredParam(name="patient") String patientId,
@@ -95,9 +33,18 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                           @OptionalParam(name="userLanguage") String userLanguage,
                           @OptionalParam(name="userTaskContext") String userTaskContext,
                           @OptionalParam(name="setting") String setting,
-                          @OptionalParam(name="settingContext") String settingContext)
+                          @OptionalParam(name="settingContext") String settingContext,
+                          @ResourceParam Parameters contextParams)
             throws IOException, JAXBException, FHIRException
     {
+        if (contextParams != null) {
+            return
+                    new CdsOpioidGuidanceProvider(provider)
+                            .applyCdsOpioidGuidance(theId, patientId, encounterId,
+                                    practitionerId, organizationId, userType, userLanguage,
+                                    userTaskContext, setting, settingContext, contextParams);
+        }
+
         PlanDefinition planDefinition = this.getDao().read(theId);
 
         if (planDefinition == null) {
@@ -186,6 +133,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
 
                 else {
 
+                    // TODO - likely need more date tranformations
                     if (result instanceof DateTime) {
                         result =
                                 new JavaDateBuilder()
@@ -193,9 +141,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                                         .build();
                     }
 
-                    // TODO - set the property in the CarePlan
-                    // Want something like this:
-                    // carePlan.setProperty(dynamicValue.getPath(), (Base) result);
+                    provider.setValue(carePlan, dynamicValue.getPath(), result);
                 }
             }
         }

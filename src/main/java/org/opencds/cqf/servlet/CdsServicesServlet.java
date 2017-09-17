@@ -9,7 +9,7 @@ import org.json.simple.parser.ParseException;
 import org.opencds.cqf.cds.CdsCard;
 import org.opencds.cqf.cds.CdsHooksHelper;
 import org.opencds.cqf.cds.CdsRequest;
-import org.opencds.cqf.providers.PlanDefinitionResourceProvider;
+import org.opencds.cqf.providers.CdsOpioidGuidanceProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -75,10 +75,10 @@ public class CdsServicesServlet extends BaseServlet {
         Parameters inParams = new Parameters();
         inParams.addParameter().setName("context").setResource(contextParams);
 
-        PlanDefinitionResourceProvider provider = (PlanDefinitionResourceProvider) getProvider("PlanDefinition");
+        CdsOpioidGuidanceProvider provider = (CdsOpioidGuidanceProvider) getProvider("PlanDefinition");
         CarePlan careplan;
         try {
-            careplan = provider.apply(new IdType("cdc-opioid-05"), cdsRequest.getPatient(), null, null, null, null, null, null, null, null, inParams);
+            careplan = provider.applyCdsOpioidGuidance(new IdType("cdc-opioid-05"), cdsRequest.getPatient(), null, null, null, null, null, null, null, null, inParams);
         } catch (JAXBException | FHIRException e) {
             throw new IllegalArgumentException("Error occurred during PlanDefinition $apply operation: " + e.getMessage());
         }

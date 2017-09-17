@@ -1,5 +1,6 @@
 package org.opencds.cqf.providers;
 
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
@@ -41,13 +42,17 @@ import java.util.*;
 /**
  * Created by Bryn on 1/16/2017.
  */
-public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<PlanDefinition> {
+public class CdsOpioidGuidanceProvider {
     private JpaDataProvider provider;
     private CqlExecutionProvider executionProvider;
 
-    public PlanDefinitionResourceProvider(Collection<IResourceProvider> providers) {
+    public CdsOpioidGuidanceProvider(Collection<IResourceProvider> providers) {
         this.provider = new JpaDataProvider(providers);
         this.executionProvider = new CqlExecutionProvider(providers);
+    }
+
+    public CdsOpioidGuidanceProvider(JpaDataProvider provider) {
+        this.provider = provider;
     }
 
     private ModelManager modelManager;
@@ -69,11 +74,6 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
             libraryManager = new LibraryManager(getModelManager());
             libraryManager.getLibrarySourceLoader().clearProviders();
             libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
-            ModelInfoProvider infoProvider = () -> {
-                Path p = Paths.get("src/main/resources/cds/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
-                return JAXB.unmarshal(new File(p.toString()), ModelInfo.class);
-            };
-            ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("OMTK").withVersion("0.1.0"), infoProvider);
         }
         return libraryManager;
     }
@@ -98,19 +98,10 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
     }
 
-    // This is basically designed to run the cdc opioid plan definition
-    // TODO: Generify this logic to run any plan definition...
-    @Operation(name = "$apply", idempotent = true)
-    public CarePlan apply(@IdParam IdType theId, @RequiredParam(name="patient") String patientId,
-                          @OptionalParam(name="encounter") String encounterId,
-                          @OptionalParam(name="practitioner") String practitionerId,
-                          @OptionalParam(name="organization") String organizationId,
-                          @OptionalParam(name="userType") String userType,
-                          @OptionalParam(name="userLanguage") String userLanguage,
-                          @OptionalParam(name="userTaskContext") String userTaskContext,
-                          @OptionalParam(name="setting") String setting,
-                          @OptionalParam(name="settingContext") String settingContext,
-                          @ResourceParam Parameters contextParams)
+    public CarePlan applyCdsOpioidGuidance(IdType theId, String patientId, String encounterId,
+                                           String practitionerId, String organizationId, String userType,
+                                           String userLanguage, String userTaskContext, String setting,
+                                           String settingContext, Parameters contextParams)
             throws IOException, JAXBException, FHIRException
     {
         // parse params
@@ -163,7 +154,11 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         }
 
         // fetch PlanDefinition
-        PlanDefinition planDefinition = this.getDao().read(theId);
+        PlanDefinition planDefinition =
+                (PlanDefinition) provider
+                        .resolveResourceProvider("PlanDefinition")
+                        .getDao()
+                        .read(theId);
 
         return resolveOpioidMedicationPlanDefinition(context, requests, planDefinition);
     }
@@ -245,141 +240,4 @@ public class PlanDefinitionResourceProvider extends JpaResourceProviderDstu3<Pla
         return careplan;
     }
 
-    @Search(allowUnknownParams=true)
-    public IBundleProvider search(
-            javax.servlet.http.HttpServletRequest theServletRequest,
-            RequestDetails theRequestDetails,
-            @Description(shortDefinition="Search the contents of the resource's data using a fulltext search")
-            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_CONTENT)
-            StringAndListParam theFtContent,
-            @Description(shortDefinition="Search the contents of the resource's narrative using a fulltext search")
-            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_TEXT)
-            StringAndListParam theFtText,
-            @Description(shortDefinition="Search for resources which have the given tag")
-            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_TAG)
-            TokenAndListParam theSearchForTag,
-            @Description(shortDefinition="Search for resources which have the given security labels")
-            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_SECURITY)
-            TokenAndListParam theSearchForSecurity,
-            @Description(shortDefinition="Search for resources which have the given profile")
-            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_PROFILE)
-            UriAndListParam theSearchForProfile,
-            @Description(shortDefinition="Return resources linked to by the given target")
-            @OptionalParam(name="_has")
-            HasAndListParam theHas,
-            @Description(shortDefinition="The ID of the resource")
-            @OptionalParam(name="_id")
-            TokenAndListParam the_id,
-            @Description(shortDefinition="The language of the resource")
-            @OptionalParam(name="_language")
-            StringAndListParam the_language,
-            @Description(shortDefinition="What resource is being referenced")
-            @OptionalParam(name="composed-of", targetTypes={  } )
-            ReferenceAndListParam theComposed_of,
-            @Description(shortDefinition="The plan definition publication date")
-            @OptionalParam(name="date")
-            DateRangeParam theDate,
-            @Description(shortDefinition="What resource is being referenced")
-            @OptionalParam(name="depends-on", targetTypes={  } )
-            ReferenceAndListParam theDepends_on,
-            @Description(shortDefinition="What resource is being referenced")
-            @OptionalParam(name="derived-from", targetTypes={  } )
-            ReferenceAndListParam theDerived_from,
-            @Description(shortDefinition="The description of the plan definition")
-            @OptionalParam(name="description")
-            StringAndListParam theDescription,
-            @Description(shortDefinition="The time during which the plan definition is intended to be in use")
-            @OptionalParam(name="effective")
-            DateRangeParam theEffective,
-            @Description(shortDefinition="External identifier for the plan definition")
-            @OptionalParam(name="identifier")
-            TokenAndListParam theIdentifier,
-            @Description(shortDefinition="Intended jurisdiction for the plan definition")
-            @OptionalParam(name="jurisdiction")
-            TokenAndListParam theJurisdiction,
-            @Description(shortDefinition="Computationally friendly name of the plan definition")
-            @OptionalParam(name="name")
-            StringAndListParam theName,
-            @Description(shortDefinition="What resource is being referenced")
-            @OptionalParam(name="predecessor", targetTypes={  } )
-            ReferenceAndListParam thePredecessor,
-            @Description(shortDefinition="Name of the publisher of the plan definition")
-            @OptionalParam(name="publisher")
-            StringAndListParam thePublisher,
-            @Description(shortDefinition="The current status of the plan definition")
-            @OptionalParam(name="status")
-            TokenAndListParam theStatus,
-            @Description(shortDefinition="What resource is being referenced")
-            @OptionalParam(name="successor", targetTypes={  } )
-            ReferenceAndListParam theSuccessor,
-            @Description(shortDefinition="The human-friendly name of the plan definition")
-            @OptionalParam(name="title")
-            StringAndListParam theTitle,
-            @Description(shortDefinition="Topics associated with the module")
-            @OptionalParam(name="topic")
-            TokenAndListParam theTopic,
-            @Description(shortDefinition="The uri that identifies the plan definition")
-            @OptionalParam(name="url")
-            UriAndListParam theUrl,
-            @Description(shortDefinition="The business version of the plan definition")
-            @OptionalParam(name="version")
-            TokenAndListParam theVersion,
-            @RawParam
-            Map<String, List<String>> theAdditionalRawParams,
-            @IncludeParam(reverse=true)
-            Set<Include> theRevIncludes,
-            @Description(shortDefinition="Only return resources which were last updated as specified by the given range")
-            @OptionalParam(name="_lastUpdated")
-            DateRangeParam theLastUpdated,
-            @IncludeParam(allow= {
-                    "PlanDefinition:composed-of" , 					"PlanDefinition:depends-on" , 					"PlanDefinition:derived-from" , 					"PlanDefinition:predecessor" , 					"PlanDefinition:successor" , 						"PlanDefinition:composed-of" , 					"PlanDefinition:depends-on" , 					"PlanDefinition:derived-from" , 					"PlanDefinition:predecessor" , 					"PlanDefinition:successor" , 						"PlanDefinition:composed-of" , 					"PlanDefinition:depends-on" , 					"PlanDefinition:derived-from" , 					"PlanDefinition:predecessor" , 					"PlanDefinition:successor" , 						"PlanDefinition:composed-of" , 					"PlanDefinition:depends-on" , 					"PlanDefinition:derived-from" , 					"PlanDefinition:predecessor" , 					"PlanDefinition:successor" , 						"PlanDefinition:composed-of" , 					"PlanDefinition:depends-on" , 					"PlanDefinition:derived-from" , 					"PlanDefinition:predecessor" , 					"PlanDefinition:successor" 					, "*"
-            })
-            Set<Include> theIncludes,
-            @Sort
-            SortSpec theSort,
-            @ca.uhn.fhir.rest.annotation.Count
-            Integer theCount
-    ) {
-        startRequest(theServletRequest);
-        try {
-            SearchParameterMap paramMap = new SearchParameterMap();
-            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_CONTENT, theFtContent);
-            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_TEXT, theFtText);
-            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_TAG, theSearchForTag);
-            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_SECURITY, theSearchForSecurity);
-            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_PROFILE, theSearchForProfile);
-            paramMap.add("_has", theHas);
-            paramMap.add("_id", the_id);
-            paramMap.add("_language", the_language);
-            paramMap.add("composed-of", theComposed_of);
-            paramMap.add("date", theDate);
-            paramMap.add("depends-on", theDepends_on);
-            paramMap.add("derived-from", theDerived_from);
-            paramMap.add("description", theDescription);
-            paramMap.add("effective", theEffective);
-            paramMap.add("identifier", theIdentifier);
-            paramMap.add("jurisdiction", theJurisdiction);
-            paramMap.add("name", theName);
-            paramMap.add("predecessor", thePredecessor);
-            paramMap.add("publisher", thePublisher);
-            paramMap.add("status", theStatus);
-            paramMap.add("successor", theSuccessor);
-            paramMap.add("title", theTitle);
-            paramMap.add("topic", theTopic);
-            paramMap.add("url", theUrl);
-            paramMap.add("version", theVersion);
-            paramMap.setRevIncludes(theRevIncludes);
-            paramMap.setLastUpdated(theLastUpdated);
-            paramMap.setIncludes(theIncludes);
-            paramMap.setSort(theSort);
-            paramMap.setCount(theCount);
-            paramMap.setRequestDetails(theRequestDetails);
-
-            getDao().translateRawParameters(theAdditionalRawParams, paramMap);
-
-            return getDao().search(paramMap);
-        } finally {
-            endRequest(theServletRequest);
-        }
-    }
 }

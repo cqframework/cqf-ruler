@@ -6,6 +6,9 @@ import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
+import ca.uhn.fhir.jpa.rp.dstu3.ActivityDefinitionResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.server.EncodingEnum;
@@ -16,8 +19,10 @@ import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
+import org.opencds.cqf.providers.FHIRActivityDefinitionResourceProvider;
 import org.opencds.cqf.providers.FHIRMeasureResourceProvider;
-import org.opencds.cqf.providers.PlanDefinitionResourceProvider;
+import org.opencds.cqf.providers.CdsOpioidGuidanceProvider;
+import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
@@ -90,26 +95,35 @@ public class BaseServlet extends RestfulServer {
 
         // Measure processing
         FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(getResourceProviders());
-        ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider jpaMeasureProvider = (ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider) getProvider("Measure");
+        MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) getProvider("Measure");
         measureProvider.setDao(jpaMeasureProvider.getDao());
         measureProvider.setContext(jpaMeasureProvider.getContext());
 
-        // Opioid processing
-        PlanDefinitionResourceProvider planDefProvider = new PlanDefinitionResourceProvider(getResourceProviders());
-        ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider jpaPlanDefProvider =
-                (ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider) getProvider("PlanDefinition");
+        // PlanDefinition processing
+        FHIRPlanDefinitionResourceProvider planDefProvider = new FHIRPlanDefinitionResourceProvider(getResourceProviders());
+        PlanDefinitionResourceProvider jpaPlanDefProvider =
+                (PlanDefinitionResourceProvider) getProvider("PlanDefinition");
         planDefProvider.setDao(jpaPlanDefProvider.getDao());
         planDefProvider.setContext(jpaPlanDefProvider.getContext());
+
+        // ActivityDefinition processing
+        FHIRActivityDefinitionResourceProvider actDefProvider = new FHIRActivityDefinitionResourceProvider(getResourceProviders());
+        ActivityDefinitionResourceProvider jpaActDefProvider =
+                (ActivityDefinitionResourceProvider) getProvider("ActivityDefinition");
+        actDefProvider.setDao(jpaActDefProvider.getDao());
+        actDefProvider.setContext(jpaActDefProvider.getContext());
 
         try {
             unregisterProvider(jpaMeasureProvider);
             unregisterProvider(jpaPlanDefProvider);
+            unregisterProvider(jpaActDefProvider);
         } catch (Exception e) {
             throw new ServletException("Unable to unregister provider: " + e.getMessage());
         }
 
         registerProvider(measureProvider);
         registerProvider(planDefProvider);
+        registerProvider(actDefProvider);
 
         // Register the logging interceptor
         LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
