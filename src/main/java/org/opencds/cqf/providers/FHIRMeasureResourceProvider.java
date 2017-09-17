@@ -6,11 +6,11 @@ import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.PatientResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
-import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.model.api.annotation.Description;
+import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.SortSpec;
+import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IBundleProvider;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -31,9 +31,7 @@ import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.helpers.DateHelper;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /*
     IN	periodStart	1..1	date
@@ -260,5 +258,236 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
         report = evaluator.evaluate(context, measure, patients, measurementPeriod, MeasureReport.MeasureReportType.SUMMARY);
         validateReport();
         return report;
+    }
+
+    @Operation(name = "$data-requirements", idempotent = true)
+    public org.hl7.fhir.dstu3.model.Library dataRequirements(@IdParam IdType theId,
+                                                             @RequiredParam(name="startPeriod") String startPeriod,
+                                                             @RequiredParam(name="endPeriod") String endPeriod)
+            throws InternalErrorException, FHIRException
+    {
+        Measure measure = this.getDao().read(theId);
+
+        // NOTE: This assumes there is only one library and it is the primary library for the measure.
+        org.hl7.fhir.dstu3.model.Library libraryResource =
+                getLibraryResourceProvider()
+                        .getDao()
+                        .read(new IdType(measure.getLibraryFirstRep().getReference()));
+
+        // TODO: what are the period params for? Library.effectivePeriod?
+
+        List<RelatedArtifact> dependencies = new ArrayList<>();
+        for (RelatedArtifact dependency : libraryResource.getRelatedArtifact()) {
+            if (dependency.getType().toCode().equals("depends-on")) {
+                dependencies.add(dependency);
+            }
+        }
+
+        List<Coding> typeCoding = new ArrayList<>();
+        typeCoding.add(new Coding().setCode("module-definition"));
+        org.hl7.fhir.dstu3.model.Library library =
+                new org.hl7.fhir.dstu3.model.Library().setType(new CodeableConcept().setCoding(typeCoding));
+
+        if (!dependencies.isEmpty()) {
+            library.setRelatedArtifact(dependencies);
+        }
+
+        return library
+                .setDataRequirement(libraryResource.getDataRequirement())
+                .setParameter(libraryResource.getParameter());
+    }
+
+    @Search(allowUnknownParams=true)
+    public ca.uhn.fhir.rest.server.IBundleProvider search(
+            javax.servlet.http.HttpServletRequest theServletRequest,
+
+            ca.uhn.fhir.rest.method.RequestDetails theRequestDetails,
+
+            @Description(shortDefinition="Search the contents of the resource's data using a fulltext search")
+            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_CONTENT)
+                    StringAndListParam theFtContent,
+
+            @Description(shortDefinition="Search the contents of the resource's narrative using a fulltext search")
+            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_TEXT)
+                    StringAndListParam theFtText,
+
+            @Description(shortDefinition="Search for resources which have the given tag")
+            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_TAG)
+                    TokenAndListParam theSearchForTag,
+
+            @Description(shortDefinition="Search for resources which have the given security labels")
+            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_SECURITY)
+                    TokenAndListParam theSearchForSecurity,
+
+            @Description(shortDefinition="Search for resources which have the given profile")
+            @OptionalParam(name=ca.uhn.fhir.rest.server.Constants.PARAM_PROFILE)
+                    UriAndListParam theSearchForProfile,
+
+            @Description(shortDefinition="Return resources linked to by the given target")
+            @OptionalParam(name="_has")
+                    HasAndListParam theHas,
+
+            @Description(shortDefinition="The ID of the resource")
+            @OptionalParam(name="_id")
+                    TokenAndListParam the_id,
+
+            @Description(shortDefinition="The language of the resource")
+            @OptionalParam(name="_language")
+                    StringAndListParam the_language,
+
+            @Description(shortDefinition="What resource is being referenced")
+            @OptionalParam(name="composed-of", targetTypes={  } )
+                    ReferenceAndListParam theComposed_of,
+
+            @Description(shortDefinition="The measure publication date")
+            @OptionalParam(name="date")
+                    DateRangeParam theDate,
+
+            @Description(shortDefinition="What resource is being referenced")
+            @OptionalParam(name="depends-on", targetTypes={  } )
+                    ReferenceAndListParam theDepends_on,
+
+            @Description(shortDefinition="What resource is being referenced")
+            @OptionalParam(name="derived-from", targetTypes={  } )
+                    ReferenceAndListParam theDerived_from,
+
+            @Description(shortDefinition="The description of the measure")
+            @OptionalParam(name="description")
+                    StringAndListParam theDescription,
+
+            @Description(shortDefinition="The time during which the measure is intended to be in use")
+            @OptionalParam(name="effective")
+                    DateRangeParam theEffective,
+
+            @Description(shortDefinition="External identifier for the measure")
+            @OptionalParam(name="identifier")
+                    TokenAndListParam theIdentifier,
+
+            @Description(shortDefinition="Intended jurisdiction for the measure")
+            @OptionalParam(name="jurisdiction")
+                    TokenAndListParam theJurisdiction,
+
+            @Description(shortDefinition="Computationally friendly name of the measure")
+            @OptionalParam(name="name")
+                    StringAndListParam theName,
+
+            @Description(shortDefinition="What resource is being referenced")
+            @OptionalParam(name="predecessor", targetTypes={  } )
+                    ReferenceAndListParam thePredecessor,
+
+            @Description(shortDefinition="Name of the publisher of the measure")
+            @OptionalParam(name="publisher")
+                    StringAndListParam thePublisher,
+
+            @Description(shortDefinition="The current status of the measure")
+            @OptionalParam(name="status")
+                    TokenAndListParam theStatus,
+
+            @Description(shortDefinition="What resource is being referenced")
+            @OptionalParam(name="successor", targetTypes={  } )
+                    ReferenceAndListParam theSuccessor,
+
+            @Description(shortDefinition="The human-friendly name of the measure")
+            @OptionalParam(name="title")
+                    StringAndListParam theTitle,
+
+            @Description(shortDefinition="Topics associated with the module")
+            @OptionalParam(name="topic")
+                    TokenAndListParam theTopic,
+
+            @Description(shortDefinition="The uri that identifies the measure")
+            @OptionalParam(name="url")
+                    UriAndListParam theUrl,
+
+            @Description(shortDefinition="The business version of the measure")
+            @OptionalParam(name="version")
+                    TokenAndListParam theVersion,
+
+            @RawParam
+                    Map<String, List<String>> theAdditionalRawParams,
+
+            @IncludeParam(reverse=true)
+                    Set<Include> theRevIncludes,
+            @Description(shortDefinition="Only return resources which were last updated as specified by the given range")
+            @OptionalParam(name="_lastUpdated")
+                    DateRangeParam theLastUpdated,
+
+            @IncludeParam(allow= {
+                    "Measure:composed-of",
+                    "Measure:depends-on",
+                    "Measure:derived-from",
+                    "Measure:predecessor",
+                    "Measure:successor",
+                    "Measure:composed-of",
+                    "Measure:depends-on",
+                    "Measure:derived-from",
+                    "Measure:predecessor",
+                    "Measure:successor",
+                    "Measure:composed-of",
+                    "Measure:depends-on",
+                    "Measure:derived-from",
+                    "Measure:predecessor",
+                    "Measure:successor",
+                    "Measure:composed-of",
+                    "Measure:depends-on",
+                    "Measure:derived-from",
+                    "Measure:predecessor",
+                    "Measure:successor",
+                    "Measure:composed-of",
+                    "Measure:depends-on",
+                    "Measure:derived-from",
+                    "Measure:predecessor",
+                    "Measure:successor",
+                    "*"
+            })
+                    Set<Include> theIncludes,
+
+            @Sort
+                    SortSpec theSort,
+
+            @ca.uhn.fhir.rest.annotation.Count
+                    Integer theCount
+    ) {
+        startRequest(theServletRequest);
+        try {
+            SearchParameterMap paramMap = new SearchParameterMap();
+            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_CONTENT, theFtContent);
+            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_TEXT, theFtText);
+            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_TAG, theSearchForTag);
+            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_SECURITY, theSearchForSecurity);
+            paramMap.add(ca.uhn.fhir.rest.server.Constants.PARAM_PROFILE, theSearchForProfile);
+            paramMap.add("_has", theHas);
+            paramMap.add("_id", the_id);
+            paramMap.add("_language", the_language);
+            paramMap.add("composed-of", theComposed_of);
+            paramMap.add("date", theDate);
+            paramMap.add("depends-on", theDepends_on);
+            paramMap.add("derived-from", theDerived_from);
+            paramMap.add("description", theDescription);
+            paramMap.add("effective", theEffective);
+            paramMap.add("identifier", theIdentifier);
+            paramMap.add("jurisdiction", theJurisdiction);
+            paramMap.add("name", theName);
+            paramMap.add("predecessor", thePredecessor);
+            paramMap.add("publisher", thePublisher);
+            paramMap.add("status", theStatus);
+            paramMap.add("successor", theSuccessor);
+            paramMap.add("title", theTitle);
+            paramMap.add("topic", theTopic);
+            paramMap.add("url", theUrl);
+            paramMap.add("version", theVersion);
+            paramMap.setRevIncludes(theRevIncludes);
+            paramMap.setLastUpdated(theLastUpdated);
+            paramMap.setIncludes(theIncludes);
+            paramMap.setSort(theSort);
+            paramMap.setCount(theCount);
+            paramMap.setRequestDetails(theRequestDetails);
+
+            getDao().translateRawParameters(theAdditionalRawParams, paramMap);
+
+            return getDao().search(paramMap);
+        } finally {
+            endRequest(theServletRequest);
+        }
     }
 }
