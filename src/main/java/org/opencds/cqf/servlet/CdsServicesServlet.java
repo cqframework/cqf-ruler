@@ -1,6 +1,7 @@
 package org.opencds.cqf.servlet;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.json.simple.JSONObject;
@@ -10,6 +11,7 @@ import org.opencds.cqf.cds.CdsCard;
 import org.opencds.cqf.cds.CdsHooksHelper;
 import org.opencds.cqf.cds.CdsRequest;
 import org.opencds.cqf.providers.CdsOpioidGuidanceProvider;
+import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -75,10 +77,10 @@ public class CdsServicesServlet extends BaseServlet {
         Parameters inParams = new Parameters();
         inParams.addParameter().setName("context").setResource(contextParams);
 
-        CdsOpioidGuidanceProvider provider = (CdsOpioidGuidanceProvider) getProvider("PlanDefinition");
+        FHIRPlanDefinitionResourceProvider provider = (FHIRPlanDefinitionResourceProvider) getProvider("PlanDefinition");
         CarePlan careplan;
         try {
-            careplan = provider.applyCdsOpioidGuidance(new IdType("cdc-opioid-05"), cdsRequest.getPatient(), null, null, null, null, null, null, null, null, inParams);
+            careplan = provider.apply(new IdType("cdc-opioid-05"), cdsRequest.getPatient(), null, null, null, null, null, null, null, null, inParams);
         } catch (JAXBException | FHIRException e) {
             throw new IllegalArgumentException("Error occurred during PlanDefinition $apply operation: " + e.getMessage());
         }

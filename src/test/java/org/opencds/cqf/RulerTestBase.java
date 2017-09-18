@@ -1,5 +1,215 @@
 package org.opencds.cqf;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.primitive.DateDt;
+import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.client.IGenericClient;
+import ca.uhn.fhir.rest.client.ServerValidationModeEnum;
+import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.webapp.WebAppContext;
+import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.ServerSocket;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 public class RulerTestBase {
+    private static IGenericClient ourClient;
+    private static FhirContext ourCtx = FhirContext.forDstu3();
+
+    private static int ourPort;
+
+    private static Server ourServer;
+    private static String ourServerBase;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+
+        String path = Paths.get("").toAbsolutePath().toString();
+
+        ourPort = RandomServerPortProvider.findFreePort();
+        ourServer = new Server(ourPort);
+
+        WebAppContext webAppContext = new WebAppContext();
+        webAppContext.setContextPath("/cqf-ruler");
+        webAppContext.setDescriptor(path + "/src/main/webapp/WEB-INF/web.xml");
+        webAppContext.setResourceBase(path + "/target/cqf-ruler");
+        webAppContext.setParentLoaderPriority(true);
+
+        ourServer.setHandler(webAppContext);
+        ourServer.start();
+
+        ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+        ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
+        ourServerBase = "http://localhost:" + ourPort + "/cqf-ruler/baseDstu3";
+        ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
+        ourClient.registerInterceptor(new LoggingInterceptor(true));
+
+        // Load test data
+        // Normally, I would use a transaction bundle, but issues with the random ports prevents that...
+        // So, doing it the old-fashioned way =)
+
+        // General
+        putResource("general-practitioner.json", "Practitioner-12208");
+        putResource("general-patient.json", "Patient-12214");
+
+        // For CDC Opioid Guidance PlanDefinition $apply operation
+        putResource("cdc-opioid-guidance-library-omtk.json", "OMTKLogic");
+        putResource("cdc-opioid-5.json", "cdc-opioid-05");
+
+        // For Measure processing $evaluate operation
+        putResource("measure-processing-library.json", "col-logic");
+        putResource("measure-processing-measure.json", "col");
+        putResource("measure-processing-procedure.json", "Procedure-9");
+        putResource("measure-processing-condition.json", "Condition-13");
+        putResource("measure-processing-valueset-1.json", "2.16.840.1.113883.3.464.1003.108.11.1001");
+        putResource("measure-processing-valueset-2.json", "2.16.840.1.113883.3.464.1003.198.12.1019");
+        putResource("measure-processing-valueset-3.json", "2.16.840.1.113883.3.464.1003.108.12.1020");
+        putResource("measure-processing-valueset-4.json", "2.16.840.1.113883.3.464.1003.198.12.1010");
+        putResource("measure-processing-valueset-5.json", "2.16.840.1.113883.3.464.1003.198.12.1011");
+
+        // For Measure $data-requirements operation
+        // TODO
+
+        // For Generic PlanDefinition $apply operation
+        // TODO
+
+        // For ActivityDefinition $apply operation
+        // TODO
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        ourServer.stop();
+    }
+
+    private static void putResource(String resourceFileName, String id) {
+        InputStream is = RulerTestBase.class.getResourceAsStream(resourceFileName);
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String json = scanner.hasNext() ? scanner.next() : "";
+        IBaseResource resource = ourCtx.newJsonParser().parseResource(json);
+        ourClient.update(id, resource);
+    }
+
+    @Test
+    public void CdcOpioidGuidanceTest() throws IOException {
+        // Get the CDS Hooks request
+        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-cds-hooks-request.json");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
+        byte[] data = cdsHooksRequest.getBytes("UTF-8");
+
+        // Unsure how to use Hapi to make this request...
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/cdc-opioid-guidance");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(data);
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        String expected = "{\n" +
+                "  \"summary\": \"High risk for opioid overdose - taper now\",\n" +
+                "  \"indicator\": \"warning\",\n" +
+                "  \"links\": [\n" +
+                "    {\n" +
+                "      \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
+                "      \"type\": \"absolute\",\n" +
+                "      \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"label\": \"MME Conversion Tables\",\n" +
+                "      \"type\": \"absolute\",\n" +
+                "      \"url\": \"https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf\"\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"detail\": \"Total morphine milligram equivalent (MME) is 20200.700mg/d. Taper to less than 50.\"\n" +
+                "}";
+
+        Assert.assertTrue(
+                response.toString().replaceAll("\\s+", "")
+                        .equals(expected.replaceAll("\\s+", ""))
+        );
+    }
+
+    @Test
+    public void MeasureProcessingTest() {
+        Parameters inParams = new Parameters();
+        inParams.addParameter().setName("patient").setValue(new StringType("Patient-12214"));
+        inParams.addParameter().setName("startPeriod").setValue(new DateType("2001-01-01"));
+        inParams.addParameter().setName("endPeriod").setValue(new DateType("2015-03-01"));
+
+        Parameters outParams = ourClient.operation()
+                .onInstance(new IdDt("Measure", "col"))
+                .named("$evaluate")
+                .withParameters(inParams)
+                .useHttpGet()
+                .execute();
+
+        List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+
+        Assert.assertTrue(!response.isEmpty());
+
+        Parameters.ParametersParameterComponent component = response.get(0);
+
+        Assert.assertTrue(component.getResource() instanceof MeasureReport);
+
+        MeasureReport report = (MeasureReport) component.getResource();
+
+        Assert.assertTrue(report.getEvaluatedResources() != null);
+
+        for (MeasureReport.MeasureReportGroupComponent group : report.getGroup()) {
+            if (group.getIdentifier().getValue().equals("history-of-colorectal-cancer")) {
+                Assert.assertTrue(group.getPopulation().get(0).getCount() > 0);
+            }
+
+            if (group.getIdentifier().getValue().equals("history-of-total-colectomy")) {
+                Assert.assertTrue(group.getPopulation().get(0).getCount() > 0);
+            }
+        }
+    }
+}
+
+class RandomServerPortProvider {
+
+    private static List<Integer> ourPorts = new ArrayList<Integer>();
+
+    public static int findFreePort() {
+        ServerSocket server;
+        try {
+            server = new ServerSocket(0);
+            int port = server.getLocalPort();
+            ourPorts.add(port);
+            server.close();
+            Thread.sleep(500);
+            return port;
+        } catch (IOException | InterruptedException e) {
+            throw new Error(e);
+        }
+    }
+
+    public static List<Integer> list() {
+        return ourPorts;
+    }
 
 }
