@@ -80,7 +80,7 @@ public class CdsServicesServlet extends BaseServlet {
         FHIRPlanDefinitionResourceProvider provider = (FHIRPlanDefinitionResourceProvider) getProvider("PlanDefinition");
         CarePlan careplan;
         try {
-            careplan = provider.apply(new IdType("cdc-opioid-05"), cdsRequest.getPatient(), null, null, null, null, null, null, null, null, inParams);
+            careplan = provider.applyPlanDefinition(new IdType("cdc-opioid-05"), cdsRequest.getPatient(), null, null, null, null, null, null, null, null, inParams);
         } catch (JAXBException | FHIRException e) {
             throw new IllegalArgumentException("Error occurred during PlanDefinition $apply operation: " + e.getMessage());
         }

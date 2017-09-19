@@ -32,17 +32,18 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
     }
 
     @Operation(name = "$apply", idempotent = true)
-    public CarePlan apply(@IdParam IdType theId,
-                          @RequiredParam(name="patient") String patientId,
-                          @OptionalParam(name="encounter") String encounterId,
-                          @OptionalParam(name="practitioner") String practitionerId,
-                          @OptionalParam(name="organization") String organizationId,
-                          @OptionalParam(name="userType") String userType,
-                          @OptionalParam(name="userLanguage") String userLanguage,
-                          @OptionalParam(name="userTaskContext") String userTaskContext,
-                          @OptionalParam(name="setting") String setting,
-                          @OptionalParam(name="settingContext") String settingContext,
-                          @ResourceParam Parameters contextParams)
+    public CarePlan applyPlanDefinition(
+            @IdParam IdType theId,
+            @RequiredParam(name="patient") String patientId,
+            @OptionalParam(name="encounter") String encounterId,
+            @OptionalParam(name="practitioner") String practitionerId,
+            @OptionalParam(name="organization") String organizationId,
+            @OptionalParam(name="userType") String userType,
+            @OptionalParam(name="userLanguage") String userLanguage,
+            @OptionalParam(name="userTaskContext") String userTaskContext,
+            @OptionalParam(name="setting") String setting,
+            @OptionalParam(name="settingContext") String settingContext,
+            @ResourceParam Parameters contextParams)
             throws IOException, JAXBException, FHIRException
     {
         if (contextParams != null) {

@@ -1,7 +1,6 @@
 package org.opencds.cqf;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.primitive.DateDt;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ca.uhn.fhir.rest.client.ServerValidationModeEnum;
@@ -83,7 +82,8 @@ public class RulerTestBase {
         // TODO
 
         // For Generic PlanDefinition $apply operation
-        // TODO
+        putResource("plandefinition-apply-library.json", "plandefinitionApplyTest");
+        putResource("plandefinition-apply.json", "apply-example");
 
         // For ActivityDefinition $apply operation
         // TODO
@@ -159,7 +159,8 @@ public class RulerTestBase {
         inParams.addParameter().setName("startPeriod").setValue(new DateType("2001-01-01"));
         inParams.addParameter().setName("endPeriod").setValue(new DateType("2015-03-01"));
 
-        Parameters outParams = ourClient.operation()
+        Parameters outParams = ourClient
+                .operation()
                 .onInstance(new IdDt("Measure", "col"))
                 .named("$evaluate")
                 .withParameters(inParams)
@@ -188,13 +189,33 @@ public class RulerTestBase {
             }
         }
     }
+
+    // TODO - fix this ...
+    // ca.uhn.fhir.rest.server.exceptions.InvalidRequestException: HTTP 400 Bad Request: No Content-Type header was provided in the request. This is required for "EXTENDED_OPERATION_INSTANCE" operation
+    //@Test
+    public void PlanDefinitionApplyTest() {
+        Parameters inParams = new Parameters();
+        inParams.addParameter().setName("patient").setValue(new StringType("Patient-12214"));
+
+        Parameters outParams = ourClient
+                .operation()
+                .onInstance(new IdDt("PlanDefinition", "apply-example"))
+                .named("$apply")
+                .withParameters(inParams)
+                .useHttpGet()
+                .execute();
+
+        List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+
+        Assert.assertTrue(!response.isEmpty());
+    }
 }
 
 class RandomServerPortProvider {
 
-    private static List<Integer> ourPorts = new ArrayList<Integer>();
+    private static List<Integer> ourPorts = new ArrayList<>();
 
-    public static int findFreePort() {
+    static int findFreePort() {
         ServerSocket server;
         try {
             server = new ServerSocket(0);
