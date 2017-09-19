@@ -107,7 +107,7 @@ public class CqlExecutionProvider {
             builder.append("include ");
 
             // TODO: This assumes the libraries resource id is the same as the library name, need to work this out better
-            builder.append(library.getId());
+            builder.append(library.getIdElement().getIdPart());
 
             if (library.getVersion() != null) {
                 builder.append(" version '");
@@ -116,7 +116,7 @@ public class CqlExecutionProvider {
             }
 
             builder.append(" called ");
-            builder.append(library.getId());
+            builder.append(library.getIdElement().getIdPart());
         }
 
         return builder.toString();
@@ -129,10 +129,10 @@ public class CqlExecutionProvider {
 
         // Provide the instance as the value of the '%context' parameter, as well as the value of a parameter named the same as the resource
         // This enables expressions to access the resource by root, as well as through the %context attribute
-//        String source = String.format("library LocalLibrary using FHIR version '3.0.0' include FHIRHelpers version '3.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-//                buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
-        String source = String.format("library LocalLibrary using FHIR version '1.8' include FHIRHelpers version '1.8' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
+        String source = String.format("library LocalLibrary using FHIR version '3.0.0' include FHIRHelpers version '3.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
                 buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
+//        String source = String.format("library LocalLibrary using FHIR version '1.8' include FHIRHelpers version '1.8' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
+//                buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
 
         org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source, getLibraryManager(), getModelManager());
         Context context = new Context(library);

@@ -75,10 +75,15 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
             if (dynamicValue.getExpression() != null) {
                 /*
                     TODO: Passing the activityDefinition as context here because that's what will have the libraries,
-                    but perhaps the "context" here should be the result resource?
+                          but perhaps the "context" here should be the result resource?
                 */
                 Object value =
                         executionProvider.evaluateInContext(activityDefinition, dynamicValue.getExpression(), patientId);
+
+                // TODO need to verify type... yay
+                if (value instanceof Boolean) {
+                    value = new BooleanType((Boolean) value);
+                }
                 this.provider.setValue(result, dynamicValue.getPath(), value);
             }
         }

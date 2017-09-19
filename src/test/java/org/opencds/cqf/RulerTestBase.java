@@ -62,6 +62,7 @@ public class RulerTestBase {
         // General
         putResource("general-practitioner.json", "Practitioner-12208");
         putResource("general-patient.json", "Patient-12214");
+        putResource("general-fhirhelpers-3.json", "FHIRHelpers");
 
         // For CDC Opioid Guidance PlanDefinition $apply operation
         putResource("cdc-opioid-guidance-library-omtk.json", "OMTKLogic");
@@ -86,7 +87,8 @@ public class RulerTestBase {
         putResource("plandefinition-apply.json", "apply-example");
 
         // For ActivityDefinition $apply operation
-        // TODO
+        putResource("activitydefinition-apply-library.json", "activityDefinitionApplyTest");
+        putResource("activitydefinition-apply.json", "ad-apply-example");
     }
 
     @AfterClass
@@ -208,6 +210,32 @@ public class RulerTestBase {
         List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
 
         Assert.assertTrue(!response.isEmpty());
+    }
+
+    @Test
+    public void ActivityDefinitionApplyTest() {
+        Parameters inParams = new Parameters();
+        inParams.addParameter().setName("patient").setValue(new StringType("Patient-12214"));
+
+        Parameters outParams = ourClient
+                .operation()
+                .onInstance(new IdDt("ActivityDefinition", "ad-apply-example"))
+                .named("$apply")
+                .withParameters(inParams)
+                .useHttpGet()
+                .execute();
+
+        List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+
+        Assert.assertTrue(!response.isEmpty());
+
+        Resource resource = response.get(0).getResource();
+
+        Assert.assertTrue(resource instanceof ProcedureRequest);
+
+        ProcedureRequest procedureRequest = (ProcedureRequest) resource;
+
+        Assert.assertTrue(procedureRequest.getDoNotPerform());
     }
 }
 
