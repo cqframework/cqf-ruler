@@ -32,7 +32,7 @@
       "text": "Testing $apply operation"
     }
   ],
-  "libary": [
+  "library": [
     {
       "reference": "Library/plandefinitionApplyTest"
     }
@@ -44,14 +44,14 @@
           "kind": "applicability",
           "description": "Simple test",
           "language": "text/cql",
-          "expression": "Results"
+          "expression": "plandefinitionApplyTest.Results"
         }
       ],
       "dynamicValue": [
         {
           "description": "Set CarePlan detail definition",
-          "path": "definition",
-          "expression": "Dynamic Detail Definition"
+          "path": "title",
+          "expression": "plandefinitionApplyTest.\"Dynamic Detail Definition\""
         }
       ]
     }

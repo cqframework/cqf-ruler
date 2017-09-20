@@ -5,6 +5,8 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ca.uhn.fhir.rest.client.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
+import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.hl7.fhir.dstu3.model.*;
@@ -15,11 +17,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
+import java.lang.reflect.ParameterizedType;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
@@ -31,6 +35,8 @@ public class RulerTestBase {
 
     private static Server ourServer;
     private static String ourServerBase;
+
+    private static Collection<IResourceProvider> providers;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -194,8 +200,9 @@ public class RulerTestBase {
 
     // TODO - fix this ...
     // ca.uhn.fhir.rest.server.exceptions.InvalidRequestException: HTTP 400 Bad Request: No Content-Type header was provided in the request. This is required for "EXTENDED_OPERATION_INSTANCE" operation
-    //@Test
-    public void PlanDefinitionApplyTest() {
+    @Test
+    public void PlanDefinitionApplyTest() throws ClassNotFoundException {
+
         Parameters inParams = new Parameters();
         inParams.addParameter().setName("patient").setValue(new StringType("Patient-12214"));
 
@@ -210,6 +217,14 @@ public class RulerTestBase {
         List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
 
         Assert.assertTrue(!response.isEmpty());
+
+        Resource resource = response.get(0).getResource();
+
+        Assert.assertTrue(resource instanceof CarePlan);
+
+        CarePlan carePlan = (CarePlan) resource;
+
+        Assert.assertTrue(carePlan.getTitle().equals("This is a dynamic definition!"));
     }
 
     @Test
