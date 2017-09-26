@@ -5,7 +5,6 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.client.IGenericClient;
 import ca.uhn.fhir.rest.client.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
-import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -17,7 +16,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.*;
-import java.lang.reflect.ParameterizedType;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.URL;
@@ -31,7 +29,7 @@ public class RulerTestBase {
     private static IGenericClient ourClient;
     private static FhirContext ourCtx = FhirContext.forDstu3();
 
-    private static int ourPort;
+    protected static int ourPort;
 
     private static Server ourServer;
     private static String ourServerBase;
@@ -69,32 +67,6 @@ public class RulerTestBase {
         putResource("general-practitioner.json", "Practitioner-12208");
         putResource("general-patient.json", "Patient-12214");
         putResource("general-fhirhelpers-3.json", "FHIRHelpers");
-
-        // For CDC Opioid Guidance PlanDefinition $apply operation
-        putResource("cdc-opioid-guidance-library-omtk.json", "OMTKLogic");
-        putResource("cdc-opioid-5.json", "cdc-opioid-05");
-
-        // For Measure processing $evaluate operation
-        putResource("measure-processing-library.json", "col-logic");
-        putResource("measure-processing-measure.json", "col");
-        putResource("measure-processing-procedure.json", "Procedure-9");
-        putResource("measure-processing-condition.json", "Condition-13");
-        putResource("measure-processing-valueset-1.json", "2.16.840.1.113883.3.464.1003.108.11.1001");
-        putResource("measure-processing-valueset-2.json", "2.16.840.1.113883.3.464.1003.198.12.1019");
-        putResource("measure-processing-valueset-3.json", "2.16.840.1.113883.3.464.1003.108.12.1020");
-        putResource("measure-processing-valueset-4.json", "2.16.840.1.113883.3.464.1003.198.12.1010");
-        putResource("measure-processing-valueset-5.json", "2.16.840.1.113883.3.464.1003.198.12.1011");
-
-        // For Measure $data-requirements operation
-        // TODO
-
-        // For Generic PlanDefinition $apply operation
-        putResource("plandefinition-apply-library.json", "plandefinitionApplyTest");
-        putResource("plandefinition-apply.json", "apply-example");
-
-        // For ActivityDefinition $apply operation
-        putResource("activitydefinition-apply-library.json", "activityDefinitionApplyTest");
-        putResource("activitydefinition-apply.json", "ad-apply-example");
     }
 
     @AfterClass
@@ -112,6 +84,10 @@ public class RulerTestBase {
 
     @Test
     public void CdcOpioidGuidanceTest() throws IOException {
+        putResource("cdc-opioid-guidance-library-omtk.json", "OMTKLogic");
+        putResource("cdc-opioid-guidance-library-primary.json", "OpioidCdsStu3");
+        putResource("cdc-opioid-5.json", "cdc-opioid-guidance");
+
         // Get the CDS Hooks request
         InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-cds-hooks-request.json");
         Scanner scanner = new Scanner(is).useDelimiter("\\A");
@@ -137,21 +113,13 @@ public class RulerTestBase {
         }
 
         String expected = "{\n" +
-                "  \"summary\": \"High risk for opioid overdose - taper now\",\n" +
-                "  \"indicator\": \"warning\",\n" +
-                "  \"links\": [\n" +
+                "  \"cards\": [\n" +
                 "    {\n" +
-                "      \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
-                "      \"type\": \"absolute\",\n" +
-                "      \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"label\": \"MME Conversion Tables\",\n" +
-                "      \"type\": \"absolute\",\n" +
-                "      \"url\": \"https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf\"\n" +
+                "      \"summary\": \"High risk for opioid overdose - taper now\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"Total morphine milligram equivalent (MME) is 20200.700mg/d. Taper to less than 50.\"\n" +
                 "    }\n" +
-                "  ],\n" +
-                "  \"detail\": \"Total morphine milligram equivalent (MME) is 20200.700mg/d. Taper to less than 50.\"\n" +
+                "  ]\n" +
                 "}";
 
         Assert.assertTrue(
@@ -162,6 +130,16 @@ public class RulerTestBase {
 
     @Test
     public void MeasureProcessingTest() {
+        putResource("measure-processing-library.json", "col-logic");
+        putResource("measure-processing-measure.json", "col");
+        putResource("measure-processing-procedure.json", "Procedure-9");
+        putResource("measure-processing-condition.json", "Condition-13");
+        putResource("measure-processing-valueset-1.json", "2.16.840.1.113883.3.464.1003.108.11.1001");
+        putResource("measure-processing-valueset-2.json", "2.16.840.1.113883.3.464.1003.198.12.1019");
+        putResource("measure-processing-valueset-3.json", "2.16.840.1.113883.3.464.1003.108.12.1020");
+        putResource("measure-processing-valueset-4.json", "2.16.840.1.113883.3.464.1003.198.12.1010");
+        putResource("measure-processing-valueset-5.json", "2.16.840.1.113883.3.464.1003.198.12.1011");
+
         Parameters inParams = new Parameters();
         inParams.addParameter().setName("patient").setValue(new StringType("Patient-12214"));
         inParams.addParameter().setName("startPeriod").setValue(new DateType("2001-01-01"));
@@ -202,6 +180,8 @@ public class RulerTestBase {
     // ca.uhn.fhir.rest.server.exceptions.InvalidRequestException: HTTP 400 Bad Request: No Content-Type header was provided in the request. This is required for "EXTENDED_OPERATION_INSTANCE" operation
     @Test
     public void PlanDefinitionApplyTest() throws ClassNotFoundException {
+        putResource("plandefinition-apply-library.json", "plandefinitionApplyTest");
+        putResource("plandefinition-apply.json", "apply-example");
 
         Parameters inParams = new Parameters();
         inParams.addParameter().setName("patient").setValue(new StringType("Patient-12214"));
@@ -229,6 +209,9 @@ public class RulerTestBase {
 
     @Test
     public void ActivityDefinitionApplyTest() {
+        putResource("activitydefinition-apply-library.json", "activityDefinitionApplyTest");
+        putResource("activitydefinition-apply.json", "ad-apply-example");
+
         Parameters inParams = new Parameters();
         inParams.addParameter().setName("patient").setValue(new StringType("Patient-12214"));
 

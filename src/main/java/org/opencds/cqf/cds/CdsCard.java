@@ -1,5 +1,6 @@
 package org.opencds.cqf.cds;
 
+import com.google.gson.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -208,38 +209,75 @@ public class CdsCard {
         this.links = new ArrayList<>();
     }
 
-
-    public JSONObject toJson() {
-        JSONObject card = new JSONObject();
+    public JsonObject toJson() {
+        JsonObject card = new JsonObject();
         if (hasSummary()) {
-            card.put("summary", summary);
+            card.addProperty("summary", summary);
         }
+
         if (hasIndicator()) {
-            card.put("indicator", indicator);
+            card.addProperty("indicator", indicator);
         }
+
         if (hasDetail()) {
-            card.put("detail", detail);
+            card.addProperty("detail", detail);
         }
+
         // TODO: Source & Suggestions
+
         if (hasLinks()) {
-            JSONArray linksArray = new JSONArray();
+            JsonArray linksArray = new JsonArray();
             for (Links linkElement : getLinks()) {
-                JSONObject link = new JSONObject();
+                JsonObject link = new JsonObject();
                 if (linkElement.hasLabel()) {
-                    link.put("label", linkElement.getLabel());
+                    link.addProperty("label", linkElement.getLabel());
                 }
+
                 if (linkElement.hasUrl()) {
-                    link.put("url", linkElement.getUrl());
+                    link.addProperty("url", linkElement.getUrl());
                 }
+
                 if (linkElement.hasType()) {
-                    link.put("type", linkElement.getType());
+                    link.addProperty("type", linkElement.getType());
                 }
                 linksArray.add(link);
             }
-            card.put("links", linksArray);
+            card.add("links", linksArray);
         }
         return card;
     }
+
+//    public JSONObject toJson() {
+//        JSONObject card = new JSONObject();
+//        if (hasSummary()) {
+//            card.put("summary", summary);
+//        }
+//        if (hasIndicator()) {
+//            card.put("indicator", indicator);
+//        }
+//        if (hasDetail()) {
+//            card.put("detail", detail);
+//        }
+//        // TODO: Source & Suggestions
+//        if (hasLinks()) {
+//            JSONArray linksArray = new JSONArray();
+//            for (Links linkElement : getLinks()) {
+//                JSONObject link = new JSONObject();
+//                if (linkElement.hasLabel()) {
+//                    link.put("label", linkElement.getLabel());
+//                }
+//                if (linkElement.hasUrl()) {
+//                    link.put("url", linkElement.getUrl());
+//                }
+//                if (linkElement.hasType()) {
+//                    link.put("type", linkElement.getType());
+//                }
+//                linksArray.add(link);
+//            }
+//            card.put("links", linksArray);
+//        }
+//        return card;
+//    }
 
     public JSONObject returnSuccess() {
         JSONObject success = new JSONObject();

@@ -81,7 +81,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         return builder.build();
     }
 
-    private Boolean meetsConditions(PlanDefinition planDefinition, String patientId,
+    public Boolean meetsConditions(PlanDefinition planDefinition, String patientId,
                                         PlanDefinition.PlanDefinitionActionComponent action)
     {
         for (PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {

@@ -21,7 +21,6 @@ import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.providers.FHIRActivityDefinitionResourceProvider;
 import org.opencds.cqf.providers.FHIRMeasureResourceProvider;
-import org.opencds.cqf.providers.CdsOpioidGuidanceProvider;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
