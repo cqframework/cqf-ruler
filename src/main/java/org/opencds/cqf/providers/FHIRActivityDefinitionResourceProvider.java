@@ -13,10 +13,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.exceptions.ActivityDefinitionApplyException;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Bryn on 1/16/2017.
@@ -41,7 +38,9 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
                           @OptionalParam(name="userTaskContext") String userTaskContext,
                           @OptionalParam(name="setting") String setting,
                           @OptionalParam(name="settingContext") String settingContext)
-            throws InternalErrorException, FHIRException, ClassNotFoundException, IllegalAccessException, InstantiationException, ActivityDefinitionApplyException {
+            throws InternalErrorException, FHIRException, ClassNotFoundException, IllegalAccessException,
+            InstantiationException, ActivityDefinitionApplyException
+    {
         ActivityDefinition activityDefinition = this.getDao().read(theId);
 
         Resource result = null;
@@ -65,6 +64,18 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
 
             case "SupplyRequest":
                 result = resolveSupplyRequest(activityDefinition, practitionerId, organizationId);
+                break;
+
+            case "Procedure":
+                result = resolveProcedure(activityDefinition, patientId);
+                break;
+
+            case "DiagnosticReport":
+                result = resolveDiagnosticReport(activityDefinition, patientId);
+                break;
+
+            case "Communication":
+                result = resolveCommunication(activityDefinition, patientId);
                 break;
         }
 
@@ -220,6 +231,88 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
         }
 
         return supplyRequest;
+    }
+
+    private Procedure resolveProcedure(ActivityDefinition activityDefinition, String patientId) {
+        Procedure procedure = new Procedure();
+
+        // TODO - set the appropriate status
+        procedure.setStatus(Procedure.ProcedureStatus.UNKNOWN);
+        procedure.setSubject(new Reference(patientId));
+
+        if (activityDefinition.hasCode()) {
+            procedure.setCode(activityDefinition.getCode());
+        }
+
+        if (activityDefinition.hasBodySite()) {
+            procedure.setBodySite(activityDefinition.getBodySite());
+        }
+
+        return procedure;
+    }
+
+    private DiagnosticReport resolveDiagnosticReport(ActivityDefinition activityDefinition, String patientId) {
+        DiagnosticReport diagnosticReport = new DiagnosticReport();
+
+        diagnosticReport.setStatus(DiagnosticReport.DiagnosticReportStatus.UNKNOWN);
+        diagnosticReport.setSubject(new Reference(patientId));
+
+        if (activityDefinition.hasCode()) {
+            diagnosticReport.setCode(activityDefinition.getCode());
+        }
+
+        else {
+            throw new ActivityDefinitionApplyException("Missing required ActivityDefinition.code property for DiagnosticReport");
+        }
+
+        if (activityDefinition.hasRelatedArtifact()) {
+            List<Attachment> presentedFormAttachments = new ArrayList<>();
+            for (RelatedArtifact artifact : activityDefinition.getRelatedArtifact()) {
+                Attachment attachment = new Attachment();
+
+                if (artifact.hasUrl()) {
+                    attachment.setUrl(artifact.getUrl());
+                }
+
+                if (artifact.hasDisplay()) {
+                    attachment.setTitle(artifact.getDisplay());
+                }
+                presentedFormAttachments.add(attachment);
+            }
+            diagnosticReport.setPresentedForm(presentedFormAttachments);
+        }
+
+        return diagnosticReport;
+    }
+
+    private Communication resolveCommunication(ActivityDefinition activityDefinition, String patientId) {
+        Communication communication = new Communication();
+
+        communication.setStatus(Communication.CommunicationStatus.UNKNOWN);
+        communication.setSubject(new Reference(patientId));
+
+        if (activityDefinition.hasCode()) {
+            communication.setReasonCode(Collections.singletonList(activityDefinition.getCode()));
+        }
+
+        if (activityDefinition.hasRelatedArtifact()) {
+            for (RelatedArtifact artifact : activityDefinition.getRelatedArtifact()) {
+                if (artifact.hasUrl()) {
+                    Attachment attachment = new Attachment().setUrl(artifact.getUrl());
+                    if (artifact.hasDisplay()) {
+                        attachment.setTitle(artifact.getDisplay());
+                    }
+
+                    Communication.CommunicationPayloadComponent payload = new Communication.CommunicationPayloadComponent();
+                    payload.setContent(artifact.hasDisplay() ? attachment.setTitle(artifact.getDisplay()) : attachment);
+                    communication.setPayload(Collections.singletonList(payload));
+                }
+
+                // TODO - other relatedArtifact types
+            }
+        }
+
+        return communication;
     }
 
     @Search(allowUnknownParams=true)

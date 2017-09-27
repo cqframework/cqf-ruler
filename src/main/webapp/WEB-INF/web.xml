@@ -71,7 +71,7 @@
 
 	<servlet-mapping>
 		<servlet-name>cdsServicesServlet</servlet-name>
-		<url-pattern>/cds-services/cdc-opioid-guidance</url-pattern>
+		<url-pattern>/cds-services/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>

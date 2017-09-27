@@ -27,7 +27,7 @@ public class CdsServicesServlet extends BaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String service = request.getServletPath().replace("/cds-services/", "");
+        String service = request.getPathInfo().replace("/", "");
 
         // validate that we are dealing with JSON
         if (!request.getContentType().equals("application/json")) {
@@ -74,9 +74,7 @@ public class CdsServicesServlet extends BaseServlet {
                     break;
 
                 case "patient-view":
-
-                    // TODO
-
+                    processor = new PatientViewProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"));
                     break;
             }
         }

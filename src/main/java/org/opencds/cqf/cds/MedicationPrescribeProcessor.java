@@ -73,7 +73,8 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
 
     @Override
     public List<CdsCard> process() {
-        Library library = getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("OpioidCdsStu3").withVersion("0.1.0"));
+        // TODO - need a better way to determine library id
+        Library library = getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("medication-prescribe"));
 
         // TODO - make it so user can set this.
         BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
