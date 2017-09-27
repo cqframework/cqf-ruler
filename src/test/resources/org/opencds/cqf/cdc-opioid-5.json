@@ -1,10 +1,6 @@
 {
   "resourceType": "PlanDefinition",
-  "id": "cdc-opioid-05",
-  "meta": {
-    "versionId": "1",
-    "lastUpdated": "2017-07-17T16:34:10.814+00:00"
-  },
+  "id": "cdc-opioid-guidance",
   "text": {
     "status": "generated",
     "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">CDC Opioid Prescribing Guideline Recommendation #5</div>"
@@ -13,7 +9,7 @@
   "identifier": [
     {
       "use": "official",
-      "value": "cdc-opioid-05"
+      "value": "cdc-opioid-guidance"
     }
   ],
   "version": "0.1.0",
@@ -49,6 +45,11 @@
       "type": "documentation",
       "display": "MME Conversion Tables",
       "url": "https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf"
+    }
+  ],
+  "library": [
+    {
+      "reference": "Library/OpioidCdsStu3"
     }
   ],
   "action": [
@@ -123,7 +124,7 @@
           "kind": "applicability",
           "description": "Is total MME >= 50?",
           "language": "text/cql",
-          "expression": "Results"
+          "expression": "IsMME50OrMore"
         }
       ],
       "groupingBehavior": "visual-group",

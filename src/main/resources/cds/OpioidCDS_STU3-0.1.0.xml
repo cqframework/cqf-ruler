@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <library xmlns="urn:hl7-org:elm:r1" xmlns:t="urn:hl7-org:elm-types:r1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:fhir="http://hl7.org/fhir" xmlns:a="urn:hl7-org:cql-annotations:r1">
-    <identifier id="OpioidCDS_STU3" version="0.1.0"/>
+    <identifier id="OpioidCdsStu3" version="0.1.0"/>
     <schemaIdentifier id="urn:hl7-org:elm" version="r1"/>
     <usings>
         <def localIdentifier="System" uri="urn:hl7-org:elm-types:r1"/>
@@ -96,7 +96,7 @@
                     <expression name="ToCode" xsi:type="FunctionRef">
                         <operand xsi:type="Indexer">
                             <operand path="coding" xsi:type="Property">
-                                <source path="medicationCodeableConcept" scope="O" xsi:type="Property"/>
+                                <source path="medication" scope="O" xsi:type="Property"/>
                             </operand>
                             <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
                         </operand>
@@ -154,51 +154,67 @@
                 </let>
                 <let identifier="doseDescription">
                     <expression xsi:type="Coalesce">
-                        <operand xsi:type="ToString">
-                            <operand name="ToQuantity" xsi:type="FunctionRef">
-                                <operand path="doseQuantity" xsi:type="Property">
-                                    <source name="dosageInstruction" xsi:type="QueryLetRef"/>
-                                </operand>
-                            </operand>
-                        </operand>
-                        <operand xsi:type="Add">
-                            <operand xsi:type="Add">
-                                <operand xsi:type="Add">
-                                    <operand xsi:type="ToString">
-                                        <operand name="ToQuantity" xsi:type="FunctionRef">
-                                            <operand path="low" xsi:type="Property">
-                                                <source path="doseRange" xsi:type="Property">
-                                                    <source name="dosageInstruction" xsi:type="QueryLetRef"/>
-                                                </source>
+                        <operand xsi:type="ToList">
+                            <operand xsi:type="If">
+                                <condition asType="t:Boolean" xsi:type="As">
+                                    <operand xsi:type="Is">
+                                        <operand path="dose" xsi:type="Property">
+                                            <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                        </operand>
+                                        <isTypeSpecifier name="fhir:Range" xsi:type="NamedTypeSpecifier"/>
+                                    </operand>
+                                    <asTypeSpecifier name="t:Boolean" xsi:type="NamedTypeSpecifier"/>
+                                </condition>
+                                <then xsi:type="Concatenate">
+                                    <operand xsi:type="Concatenate">
+                                        <operand xsi:type="Concatenate">
+                                            <operand xsi:type="ToString">
+                                                <operand name="ToQuantity" xsi:type="FunctionRef">
+                                                    <operand path="low" xsi:type="Property">
+                                                        <source path="dose" xsi:type="Property">
+                                                            <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                                        </source>
+                                                    </operand>
+                                                </operand>
+                                            </operand>
+                                            <operand valueType="t:String" value="-" xsi:type="Literal"/>
+                                        </operand>
+                                        <operand xsi:type="ToString">
+                                            <operand name="ToQuantity" xsi:type="FunctionRef">
+                                                <operand path="high" xsi:type="Property">
+                                                    <source path="dose" xsi:type="Property">
+                                                        <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                                    </source>
+                                                </operand>
                                             </operand>
                                         </operand>
                                     </operand>
-                                    <operand valueType="t:String" value="-" xsi:type="Literal"/>
-                                </operand>
-                                <operand xsi:type="ToString">
-                                    <operand name="ToQuantity" xsi:type="FunctionRef">
-                                        <operand path="high" xsi:type="Property">
-                                            <source path="doseRange" xsi:type="Property">
-                                                <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                    <operand path="value" xsi:type="Property">
+                                        <source path="unit" xsi:type="Property">
+                                            <source path="high" xsi:type="Property">
+                                                <source path="dose" xsi:type="Property">
+                                                    <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                                </source>
                                             </source>
+                                        </source>
+                                    </operand>
+                                </then>
+                                <else xsi:type="ToString">
+                                    <operand name="ToQuantity" xsi:type="FunctionRef">
+                                        <operand asType="fhir:Quantity" xsi:type="As">
+                                            <operand path="dose" xsi:type="Property">
+                                                <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                            </operand>
+                                            <asTypeSpecifier name="fhir:Quantity" xsi:type="NamedTypeSpecifier"/>
                                         </operand>
                                     </operand>
-                                </operand>
-                            </operand>
-                            <operand path="value" xsi:type="Property">
-                                <source path="unit" xsi:type="Property">
-                                    <source path="high" xsi:type="Property">
-                                        <source path="doseRange" xsi:type="Property">
-                                            <source name="dosageInstruction" xsi:type="QueryLetRef"/>
-                                        </source>
-                                    </source>
-                                </source>
+                                </else>
                             </operand>
                         </operand>
                     </expression>
                 </let>
                 <let identifier="frequencyDescription">
-                    <expression xsi:type="Add">
+                    <expression xsi:type="Concatenate">
                         <operand xsi:type="ToString">
                             <operand path="value" xsi:type="Property">
                                 <source path="frequency" xsi:type="Property">
@@ -211,7 +227,7 @@
                             </operand>
                         </operand>
                         <operand xsi:type="Coalesce">
-                            <operand xsi:type="Add">
+                            <operand xsi:type="Concatenate">
                                 <operand valueType="t:String" value="-" xsi:type="Literal"/>
                                 <operand xsi:type="ToString">
                                     <operand path="value" xsi:type="Property">
@@ -244,22 +260,25 @@
                         </element>
                         <element name="isPRN">
                             <value path="value" xsi:type="Property">
-                                <source path="asNeededBoolean" xsi:type="Property">
+                                <source path="asNeeded" xsi:type="Property">
                                     <source name="dosageInstruction" xsi:type="QueryLetRef"/>
                                 </source>
                             </value>
                         </element>
                         <element name="prescription">
                             <value xsi:type="If">
-                                <condition xsi:type="Not">
-                                    <operand xsi:type="IsNull">
-                                        <operand path="text" xsi:type="Property">
-                                            <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                <condition asType="t:Boolean" xsi:type="As">
+                                    <operand xsi:type="Not">
+                                        <operand xsi:type="IsNull">
+                                            <operand path="text" xsi:type="Property">
+                                                <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                            </operand>
                                         </operand>
                                     </operand>
+                                    <asTypeSpecifier name="t:Boolean" xsi:type="NamedTypeSpecifier"/>
                                 </condition>
-                                <then xsi:type="Add">
-                                    <operand xsi:type="Add">
+                                <then xsi:type="Concatenate">
+                                    <operand xsi:type="Concatenate">
                                         <operand name="medicationName" xsi:type="QueryLetRef"/>
                                         <operand valueType="t:String" value=" " xsi:type="Literal"/>
                                     </operand>
@@ -269,11 +288,11 @@
                                         </source>
                                     </operand>
                                 </then>
-                                <else xsi:type="Add">
-                                    <operand xsi:type="Add">
-                                        <operand xsi:type="Add">
-                                            <operand xsi:type="Add">
-                                                <operand xsi:type="Add">
+                                <else xsi:type="Concatenate">
+                                    <operand xsi:type="Concatenate">
+                                        <operand xsi:type="Concatenate">
+                                            <operand xsi:type="Concatenate">
+                                                <operand xsi:type="Concatenate">
                                                     <operand name="medicationName" xsi:type="QueryLetRef"/>
                                                     <operand valueType="t:String" value=" " xsi:type="Literal"/>
                                                 </operand>
@@ -284,10 +303,13 @@
                                         <operand name="frequencyDescription" xsi:type="QueryLetRef"/>
                                     </operand>
                                     <operand xsi:type="If">
-                                        <condition path="value" xsi:type="Property">
-                                            <source path="asNeededBoolean" xsi:type="Property">
-                                                <source name="dosageInstruction" xsi:type="QueryLetRef"/>
-                                            </source>
+                                        <condition asType="t:Boolean" xsi:type="As">
+                                            <operand path="value" xsi:type="Property">
+                                                <source path="asNeeded" xsi:type="Property">
+                                                    <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                                </source>
+                                            </operand>
+                                            <asTypeSpecifier name="t:Boolean" xsi:type="NamedTypeSpecifier"/>
                                         </condition>
                                         <then valueType="t:String" value=" PRN" xsi:type="Literal"/>
                                         <else valueType="t:String" value="" xsi:type="Literal"/>
@@ -296,17 +318,31 @@
                             </value>
                         </element>
                         <element name="dose">
-                            <value name="ToQuantity" xsi:type="FunctionRef">
-                                <operand xsi:type="Coalesce">
-                                    <operand path="doseQuantity" xsi:type="Property">
-                                        <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                            <value xsi:type="If">
+                                <condition asType="t:Boolean" xsi:type="As">
+                                    <operand xsi:type="Is">
+                                        <operand path="dose" xsi:type="Property">
+                                            <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                        </operand>
+                                        <isTypeSpecifier name="fhir:Range" xsi:type="NamedTypeSpecifier"/>
                                     </operand>
+                                    <asTypeSpecifier name="t:Boolean" xsi:type="NamedTypeSpecifier"/>
+                                </condition>
+                                <then name="ToQuantity" xsi:type="FunctionRef">
                                     <operand path="high" xsi:type="Property">
-                                        <source path="doseRange" xsi:type="Property">
+                                        <source path="dose" xsi:type="Property">
                                             <source name="dosageInstruction" xsi:type="QueryLetRef"/>
                                         </source>
                                     </operand>
-                                </operand>
+                                </then>
+                                <else name="ToQuantity" xsi:type="FunctionRef">
+                                    <operand asType="fhir:Quantity" xsi:type="As">
+                                        <operand path="dose" xsi:type="Property">
+                                            <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                        </operand>
+                                        <asTypeSpecifier name="fhir:Quantity" xsi:type="NamedTypeSpecifier"/>
+                                    </operand>
+                                </else>
                             </value>
                         </element>
                         <element name="dosesPerDay">
@@ -380,7 +416,10 @@
                 <sort>
                     <by direction="asc" xsi:type="ByExpression">
                         <expression xsi:type="If">
-                            <condition name="isDraft" xsi:type="IdentifierRef"/>
+                            <condition asType="t:Boolean" xsi:type="As">
+                                <operand name="isDraft" xsi:type="IdentifierRef"/>
+                                <asTypeSpecifier name="t:Boolean" xsi:type="NamedTypeSpecifier"/>
+                            </condition>
                             <then valueType="t:Integer" value="0" xsi:type="Literal"/>
                             <else valueType="t:Integer" value="1" xsi:type="Literal"/>
                         </expression>
@@ -432,8 +471,11 @@
                         </element>
                         <element name="title">
                             <value xsi:type="If">
-                                <condition name="M" xsi:type="AliasRef"/>
-                                <then xsi:type="Add">
+                                <condition asType="t:Boolean" xsi:type="As">
+                                    <operand name="M" xsi:type="AliasRef"/>
+                                    <asTypeSpecifier name="t:Boolean" xsi:type="NamedTypeSpecifier"/>
+                                </condition>
+                                <then xsi:type="Concatenate">
                                     <operand valueType="t:String" value="High risk for opioid overdose - " xsi:type="Literal"/>
                                     <operand xsi:type="Case">
                                         <caseItem>
@@ -455,9 +497,12 @@
                         </element>
                         <element name="description">
                             <value xsi:type="If">
-                                <condition name="M" xsi:type="AliasRef"/>
-                                <then xsi:type="Add">
-                                    <operand xsi:type="Add">
+                                <condition asType="t:Boolean" xsi:type="As">
+                                    <operand name="M" xsi:type="AliasRef"/>
+                                    <asTypeSpecifier name="t:Boolean" xsi:type="NamedTypeSpecifier"/>
+                                </condition>
+                                <then xsi:type="Concatenate">
+                                    <operand xsi:type="Concatenate">
                                         <operand valueType="t:String" value="Total morphine milligram equivalent (MME) is " xsi:type="Literal"/>
                                         <operand xsi:type="ToString">
                                             <operand name="TotalMME" xsi:type="ExpressionRef"/>
@@ -465,8 +510,8 @@
                                     </operand>
                                     <operand valueType="t:String" value=". Taper to less than 50." xsi:type="Literal"/>
                                 </then>
-                                <else xsi:type="Add">
-                                    <operand xsi:type="Add">
+                                <else xsi:type="Concatenate">
+                                    <operand xsi:type="Concatenate">
                                         <operand valueType="t:String" value="Total morphine milligram equivalent (MME) is " xsi:type="Literal"/>
                                         <operand xsi:type="ToString">
                                             <operand name="TotalMME" xsi:type="ExpressionRef"/>

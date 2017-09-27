@@ -3,60 +3,58 @@
   "fhirServer" : "http://fhirtest.uhn.ca/baseDstu2",
   "hook" : "medication-prescribe",
   "user" : "Practitioner/example",
-  "context" : [
-    {
-      "resourceType": "MedicationOrder",
-      "id": "medrx001",
-      "dateWritten": "2017-05-05",
-      "status": "draft",
-      "patient": {
-        "reference": "Patient/Patient-12214"
-      },
-      "medicationCodeableConcept": {
-        "coding": [
-          {
-            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
-            "code": "197696"
-          }
-        ]
-      },
-      "dosageInstruction": [
+  "context" : {
+    "resourceType": "MedicationOrder",
+    "id": "medrx001",
+    "dateWritten": "2017-05-05",
+    "status": "draft",
+    "patient": {
+      "reference": "Patient/Patient-12214"
+    },
+    "medicationCodeableConcept": {
+      "coding": [
         {
-          "text": "Take 40mg three times daily",
-          "timing": {
-            "repeat": {
-              "frequency": 3,
-              "frequencyMax": 3,
-              "period": 1,
-              "unit": "d"
-            }
-          },
-          "asNeededBoolean": false,
-          "doseQuantity": {
-            "value": 40,
-            "unit": "mg",
-            "system": "http://unitsofmeasure.org",
-            "code": "mg"
-          }
+          "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+          "code": "197696"
         }
-      ],
-      "dispenseRequest": {
-        "quantity": {
-          "value": 3000,
+      ]
+    },
+    "dosageInstruction": [
+      {
+        "text": "Take 40mg three times daily",
+        "timing": {
+          "repeat": {
+            "frequency": 3,
+            "frequencyMax": 3,
+            "period": 1,
+            "unit": "d"
+          }
+        },
+        "asNeededBoolean": false,
+        "doseQuantity": {
+          "value": 40,
           "unit": "mg",
           "system": "http://unitsofmeasure.org",
           "code": "mg"
         }
       }
+    ],
+    "dispenseRequest": {
+      "quantity": {
+        "value": 3000,
+        "unit": "mg",
+        "system": "http://unitsofmeasure.org",
+        "code": "mg"
+      }
     }
-  ],
+  },
   "patient": "Patient/Patient-12214",
   "prefetch": {
     "medication": {
       "response": {
         "status": "200 OK"
       },
-      "resource": {
+      "resources": [{
         "resourceType": "MedicationOrder",
         "id": "medrx002",
         "dateWritten": "2017-04-25",
@@ -99,7 +97,7 @@
             "code": "mg"
           }
         }
-      }
+      }]
     }
   }
 }

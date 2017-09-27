@@ -33,8 +33,8 @@ context Patient
 
 define "Pregnancy Conditions":
   [Condition: "Pregnancy"] C
-    where C.clinicalStatus = 'active'
-      and C.verificationStatus = 'confirmed'
+    where C.clinicalStatus.value = 'active'
+      and C.verificationStatus.value = 'confirmed'
       // well, this is ugly....
       and Interval[C.onset as dateTime, C.abatement as dateTime] includes Today()
 
@@ -48,7 +48,7 @@ define "Zika Exposure Assessment":
 define "Zika Exposure Assessment Result":
   First(
     [Observation: "Zika Exposure Assessment"] O
-      where O.status = 'final'
+      where O.status.value = 'final'
     	and O."context".reference = "Current Encounter".id // TODO: fix
       sort by effective desc
   )
@@ -58,8 +58,8 @@ define "Has Zika Exposure Assessment":
 
 define "Zika Symptoms":
   [Condition: "Zika Virus Signs and Symptoms"] C
-    where C.clinicalStatus = 'active'
-      and C.verificationStatus = 'confirmed'
+    where C.clinicalStatus.value = 'active'
+      and C.verificationStatus.value = 'confirmed'
       and C."context".reference = "Current Encounter".id // TODO: fix
 
 define "Has Zika Symptoms":
