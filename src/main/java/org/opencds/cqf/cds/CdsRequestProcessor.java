@@ -10,7 +10,7 @@ import org.opencds.cqf.cql.execution.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CdsRequestProcessor implements Processor {
+public abstract class CdsRequestProcessor {
     CdsHooksRequest request;
     PlanDefinition planDefinition;
     LibraryResourceProvider libraryResourceProvider;
@@ -20,6 +20,8 @@ public abstract class CdsRequestProcessor implements Processor {
         this.planDefinition = planDefinition;
         this.libraryResourceProvider = libraryResourceProvider;
     }
+
+    public abstract List<CdsCard> process();
 
     List<CdsCard> resolveActions(Context executionContext) {
         List<CdsCard> cards = new ArrayList<>();

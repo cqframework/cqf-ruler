@@ -9,6 +9,7 @@ import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.helpers.LibraryHelper;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
@@ -17,10 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.opencds.cqf.helpers.LibraryHelper.errorsToString;
-import static org.opencds.cqf.helpers.LibraryHelper.readLibrary;
-import static org.opencds.cqf.helpers.LibraryHelper.translateLibrary;
-
 /**
  * Created by Christopher on 1/11/2017.
  */
@@ -28,6 +25,7 @@ public class STU3LibraryLoader implements LibraryLoader {
 
 //    private ModelManager modelManager;
     private LibraryManager libraryManager;
+    private LibraryHelper libraryHelper;
     private ModelManager modelManager;
     private LibraryResourceProvider provider;
     private Map<String, Library> libraries = new HashMap<>();
@@ -39,6 +37,7 @@ public class STU3LibraryLoader implements LibraryLoader {
     public STU3LibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager, ModelManager modelManager) {
 //        this.modelManager = modelManager;
         this.libraryManager = libraryManager;
+        this.libraryHelper = new LibraryHelper();
         this.modelManager = modelManager;
         this.provider = provider;
     }
@@ -72,10 +71,10 @@ public class STU3LibraryLoader implements LibraryLoader {
 
         for (org.hl7.fhir.dstu3.model.Attachment content : library.getContent()) {
             if (content.getContentType().equals("application/elm+xml")) {
-                return readLibrary(new ByteArrayInputStream(content.getData()));
+                return libraryHelper.readLibrary(new ByteArrayInputStream(content.getData()));
             }
             else if (content.getContentType().equals("text/cql")) {
-                return translateLibrary(new ByteArrayInputStream(content.getData()), libraryManager, modelManager);
+                return libraryHelper.translateLibrary(new ByteArrayInputStream(content.getData()), libraryManager, modelManager);
             }
         }
 
@@ -88,11 +87,11 @@ public class STU3LibraryLoader implements LibraryLoader {
         org.hl7.elm.r1.Library translatedLibrary = libraryManager.resolveLibrary(identifier, errors).getLibrary();
 
         if (errors.size() > 0) {
-            throw new IllegalArgumentException(errorsToString(errors));
+            throw new IllegalArgumentException(libraryHelper.errorsToString(errors));
         }
 
         try {
-            return readLibrary(new ByteArrayInputStream(CqlTranslator.convertToXML(translatedLibrary).getBytes(StandardCharsets.UTF_8)));
+            return libraryHelper.readLibrary(new ByteArrayInputStream(CqlTranslator.convertToXML(translatedLibrary).getBytes(StandardCharsets.UTF_8)));
         } catch (JAXBException e) {
             throw new IllegalArgumentException(String.format("Errors occurred translating library %s%s.",
                     identifier.getId(), identifier.getVersion() != null ? ("-" + identifier.getVersion()) : ""));
