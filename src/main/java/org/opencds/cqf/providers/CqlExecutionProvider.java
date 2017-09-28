@@ -11,6 +11,7 @@ import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.helpers.LibraryHelper;
 
+import javax.xml.bind.JAXBException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,9 +21,11 @@ import java.util.List;
  */
 public class CqlExecutionProvider {
     private JpaDataProvider provider;
+    private LibraryHelper libraryHelper;
 
     public CqlExecutionProvider(Collection<IResourceProvider> providers) {
         this.provider = new JpaDataProvider(providers);
+        this.libraryHelper = new LibraryHelper();
     }
 
     private ModelManager modelManager;
@@ -134,7 +137,7 @@ public class CqlExecutionProvider {
 //        String source = String.format("library LocalLibrary using FHIR version '1.8' include FHIRHelpers version '1.8' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
 //                buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
 
-        org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source, getLibraryManager(), getModelManager());
+        org.cqframework.cql.elm.execution.Library library = libraryHelper.translateLibrary(source, getLibraryManager(), getModelManager());
         Context context = new Context(library);
         context.setParameter(null, instance.fhirType(), instance);
         context.setParameter(null, "%context", instance);

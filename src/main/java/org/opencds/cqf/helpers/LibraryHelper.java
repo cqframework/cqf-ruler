@@ -9,27 +9,38 @@ import org.cqframework.cql.elm.tracking.TrackBack;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Christopher on 1/11/2017.
  */
 public class LibraryHelper {
 
-    public static Library readLibrary(InputStream xmlStream) {
+    private Unmarshaller unmarshaller;
+
+    public LibraryHelper() {
         try {
-            return CqlLibraryReader.read(xmlStream);
-        } catch (IOException | JAXBException e) {
-            throw new IllegalArgumentException("Error encountered while reading ELM xml: " + e.getMessage());
+            this.unmarshaller = CqlLibraryReader.getUnmarshaller();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error creating Unmarshaller - " + e.getMessage());
         }
     }
 
-    public static String errorsToString(Iterable<CqlTranslatorException> exceptions) {
+    public Library readLibrary(InputStream xmlStream) {
+        try {
+            return CqlLibraryReader.read(unmarshaller, xmlStream);
+        } catch (IOException | JAXBException e) {
+            throw new RuntimeException("Error encountered while reading ELM xml: " + e.getMessage());
+        }
+    }
+
+    public String errorsToString(Iterable<CqlTranslatorException> exceptions) {
         ArrayList<String> errors = new ArrayList<>();
         for (CqlTranslatorException error : exceptions) {
             TrackBack tb = error.getLocator();
@@ -43,11 +54,11 @@ public class LibraryHelper {
         return errors.toString();
     }
 
-    public static CqlTranslator getTranslator(String cql, LibraryManager libraryManager, ModelManager modelManager) {
+    public CqlTranslator getTranslator(String cql, LibraryManager libraryManager, ModelManager modelManager) {
         return getTranslator(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), libraryManager, modelManager);
     }
 
-    public static CqlTranslator getTranslator(InputStream cqlStream, LibraryManager libraryManager, ModelManager modelManager) {
+    public CqlTranslator getTranslator(InputStream cqlStream, LibraryManager libraryManager, ModelManager modelManager) {
         ArrayList<CqlTranslator.Options> options = new ArrayList<>();
         options.add(CqlTranslator.Options.EnableDateRangeOptimization);
         options.add(CqlTranslator.Options.EnableAnnotations);
@@ -57,26 +68,26 @@ public class LibraryHelper {
             translator = CqlTranslator.fromStream(cqlStream, modelManager, libraryManager,
                     options.toArray(new CqlTranslator.Options[options.size()]));
         } catch (IOException e) {
-            throw new IllegalArgumentException(String.format("Errors occurred translating library: %s", e.getMessage()));
+            throw new RuntimeException(String.format("Errors occurred translating library: %s", e.getMessage()));
         }
 
         if (translator.getErrors().size() > 0) {
-            throw new IllegalArgumentException(errorsToString(translator.getErrors()));
+            throw new RuntimeException(errorsToString(translator.getErrors()));
         }
 
         return translator;
     }
 
-    public static Library translateLibrary(String cql, LibraryManager libraryManager, ModelManager modelManager) {
+    public Library translateLibrary(String cql, LibraryManager libraryManager, ModelManager modelManager) {
         return translateLibrary(new ByteArrayInputStream(cql.getBytes(StandardCharsets.UTF_8)), libraryManager, modelManager);
     }
 
-    public static Library translateLibrary(InputStream cqlStream, LibraryManager libraryManager, ModelManager modelManager) {
+    public Library translateLibrary(InputStream cqlStream, LibraryManager libraryManager, ModelManager modelManager) {
         CqlTranslator translator = getTranslator(cqlStream, libraryManager, modelManager);
         return readLibrary(new ByteArrayInputStream(translator.toXml().getBytes(StandardCharsets.UTF_8)));
     }
 
-    public static Library translateLibrary(CqlTranslator translator) {
+    public Library translateLibrary(CqlTranslator translator) {
         return readLibrary(new ByteArrayInputStream(translator.toXml().getBytes(StandardCharsets.UTF_8)));
     }
 }
