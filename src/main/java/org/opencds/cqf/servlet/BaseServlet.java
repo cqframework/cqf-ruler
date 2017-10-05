@@ -11,7 +11,7 @@ import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
-import ca.uhn.fhir.rest.server.EncodingEnum;
+import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;

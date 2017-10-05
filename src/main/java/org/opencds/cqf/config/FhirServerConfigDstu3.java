@@ -30,9 +30,9 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     @Bean()
     public DaoConfig daoConfig() {
         DaoConfig retVal = new DaoConfig();
-        retVal.setSubscriptionEnabled(true);
-        retVal.setSubscriptionPollDelay(5000);
-        retVal.setSubscriptionPurgeInactiveAfterMillis(DateUtils.MILLIS_PER_HOUR);
+//        retVal.setSubscriptionEnabled(true);
+//        retVal.setSubscriptionPollDelay(5000);
+//        retVal.setSubscriptionPurgeInactiveAfterMillis(DateUtils.MILLIS_PER_HOUR);
         retVal.setAllowMultipleDelete(true);
         return retVal;
     }
@@ -40,10 +40,10 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     @Bean(destroyMethod = "close")
     public DataSource dataSource() {
         BasicDataSource retVal = new BasicDataSource();
-        retVal.setDriver(new org.apache.derby.jdbc.EmbeddedDriver());
-        retVal.setUrl("jdbc:derby:directory:target/jpaserver_derby_files;create=true");
-        retVal.setUsername("");
-        retVal.setPassword("");
+        retVal.setDriver(new org.postgresql.Driver());
+        retVal.setUrl("jdbc:postgresql://localhost:5432/fhir");
+        retVal.setUsername("hapi");
+        retVal.setPassword("hapi");
         return retVal;
     }
 
@@ -60,7 +60,7 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
 
     private Properties jpaProperties() {
         Properties extraProperties = new Properties();
-        extraProperties.put("hibernate.dialect", org.hibernate.dialect.DerbyTenSevenDialect.class.getName());
+        extraProperties.put("hibernate.dialect", org.hibernate.dialect.PostgreSQL94Dialect.class.getName());
         extraProperties.put("hibernate.format_sql", "true");
         extraProperties.put("hibernate.show_sql", "false");
         extraProperties.put("hibernate.hbm2ddl.auto", "update");
