@@ -1,5 +1,6 @@
 package org.opencds.cqf.config;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
@@ -12,6 +13,8 @@ import org.opencds.cqf.cql.execution.LibraryLoader;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +29,6 @@ import static org.opencds.cqf.helpers.LibraryHelper.translateLibrary;
  */
 public class STU3LibraryLoader implements LibraryLoader {
 
-//    private ModelManager modelManager;
     private LibraryManager libraryManager;
     private ModelManager modelManager;
     private LibraryResourceProvider provider;
@@ -37,7 +39,6 @@ public class STU3LibraryLoader implements LibraryLoader {
     }
 
     public STU3LibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager, ModelManager modelManager) {
-//        this.modelManager = modelManager;
         this.libraryManager = libraryManager;
         this.modelManager = modelManager;
         this.provider = provider;
@@ -70,12 +71,14 @@ public class STU3LibraryLoader implements LibraryLoader {
         IdType id = new IdType(libraryIdentifier.getId());
         org.hl7.fhir.dstu3.model.Library library = provider.getDao().read(id);
 
+        InputStream is = null;
         for (org.hl7.fhir.dstu3.model.Attachment content : library.getContent()) {
+            is = new ByteArrayInputStream(content.getData());
             if (content.getContentType().equals("application/elm+xml")) {
-                return readLibrary(new ByteArrayInputStream(content.getData()));
+                return readLibrary(is);
             }
             else if (content.getContentType().equals("text/cql")) {
-                return translateLibrary(new ByteArrayInputStream(content.getData()), libraryManager, modelManager);
+                return translateLibrary(is, libraryManager, modelManager);
             }
         }
 
@@ -92,8 +95,8 @@ public class STU3LibraryLoader implements LibraryLoader {
         }
 
         try {
-            return readLibrary(new ByteArrayInputStream(CqlTranslator.convertToXML(translatedLibrary).getBytes(StandardCharsets.UTF_8)));
-        } catch (JAXBException e) {
+            return readLibrary(new ByteArrayInputStream(CqlTranslator.fromStream(is == null ? new ByteArrayInputStream(new byte[]{}) : is, modelManager, libraryManager).convertToXml(translatedLibrary).getBytes(StandardCharsets.UTF_8)));
+        } catch (JAXBException | IOException e) {
             throw new IllegalArgumentException(String.format("Errors occurred translating library %s%s.",
                     identifier.getId(), identifier.getVersion() != null ? ("-" + identifier.getVersion()) : ""));
         }
