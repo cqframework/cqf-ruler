@@ -14,6 +14,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opencds.cqf.helpers.XlsxToValueSet;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -83,7 +84,7 @@ public class RulerTestBase {
     }
 
     // this test requires the OpioidManagementTerminologyKnowledge.db file to be located in the src/main/resources/cds folder
-    //@Test
+    @Test
     public void CdcOpioidGuidanceTest() throws IOException {
         putResource("cdc-opioid-guidance-library-omtk.json", "OMTKLogic");
         putResource("cdc-opioid-guidance-library-primary.json", "OpioidCdsStu3");
@@ -113,24 +114,8 @@ public class RulerTestBase {
             }
         }
 
-        // TODO - fix this - shouldn't have 4 of the same card
         String expected = "{\n" +
                 "  \"cards\": [\n" +
-                "    {\n" +
-                "      \"summary\": \"High risk for opioid overdose - taper now\",\n" +
-                "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"Total morphine milligram equivalent (MME) is 20200.700mg/d. Taper to less than 50.\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"summary\": \"High risk for opioid overdose - taper now\",\n" +
-                "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"Total morphine milligram equivalent (MME) is 20200.700mg/d. Taper to less than 50.\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"summary\": \"High risk for opioid overdose - taper now\",\n" +
-                "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"Total morphine milligram equivalent (MME) is 20200.700mg/d. Taper to less than 50.\"\n" +
-                "    },\n" +
                 "    {\n" +
                 "      \"summary\": \"High risk for opioid overdose - taper now\",\n" +
                 "      \"indicator\": \"warning\",\n" +

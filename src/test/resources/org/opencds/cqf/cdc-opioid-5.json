@@ -138,43 +138,6 @@
           "description": "Dynamic description generation",
           "expression": "DynamicDescription"
         }
-      ],
-      "action": [
-        {
-          "fhir_comments": [
-            " Will reduce dosage "
-          ],
-          "description": "Will reduce dosage",
-          "_description": {
-            "fhir_comments": [
-              " Open Order Set, where available "
-            ]
-          }
-        },
-        {
-          "fhir_comments": [
-            " Risk of overdose carefully considered and outweighed by benefit; snooze 3 mo "
-          ],
-          "description": "Risk of overdose carefully considered and outweighed by benefit; snooze 3 mo"
-        },
-        {
-          "fhir_comments": [
-            " Acute pain; snooze 1 mo "
-          ],
-          "description": "Acute pain; snooze 1 mo"
-        },
-        {
-          "fhir_comments": [
-            " N/A - see comment (will be reviewed by medical director); snooze 3 mo "
-          ],
-          "description": "N/A - see comment (will be reviewed by medical director); snooze 3 mo",
-          "_description": {
-            "fhir_comments": [
-              " TODO: How do we indicate through the response that a comment must be captured? ",
-              " TODO: How do we communicate the response back to the CDS service for persistence? "
-            ]
-          }
-        }
       ]
     }
   ]

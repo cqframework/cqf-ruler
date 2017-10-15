@@ -307,7 +307,7 @@
                 </executions>
                 <configuration>
                     <executable>maven</executable>
-                    <mainClass>org.opencds.cqf.helpers.ValueSetFromXlsx</mainClass>
+                    <mainClass>org.opencds.cqf.helpers.XlsxToValueSet</mainClass>
                 </configuration>
             </plugin>
 
