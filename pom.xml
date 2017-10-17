@@ -308,6 +308,16 @@
                 <configuration>
                     <executable>maven</executable>
                     <mainClass>org.opencds.cqf.helpers.XlsxToValueSet</mainClass>
+                    <arguments>
+                        <argument>-b</argument>
+                        <argument>-o</argument>
+                        <argument>-s</argument>
+                        <argument>-v</argument>
+                        <argument>-c</argument>
+                        <argument>-d</argument>
+                        <argument>-u</argument>
+                        <argument>-outDir</argument>
+                    </arguments>
                 </configuration>
             </plugin>
 
