@@ -25,36 +25,36 @@ public class CdsHooksHelper {
         opioidGuidance.put("hook", "medication-prescribe");
         opioidGuidance.put("name", "Opioid Morphine Milligram Equivalence (MME) Guidance Service");
         opioidGuidance.put("description", "CDS Service that finds the MME of an opioid medication and provides guidance to the prescriber if the MME exceeds the recommended range.");
-        opioidGuidance.put("id", "opioid-mme-guidance");
+        opioidGuidance.put("id", "cdc-opioid-guidance");
 
         JSONObject prefetchContent = new JSONObject();
-        prefetchContent.put("medication", "MedicationRequest?patient={{Patient.id}}&status=active");
+        prefetchContent.put("medication", "MedicationOrder?patient={{Patient.id}}&status=active");
 
         opioidGuidance.put("prefetch", prefetchContent);
 
         jsonArray.add(opioidGuidance);
 
-        JSONObject medicationPrescribe = new JSONObject();
-        medicationPrescribe.put("hook", "medication-prescribe");
-        medicationPrescribe.put("name", "User-defined medication-prescribe service");
-        medicationPrescribe.put("description", "Enables user to define a CDS Hooks service using naming conventions");
-        medicationPrescribe.put("id", "user-medication-prescribe");
-
-        medicationPrescribe.put("prefetch", prefetchContent);
-
-        jsonArray.add(medicationPrescribe);
-
-        JSONObject patientView = new JSONObject();
-        patientView.put("hook", "patient-view");
-        patientView.put("name", "User-defined patient-view service");
-        patientView.put("description", "Enables user to define a CDS Hooks service using naming conventions");
-        patientView.put("id", "user-patient-view");
-
-        prefetchContent = new JSONObject();
-        prefetchContent.put("patient", "Patient/{{Patient.id}}");
-        patientView.put("prefetch", prefetchContent);
-
-        jsonArray.add(patientView);
+//        JSONObject medicationPrescribe = new JSONObject();
+//        medicationPrescribe.put("hook", "medication-prescribe");
+//        medicationPrescribe.put("name", "User-defined medication-prescribe service");
+//        medicationPrescribe.put("description", "Enables user to define a CDS Hooks service using naming conventions");
+//        medicationPrescribe.put("id", "user-medication-prescribe");
+//
+//        medicationPrescribe.put("prefetch", prefetchContent);
+//
+//        jsonArray.add(medicationPrescribe);
+//
+//        JSONObject patientView = new JSONObject();
+//        patientView.put("hook", "patient-view");
+//        patientView.put("name", "User-defined patient-view service");
+//        patientView.put("description", "Enables user to define a CDS Hooks service using naming conventions");
+//        patientView.put("id", "user-patient-view");
+//
+//        prefetchContent = new JSONObject();
+//        prefetchContent.put("patient", "Patient/{{Patient.id}}");
+//        patientView.put("prefetch", prefetchContent);
+//
+//        jsonArray.add(patientView);
 
         jsonResponse.put("services", jsonArray);
 

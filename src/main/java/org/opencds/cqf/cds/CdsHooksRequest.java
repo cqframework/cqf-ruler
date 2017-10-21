@@ -2,11 +2,10 @@ package org.opencds.cqf.cds;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import org.opencds.cqf.exceptions.MissingHookException;
 
+import java.io.IOException;
 import java.io.Reader;
 
 public class CdsHooksRequest {
@@ -27,9 +26,9 @@ public class CdsHooksRequest {
     private JsonObject context;
     private JsonObject prefetch;
 
-    public CdsHooksRequest(Reader cdsHooksRequest) {
+    public CdsHooksRequest(Reader cdsHooksRequest) throws IOException {
         JsonParser parser = new JsonParser();
-        this.requestJson = parser.parse(cdsHooksRequest).getAsJsonObject();
+        this.requestJson =  parser.parse(cdsHooksRequest).getAsJsonObject();
 
         this.hook = requestJson.getAsJsonPrimitive("hook").getAsString();
 
