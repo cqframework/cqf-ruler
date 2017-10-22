@@ -156,7 +156,7 @@ public class CdsServicesServlet extends BaseServlet {
         }
     }
 
-protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         if (!request.getRequestURL().toString().endsWith("cds-services")) {
             throw new ServletException("This servlet is not configured to handle GET requests.");

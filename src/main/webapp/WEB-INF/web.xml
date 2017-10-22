@@ -81,7 +81,7 @@
 		<init-param>
 			<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>
 			<param-name>cors.allowed.origins</param-name>
-			<param-value>*</param-value>
+			<param-value>http://sandbox.cds-hooks.org, *</param-value>
 		</init-param>
 		<init-param>
 			<description>A comma separated list of HTTP verbs, using which a CORS request can be made.</description>

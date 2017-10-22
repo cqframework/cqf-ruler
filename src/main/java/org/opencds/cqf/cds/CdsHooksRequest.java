@@ -23,7 +23,7 @@ public class CdsHooksRequest {
     private String userReference; // this is really a Reference (Resource/ID)
     private String patientId;
     private String encounterId;
-    private JsonObject context;
+    private JsonArray context;
     private JsonObject prefetch;
 
     public CdsHooksRequest(Reader cdsHooksRequest) throws IOException {
@@ -89,10 +89,10 @@ public class CdsHooksRequest {
         return encounterId;
     }
 
-    public JsonObject getContext() {
+    public JsonArray getContext() {
         if (context == null) {
-            JsonObject temp = requestJson.getAsJsonObject("context");
-            this.context = temp == null ? new JsonObject() : temp;
+            JsonArray temp = requestJson.getAsJsonArray("context");
+            this.context = temp == null ? new JsonArray() : temp;
         }
         return context;
     }

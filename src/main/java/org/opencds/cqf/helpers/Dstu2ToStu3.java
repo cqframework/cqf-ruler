@@ -28,7 +28,7 @@ public class Dstu2ToStu3 {
     }
 
     private static CodeableConcept convertToCodeableConcept(CodeableConceptDt conceptDt) {
-        CodeableConcept concept = new CodeableConcept().setText(conceptDt.getText());
+        CodeableConcept concept = new CodeableConcept().setText(conceptDt.getText() == null ? "" : conceptDt.getText());
         concept.setId(conceptDt.getElementSpecificId());
         List<Coding> codes = new ArrayList<>();
         for (CodingDt code : conceptDt.getCoding()) {
@@ -48,7 +48,7 @@ public class Dstu2ToStu3 {
         for (MedicationOrder.DosageInstruction dosageInstruction : instructions) {
             Dosage dosage = new Dosage();
             dosage.setText(dosageInstruction.getText());
-            dosage.setAsNeeded(new BooleanType(((BooleanDt) dosageInstruction.getAsNeeded()).getValue()));
+            dosage.setAsNeeded(dosageInstruction.getAsNeeded() == null ? new BooleanType(true) : new BooleanType(((BooleanDt) dosageInstruction.getAsNeeded()).getValue()));
 
 
             Integer frequency = dosageInstruction.getTiming().getRepeat().getFrequency();

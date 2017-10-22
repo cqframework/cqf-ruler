@@ -22,6 +22,8 @@ import javax.xml.bind.JAXB;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
@@ -92,6 +94,23 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
 //        executionContext.setEnableTraceLogging(true);
         executionContext.setParameter(null, "Orders", activePrescriptions);
 
-        return resolveActions(executionContext);
+        List<CdsCard> cards = resolveActions(executionContext);
+        if (cards.isEmpty()) {
+            cards.add(
+                    new CdsCard()
+                            .setSummary("Success")
+                            .setDetail("Prescription satisfies recommendation #5 of the cdc opioid guidance.")
+                            .setIndicator("info")
+                            .setLinks(
+                                    Collections.singletonList(
+                                            new CdsCard.Links()
+                                                    .setLabel("CDC Recommendations for prescribing opioids")
+                                                    .setUrl("https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420")
+                                    )
+                            )
+            );
+        }
+
+        return cards;
     }
 }
