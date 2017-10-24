@@ -11,6 +11,7 @@ import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 
 import java.util.List;
 
@@ -61,10 +62,13 @@ public class PatientViewProcessor extends CdsRequestProcessor {
 
         // TODO - make it so user can set this.
         BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
+        dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3"));
+        dstu3Provider.setExpandValueSets(true);
 
         Context executionContext = new Context(library);
         executionContext.registerLibraryLoader(getLibraryLoader());
         executionContext.registerDataProvider("http://hl7.org/fhir", dstu3Provider);
+        executionContext.registerTerminologyProvider(dstu3Provider.getTerminologyProvider());
         executionContext.setContextValue("Patient", request.getPatientId());
         executionContext.setExpressionCaching(true);
 //        executionContext.setEnableTraceLogging(true);

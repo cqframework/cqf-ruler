@@ -131,6 +131,11 @@ public class RulerTestBase {
     }
 
     @Test
+    public void ZikaVirusInterventionTest() {
+
+    }
+
+    @Test
     public void MeasureProcessingTest() {
         putResource("measure-processing-library.json", "col-logic");
         putResource("measure-processing-measure.json", "col");

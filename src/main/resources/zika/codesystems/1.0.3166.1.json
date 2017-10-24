@@ -1,0 +1,483 @@
+{
+  "resourceType": "CodeSystem",
+  "id": "1.0.3166.1",
+  "url": "urn:iso:std:iso:3166",
+  "version": "1997",
+  "status": "draft",
+  "content": "example",
+  "concept": [
+    {
+      "code": "VIR",
+      "display": "VIRGIN ISLANDS, U.S."
+    },
+    {
+      "code": "ASM",
+      "display": "AMERICAN SAMOA"
+    },
+    {
+      "code": "AIA",
+      "display": "ANGUILLA"
+    },
+    {
+      "code": "ATG",
+      "display": "ANTIGUA AND BARBUDA"
+    },
+    {
+      "code": "ARG",
+      "display": "ARGENTINA"
+    },
+    {
+      "code": "ABW",
+      "display": "ARUBA"
+    },
+    {
+      "code": "BHS",
+      "display": "BAHAMAS"
+    },
+    {
+      "code": "BRB",
+      "display": "BARBADOS"
+    },
+    {
+      "code": "BLZ",
+      "display": "BELIZE"
+    },
+    {
+      "code": "BOL",
+      "display": "BOLIVIA"
+    },
+    {
+      "code": "BES",
+      "display": "BONAIRE, SINT EUSTATIUS and SABA"
+    },
+    {
+      "code": "BRA",
+      "display": "BRAZIL"
+    },
+    {
+      "code": "CPV",
+      "display": "CAPE VERDE"
+    },
+    {
+      "code": "CYM",
+      "display": "CAYMAN ISLANDS"
+    },
+    {
+      "code": "COL",
+      "display": "COLOMBIA"
+    },
+    {
+      "code": "CRI",
+      "display": "COSTA RICA"
+    },
+    {
+      "code": "CUB",
+      "display": "CUBA"
+    },
+    {
+      "code": "CUW",
+      "display": "CURACAO"
+    },
+    {
+      "code": "DMA",
+      "display": "DOMINICA"
+    },
+    {
+      "code": "DOM",
+      "display": "DOMINICAN REPUBLIC"
+    },
+    {
+      "code": "ECU",
+      "display": "ECUADOR"
+    },
+    {
+      "code": "SLV",
+      "display": "EL SALVADOR"
+    },
+    {
+      "code": "FJI",
+      "display": "FIJI"
+    },
+    {
+      "code": "GUF",
+      "display": "FRENCH GUIANA"
+    },
+    {
+      "code": "GRD",
+      "display": "GRENADA"
+    },
+    {
+      "code": "GLP",
+      "display": "GUADELOUPE"
+    },
+    {
+      "code": "GTM",
+      "display": "GUATEMALA"
+    },
+    {
+      "code": "GUY",
+      "display": "GUYANA"
+    },
+    {
+      "code": "HTI",
+      "display": "HAITI"
+    },
+    {
+      "code": "HND",
+      "display": "HONDURAS"
+    },
+    {
+      "code": "JAM",
+      "display": "JAMAICA"
+    },
+    {
+      "code": "FSM",
+      "display": "KOSRAE, FEDERATED STATES OF MICRONESIA"
+    },
+    {
+      "code": "MHL",
+      "display": "MARSHALL ISLANDS"
+    },
+    {
+      "code": "MTQ",
+      "display": "MARTINIQUE"
+    },
+    {
+      "code": "MEX",
+      "display": "MEXICO"
+    },
+    {
+      "code": "MSR",
+      "display": "MONTSERRAT"
+    },
+    {
+      "code": "NCL",
+      "display": "NEW CALEDONIA"
+    },
+    {
+      "code": "NIC",
+      "display": "NICARAGUA"
+    },
+    {
+      "code": "PLW",
+      "display": "PALAU"
+    },
+    {
+      "code": "PAN",
+      "display": "PANAMA"
+    },
+    {
+      "code": "PNG",
+      "display": "PAPUA NEW GUINEA"
+    },
+    {
+      "code": "PRY",
+      "display": "PARAGUAY"
+    },
+    {
+      "code": "PER",
+      "display": "PERU"
+    },
+    {
+      "code": "PRI",
+      "display": "PUERTO RICO"
+    },
+    {
+      "code": "BLM",
+      "display": "SAINT BARTHÉLEMY"
+    },
+    {
+      "code": "KNA",
+      "display": "SAINT KITTS AND NEVIS"
+    },
+    {
+      "code": "LCA",
+      "display": "SAINT LUCIA"
+    },
+    {
+      "code": "MAF",
+      "display": "SAINT MARTIN (FRENCH PART)"
+    },
+    {
+      "code": "VCT",
+      "display": "SAINT VINCENT AND THE GRENADINES"
+    },
+    {
+      "code": "WSM",
+      "display": "SAMOA"
+    },
+    {
+      "code": "SGP",
+      "display": "SINGAPORE"
+    },
+    {
+      "code": "SXM",
+      "display": "SINT MAARTEN (DUTCH PART)"
+    },
+    {
+      "code": "SUR",
+      "display": "SURINAME"
+    },
+    {
+      "code": "TON",
+      "display": "TONGA"
+    },
+    {
+      "code": "TTO",
+      "display": "TRINIDAD AND TOBAGO"
+    },
+    {
+      "code": "TCA",
+      "display": "TURKS AND CAICOS ISLANDS"
+    },
+    {
+      "code": "USA",
+      "display": "UNITED STATES"
+    },
+    {
+      "code": "VEN",
+      "display": "VENEZUELA"
+    },
+    {
+      "code": "VGB",
+      "display": "VIRGIN ISLANDS, BRITISH"
+    },
+    {
+      "code": "VIR",
+      "display": "VIRGIN ISLANDS, U.S."
+    },
+    {
+      "code": "ASM",
+      "display": "AMERICAN SAMOA"
+    },
+    {
+      "code": "AIA",
+      "display": "ANGUILLA"
+    },
+    {
+      "code": "ATG",
+      "display": "ANTIGUA AND BARBUDA"
+    },
+    {
+      "code": "ARG",
+      "display": "ARGENTINA"
+    },
+    {
+      "code": "ABW",
+      "display": "ARUBA"
+    },
+    {
+      "code": "BHS",
+      "display": "BAHAMAS"
+    },
+    {
+      "code": "BRB",
+      "display": "BARBADOS"
+    },
+    {
+      "code": "BLZ",
+      "display": "BELIZE"
+    },
+    {
+      "code": "BOL",
+      "display": "BOLIVIA"
+    },
+    {
+      "code": "BES",
+      "display": "BONAIRE, SINT EUSTATIUS and SABA"
+    },
+    {
+      "code": "BRA",
+      "display": "BRAZIL"
+    },
+    {
+      "code": "CPV",
+      "display": "CAPE VERDE"
+    },
+    {
+      "code": "CYM",
+      "display": "CAYMAN ISLANDS"
+    },
+    {
+      "code": "COL",
+      "display": "COLOMBIA"
+    },
+    {
+      "code": "CRI",
+      "display": "COSTA RICA"
+    },
+    {
+      "code": "CUB",
+      "display": "CUBA"
+    },
+    {
+      "code": "CUW",
+      "display": "CURACAO"
+    },
+    {
+      "code": "DMA",
+      "display": "DOMINICA"
+    },
+    {
+      "code": "DOM",
+      "display": "DOMINICAN REPUBLIC"
+    },
+    {
+      "code": "ECU",
+      "display": "ECUADOR"
+    },
+    {
+      "code": "SLV",
+      "display": "EL SALVADOR"
+    },
+    {
+      "code": "FJI",
+      "display": "FIJI"
+    },
+    {
+      "code": "GUF",
+      "display": "FRENCH GUIANA"
+    },
+    {
+      "code": "GRD",
+      "display": "GRENADA"
+    },
+    {
+      "code": "GLP",
+      "display": "GUADELOUPE"
+    },
+    {
+      "code": "GTM",
+      "display": "GUATEMALA"
+    },
+    {
+      "code": "GUY",
+      "display": "GUYANA"
+    },
+    {
+      "code": "HTI",
+      "display": "HAITI"
+    },
+    {
+      "code": "HND",
+      "display": "HONDURAS"
+    },
+    {
+      "code": "JAM",
+      "display": "JAMAICA"
+    },
+    {
+      "code": "FSM",
+      "display": "KOSRAE, FEDERATED STATES OF MICRONESIA"
+    },
+    {
+      "code": "MHL",
+      "display": "MARSHALL ISLANDS"
+    },
+    {
+      "code": "MTQ",
+      "display": "MARTINIQUE"
+    },
+    {
+      "code": "MEX",
+      "display": "MEXICO"
+    },
+    {
+      "code": "MSR",
+      "display": "MONTSERRAT"
+    },
+    {
+      "code": "NCL",
+      "display": "NEW CALEDONIA"
+    },
+    {
+      "code": "NIC",
+      "display": "NICARAGUA"
+    },
+    {
+      "code": "PLW",
+      "display": "PALAU"
+    },
+    {
+      "code": "PAN",
+      "display": "PANAMA"
+    },
+    {
+      "code": "PNG",
+      "display": "PAPUA NEW GUINEA"
+    },
+    {
+      "code": "PRY",
+      "display": "PARAGUAY"
+    },
+    {
+      "code": "PER",
+      "display": "PERU"
+    },
+    {
+      "code": "PRI",
+      "display": "PUERTO RICO"
+    },
+    {
+      "code": "BLM",
+      "display": "SAINT BARTHÉLEMY"
+    },
+    {
+      "code": "KNA",
+      "display": "SAINT KITTS AND NEVIS"
+    },
+    {
+      "code": "LCA",
+      "display": "SAINT LUCIA"
+    },
+    {
+      "code": "MAF",
+      "display": "SAINT MARTIN (FRENCH PART)"
+    },
+    {
+      "code": "VCT",
+      "display": "SAINT VINCENT AND THE GRENADINES"
+    },
+    {
+      "code": "WSM",
+      "display": "SAMOA"
+    },
+    {
+      "code": "SGP",
+      "display": "SINGAPORE"
+    },
+    {
+      "code": "SXM",
+      "display": "SINT MAARTEN (DUTCH PART)"
+    },
+    {
+      "code": "SUR",
+      "display": "SURINAME"
+    },
+    {
+      "code": "TON",
+      "display": "TONGA"
+    },
+    {
+      "code": "TTO",
+      "display": "TRINIDAD AND TOBAGO"
+    },
+    {
+      "code": "TCA",
+      "display": "TURKS AND CAICOS ISLANDS"
+    },
+    {
+      "code": "USA",
+      "display": "UNITED STATES"
+    },
+    {
+      "code": "VEN",
+      "display": "VENEZUELA"
+    },
+    {
+      "code": "VGB",
+      "display": "VIRGIN ISLANDS, BRITISH"
+    }
+  ]
+}
+

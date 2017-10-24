@@ -27,8 +27,6 @@ public class CdsServicesServlet extends BaseServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String service = request.getPathInfo().replace("/", "");
-
         // validate that we are dealing with JSON
         if (!request.getContentType().equals("application/json")) {
             throw new ServletException(String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
@@ -37,6 +35,8 @@ public class CdsServicesServlet extends BaseServlet {
         CdsHooksRequest cdsHooksRequest = new CdsHooksRequest(request.getReader());
         CdsRequestProcessor processor = null;
 
+        String service = request.getPathInfo().replace("/", "");
+        
         // PlanDefinition must have the same id as the cds service
         // For example, {BASE}/cds-services/cdc-opioid-guidance -> PlanDefinition ID = cds-opioid-guidance
         PlanDefinition planDefinition =

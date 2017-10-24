@@ -1,6 +1,8 @@
 package org.opencds.cqf.cds;
 
+import ca.uhn.fhir.context.FhirContext;
 import com.google.gson.*;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -93,8 +95,7 @@ public class CdsCard {
     public static class Suggestions {
         private String label;
         private String uuid;
-        private List<String> create;
-        private List<String> delete;
+        private List<Action> actions;
 
         public boolean hasLabel() {
             return this.label != null && !this.label.isEmpty();
@@ -118,26 +119,56 @@ public class CdsCard {
             return this;
         }
 
-        public boolean hasCreate() {
-            return this.create != null && !this.create.isEmpty();
+        public boolean hasActions() {
+            return this.actions != null && !this.actions.isEmpty();
         }
-        public List<String> getCreate() {
-            return this.create;
+        public List<Action> getActions() {
+            return this.actions;
         }
-        public CdsCard.Suggestions setCreate(List<String> create) {
-            this.create = create;
+        public CdsCard.Suggestions setActions(List<Action> actions) {
+            this.actions = actions;
             return this;
         }
 
-        public boolean hasDelete() {
-            return this.delete != null && !this.delete.isEmpty();
-        }
-        public List<String> getDelete() {
-            return this.delete;
-        }
-        public CdsCard.Suggestions setDelete(List<String> delete) {
-            this.delete = delete;
-            return this;
+        public static class Action {
+            enum ActionType {CREATE, UPDATE, DELETE}
+
+            private ActionType type;
+            private String description;
+            private IBaseResource resource;
+
+            public boolean hasType() {
+                return this.type != null;
+            }
+            public ActionType getType() {
+                return this.type;
+            }
+            public Action setType(ActionType type) {
+                this.type = type;
+                return this;
+            }
+
+            public boolean hasDescription() {
+                return this.description != null && !this.description.isEmpty();
+            }
+            public String getDescription() {
+                return this.description;
+            }
+            public Action setDescription(String description) {
+                this.description = description;
+                return this;
+            }
+
+            public boolean hasResource() {
+                return this.resource != null;
+            }
+            public IBaseResource getResource() {
+                return this.resource;
+            }
+            public Action setResource(IBaseResource resource) {
+                this.resource = resource;
+                return this;
+            }
         }
     }
     public boolean hasSuggestions() {
@@ -223,7 +254,40 @@ public class CdsCard {
             card.addProperty("detail", detail);
         }
 
-        // TODO: Source & Suggestions
+        // TODO: Source
+
+
+        if (hasSuggestions()) {
+            JsonArray suggestionArray = new JsonArray();
+            for (Suggestions suggestion : getSuggestions()) {
+                JsonObject suggestionObj = new JsonObject();
+                if (suggestion.hasLabel()) {
+                    suggestionObj.addProperty("label", suggestion.getLabel());
+                }
+                if (suggestion.hasUuid()) {
+                    suggestionObj.addProperty("uuid", suggestion.getUuid());
+                }
+                if (suggestion.hasActions()) {
+                    JsonArray actionArray = new JsonArray();
+                    for (Suggestions.Action action : suggestion.getActions()) {
+                        JsonObject actionObj = new JsonObject();
+                        if (action.hasDescription()) {
+                            actionObj.addProperty("description", action.getDescription());
+                        }
+                        if (action.hasType()) {
+                            actionObj.addProperty("type", action.getType().toString());
+                        }
+                        if (action.hasResource()) {
+                            actionObj.addProperty("resource", FhirContext.forDstu3().newJsonParser().encodeResourceToString(action.getResource()));
+                        }
+                        actionArray.add(actionObj);
+                    }
+                    suggestionObj.add("actions", actionArray);
+                }
+                suggestionArray.add(suggestionObj);
+            }
+            card.add("suggestions", suggestionArray);
+        }
 
         if (hasLinks()) {
             JsonArray linksArray = new JsonArray();

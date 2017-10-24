@@ -7,7 +7,9 @@ import org.hl7.fhir.dstu3.model.*;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.execution.Context;
 
+import javax.xml.namespace.QName;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class CdsRequestProcessor implements Processor {
@@ -59,15 +61,14 @@ public abstract class CdsRequestProcessor implements Processor {
                 */
 
                 if (action.hasDefinition()) {
-                    if (action.getDefinitionTarget().fhirType().equals("ActivityDefinition")) {
-                        // ActivityDefinition $apply
-                        BaseFhirDataProvider provider = (BaseFhirDataProvider) executionContext.resolveDataProvider("http://hl7.org/fhir");
+                    if (action.getDefinition().getReferenceElement().getResourceType().equals("ActivityDefinition")) {
+                        BaseFhirDataProvider provider = (BaseFhirDataProvider) executionContext.resolveDataProvider(new QName("http://hl7.org/fhir", ""));
                         Parameters inParams = new Parameters();
                         inParams.addParameter().setName("patient").setValue(new StringType(request.getPatientId()));
 
                         Parameters outParams = provider.getFhirClient()
                                 .operation()
-                                .onInstance(new IdDt("ActivityDefinition", action.getDefinition().getId()))
+                                .onInstance(new IdDt("ActivityDefinition", action.getDefinition().getReferenceElement().getIdPart()))
                                 .named("$apply")
                                 .withParameters(inParams)
                                 .useHttpGet()
@@ -76,21 +77,29 @@ public abstract class CdsRequestProcessor implements Processor {
                         List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
                         Resource resource = response.get(0).getResource();
 
-                        if (resource != null) {
-                            // put resulting resource into data provider
-                            MethodOutcome outcome = provider.getFhirClient().create().resource(resource).execute();
+                        if (resource == null) {
+                            continue;
                         }
 
-                        // TODO - info card saying resource was created and provide the id?
+                        // TODO - currently only have suggestions that create resources - implement delete and update.
+                        CdsCard card = new CdsCard();
+                        card.setIndicator("info");
+                        CdsCard.Suggestions suggestion = new CdsCard.Suggestions();
+                        suggestion.setActions(
+                                Collections.singletonList(
+                                        new CdsCard.Suggestions.Action()
+                                                .setType(CdsCard.Suggestions.Action.ActionType.CREATE)
+                                                .setResource(resource)
+                                )
+                        );
+                        cards.add(card);
                     }
 
                     else {
                         // PlanDefinition $apply
                         // TODO
 
-                        // put CarePlan in provider
-
-                        // TODO - info card saying CarePlan was created and provide the id?
+                        // TODO - suggestion to create CarePlan
                     }
                 }
 
