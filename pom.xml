@@ -231,6 +231,22 @@
             <version>9.4.1212.jre7</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.13.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbynet</artifactId>
+            <version>10.13.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>10.13.1.1</version>
+        </dependency>
+
         <!-- The following dependencies are only needed for automated unit tests, you do not neccesarily need them to run the example. -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
