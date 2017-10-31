@@ -37,13 +37,25 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
         return retVal;
     }
 
+//    PostgreSQL config
+//    @Bean(destroyMethod = "close")
+//    public DataSource dataSource() {
+//        BasicDataSource retVal = new BasicDataSource();
+//        retVal.setDriver(new org.postgresql.Driver());
+//        retVal.setUrl("jdbc:postgresql://localhost:5432/fhir");
+//        retVal.setUsername("hapi");
+//        retVal.setPassword("hapi");
+//        return retVal;
+//    }
+
+//    Derby config
     @Bean(destroyMethod = "close")
     public DataSource dataSource() {
         BasicDataSource retVal = new BasicDataSource();
-        retVal.setDriver(new org.postgresql.Driver());
-        retVal.setUrl("jdbc:postgresql://localhost:5432/fhir");
-        retVal.setUsername("hapi");
-        retVal.setPassword("hapi");
+        retVal.setDriver(new org.apache.derby.jdbc.EmbeddedDriver());
+        retVal.setUrl("jdbc:derby:directory:target/jpaserver_derby_files;create=true");
+        retVal.setUsername("");
+        retVal.setPassword("");
         return retVal;
     }
 
@@ -58,9 +70,29 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
         return retVal;
     }
 
+//    PostgreSQL config
+//    private Properties jpaProperties() {
+//        Properties extraProperties = new Properties();
+//        extraProperties.put("hibernate.dialect", org.hibernate.dialect.PostgreSQL94Dialect.class.getName());
+//        extraProperties.put("hibernate.format_sql", "true");
+//        extraProperties.put("hibernate.show_sql", "false");
+//        extraProperties.put("hibernate.hbm2ddl.auto", "update");
+//        extraProperties.put("hibernate.jdbc.batch_size", "20");
+//        extraProperties.put("hibernate.cache.use_query_cache", "false");
+//        extraProperties.put("hibernate.cache.use_second_level_cache", "false");
+//        extraProperties.put("hibernate.cache.use_structured_entries", "false");
+//        extraProperties.put("hibernate.cache.use_minimal_puts", "false");
+//        extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
+//        extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles");
+//        extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
+////		extraProperties.put("hibernate.search.default.worker.execution", "async");
+//        return extraProperties;
+//    }
+
+//    Derby config
     private Properties jpaProperties() {
         Properties extraProperties = new Properties();
-        extraProperties.put("hibernate.dialect", org.hibernate.dialect.PostgreSQL94Dialect.class.getName());
+        extraProperties.put("hibernate.dialect", org.hibernate.dialect.DerbyTenSevenDialect.class.getName());
         extraProperties.put("hibernate.format_sql", "true");
         extraProperties.put("hibernate.show_sql", "false");
         extraProperties.put("hibernate.hbm2ddl.auto", "update");
