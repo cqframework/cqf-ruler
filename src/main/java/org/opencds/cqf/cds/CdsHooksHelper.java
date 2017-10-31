@@ -44,17 +44,17 @@ public class CdsHooksHelper {
 //
 //        jsonArray.add(medicationPrescribe);
 //
-//        JSONObject patientView = new JSONObject();
-//        patientView.put("hook", "patient-view");
-//        patientView.put("name", "User-defined patient-view service");
-//        patientView.put("description", "Enables user to define a CDS Hooks service using naming conventions");
-//        patientView.put("id", "user-patient-view");
-//
-//        prefetchContent = new JSONObject();
-//        prefetchContent.put("patient", "Patient/{{Patient.id}}");
-//        patientView.put("prefetch", prefetchContent);
-//
-//        jsonArray.add(patientView);
+        JSONObject patientView = new JSONObject();
+        patientView.put("hook", "patient-view");
+        patientView.put("name", "Zika Virus Intervention");
+        patientView.put("description", "Identifies possible Zika exposure and offers suggestions for suggested actions for pregnant patients");
+        patientView.put("id", "zika-virus-intervention");
+
+        prefetchContent = new JSONObject();
+        prefetchContent.put("patient", "Patient/{{Patient.id}}");
+        patientView.put("prefetch", prefetchContent);
+
+        jsonArray.add(patientView);
 
         jsonResponse.put("services", jsonArray);
 

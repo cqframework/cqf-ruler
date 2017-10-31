@@ -1,0 +1,19 @@
+{
+  "resourceType": "Library",
+  "id": "col-plandefinition-logic",
+  "version": "0.1.0",
+  "type": {
+    "coding": [
+      {
+        "code": "logic-library"
+      }
+    ]
+  },
+  "status": "draft",
+  "content": [
+    {
+      "contentType": "application/elm+xml",
+      "data": ""
+    }
+  ]
+}

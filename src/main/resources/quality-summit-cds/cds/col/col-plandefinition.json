@@ -1,0 +1,23 @@
+{
+  "resourceType": "PlanDefinition",
+  "id": "col-plandefinition",
+  "status": "draft",
+  "library": {
+    "reference": "Library/col-plandefinition-logic"
+  },
+  "action": [
+    {
+      "condition": [
+        {
+          "kind": "applicability",
+          "expression": "Does Patient Qualify?"
+        }
+      ],
+      "action": [
+        {
+
+        }
+      ]
+    }
+  ]
+}

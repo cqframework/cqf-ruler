@@ -42,7 +42,7 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
         BasicDataSource retVal = new BasicDataSource();
         retVal.setDriver(new org.postgresql.Driver());
         retVal.setUrl("jdbc:postgresql://localhost:5432/fhir");
-        retVal.setUsername("postgres");
+        retVal.setUsername("hapi");
         retVal.setPassword("hapi");
         return retVal;
     }

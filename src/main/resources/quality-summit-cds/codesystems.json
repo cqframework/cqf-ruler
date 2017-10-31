@@ -1,0 +1,1283 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.90",
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.90",
+        "url": "http://hl7.org/fhir/sid/icd-10-us",
+        "status": "active",
+        "concept": [
+          {
+            "code": "Z90.12",
+            "display": "Acquired absence of left breast and nipple"
+          },
+          {
+            "code": "C18.0",
+            "display": "Malignant neoplasm of cecum"
+          },
+          {
+            "code": "C18.1",
+            "display": "Malignant neoplasm of appendix"
+          },
+          {
+            "code": "C18.2",
+            "display": "Malignant neoplasm of ascending colon"
+          },
+          {
+            "code": "C18.3",
+            "display": "Malignant neoplasm of hepatic flexure"
+          },
+          {
+            "code": "C18.4",
+            "display": "Malignant neoplasm of transverse colon"
+          },
+          {
+            "code": "C18.5",
+            "display": "Malignant neoplasm of splenic flexure"
+          },
+          {
+            "code": "C18.6",
+            "display": "Malignant neoplasm of descending colon"
+          },
+          {
+            "code": "C18.7",
+            "display": "Malignant neoplasm of sigmoid colon"
+          },
+          {
+            "code": "C18.8",
+            "display": "Malignant neoplasm of overlapping sites of colon"
+          },
+          {
+            "code": "C18.9",
+            "display": "Malignant neoplasm of colon, unspecified"
+          },
+          {
+            "code": "C19",
+            "display": "Malignant neoplasm of rectosigmoid junction"
+          },
+          {
+            "code": "C20",
+            "display": "Malignant neoplasm of rectum"
+          },
+          {
+            "code": "C21.2",
+            "display": "Malignant neoplasm of cloacogenic zone"
+          },
+          {
+            "code": "C21.8",
+            "display": "Malignant neoplasm of overlapping sites of rectum, anus and anal canal"
+          },
+          {
+            "code": "C78.5",
+            "display": "Secondary malignant neoplasm of large intestine and rectum"
+          },
+          {
+            "code": "Z85.038",
+            "display": "Personal history of other malignant neoplasm of large intestine"
+          },
+          {
+            "code": "Z85.048",
+            "display": "Personal history of other malignant neoplasm of rectum, rectosigmoid junction, and anus"
+          },
+          {
+            "code": "Z90.11",
+            "display": "Acquired absence of right breast and nipple"
+          },
+          {
+            "code": "Z90.13",
+            "display": "Acquired absence of bilateral breasts and nipples"
+          },
+          {
+            "code": "Q51.5",
+            "display": "Agenesis and aplasia of cervix"
+          },
+          {
+            "code": "Z90.710",
+            "display": "Acquired absence of both cervix and uterus"
+          },
+          {
+            "code": "Z90.712",
+            "display": "Acquired absence of cervix with remaining uterus"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.90"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.1",
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.1",
+        "url": "http://loinc.org",
+        "status": "active",
+        "concept": [
+          {
+            "code": "77353-1",
+            "display": "Noninvasive colorectal cancer DNA and occult blood screening [Interpretation] in Stool Narrative"
+          },
+          {
+            "code": "77354-9",
+            "display": "Noninvasive colorectal cancer DNA and occult blood screening [Presence] in Stool"
+          },
+          {
+            "code": "33717-0",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+          },
+          {
+            "code": "47528-5",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+          },
+          {
+            "code": "47527-7",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+          },
+          {
+            "code": "19774-9",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+          },
+          {
+            "code": "19762-4",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+          },
+          {
+            "code": "19765-7",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+          },
+          {
+            "code": "19766-5",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+          },
+          {
+            "code": "10524-7",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+          },
+          {
+            "code": "18500-9",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+          },
+          {
+            "code": "19764-0",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+          },
+          {
+            "code": "30167-1",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "49896-4",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "21440-3",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "38372-9",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "59420-0",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "75406-9",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "75694-0",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "69002-4",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "71431-1",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "59263-4",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "59264-2",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "77379-6",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "77399-4",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "77400-0",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+          },
+          {
+            "code": "12503-9",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "12504-7",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "14563-1",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "14564-9",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "14565-6",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "2335-8",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "27396-1",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "27401-9",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "27925-7",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "27926-5",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "29771-3",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "56490-6",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "56491-4",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "57905-2",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "58453-2",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          },
+          {
+            "code": "80372-6",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.1"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.3",
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.3",
+        "url": "https://www.cms.gov/Medicare/Coding/ICD10/index.html",
+        "status": "active",
+        "concept": [
+          {
+            "code": "0HTV0ZZ",
+            "display": "Resection of Bilateral Breast, Open Approach"
+          },
+          {
+            "code": "0HTU0ZZ",
+            "display": "Resection of Left Breast, Open Approach"
+          },
+          {
+            "code": "0HTT0ZZ",
+            "display": "Resection of Right Breast, Open Approach"
+          },
+          {
+            "code": "0UTC0ZZ",
+            "display": "Resection of Cervix, Open Approach"
+          },
+          {
+            "code": "0UTC4ZZ",
+            "display": "Resection of Cervix, Percutaneous Endoscopic Approach"
+          },
+          {
+            "code": "0UTC7ZZ",
+            "display": "Resection of Cervix, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0UTC8ZZ",
+            "display": "Resection of Cervix, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0DTE0ZZ",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.45"
+          },
+          {
+            "code": "0DTE4ZZ",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.45"
+          },
+          {
+            "code": "0DTE7ZZ",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.45"
+          },
+          {
+            "code": "0DTE8ZZ",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.45"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.3"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.42",
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.42",
+        "url": "http://hl7.org/fhir/sid/icd-9-cm",
+        "status": "active",
+        "concept": [
+          {
+            "code": "85.48",
+            "display": "Bilateral extended radical mastectomy"
+          },
+          {
+            "code": "85.44",
+            "display": "Bilateral extended simple mastectomy"
+          },
+          {
+            "code": "85.46",
+            "display": "Bilateral radical mastectomy"
+          },
+          {
+            "code": "85.42",
+            "display": "Bilateral simple mastectomy"
+          },
+          {
+            "code": "87.37",
+            "display": "Other mammography"
+          },
+          {
+            "code": "87.36",
+            "display": "Xerography of breast"
+          },
+          {
+            "code": "85.47",
+            "display": "Unilateral extended radical mastectomy"
+          },
+          {
+            "code": "85.43",
+            "display": "Unilateral extended simple mastectomy"
+          },
+          {
+            "code": "85.45",
+            "display": "Unilateral radical mastectomy"
+          },
+          {
+            "code": "85.41",
+            "display": "Unilateral simple mastectomy"
+          },
+          {
+            "code": "V88.02",
+            "display": "Acquired absence of both cervix and uterus"
+          },
+          {
+            "code": "V88.03",
+            "display": "Acquired absence of cervix with remaining uterus"
+          },
+          {
+            "code": "752.43",
+            "display": "Cervical agenesis"
+          },
+          {
+            "code": "618.5",
+            "display": "Prolapse of vaginal vault after hysterectomy"
+          },
+          {
+            "code": "68.61",
+            "display": "Laparoscopic radical abdominal hysterectomy"
+          },
+          {
+            "code": "68.71",
+            "display": "Laparoscopic radical vaginal hysterectomy [LRVH]"
+          },
+          {
+            "code": "68.41",
+            "display": "Laparoscopic total abdominal hysterectomy"
+          },
+          {
+            "code": "68.51",
+            "display": "Laparoscopically assisted vaginal hysterectomy (LAVH)"
+          },
+          {
+            "code": "68.69",
+            "display": "Other and unspecified radical abdominal hysterectomy"
+          },
+          {
+            "code": "68.79",
+            "display": "Other and unspecified radical vaginal hysterectomy"
+          },
+          {
+            "code": "68.49",
+            "display": "Other and unspecified total abdominal hysterectomy"
+          },
+          {
+            "code": "68.59",
+            "display": "Other and unspecified vaginal hysterectomy"
+          },
+          {
+            "code": "68.8",
+            "display": "Pelvic evisceration"
+          },
+          {
+            "code": "45.81",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.46"
+          },
+          {
+            "code": "45.82",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.46"
+          },
+          {
+            "code": "45.83",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.46"
+          },
+          {
+            "code": "45.24",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.40"
+          },
+          {
+            "code": "153.0",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "153.1",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "153.2",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "153.3",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "153.4",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "153.5",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "153.6",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "153.7",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "153.8",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "153.9",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "154.0",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "154.1",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "197.5",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "V10.05",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "V10.06",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+          },
+          {
+            "code": "45.22",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
+          },
+          {
+            "code": "45.23",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
+          },
+          {
+            "code": "45.25",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
+          },
+          {
+            "code": "45.42",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
+          },
+          {
+            "code": "45.43",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.42"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.12",
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.12",
+        "url": "http://www.ama-assn.org/go/cpt",
+        "status": "active",
+        "concept": [
+          {
+            "code": "50",
+            "display": "Bilateral Procedure [50]"
+          },
+          {
+            "code": "LT",
+            "display": "Left side (used to identify procedures performed on the left side of the body) [LT]"
+          },
+          {
+            "code": "RT",
+            "display": "Right side (used to identify procedures performed on the right side of the body) [RT]"
+          },
+          {
+            "code": "77066",
+            "display": "Diagnostic mammography, including computer-aided detection (CAD) when performed; bilateral"
+          },
+          {
+            "code": "77065",
+            "display": "Diagnostic mammography, including computer-aided detection (CAD) when performed; unilateral"
+          },
+          {
+            "code": "77062",
+            "display": "Digital breast tomosynthesis; bilateral"
+          },
+          {
+            "code": "77061",
+            "display": "Digital breast tomosynthesis; unilateral"
+          },
+          {
+            "code": "77056",
+            "display": "Mammography; bilateral"
+          },
+          {
+            "code": "77055",
+            "display": "Mammography; unilateral]"
+          },
+          {
+            "code": "77063",
+            "display": "Screening digital breast tomosynthesis, bilateral (List separately in addition to code for primary procedure)"
+          },
+          {
+            "code": "77057",
+            "display": "Screening mammography, bilateral (2-view study of each breast)"
+          },
+          {
+            "code": "77067",
+            "display": "Screening mammography, bilateral (2-view study of each breast), including computer-aided detection (CAD) when performed"
+          },
+          {
+            "code": "19307",
+            "display": "Mastectomy, modified radical, including axillary lymph nodes, with or without pectoralis minor muscle, but excluding pectoralis major muscle"
+          },
+          {
+            "code": "19306",
+            "display": "Mastectomy, radical, including pectoral muscles, axillary and internal mammary lymph nodes (Urban type operation)"
+          },
+          {
+            "code": "19305",
+            "display": "Mastectomy, radical, including pectoral muscles, axillary lymph nodes"
+          },
+          {
+            "code": "19303",
+            "display": "Mastectomy, simple, complete"
+          },
+          {
+            "code": "19304",
+            "display": "Mastectomy, subcutaneous"
+          },
+          {
+            "code": "19240",
+            "display": "Mastectomy, modified radical, including axillary lymph nodes, with or without pectoralis minor muscle, but excluding pectoralis major muscle"
+          },
+          {
+            "code": "19220",
+            "display": "Mastectomy, radical, including pectoral muscles, axillary and internal mammary lymph nodes (Urban type operation)"
+          },
+          {
+            "code": "19200",
+            "display": "Mastectomy, radical, including pectoral muscles, axillary lymph nodes"
+          },
+          {
+            "code": "19180",
+            "display": "Mastectomy, simple, complete"
+          },
+          {
+            "code": "58953",
+            "display": "Bilateral salpingo-oophorectomy with omentectomy, total abdominal hysterectomy and radical dissection for debulking"
+          },
+          {
+            "code": "58954",
+            "display": "Bilateral salpingo-oophorectomy with omentectomy, total abdominal hysterectomy and radical dissection for debulking; with pelvic lymphadenectomy and limited para-aortic lymphadenectomy"
+          },
+          {
+            "code": "58956",
+            "display": "Bilateral salpingo-oophorectomy with total omentectomy, total abdominal hysterectomy for malignancy"
+          },
+          {
+            "code": "51925",
+            "display": "Closure of vesicouterine fistula; with hysterectomy"
+          },
+          {
+            "code": "57540",
+            "display": "Excision of cervical stump, abdominal approach"
+          },
+          {
+            "code": "57545",
+            "display": "Excision of cervical stump, abdominal approach; with pelvic floor repair"
+          },
+          {
+            "code": "57550",
+            "display": "Excision of cervical stump, vaginal approach"
+          },
+          {
+            "code": "57555",
+            "display": "Excision of cervical stump, vaginal approach; with anterior and/or posterior repair"
+          },
+          {
+            "code": "57556",
+            "display": "Excision of cervical stump, vaginal approach; with repair of enterocele"
+          },
+          {
+            "code": "58548",
+            "display": "Laparoscopy, surgical, with radical hysterectomy, with bilateral total pelvic lymphadenectomy and para-aortic lymph node sampling (biopsy), with removal of tube(s) and ovary(s), if performed"
+          },
+          {
+            "code": "58570",
+            "display": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less"
+          },
+          {
+            "code": "58571",
+            "display": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less; with removal of tube(s) and/or ovary(s)"
+          },
+          {
+            "code": "58572",
+            "display": "Laparoscopy, surgical, with total hysterectomy, for uterus greater than 250 g"
+          },
+          {
+            "code": "58573",
+            "display": "Laparoscopy, surgical, with total hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s)"
+          },
+          {
+            "code": "58550",
+            "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus 250 g or less"
+          },
+          {
+            "code": "58552",
+            "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus 250 g or less; with removal of tube(s) and/or ovary(s)"
+          },
+          {
+            "code": "58553",
+            "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus greater than 250 g"
+          },
+          {
+            "code": "58554",
+            "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s)"
+          },
+          {
+            "code": "58240",
+            "display": "Pelvic exenteration for gynecologic malignancy, with total abdominal hysterectomy or cervicectomy, with or without removal of tube(s), with or without removal of ovary(s), with removal of bladder and ureteral transplantations, and/or abdominoperineal resection of rectum and colon and colostomy, or any combination thereof"
+          },
+          {
+            "code": "58210",
+            "display": "Radical abdominal hysterectomy, with bilateral total pelvic lymphadenectomy and para-aortic lymph node sampling (biopsy), with or without removal of tube(s), with or without removal of ovary(s)"
+          },
+          {
+            "code": "58951",
+            "display": "Resection (initial) of ovarian, tubal or primary peritoneal malignancy with bilateral salpingo-oophorectomy and omentectomy; with total abdominal hysterectomy, pelvic and limited para-aortic lymphadenectomy"
+          },
+          {
+            "code": "59135",
+            "display": "Surgical treatment of ectopic pregnancy; interstitial, uterine pregnancy requiring total hysterectomy"
+          },
+          {
+            "code": "X1022450",
+            "display": "Total abdominal hysterectomy (corpus and cervix), with or without removal of tube(s), with or without removal of ovary(s)"
+          },
+          {
+            "code": "58150",
+            "display": "Total abdominal hysterectomy (corpus and cervix), with or without removal of tube(s), with or without removal of ovary(s)"
+          },
+          {
+            "code": "58152",
+            "display": "Total abdominal hysterectomy (corpus and cervix), with or without removal of tube(s), with or without removal of ovary(s); with colpo-urethrocystopexy (eg, Marshall-Marchetti-Krantz, Burch)"
+          },
+          {
+            "code": "58200",
+            "display": "Total abdominal hysterectomy, including partial vaginectomy, with para-aortic and pelvic lymph node sampling, with or without removal of tube(s), with or without removal of ovary(s)"
+          },
+          {
+            "code": "X1022451",
+            "display": "Vaginal hysterectomy, for uterus 250 g or less"
+          },
+          {
+            "code": "58260",
+            "display": "Vaginal hysterectomy, for uterus 250 g or less"
+          },
+          {
+            "code": "58267",
+            "display": "Vaginal hysterectomy, for uterus 250 g or less; with colpo-urethrocystopexy (Marshall-Marchetti-Krantz type, Pereyra type) with or without endoscopic control"
+          },
+          {
+            "code": "58262",
+            "display": "Vaginal hysterectomy, for uterus 250 g or less; with removal of tube(s), and/or ovary(s)"
+          },
+          {
+            "code": "58263",
+            "display": "Vaginal hysterectomy, for uterus 250 g or less; with removal of tube(s), and/or ovary(s), with repair of enterocele"
+          },
+          {
+            "code": "58270",
+            "display": "Vaginal hysterectomy, for uterus 250 g or less; with repair of enterocele"
+          },
+          {
+            "code": "X1022567",
+            "display": "Vaginal hysterectomy, for uterus greater than 250 g"
+          },
+          {
+            "code": "58290",
+            "display": "Vaginal hysterectomy, for uterus greater than 250 g"
+          },
+          {
+            "code": "58293",
+            "display": "Vaginal hysterectomy, for uterus greater than 250 g; with colpo-urethrocystopexy (Marshall-Marchetti-Krantz type, Pereyra type) with or without endoscopic control"
+          },
+          {
+            "code": "58291",
+            "display": "Vaginal hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s)"
+          },
+          {
+            "code": "58292",
+            "display": "Vaginal hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s), with repair of enterocele"
+          },
+          {
+            "code": "58294",
+            "display": "Vaginal hysterectomy, for uterus greater than 250 g; with repair of enterocele"
+          },
+          {
+            "code": "58285",
+            "display": "Mastectomy, simple, complete"
+          },
+          {
+            "code": "X1022452",
+            "display": "Vaginal hysterectomy, with total or partial vaginectomy"
+          },
+          {
+            "code": "58275",
+            "display": "Vaginal hysterectomy, with total or partial vaginectomy"
+          },
+          {
+            "code": "58280",
+            "display": "Vaginal hysterectomy, with total or partial vaginectomy; with repair of enterocele"
+          },
+          {
+            "code": "88147",
+            "display": "Cytopathology smears, cervical or vaginal; screening by automated system under physician supervision"
+          },
+          {
+            "code": "88148",
+            "display": "Cytopathology smears, cervical or vaginal; screening by automated system with manual rescreening under physician supervision"
+          },
+          {
+            "code": "88142",
+            "display": "Cytopathology, cervical or vaginal (any reporting system), collected in preservative fluid, automated thin layer preparation; manual screening under physician supervision"
+          },
+          {
+            "code": "88174",
+            "display": "Cytopathology, cervical or vaginal (any reporting system), collected in preservative fluid, automated thin layer preparation; screening by automated system, under physician supervision"
+          },
+          {
+            "code": "88143",
+            "display": "Cytopathology, cervical or vaginal (any reporting system), collected in preservative fluid, automated thin layer preparation; with manual screening and rescreening under physician supervision"
+          },
+          {
+            "code": "88175",
+            "display": "Cytopathology, cervical or vaginal (any reporting system), collected in preservative fluid, automated thin layer preparation; with screening by automated system and manual rescreening or review, under physician supervision"
+          },
+          {
+            "code": "88141",
+            "display": "Cytopathology, cervical or vaginal (any reporting system), requiring interpretation by physician"
+          },
+          {
+            "code": "88164",
+            "display": "Cytopathology, slides, cervical or vaginal (the Bethesda System); manual screening under physician supervision"
+          },
+          {
+            "code": "88166",
+            "display": "Cytopathology, slides, cervical or vaginal (the Bethesda System); with manual screening and computer-assisted rescreening under physician supervision"
+          },
+          {
+            "code": "88167",
+            "display": "Cytopathology, slides, cervical or vaginal (the Bethesda System); with manual screening and computer-assisted rescreening using cell selection and review under physician supervision"
+          },
+          {
+            "code": "88165",
+            "display": "Cytopathology, slides, cervical or vaginal (the Bethesda System); with manual screening and rescreening under physician supervision"
+          },
+          {
+            "code": "88150",
+            "display": "Cytopathology, slides, cervical or vaginal; manual screening under physician supervision"
+          },
+          {
+            "code": "88152",
+            "display": "Cytopathology, slides, cervical or vaginal; with manual screening and computer-assisted rescreening under physician supervision"
+          },
+          {
+            "code": "88154",
+            "display": "Cytopathology, slides, cervical or vaginal; with manual screening and computer-assisted rescreening using cell selection and review under physician supervision"
+          },
+          {
+            "code": "88153",
+            "display": "Cytopathology, slides, cervical or vaginal; with manual screening and rescreening under physician supervision"
+          },
+          {
+            "code": "87620",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
+          },
+          {
+            "code": "87621",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
+          },
+          {
+            "code": "87622",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
+          },
+          {
+            "code": "87624",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
+          },
+          {
+            "code": "87625",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
+          },
+          {
+            "code": "44388",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44393",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44389",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44391",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44390",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44392",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44394",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44397",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45378",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45383",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45380",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45382",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45386",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45381",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45391",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45379",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45384",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45385",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45387",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45392",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45355",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44401",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44402",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44403",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44404",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44405",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44406",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44407",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "44408",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45388",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45389",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45390",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45393",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "45398",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+          },
+          {
+            "code": "81528",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1420.35"
+          },
+          {
+            "code": "45330",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45339",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45331",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45334",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45337",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45340",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45335",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45341",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45332",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45333",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45338",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45345",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "81542",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45346",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45347",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45349",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "45350",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+          },
+          {
+            "code": "82274",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.41"
+          },
+          {
+            "code": "82270",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.41"
+          },
+          {
+            "code": "44156",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+          },
+          {
+            "code": "44158",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+          },
+          {
+            "code": "44157",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+          },
+          {
+            "code": "44155",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+          },
+          {
+            "code": "44151",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+          },
+          {
+            "code": "44150",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+          },
+          {
+            "code": "44211",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+          },
+          {
+            "code": "44210",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+          },
+          {
+            "code": "44212",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+          },
+          {
+            "code": "44153",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+          },
+          {
+            "code": "44152",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+          },
+          {
+            "code": "74263",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1421.34"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.12"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.5",
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.5",
+        "url": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+        "status": "active",
+        "concept": [
+          {
+            "code": "G0202",
+            "display": "Screening mammography, bilateral (2-view study of each breast), including computer-aided detection (cad) when performed"
+          },
+          {
+            "code": "G0204",
+            "display": "Diagnostic mammography, including computer-aided detection (cad) when performed; bilateral"
+          },
+          {
+            "code": "G0206",
+            "display": "Diagnostic mammography, including computer-aided detection (cad) when performed; unilateral"
+          },
+          {
+            "code": "G0147",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+          },
+          {
+            "code": "G0148",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+          },
+          {
+            "code": "G0141",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+          },
+          {
+            "code": "G0124",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+          },
+          {
+            "code": "G0123",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+          },
+          {
+            "code": "G0143",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+          },
+          {
+            "code": "G0145",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+          },
+          {
+            "code": "G0144",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+          },
+          {
+            "code": "P3000",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+          },
+          {
+            "code": "P3001",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+          },
+          {
+            "code": "Q0091",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+          },
+          {
+            "code": "G0245",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.30"
+          },
+          {
+            "code": "G0464",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1420.36"
+          },
+          {
+            "code": "G0397",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.42"
+          },
+          {
+            "code": "G0476",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.27"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.5"
+      }
+    },
+    {
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.3.88.12.3221.8.11",
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.3.88.12.3221.8.11",
+        "url": "https://www.cms.gov/Medicare/CMS-Forms/CMS-Forms/CMS-Forms-Items/CMS1196256.html/fl42",
+        "status": "active",
+        "concept": [
+          {
+            "code": "0403",
+            "display": "Screening mammography"
+          },
+          {
+            "code": "0401",
+            "display": "Diagnostic mammography"
+          },
+          {
+            "code": "0923",
+            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.25"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.3.88.12.3221.8.11"
+      }
+    }
+  ]
+}

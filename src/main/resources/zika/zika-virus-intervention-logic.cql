@@ -125,8 +125,11 @@ define "Zika Symptom Onset":
       sort by case when onset.value is DateTime then onset.value else ToDateTime(onset.value) end
   ).onset
 
+define "Weeks since Symptom Onset":
+	weeks between "Zika Symptom Onset".value and Today()
+
 define "Time Since Symptom Onset":
-  System.Quantity { value: weeks between "Zika Symptom Onset".value and Today(), unit: 'wk' }
+  System.Quantity { value: if "Weeks since Symptom Onset" is null then 0 else "Weeks since Symptom Onset", unit: 'wk' }
 
 define "Should Administer Zika Virus Exposure Assessment":
   not ("Has Zika Exposure Assessment")
@@ -138,11 +141,11 @@ define "Should Order Serum + Urine rRT-PCR Test":
 define "Should Order Serum Zika Virus IgM + Dengue Virus IgM":
   ("Has Possible Zika Exposure" and "Has Zika Symptoms" and "Time Since Symptom Onset" in Interval[2 weeks, 12 weeks))
     or ("Resident of or Frequent Traveler to Zika Area" and "No Zika Symptoms")
-    or ("No Zika Symptoms" and ToQuantity("Time Since Possible Exposure") in Interval[2 weeks, 12 weeks))
+    or ("No Zika Symptoms" and if "Time Since Possible Exposure" is null then false else ToQuantity("Time Since Possible Exposure") in Interval[2 weeks, 12 weeks))
 
 define "Should Consider IgM Antibody Testing":
   ("Has Possible Zika Exposure" and "Has Zika Symptoms" and "Time Since Symptom Onset" >= 12 weeks)
-    or ("No Zika Symptoms" and ToQuantity("Time Since Possible Exposure") >= 12 weeks)
+    or ("No Zika Symptoms" and if "Time Since Possible Exposure" is null then false else ToQuantity("Time Since Possible Exposure") >= 12 weeks)
 
 define "Should Provide Mosquito Prevention and Contraception Advice":
   "Planned Travel to Zika Area"
