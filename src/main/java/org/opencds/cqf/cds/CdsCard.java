@@ -278,7 +278,7 @@ public class CdsCard {
                             actionObj.addProperty("type", action.getType().toString());
                         }
                         if (action.hasResource()) {
-                            actionObj.addProperty("resource", FhirContext.forDstu3().newJsonParser().encodeResourceToString(action.getResource()));
+                            actionObj.addProperty("resource", FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(action.getResource()));
                         }
                         actionArray.add(actionObj);
                     }

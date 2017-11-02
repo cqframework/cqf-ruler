@@ -3,7 +3,7 @@
   "type": "transaction",
   "entry": [
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.90",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.90",
       "resource": {
         "resourceType": "CodeSystem",
         "id": "2.16.840.1.113883.6.90",
@@ -106,11 +106,11 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.90"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.90"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.1",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.1",
       "resource": {
         "resourceType": "CodeSystem",
         "id": "2.16.840.1.113883.6.1",
@@ -127,173 +127,173 @@
           },
           {
             "code": "33717-0",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+            "display": "Cytology Cervical or vaginal smear or scraping study"
           },
           {
             "code": "47528-5",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+            "display": "Cytology report of Cervical or vaginal smear or scraping Cyto stain"
           },
           {
             "code": "47527-7",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+            "display": "Cytology report of Cervical or vaginal smear or scraping Cyto stain.thin prep"
           },
           {
             "code": "19774-9",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+            "display": "Cytology study comment Cervical or vaginal smear or scraping Cyto stain"
           },
           {
             "code": "19762-4",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+            "display": "General categories [Interpretation] of Cervical or vaginal smear or scraping by Cyto stain"
           },
           {
             "code": "19765-7",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+            "display": "Microscopic observation [Identifier] in Cervical or vaginal smear or scraping by Cyto stain"
           },
           {
             "code": "19766-5",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+            "display": "Microscopic observation [Identifier] in Cervical or vaginal smear or scraping by Cyto stain Narrative"
           },
           {
             "code": "10524-7",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+            "display": "Microscopic observation [Identifier] in Cervix by Cyto stain"
           },
           {
             "code": "18500-9",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+            "display": "Microscopic observation [Identifier] in Cervix by Cyto stain.thin prep"
           },
           {
             "code": "19764-0",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+            "display": "Statement of adequacy [Interpretation] of Cervical or vaginal smear or scraping by Cyto stain"
           },
           {
             "code": "30167-1",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 16+18+31+33+35+39+45+51+52+56+58+59+68 DNA [Presence] in Cervix by Probe and signal amplification method"
           },
           {
             "code": "49896-4",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 16+18+31+33+35+39+45+51+52+56+58+59+68 DNA [Presence] in Unspecified specimen by Probe and target amplification method"
           },
           {
             "code": "21440-3",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 16+18+31+33+35+45+51+52+56 DNA [Presence] in Cervix by DNA probe"
           },
           {
             "code": "38372-9",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 6+11+16+18+31+33+35+39+42+43+44+45+51+52+56+58+59+68 DNA [Presence] in Cervix by Probe and signal amplification method"
           },
           {
             "code": "59420-0",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 16+18+31+33+35+39+45+51+52+56+58+59+66+68 DNA [Presence] in Cervix by Probe and signal amplification method"
           },
           {
             "code": "75406-9",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 16 and 18+45 E6+E7 mRNA [Presence] in Cervix by Probe with amplification"
           },
           {
             "code": "75694-0",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 18+45 E6+E7 mRNA [Presence] in Cervix by Probe and target amplification method"
           },
           {
             "code": "69002-4",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus E6+E7 mRNA [Presence] in Cervix by Probe and target amplification method"
           },
           {
             "code": "71431-1",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 31+33+35+39+45+51+52+56+58+59+66+68 DNA [Presence] in Cervix by Probe and target amplification method"
           },
           {
             "code": "59263-4",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 16 DNA [Presence] in Cervix by Probe and signal amplification method"
           },
           {
             "code": "59264-2",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 18 DNA [Presence] in Cervix by Probe and signal amplification method"
           },
           {
             "code": "77379-6",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papiloma virus 16 and 18 and 31+33+35+39+45+51+52+56+58+59+66+68 DNA [Interpretation] in Cervix"
           },
           {
             "code": "77399-4",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 16 DNA [Presence] in Cervix by Probe and target amplification method"
           },
           {
             "code": "77400-0",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+            "display": "Human papilloma virus 18 DNA [Presence] in Cervix by Probe and target amplification method"
           },
           {
             "code": "12503-9",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --4th specimen"
           },
           {
             "code": "12504-7",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --5th specimen"
           },
           {
             "code": "14563-1",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --1st specimen"
           },
           {
             "code": "14564-9",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --2nd specimen"
           },
           {
             "code": "14565-6",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --3rd specimen"
           },
           {
             "code": "2335-8",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool"
           },
           {
             "code": "27396-1",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Mass/mass] in Stool"
           },
           {
             "code": "27401-9",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --6th specimen"
           },
           {
             "code": "27925-7",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --7th specimen"
           },
           {
             "code": "27926-5",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --8th specimen"
           },
           {
             "code": "29771-3",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method"
           },
           {
             "code": "56490-6",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --2nd specimen"
           },
           {
             "code": "56491-4",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --3rd specimen"
           },
           {
             "code": "57905-2",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --1st specimen"
           },
           {
             "code": "58453-2",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Mass/volume] in Stool by Immunologic method"
           },
           {
             "code": "80372-6",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Rapid immunoassay"
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.1"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.1"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.3",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.3",
       "resource": {
         "resourceType": "CodeSystem",
         "id": "2.16.840.1.113883.6.3",
@@ -330,29 +330,29 @@
           },
           {
             "code": "0DTE0ZZ",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.45"
+            "display": "Resection of Large Intestine, Open Approach"
           },
           {
             "code": "0DTE4ZZ",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.45"
+            "display": "Resection of Large Intestine, Percutaneous Endoscopic Approach"
           },
           {
             "code": "0DTE7ZZ",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.45"
+            "display": "Resection of Large Intestine, Via Natural or Artificial Opening"
           },
           {
             "code": "0DTE8ZZ",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.45"
+            "display": "Resection of Large Intestine, Via Natural or Artificial Opening Endoscopic"
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.3"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.3"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.42",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.42",
       "resource": {
         "resourceType": "CodeSystem",
         "id": "2.16.840.1.113883.6.42",
@@ -453,109 +453,109 @@
           },
           {
             "code": "45.81",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.46"
+            "display": "Laparoscopic total intra-abdominal colectomy"
           },
           {
             "code": "45.82",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.46"
+            "display": "Open total intra-abdominal colectomy"
           },
           {
             "code": "45.83",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.46"
+            "display": "Other and unspecified total intra-abdominal colectomy"
           },
           {
             "code": "45.24",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.40"
+            "display": "Flexible sigmoidoscopy"
           },
           {
             "code": "153.0",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of hepatic flexure"
           },
           {
             "code": "153.1",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of transverse colon"
           },
           {
             "code": "153.2",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of descending colon"
           },
           {
             "code": "153.3",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of sigmoid colon"
           },
           {
             "code": "153.4",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of cecum"
           },
           {
             "code": "153.5",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of appendix vermiformis"
           },
           {
             "code": "153.6",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of ascending colon"
           },
           {
             "code": "153.7",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of splenic flexure"
           },
           {
             "code": "153.8",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of other specified sites of large intestine"
           },
           {
             "code": "153.9",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of colon, unspecified site"
           },
           {
             "code": "154.0",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of rectosigmoid junction"
           },
           {
             "code": "154.1",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Malignant neoplasm of rectum"
           },
           {
             "code": "197.5",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Secondary malignant neoplasm of large intestine and rectum"
           },
           {
             "code": "V10.05",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Personal history of malignant neoplasm of large intestine"
           },
           {
             "code": "V10.06",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+            "display": "Personal history of malignant neoplasm of rectum, rectosigmoid junction, and anus"
           },
           {
             "code": "45.22",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
+            "display": "Endoscopy of large intestine through artificial stoma"
           },
           {
             "code": "45.23",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
+            "display": "Colonoscopy"
           },
           {
             "code": "45.25",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
+            "display": "Closed [endoscopic] biopsy of large intestine"
           },
           {
             "code": "45.42",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
+            "display": "Endoscopic polypectomy of large intestine"
           },
           {
             "code": "45.43",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
+            "display": "Endoscopic destruction of other lesion or tissue of large intestine"
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.42"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.42"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.12",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.12",
       "resource": {
         "resourceType": "CodeSystem",
         "id": "2.16.840.1.113883.6.12",
@@ -876,297 +876,289 @@
           },
           {
             "code": "87620",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
+            "display": "Infectious agent detection by nucleic acid (DNA or RNA); papillomavirus, human, direct probe technique"
           },
           {
             "code": "87621",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
+            "display": "Infectious agent detection by nucleic acid (DNA or RNA); papillomavirus, human, amplified probe technique"
           },
           {
             "code": "87622",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
+            "display": "Infectious agent detection by nucleic acid (DNA or RNA); papillomavirus, human, quantification"
           },
           {
             "code": "87624",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
+            "display": "Infectious agent detection by nucleic acid (DNA or RNA); Human Papillomavirus (HPV), high-risk types (eg, 16, 18, 31, 33, 35, 39, 45, 51, 52, 56, 58, 59, 68)"
           },
           {
             "code": "87625",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
+            "display": "Infectious agent detection by nucleic acid (DNA or RNA); Human Papillomavirus (HPV), types 16 and 18 only, includes type 45, if performed"
           },
           {
             "code": "44388",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
           },
           {
             "code": "44393",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
           },
           {
             "code": "44389",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with biopsy, single or multiple"
           },
           {
             "code": "44391",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with control of bleeding, any method"
           },
           {
             "code": "44390",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with removal of foreign body(s)"
           },
           {
             "code": "44392",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
           },
           {
             "code": "44394",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
           },
           {
             "code": "44397",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with transendoscopic stent placement (includes predilation)"
           },
           {
             "code": "45378",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
           },
           {
             "code": "45383",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible, proximal to splenic flexure; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
           },
           {
             "code": "45380",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with biopsy, single or multiple"
           },
           {
             "code": "45382",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with control of bleeding, any method"
           },
           {
             "code": "45386",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with transendoscopic balloon dilation"
           },
           {
             "code": "45381",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with directed submucosal injection(s), any substance"
           },
           {
             "code": "45391",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with endoscopic ultrasound examination limited to the rectum, sigmoid, descending, transverse, or ascending colon and cecum, and adjacent structures"
           },
           {
             "code": "45379",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with removal of foreign body(s)"
           },
           {
             "code": "45384",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
           },
           {
             "code": "45385",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
           },
           {
             "code": "45387",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible, proximal to splenic flexure; with transendoscopic stent placement (includes predilation)"
           },
           {
             "code": "45392",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s), includes endoscopic ultrasound examination limited to the rectum, sigmoid, descending, transverse, or ascending colon and cecum, and adjacent structures"
           },
           {
             "code": "45355",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, rigid or flexible, transabdominal via colotomy, single or multiple"
           },
           {
             "code": "44401",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre-and post-dilation and guide wire passage, when performed)"
           },
           {
             "code": "44402",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with endoscopic stent placement (including pre- and post-dilation and guide wire passage, when performed)"
           },
           {
             "code": "44403",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with endoscopic mucosal resection"
           },
           {
             "code": "44404",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with directed submucosal injection(s), any substance"
           },
           {
             "code": "44405",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with transendoscopic balloon dilation"
           },
           {
             "code": "44406",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with endoscopic ultrasound examination, limited to the sigmoid, descending, transverse, or ascending colon and cecum and adjacent structures"
           },
           {
             "code": "44407",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s), includes endoscopic ultrasound examination limited to the sigmoid, descending, transverse, or ascending colon and cecum and adjacent structures"
           },
           {
             "code": "44408",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy through stoma; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
           },
           {
             "code": "45388",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
           },
           {
             "code": "45389",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with endoscopic stent placement (includes pre- and post-dilation and guide wire passage, when performed)"
           },
           {
             "code": "45390",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with endoscopic mucosal resection"
           },
           {
             "code": "45393",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
           },
           {
             "code": "45398",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+            "display": "Colonoscopy, flexible; with band ligation(s) (eg, hemorrhoids)"
           },
           {
             "code": "81528",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1420.35"
+            "display": "Oncology (colorectal) screening, quantitative real-time target and signal amplification of 10 DNA markers (KRAS mutations, promoter methylation of NDRG4 and BMP3) and fecal hemoglobin, utilizing stool, algorithm reported as a positive or negative result"
           },
           {
             "code": "45330",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
           },
           {
             "code": "45339",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
           },
           {
             "code": "45331",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with biopsy, single or multiple"
           },
           {
             "code": "45334",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with control of bleeding, any method"
           },
           {
             "code": "45337",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
           },
           {
             "code": "45340",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with transendoscopic balloon dilation"
           },
           {
             "code": "45335",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with directed submucosal injection(s), any substance"
           },
           {
             "code": "45341",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with endoscopic ultrasound examination"
           },
           {
             "code": "45332",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with removal of foreign body(s)"
           },
           {
             "code": "45333",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
           },
           {
             "code": "45338",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
           },
           {
             "code": "45345",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
-          },
-          {
-            "code": "81542",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with transendoscopic stent placement (includes predilation)"
           },
           {
             "code": "45346",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
           },
           {
             "code": "45347",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with placement of endoscopic stent (includes pre- and post-dilation and guide wire passage, when performed)"
           },
           {
             "code": "45349",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with endoscopic mucosal resection"
           },
           {
             "code": "45350",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+            "display": "Sigmoidoscopy, flexible; with band ligation(s) (eg, hemorrhoids)"
           },
           {
             "code": "82274",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.41"
+            "display": "Blood, occult, by fecal hemoglobin determination by immunoassay, qualitative, feces, 1-3 simultaneous determinations"
           },
           {
             "code": "82270",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.41"
+            "display": "Blood, occult, by peroxidase activity (eg, guaiac), qualitative; feces, consecutive collected specimens with single determination, for colorectal neoplasm screening (ie, patient was provided 3 cards or single triple card for consecutive collection)"
           },
           {
             "code": "44156",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+            "display": "Colectomy, total, abdominal, with proctectomy; with continent ileostomy"
           },
           {
             "code": "44158",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+            "display": "Colectomy, total, abdominal, with proctectomy; with ileoanal anastomosis, creation of ileal reservoir (S or J), includes loop ileostomy, and rectal mucosectomy, when performed"
           },
           {
             "code": "44157",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+            "display": "Colectomy, total, abdominal, with proctectomy; with ileoanal anastomosis, includes loop ileostomy, and rectal mucosectomy, when performed"
           },
           {
             "code": "44155",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+            "display": "Colectomy, total, abdominal, with proctectomy; with ileostomy"
           },
           {
             "code": "44151",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+            "display": "Colectomy, total, abdominal, without proctectomy; with continent ileostomy"
           },
           {
             "code": "44150",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+            "display": "Colectomy, total, abdominal, without proctectomy; with ileostomy or ileoproctostomy"
           },
           {
             "code": "44211",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+            "display": "Laparoscopy, surgical; colectomy, total, abdominal, with proctectomy, with ileoanal anastomosis, creation of ileal reservoir (S or J), with loop ileostomy, includes rectal mucosectomy, when performed"
           },
           {
             "code": "44210",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+            "display": "Laparoscopy, surgical; colectomy, total, abdominal, without proctectomy, with ileostomy or ileoproctostomy"
           },
           {
             "code": "44212",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+            "display": "Laparoscopy, surgical; colectomy, total, abdominal, with proctectomy, with ileostomy"
           },
           {
             "code": "44153",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+            "display": "Colectomy, total, abdominal, without proctectomy; with rectal mucosectomy, ileoanal anastomosis, creation of ileal reservoir (S or J), with or without loop ileostomy"
           },
           {
             "code": "44152",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
-          },
-          {
-            "code": "74263",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1421.34"
+            "display": "Colectomy, total, abdominal, without proctectomy; with rectal mucosectomy, ileoanal anastomosis, with or without loop ileostomy"
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.12"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.12"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.5",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.5",
       "resource": {
         "resourceType": "CodeSystem",
         "id": "2.16.840.1.113883.6.5",
@@ -1187,73 +1179,73 @@
           },
           {
             "code": "G0147",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+            "display": "Screening cytopathology smears, cervical or vaginal, performed by automated system under physician supervision"
           },
           {
             "code": "G0148",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+            "display": "Screening cytopathology smears, cervical or vaginal, performed by automated system with manual rescreening"
           },
           {
             "code": "G0141",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+            "display": "Screening cytopathology smears, cervical or vaginal, performed by automated system, with manual rescreening, requiring interpretation by physician"
           },
           {
             "code": "G0124",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+            "display": "Screening cytopathology, cervical or vaginal (any reporting system), collected in preservative fluid, automated thin layer preparation, requiring interpretation by physician"
           },
           {
             "code": "G0123",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+            "display": "Screening cytopathology, cervical or vaginal (any reporting system), collected in preservative fluid, automated thin layer preparation, screening by cytotechnologist under physician supervision"
           },
           {
             "code": "G0143",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+            "display": "Screening cytopathology, cervical or vaginal (any reporting system), collected in preservative fluid, automated thin layer preparation, with manual screening and rescreening by cytotechnologist under physician supervision"
           },
           {
             "code": "G0145",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+            "display": "Screening cytopathology, cervical or vaginal (any reporting system), collected in preservative fluid, automated thin layer preparation, with screening by automated system and manual rescreening under physician supervision"
           },
           {
             "code": "G0144",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+            "display": "Screening cytopathology, cervical or vaginal (any reporting system), collected in preservative fluid, automated thin layer preparation, with screening by automated system, under physician supervision"
           },
           {
             "code": "P3000",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+            "display": "Screening papanicolaou smear, cervical or vaginal, up to three smears, by technician under physician supervision"
           },
           {
             "code": "P3001",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+            "display": "Screening papanicolaou smear, cervical or vaginal, up to three smears, requiring interpretation by physician"
           },
           {
             "code": "Q0091",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+            "display": "Screening papanicolaou smear; obtaining, preparing and conveyance of cervical or vaginal smear to laboratory"
           },
           {
             "code": "G0245",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1064.30"
+            "display": "Initial physician evaluation and management of a diabetic patient with diabetic sensory neuropathy resulting in a loss of protective sensation (lops) which must include: (1) the diagnosis of lops, (2) a patient history, (3) a physical examination that consists of at least the following elements: (a) visual inspection of the forefoot, hindfoot and toe web spaces, (b) evaluation of a protective sensation, (c) evaluation of foot structure and biomechanics, (d) evaluation of vascular status and skin integrity, and (e) evaluation and recommendation of footwear and (4) patient education"
           },
           {
             "code": "G0464",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1420.36"
+            "display": "Colorectal cancer screening; stool-based dna and fecal occult hemoglobin (e.g., kras, ndrg4 and bmp3)"
           },
           {
             "code": "G0397",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1093.42"
+            "display": "Alcohol and/or substance (other than tobacco) abuse structured assessment (e.g., audit, dast), and intervention, greater than 30 minutes"
           },
           {
             "code": "G0476",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1265.27"
+            "display": "Infectious agent detection by nucleic acid (dna or rna); human papillomavirus (hpv), high-risk types (e.g., 16, 18, 31, 33, 35, 39, 45, 51, 52, 56, 58, 59, 68) for cervical cancer screening, must be performed in addition to pap test"
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.5"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.5"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.3.88.12.3221.8.11",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.3.88.12.3221.8.11",
       "resource": {
         "resourceType": "CodeSystem",
         "id": "2.16.840.1.113883.3.88.12.3221.8.11",
@@ -1270,13 +1262,13 @@
           },
           {
             "code": "0923",
-            "display": "From http://fhir.ext.apelon.com/dtsserverws/fhir/ValueSet/2.16.840.1.113883.3.464.1004.1208.25"
+            "display": "Pap smear"
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.3.88.12.3221.8.11"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.3.88.12.3221.8.11"
       }
     }
   ]

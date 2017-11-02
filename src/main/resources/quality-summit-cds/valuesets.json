@@ -3,11 +3,11 @@
   "type": "transaction",
   "entry": [
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1329.1",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1329.1",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1329.1",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1329.1",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1329.1",
         "status": "active",
         "compose": {
           "include": [
@@ -25,15 +25,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1329.1"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1329.1"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1330.2",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1330.2",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1330.2",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1330.2",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1330.2",
         "status": "active",
         "compose": {
           "include": [
@@ -51,15 +51,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1330.2"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1330.2"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1042",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042",
         "status": "active",
         "compose": {
           "include": [
@@ -95,15 +95,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.3",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.3",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1042.3",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.3",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.3",
         "status": "active",
         "compose": {
           "include": [
@@ -121,15 +121,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.3"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.3"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.4",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.4",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1042.4",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.4",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.4",
         "status": "active",
         "compose": {
           "include": [
@@ -156,15 +156,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.4"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1042.4"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1043.5",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1043.5",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1043.5",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1043.5",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1043.5",
         "status": "active",
         "compose": {
           "include": [
@@ -182,15 +182,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1043.5"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1043.5"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1331.6",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1331.6",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1331.6",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1331.6",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1331.6",
         "status": "active",
         "compose": {
           "include": [
@@ -208,15 +208,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1331.6"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1331.6"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1148.7",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1148.7",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1148.7",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1148.7",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1148.7",
         "status": "active",
         "compose": {
           "include": [
@@ -234,15 +234,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1148.7"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1148.7"
       }
     },
             {
-              "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168",
+              "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168",
               "resource": {
                 "resourceType": "ValueSet",
                 "id": "2.16.840.1.113883.3.464.1004.1168",
-                "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168",
+                "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168",
                 "status": "active",
                 "compose": {
                   "include": [
@@ -323,15 +323,15 @@
               },
               "request": {
                 "method": "PUT",
-                "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168"
+                "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168"
               }
             },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.8",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.8",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1168.8",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.8",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.8",
         "status": "active",
         "compose": {
           "include": [
@@ -373,15 +373,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.8"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.8"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.9",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.9",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1168.9",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.9",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.9",
         "status": "active",
         "compose": {
           "include": [
@@ -405,15 +405,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.9"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.9"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.10",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.10",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1168.10",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.10",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.10",
         "status": "active",
         "compose": {
           "include": [
@@ -434,15 +434,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.10"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.10"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.11",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.11",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1168.11",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.11",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.11",
         "status": "active",
         "compose": {
           "include": [
@@ -463,15 +463,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.11"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1168.11"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1230.12",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1230.12",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1230.12",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1230.12",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1230.12",
         "status": "active",
         "compose": {
           "include": [
@@ -489,15 +489,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1230.12"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1230.12"
       }
     },
             {
-              "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256",
+              "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256",
               "resource": {
                 "resourceType": "ValueSet",
                 "id": "2.16.840.1.113883.3.464.1004.1256",
-                "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256",
+                "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256",
                 "status": "active",
                 "compose": {
                   "include": [
@@ -557,15 +557,15 @@
               },
               "request": {
                 "method": "PUT",
-                "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256"
+                "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256"
               }
             },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.13",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.13",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1256.13",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.13",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.13",
         "status": "active",
         "compose": {
           "include": [
@@ -607,15 +607,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.13"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.13"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.14",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.14",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1256.14",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.14",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.14",
         "status": "active",
         "compose": {
           "include": [
@@ -642,15 +642,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.14"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1256.14"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1334.15",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1334.15",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1334.15",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1334.15",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1334.15",
         "status": "active",
         "compose": {
           "include": [
@@ -668,15 +668,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1334.15"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1334.15"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1335.16",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1335.16",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1335.16",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1335.16",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1335.16",
         "status": "active",
         "compose": {
           "include": [
@@ -694,15 +694,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1335.16"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1335.16"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.17",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.17",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1123.17",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.17",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.17",
         "status": "active",
         "compose": {
           "include": [
@@ -843,15 +843,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.17"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.17"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.18",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.18",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1123.18",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.18",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.18",
         "status": "active",
         "compose": {
           "include": [
@@ -875,15 +875,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.18"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.18"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.19",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.19",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1123.19",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.19",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.19",
         "status": "active",
         "compose": {
           "include": [
@@ -910,15 +910,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.19"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.19"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.20",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.20",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1123.20",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.20",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.20",
         "status": "active",
         "compose": {
           "include": [
@@ -945,15 +945,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.20"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.20"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.21",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.21",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1123.21",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.21",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.21",
         "status": "active",
         "compose": {
           "include": [
@@ -995,15 +995,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.21"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1123.21"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1208",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208",
         "status": "active",
         "compose": {
           "include": [
@@ -1147,15 +1147,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.22",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.22",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1208.22",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.22",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.22",
         "status": "active",
         "compose": {
           "include": [
@@ -1215,15 +1215,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.22"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.22"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.23",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.23",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1208.23",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.23",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.23",
         "status": "active",
         "compose": {
           "include": [
@@ -1271,15 +1271,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.23"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.24",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.24",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1208.24",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.24",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.24",
         "status": "active",
         "compose": {
           "include": [
@@ -1324,15 +1324,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.24"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.25",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.25",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1208.25",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.25",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.25",
         "status": "active",
         "compose": {
           "include": [
@@ -1350,15 +1350,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.25"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1208.25"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.26",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.26",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1265.26",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.26",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.26",
         "status": "active",
         "compose": {
           "include": [
@@ -1388,15 +1388,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.26"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.27",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.27",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1265.27",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.27",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.27",
         "status": "active",
         "compose": {
           "include": [
@@ -1414,15 +1414,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.27"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.27"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.28",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.28",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1265.28",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.28",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.28",
         "status": "active",
         "compose": {
           "include": [
@@ -1479,15 +1479,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1265.28"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.29",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.29",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1064.29",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.29",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.29",
         "status": "active",
         "compose": {
           "include": [
@@ -1604,15 +1604,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.29"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.30",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.30",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1064.30",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.30",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.30",
         "status": "active",
         "compose": {
           "include": [
@@ -1633,15 +1633,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.30"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.30"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.31",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.31",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1064.31",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.31",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.31",
         "status": "active",
         "compose": {
           "include": [
@@ -1671,15 +1671,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1064.31"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.32",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.32",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1065.32",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.32",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.32",
         "status": "active",
         "compose": {
           "include": [
@@ -1748,15 +1748,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.32"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.32"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.33",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.33",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1065.33",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.33",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.33",
         "status": "active",
         "compose": {
           "include": [
@@ -1816,15 +1816,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1065.33"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1421.34",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1421.34",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1421.34",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1421.34",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1421.34",
         "status": "active",
         "compose": {
           "include": [
@@ -1842,15 +1842,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1421.34"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1421.34"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.35",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.35",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1420.35",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.35",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.35",
         "status": "active",
         "compose": {
           "include": [
@@ -1868,15 +1868,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.35"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.35"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.36",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.36",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1420.36",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.36",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.36",
         "status": "active",
         "compose": {
           "include": [
@@ -1894,15 +1894,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.36"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.36"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.37",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.37",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1420.37",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.37",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.37",
         "status": "active",
         "compose": {
           "include": [
@@ -1923,15 +1923,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.37"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1420.37"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.38",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.38",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1102.38",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.38",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.38",
         "status": "active",
         "compose": {
           "include": [
@@ -1997,15 +1997,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.38"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.39",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.39",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1102.39",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.39",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.39",
         "status": "active",
         "compose": {
           "include": [
@@ -2023,15 +2023,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.39"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.39"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.40",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.40",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1102.40",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.40",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.40",
         "status": "active",
         "compose": {
           "include": [
@@ -2049,15 +2049,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.40"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1102.40"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.41",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.41",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1093.41",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.41",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.41",
         "status": "active",
         "compose": {
           "include": [
@@ -2078,15 +2078,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.41"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.41"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.42",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.42",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1093.42",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.42",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.42",
         "status": "active",
         "compose": {
           "include": [
@@ -2104,15 +2104,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.42"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.42"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.43",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.43",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1093.43",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.43",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.43",
         "status": "active",
         "compose": {
           "include": [
@@ -2175,15 +2175,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1093.43"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.44",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.44",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1250.44",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.44",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.44",
         "status": "active",
         "compose": {
           "include": [
@@ -2231,15 +2231,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.44"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.45",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.45",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1250.45",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.45",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.45",
         "status": "active",
         "compose": {
           "include": [
@@ -2266,15 +2266,15 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.45"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.45"
       }
     },
     {
-      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.46",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.46",
       "resource": {
         "resourceType": "ValueSet",
         "id": "2.16.840.1.113883.3.464.1004.1250.46",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.46",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.46",
         "status": "active",
         "compose": {
           "include": [
@@ -2298,7 +2298,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.46"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1004.1250.46"
       }
     }
   ]

@@ -171,7 +171,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/measure-bcs-logic"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Library/measure-bcs-logic"
       }
     },
     {
@@ -262,7 +262,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Measure/measure-bcs"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Measure/measure-bcs"
       }
     }
   ]

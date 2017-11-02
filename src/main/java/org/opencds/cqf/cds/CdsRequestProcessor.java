@@ -92,6 +92,7 @@ public abstract class CdsRequestProcessor implements Processor {
                                                 .setResource(resource)
                                 )
                         );
+                        card.getSuggestions().add(suggestion);
                         cards.add(card);
                     }
 

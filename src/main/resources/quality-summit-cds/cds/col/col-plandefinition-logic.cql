@@ -1,4 +1,4 @@
-library ColPlanDefinitionLogic version '1.0'
+library colPlandefinitionLogic version '1.0'
 
 using FHIR version '3.0.0'
 
@@ -54,36 +54,45 @@ define "FOBT Observations":
 		union [Observation: "FOBT Value Set (HCPCS)"]
 		union [Observation: "FOBT Value Set (ICD9)"]
 
+define "Fecal Occult Blood Tests":
+    "FOBT Observations" Obs
+    			where Obs.status.value in { 'final', 'amended' }
+    				and Obs.effective.value in "Lookback Interval One Year"
+
 define "Needs Fecal Occult Blood Test":
-	not exists(
-		"FOBT Observations" Obs
-			where Obs.status.value in { 'final', 'amended' }
-				and Obs.effective.value in "Lookback Interval One Year"
-	)
+	if "Fecal Occult Blood Tests" is null
+	    then true
+	else not exists "Fecal Occult Blood Tests"
 
 define "Flexible Sigmoidoscopy Reports":
 	[DiagnosticReport: "Flexible Sigmoidoscopy Value Set (CPT)"]
 		union [DiagnosticReport: "Flexible Sigmoidoscopy Value Set (HCPCS)"]
 		union [DiagnosticReport: "Flexible Sigmoidoscopy Value Set (ICD9)"]
 
+define "Flexible Sigmoidoscopy Diagnostics":
+    "Flexible Sigmoidoscopy Reports" DiagRep
+    			where DiagRep.status.value in { 'preliminary', 'final', 'amended', 'corrected', 'appended' }
+    				and PeriodToIntervalOfDT(DiagRep.effective) included in "Lookback Interval Five Years"
+
 define "Needs Flexible Sigmoidoscopy":
-	not exists(
-		"Flexible Sigmoidoscopy Reports" DiagRep
-			where DiagRep.status.value in { 'preliminary', 'final', 'amended', 'corrected', 'appended' }
-				and PeriodToIntervalOfDT(DiagRep.effective) included in "Lookback Interval Five Years"
-	)
+	if "Flexible Sigmoidoscopy Diagnostics" is null
+	    then true
+	else not exists "Flexible Sigmoidoscopy Diagnostics"
 
 define "Colonoscopy Reports":
 	[DiagnosticReport: "Colonoscopy Value Set (CPT)"]
 		union [DiagnosticReport: "Colonoscopy Value Set (HCPCS)"]
 		union [DiagnosticReport: "Colonoscopy Value Set (ICD9)"]
 
+define "Colonoscopy Diagnostics":
+    "Colonoscopy Reports" DiagRep
+    			where DiagRep.status.value in { 'preliminary', 'final', 'amended', 'corrected', 'appended' }
+    				and PeriodToIntervalOfDT(DiagRep.effective) included in "Lookback Interval Ten Years"
+
 define "Needs Colonoscopy":
-	not exists(
-		"Colonoscopy Reports" DiagRep
-			where DiagRep.status.value in { 'preliminary', 'final', 'amended', 'corrected', 'appended' }
-				and PeriodToIntervalOfDT(DiagRep.effective) included in "Lookback Interval Ten Years"
-	)
+	if "Colonoscopy Diagnostics" is null
+	    then true
+	else not exists "Colonoscopy Diagnostics"
 
 define "Needs CT Colonography":
 	not exists(
@@ -97,12 +106,15 @@ define "FIT-DNA Observations":
 		union [Observation: "FIT-DNA Value Set (HCPCS)"]
 		union [Observation: "FIT-DNA Value Set (LOINC)"]
 
+define "FIT-DNA Tests":
+    "FIT-DNA Observations" Obs
+    			where Obs.status.value in { 'final', 'amended' }
+    				and Obs.effective.value in "Lookback Interval Three Years"
+
 define "Needs FIT-DNA Test":
-	not exists(
-		"FIT-DNA Observations" Obs
-			where Obs.status.value in { 'final', 'amended' }
-				and Obs.effective.value in "Lookback Interval Three Years"
-	)
+	if "FIT-DNA Tests" is null
+	    then true
+	else not exists "FIT-DNA Tests"
 
 define "Colorectal Cancer Conditions":
 	[Condition: "Colorectal Cancer Value Set (ICD10)"]

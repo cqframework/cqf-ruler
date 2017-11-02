@@ -3,7 +3,7 @@
   "type": "transaction",
   "entry": [
     {
-      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-11",
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-11",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-11",
@@ -55,11 +55,11 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-11"
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-11"
       }
     },
     {
-      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-12",
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-12",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-12",
@@ -111,11 +111,11 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-12"
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-12"
       }
     },
     {
-      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-13",
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-13",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-13",
@@ -167,11 +167,11 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-13"
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-13"
       }
     },
     {
-      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-14",
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-14",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-14",
@@ -223,11 +223,11 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-14"
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-14"
       }
     },
     {
-      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-4",
+      "fullUrl": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-4",
       "resource": {
         "resourceType": "Condition",
         "id": "Condition-4",
@@ -279,7 +279,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-4"
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Condition/Condition-4"
       }
     }
   ]

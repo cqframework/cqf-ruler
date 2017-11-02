@@ -5,7 +5,7 @@
     {
       "resource": {
         "resourceType": "Library",
-        "id": "measure-col-logic",
+        "id": "library-col-logic",
         "version": "1.0.0",
         "status": "active",
         "experimental": true,
@@ -189,7 +189,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Library/measure-col-logic"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Library/measure-col-logic"
       }
     },
     {
@@ -222,7 +222,7 @@
         ],
         "library": [
           {
-            "reference": "Library/measure-col-logic"
+            "reference": "Library/library-col-logic"
           }
         ],
         "scoring": {
@@ -280,7 +280,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Measure/measure-col"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Measure/measure-col"
       }
     }
   ]

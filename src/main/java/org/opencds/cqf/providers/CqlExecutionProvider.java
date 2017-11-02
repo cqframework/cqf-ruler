@@ -7,6 +7,7 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.hl7.fhir.dstu3.model.*;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
+import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.helpers.LibraryHelper;
@@ -141,6 +142,7 @@ public class CqlExecutionProvider {
         context.setExpressionCaching(true);
         context.registerLibraryLoader(getLibraryLoader());
         context.setContextValue("Patient", patientId);
+        context.registerDataProvider("http://hl7.org/fhir", new FhirDataProviderStu3().setEndpoint("http://localhost:8080/cqf-ruler/baseDstu3"));
         return context.resolveExpressionRef("Expression").evaluate(context);
     }
 }

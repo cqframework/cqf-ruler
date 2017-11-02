@@ -1,0 +1,37 @@
+{
+  "resourceType": "ActivityDefinition",
+  "id": "fobt-service-request",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Create ServiceRequest for FOBT Procedure</div>"
+  },
+  "status": "draft",
+  "description": "Create ServiceRequest for FOBT Procedure",
+  "kind": "ProcedureRequest",
+  "code": {
+    "coding": [
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "code": "82272",
+        "display": "Fecal Occult Blood Test"
+      }
+    ]
+  },
+  "timingTiming": {
+    "_event": [
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/cqif-basic-cqlExpression",
+            "valueString": "Now()"
+          }
+        ]
+      }
+    ]
+  },
+  "participant": [
+    {
+      "type": "practitioner"
+    }
+  ]
+}

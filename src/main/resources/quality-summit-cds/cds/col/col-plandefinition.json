@@ -1,21 +1,79 @@
 {
   "resourceType": "PlanDefinition",
-  "id": "col-plandefinition",
+  "id": "col-decision-support",
   "status": "draft",
   "library": {
-    "reference": "Library/col-plandefinition-logic"
+    "reference": "Library/patient-view"
   },
   "action": [
     {
       "condition": [
         {
           "kind": "applicability",
+          "language": "text/cql",
           "expression": "Does Patient Qualify?"
         }
       ],
       "action": [
         {
-
+          "condition": [
+            {
+              "kind": "applicability",
+              "language": "text/cql",
+              "expression": "Needs Fecal Occult Blood Test"
+            }
+          ],
+          "definition": {
+            "reference": "ActivityDefinition/fobt-service-request"
+          }
+        },
+        {
+          "condition": [
+            {
+              "kind": "applicability",
+              "language": "text/cql",
+              "expression": "Needs Flexible Sigmoidoscopy"
+            }
+          ],
+          "definition": {
+            "reference": "ActivityDefinition/flexible-sigmoidoscopy-service-request"
+          }
+        },
+        {
+          "condition": [
+            {
+              "kind": "applicability",
+              "language": "text/cql",
+              "expression": "Needs Colonoscopy"
+            }
+          ],
+          "definition": {
+            "reference": "ActivityDefinition/colonoscopy-service-request"
+          }
+        },
+        {
+          "condition": [
+            {
+              "kind": "applicability",
+              "language": "text/cql",
+              "expression": "Needs CT Colonography"
+            }
+          ],
+          "definition": {
+            "reference": "ActivityDefinition/colonography-service-request"
+          }
+        },
+        {
+          "condition": [
+            {
+              "kind": "applicability",
+              "language": "text/cql",
+              "expression": "Needs FIT-DNA Test"
+            }
+          ],
+          "definition": {
+            "reference": "ActivityDefinition/fit-dna-service-request"
+          }
         }
       ]
     }

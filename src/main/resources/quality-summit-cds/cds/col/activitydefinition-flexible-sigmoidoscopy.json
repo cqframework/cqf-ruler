@@ -1,0 +1,37 @@
+{
+  "resourceType": "ActivityDefinition",
+  "id": "flexible-sigmoidoscopy-service-request",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Create ServiceRequest for Flexible Sigmoidoscopy Procedure</div>"
+  },
+  "status": "draft",
+  "description": "Create ServiceRequest for Flexible Sigmoidoscopy Procedure",
+  "kind": "ProcedureRequest",
+  "code": {
+    "coding": [
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "code": "45530",
+        "display": "Sigmoidoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+      }
+    ]
+  },
+  "timingTiming": {
+    "_event": [
+      {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/cqif-basic-cqlExpression",
+            "valueString": "Now()"
+          }
+        ]
+      }
+    ]
+  },
+  "participant": [
+    {
+      "type": "practitioner"
+    }
+  ]
+}
