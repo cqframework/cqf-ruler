@@ -1,0 +1,33 @@
+{
+  "resourceType": "PlanDefinition",
+  "id": "ccs-decision-support",
+  "status": "draft",
+  "library": {
+    "reference": "Library/patient-view"
+  },
+  "action": [
+    {
+      "condition": [
+        {
+          "kind": "applicability",
+          "language": "text/cql",
+          "expression": "Does Patient Qualify?"
+        }
+      ],
+      "action": [
+        {
+          "condition": [
+            {
+              "kind": "applicability",
+              "language": "text/cql",
+              "expression": "Needs Cervical Cytology Test"
+            }
+          ],
+          "definition": {
+            "reference": "ActivityDefinition/cervical-cytology-service-request"
+          }
+        }
+      ]
+    }
+  ]
+}

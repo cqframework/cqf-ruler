@@ -4,7 +4,6 @@
   "entry": [
     {
       "resource": {
-
         "resourceType": "Patient",
         "id": "Patient-276",
         "meta": {
