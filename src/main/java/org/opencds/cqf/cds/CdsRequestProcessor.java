@@ -88,7 +88,7 @@ public abstract class CdsRequestProcessor implements Processor {
                         suggestion.setActions(
                                 Collections.singletonList(
                                         new CdsCard.Suggestions.Action()
-                                                .setType(CdsCard.Suggestions.Action.ActionType.CREATE)
+                                                .setType(CdsCard.Suggestions.Action.ActionType.create)
                                                 .setResource(resource)
                                 )
                         );

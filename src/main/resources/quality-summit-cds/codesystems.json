@@ -293,10 +293,10 @@
       }
     },
     {
-      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.3",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.285",
       "resource": {
         "resourceType": "CodeSystem",
-        "id": "2.16.840.1.113883.6.3",
+        "id": "2.16.840.1.113883.6.285",
         "url": "https://www.cms.gov/Medicare/Coding/ICD10/index.html",
         "status": "active",
         "concept": [
@@ -348,7 +348,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.3"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.285"
       }
     },
     {
@@ -1158,10 +1158,10 @@
       }
     },
     {
-      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.5",
+      "fullUrl": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.4",
       "resource": {
         "resourceType": "CodeSystem",
-        "id": "2.16.840.1.113883.6.5",
+        "id": "2.16.840.1.113883.6.4",
         "url": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
         "status": "active",
         "concept": [
@@ -1241,7 +1241,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.5"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.4"
       }
     },
     {

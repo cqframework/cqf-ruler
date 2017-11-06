@@ -131,7 +131,7 @@ public class CdsCard {
         }
 
         public static class Action {
-            enum ActionType {CREATE, UPDATE, DELETE}
+            enum ActionType {create, update, delete}
 
             private ActionType type;
             private String description;
@@ -278,7 +278,8 @@ public class CdsCard {
                             actionObj.addProperty("type", action.getType().toString());
                         }
                         if (action.hasResource()) {
-                            actionObj.addProperty("resource", FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(action.getResource()));
+                            JsonElement res = new JsonParser().parse(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(action.getResource()));
+                            actionObj.add("resource", res);
                         }
                         actionArray.add(actionObj);
                     }
