@@ -49,6 +49,10 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             // do something?
         }
 
+        if (valueSet != null && valueSet.startsWith("urn:oid:")) {
+            valueSet = valueSet.replace("urn:oid:", "");
+        }
+
         if (codePath == null && (codes != null || valueSet != null)) {
             throw new IllegalArgumentException("A code path must be provided when filtering on codes or a valueset.");
         }
