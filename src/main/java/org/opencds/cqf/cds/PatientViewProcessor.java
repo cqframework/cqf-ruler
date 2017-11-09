@@ -60,9 +60,17 @@ public class PatientViewProcessor extends CdsRequestProcessor {
         // TODO - need a better way to determine library id
         Library library = getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("patient-view"));
 
-        // TODO - make it so user can set this.
-        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
-        dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3"));
+        // Retrieve FHIR server endpoint from CDS Hooks request, or default to localhost
+        String fhirServerEndpoint = request.getFhirServerEndpoint();
+        if (fhirServerEndpoint == null) {
+        		fhirServerEndpoint = "http://localhost:8080/cqf-ruler/baseDstu3";
+        }
+        
+        // TODO - what are requirements for a valid terminology provider endpoint?  Fails with HSPC sandbox.
+//        String terminologyProvider = "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3";
+        
+        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(fhirServerEndpoint);
+        dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint(fhirServerEndpoint));
         dstu3Provider.setExpandValueSets(true);
 
         Context executionContext = new Context(library);
