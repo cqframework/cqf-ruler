@@ -16,6 +16,7 @@
       ],
       "action": [
         {
+          "title": "Order Fecal Occult Blood Test",
           "condition": [
             {
               "kind": "applicability",
@@ -28,6 +29,8 @@
           }
         },
         {
+          "title": "Order Flexible Sigmoidoscopy",
+          "description": "Sigmoidoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)",
           "condition": [
             {
               "kind": "applicability",
@@ -40,6 +43,7 @@
           }
         },
         {
+          "title": "Order Colonoscopy",
           "condition": [
             {
               "kind": "applicability",
@@ -52,6 +56,8 @@
           }
         },
         {
+          "title": "Order CT Colonography",
+          "description": "Computed tomographic (CT) colonography, diagnostic, including image postprocessing, without contract material",
           "condition": [
             {
               "kind": "applicability",
@@ -64,6 +70,7 @@
           }
         },
         {
+          "title": "Order FIT-DNA Test",
           "condition": [
             {
               "kind": "applicability",

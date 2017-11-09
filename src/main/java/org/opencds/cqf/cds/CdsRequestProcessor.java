@@ -1,16 +1,21 @@
 package org.opencds.cqf.cds;
 
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.model.primitive.IdDt;
-import ca.uhn.fhir.rest.api.MethodOutcome;
-import org.hl7.fhir.dstu3.model.*;
-import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
-import org.opencds.cqf.cql.execution.Context;
-
-import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.hl7.fhir.dstu3.model.ActivityDefinition;
+import org.hl7.fhir.dstu3.model.Parameters;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
+import org.opencds.cqf.cql.execution.Context;
+
+import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.model.primitive.IdDt;
 
 public abstract class CdsRequestProcessor implements Processor {
     CdsHooksRequest request;
@@ -29,6 +34,60 @@ public abstract class CdsRequestProcessor implements Processor {
         walkAction(executionContext, cards, planDefinition.getAction());
 
         return cards;
+    }
+    
+    private String getSummary(Context executionContext, PlanDefinition.PlanDefinitionActionComponent action) {
+    		String summary = null;
+    		// TODO - this throws runtime exception if expression is not found in current library, should return null??
+//    		ExpressionDef expressionDef = executionContext.resolveExpressionRef("getSummary");
+//    		if (expressionDef != null && expressionDef.getExpression() != null) {
+//	        	summary = (String) expressionDef.getExpression().evaluate(executionContext);
+//    		}
+        if (summary == null && action.getTitle() != null) {
+    			summary = action.getTitle();
+        }
+        if (summary == null && action.hasDefinition() && action.getDefinition().getReferenceElement().getResourceType().equals("ActivityDefinition")) {
+        		// TODO - this returns null, fix to resolve ActivityDefinition reference	
+            ActivityDefinition definition = (ActivityDefinition) action.getDefinition().getResource();
+    			if (definition != null) {
+    				summary = definition.getTitle();
+    			}
+        }
+        
+        return summary;
+    }
+
+    private String getDetail(Context executionContext, PlanDefinition.PlanDefinitionActionComponent action) {
+    		String detail = null;
+//        Expression expression = executionContext.resolveExpressionRef("getDetail").getExpression();
+//        if (expression != null) {
+//        		detail = (String) expression.evaluate(executionContext);
+//        }
+        if (detail == null && action.getDescription() != null) {
+        		detail = action.getDescription();
+        }
+        if (detail == null && action.hasDefinition() && action.getDefinition().getReferenceElement().getResourceType().equals("ActivityDefinition")) {
+    		// TODO - this returns null, fix to resolve ActivityDefinition reference	
+        	ActivityDefinition definition = (ActivityDefinition) action.getDefinition().getResource();
+    			if (definition != null) {
+    				detail = definition.getDescription();
+    			}
+        }
+        
+        return detail;
+    }
+
+    private String getIndicator(Context executionContext, PlanDefinition.PlanDefinitionActionComponent action) {
+    		String indicator = null;
+//        Expression expression = executionContext.resolveExpressionRef("getIndicator").getExpression();
+//        if (expression != null) {
+//        		indicator = (String) expression.evaluate(executionContext);
+//        }
+        if (indicator == null) {
+        		indicator = "info";
+        }
+        
+        return indicator;
     }
 
     private void walkAction(Context executionContext, List<CdsCard> cards, List<PlanDefinition.PlanDefinitionActionComponent> actions) {
@@ -83,7 +142,14 @@ public abstract class CdsRequestProcessor implements Processor {
 
                         // TODO - currently only have suggestions that create resources - implement delete and update.
                         CdsCard card = new CdsCard();
-                        card.setIndicator("info");
+                        card.setIndicator(getIndicator(executionContext, action));
+                        String summary = getSummary(executionContext, action);
+                        if (summary == null) {
+                        		summary = "Suggestion for " + resource.getResourceType().toString();
+                        }
+                        card.setSummary(summary);
+                        card.setDetail(getDetail(executionContext, action));
+                        
                         CdsCard.Suggestions suggestion = new CdsCard.Suggestions();
                         suggestion.setActions(
                                 Collections.singletonList(
@@ -112,9 +178,10 @@ public abstract class CdsRequestProcessor implements Processor {
 
                 else {
                     CdsCard card = new CdsCard();
-                    card.setSummary((String) executionContext.resolveExpressionRef("getSummary").getExpression().evaluate(executionContext));
-                    card.setDetail((String) executionContext.resolveExpressionRef("getDetail").getExpression().evaluate(executionContext));
-                    card.setIndicator((String) executionContext.resolveExpressionRef("getIndicator").getExpression().evaluate(executionContext));
+                    card.setSummary(getSummary(executionContext, action));
+                    card.setDetail(getDetail(executionContext, action));
+                    card.setIndicator(getIndicator(executionContext, action));
+                    
                     cards.add(card);
                 }
             }
