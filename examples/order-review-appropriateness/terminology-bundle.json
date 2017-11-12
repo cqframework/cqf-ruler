@@ -1,0 +1,263 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.12",
+        "url": "http://www.ama-assn.org/go/cpt",
+        "status": "active",
+        "concept": [
+          {
+            "code": "70450",
+            "display": "CT BRAIN without contrast"
+          },
+          {
+            "code": "70460",
+            "display": "CT BRAIN with contrast"
+          },
+          {
+            "code": "70470",
+            "display": "CT BRAIN w/o & with contrast"
+          },
+          {
+            "code": "70480",
+            "display": "CT ORBIT/SKULL without contrast"
+          },
+          {
+            "code": "70481",
+            "display": "CT ORBITS/SKULL with contrast"
+          },
+          {
+            "code": "70482",
+            "display": "CT ORBIT/SKULL w/o & with contrast CT ORBITS/SKULL with contrast"
+          },
+          {
+            "code": "70486",
+            "display": "CT MAXILLOFACIAL without contrast"
+          },
+          {
+            "code": "70487",
+            "display": "CT FACE with contrast"
+          },
+          {
+            "code": "70488",
+            "display": "CT FACE w/o & with contrast"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.12"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "extremely.appropriate",
+        "status": "active",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "concept": [
+                {
+                  "code": "70450"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/extremely.appropriate"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "appropriate",
+        "status": "active",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "concept": [
+                {
+                  "code": "70460"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/appropriate"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "probably.appropriate",
+        "status": "active",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "concept": [
+                {
+                  "code": "70470"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/probably.appropriate"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "uncertain.appropriate",
+        "status": "active",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "concept": [
+                {
+                  "code": "70480"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/uncertain.appropriate"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "uncertain",
+        "status": "active",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "concept": [
+                {
+                  "code": "70481"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/uncertain"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "uncertain.inappropriate",
+        "status": "active",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "concept": [
+                {
+                  "code": "70482"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/uncertain.inappropriate"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "probably.inappropriate",
+        "status": "active",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "concept": [
+                {
+                  "code": "70486"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/probably.inappropriate"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "inappropriate",
+        "status": "active",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "concept": [
+                {
+                  "code": "70487"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/inappropriate"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "extremely.inappropriate",
+        "status": "active",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "concept": [
+                {
+                  "code": "70488"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/extremely.inappropriate"
+      }
+    }
+  ]
+}

@@ -128,11 +128,16 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
             );
         }
 
+        if (activityDefinition.hasExtension()) {
+            procedureRequest.setExtension(activityDefinition.getExtension());
+        }
+
         if (activityDefinition.hasCode()) {
             procedureRequest.setCode(activityDefinition.getCode());
         }
 
-        else {
+        // code can be set as a dynamicValue
+        else if (!activityDefinition.hasCode() && !activityDefinition.hasDynamicValue()) {
             throw new ActivityDefinitionApplyException("Missing required code property");
         }
 

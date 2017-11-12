@@ -67,10 +67,9 @@ public class CdsServicesServlet extends BaseServlet {
                     }
                     break;
                 case "order-review":
-                    resolveOrderReviewPrefetch(cdsHooksRequest);
-
-                    // TODO
-
+                    // resolveOrderReviewPrefetch(cdsHooksRequest);
+                    // TODO - currently only works for ProcedureRequest orders
+                    processor = new OrderReviewProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"));
                     break;
 
                 case "patient-view":
@@ -80,7 +79,7 @@ public class CdsServicesServlet extends BaseServlet {
         }
 
         if (processor == null) {
-            throw new ServletException("Invalid cds service - currently only cdc-opioid-guidance is supported");
+            throw new ServletException("Invalid cds service");
         }
 
         response.getWriter().println(toJsonResponse(processor.process()));

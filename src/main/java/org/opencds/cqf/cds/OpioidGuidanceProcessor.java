@@ -84,7 +84,7 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         String path = Paths.get("src/main/resources/cds/OpioidManagementTerminologyKnowledge.db").toAbsolutePath().toString().replace("\\", "/");
         String connString = "jdbc:sqlite://" + path;
         OmtkDataProvider omtkProvider = new OmtkDataProvider(connString);
-        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
+        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServerEndpoint());
 
         Context executionContext = new Context(library);
         executionContext.registerLibraryLoader(getLibraryLoader());

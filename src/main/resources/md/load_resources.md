@@ -2,49 +2,7 @@
 
 ## Methods
  
-### [Resource Loader GUI](https://github.com/DBCG/cqf-ruler/blob/master/src/main/java/org/opencds/cqf/helpers/ResourceLoaderGUI.java)
-
-This project provides an interface to load resources. To access it, run the following command:
-
-```
-$ mvn exec:java -Dexec.mainClass="org.opencds.cqf.helpers.ResourceLoaderGUI"
-```
-    
-The following dialog box should appear:
-
-![Resource Loader GUI](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/load_resource_gui.png)
-
-As you can see, there are 3 different methods provided for loading resources.
-1. Single Resource - moves a single resource from one data provider to another.
-   - Specify "Source URL" and "Destination URL" and select "Single resource" from the dropdown menu.
-   
-   ![Single Resource Home](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/single_resource_specify_url.png)
-   
-   - Specify the "Resource ID" and the "Resource Type" and click "Load".
-   
-   ![Single Resource Load](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/single_resource_load.png)
-
-2. List of Resources - moves a list of resources for one data provider to another.
-   - Specify "Source URL" and "Destination URL" and select "List of resources" from the dropdown menu.
-   
-   ![List Resources Home](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/list_resources_specify_url.png)
-   
-   - Specify resources as a comma separated list with the resource ID followed by the resource type and click "Load".
-   
-   ![List Resources Load](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/list_resources_load.png)
-
-3. Bundle from File - loads a Bundle of resources from a JSON file into a data provider.
-   - Specify "Destination URL" and select "Bundle from file".
-   
-   ![Bundle Home](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/bundle_specify_url.png)
-   
-   - Specify absolute file path to Bundle JSON file and click "Load".
-   
-   ![Bundle Load](https://raw.githubusercontent.com/DBCG/cqf-ruler/master/src/main/resources/img/bundle_load.png)
-
-The console will display any errors that occur.
-
-## HTTP Client
+### HTTP Client
 
 There are 2 different methods of uploading resources using an HTTP client.
 1. PUT or POST a single resource
@@ -108,7 +66,7 @@ There are 2 different methods of uploading resources using an HTTP client.
 
 2. POST a transaction Bundle
     
-    The [transaction](http://hl7.org/implement/standards/fhir/http.html#transaction) operation loads all the resources within a [transaction Bundle](https://github.com/DBCG/cqf-ruler/blob/master/src/main/resources/database-init-bundle.json).
+    The [transaction](http://hl7.org/implement/standards/fhir/http.html#transaction) operation loads all the resources within a transaction Bundle.
     
     POST [base]/baseDstu3
     ```
@@ -148,4 +106,3 @@ There are 2 different methods of uploading resources using an HTTP client.
       ]
     }
     ```
-    As an example, POST this [bundle](https://github.com/DBCG/cqf-ruler/blob/master/src/main/resources/database-init-bundle.json) to http://measure.eval.kanvix.com/cqf-ruler/baseDstu3.    

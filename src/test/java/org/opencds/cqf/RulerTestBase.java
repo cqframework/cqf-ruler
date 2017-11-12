@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import org.cqframework.cql.elm.execution.Library;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.hl7.fhir.dstu3.model.*;
@@ -14,17 +15,21 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opencds.cqf.helpers.XlsxToValueSet;
+import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
+import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
+import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.CqlLibraryReader;
+import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
+import org.opencds.cqf.helpers.FhirMeasureEvaluator;
 
+import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class RulerTestBase {
     private static IGenericClient ourClient;
@@ -236,6 +241,57 @@ public class RulerTestBase {
         ProcedureRequest procedureRequest = (ProcedureRequest) resource;
 
         Assert.assertTrue(procedureRequest.getDoNotPerform());
+    }
+
+    @Test
+    public void TestMeasureEvaluator() throws IOException, JAXBException {
+        File xmlFile = new File(URLDecoder.decode(RulerHelperTests.class.getResource("library-col.elm.xml").getFile(), "UTF-8"));
+        Library library = CqlLibraryReader.read(xmlFile);
+
+        Context context = new Context(library);
+
+        BaseFhirDataProvider provider = new FhirDataProviderStu3().setEndpoint(ourServerBase);
+
+        FhirTerminologyProvider terminologyProvider = new FhirTerminologyProvider().withEndpoint(ourServerBase);
+        provider.setTerminologyProvider(terminologyProvider);
+//        provider.setExpandValueSets(true);
+
+        context.registerDataProvider("http://hl7.org/fhir", provider);
+        context.registerTerminologyProvider(terminologyProvider);
+
+        xmlFile = new File(URLDecoder.decode(RulerHelperTests.class.getResource("measure-col.xml").getFile(), "UTF-8"));
+        Measure measure = provider.getFhirClient().getFhirContext().newXmlParser().parseResource(Measure.class, new FileReader(xmlFile));
+
+        String patientId = "Patient-12214";
+        Patient patient = provider.getFhirClient().read().resource(Patient.class).withId(patientId).execute();
+        // TODO: Couldn't figure out what matcher to use here, gave up.
+        if (patient == null) {
+            throw new RuntimeException("Patient is null");
+        }
+
+        context.setContextValue("Patient", patientId);
+
+        FhirMeasureEvaluator evaluator = new FhirMeasureEvaluator();
+
+        // Java's date support is _so_ bad.
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(0);
+        cal.set(2014, Calendar.JANUARY, 1, 0, 0, 0);
+        Date periodStart = cal.getTime();
+        cal.set(2014, Calendar.DECEMBER, 31, 11, 59, 59);
+        Date periodEnd = cal.getTime();
+
+        org.hl7.fhir.dstu3.model.MeasureReport report = evaluator.evaluate(context, measure, patient, periodStart, periodEnd);
+
+        if (report == null) {
+            throw new RuntimeException("MeasureReport is null");
+        }
+
+        if (report.getEvaluatedResources() == null) {
+            throw new RuntimeException("EvaluatedResources is null");
+        }
+
+        System.out.println(String.format("Bundle url: %s", report.getEvaluatedResources().getReference()));
     }
 }
 

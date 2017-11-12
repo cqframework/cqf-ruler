@@ -18,6 +18,7 @@ import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.exceptions.MissingContextException;
 import org.opencds.cqf.helpers.Dstu2ToStu3;
 
@@ -78,14 +79,15 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
         // TODO - need a better way to determine library id
         Library library = getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("medication-prescribe"));
 
-        // TODO - make it so user can set this.
-        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
+        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServerEndpoint());
+        // TODO - assuming terminology service is same as data provider - not a great assumption...
+        dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint(request.getFhirServerEndpoint()));
+        dstu3Provider.setExpandValueSets(true);
 
         Context executionContext = new Context(library);
         executionContext.registerLibraryLoader(getLibraryLoader());
         executionContext.registerDataProvider("http://hl7.org/fhir", dstu3Provider);
         executionContext.setExpressionCaching(true);
-//        executionContext.setEnableTraceLogging(true);
         executionContext.setParameter(null, "Orders", activePrescriptions);
 
         return resolveActions(executionContext);

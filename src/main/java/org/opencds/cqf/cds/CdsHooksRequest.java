@@ -52,7 +52,7 @@ public class CdsHooksRequest {
     public String getFhirServerEndpoint() {
         if (fhirServerEndpoint == null) {
             String temp = requestJson.getAsJsonPrimitive("fhirServer").getAsString();
-            this.fhirServerEndpoint = temp == null ? "" : temp;
+            this.fhirServerEndpoint = temp == null || temp.isEmpty() ? "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3" : temp;
         }
         return fhirServerEndpoint;
     }

@@ -1,0 +1,46 @@
+{
+  "resourceType": "PlanDefinition",
+  "id": "radiology-appropriateness",
+  "status": "draft",
+  "library": {
+    "reference": "Library/order-review"
+  },
+  "action": [
+    {
+      "condition": [
+        {
+          "kind": "applicability",
+          "language": "text/cql",
+          "expression": "Is Appropriate Category"
+        }
+      ],
+      "definition": {
+        "reference": "ActivityDefinition/radiology-appropriate"
+      }
+    },
+    {
+      "condition": [
+        {
+          "kind": "applicability",
+          "language": "text/cql",
+          "expression": "Is Uncertain Category"
+        }
+      ],
+      "definition": {
+        "reference": "ActivityDefinition/radiology-uncertain"
+      }
+    },
+    {
+      "condition": [
+        {
+          "kind": "applicability",
+          "language": "text/cql",
+          "expression": "Is Inappropriate Category"
+        }
+      ],
+      "definition": {
+        "reference": "ActivityDefinition/radiology-inappropriate"
+      }
+    }
+  ]
+}

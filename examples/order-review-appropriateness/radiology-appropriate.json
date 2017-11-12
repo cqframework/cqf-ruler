@@ -1,0 +1,45 @@
+{
+  "resourceType": "ActivityDefinition",
+  "id": "radiology-appropriate",
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/us/qicore/StructureDefinition/procedurerequest-appropriatenessScore",
+      "valueDecimal": ""
+    }
+  ],
+  "status": "draft",
+  "description": "Adds appropriatenesScore to reource",
+  "library": [
+    {
+      "reference": "Library/order-review"
+    }
+  ],
+  "kind": "ProcedureRequest",
+  "dynamicValue": [
+    {
+      "description": "Set ProcedureRequest ID property",
+      "path": "id",
+      "expression": "order-review.\"Get ID\""
+    },
+    {
+      "description": "Set ProcedureRequest appropriatenessScore extension property",
+      "path": "extension[0].valueDecimal",
+      "expression": "order-review.\"Get Appropriateness Score\""
+    },
+    {
+      "description": "Set ProcedureRequest status property",
+      "path": "status",
+      "expression": "order-review.\"Get Status\""
+    },
+    {
+      "description": "Set ProcedureRequest intent property",
+      "path": "intent",
+      "expression": "order-review.\"Get Intent\""
+    },
+    {
+      "description": "Set ProcedureRequest priority property",
+      "path": "priority",
+      "expression": "order-review.\"Get Priority\""
+    }
+  ]
+}

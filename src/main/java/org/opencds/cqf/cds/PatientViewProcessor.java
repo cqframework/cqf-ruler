@@ -60,9 +60,9 @@ public class PatientViewProcessor extends CdsRequestProcessor {
         // TODO - need a better way to determine library id
         Library library = getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("patient-view"));
 
-        // TODO - make it so user can set this.
-        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
-        dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint("http://measure.eval.kanvix.com/cqf-ruler/baseDstu3"));
+        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServerEndpoint());
+        // TODO - assuming terminology service is same as data provider - not a great assumption...
+        dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint(request.getFhirServerEndpoint()));
         dstu3Provider.setExpandValueSets(true);
 
         Context executionContext = new Context(library);
@@ -71,7 +71,6 @@ public class PatientViewProcessor extends CdsRequestProcessor {
         executionContext.registerTerminologyProvider(dstu3Provider.getTerminologyProvider());
         executionContext.setContextValue("Patient", request.getPatientId());
         executionContext.setExpressionCaching(true);
-//        executionContext.setEnableTraceLogging(true);
 
         return resolveActions(executionContext);
     }
