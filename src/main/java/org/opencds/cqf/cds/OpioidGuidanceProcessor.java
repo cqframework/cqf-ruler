@@ -7,7 +7,6 @@ import org.cqframework.cql.cql2elm.ModelInfoProvider;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.elm.r1.VersionedIdentifier;
-import org.hl7.elm_modelinfo.r1.ModelInfo;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.config.STU3LibraryLoader;
@@ -16,13 +15,10 @@ import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.omtk.OmtkDataProvider;
+import org.opencds.cqf.opioidcds.OmtkDataProvider;
+import org.opencds.cqf.opioidcds.OmtkModelInfoProvider;
 
-import javax.xml.bind.JAXB;
-import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,10 +28,7 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
     private ModelManager getModelManager() {
         if (modelManager == null) {
             modelManager = new ModelManager();
-            ModelInfoProvider infoProvider = () -> {
-                Path p = Paths.get("src/main/resources/cds/OMTK-modelinfo-0.1.0.xml").toAbsolutePath();
-                return JAXB.unmarshal(new File(p.toString()), ModelInfo.class);
-            };
+            ModelInfoProvider infoProvider = new OmtkModelInfoProvider();
             ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("OMTK").withVersion("0.1.0"), infoProvider);
         }
         return modelManager;
