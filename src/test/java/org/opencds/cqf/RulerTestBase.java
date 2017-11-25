@@ -5,7 +5,6 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.cqframework.cql.elm.execution.Library;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -35,19 +34,20 @@ public class RulerTestBase {
     private static IGenericClient ourClient;
     private static FhirContext ourCtx = FhirContext.forDstu3();
 
-    protected static int ourPort;
+    private static int ourPort;
 
     private static Server ourServer;
     private static String ourServerBase;
 
-    private static Collection<IResourceProvider> providers;
+//    private static Collection<IResourceProvider> providers;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
 
         String path = Paths.get("").toAbsolutePath().toString();
 
-        ourPort = RandomServerPortProvider.findFreePort();
+        // changing from random to hard coded
+        ourPort = 8080;
         ourServer = new Server(ourPort);
 
         WebAppContext webAppContext = new WebAppContext();
@@ -85,11 +85,17 @@ public class RulerTestBase {
         Scanner scanner = new Scanner(is).useDelimiter("\\A");
         String json = scanner.hasNext() ? scanner.next() : "";
         IBaseResource resource = ourCtx.newJsonParser().parseResource(json);
-        ourClient.update(id, resource);
+
+        if (resource instanceof Bundle) {
+            ourClient.transaction().withBundle((Bundle) resource).execute();
+        }
+        else {
+            ourClient.update().resource(resource).withId(id).execute();
+        }
     }
 
     // this test requires the OpioidManagementTerminologyKnowledge.db file to be located in the src/main/resources/cds folder
-    //@Test
+//    @Test
     public void CdcOpioidGuidanceTest() throws IOException {
         putResource("cdc-opioid-guidance-library-omtk.json", "OMTKLogic");
         putResource("cdc-opioid-guidance-library-primary.json", "OpioidCdsStu3");
@@ -137,15 +143,7 @@ public class RulerTestBase {
 
     @Test
     public void MeasureProcessingTest() {
-        putResource("measure-processing-library.json", "col-logic");
-        putResource("measure-processing-measure.json", "col");
-        putResource("measure-processing-procedure.json", "Procedure-9");
-        putResource("measure-processing-condition.json", "Condition-13");
-        putResource("measure-processing-valueset-1.json", "2.16.840.1.113883.3.464.1003.108.11.1001");
-        putResource("measure-processing-valueset-2.json", "2.16.840.1.113883.3.464.1003.198.12.1019");
-        putResource("measure-processing-valueset-3.json", "2.16.840.1.113883.3.464.1003.108.12.1020");
-        putResource("measure-processing-valueset-4.json", "2.16.840.1.113883.3.464.1003.198.12.1010");
-        putResource("measure-processing-valueset-5.json", "2.16.840.1.113883.3.464.1003.198.12.1011");
+        putResource("measure-processing-bundle.json", "");
 
         Parameters inParams = new Parameters();
         inParams.addParameter().setName("patient").setValue(new StringType("Patient-12214"));
@@ -241,9 +239,10 @@ public class RulerTestBase {
         Assert.assertTrue(procedureRequest.getDoNotPerform());
     }
 
-    // TODO: fix this - HTTP 400 Bad Request: Unable to find imported value set 2.16.840.1.113883.3.464.1003.108.11.1001
-    //@Test
+    @Test
     public void TestMeasureEvaluator() throws IOException, JAXBException {
+        putResource("measure-processing-bundle.json", "");
+
         File xmlFile = new File(URLDecoder.decode(RulerHelperTests.class.getResource("library-col.elm.xml").getFile(), "UTF-8"));
         Library library = CqlLibraryReader.read(xmlFile);
 
@@ -291,6 +290,329 @@ public class RulerTestBase {
         }
 
         System.out.println(String.format("Bundle url: %s", report.getEvaluatedResources().getReference()));
+    }
+
+    @Test
+    public void BCSCdsHooksPatientViewTest() throws IOException {
+        putResource("cds-bcs-bundle.json", "");
+        putResource("cds-codesystems.json", "");
+        putResource("cds-valuesets.json", "");
+
+        // Get the CDS Hooks request
+        InputStream is = this.getClass().getResourceAsStream("cds-bcs-request.json");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
+        byte[] data = cdsHooksRequest.getBytes("UTF-8");
+
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/bcs-decision-support");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(data);
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"indicator\": \"info\",\n" +
+                "      \"suggestions\": [\n" +
+                "        {\n" +
+                "          \"actions\": [\n" +
+                "            {\n" +
+                "              \"type\": \"create\",\n" +
+                "              \"resource\": {\n" +
+                "                \"resourceType\": \"ProcedureRequest\",\n" +
+                "                \"status\": \"draft\",\n" +
+                "                \"intent\": \"order\",\n" +
+                "                \"code\": {\n" +
+                "                  \"coding\": [\n" +
+                "                    {\n" +
+                "                      \"system\": \"http://www.ama-assn.org/go/cpt\",\n" +
+                "                      \"code\": \"77056\",\n" +
+                "                      \"display\": \"Mammography; bilateral\"\n" +
+                "                    }\n" +
+                "                  ]\n" +
+                "                },\n" +
+                "                \"subject\": {\n" +
+                "                  \"reference\": \"Patient/Patient-6535\"\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        Assert.assertTrue(
+                response.toString().replaceAll("\\s+", "")
+                        .equals(expected.replaceAll("\\s+", ""))
+        );
+    }
+
+    @Test
+    public void CCSCdsHooksPatientViewTest() throws IOException {
+        putResource("cds-ccs-bundle.json", "");
+        putResource("cds-codesystems.json", "");
+        putResource("cds-valuesets.json", "");
+
+        // Get the CDS Hooks request
+        InputStream is = this.getClass().getResourceAsStream("cds-ccs-request.json");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
+        byte[] data = cdsHooksRequest.getBytes("UTF-8");
+
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/ccs-decision-support");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(data);
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"indicator\": \"info\",\n" +
+                "      \"suggestions\": [\n" +
+                "        {\n" +
+                "          \"actions\": [\n" +
+                "            {\n" +
+                "              \"type\": \"create\",\n" +
+                "              \"resource\": {\n" +
+                "                \"resourceType\": \"ProcedureRequest\",\n" +
+                "                \"status\": \"draft\",\n" +
+                "                \"intent\": \"order\",\n" +
+                "                \"code\": {\n" +
+                "                  \"coding\": [\n" +
+                "                    {\n" +
+                "                      \"system\": \"http://loinc.org\",\n" +
+                "                      \"code\": \"33717-0\",\n" +
+                "                      \"display\": \"Cytology Cervical or vaginal smear or scraping study\"\n" +
+                "                    }\n" +
+                "                  ]\n" +
+                "                },\n" +
+                "                \"subject\": {\n" +
+                "                  \"reference\": \"Patient/Patient-6532\"\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        Assert.assertTrue(
+                response.toString().replaceAll("\\s+", "")
+                        .equals(expected.replaceAll("\\s+", ""))
+        );
+    }
+
+    @Test
+    public void COLCdsHooksPatientViewTest() throws IOException {
+        putResource("cds-col-bundle.json", "");
+        putResource("cds-codesystems.json", "");
+        putResource("cds-valuesets.json", "");
+
+        // Get the CDS Hooks request
+        InputStream is = this.getClass().getResourceAsStream("cds-col-request.json");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
+        byte[] data = cdsHooksRequest.getBytes("UTF-8");
+
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/col-decision-support");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(data);
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"indicator\": \"info\",\n" +
+                "      \"suggestions\": [\n" +
+                "        {\n" +
+                "          \"actions\": [\n" +
+                "            {\n" +
+                "              \"type\": \"create\",\n" +
+                "              \"resource\": {\n" +
+                "                \"resourceType\": \"ProcedureRequest\",\n" +
+                "                \"status\": \"draft\",\n" +
+                "                \"intent\": \"order\",\n" +
+                "                \"code\": {\n" +
+                "                  \"coding\": [\n" +
+                "                    {\n" +
+                "                      \"system\": \"http://www.ama-assn.org/go/cpt\",\n" +
+                "                      \"code\": \"82272\",\n" +
+                "                      \"display\": \"Fecal Occult Blood Test\"\n" +
+                "                    }\n" +
+                "                  ]\n" +
+                "                },\n" +
+                "                \"subject\": {\n" +
+                "                  \"reference\": \"Patient/Patient-276\"\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"indicator\": \"info\",\n" +
+                "      \"suggestions\": [\n" +
+                "        {\n" +
+                "          \"actions\": [\n" +
+                "            {\n" +
+                "              \"type\": \"create\",\n" +
+                "              \"resource\": {\n" +
+                "                \"resourceType\": \"ProcedureRequest\",\n" +
+                "                \"status\": \"draft\",\n" +
+                "                \"intent\": \"order\",\n" +
+                "                \"code\": {\n" +
+                "                  \"coding\": [\n" +
+                "                    {\n" +
+                "                      \"system\": \"http://www.ama-assn.org/go/cpt\",\n" +
+                "                      \"code\": \"45530\",\n" +
+                "                      \"display\": \"Sigmoidoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)\"\n" +
+                "                    }\n" +
+                "                  ]\n" +
+                "                },\n" +
+                "                \"subject\": {\n" +
+                "                  \"reference\": \"Patient/Patient-276\"\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"indicator\": \"info\",\n" +
+                "      \"suggestions\": [\n" +
+                "        {\n" +
+                "          \"actions\": [\n" +
+                "            {\n" +
+                "              \"type\": \"create\",\n" +
+                "              \"resource\": {\n" +
+                "                \"resourceType\": \"ProcedureRequest\",\n" +
+                "                \"status\": \"draft\",\n" +
+                "                \"intent\": \"order\",\n" +
+                "                \"code\": {\n" +
+                "                  \"coding\": [\n" +
+                "                    {\n" +
+                "                      \"system\": \"http://hl7.org/fhir/sid/icd-9-cm\",\n" +
+                "                      \"code\": \"45.23\",\n" +
+                "                      \"display\": \"Colonoscopy\"\n" +
+                "                    }\n" +
+                "                  ]\n" +
+                "                },\n" +
+                "                \"subject\": {\n" +
+                "                  \"reference\": \"Patient/Patient-276\"\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"indicator\": \"info\",\n" +
+                "      \"suggestions\": [\n" +
+                "        {\n" +
+                "          \"actions\": [\n" +
+                "            {\n" +
+                "              \"type\": \"create\",\n" +
+                "              \"resource\": {\n" +
+                "                \"resourceType\": \"ProcedureRequest\",\n" +
+                "                \"status\": \"draft\",\n" +
+                "                \"intent\": \"order\",\n" +
+                "                \"code\": {\n" +
+                "                  \"coding\": [\n" +
+                "                    {\n" +
+                "                      \"system\": \"http://www.ama-assn.org/go/cpt\",\n" +
+                "                      \"code\": \"74261\",\n" +
+                "                      \"display\": \"Computed tomographic (CT) colonography, diagnostic, including image postprocessing, without contract material\"\n" +
+                "                    }\n" +
+                "                  ]\n" +
+                "                },\n" +
+                "                \"subject\": {\n" +
+                "                  \"reference\": \"Patient/Patient-276\"\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"indicator\": \"info\",\n" +
+                "      \"suggestions\": [\n" +
+                "        {\n" +
+                "          \"actions\": [\n" +
+                "            {\n" +
+                "              \"type\": \"create\",\n" +
+                "              \"resource\": {\n" +
+                "                \"resourceType\": \"ProcedureRequest\",\n" +
+                "                \"status\": \"draft\",\n" +
+                "                \"intent\": \"order\",\n" +
+                "                \"code\": {\n" +
+                "                  \"coding\": [\n" +
+                "                    {\n" +
+                "                      \"system\": \"http://www.ama-assn.org/go/cpt\",\n" +
+                "                      \"code\": \"81528\",\n" +
+                "                      \"display\": \"Oncology (colorectal) screening, quantitative real-time target and signal amplification of 10 DNA markers (KRAS mutations, promoter methylation of NDRG4 and BMP3) and fecal hemoglobin, utilizing stool, algorithm reported as a positive or negative result\"\n" +
+                "                    }\n" +
+                "                  ]\n" +
+                "                },\n" +
+                "                \"subject\": {\n" +
+                "                  \"reference\": \"Patient/Patient-276\"\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}\n";
+
+        Assert.assertTrue(
+                response.toString().replaceAll("\\s+", "")
+                        .equals(expected.replaceAll("\\s+", ""))
+        );
     }
 }
 

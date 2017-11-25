@@ -1,0 +1,2655 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Library",
+        "id": "col-logic",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-09T21:25:51.679-06:00"
+        },
+        "status": "draft",
+        "type": {
+          "coding": [
+            {
+              "code": "logic-library"
+            }
+          ]
+        },
+        "content": [
+          {
+            "contentType": "application/elm+xml",
+            "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjxsaWJyYXJ5IHhtbG5zPSJ1cm46aGw3LW9yZzplbG06cjEiIHhtbG5zOnQ9InVybjpobDctb3JnOmVsbS10eXBlczpyMSIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSIgeG1sbnM6eHNkPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYSIgeG1sbnM6Zmhpcj0iaHR0cDovL2hsNy5vcmcvZmhpciIgeG1sbnM6YT0idXJuOmhsNy1vcmc6Y3FsLWFubm90YXRpb25zOnIxIj4NCiAgIDxpZGVudGlmaWVyIGlkPSJDT0wiIHZlcnNpb249IjEiLz4NCiAgIDxzY2hlbWFJZGVudGlmaWVyIGlkPSJ1cm46aGw3LW9yZzplbG0iIHZlcnNpb249InIxIi8+DQogICA8dXNpbmdzPg0KICAgICAgPGRlZiBsb2NhbElkZW50aWZpZXI9IlN5c3RlbSIgdXJpPSJ1cm46aGw3LW9yZzplbG0tdHlwZXM6cjEiLz4NCiAgICAgIDxkZWYgbG9jYWxJZGVudGlmaWVyPSJGSElSIiB1cmk9Imh0dHA6Ly9obDcub3JnL2ZoaXIiIHZlcnNpb249IjEuNiIvPg0KICAgPC91c2luZ3M+DQogICA8cGFyYW1ldGVycz4NCiAgICAgIDxkZWYgbmFtZT0iTWVhc3VyZW1lbnRQZXJpb2QiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPg0KICAgICAgICAgPHBhcmFtZXRlclR5cGVTcGVjaWZpZXIgeHNpOnR5cGU9IkludGVydmFsVHlwZVNwZWNpZmllciI+DQogICAgICAgICAgICA8cG9pbnRUeXBlIG5hbWU9InQ6RGF0ZVRpbWUiIHhzaTp0eXBlPSJOYW1lZFR5cGVTcGVjaWZpZXIiLz4NCiAgICAgICAgIDwvcGFyYW1ldGVyVHlwZVNwZWNpZmllcj4NCiAgICAgIDwvZGVmPg0KICAgPC9wYXJhbWV0ZXJzPg0KICAgPGNvZGVTeXN0ZW1zPg0KICAgICAgPGRlZiBuYW1lPSJDUFQiIGlkPSJ1cm46b2lkOjIuMTYuODQwLjEuMTEzODgzLjYuMTIiIGFjY2Vzc0xldmVsPSJQdWJsaWMiLz4NCiAgICAgIDxkZWYgbmFtZT0iU05PTUVELUNUIiBpZD0idXJuOm9pZDoyLjE2Ljg0MC4xLjExMzg4My42Ljk2IiBhY2Nlc3NMZXZlbD0iUHVibGljIi8+DQogICAgICA8ZGVmIG5hbWU9IkxPSU5DIiBpZD0iaHR0cDovL2xvaW5jLm9yZyIgYWNjZXNzTGV2ZWw9IlB1YmxpYyIvPg0KICAgPC9jb2RlU3lzdGVtcz4NCiAgIDx2YWx1ZVNldHM+DQogICAgICA8ZGVmIG5hbWU9Ik1hbGlnbmFudCBOZW9wbGFzbSBvZiBDb2xvbiIgaWQ9IjIuMTYuODQwLjEuMTEzODgzLjMuNDY0LjEwMDMuMTA4LjExLjEwMDEiIGFjY2Vzc0xldmVsPSJQdWJsaWMiLz4NCiAgICAgIDxkZWYgbmFtZT0iVG90YWwgQ29sZWN0b215IiBpZD0iMi4xNi44NDAuMS4xMTM4ODMuMy40NjQuMTAwMy4xOTguMTIuMTAxOSIgYWNjZXNzTGV2ZWw9IlB1YmxpYyIvPg0KICAgICAgPGRlZiBuYW1lPSJDb2xvbm9zY29weSIgaWQ9IjIuMTYuODQwLjEuMTEzODgzLjMuNDY0LjEwMDMuMTA4LjEyLjEwMjAiIGFjY2Vzc0xldmVsPSJQdWJsaWMiLz4NCiAgICAgIDxkZWYgbmFtZT0iRmxleGlibGUgU2lnbW9pZG9zY29weSIgaWQ9IjIuMTYuODQwLjEuMTEzODgzLjMuNDY0LjEwMDMuMTk4LjEyLjEwMTAiIGFjY2Vzc0xldmVsPSJQdWJsaWMiLz4NCiAgICAgIDxkZWYgbmFtZT0iRmVjYWwgT2NjdWx0IEJsb29kIFRlc3QgKEZPQlQpIiBpZD0iMi4xNi44NDAuMS4xMTM4ODMuMy40NjQuMTAwMy4xOTguMTIuMTAxMSIgYWNjZXNzTGV2ZWw9IlB1YmxpYyIvPg0KICAgPC92YWx1ZVNldHM+DQogICA8c3RhdGVtZW50cz4NCiAgICAgIDxkZWYgbmFtZT0iUGF0aWVudCIgY29udGV4dD0iUGF0aWVudCI+DQogICAgICAgICA8ZXhwcmVzc2lvbiB4c2k6dHlwZT0iU2luZ2xldG9uRnJvbSI+DQogICAgICAgICAgICA8b3BlcmFuZCBkYXRhVHlwZT0iZmhpcjpQYXRpZW50IiB4c2k6dHlwZT0iUmV0cmlldmUiLz4NCiAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgIDwvZGVmPg0KICAgICAgPGRlZiBuYW1lPSJMb29rYmFjayBJbnRlcnZhbCBPbmUgWWVhciIgY29udGV4dD0iUGF0aWVudCIgYWNjZXNzTGV2ZWw9IlB1YmxpYyI+DQogICAgICAgICA8ZXhwcmVzc2lvbiBsb3dDbG9zZWQ9InRydWUiIGhpZ2hDbG9zZWQ9InRydWUiIHhzaTp0eXBlPSJJbnRlcnZhbCI+DQogICAgICAgICAgICA8bG93IHhzaTp0eXBlPSJTdWJ0cmFjdCI+DQogICAgICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iU3RhcnQiPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgbmFtZT0iTWVhc3VyZW1lbnRQZXJpb2QiIHhzaTp0eXBlPSJQYXJhbWV0ZXJSZWYiLz4NCiAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHZhbHVlPSIxIiB1bml0PSJ5ZWFycyIgeHNpOnR5cGU9IlF1YW50aXR5Ii8+DQogICAgICAgICAgICA8L2xvdz4NCiAgICAgICAgICAgIDxoaWdoIHhzaTp0eXBlPSJFbmQiPg0KICAgICAgICAgICAgICAgPG9wZXJhbmQgbmFtZT0iTWVhc3VyZW1lbnRQZXJpb2QiIHhzaTp0eXBlPSJQYXJhbWV0ZXJSZWYiLz4NCiAgICAgICAgICAgIDwvaGlnaD4NCiAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgIDwvZGVmPg0KICAgICAgPGRlZiBuYW1lPSJMb29rYmFjayBJbnRlcnZhbCBGaXZlIFllYXJzIiBjb250ZXh0PSJQYXRpZW50IiBhY2Nlc3NMZXZlbD0iUHVibGljIj4NCiAgICAgICAgIDxleHByZXNzaW9uIGxvd0Nsb3NlZD0idHJ1ZSIgaGlnaENsb3NlZD0idHJ1ZSIgeHNpOnR5cGU9IkludGVydmFsIj4NCiAgICAgICAgICAgIDxsb3cgeHNpOnR5cGU9IlN1YnRyYWN0Ij4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJTdGFydCI+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCBuYW1lPSJNZWFzdXJlbWVudFBlcmlvZCIgeHNpOnR5cGU9IlBhcmFtZXRlclJlZiIvPg0KICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgPG9wZXJhbmQgdmFsdWU9IjUiIHVuaXQ9InllYXJzIiB4c2k6dHlwZT0iUXVhbnRpdHkiLz4NCiAgICAgICAgICAgIDwvbG93Pg0KICAgICAgICAgICAgPGhpZ2ggeHNpOnR5cGU9IkVuZCI+DQogICAgICAgICAgICAgICA8b3BlcmFuZCBuYW1lPSJNZWFzdXJlbWVudFBlcmlvZCIgeHNpOnR5cGU9IlBhcmFtZXRlclJlZiIvPg0KICAgICAgICAgICAgPC9oaWdoPg0KICAgICAgICAgPC9leHByZXNzaW9uPg0KICAgICAgPC9kZWY+DQogICAgICA8ZGVmIG5hbWU9Ikxvb2tiYWNrIEludGVydmFsIFRlbiBZZWFycyIgY29udGV4dD0iUGF0aWVudCIgYWNjZXNzTGV2ZWw9IlB1YmxpYyI+DQogICAgICAgICA8ZXhwcmVzc2lvbiBsb3dDbG9zZWQ9InRydWUiIGhpZ2hDbG9zZWQ9InRydWUiIHhzaTp0eXBlPSJJbnRlcnZhbCI+DQogICAgICAgICAgICA8bG93IHhzaTp0eXBlPSJTdWJ0cmFjdCI+DQogICAgICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iU3RhcnQiPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgbmFtZT0iTWVhc3VyZW1lbnRQZXJpb2QiIHhzaTp0eXBlPSJQYXJhbWV0ZXJSZWYiLz4NCiAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHZhbHVlPSIxMCIgdW5pdD0ieWVhcnMiIHhzaTp0eXBlPSJRdWFudGl0eSIvPg0KICAgICAgICAgICAgPC9sb3c+DQogICAgICAgICAgICA8aGlnaCB4c2k6dHlwZT0iRW5kIj4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIG5hbWU9Ik1lYXN1cmVtZW50UGVyaW9kIiB4c2k6dHlwZT0iUGFyYW1ldGVyUmVmIi8+DQogICAgICAgICAgICA8L2hpZ2g+DQogICAgICAgICA8L2V4cHJlc3Npb24+DQogICAgICA8L2RlZj4NCiAgICAgIDxkZWYgbmFtZT0iSW4gRGVtb2dyYXBoaWMiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPg0KICAgICAgICAgPGV4cHJlc3Npb24geHNpOnR5cGU9IkdyZWF0ZXJPckVxdWFsIj4NCiAgICAgICAgICAgIDxvcGVyYW5kIHByZWNpc2lvbj0iWWVhciIgeHNpOnR5cGU9IkNhbGN1bGF0ZUFnZUF0Ij4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHBhdGg9ImJpcnRoRGF0ZS52YWx1ZSIgeHNpOnR5cGU9IlByb3BlcnR5Ij4NCiAgICAgICAgICAgICAgICAgIDxzb3VyY2UgbmFtZT0iUGF0aWVudCIgeHNpOnR5cGU9IkV4cHJlc3Npb25SZWYiLz4NCiAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJTdGFydCI+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCBuYW1lPSJNZWFzdXJlbWVudFBlcmlvZCIgeHNpOnR5cGU9IlBhcmFtZXRlclJlZiIvPg0KICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgPG9wZXJhbmQgdmFsdWVUeXBlPSJ0OkludGVnZXIiIHZhbHVlPSI1MCIgeHNpOnR5cGU9IkxpdGVyYWwiLz4NCiAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgIDwvZGVmPg0KICAgICAgPGRlZiBuYW1lPSJIeCBDb2xvcmVjdGFsIENhbmNlciIgY29udGV4dD0iUGF0aWVudCIgYWNjZXNzTGV2ZWw9IlB1YmxpYyI+DQogICAgICAgICA8ZXhwcmVzc2lvbiB4c2k6dHlwZT0iUXVlcnkiPg0KICAgICAgICAgICAgPHNvdXJjZSBhbGlhcz0iQyI+DQogICAgICAgICAgICAgICA8ZXhwcmVzc2lvbiBkYXRhVHlwZT0iZmhpcjpDb25kaXRpb24iIGNvZGVQcm9wZXJ0eT0iY29kZSIgeHNpOnR5cGU9IlJldHJpZXZlIj4NCiAgICAgICAgICAgICAgICAgIDxjb2RlcyBuYW1lPSJNYWxpZ25hbnQgTmVvcGxhc20gb2YgQ29sb24iIHhzaTp0eXBlPSJWYWx1ZVNldFJlZiIvPg0KICAgICAgICAgICAgICAgPC9leHByZXNzaW9uPg0KICAgICAgICAgICAgPC9zb3VyY2U+DQogICAgICAgICAgICA8d2hlcmUgeHNpOnR5cGU9IkFuZCI+DQogICAgICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iRXF1YWwiPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgcGF0aD0idmFsdWUiIHhzaTp0eXBlPSJQcm9wZXJ0eSI+DQogICAgICAgICAgICAgICAgICAgICA8c291cmNlIHBhdGg9ImNsaW5pY2FsU3RhdHVzIiBzY29wZT0iQyIgeHNpOnR5cGU9IlByb3BlcnR5Ii8+DQogICAgICAgICAgICAgICAgICA8L29wZXJhbmQ+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCB2YWx1ZVR5cGU9InQ6U3RyaW5nIiB2YWx1ZT0iYWN0aXZlIiB4c2k6dHlwZT0iTGl0ZXJhbCIvPg0KICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgPG9wZXJhbmQgeHNpOnR5cGU9IkVxdWFsIj4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIHBhdGg9InZhbHVlIiB4c2k6dHlwZT0iUHJvcGVydHkiPg0KICAgICAgICAgICAgICAgICAgICAgPHNvdXJjZSBwYXRoPSJ2ZXJpZmljYXRpb25TdGF0dXMiIHNjb3BlPSJDIiB4c2k6dHlwZT0iUHJvcGVydHkiLz4NCiAgICAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIHZhbHVlVHlwZT0idDpTdHJpbmciIHZhbHVlPSJjb25maXJtZWQiIHhzaTp0eXBlPSJMaXRlcmFsIi8+DQogICAgICAgICAgICAgICA8L29wZXJhbmQ+DQogICAgICAgICAgICA8L3doZXJlPg0KICAgICAgICAgPC9leHByZXNzaW9uPg0KICAgICAgPC9kZWY+DQogICAgICA8ZGVmIG5hbWU9Ikh4IFRvdGFsIENvbGVjdG9teSIgY29udGV4dD0iUGF0aWVudCIgYWNjZXNzTGV2ZWw9IlB1YmxpYyI+DQogICAgICAgICA8ZXhwcmVzc2lvbiB4c2k6dHlwZT0iUXVlcnkiPg0KICAgICAgICAgICAgPHNvdXJjZSBhbGlhcz0iVCI+DQogICAgICAgICAgICAgICA8ZXhwcmVzc2lvbiBkYXRhVHlwZT0iZmhpcjpQcm9jZWR1cmUiIGNvZGVQcm9wZXJ0eT0iY29kZSIgeHNpOnR5cGU9IlJldHJpZXZlIj4NCiAgICAgICAgICAgICAgICAgIDxjb2RlcyBuYW1lPSJUb3RhbCBDb2xlY3RvbXkiIHhzaTp0eXBlPSJWYWx1ZVNldFJlZiIvPg0KICAgICAgICAgICAgICAgPC9leHByZXNzaW9uPg0KICAgICAgICAgICAgPC9zb3VyY2U+DQogICAgICAgICAgICA8d2hlcmUgeHNpOnR5cGU9IkVxdWFsIj4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHBhdGg9InZhbHVlIiB4c2k6dHlwZT0iUHJvcGVydHkiPg0KICAgICAgICAgICAgICAgICAgPHNvdXJjZSBwYXRoPSJzdGF0dXMiIHNjb3BlPSJUIiB4c2k6dHlwZT0iUHJvcGVydHkiLz4NCiAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHZhbHVlVHlwZT0idDpTdHJpbmciIHZhbHVlPSJjb21wbGV0ZWQiIHhzaTp0eXBlPSJMaXRlcmFsIi8+DQogICAgICAgICAgICA8L3doZXJlPg0KICAgICAgICAgPC9leHByZXNzaW9uPg0KICAgICAgPC9kZWY+DQogICAgICA8ZGVmIG5hbWU9IkNvbG9ub3Njb3B5IFBlcmZvcm1lZCIgY29udGV4dD0iUGF0aWVudCIgYWNjZXNzTGV2ZWw9IlB1YmxpYyI+DQogICAgICAgICA8ZXhwcmVzc2lvbiB4c2k6dHlwZT0iUXVlcnkiPg0KICAgICAgICAgICAgPHNvdXJjZSBhbGlhcz0iQyI+DQogICAgICAgICAgICAgICA8ZXhwcmVzc2lvbiBkYXRhVHlwZT0iZmhpcjpQcm9jZWR1cmUiIGNvZGVQcm9wZXJ0eT0iY29kZSIgeHNpOnR5cGU9IlJldHJpZXZlIj4NCiAgICAgICAgICAgICAgICAgIDxjb2RlcyBuYW1lPSJDb2xvbm9zY29weSIgeHNpOnR5cGU9IlZhbHVlU2V0UmVmIi8+DQogICAgICAgICAgICAgICA8L2V4cHJlc3Npb24+DQogICAgICAgICAgICA8L3NvdXJjZT4NCiAgICAgICAgICAgIDx3aGVyZSB4c2k6dHlwZT0iQW5kIj4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJFcXVhbCI+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCBwYXRoPSJ2YWx1ZSIgeHNpOnR5cGU9IlByb3BlcnR5Ij4NCiAgICAgICAgICAgICAgICAgICAgIDxzb3VyY2UgcGF0aD0ic3RhdHVzIiBzY29wZT0iQyIgeHNpOnR5cGU9IlByb3BlcnR5Ii8+DQogICAgICAgICAgICAgICAgICA8L29wZXJhbmQ+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCB2YWx1ZVR5cGU9InQ6U3RyaW5nIiB2YWx1ZT0iY29tcGxldGVkIiB4c2k6dHlwZT0iTGl0ZXJhbCIvPg0KICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgPG9wZXJhbmQgeHNpOnR5cGU9IkluIj4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIHBhdGg9InZhbHVlIiB4c2k6dHlwZT0iUHJvcGVydHkiPg0KICAgICAgICAgICAgICAgICAgICAgPHNvdXJjZSBwYXRoPSJlbmQiIHhzaTp0eXBlPSJQcm9wZXJ0eSI+DQogICAgICAgICAgICAgICAgICAgICAgICA8c291cmNlIHBhdGg9InBlcmZvcm1lZFBlcmlvZCIgc2NvcGU9IkMiIHhzaTp0eXBlPSJQcm9wZXJ0eSIvPg0KICAgICAgICAgICAgICAgICAgICAgPC9zb3VyY2U+DQogICAgICAgICAgICAgICAgICA8L29wZXJhbmQ+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCBuYW1lPSJMb29rYmFjayBJbnRlcnZhbCBUZW4gWWVhcnMiIHhzaTp0eXBlPSJFeHByZXNzaW9uUmVmIi8+DQogICAgICAgICAgICAgICA8L29wZXJhbmQ+DQogICAgICAgICAgICA8L3doZXJlPg0KICAgICAgICAgPC9leHByZXNzaW9uPg0KICAgICAgPC9kZWY+DQogICAgICA8ZGVmIG5hbWU9IkNvbG9ub3Njb3B5IFJlc3VsdHMiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPg0KICAgICAgICAgPGV4cHJlc3Npb24geHNpOnR5cGU9IlF1ZXJ5Ij4NCiAgICAgICAgICAgIDxzb3VyY2UgYWxpYXM9IkMiPg0KICAgICAgICAgICAgICAgPGV4cHJlc3Npb24gZGF0YVR5cGU9ImZoaXI6T2JzZXJ2YXRpb24iIGNvZGVQcm9wZXJ0eT0iY29kZSIgeHNpOnR5cGU9IlJldHJpZXZlIj4NCiAgICAgICAgICAgICAgICAgIDxjb2RlcyBuYW1lPSJDb2xvbm9zY29weSIgeHNpOnR5cGU9IlZhbHVlU2V0UmVmIi8+DQogICAgICAgICAgICAgICA8L2V4cHJlc3Npb24+DQogICAgICAgICAgICA8L3NvdXJjZT4NCiAgICAgICAgICAgIDx3aGVyZSB4c2k6dHlwZT0iQW5kIj4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJFcXVhbCI+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCBwYXRoPSJ2YWx1ZSIgeHNpOnR5cGU9IlByb3BlcnR5Ij4NCiAgICAgICAgICAgICAgICAgICAgIDxzb3VyY2UgcGF0aD0ic3RhdHVzIiBzY29wZT0iQyIgeHNpOnR5cGU9IlByb3BlcnR5Ii8+DQogICAgICAgICAgICAgICAgICA8L29wZXJhbmQ+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCB2YWx1ZVR5cGU9InQ6U3RyaW5nIiB2YWx1ZT0iZmluYWwiIHhzaTp0eXBlPSJMaXRlcmFsIi8+DQogICAgICAgICAgICAgICA8L29wZXJhbmQ+DQogICAgICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iSW4iPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgcGF0aD0idmFsdWUiIHhzaTp0eXBlPSJQcm9wZXJ0eSI+DQogICAgICAgICAgICAgICAgICAgICA8c291cmNlIHBhdGg9ImVmZmVjdGl2ZURhdGVUaW1lIiBzY29wZT0iQyIgeHNpOnR5cGU9IlByb3BlcnR5Ii8+DQogICAgICAgICAgICAgICAgICA8L29wZXJhbmQ+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCBuYW1lPSJMb29rYmFjayBJbnRlcnZhbCBUZW4gWWVhcnMiIHhzaTp0eXBlPSJFeHByZXNzaW9uUmVmIi8+DQogICAgICAgICAgICAgICA8L29wZXJhbmQ+DQogICAgICAgICAgICA8L3doZXJlPg0KICAgICAgICAgPC9leHByZXNzaW9uPg0KICAgICAgPC9kZWY+DQogICAgICA8ZGVmIG5hbWU9IlNpZ21vaWRvc2NvcHkgUHJvY2VkdXJlIiBjb250ZXh0PSJQYXRpZW50IiBhY2Nlc3NMZXZlbD0iUHVibGljIj4NCiAgICAgICAgIDxleHByZXNzaW9uIHhzaTp0eXBlPSJRdWVyeSI+DQogICAgICAgICAgICA8c291cmNlIGFsaWFzPSJTIj4NCiAgICAgICAgICAgICAgIDxleHByZXNzaW9uIGRhdGFUeXBlPSJmaGlyOlByb2NlZHVyZSIgY29kZVByb3BlcnR5PSJjb2RlIiB4c2k6dHlwZT0iUmV0cmlldmUiPg0KICAgICAgICAgICAgICAgICAgPGNvZGVzIG5hbWU9IkZsZXhpYmxlIFNpZ21vaWRvc2NvcHkiIHhzaTp0eXBlPSJWYWx1ZVNldFJlZiIvPg0KICAgICAgICAgICAgICAgPC9leHByZXNzaW9uPg0KICAgICAgICAgICAgPC9zb3VyY2U+DQogICAgICAgICAgICA8d2hlcmUgeHNpOnR5cGU9IkFuZCI+DQogICAgICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iRXF1YWwiPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgcGF0aD0idmFsdWUiIHhzaTp0eXBlPSJQcm9wZXJ0eSI+DQogICAgICAgICAgICAgICAgICAgICA8c291cmNlIHBhdGg9InN0YXR1cyIgc2NvcGU9IlMiIHhzaTp0eXBlPSJQcm9wZXJ0eSIvPg0KICAgICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgdmFsdWVUeXBlPSJ0OlN0cmluZyIgdmFsdWU9ImNvbXBsZXRlZCIgeHNpOnR5cGU9IkxpdGVyYWwiLz4NCiAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJJbiI+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCBwYXRoPSJ2YWx1ZSIgeHNpOnR5cGU9IlByb3BlcnR5Ij4NCiAgICAgICAgICAgICAgICAgICAgIDxzb3VyY2UgcGF0aD0iZW5kIiB4c2k6dHlwZT0iUHJvcGVydHkiPg0KICAgICAgICAgICAgICAgICAgICAgICAgPHNvdXJjZSBwYXRoPSJwZXJmb3JtZWRQZXJpb2QiIHNjb3BlPSJTIiB4c2k6dHlwZT0iUHJvcGVydHkiLz4NCiAgICAgICAgICAgICAgICAgICAgIDwvc291cmNlPg0KICAgICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgbmFtZT0iTG9va2JhY2sgSW50ZXJ2YWwgRml2ZSBZZWFycyIgeHNpOnR5cGU9IkV4cHJlc3Npb25SZWYiLz4NCiAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgIDwvd2hlcmU+DQogICAgICAgICA8L2V4cHJlc3Npb24+DQogICAgICA8L2RlZj4NCiAgICAgIDxkZWYgbmFtZT0iU2lnbW9pZG9zY29weSBPYnNlcnZhdGlvbiIgY29udGV4dD0iUGF0aWVudCIgYWNjZXNzTGV2ZWw9IlB1YmxpYyI+DQogICAgICAgICA8ZXhwcmVzc2lvbiB4c2k6dHlwZT0iUXVlcnkiPg0KICAgICAgICAgICAgPHNvdXJjZSBhbGlhcz0iTyI+DQogICAgICAgICAgICAgICA8ZXhwcmVzc2lvbiBkYXRhVHlwZT0iZmhpcjpPYnNlcnZhdGlvbiIgY29kZVByb3BlcnR5PSJjb2RlIiB4c2k6dHlwZT0iUmV0cmlldmUiPg0KICAgICAgICAgICAgICAgICAgPGNvZGVzIG5hbWU9IkZsZXhpYmxlIFNpZ21vaWRvc2NvcHkiIHhzaTp0eXBlPSJWYWx1ZVNldFJlZiIvPg0KICAgICAgICAgICAgICAgPC9leHByZXNzaW9uPg0KICAgICAgICAgICAgPC9zb3VyY2U+DQogICAgICAgICAgICA8d2hlcmUgeHNpOnR5cGU9IkFuZCI+DQogICAgICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iRXF1YWwiPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgcGF0aD0idmFsdWUiIHhzaTp0eXBlPSJQcm9wZXJ0eSI+DQogICAgICAgICAgICAgICAgICAgICA8c291cmNlIHBhdGg9InN0YXR1cyIgc2NvcGU9Ik8iIHhzaTp0eXBlPSJQcm9wZXJ0eSIvPg0KICAgICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgdmFsdWVUeXBlPSJ0OlN0cmluZyIgdmFsdWU9ImZpbmFsIiB4c2k6dHlwZT0iTGl0ZXJhbCIvPg0KICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgPG9wZXJhbmQgeHNpOnR5cGU9IkluIj4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIHBhdGg9InZhbHVlIiB4c2k6dHlwZT0iUHJvcGVydHkiPg0KICAgICAgICAgICAgICAgICAgICAgPHNvdXJjZSBwYXRoPSJlZmZlY3RpdmVEYXRlVGltZSIgc2NvcGU9Ik8iIHhzaTp0eXBlPSJQcm9wZXJ0eSIvPg0KICAgICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgbmFtZT0iTG9va2JhY2sgSW50ZXJ2YWwgRml2ZSBZZWFycyIgeHNpOnR5cGU9IkV4cHJlc3Npb25SZWYiLz4NCiAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgIDwvd2hlcmU+DQogICAgICAgICA8L2V4cHJlc3Npb24+DQogICAgICA8L2RlZj4NCiAgICAgIDxkZWYgbmFtZT0iRk9CVCBQcm9jZWR1cmUiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPg0KICAgICAgICAgPGV4cHJlc3Npb24geHNpOnR5cGU9IlF1ZXJ5Ij4NCiAgICAgICAgICAgIDxzb3VyY2UgYWxpYXM9IkYiPg0KICAgICAgICAgICAgICAgPGV4cHJlc3Npb24gZGF0YVR5cGU9ImZoaXI6UHJvY2VkdXJlIiBjb2RlUHJvcGVydHk9ImNvZGUiIHhzaTp0eXBlPSJSZXRyaWV2ZSI+DQogICAgICAgICAgICAgICAgICA8Y29kZXMgbmFtZT0iRmVjYWwgT2NjdWx0IEJsb29kIFRlc3QgKEZPQlQpIiB4c2k6dHlwZT0iVmFsdWVTZXRSZWYiLz4NCiAgICAgICAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgICAgICAgIDwvc291cmNlPg0KICAgICAgICAgICAgPHdoZXJlIHhzaTp0eXBlPSJBbmQiPg0KICAgICAgICAgICAgICAgPG9wZXJhbmQgeHNpOnR5cGU9IkVxdWFsIj4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIHBhdGg9InZhbHVlIiB4c2k6dHlwZT0iUHJvcGVydHkiPg0KICAgICAgICAgICAgICAgICAgICAgPHNvdXJjZSBwYXRoPSJzdGF0dXMiIHNjb3BlPSJGIiB4c2k6dHlwZT0iUHJvcGVydHkiLz4NCiAgICAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIHZhbHVlVHlwZT0idDpTdHJpbmciIHZhbHVlPSJjb21wbGV0ZWQiIHhzaTp0eXBlPSJMaXRlcmFsIi8+DQogICAgICAgICAgICAgICA8L29wZXJhbmQ+DQogICAgICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iSW4iPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgcGF0aD0idmFsdWUiIHhzaTp0eXBlPSJQcm9wZXJ0eSI+DQogICAgICAgICAgICAgICAgICAgICA8c291cmNlIHBhdGg9ImVuZCIgeHNpOnR5cGU9IlByb3BlcnR5Ij4NCiAgICAgICAgICAgICAgICAgICAgICAgIDxzb3VyY2UgcGF0aD0icGVyZm9ybWVkUGVyaW9kIiBzY29wZT0iRiIgeHNpOnR5cGU9IlByb3BlcnR5Ii8+DQogICAgICAgICAgICAgICAgICAgICA8L3NvdXJjZT4NCiAgICAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIG5hbWU9Ikxvb2tiYWNrIEludGVydmFsIE9uZSBZZWFyIiB4c2k6dHlwZT0iRXhwcmVzc2lvblJlZiIvPg0KICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgPC93aGVyZT4NCiAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgIDwvZGVmPg0KICAgICAgPGRlZiBuYW1lPSJGT0JUIE9ic2VydmF0aW9uIiBjb250ZXh0PSJQYXRpZW50IiBhY2Nlc3NMZXZlbD0iUHVibGljIj4NCiAgICAgICAgIDxleHByZXNzaW9uIHhzaTp0eXBlPSJRdWVyeSI+DQogICAgICAgICAgICA8c291cmNlIGFsaWFzPSJPIj4NCiAgICAgICAgICAgICAgIDxleHByZXNzaW9uIGRhdGFUeXBlPSJmaGlyOk9ic2VydmF0aW9uIiBjb2RlUHJvcGVydHk9ImNvZGUiIHhzaTp0eXBlPSJSZXRyaWV2ZSI+DQogICAgICAgICAgICAgICAgICA8Y29kZXMgbmFtZT0iRmVjYWwgT2NjdWx0IEJsb29kIFRlc3QgKEZPQlQpIiB4c2k6dHlwZT0iVmFsdWVTZXRSZWYiLz4NCiAgICAgICAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgICAgICAgIDwvc291cmNlPg0KICAgICAgICAgICAgPHdoZXJlIHhzaTp0eXBlPSJBbmQiPg0KICAgICAgICAgICAgICAgPG9wZXJhbmQgeHNpOnR5cGU9IkVxdWFsIj4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIHBhdGg9InZhbHVlIiB4c2k6dHlwZT0iUHJvcGVydHkiPg0KICAgICAgICAgICAgICAgICAgICAgPHNvdXJjZSBwYXRoPSJzdGF0dXMiIHNjb3BlPSJPIiB4c2k6dHlwZT0iUHJvcGVydHkiLz4NCiAgICAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIHZhbHVlVHlwZT0idDpTdHJpbmciIHZhbHVlPSJmaW5hbCIgeHNpOnR5cGU9IkxpdGVyYWwiLz4NCiAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJJbiI+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCBwYXRoPSJ2YWx1ZSIgeHNpOnR5cGU9IlByb3BlcnR5Ij4NCiAgICAgICAgICAgICAgICAgICAgIDxzb3VyY2UgcGF0aD0iZWZmZWN0aXZlRGF0ZVRpbWUiIHNjb3BlPSJPIiB4c2k6dHlwZT0iUHJvcGVydHkiLz4NCiAgICAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIG5hbWU9Ikxvb2tiYWNrIEludGVydmFsIE9uZSBZZWFyIiB4c2k6dHlwZT0iRXhwcmVzc2lvblJlZiIvPg0KICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgPC93aGVyZT4NCiAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgIDwvZGVmPg0KICAgICAgPGRlZiBuYW1lPSJDb2xvbm9zY29weSBQcm9jZWR1cmUiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPg0KICAgICAgICAgPGV4cHJlc3Npb24geHNpOnR5cGU9IlF1ZXJ5Ij4NCiAgICAgICAgICAgIDxzb3VyY2UgYWxpYXM9IkMiPg0KICAgICAgICAgICAgICAgPGV4cHJlc3Npb24gZGF0YVR5cGU9ImZoaXI6UHJvY2VkdXJlIiBjb2RlUHJvcGVydHk9ImNvZGUiIHhzaTp0eXBlPSJSZXRyaWV2ZSI+DQogICAgICAgICAgICAgICAgICA8Y29kZXMgbmFtZT0iQ29sb25vc2NvcHkiIHhzaTp0eXBlPSJWYWx1ZVNldFJlZiIvPg0KICAgICAgICAgICAgICAgPC9leHByZXNzaW9uPg0KICAgICAgICAgICAgPC9zb3VyY2U+DQogICAgICAgICAgICA8d2hlcmUgeHNpOnR5cGU9IkFuZCI+DQogICAgICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iRXF1YWwiPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgcGF0aD0idmFsdWUiIHhzaTp0eXBlPSJQcm9wZXJ0eSI+DQogICAgICAgICAgICAgICAgICAgICA8c291cmNlIHBhdGg9InN0YXR1cyIgc2NvcGU9IkMiIHhzaTp0eXBlPSJQcm9wZXJ0eSIvPg0KICAgICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgdmFsdWVUeXBlPSJ0OlN0cmluZyIgdmFsdWU9ImNvbXBsZXRlZCIgeHNpOnR5cGU9IkxpdGVyYWwiLz4NCiAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJJbiI+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCBwYXRoPSJ2YWx1ZSIgeHNpOnR5cGU9IlByb3BlcnR5Ij4NCiAgICAgICAgICAgICAgICAgICAgIDxzb3VyY2UgcGF0aD0iZW5kIiB4c2k6dHlwZT0iUHJvcGVydHkiPg0KICAgICAgICAgICAgICAgICAgICAgICAgPHNvdXJjZSBwYXRoPSJwZXJmb3JtZWRQZXJpb2QiIHNjb3BlPSJDIiB4c2k6dHlwZT0iUHJvcGVydHkiLz4NCiAgICAgICAgICAgICAgICAgICAgIDwvc291cmNlPg0KICAgICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgbmFtZT0iTG9va2JhY2sgSW50ZXJ2YWwgVGVuIFllYXJzIiB4c2k6dHlwZT0iRXhwcmVzc2lvblJlZiIvPg0KICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgPC93aGVyZT4NCiAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgIDwvZGVmPg0KICAgICAgPGRlZiBuYW1lPSJDb2xvbm9zY29weSBPYnNlcnZhdGlvbiIgY29udGV4dD0iUGF0aWVudCIgYWNjZXNzTGV2ZWw9IlB1YmxpYyI+DQogICAgICAgICA8ZXhwcmVzc2lvbiB4c2k6dHlwZT0iUXVlcnkiPg0KICAgICAgICAgICAgPHNvdXJjZSBhbGlhcz0iTyI+DQogICAgICAgICAgICAgICA8ZXhwcmVzc2lvbiBkYXRhVHlwZT0iZmhpcjpPYnNlcnZhdGlvbiIgY29kZVByb3BlcnR5PSJjb2RlIiB4c2k6dHlwZT0iUmV0cmlldmUiPg0KICAgICAgICAgICAgICAgICAgPGNvZGVzIG5hbWU9IkNvbG9ub3Njb3B5IiB4c2k6dHlwZT0iVmFsdWVTZXRSZWYiLz4NCiAgICAgICAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgICAgICAgIDwvc291cmNlPg0KICAgICAgICAgICAgPHdoZXJlIHhzaTp0eXBlPSJBbmQiPg0KICAgICAgICAgICAgICAgPG9wZXJhbmQgeHNpOnR5cGU9IkVxdWFsIj4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIHBhdGg9InZhbHVlIiB4c2k6dHlwZT0iUHJvcGVydHkiPg0KICAgICAgICAgICAgICAgICAgICAgPHNvdXJjZSBwYXRoPSJzdGF0dXMiIHNjb3BlPSJPIiB4c2k6dHlwZT0iUHJvcGVydHkiLz4NCiAgICAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIHZhbHVlVHlwZT0idDpTdHJpbmciIHZhbHVlPSJmaW5hbCIgeHNpOnR5cGU9IkxpdGVyYWwiLz4NCiAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJJbiI+DQogICAgICAgICAgICAgICAgICA8b3BlcmFuZCBwYXRoPSJ2YWx1ZSIgeHNpOnR5cGU9IlByb3BlcnR5Ij4NCiAgICAgICAgICAgICAgICAgICAgIDxzb3VyY2UgcGF0aD0iZWZmZWN0aXZlRGF0ZVRpbWUiIHNjb3BlPSJPIiB4c2k6dHlwZT0iUHJvcGVydHkiLz4NCiAgICAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIG5hbWU9Ikxvb2tiYWNrIEludGVydmFsIFRlbiBZZWFycyIgeHNpOnR5cGU9IkV4cHJlc3Npb25SZWYiLz4NCiAgICAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgIDwvd2hlcmU+DQogICAgICAgICA8L2V4cHJlc3Npb24+DQogICAgICA8L2RlZj4NCiAgIDwvc3RhdGVtZW50cz4NCjwvbGlicmFyeT4NCg=="
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Library/col-logic"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "Condition-13",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-09T21:52:17.035-06:00"
+        },
+        "extension": [
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.22.4.3"
+          },
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.24.3.137"
+          }
+        ],
+        "clinicalStatus": "active",
+        "verificationStatus": "confirmed",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/condition-category",
+                "code": "diagnosis",
+                "display": "Diagnosis"
+              }
+            ],
+            "text": "This is a judgment made by a healthcare provider that the patient has a particular disease or condition"
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "363414004"
+            }
+          ],
+          "text": "Diagnosis: Malignant Neoplasm Of Colon"
+        },
+        "subject": {
+          "reference": "Patient/Patient-12214",
+          "display": "2  N Geriatric Jr"
+        },
+        "asserter": {
+          "reference": "Practitioner/Practitioner-12208",
+          "display": "Jay McCann Sawyer MD"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-13"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Measure",
+        "id": "col",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-09T21:26:03.890-06:00"
+        },
+        "text": {
+          "status": "additional",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">\n      Cohort definition for Colorectal Cancer Screening.\n    </div>"
+        },
+        "identifier": [
+          {
+            "use": "official",
+            "system": "http://hl7.org/fhir/cqi/ecqm/Measure/Identifier/payer-extract",
+            "value": "COL"
+          }
+        ],
+        "version": "1.0.0",
+        "title": "Colorectal Cancer Screening. Cohort Definition",
+        "status": "active",
+        "experimental": true,
+        "description": "Colorectal Cancer Screening. Cohort Definition",
+        "topic": [
+          {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/c80-doc-typecodes",
+                "code": "57024-2"
+              }
+            ]
+          }
+        ],
+        "library": [
+          {
+            "reference": "Library/col-logic"
+          }
+        ],
+        "group": [
+          {
+            "identifier": {
+              "value": "in-demographic"
+            },
+            "population": [
+              {
+                "identifier": {
+                  "value": "in-demographic"
+                },
+                "criteria": "In Demographic"
+              }
+            ]
+          },
+          {
+            "identifier": {
+              "value": "history-of-colorectal-cancer"
+            },
+            "population": [
+              {
+                "identifier": {
+                  "value": "history-of-colorectal-cancer"
+                },
+                "criteria": "Hx Colorectal Cancer"
+              }
+            ]
+          },
+          {
+            "identifier": {
+              "value": "history-of-total-colectomy"
+            },
+            "population": [
+              {
+                "identifier": {
+                  "value": "history-of-total-colectomy"
+                },
+                "criteria": "Hx Total Colectomy"
+              }
+            ]
+          },
+          {
+            "identifier": {
+              "value": "colonoscopy-performed"
+            },
+            "population": [
+              {
+                "identifier": {
+                  "value": "colonoscopy-performed"
+                },
+                "criteria": "Colonoscopy Performed"
+              }
+            ]
+          },
+          {
+            "identifier": {
+              "value": "colonoscopy-results"
+            },
+            "population": [
+              {
+                "identifier": {
+                  "value": "colonoscopy-results"
+                },
+                "criteria": "Colonoscopy Results"
+              }
+            ]
+          },
+          {
+            "identifier": {
+              "value": "sigmoidoscopy-procedure"
+            },
+            "population": [
+              {
+                "identifier": {
+                  "value": "sigmoidoscopy-procedure"
+                },
+                "criteria": "Sigmoidoscopy Procedure"
+              }
+            ]
+          },
+          {
+            "identifier": {
+              "value": "sigmoidoscopy-observation"
+            },
+            "population": [
+              {
+                "identifier": {
+                  "value": "sigmoidoscopy-observation"
+                },
+                "criteria": "Sigmoidoscopy Observation"
+              }
+            ]
+          },
+          {
+            "identifier": {
+              "value": "fobt-procedure"
+            },
+            "population": [
+              {
+                "identifier": {
+                  "value": "fobt-procedure"
+                },
+                "criteria": "FOBT Procedure"
+              }
+            ]
+          },
+          {
+            "identifier": {
+              "value": "fobt-observation"
+            },
+            "population": [
+              {
+                "identifier": {
+                  "value": "fobt-observation"
+                },
+                "criteria": "FOBT Observation"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Measure/col"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "Procedure-9",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2017-09-09T21:52:35.933-06:00"
+        },
+        "extension": [
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.24.3.64"
+          },
+          {
+            "url": "http://mihin.org/fhir/templateId",
+            "valueString": "2.16.840.1.113883.10.20.22.4.14"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/identifier",
+            "value": "1.3.6.1.4.1.115:579f4eb5aeac500a550c5c7b"
+          }
+        ],
+        "status": "completed",
+        "category": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "387713003",
+              "display": "Surgical Procedure"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "36192008"
+            }
+          ],
+          "text": "Procedure, Performed: Total Colectomy"
+        },
+        "subject": {
+          "reference": "Patient/Patient-12214",
+          "display": "2  N Geriatric Jr"
+        },
+        "performedPeriod": {
+          "start": "2010-10-12T06:00:00-04:00",
+          "end": "2010-10-12T08:15:00-04:00"
+        },
+        "performer": [
+          {
+            "role": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/ValueSet/performer-role",
+                  "code": "112247003",
+                  "display": "Medical doctor (occupation)"
+                }
+              ]
+            },
+            "actor": {
+              "reference": "Practitioner/Practitioner-12208",
+              "display": "Jay McCann Sawyer MD"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-9"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.1",
+        "meta": {
+          "versionId": "3",
+          "lastUpdated": "2016-09-20T17:39:30.000+00:00"
+        },
+        "url": "http://loinc.org",
+        "status": "active",
+        "_status": {
+          "fhir_comments": [
+            "\n  <version value=\"\"/>\n  <name value=\"\"/>\n  "
+          ]
+        },
+        "date": "2016-09-19",
+        "concept": [
+          {
+            "fhir_comments": [
+              " <content value=\"fragment\" /> "
+            ],
+            "code": "8480-6",
+            "display": "Systolic blood pressure"
+          },
+          {
+            "code": "8462-4",
+            "display": "Diastolic blood pressure"
+          },
+          {
+            "code": "27396-1",
+            "display": "Hemoglobin.gastrointestinal [Mass/mass] in Stool"
+          },
+          {
+            "code": "58453-2",
+            "display": "Hemoglobin.gastrointestinal [Mass/volume] in Stool by Immunologic method"
+          },
+          {
+            "code": "2335-8",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool"
+          },
+          {
+            "code": "14563-1",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --1st specimen"
+          },
+          {
+            "code": "14564-9",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --2nd specimen"
+          },
+          {
+            "code": "14565-6",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --3rd specimen"
+          },
+          {
+            "code": "12503-9",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --4th specimen"
+          },
+          {
+            "code": "12504-7",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --5th specimen"
+          },
+          {
+            "code": "27401-9",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --6th specimen"
+          },
+          {
+            "code": "27925-7",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --7th specimen"
+          },
+          {
+            "code": "27926-5",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --8th specimen"
+          },
+          {
+            "code": "29771-3",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method"
+          },
+          {
+            "code": "57905-2",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --1st specimen"
+          },
+          {
+            "code": "56490-6",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --2nd specimen"
+          },
+          {
+            "code": "56491-4",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --3rd specimen"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.1"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.4",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2016-09-20T21:25:23.000+00:00"
+        },
+        "url": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+        "status": "active",
+        "_status": {
+          "fhir_comments": [
+            "\n  <version value=\"\"/>\n  <name value=\"\"/>\n  "
+          ]
+        },
+        "date": "2016-09-19",
+        "concept": [
+          {
+            "fhir_comments": [
+              " <content value=\"fragment\" /> "
+            ],
+            "code": "G0104",
+            "display": "Colorectal cancer screening; flexible sigmoidoscopy"
+          },
+          {
+            "code": "G0105",
+            "display": "Colorectal cancer screening; colonoscopy on individual at high risk"
+          },
+          {
+            "code": "G0121",
+            "display": "Colorectal cancer screening; colonoscopy on individual not meeting criteria for high risk"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.4"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.12",
+        "meta": {
+          "versionId": "2",
+          "lastUpdated": "2016-09-20T21:23:02.000+00:00"
+        },
+        "url": "http://www.ama-assn.org/go/cpt ",
+        "status": "active",
+        "_status": {
+          "fhir_comments": [
+            "\n  <version value=\"\"/>\n  <name value=\"\"/>\n  "
+          ]
+        },
+        "date": "2016-09-19",
+        "concept": [
+          {
+            "fhir_comments": [
+              " <content value=\"fragment\" /> "
+            ],
+            "code": "99420",
+            "display": "Administration and interpretation of health risk assessment instrument (eg, health hazard appraisal)"
+          },
+          {
+            "code": "99345",
+            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the patient is unstable or has developed a significant new problem requiring immediate physician attention. Typically, 75 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99344",
+            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99343",
+            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A detailed history; A detailed examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 45 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99341",
+            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A problem focused history; A problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low severity. Typically, 20 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99342",
+            "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; and Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99350",
+            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A comprehensive interval history; A comprehensive examination; Medical decision making of moderate to high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. The patient may be unstable or may have developed a significant new problem requiring immediate physician attention. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99349",
+            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A detailed interval history; A detailed examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are moderate to high severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99347",
+            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A problem focused interval history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 15 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99348",
+            "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: An expanded problem focused interval history; An expanded problem focused examination; Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 25 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99385",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 18-39 years"
+          },
+          {
+            "code": "99386",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 40-64 years"
+          },
+          {
+            "code": "99387",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 65 years and older"
+          },
+          {
+            "code": "99384",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; adolescent (age 12 through 17 years)"
+          },
+          {
+            "code": "99382",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; early childhood (age 1 through 4 years)"
+          },
+          {
+            "code": "99381",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; infant (age younger than 1 year)"
+          },
+          {
+            "code": "99383",
+            "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; late childhood (age 5 through 11 years)"
+          },
+          {
+            "code": "99245",
+            "display": "Office consultation for a new or established patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 80 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99244",
+            "display": "Office consultation for a new or established patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99243",
+            "display": "Office consultation for a new or established patient, which requires these 3 key components: A detailed history; A detailed examination; and Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99241",
+            "display": "Office consultation for a new or established patient, which requires these 3 key components: A problem focused history; A problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 15 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99242",
+            "display": "Office consultation for a new or established patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99205",
+            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99204",
+            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 45 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99203",
+            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A detailed history; A detailed examination; Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99201",
+            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A problem focused history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 10 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99202",
+            "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 20 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99211",
+            "display": "Office or other outpatient visit for the evaluation and management of an established patient, that may not require the presence of a physician or other qualified health care professional. Usually, the presenting problem(s) are minimal. Typically, 5 minutes are spent performing or supervising these services."
+          },
+          {
+            "code": "99215",
+            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99214",
+            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A detailed history; A detailed examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 25 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99212",
+            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A problem focused history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 10 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99213",
+            "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: An expanded problem focused history; An expanded problem focused examination; Medical decision making of low complexity. Counseling and coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 15 minutes are spent face-to-face with the patient and/or family."
+          },
+          {
+            "code": "99395",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 18-39 years"
+          },
+          {
+            "code": "99396",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 40-64 years"
+          },
+          {
+            "code": "99397",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 65 years and older"
+          },
+          {
+            "code": "99394",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; adolescent (age 12 through 17 years)"
+          },
+          {
+            "code": "99392",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; early childhood (age 1 through 4 years)"
+          },
+          {
+            "code": "99391",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; infant (age younger than 1 year)"
+          },
+          {
+            "code": "99393",
+            "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; late childhood (age 5 through 11 years)"
+          },
+          {
+            "code": "99401",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 15 minutes"
+          },
+          {
+            "code": "99402",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 30 minutes"
+          },
+          {
+            "code": "99403",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 45 minutes"
+          },
+          {
+            "code": "99404",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to an individual (separate procedure); approximately 60 minutes"
+          },
+          {
+            "code": "99411",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to individuals in a group setting (separate procedure); approximately 30 minutes"
+          },
+          {
+            "code": "99412",
+            "display": "Preventive medicine counseling and/or risk factor reduction intervention(s) provided to individuals in a group setting (separate procedure); approximately 60 minutes"
+          },
+          {
+            "code": "99429",
+            "display": "Unlisted preventive medicine service"
+          },
+          {
+            "code": "99456",
+            "display": "Work related or medical disability examination by other than the treating physician that includes: Completion of a medical history commensurate with the patient's condition; Performance of an examination commensurate with the patient's condition; Formulation of a diagnosis, assessment of capabilities and stability, and calculation of impairment; Development of future medical treatment plan; and Completion of necessary documentation/certificates and report."
+          },
+          {
+            "code": "99455",
+            "display": "Work related or medical disability examination by the treating physician that includes: Completion of a medical history commensurate with the patient's condition; Performance of an examination commensurate with the patient's condition; Formulation of a diagnosis, assessment of capabilities and stability, and calculation of impairment; Development of future medical treatment plan; and Completion of necessary documentation/certificates and report."
+          },
+          {
+            "code": "44388",
+            "display": "Colonoscopy through stoma; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+          },
+          {
+            "code": "44401",
+            "display": "Colonoscopy through stoma; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre-and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "44393",
+            "display": "Colonoscopy through stoma; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
+          },
+          {
+            "code": "44389",
+            "display": "Colonoscopy through stoma; with biopsy, single or multiple"
+          },
+          {
+            "code": "44391",
+            "display": "Colonoscopy through stoma; with control of bleeding, any method"
+          },
+          {
+            "code": "44408",
+            "display": "Colonoscopy through stoma; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
+          },
+          {
+            "code": "44404",
+            "display": "Colonoscopy through stoma; with directed submucosal injection(s), any substance"
+          },
+          {
+            "code": "44403",
+            "display": "Colonoscopy through stoma; with endoscopic mucosal resection"
+          },
+          {
+            "code": "44402",
+            "display": "Colonoscopy through stoma; with endoscopic stent placement (including pre- and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "44406",
+            "display": "Colonoscopy through stoma; with endoscopic ultrasound examination, limited to the sigmoid, descending, transverse, or ascending colon and cecum and adjacent structures"
+          },
+          {
+            "code": "44390",
+            "display": "Colonoscopy through stoma; with removal of foreign body(s)"
+          },
+          {
+            "code": "44392",
+            "display": "Colonoscopy through stoma; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
+          },
+          {
+            "code": "44394",
+            "display": "Colonoscopy through stoma; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
+          },
+          {
+            "code": "44405",
+            "display": "Colonoscopy through stoma; with transendoscopic balloon dilation"
+          },
+          {
+            "code": "44397",
+            "display": "Colonoscopy through stoma; with transendoscopic stent placement (includes predilation)"
+          },
+          {
+            "code": "44407",
+            "display": "Colonoscopy through stoma; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s), includes endoscopic ultrasound examination limited to the sigmoid, descending, transverse, or ascending colon and cecum and adjacent structures"
+          },
+          {
+            "code": "45383",
+            "display": "Colonoscopy, flexible, proximal to splenic flexure; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
+          },
+          {
+            "code": "45387",
+            "display": "Colonoscopy, flexible, proximal to splenic flexure; with transendoscopic stent placement (includes predilation)"
+          },
+          {
+            "code": "45378",
+            "display": "Colonoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+          },
+          {
+            "code": "45388",
+            "display": "Colonoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "45398",
+            "display": "Colonoscopy, flexible; with band ligation(s) (eg, hemorrhoids)"
+          },
+          {
+            "code": "45380",
+            "display": "Colonoscopy, flexible; with biopsy, single or multiple"
+          },
+          {
+            "code": "45382",
+            "display": "Colonoscopy, flexible; with control of bleeding, any method"
+          },
+          {
+            "code": "45393",
+            "display": "Colonoscopy, flexible; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
+          },
+          {
+            "code": "45381",
+            "display": "Colonoscopy, flexible; with directed submucosal injection(s), any substance"
+          },
+          {
+            "code": "45390",
+            "display": "Colonoscopy, flexible; with endoscopic mucosal resection"
+          },
+          {
+            "code": "45389",
+            "display": "Colonoscopy, flexible; with endoscopic stent placement (includes pre- and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "45391",
+            "display": "Colonoscopy, flexible; with endoscopic ultrasound examination limited to the rectum, sigmoid, descending, transverse, or ascending colon and cecum, and adjacent structures"
+          },
+          {
+            "code": "45379",
+            "display": "Colonoscopy, flexible; with removal of foreign body(s)"
+          },
+          {
+            "code": "45384",
+            "display": "Colonoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
+          },
+          {
+            "code": "45385",
+            "display": "Colonoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
+          },
+          {
+            "code": "45386",
+            "display": "Colonoscopy, flexible; with transendoscopic balloon dilation"
+          },
+          {
+            "code": "45392",
+            "display": "Colonoscopy, flexible; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s), includes endoscopic ultrasound examination limited to the rectum, sigmoid, descending, transverse, or ascending colon and cecum, and adjacent structures"
+          },
+          {
+            "code": "45355",
+            "display": "Colonoscopy, rigid or flexible, transabdominal via colotomy, single or multiple"
+          },
+          {
+            "code": "45330",
+            "display": "Sigmoidoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+          },
+          {
+            "code": "45346",
+            "display": "Sigmoidoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "45339",
+            "display": "Sigmoidoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
+          },
+          {
+            "code": "45350",
+            "display": "Sigmoidoscopy, flexible; with band ligation(s) (eg, hemorrhoids)"
+          },
+          {
+            "code": "45331",
+            "display": "Sigmoidoscopy, flexible; with biopsy, single or multiple"
+          },
+          {
+            "code": "45334",
+            "display": "Sigmoidoscopy, flexible; with control of bleeding, any method"
+          },
+          {
+            "code": "45337",
+            "display": "Sigmoidoscopy, flexible; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
+          },
+          {
+            "code": "45335",
+            "display": "Sigmoidoscopy, flexible; with directed submucosal injection(s), any substance"
+          },
+          {
+            "code": "45349",
+            "display": "Sigmoidoscopy, flexible; with endoscopic mucosal resection"
+          },
+          {
+            "code": "45341",
+            "display": "Sigmoidoscopy, flexible; with endoscopic ultrasound examination"
+          },
+          {
+            "code": "45347",
+            "display": "Sigmoidoscopy, flexible; with placement of endoscopic stent (includes pre- and post-dilation and guide wire passage, when performed)"
+          },
+          {
+            "code": "45332",
+            "display": "Sigmoidoscopy, flexible; with removal of foreign body(s)"
+          },
+          {
+            "code": "45333",
+            "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
+          },
+          {
+            "code": "45338",
+            "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
+          },
+          {
+            "code": "45340",
+            "display": "Sigmoidoscopy, flexible; with transendoscopic balloon dilation"
+          },
+          {
+            "code": "45345",
+            "display": "Sigmoidoscopy, flexible; with transendoscopic stent placement (includes predilation)"
+          },
+          {
+            "code": "45342",
+            "display": "Sigmoidoscopy, flexible; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s)"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.12"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "CodeSystem",
+        "id": "2.16.840.1.113883.6.96",
+        "meta": {
+          "versionId": "5",
+          "lastUpdated": "2016-09-20T17:32:35.000+00:00"
+        },
+        "url": "http://snomed.info/sct",
+        "status": "active",
+        "_status": {
+          "fhir_comments": [
+            "\n  <version value=\"\"/>\n  <name value=\"\"/>\n  "
+          ]
+        },
+        "date": "2016-09-19",
+        "concept": [
+          {
+            "fhir_comments": [
+              " <content value=\"fragment\" /> "
+            ],
+            "code": "401.1",
+            "display": "Benign essential hypertension"
+          },
+          {
+            "code": "1201005",
+            "display": "Benign essential hypertension"
+          },
+          {
+            "code": "10725009",
+            "display": "Benign hypertension"
+          },
+          {
+            "code": "48146000",
+            "display": "Diastolic hypertension"
+          },
+          {
+            "code": "59621000",
+            "display": "Essential hypertension"
+          },
+          {
+            "code": "65518004",
+            "display": "Labile diastolic hypertension"
+          },
+          {
+            "code": "371125006",
+            "display": "Labile essential hypertension"
+          },
+          {
+            "code": "276789009",
+            "display": "Labile hypertension"
+          },
+          {
+            "code": "46481004",
+            "display": "Low-renin essential hypertension"
+          },
+          {
+            "code": "401.0",
+            "display": "Malignant essential hypertension"
+          },
+          {
+            "code": "78975002",
+            "display": "Malignant essential hypertension"
+          },
+          {
+            "code": "59720008",
+            "display": "Sustained diastolic hypertension"
+          },
+          {
+            "code": "429457004",
+            "display": "Systolic essential hypertension"
+          },
+          {
+            "code": "56218007",
+            "display": "Systolic hypertension"
+          },
+          {
+            "code": "401.9",
+            "display": "Unspecified essential hypertension"
+          },
+          {
+            "code": "I10",
+            "display": "Essential (primary) hypertension"
+          },
+          {
+            "code": "303401008",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Parks panproctocolectomy, anastomosis of ileum to anus and creation of pouch"
+          },
+          {
+            "code": "235331003",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Restorative proctocolectomy"
+          },
+          {
+            "code": "36192008",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total abdominal colectomy with ileoproctostomy"
+          },
+          {
+            "code": "456004",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total abdominal colectomy with ileostomy"
+          },
+          {
+            "code": "44751009",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total abdominal colectomy with proctectomy and continent ileostomy"
+          },
+          {
+            "code": "31130001",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total abdominal colectomy with proctectomy and ileostomy"
+          },
+          {
+            "code": "80294005",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total abdominal colectomy with rectal mucosectomy and ileoanal anastomosis"
+          },
+          {
+            "code": "26390003",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total colectomy"
+          },
+          {
+            "code": "307666008",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total colectomy and ileostomy"
+          },
+          {
+            "code": "307669001",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total colectomy, ileostomy and closure of rectal stump"
+          },
+          {
+            "code": "307667004",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2015.09.15AA\"/> "
+              ]
+            },
+            "display": "Total colectomy, ileostomy and rectal mucous fistula"
+          },
+          {
+            "code": "310634005",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Check colonoscopy"
+          },
+          {
+            "code": "73761001",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy"
+          },
+          {
+            "code": "446745002",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy and biopsy of colon"
+          },
+          {
+            "code": "446521004",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy and excision of mucosa of colon"
+          },
+          {
+            "code": "447021001",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy and tattooing"
+          },
+          {
+            "code": "443998000",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy through colostomy with endoscopic biopsy of colon"
+          },
+          {
+            "code": "12350003",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Colonoscopy with rigid sigmoidoscope through colotomy"
+          },
+          {
+            "code": "427459009",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Diagnostic endoscopic examination of colonic pouch and biopsy of colonic pouch using colonoscope"
+          },
+          {
+            "code": "174184006",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Diagnostic endoscopic examination on colon"
+          },
+          {
+            "code": "367535003",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Fiberoptic colonoscopy"
+          },
+          {
+            "code": "8180007",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Fiberoptic colonoscopy through colostomy"
+          },
+          {
+            "code": "25732003",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Fiberoptic colonoscopy with biopsy"
+          },
+          {
+            "code": "34264006",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Intraoperative colonoscopy"
+          },
+          {
+            "code": "235151005",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Limited colonoscopy"
+          },
+          {
+            "code": "174158000",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Open colonoscopy"
+          },
+          {
+            "code": "444783004",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Screening colonoscopy"
+          },
+          {
+            "code": "303587008",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Therapeutic colonoscopy"
+          },
+          {
+            "code": "235150006",
+            "_code": {
+              "fhir_comments": [
+                " <version value=\"2014.07.14AA\"/> "
+              ]
+            },
+            "display": "Total colonoscopy"
+          },
+          {
+            "code": "425634007",
+            "display": "Diagnostic endoscopic examination of lower bowel and sampling for bacterial overgrowth using fiberoptic sigmoidoscope"
+          },
+          {
+            "code": "44441009",
+            "display": "Flexible fiberoptic sigmoidoscopy"
+          },
+          {
+            "code": "112870002",
+            "display": "Flexible fiberoptic sigmoidoscopy for removal of foreign body"
+          },
+          {
+            "code": "396226005",
+            "display": "Flexible fiberoptic sigmoidoscopy with biopsy"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/CodeSystem/2.16.840.1.113883.6.96"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.108.11.1001",
+        "meta": {
+          "versionId": "3",
+          "lastUpdated": "2017-07-25T09:54:33.579+00:00"
+        },
+        "url": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Valueset/2.16.840.1.113883.3.464.1003.108.11.1001",
+        "name": "Malignant Neoplasm of Colon (SNOMED CT) eCQM",
+        "status": "active",
+        "compose": {
+          "include": [
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "concept": [
+                {
+                  "code": "187758006"
+                },
+                {
+                  "code": "109838007"
+                },
+                {
+                  "code": "1701000119104"
+                },
+                {
+                  "code": "187757001"
+                },
+                {
+                  "code": "269533000"
+                },
+                {
+                  "code": "269544008"
+                },
+                {
+                  "code": "285312008"
+                },
+                {
+                  "code": "285611007"
+                },
+                {
+                  "code": "301756000"
+                },
+                {
+                  "code": "312111009"
+                },
+                {
+                  "code": "312112002"
+                },
+                {
+                  "code": "312113007"
+                },
+                {
+                  "code": "312114001"
+                },
+                {
+                  "code": "312115000"
+                },
+                {
+                  "code": "314965007"
+                },
+                {
+                  "code": "315058005"
+                },
+                {
+                  "code": "363406005"
+                },
+                {
+                  "code": "363407001"
+                },
+                {
+                  "code": "363408006"
+                },
+                {
+                  "code": "363409003"
+                },
+                {
+                  "code": "363410008"
+                },
+                {
+                  "code": "363412000"
+                },
+                {
+                  "code": "363413005"
+                },
+                {
+                  "code": "363414004"
+                },
+                {
+                  "code": "363510005"
+                },
+                {
+                  "code": "425178004"
+                },
+                {
+                  "code": "449218003"
+                },
+                {
+                  "code": "93683002"
+                },
+                {
+                  "code": "93761005"
+                },
+                {
+                  "code": "93771007"
+                },
+                {
+                  "code": "93826009"
+                },
+                {
+                  "code": "93980002"
+                },
+                {
+                  "code": "94006002"
+                },
+                {
+                  "code": "94072004"
+                },
+                {
+                  "code": "94105000"
+                },
+                {
+                  "code": "94179005"
+                },
+                {
+                  "code": "94260004"
+                },
+                {
+                  "code": "94271003"
+                },
+                {
+                  "code": "94328005"
+                },
+                {
+                  "code": "94509004"
+                },
+                {
+                  "code": "94538001"
+                },
+                {
+                  "code": "94604000"
+                },
+                {
+                  "code": "94643001"
+                }
+              ]
+            }
+          ]
+        },
+        "expansion": {
+          "identifier": "http://open-api2.hspconsortium.org/payerextract/data/ValueSet/2.16.840.1.113883.3.464.1003.108.11.1001",
+          "timestamp": "2016-09-19T14:05:21.939-04:00",
+          "total": 43,
+          "offset": 0,
+          "contains": [
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "425178004",
+              "display": "Adenocarcinoma of rectosigmoid junction"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "301756000",
+              "display": "Adenocarcinoma of sigmoid colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "312111009",
+              "display": "Carcinoma of ascending colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "269533000",
+              "display": "Carcinoma of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "312113007",
+              "display": "Carcinoma of descending colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "312114001",
+              "display": "Carcinoma of hepatic flexure"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "285312008",
+              "display": "Carcinoma of sigmoid colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "312115000",
+              "display": "Carcinoma of splenic flexure"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "269544008",
+              "display": "Carcinoma of the rectosigmoid junction"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "312112002",
+              "display": "Carcinoma of transverse colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "315058005",
+              "display": "Lynch syndrome"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "314965007",
+              "display": "Local recurrence of malignant tumor of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "449218003",
+              "display": "Lymphoma of sigmoid colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "187758006",
+              "display": "Malignant neoplasm of other specified sites of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "187757001",
+              "display": "Malignant neoplasm, overlapping lesion of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "363412000",
+              "display": "Malignant tumor of ascending colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "363406005",
+              "display": "Malignant tumor of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "363409003",
+              "display": "Malignant tumor of descending colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "363407001",
+              "display": "Malignant tumor of hepatic flexure"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "363510005",
+              "display": "Malignant tumor of large intestine"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "363414004",
+              "display": "Malignant tumor of rectosigmoid junction"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "363410008",
+              "display": "Malignant tumor of sigmoid colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "363413005",
+              "display": "Malignant tumor of splenic flexure"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "363408006",
+              "display": "Malignant tumor of transverse colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "285611007",
+              "display": "Metastasis to colon of unknown primary"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "109838007",
+              "display": "Overlapping malignant neoplasm of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "1701000119104",
+              "display": "Primary adenocarcinoma of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "93683002",
+              "display": "Primary malignant neoplasm of ascending colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "93761005",
+              "display": "Primary malignant neoplasm of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "93771007",
+              "display": "Primary malignant neoplasm of descending colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "93826009",
+              "display": "Primary malignant neoplasm of hepatic flexure of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "93980002",
+              "display": "Primary malignant neoplasm of rectosigmoid junction"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "94006002",
+              "display": "Primary malignant neoplasm of sigmoid colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "94072004",
+              "display": "Primary malignant neoplasm of splenic flexure of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "94105000",
+              "display": "Primary malignant neoplasm of transverse colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "94179005",
+              "display": "Secondary malignant neoplasm of ascending colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "94260004",
+              "display": "Secondary malignant neoplasm of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "94271003",
+              "display": "Secondary malignant neoplasm of descending colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "94328005",
+              "display": "Secondary malignant neoplasm of hepatic flexure of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "94509004",
+              "display": "Secondary malignant neoplasm of rectosigmoid junction"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "94538001",
+              "display": "Secondary malignant neoplasm of sigmoid colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "94604000",
+              "display": "Secondary malignant neoplasm of splenic flexure of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.03.14AB",
+              "code": "94643001",
+              "display": "Secondary malignant neoplasm of transverse colon"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.11.1001"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.198.12.1019",
+        "meta": {
+          "versionId": "3",
+          "lastUpdated": "2017-07-25T09:54:33.579+00:00"
+        },
+        "url": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Valueset/2.16.840.1.113883.3.464.1003.198.12.1019 ",
+        "name": "Total Colectomy eMeasure",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2016.1.15AA",
+              "concept": [
+                {
+                  "code": "44156"
+                },
+                {
+                  "code": "44158"
+                },
+                {
+                  "code": "44157"
+                },
+                {
+                  "code": "44155"
+                },
+                {
+                  "code": "44151"
+                },
+                {
+                  "code": "44150"
+                },
+                {
+                  "code": "44211"
+                },
+                {
+                  "code": "44212"
+                },
+                {
+                  "code": "44210"
+                },
+                {
+                  "code": "44153"
+                },
+                {
+                  "code": "44152"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015.09.15AA",
+              "filter": [
+                {
+                  "property": "concept",
+                  "op": "is-a",
+                  "value": "26390003"
+                }
+              ]
+            }
+          ]
+        },
+        "expansion": {
+          "timestamp": "2016-09-20T12:32:19.296-04:00",
+          "total": 22,
+          "offset": 0,
+          "contains": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44156",
+              "display": "Colectomy, total, abdominal, with proctectomy; with continent ileostomy"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44158",
+              "display": "Colectomy, total, abdominal, with proctectomy; with ileoanal anastomosis, creation of ileal reservoir (S or J), includes loop ileostomy, and rectal mucosectomy, when performed"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44157",
+              "display": "Colectomy, total, abdominal, with proctectomy; with ileoanal anastomosis, includes loop ileostomy, and rectal mucosectomy, when performed"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44155",
+              "display": "Colectomy, total, abdominal, with proctectomy; with ileostomy"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44151",
+              "display": "Colectomy, total, abdominal, without proctectomy; with continent ileostomy"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44150",
+              "display": "Colectomy, total, abdominal, without proctectomy; with ileostomy or ileoproctostomy"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44153",
+              "display": "Colectomy, total, abdominal, without proctectomy; with rectal mucosectomy, ileoanal anastomosis, creation of ileal reservoir (S or J), with or without loop ileostomy"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44152",
+              "display": "Colectomy, total, abdominal, without proctectomy; with rectal mucosectomy, ileoanal anastomosis, with or without loop ileostomy"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44211",
+              "display": "Laparoscopy, surgical; colectomy, total, abdominal, with proctectomy, with ileoanal anastomosis, creation of ileal reservoir (S or J), with loop ileostomy, includes rectal mucosectomy, when performed"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44212",
+              "display": "Laparoscopy, surgical; colectomy, total, abdominal, with proctectomy, with ileostomy"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44210",
+              "display": "Laparoscopy, surgical; colectomy, total, abdominal, without proctectomy, with ileostomy or ileoproctostomy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "303401008",
+              "display": "Parks panproctocolectomy, anastomosis of ileum to anus and creation of pouch"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "235331003",
+              "display": "Restorative proctocolectomy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "36192008",
+              "display": "Total abdominal colectomy with ileoproctostomy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "456004",
+              "display": "Total abdominal colectomy with ileostomy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "44751009",
+              "display": "Total abdominal colectomy with proctectomy and continent ileostomy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "31130001",
+              "display": "Total abdominal colectomy with proctectomy and ileostomy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "80294005",
+              "display": "Total abdominal colectomy with rectal mucosectomy and ileoanal anastomosis"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "26390003",
+              "display": "Total colectomy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "307666008",
+              "display": "Total colectomy and ileostomy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "307669001",
+              "display": "Total colectomy, ileostomy and closure of rectal stump"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "307667004",
+              "display": "Total colectomy, ileostomy and rectal mucous fistula"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1019"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.108.12.1020",
+        "meta": {
+          "versionId": "3",
+          "lastUpdated": "2017-07-25T09:54:33.579+00:00"
+        },
+        "url": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Valueset/2.16.840.1.113883.3.464.1003.108.12.1020",
+        "name": "Colonoscopy eMeasure",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2015.1.14AB",
+              "concept": [
+                {
+                  "code": "44388"
+                },
+                {
+                  "code": "44393"
+                },
+                {
+                  "code": "44389"
+                },
+                {
+                  "code": "44391"
+                },
+                {
+                  "code": "44390"
+                },
+                {
+                  "code": "44392"
+                },
+                {
+                  "code": "44394"
+                },
+                {
+                  "code": "44397"
+                },
+                {
+                  "code": "45378"
+                },
+                {
+                  "code": "45383"
+                },
+                {
+                  "code": "45380"
+                },
+                {
+                  "code": "45382"
+                },
+                {
+                  "code": "45386"
+                },
+                {
+                  "code": "45381"
+                },
+                {
+                  "code": "45391"
+                },
+                {
+                  "code": "45379"
+                },
+                {
+                  "code": "45384"
+                },
+                {
+                  "code": "45385"
+                },
+                {
+                  "code": "45387"
+                },
+                {
+                  "code": "45392"
+                },
+                {
+                  "code": "45355"
+                },
+                {
+                  "code": "44401"
+                },
+                {
+                  "code": "44402"
+                },
+                {
+                  "code": "44403"
+                },
+                {
+                  "code": "44404"
+                },
+                {
+                  "code": "44405"
+                },
+                {
+                  "code": "44406"
+                },
+                {
+                  "code": "44407"
+                },
+                {
+                  "code": "44408"
+                },
+                {
+                  "code": "45388"
+                },
+                {
+                  "code": "45389"
+                },
+                {
+                  "code": "45390"
+                },
+                {
+                  "code": "45393"
+                },
+                {
+                  "code": "45398"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2014.07.14AA",
+              "filter": [
+                {
+                  "property": "concept",
+                  "op": "is-a",
+                  "value": "73761001"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2014.07.14AA",
+              "filter": [
+                {
+                  "property": "concept",
+                  "op": "is-a",
+                  "value": "174184006"
+                }
+              ]
+            }
+          ]
+        },
+        "expansion": {
+          "timestamp": "2016-09-20T13:07:55.271-04:00",
+          "total": 54,
+          "offset": 0,
+          "contains": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "310634005",
+              "display": "Check colonoscopy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "73761001",
+              "display": "Colonoscopy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "446745002",
+              "display": "Colonoscopy and biopsy of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "446521004",
+              "display": "Colonoscopy and excision of mucosa of colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "447021001",
+              "display": "Colonoscopy and tattooing"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "443998000",
+              "display": "Colonoscopy through colostomy with endoscopic biopsy of colon"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44388",
+              "display": "Colonoscopy through stoma; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44401",
+              "display": "Colonoscopy through stoma; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre-and post-dilation and guide wire passage, when performed)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44393",
+              "display": "Colonoscopy through stoma; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44389",
+              "display": "Colonoscopy through stoma; with biopsy, single or multiple"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44391",
+              "display": "Colonoscopy through stoma; with control of bleeding, any method"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44408",
+              "display": "Colonoscopy through stoma; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44404",
+              "display": "Colonoscopy through stoma; with directed submucosal injection(s), any substance"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44403",
+              "display": "Colonoscopy through stoma; with endoscopic mucosal resection"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44402",
+              "display": "Colonoscopy through stoma; with endoscopic stent placement (including pre- and post-dilation and guide wire passage, when performed)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44406",
+              "display": "Colonoscopy through stoma; with endoscopic ultrasound examination, limited to the sigmoid, descending, transverse, or ascending colon and cecum and adjacent structures"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44390",
+              "display": "Colonoscopy through stoma; with removal of foreign body(s)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44392",
+              "display": "Colonoscopy through stoma; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44394",
+              "display": "Colonoscopy through stoma; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44405",
+              "display": "Colonoscopy through stoma; with transendoscopic balloon dilation"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44397",
+              "display": "Colonoscopy through stoma; with transendoscopic stent placement (includes predilation)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "44407",
+              "display": "Colonoscopy through stoma; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s), includes endoscopic ultrasound examination limited to the sigmoid, descending, transverse, or ascending colon and cecum and adjacent structures"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "12350003",
+              "display": "Colonoscopy with rigid sigmoidoscope through colotomy"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45383",
+              "display": "Colonoscopy, flexible, proximal to splenic flexure; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45387",
+              "display": "Colonoscopy, flexible, proximal to splenic flexure; with transendoscopic stent placement (includes predilation)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45378",
+              "display": "Colonoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45388",
+              "display": "Colonoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45398",
+              "display": "Colonoscopy, flexible; with band ligation(s) (eg, hemorrhoids)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45380",
+              "display": "Colonoscopy, flexible; with biopsy, single or multiple"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45382",
+              "display": "Colonoscopy, flexible; with control of bleeding, any method"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45393",
+              "display": "Colonoscopy, flexible; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45381",
+              "display": "Colonoscopy, flexible; with directed submucosal injection(s), any substance"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45390",
+              "display": "Colonoscopy, flexible; with endoscopic mucosal resection"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45389",
+              "display": "Colonoscopy, flexible; with endoscopic stent placement (includes pre- and post-dilation and guide wire passage, when performed)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45391",
+              "display": "Colonoscopy, flexible; with endoscopic ultrasound examination limited to the rectum, sigmoid, descending, transverse, or ascending colon and cecum, and adjacent structures"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45379",
+              "display": "Colonoscopy, flexible; with removal of foreign body(s)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45384",
+              "display": "Colonoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45385",
+              "display": "Colonoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45386",
+              "display": "Colonoscopy, flexible; with transendoscopic balloon dilation"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45392",
+              "display": "Colonoscopy, flexible; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s), includes endoscopic ultrasound examination limited to the rectum, sigmoid, descending, transverse, or ascending colon and cecum, and adjacent structures"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45355",
+              "display": "Colonoscopy, rigid or flexible, transabdominal via colotomy, single or multiple"
+            },
+            {
+              "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+              "code": "G0105",
+              "display": "Colorectal cancer screening; colonoscopy on individual at high risk"
+            },
+            {
+              "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+              "code": "G0121",
+              "display": "Colorectal cancer screening; colonoscopy on individual not meeting criteria for high risk"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "427459009",
+              "display": "Diagnostic endoscopic examination of colonic pouch and biopsy of colonic pouch using colonoscope"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "174184006",
+              "display": "Diagnostic endoscopic examination on colon"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "367535003",
+              "display": "Fiberoptic colonoscopy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "8180007",
+              "display": "Fiberoptic colonoscopy through colostomy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "25732003",
+              "display": "Fiberoptic colonoscopy with biopsy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "34264006",
+              "display": "Intraoperative colonoscopy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "235151005",
+              "display": "Limited colonoscopy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "174158000",
+              "display": "Open colonoscopy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "444783004",
+              "display": "Screening colonoscopy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "303587008",
+              "display": "Therapeutic colonoscopy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "235150006",
+              "display": "Total colonoscopy"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1020"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.198.12.1010",
+        "meta": {
+          "versionId": "6",
+          "lastUpdated": "2017-07-25T09:54:33.579+00:00"
+        },
+        "url": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Valueset/2.16.840.1.113883.3.464.1003.198.12.1010",
+        "name": "Flexible Sigmoidoscopy eMeasure",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2015.1.14AB",
+              "concept": [
+                {
+                  "code": "45330"
+                },
+                {
+                  "code": "45339"
+                },
+                {
+                  "code": "45331"
+                },
+                {
+                  "code": "45334"
+                },
+                {
+                  "code": "45337"
+                },
+                {
+                  "code": "45340"
+                },
+                {
+                  "code": "45335"
+                },
+                {
+                  "code": "45341"
+                },
+                {
+                  "code": "45332"
+                },
+                {
+                  "code": "45333"
+                },
+                {
+                  "code": "45338"
+                },
+                {
+                  "code": "45345"
+                },
+                {
+                  "code": "45342"
+                },
+                {
+                  "code": "45346"
+                },
+                {
+                  "code": "45347"
+                },
+                {
+                  "code": "45349"
+                },
+                {
+                  "code": "45350"
+                }
+              ]
+            },
+            {
+              "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+              "version": "2016.1.15AB",
+              "concept": [
+                {
+                  "code": "G0104"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2014.07.14AA",
+              "filter": [
+                {
+                  "property": "concept",
+                  "op": "is-a",
+                  "value": "44441009"
+                }
+              ]
+            }
+          ]
+        },
+        "expansion": {
+          "timestamp": "2016-09-20T13:20:03.237-04:00",
+          "total": 22,
+          "offset": 0,
+          "contains": [
+            {
+              "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+              "code": "G0104",
+              "display": "Colorectal cancer screening; flexible sigmoidoscopy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "425634007",
+              "display": "Diagnostic endoscopic examination of lower bowel and sampling for bacterial overgrowth using fiberoptic sigmoidoscope"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "44441009",
+              "display": "Flexible fiberoptic sigmoidoscopy"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "112870002",
+              "display": "Flexible fiberoptic sigmoidoscopy for removal of foreign body"
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "code": "396226005",
+              "display": "Flexible fiberoptic sigmoidoscopy with biopsy"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45330",
+              "display": "Sigmoidoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45346",
+              "display": "Sigmoidoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45339",
+              "display": "Sigmoidoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) not amenable to removal by hot biopsy forceps, bipolar cautery or snare technique"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45350",
+              "display": "Sigmoidoscopy, flexible; with band ligation(s) (eg, hemorrhoids)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45331",
+              "display": "Sigmoidoscopy, flexible; with biopsy, single or multiple"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45334",
+              "display": "Sigmoidoscopy, flexible; with control of bleeding, any method"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45337",
+              "display": "Sigmoidoscopy, flexible; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45335",
+              "display": "Sigmoidoscopy, flexible; with directed submucosal injection(s), any substance"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45349",
+              "display": "Sigmoidoscopy, flexible; with endoscopic mucosal resection"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45341",
+              "display": "Sigmoidoscopy, flexible; with endoscopic ultrasound examination"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45347",
+              "display": "Sigmoidoscopy, flexible; with placement of endoscopic stent (includes pre- and post-dilation and guide wire passage, when performed)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45332",
+              "display": "Sigmoidoscopy, flexible; with removal of foreign body(s)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45333",
+              "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45338",
+              "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45340",
+              "display": "Sigmoidoscopy, flexible; with transendoscopic balloon dilation"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45345",
+              "display": "Sigmoidoscopy, flexible; with transendoscopic stent placement (includes predilation)"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "45342",
+              "display": "Sigmoidoscopy, flexible; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s)"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1010"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.198.12.1011",
+        "meta": {
+          "versionId": "3",
+          "lastUpdated": "2017-07-25T09:54:33.579+00:00"
+        },
+        "url": "http://measure.eval.kanvix.com/cql-measure-processor/baseDstu3/Valueset/2.16.840.1.113883.3.464.1003.198.12.1011",
+        "name": "Fecal Occult Blood Test (FOBT) eMeasure",
+        "compose": {
+          "include": [
+            {
+              "system": "http://loinc.org",
+              "version": "2.44.13AA",
+              "concept": [
+                {
+                  "code": "27396-1"
+                },
+                {
+                  "code": "58453-2"
+                },
+                {
+                  "code": "2335-8"
+                },
+                {
+                  "code": "14563-1"
+                },
+                {
+                  "code": "14564-9"
+                },
+                {
+                  "code": "14565-6"
+                },
+                {
+                  "code": "12503-9"
+                },
+                {
+                  "code": "12504-7"
+                },
+                {
+                  "code": "27401-9"
+                },
+                {
+                  "code": "27925-7"
+                },
+                {
+                  "code": "27926-5"
+                },
+                {
+                  "code": "29771-3"
+                },
+                {
+                  "code": "57905-2"
+                },
+                {
+                  "code": "56490-6"
+                },
+                {
+                  "code": "56491-4"
+                }
+              ]
+            }
+          ]
+        },
+        "expansion": {
+          "timestamp": "2016-09-20T13:32:34.390-04:00",
+          "total": 15,
+          "offset": 0,
+          "contains": [
+            {
+              "system": "http://loinc.org",
+              "code": "27396-1",
+              "display": "Hemoglobin.gastrointestinal [Mass/mass] in Stool"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "58453-2",
+              "display": "Hemoglobin.gastrointestinal [Mass/volume] in Stool by Immunologic method"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "2335-8",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "14563-1",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --1st specimen"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "14564-9",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --2nd specimen"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "14565-6",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --3rd specimen"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "12503-9",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --4th specimen"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "12504-7",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --5th specimen"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "27401-9",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --6th specimen"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "27925-7",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --7th specimen"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "27926-5",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool --8th specimen"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "29771-3",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "57905-2",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --1st specimen"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "56490-6",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --2nd specimen"
+            },
+            {
+              "system": "http://loinc.org",
+              "code": "56491-4",
+              "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Immunologic method --3rd specimen"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1011"
+      }
+    }
+  ]
+}
