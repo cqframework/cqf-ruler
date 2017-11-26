@@ -7,6 +7,7 @@ import org.cqframework.cql.cql2elm.ModelInfoProvider;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.elm.r1.VersionedIdentifier;
+import org.hl7.fhir.dstu3.model.MedicationRequest;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.config.STU3LibraryLoader;
@@ -70,6 +71,12 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
     @Override
     public List<CdsCard> process() {
 
+        // validate resources
+        validateContextAndPrefetchResources(contextPrescription);
+        for (MedicationRequest request : activePrescriptions) {
+            validateContextAndPrefetchResources(request);
+        }
+
         // read opioid library
         Library library = getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("OpioidCdsStu3").withVersion("0.1.0"));
 
@@ -108,21 +115,30 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         return cards;
     }
 
-    private void validateContextAndPrefetchResources() {
-        if (!contextPrescription.hasMedication()) {
-            throw new RuntimeException("Missing medication code in context prescrition");
+    private void validateContextAndPrefetchResources(MedicationRequest prescription) {
+        if (!prescription.hasMedication()) {
+            throw new RuntimeException("Missing medication code in prescrition " + prescription.getId());
         }
 
-        if (contextPrescription.hasDosageInstruction()) {
-            if (!contextPrescription.getDosageInstructionFirstRep().hasAsNeededBooleanType()) {
-                throw new RuntimeException("Missing/invalid asNeededBoolean field in dosageInstruction in context prescrition");
+        if (prescription.hasDosageInstruction()) {
+            if (!prescription.getDosageInstructionFirstRep().hasAsNeededBooleanType()) {
+                throw new RuntimeException("Missing/invalid asNeededBoolean field in dosageInstruction for prescription " + prescription.getId());
             }
-            if (!contextPrescription.getDosageInstructionFirstRep().hasAsNeededBooleanType()) {
-                throw new RuntimeException("Missing/invalid asNeededBoolean field in dosageInstruction in context prescrition");
+            if (!prescription.getDosageInstructionFirstRep().hasDoseSimpleQuantity()) {
+                throw new RuntimeException("Missing/invalid doseQuantity field in dosageInstruction for prescription " + prescription.getId());
             }
         }
         else {
-            throw new RuntimeException("Missing dosageInstruction structure in context prescrition");
+            throw new RuntimeException("Missing dosageInstruction structure in prescription " + prescription.getId());
+        }
+
+        if (prescription.hasDispenseRequest()) {
+            if (!prescription.getDispenseRequest().hasQuantity()) {
+                throw new RuntimeException("Missing quantity field in dispenseRequest for prescription " + prescription.getId());
+            }
+        }
+        else {
+            throw new RuntimeException("Missing dispenseRequest structure in  prescription " + prescription.getId());
         }
     }
 }
