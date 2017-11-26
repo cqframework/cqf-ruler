@@ -60,10 +60,11 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         return librarySourceProvider;
     }
 
-    public OpioidGuidanceProcessor(CdsHooksRequest request, PlanDefinition planDefinition, LibraryResourceProvider libraryResourceProvider)
+    public OpioidGuidanceProcessor(CdsHooksRequest request, PlanDefinition planDefinition,
+                                   LibraryResourceProvider libraryResourceProvider, boolean isStu3)
             throws FHIRException
     {
-        super(request, planDefinition, libraryResourceProvider);
+        super(request, planDefinition, libraryResourceProvider, isStu3);
     }
 
     @Override
@@ -105,5 +106,23 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         }
 
         return cards;
+    }
+
+    private void validateContextAndPrefetchResources() {
+        if (!contextPrescription.hasMedication()) {
+            throw new RuntimeException("Missing medication code in context prescrition");
+        }
+
+        if (contextPrescription.hasDosageInstruction()) {
+            if (!contextPrescription.getDosageInstructionFirstRep().hasAsNeededBooleanType()) {
+                throw new RuntimeException("Missing/invalid asNeededBoolean field in dosageInstruction in context prescrition");
+            }
+            if (!contextPrescription.getDosageInstructionFirstRep().hasAsNeededBooleanType()) {
+                throw new RuntimeException("Missing/invalid asNeededBoolean field in dosageInstruction in context prescrition");
+            }
+        }
+        else {
+            throw new RuntimeException("Missing dosageInstruction structure in context prescrition");
+        }
     }
 }

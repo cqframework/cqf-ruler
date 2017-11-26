@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
+import ca.uhn.fhir.parser.DataFormatException;
 import com.google.gson.JsonElement;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -64,10 +65,11 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
         return librarySourceProvider;
     }
 
-    public MedicationPrescribeProcessor(CdsHooksRequest request, PlanDefinition planDefinition, LibraryResourceProvider libraryResourceProvider)
+    public MedicationPrescribeProcessor(CdsHooksRequest request, PlanDefinition planDefinition,
+                                        LibraryResourceProvider libraryResourceProvider, boolean isStu3)
             throws FHIRException
     {
-        super(request, planDefinition, libraryResourceProvider);
+        super(request, planDefinition, libraryResourceProvider, isStu3);
 
         this.activePrescriptions = new ArrayList<>();
         resolveContextPrescription();
@@ -99,16 +101,30 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
         }
 
         String resourceName = request.getContext().get(0).getAsJsonObject().getAsJsonPrimitive("resourceType").getAsString();
-        this.contextPrescription = getMedicationRequest(resourceName, FhirContext.forDstu2().newJsonParser().parseResource(request.getContext().get(0).toString()));
+        if (!isStu3) {
+            this.contextPrescription = getMedicationRequest(resourceName, FhirContext.forDstu2().newJsonParser().parseResource(request.getContext().get(0).toString()));
+        }
+        else {
+            this.contextPrescription = getMedicationRequest(resourceName, FhirContext.forDstu3().newJsonParser().parseResource(request.getContext().get(0).toString()));
+        }
     }
 
     private void resolveActivePrescriptions() throws FHIRException {
         this.activePrescriptions.add(contextPrescription); // include the context prescription
-        String resourceName;
-        Bundle bundle = (Bundle) FhirContext.forDstu2().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medication").getAsJsonObject("resource").toString());
-        for (Bundle.Entry entry : bundle.getEntry()) {
-            this.activePrescriptions.add(getMedicationRequest(entry.getResource().getResourceName(), entry.getResource()));
+
+        if (!isStu3) {
+            Bundle bundle = (Bundle) FhirContext.forDstu2().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medication").getAsJsonObject("resource").toString());
+            for (Bundle.Entry entry : bundle.getEntry()) {
+                this.activePrescriptions.add(getMedicationRequest(entry.getResource().getResourceName(), entry.getResource()));
+            }
         }
+        else {
+            org.hl7.fhir.dstu3.model.Bundle bundle = (org.hl7.fhir.dstu3.model.Bundle) FhirContext.forDstu3().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medication").getAsJsonObject("resource").toString());
+            for (org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                this.activePrescriptions.add(getMedicationRequest(entry.getResource().getResourceType().name(), entry.getResource()));
+            }
+        }
+
     }
 
     private MedicationRequest getMedicationRequest(String resourceName, IBaseResource resource) throws FHIRException {

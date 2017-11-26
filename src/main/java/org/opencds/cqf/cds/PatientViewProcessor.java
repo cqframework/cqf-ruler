@@ -51,8 +51,9 @@ public class PatientViewProcessor extends CdsRequestProcessor {
         return librarySourceProvider;
     }
 
-    public PatientViewProcessor(CdsHooksRequest request, PlanDefinition planDefinition, LibraryResourceProvider libraryResourceProvider) {
-        super(request, planDefinition, libraryResourceProvider);
+    public PatientViewProcessor(CdsHooksRequest request, PlanDefinition planDefinition,
+                                LibraryResourceProvider libraryResourceProvider, boolean isStu3) {
+        super(request, planDefinition, libraryResourceProvider, isStu3);
     }
 
     @Override

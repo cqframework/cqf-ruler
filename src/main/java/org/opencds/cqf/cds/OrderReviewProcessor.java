@@ -57,8 +57,9 @@ public class OrderReviewProcessor extends CdsRequestProcessor {
         return librarySourceProvider;
     }
 
-    public OrderReviewProcessor(CdsHooksRequest request, PlanDefinition planDefinition, LibraryResourceProvider libraryResourceProvider) {
-        super(request, planDefinition, libraryResourceProvider);
+    public OrderReviewProcessor(CdsHooksRequest request, PlanDefinition planDefinition,
+                                LibraryResourceProvider libraryResourceProvider, boolean isStu3) {
+        super(request, planDefinition, libraryResourceProvider, isStu3);
         resolveOrder();
     }
 

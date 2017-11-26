@@ -2,6 +2,7 @@ package org.opencds.cqf.servlet;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.model.dstu2.resource.Conformance;
 import ca.uhn.fhir.model.primitive.IdDt;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,13 +11,20 @@ import com.google.gson.JsonObject;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cds.*;
+import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
+import org.opencds.cqf.cql.data.fhir.FhirDataProviderDstu2;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -24,6 +32,9 @@ import java.util.List;
  */
 @WebServlet(name = "cds-services")
 public class CdsServicesServlet extends BaseServlet {
+
+    // default is DSTU2
+    boolean isStu3 = false;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -33,6 +44,11 @@ public class CdsServicesServlet extends BaseServlet {
         }
 
         CdsHooksRequest cdsHooksRequest = new CdsHooksRequest(request.getReader());
+
+        //
+        if (cdsHooksRequest.getFhirServerEndpoint() != null) {
+            isStu3 = isStu3(cdsHooksRequest.getFhirServerEndpoint());
+        }
         CdsRequestProcessor processor = null;
 
         String service = request.getPathInfo().replace("/", "");
@@ -48,9 +64,10 @@ public class CdsServicesServlet extends BaseServlet {
         if (request.getRequestURL().toString().endsWith("cdc-opioid-guidance")) {
             resolveMedicationPrescribePrefetch(cdsHooksRequest);
             try {
-                processor = new OpioidGuidanceProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"));
+                processor = new OpioidGuidanceProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"), isStu3);
             } catch (FHIRException e) {
                 e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 
@@ -61,28 +78,50 @@ public class CdsServicesServlet extends BaseServlet {
                 case "medication-prescribe":
                     resolveMedicationPrescribePrefetch(cdsHooksRequest);
                     try {
-                        processor = new MedicationPrescribeProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"));
+                        processor = new MedicationPrescribeProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"), isStu3);
                     } catch (FHIRException e) {
                         e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                     break;
                 case "order-review":
                     // resolveOrderReviewPrefetch(cdsHooksRequest);
                     // TODO - currently only works for ProcedureRequest orders
-                    processor = new OrderReviewProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"));
+                    processor = new OrderReviewProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"), isStu3);
                     break;
 
                 case "patient-view":
-                    processor = new PatientViewProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"));
+                    processor = new PatientViewProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"), isStu3);
                     break;
             }
         }
 
         if (processor == null) {
-            throw new ServletException("Invalid cds service");
+            throw new RuntimeException("Invalid cds service");
         }
 
         response.getWriter().println(toJsonResponse(processor.process()));
+    }
+
+    private boolean isStu3(String baseUrl) throws IOException {
+        URL url = new URL(baseUrl + "/metadata");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        try {
+            Conformance conformance = (Conformance) FhirContext.forDstu2().newJsonParser().parseResource(response.toString());
+            return false;
+        } catch (Exception e) {
+            return true;
+        }
     }
 
     // If the EHR did not provide the prefetch resources, fetch them
@@ -90,14 +129,26 @@ public class CdsServicesServlet extends BaseServlet {
     // This is a big drag on performance.
     public void resolveMedicationPrescribePrefetch(CdsHooksRequest cdsHooksRequest) {
         if (cdsHooksRequest.getPrefetch().size() == 0) {
-            String searchUrl = String.format("MedicationOrder?patient=%s&status=active", cdsHooksRequest.getPatientId());
-            ca.uhn.fhir.model.dstu2.resource.Bundle postfetch = FhirContext.forDstu2()
-                    .newRestfulGenericClient(cdsHooksRequest.getFhirServerEndpoint())
-                    .search()
-                    .byUrl(searchUrl)
-                    .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
-                    .execute();
-            cdsHooksRequest.setPrefetch(postfetch, "medication");
+            if (isStu3) {
+                String searchUrl = String.format("MedicationRequest?patient=%s&status=active", cdsHooksRequest.getPatientId());
+                Bundle postfetch = FhirContext.forDstu3()
+                        .newRestfulGenericClient(cdsHooksRequest.getFhirServerEndpoint())
+                        .search()
+                        .byUrl(searchUrl)
+                        .returnBundle(Bundle.class)
+                        .execute();
+                cdsHooksRequest.setPrefetch(postfetch, "medication");
+            }
+            else {
+                String searchUrl = String.format("MedicationOrder?patient=%s&status=active", cdsHooksRequest.getPatientId());
+                ca.uhn.fhir.model.dstu2.resource.Bundle postfetch = FhirContext.forDstu2()
+                        .newRestfulGenericClient(cdsHooksRequest.getFhirServerEndpoint())
+                        .search()
+                        .byUrl(searchUrl)
+                        .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
+                        .execute();
+                cdsHooksRequest.setPrefetch(postfetch, "medication");
+            }
         }
     }
 

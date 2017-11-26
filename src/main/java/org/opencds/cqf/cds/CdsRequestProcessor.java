@@ -16,11 +16,13 @@ public abstract class CdsRequestProcessor implements Processor {
     CdsHooksRequest request;
     PlanDefinition planDefinition;
     LibraryResourceProvider libraryResourceProvider;
+    boolean isStu3;
 
-    CdsRequestProcessor(CdsHooksRequest request, PlanDefinition planDefinition, LibraryResourceProvider libraryResourceProvider) {
+    CdsRequestProcessor(CdsHooksRequest request, PlanDefinition planDefinition, LibraryResourceProvider libraryResourceProvider, boolean isStu3) {
         this.request = request;
         this.planDefinition = planDefinition;
         this.libraryResourceProvider = libraryResourceProvider;
+        this.isStu3 = isStu3;
     }
 
     List<CdsCard> resolveActions(Context executionContext) {
