@@ -146,25 +146,17 @@ public class CdsHooksRequest {
     // TODO - this won't do for patient-view
     public void setPrefetch(Bundle prefetchBundle, String sub) {
         JsonObject subJson = new JsonObject();
-        JsonArray resources = new JsonArray();
-        for (Bundle.Entry entry : prefetchBundle.getEntry()) {
-            JsonParser parser = new JsonParser();
-            JsonObject resource = parser.parse(FhirContext.forDstu2().newJsonParser().encodeResourceToString(entry.getResource())).getAsJsonObject();
-            resources.add(resource);
-        }
-        subJson.add("resources", resources);
+        JsonParser parser = new JsonParser();
+        JsonObject bundle = parser.parse(FhirContext.forDstu2().newJsonParser().encodeResourceToString(prefetchBundle)).getAsJsonObject();
+        subJson.add("resource", bundle);
         this.prefetch.add(sub, subJson);
     }
 
     public void setPrefetch(org.hl7.fhir.dstu3.model.Bundle prefetchBundle, String sub) {
         JsonObject subJson = new JsonObject();
-        JsonArray resources = new JsonArray();
-        for (org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent entry : prefetchBundle.getEntry()) {
-            JsonParser parser = new JsonParser();
-            JsonObject resource = parser.parse(FhirContext.forDstu3().newJsonParser().encodeResourceToString(entry.getResource())).getAsJsonObject();
-            resources.add(resource);
-        }
-        subJson.add("resources", resources);
+        JsonParser parser = new JsonParser();
+        JsonObject bundle = parser.parse(FhirContext.forDstu3().newJsonParser().encodeResourceToString(prefetchBundle)).getAsJsonObject();
+        subJson.add("resource", bundle);
         this.prefetch.add(sub, subJson);
     }
 }

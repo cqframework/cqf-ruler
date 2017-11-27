@@ -73,12 +73,18 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
 
         if (!isStu3) {
             Bundle bundle = (Bundle) FhirContext.forDstu2().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medication").getAsJsonObject("resource").toString());
+            if (bundle.getEntry() == null) {
+                return;
+            }
             for (Bundle.Entry entry : bundle.getEntry()) {
                 this.activePrescriptions.add(getMedicationRequest(entry.getResource().getResourceName(), entry.getResource()));
             }
         }
         else {
             org.hl7.fhir.dstu3.model.Bundle bundle = (org.hl7.fhir.dstu3.model.Bundle) FhirContext.forDstu3().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medication").getAsJsonObject("resource").toString());
+            if (!bundle.hasEntry()) {
+                return;
+            }
             for (org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent entry : bundle.getEntry()) {
                 this.activePrescriptions.add(getMedicationRequest(entry.getResource().getResourceType().name(), entry.getResource()));
             }
