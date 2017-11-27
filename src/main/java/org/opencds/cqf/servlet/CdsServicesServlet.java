@@ -116,12 +116,7 @@ public class CdsServicesServlet extends BaseServlet {
             }
         }
 
-        try {
-            Conformance conformance = (Conformance) FhirContext.forDstu2().newJsonParser().parseResource(response.toString());
-            return false;
-        } catch (Exception e) {
-            return true;
-        }
+        return !response.toString().contains("Conformance");
     }
 
     // If the EHR did not provide the prefetch resources, fetch them

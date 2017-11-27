@@ -92,7 +92,6 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         executionContext.registerDataProvider("http://org.opencds/opioid-cds", omtkProvider);
         executionContext.registerDataProvider("http://hl7.org/fhir", dstu3Provider);
         executionContext.setExpressionCaching(true);
-//        executionContext.setEnableTraceLogging(true);
         executionContext.setParameter(null, "Orders", activePrescriptions);
 
         List<CdsCard> cards = resolveActions(executionContext);
@@ -130,15 +129,6 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         }
         else {
             throw new RuntimeException("Missing dosageInstruction structure in prescription " + prescription.getId());
-        }
-
-        if (prescription.hasDispenseRequest()) {
-            if (!prescription.getDispenseRequest().hasQuantity()) {
-                throw new RuntimeException("Missing quantity field in dispenseRequest for prescription " + prescription.getId());
-            }
-        }
-        else {
-            throw new RuntimeException("Missing dispenseRequest structure in  prescription " + prescription.getId());
         }
     }
 }

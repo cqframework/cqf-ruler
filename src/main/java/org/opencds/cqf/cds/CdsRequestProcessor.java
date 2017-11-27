@@ -12,18 +12,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class CdsRequestProcessor implements Processor {
+public abstract class CdsRequestProcessor {
     CdsHooksRequest request;
     PlanDefinition planDefinition;
     LibraryResourceProvider libraryResourceProvider;
+    DefaultProviders providers;
     boolean isStu3;
 
     CdsRequestProcessor(CdsHooksRequest request, PlanDefinition planDefinition, LibraryResourceProvider libraryResourceProvider, boolean isStu3) {
         this.request = request;
         this.planDefinition = planDefinition;
         this.libraryResourceProvider = libraryResourceProvider;
+        providers = new DefaultProviders(libraryResourceProvider);
         this.isStu3 = isStu3;
     }
+
+    public abstract List<CdsCard> process();
 
     List<CdsCard> resolveActions(Context executionContext) {
         List<CdsCard> cards = new ArrayList<>();
