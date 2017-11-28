@@ -2,7 +2,6 @@ package org.opencds.cqf.servlet;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.model.dstu2.resource.Conformance;
 import ca.uhn.fhir.model.primitive.IdDt;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,8 +10,6 @@ import com.google.gson.JsonObject;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cds.*;
-import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
-import org.opencds.cqf.cql.data.fhir.FhirDataProviderDstu2;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 
 import javax.servlet.ServletException;
@@ -34,7 +31,7 @@ import java.util.List;
 public class CdsServicesServlet extends BaseServlet {
 
     // default is DSTU2
-    boolean isStu3 = false;
+    private boolean isStu3 = false;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -122,7 +119,7 @@ public class CdsServicesServlet extends BaseServlet {
     // If the EHR did not provide the prefetch resources, fetch them
     // Assuming EHR is using DSTU2 resources here...
     // This is a big drag on performance.
-    public void resolveMedicationPrescribePrefetch(CdsHooksRequest cdsHooksRequest) {
+    private void resolveMedicationPrescribePrefetch(CdsHooksRequest cdsHooksRequest) {
         if (cdsHooksRequest.getPrefetch().size() == 0) {
             if (isStu3) {
                 String searchUrl = String.format("MedicationRequest?patient=%s&status=active", cdsHooksRequest.getPatientId());
@@ -210,7 +207,7 @@ public class CdsServicesServlet extends BaseServlet {
         CdsHooksHelper.DisplayDiscovery(response);
     }
 
-    public String toJsonResponse(List<CdsCard> cards) {
+    private String toJsonResponse(List<CdsCard> cards) {
         JsonObject ret = new JsonObject();
         JsonArray cardArray = new JsonArray();
 

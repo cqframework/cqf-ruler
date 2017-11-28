@@ -56,6 +56,7 @@ public class CdsCard {
     public static class Source {
         private String label;
         private String url;
+        private String icon;
 
         public boolean hasLabel() {
             return this.label != null && !this.label.isEmpty();
@@ -76,6 +77,17 @@ public class CdsCard {
         }
         public CdsCard.Source setUrl(String url) {
             this.url = url;
+            return this;
+        }
+
+        public boolean hasIcon() {
+            return this.icon != null && !this.icon.isEmpty();
+        }
+        public String getIcon() {
+            return this.icon;
+        }
+        public CdsCard.Source setIcon(String icon) {
+            this.icon = icon;
             return this;
         }
     }

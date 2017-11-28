@@ -89,7 +89,6 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
                 this.activePrescriptions.add(getMedicationRequest(entry.getResource().getResourceType().name(), entry.getResource()));
             }
         }
-
     }
 
     private MedicationRequest getMedicationRequest(String resourceName, IBaseResource resource) throws FHIRException {
