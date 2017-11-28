@@ -4,8 +4,8 @@ import org.hl7.fhir.dstu3.model.Attachment;
 
 public class AttachmentBuilder extends BaseBuilder<Attachment> {
 
-    public AttachmentBuilder(Attachment complexProperty) {
-        super(complexProperty);
+    public AttachmentBuilder() {
+        super(new Attachment());
     }
 
     // TODO - incomplete

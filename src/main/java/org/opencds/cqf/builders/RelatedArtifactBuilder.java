@@ -6,8 +6,8 @@ import org.hl7.fhir.exceptions.FHIRException;
 
 public class RelatedArtifactBuilder extends BaseBuilder<RelatedArtifact> {
 
-    public RelatedArtifactBuilder(RelatedArtifact complexProperty) {
-        super(complexProperty);
+    public RelatedArtifactBuilder() {
+        super(new RelatedArtifact());
     }
 
     // TODO - incomplete

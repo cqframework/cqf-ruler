@@ -1,9 +1,6 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.Annotation;
-import org.hl7.fhir.dstu3.model.CarePlan;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +55,11 @@ public class CarePlanActivityBuilder extends BaseBuilder<CarePlan.CarePlanActivi
 
     public CarePlanActivityBuilder buildReference(Reference reference) {
         complexProperty.setReference(reference);
+        return this;
+    }
+
+    public CarePlanActivityBuilder buildReferenceTarget(Resource resource) {
+        complexProperty.setReferenceTarget(resource);
         return this;
     }
 

@@ -7,8 +7,8 @@ import java.util.List;
 
 public class RequestGroupBuilder extends BaseBuilder<RequestGroup> {
 
-    public RequestGroupBuilder(RequestGroup complexProperty) {
-        super(complexProperty);
+    public RequestGroupBuilder() {
+        super(new RequestGroup());
     }
 
     // TODO - incomplete

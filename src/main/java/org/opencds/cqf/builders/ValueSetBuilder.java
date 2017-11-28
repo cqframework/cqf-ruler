@@ -4,43 +4,43 @@ import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.exceptions.FHIRException;
 
-public class ValueSetBuider extends BaseBuilder<ValueSet> {
+public class ValueSetBuilder extends BaseBuilder<ValueSet> {
 
-    public ValueSetBuider(ValueSet complexProperty) {
+    public ValueSetBuilder(ValueSet complexProperty) {
         super(complexProperty);
     }
 
-    public ValueSetBuider buildId(String id) {
+    public ValueSetBuilder buildId(String id) {
         complexProperty.setId(id);
         return this;
     }
 
-    public ValueSetBuider buildUrl(String url) {
+    public ValueSetBuilder buildUrl(String url) {
         complexProperty.setUrl(url);
         return this;
     }
 
-    public ValueSetBuider buildTitle(String title) {
+    public ValueSetBuilder buildTitle(String title) {
         complexProperty.setTitle(title);
         return this;
     }
 
-    public ValueSetBuider buildStatus() {
+    public ValueSetBuilder buildStatus() {
         complexProperty.setStatus(Enumerations.PublicationStatus.DRAFT);
         return this;
     }
 
-    public ValueSetBuider buildStatus(String status) throws FHIRException {
+    public ValueSetBuilder buildStatus(String status) throws FHIRException {
         complexProperty.setStatus(Enumerations.PublicationStatus.fromCode(status));
         return this;
     }
 
-    public ValueSetBuider buildStatus(Enumerations.PublicationStatus status) {
+    public ValueSetBuilder buildStatus(Enumerations.PublicationStatus status) {
         complexProperty.setStatus(status);
         return this;
     }
 
-    public ValueSetBuider buildCompose(ValueSet.ValueSetComposeComponent compose) {
+    public ValueSetBuilder buildCompose(ValueSet.ValueSetComposeComponent compose) {
         complexProperty.setCompose(compose);
         return this;
     }

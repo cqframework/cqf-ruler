@@ -98,7 +98,7 @@ public class CdsHooksRequest {
     }
 
     /*
-
+        TODO - this is not the correct format!
         Prefetch format:
         "prefetch": {
             "medication": { // for medication-prescribe and order-review

@@ -4,6 +4,7 @@ import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.api.annotation.Description;
+import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
@@ -12,16 +13,15 @@ import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.builders.CarePlanBuilder;
-import org.opencds.cqf.builders.JavaDateBuilder;
+import org.opencds.cqf.builders.*;
+import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
+import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3<PlanDefinition> {
 
@@ -153,6 +153,104 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         }
 
         return carePlan;
+    }
+
+    public CarePlan resolveCdsHooksPlanDefinition(PlanDefinition planDefinition, Context context, String patientId) {
+        CarePlanBuilder carePlanBuilder = new CarePlanBuilder();
+        RequestGroupBuilder requestGroupBuilder = new RequestGroupBuilder();
+
+        // links
+        if (planDefinition.hasRelatedArtifact()) {
+            List<Extension> extensions = new ArrayList<>();
+            for (RelatedArtifact relatedArtifact : planDefinition.getRelatedArtifact()) {
+                ExtensionBuilder extensionBuilder = new ExtensionBuilder();
+                if (relatedArtifact.hasDisplay()) { // label
+                    extensionBuilder.buildUrl("http://example.org");
+                    extensionBuilder.buildValue(relatedArtifact.getDisplay());
+                }
+                if (relatedArtifact.hasUrl()) { // url
+                    extensionBuilder.buildUrl("http://example.org");
+                    extensionBuilder.buildValue(new UriType(relatedArtifact.getUrl()));
+                }
+                if (relatedArtifact.hasExtension()) { // type
+                    extensionBuilder.buildUrl("http://example.org");
+                    extensionBuilder.buildValue(relatedArtifact.getExtensionFirstRep().getValue().toString());
+                }
+                extensions.add(extensionBuilder.build());
+            }
+            requestGroupBuilder.buildExtension(extensions);
+        }
+
+        List<RequestGroup.RequestGroupActionComponent> actionComponents = new ArrayList<>();
+        for (PlanDefinition.PlanDefinitionActionComponent action : planDefinition.getAction()) {
+            RequestGroupActionBuilder actionBuilder = new RequestGroupActionBuilder();
+            if (action.hasTitle()) {
+                actionBuilder.buildTitle(action.getTitle());
+            }
+            if (action.hasDescription()) {
+                actionBuilder.buildDescripition(action.getDescription());
+            }
+
+            // source
+            if (action.hasDocumentation()) {
+                RelatedArtifact artifact = action.getDocumentationFirstRep();
+                RelatedArtifactBuilder artifactBuilder = new RelatedArtifactBuilder();
+                if (artifact.hasDisplay()) {
+                    artifactBuilder.buildDisplay(artifact.getDisplay());
+                }
+                if (artifact.hasUrl()) {
+                    artifactBuilder.buildUrl(artifact.getUrl());
+                }
+                if (artifact.hasDocument() && artifact.getDocument().hasUrl()) {
+                    AttachmentBuilder attachmentBuilder = new AttachmentBuilder();
+                    attachmentBuilder.buildUrl(artifact.getDocument().getUrl());
+                    artifactBuilder.buildDocument(attachmentBuilder.build());
+                }
+                actionBuilder.buildDocumentation(Collections.singletonList(artifactBuilder.build()));
+            }
+
+            // suggestions
+            // TODO - uuid
+            if (action.hasLabel()) {
+                actionBuilder.buildLabel(action.getLabel());
+            }
+            if (action.hasType()) {
+                actionBuilder.buildType(action.getType());
+            }
+            if (action.hasDefinition()) {
+                if (action.getDefinition().getReferenceElement().getResourceType().equals("ActivityDefinition")) {
+                    if (action.getDefinition().getResource() != null) {
+                        ReferenceBuilder referenceBuilder = new ReferenceBuilder();
+                        referenceBuilder.buildDisplay(((ActivityDefinition) action.getDefinition().getResource()).getDescription());
+                        actionBuilder.buildResource(referenceBuilder.build());
+                    }
+
+                    BaseFhirDataProvider provider = (BaseFhirDataProvider) context.resolveDataProvider(new QName("http://hl7.org/fhir", ""));
+                    Parameters inParams = new Parameters();
+                    inParams.addParameter().setName("patient").setValue(new StringType(patientId));
+
+                    Parameters outParams = provider.getFhirClient()
+                            .operation()
+                            .onInstance(new IdDt("ActivityDefinition", action.getDefinition().getReferenceElement().getIdPart()))
+                            .named("$apply")
+                            .withParameters(inParams)
+                            .useHttpGet()
+                            .execute();
+
+                    List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+                    Resource resource = response.get(0).getResource();
+                    actionBuilder.buildResourceTarget(resource);
+                }
+                actionComponents.add(actionBuilder.build());
+            }
+            requestGroupBuilder.buildAction(actionComponents);
+        }
+
+        CarePlanActivityBuilder carePlanActivityBuilder = new CarePlanActivityBuilder();
+        carePlanActivityBuilder.buildReferenceTarget(requestGroupBuilder.build());
+        carePlanBuilder.buildActivity(carePlanActivityBuilder.build());
+
+        return carePlanBuilder.build();
     }
 
     @Search(allowUnknownParams=true)

@@ -6,8 +6,8 @@ import java.util.List;
 
 public class RequestGroupActionBuilder extends BaseBuilder<RequestGroup.RequestGroupActionComponent> {
 
-    public RequestGroupActionBuilder(RequestGroup.RequestGroupActionComponent complexProperty) {
-        super(complexProperty);
+    public RequestGroupActionBuilder() {
+        super(new RequestGroup.RequestGroupActionComponent());
     }
 
     // TODO - incomplete
