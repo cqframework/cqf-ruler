@@ -236,6 +236,20 @@ define "Is Absence Of Right Breast":
 				and end of PeriodToIntervalOfDT(Obs.effective) same day or before Today()
 	)
 
+define MammogramSummary:
+    if "Needs Mammogram"
+        then 'A Mammogram procedure for the patient is recommended'
+    else 'The patient has a current Mammogram procedure'
+
+define MammogramDetail:
+    if "Needs Mammogram"
+        then 'The patient has not had a Mammogram procedure in the last 39 months'
+    else 'The patient has not had a Mammogram procedure in the last 39 months'
+
+define MammogramIndicator:
+    if "Needs Mammogram"
+        then 'warning'
+    else 'success'
 
 /*
 Utility Functions

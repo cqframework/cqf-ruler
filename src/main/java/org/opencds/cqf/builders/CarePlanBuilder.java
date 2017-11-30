@@ -223,11 +223,7 @@ public class CarePlanBuilder extends BaseBuilder<CarePlan> {
     }
 
     public CarePlanBuilder buildActivity(CarePlan.CarePlanActivityComponent activity) {
-        if (!complexProperty.hasActivity()) {
-            complexProperty.setActivity(Collections.singletonList(new CarePlan.CarePlanActivityComponent()));
-        }
-
-        complexProperty.getActivity().add(activity);
+        complexProperty.addActivity(activity);
         return this;
     }
 

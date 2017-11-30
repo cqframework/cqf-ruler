@@ -14,6 +14,7 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.builders.*;
+import org.opencds.cqf.cds.CdsHooksRequest;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
@@ -155,9 +156,12 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         return carePlan;
     }
 
-    public CarePlan resolveCdsHooksPlanDefinition(PlanDefinition planDefinition, Context context, String patientId) {
+    public CarePlan resolveCdsHooksPlanDefinition(Context context, CdsHooksRequest request) {
+
+        PlanDefinition planDefinition = this.getDao().read(new IdType(request.getService()));
+
         CarePlanBuilder carePlanBuilder = new CarePlanBuilder();
-        RequestGroupBuilder requestGroupBuilder = new RequestGroupBuilder();
+        RequestGroupBuilder requestGroupBuilder = new RequestGroupBuilder().buildStatus().buildIntent();
 
         // links
         if (planDefinition.hasRelatedArtifact()) {
@@ -181,76 +185,131 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
             requestGroupBuilder.buildExtension(extensions);
         }
 
-        List<RequestGroup.RequestGroupActionComponent> actionComponents = new ArrayList<>();
-        for (PlanDefinition.PlanDefinitionActionComponent action : planDefinition.getAction()) {
-            RequestGroupActionBuilder actionBuilder = new RequestGroupActionBuilder();
-            if (action.hasTitle()) {
-                actionBuilder.buildTitle(action.getTitle());
-            }
-            if (action.hasDescription()) {
-                actionBuilder.buildDescripition(action.getDescription());
-            }
-
-            // source
-            if (action.hasDocumentation()) {
-                RelatedArtifact artifact = action.getDocumentationFirstRep();
-                RelatedArtifactBuilder artifactBuilder = new RelatedArtifactBuilder();
-                if (artifact.hasDisplay()) {
-                    artifactBuilder.buildDisplay(artifact.getDisplay());
-                }
-                if (artifact.hasUrl()) {
-                    artifactBuilder.buildUrl(artifact.getUrl());
-                }
-                if (artifact.hasDocument() && artifact.getDocument().hasUrl()) {
-                    AttachmentBuilder attachmentBuilder = new AttachmentBuilder();
-                    attachmentBuilder.buildUrl(artifact.getDocument().getUrl());
-                    artifactBuilder.buildDocument(attachmentBuilder.build());
-                }
-                actionBuilder.buildDocumentation(Collections.singletonList(artifactBuilder.build()));
-            }
-
-            // suggestions
-            // TODO - uuid
-            if (action.hasLabel()) {
-                actionBuilder.buildLabel(action.getLabel());
-            }
-            if (action.hasType()) {
-                actionBuilder.buildType(action.getType());
-            }
-            if (action.hasDefinition()) {
-                if (action.getDefinition().getReferenceElement().getResourceType().equals("ActivityDefinition")) {
-                    if (action.getDefinition().getResource() != null) {
-                        ReferenceBuilder referenceBuilder = new ReferenceBuilder();
-                        referenceBuilder.buildDisplay(((ActivityDefinition) action.getDefinition().getResource()).getDescription());
-                        actionBuilder.buildResource(referenceBuilder.build());
-                    }
-
-                    BaseFhirDataProvider provider = (BaseFhirDataProvider) context.resolveDataProvider(new QName("http://hl7.org/fhir", ""));
-                    Parameters inParams = new Parameters();
-                    inParams.addParameter().setName("patient").setValue(new StringType(patientId));
-
-                    Parameters outParams = provider.getFhirClient()
-                            .operation()
-                            .onInstance(new IdDt("ActivityDefinition", action.getDefinition().getReferenceElement().getIdPart()))
-                            .named("$apply")
-                            .withParameters(inParams)
-                            .useHttpGet()
-                            .execute();
-
-                    List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
-                    Resource resource = response.get(0).getResource();
-                    actionBuilder.buildResourceTarget(resource);
-                }
-                actionComponents.add(actionBuilder.build());
-            }
-            requestGroupBuilder.buildAction(actionComponents);
-        }
+        resolveActions(planDefinition.getAction(), context, request, requestGroupBuilder, new ArrayList<>());
 
         CarePlanActivityBuilder carePlanActivityBuilder = new CarePlanActivityBuilder();
         carePlanActivityBuilder.buildReferenceTarget(requestGroupBuilder.build());
         carePlanBuilder.buildActivity(carePlanActivityBuilder.build());
 
         return carePlanBuilder.build();
+    }
+
+    private void resolveActions(List<PlanDefinition.PlanDefinitionActionComponent> actions, Context context,
+                                CdsHooksRequest request, RequestGroupBuilder requestGroupBuilder,
+                                List<RequestGroup.RequestGroupActionComponent> actionComponents)
+    {
+        for (PlanDefinition.PlanDefinitionActionComponent action : actions) {
+            boolean conditionsMet = true;
+            for (PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {
+                if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
+                    if (!condition.hasExpression()) {
+                        continue;
+                    }
+
+                    Object result = context.resolveExpressionRef(condition.getExpression()).getExpression().evaluate(context);
+
+                    if (!(result instanceof Boolean)) {
+                        continue;
+                    }
+
+                    if (!(Boolean) result) {
+                        conditionsMet = false;
+                    }
+                }
+
+                if (conditionsMet) {
+                    RequestGroupActionBuilder actionBuilder = new RequestGroupActionBuilder();
+                    if (action.hasTitle()) {
+                        actionBuilder.buildTitle(action.getTitle());
+                    }
+                    if (action.hasDescription()) {
+                        actionBuilder.buildDescripition(action.getDescription());
+                    }
+
+                    // source
+                    if (action.hasDocumentation()) {
+                        RelatedArtifact artifact = action.getDocumentationFirstRep();
+                        RelatedArtifactBuilder artifactBuilder = new RelatedArtifactBuilder();
+                        if (artifact.hasDisplay()) {
+                            artifactBuilder.buildDisplay(artifact.getDisplay());
+                        }
+                        if (artifact.hasUrl()) {
+                            artifactBuilder.buildUrl(artifact.getUrl());
+                        }
+                        if (artifact.hasDocument() && artifact.getDocument().hasUrl()) {
+                            AttachmentBuilder attachmentBuilder = new AttachmentBuilder();
+                            attachmentBuilder.buildUrl(artifact.getDocument().getUrl());
+                            artifactBuilder.buildDocument(attachmentBuilder.build());
+                        }
+                        actionBuilder.buildDocumentation(Collections.singletonList(artifactBuilder.build()));
+                    }
+
+                    // suggestions
+                    // TODO - uuid
+                    if (action.hasLabel()) {
+                        actionBuilder.buildLabel(action.getLabel());
+                    }
+                    if (action.hasType()) {
+                        actionBuilder.buildType(action.getType());
+                    }
+                    if (action.hasDefinition()) {
+                        if (action.getDefinition().getReferenceElement().getResourceType().equals("ActivityDefinition")) {
+                            if (action.getDefinition().getResource() != null) {
+                                ReferenceBuilder referenceBuilder = new ReferenceBuilder();
+                                referenceBuilder.buildDisplay(((ActivityDefinition) action.getDefinition().getResource()).getDescription());
+                                actionBuilder.buildResource(referenceBuilder.build());
+                            }
+
+                            BaseFhirDataProvider provider = (BaseFhirDataProvider) context.resolveDataProvider(new QName("http://hl7.org/fhir", ""));
+                            Parameters inParams = new Parameters();
+                            inParams.addParameter().setName("patient").setValue(new StringType(request.getPatientId()));
+
+                            Parameters outParams = provider.getFhirClient()
+                                    .operation()
+                                    .onInstance(new IdDt("ActivityDefinition", action.getDefinition().getReferenceElement().getIdPart()))
+                                    .named("$apply")
+                                    .withParameters(inParams)
+                                    .useHttpGet()
+                                    .execute();
+
+                            List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+                            Resource resource = response.get(0).getResource().setId(UUID.randomUUID().toString());
+                            actionBuilder.buildResourceTarget(resource);
+                            actionBuilder.buildResource(new ReferenceBuilder().buildReference(resource.getId()).build());
+                        }
+                    }
+
+                    // Dynamic values populate the RequestGroup - there is a bit of hijacking going on here...
+                    if (action.hasDynamicValue()) {
+                        for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue : action.getDynamicValue()) {
+                            if (dynamicValue.hasPath() && dynamicValue.hasExpression()) {
+                                if (dynamicValue.getPath().endsWith("title")) { // summary
+                                    String title = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
+                                    actionBuilder.buildTitle(title);
+                                }
+                                else if (dynamicValue.getPath().endsWith("description")) { // detail
+                                    String description = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
+                                    actionBuilder.buildDescripition(description);
+                                }
+                                else if (dynamicValue.getPath().endsWith("extension")) { // indicator
+                                    String extension = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
+                                    actionBuilder.buildExtension(extension);
+                                }
+                            }
+                        }
+                    }
+
+                    if (!actionBuilder.build().isEmpty()) {
+                        actionComponents.add(actionBuilder.build());
+                    }
+
+                    if (action.hasAction()) {
+                        resolveActions(action.getAction(), context, request, requestGroupBuilder, actionComponents);
+                    }
+                }
+            }
+        }
+        requestGroupBuilder.buildAction(new ArrayList<>(actionComponents));
     }
 
     @Search(allowUnknownParams=true)

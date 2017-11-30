@@ -2,7 +2,6 @@ package org.opencds.cqf.servlet;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.model.primitive.IdDt;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -41,6 +40,7 @@ public class CdsServicesServlet extends BaseServlet {
         }
 
         CdsHooksRequest cdsHooksRequest = new CdsHooksRequest(request.getReader());
+        cdsHooksRequest.setService(request.getPathInfo().replace("/", ""));
 
         //
         if (cdsHooksRequest.getFhirServerEndpoint() != null) {
@@ -48,20 +48,15 @@ public class CdsServicesServlet extends BaseServlet {
         }
         CdsRequestProcessor processor = null;
 
-        String service = request.getPathInfo().replace("/", "");
-        
-        // PlanDefinition must have the same id as the cds service
-        // For example, {BASE}/cds-services/cdc-opioid-guidance -> PlanDefinition ID = cds-opioid-guidance
-        PlanDefinition planDefinition =
-                ((FHIRPlanDefinitionResourceProvider) getProvider("PlanDefinition"))
-                        .getDao()
-                        .read(new IdDt(service));
+        // necessary resource providers
+        LibraryResourceProvider libraryResourceProvider = (LibraryResourceProvider) getProvider("Library");
+        FHIRPlanDefinitionResourceProvider planDefinitionResourceProvider = (FHIRPlanDefinitionResourceProvider) getProvider("PlanDefinition");
 
-        // Custom cds services
+        // Custom cds services - requires customized terminology/data providers
         if (request.getRequestURL().toString().endsWith("cdc-opioid-guidance")) {
             resolveMedicationPrescribePrefetch(cdsHooksRequest);
             try {
-                processor = new OpioidGuidanceProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"), isStu3);
+                processor = new OpioidGuidanceProcessor(cdsHooksRequest, libraryResourceProvider, planDefinitionResourceProvider, isStu3);
             } catch (FHIRException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
@@ -75,7 +70,7 @@ public class CdsServicesServlet extends BaseServlet {
                 case "medication-prescribe":
                     resolveMedicationPrescribePrefetch(cdsHooksRequest);
                     try {
-                        processor = new MedicationPrescribeProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"), isStu3);
+                        processor = new MedicationPrescribeProcessor(cdsHooksRequest, libraryResourceProvider, planDefinitionResourceProvider, isStu3);
                     } catch (FHIRException e) {
                         e.printStackTrace();
                         throw new RuntimeException(e);
@@ -84,11 +79,11 @@ public class CdsServicesServlet extends BaseServlet {
                 case "order-review":
                     // resolveOrderReviewPrefetch(cdsHooksRequest);
                     // TODO - currently only works for ProcedureRequest orders
-                    processor = new OrderReviewProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"), isStu3);
+                    processor = new OrderReviewProcessor(cdsHooksRequest, libraryResourceProvider, planDefinitionResourceProvider, isStu3);
                     break;
 
                 case "patient-view":
-                    processor = new PatientViewProcessor(cdsHooksRequest, planDefinition, (LibraryResourceProvider) getProvider("Library"), isStu3);
+                    processor = new PatientViewProcessor(cdsHooksRequest, libraryResourceProvider, planDefinitionResourceProvider, isStu3);
                     break;
             }
         }
@@ -100,6 +95,7 @@ public class CdsServicesServlet extends BaseServlet {
         response.getWriter().println(toJsonResponse(processor.process()));
     }
 
+    // This is a little bit of a hacky way to determine the FHIR version - but it works =)
     private boolean isStu3(String baseUrl) throws IOException {
         URL url = new URL(baseUrl + "/metadata");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();

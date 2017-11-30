@@ -141,6 +141,12 @@ public class CdsCard {
             this.actions = actions;
             return this;
         }
+        public void addAction(Action action) {
+            if (this.actions == null) {
+                this.actions = new ArrayList<>();
+            }
+            this.actions.add(action);
+        }
 
         public static class Action {
             enum ActionType {create, update, delete}
@@ -193,7 +199,9 @@ public class CdsCard {
         this.suggestions = suggestions;
         return this;
     }
-
+    public void addSuggestion(Suggestions suggestions) {
+        this.suggestions.add(suggestions);
+    }
 
     private List<Links> links;
     public static class Links {

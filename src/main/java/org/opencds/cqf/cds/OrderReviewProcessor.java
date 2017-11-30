@@ -10,6 +10,7 @@ import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.exceptions.MissingContextException;
+import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 
 import java.util.List;
 
@@ -17,9 +18,9 @@ public class OrderReviewProcessor extends CdsRequestProcessor {
 
     private ProcedureRequest contextOrder;
 
-    public OrderReviewProcessor(CdsHooksRequest request, PlanDefinition planDefinition,
-                                LibraryResourceProvider libraryResourceProvider, boolean isStu3) {
-        super(request, planDefinition, libraryResourceProvider, isStu3);
+    public OrderReviewProcessor(CdsHooksRequest request, LibraryResourceProvider libraryResourceProvider,
+                                FHIRPlanDefinitionResourceProvider planDefinitionResourceProvider, boolean isStu3) {
+        super(request, libraryResourceProvider, planDefinitionResourceProvider, isStu3);
         resolveOrder();
     }
 

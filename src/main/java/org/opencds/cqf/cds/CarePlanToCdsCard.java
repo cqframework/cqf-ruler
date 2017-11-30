@@ -12,26 +12,21 @@ public class CarePlanToCdsCard {
         List<CdsCard> cards = new ArrayList<>();
 
         for (CarePlan.CarePlanActivityComponent activity : carePlan.getActivity()) {
-            CdsCard card = new CdsCard();
-            if (activity.hasReference() && activity.getReferenceTarget() instanceof RequestGroup) {
+            if (activity.getReferenceTarget() != null && activity.getReferenceTarget() instanceof RequestGroup) {
                 RequestGroup requestGroup = (RequestGroup) activity.getReferenceTarget();
-                card = convert(requestGroup);
+                cards = convert(requestGroup);
             }
-            if (activity.hasExtension() && activity.getExtensionFirstRep().getValue() instanceof StringType) {
-                // indicator
-                card.setIndicator(activity.getExtensionFirstRep().getValue().toString());
-            }
-            cards.add(card);
         }
 
         return cards;
     }
 
-    private static CdsCard convert(RequestGroup requestGroup) {
-        CdsCard card = new CdsCard();
+    private static List<CdsCard> convert(RequestGroup requestGroup) {
+        List<CdsCard> cards = new ArrayList<>();
 
         // links
         if (requestGroup.hasExtension()) {
+            CdsCard card = new CdsCard();
             List<CdsCard.Links> links = new ArrayList<>();
             for (Extension extension : requestGroup.getExtension()) {
                 CdsCard.Links link = new CdsCard.Links();
@@ -58,16 +53,21 @@ public class CarePlanToCdsCard {
                 links.add(link);
             }
             card.setLinks(links);
+            cards.add(card);
         }
 
         if (requestGroup.hasAction()) {
             for (RequestGroup.RequestGroupActionComponent action : requestGroup.getAction()) {
+                CdsCard card = new CdsCard();
                 // basic
                 if (action.hasTitle()) {
                     card.setSummary(action.getTitle());
                 }
                 if (action.hasDescription()) {
                     card.setDetail(action.getDescription());
+                }
+                if (action.hasExtension()) {
+                    card.setIndicator(action.getExtensionFirstRep().getValue().toString());
                 }
 
                 // source
@@ -98,7 +98,8 @@ public class CarePlanToCdsCard {
                     hasSuggestions = true;
                 }
                 if (action.hasType()) {
-                    actions.setType(CdsCard.Suggestions.Action.ActionType.valueOf(action.getType().getCode()));
+                    String code = action.getType().getCode();
+                    actions.setType(CdsCard.Suggestions.Action.ActionType.valueOf(code.equals("remove") ? "delete" : code));
                     hasSuggestions = true;
                 }
                 if (action.hasResource()) {
@@ -106,12 +107,13 @@ public class CarePlanToCdsCard {
                     hasSuggestions = true;
                 }
                 if (hasSuggestions) {
-                    suggestions.setActions(Collections.singletonList(actions));
-                    card.setSuggestions(Collections.singletonList(suggestions));
+                    suggestions.addAction(actions);
+                    card.addSuggestion(suggestions);
                 }
+                cards.add(card);
             }
         }
 
-        return card;
+        return cards;
     }
 }

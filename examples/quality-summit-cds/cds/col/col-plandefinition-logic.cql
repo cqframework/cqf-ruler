@@ -64,6 +64,15 @@ define "Needs Fecal Occult Blood Test":
 	    then true
 	else not exists "Fecal Occult Blood Tests"
 
+define FOBTSummary:
+    'A Fecal Occult Blood test for the patient is recommended'
+
+define FOBTDetail:
+    'The patient has not had a Fecal Occult Blood test in the last year'
+
+define FOBTIndicator:
+    'warning'
+
 define "Flexible Sigmoidoscopy Reports":
 	[DiagnosticReport: "Flexible Sigmoidoscopy Value Set (CPT)"]
 		union [DiagnosticReport: "Flexible Sigmoidoscopy Value Set (HCPCS)"]
@@ -78,6 +87,15 @@ define "Needs Flexible Sigmoidoscopy":
 	if "Flexible Sigmoidoscopy Diagnostics" is null
 	    then true
 	else not exists "Flexible Sigmoidoscopy Diagnostics"
+
+define FlexibleSigmoidoscopySummary:
+    'A Flexible Sigmoidoscopy procedure for the patient is recommended'
+
+define FlexibleSigmoidoscopyDetail:
+    'The patient has not had a Flexible Sigmoidoscopy procedure in the last 5 years'
+
+define FlexibleSigmoidoscopyIndicator:
+    'warning'
 
 define "Colonoscopy Reports":
 	[DiagnosticReport: "Colonoscopy Value Set (CPT)"]
@@ -94,12 +112,30 @@ define "Needs Colonoscopy":
 	    then true
 	else not exists "Colonoscopy Diagnostics"
 
+define ColonoscopySummary:
+    'A Colonoscopy procedure for the patient is recommended'
+
+define ColonoscopyDetail:
+    'The patient has not had a Colonoscopy procedure in the last 10 years'
+
+define ColonoscopyIndicator:
+    'warning'
+
 define "Needs CT Colonography":
 	not exists(
 		[DiagnosticReport: "CT Colonography Value Set"] DiagRep
 			where DiagRep.status.value in { 'preliminary', 'final', 'amended', 'corrected', 'appended' }
 				and PeriodToIntervalOfDT(DiagRep.effective) included in "Lookback Interval Five Years"
 	)
+
+define ColonographySummary:
+    'A Colonography procedure for the patient is recommended'
+
+define ColonographyDetail:
+    'The patient has not had a Colonography procedure in the last 5 years'
+
+define ColonographyIndicator:
+    'warning'
 
 define "FIT-DNA Observations":
 	[Observation: "FIT-DNA Value Set (CPT)"]
@@ -115,6 +151,15 @@ define "Needs FIT-DNA Test":
 	if "FIT-DNA Tests" is null
 	    then true
 	else not exists "FIT-DNA Tests"
+
+define FITDNASummary:
+    'A FIT-DNA test for the patient is recommended'
+
+define FITDNADetail:
+    'The patient has not had a FIT-DNA test in the last 3 years'
+
+define FITDNAIndicator:
+    'warning'
 
 define "Colorectal Cancer Conditions":
 	[Condition: "Colorectal Cancer Value Set (ICD10)"]

@@ -2,6 +2,7 @@ package org.opencds.cqf.builders;
 
 import org.hl7.fhir.dstu3.model.*;
 
+import java.util.Collections;
 import java.util.List;
 
 public class RequestGroupActionBuilder extends BaseBuilder<RequestGroup.RequestGroupActionComponent> {
@@ -44,6 +45,16 @@ public class RequestGroupActionBuilder extends BaseBuilder<RequestGroup.RequestG
 
     public RequestGroupActionBuilder buildResourceTarget(Resource resource) {
         complexProperty.setResourceTarget(resource);
+        return this;
+    }
+
+    public RequestGroupActionBuilder buildExtension(String extension) {
+        complexProperty.setExtension(Collections.singletonList(new Extension().setUrl("http://example.org").setValue(new StringType(extension))));
+        return this;
+    }
+
+    public RequestGroupActionBuilder buildExtension(List<Extension> extensions) {
+        complexProperty.setExtension(extensions);
         return this;
     }
 }

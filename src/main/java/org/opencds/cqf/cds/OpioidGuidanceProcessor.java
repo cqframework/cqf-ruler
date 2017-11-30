@@ -18,6 +18,7 @@ import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.opioidcds.OmtkDataProvider;
 import org.opencds.cqf.opioidcds.OmtkModelInfoProvider;
+import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -61,11 +62,11 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         return librarySourceProvider;
     }
 
-    public OpioidGuidanceProcessor(CdsHooksRequest request, PlanDefinition planDefinition,
-                                   LibraryResourceProvider libraryResourceProvider, boolean isStu3)
+    public OpioidGuidanceProcessor(CdsHooksRequest request, LibraryResourceProvider libraryResourceProvider,
+                                   FHIRPlanDefinitionResourceProvider planDefinitionResourceProvider, boolean isStu3)
             throws FHIRException
     {
-        super(request, planDefinition, libraryResourceProvider, isStu3);
+        super(request, libraryResourceProvider, planDefinitionResourceProvider, isStu3);
     }
 
     @Override
@@ -114,6 +115,7 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         return cards;
     }
 
+    // TODO - finish this
     private void validateContextAndPrefetchResources(MedicationRequest prescription) {
         if (!prescription.hasMedication()) {
             throw new RuntimeException("Missing medication code in prescrition " + prescription.getId());

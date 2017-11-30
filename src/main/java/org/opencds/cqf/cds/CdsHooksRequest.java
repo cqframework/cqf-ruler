@@ -26,6 +26,15 @@ public class CdsHooksRequest {
     private JsonArray context;
     private JsonObject prefetch;
 
+    // Not an standard request element
+    private String service;
+    public void setService(String service) {
+        this.service = service;
+    }
+    public String getService() {
+        return service;
+    }
+
     public CdsHooksRequest(Reader cdsHooksRequest) throws IOException {
         JsonParser parser = new JsonParser();
         this.requestJson =  parser.parse(cdsHooksRequest).getAsJsonObject();

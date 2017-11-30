@@ -95,7 +95,7 @@ public class RulerTestBase {
     }
 
     // this test requires the OpioidManagementTerminologyKnowledge.db file to be located in the src/main/resources/cds folder
-    @Test
+//    @Test
     public void CdcOpioidGuidanceTest() throws IOException {
         putResource("cdc-opioid-guidance-library-omtk.json", "OMTKLogic");
         putResource("cdc-opioid-guidance-library-primary.json", "OpioidCdsStu3");
@@ -324,7 +324,9 @@ public class RulerTestBase {
         String expected = "{\n" +
                 "  \"cards\": [\n" +
                 "    {\n" +
-                "      \"indicator\": \"info\",\n" +
+                "      \"summary\": \"A Mammogram procedure for the patient is recommended\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The patient has not had a Mammogram procedure in the last 39 months\",\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
                 "          \"actions\": [\n" +
@@ -353,10 +355,11 @@ public class RulerTestBase {
                 "      ]\n" +
                 "    }\n" +
                 "  ]\n" +
-                "}";
+                "}\n";
 
+        String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
         Assert.assertTrue(
-                response.toString().replaceAll("\\s+", "")
+                withoutID.replaceAll("\\s+", "")
                         .equals(expected.replaceAll("\\s+", ""))
         );
     }
@@ -393,7 +396,9 @@ public class RulerTestBase {
         String expected = "{\n" +
                 "  \"cards\": [\n" +
                 "    {\n" +
-                "      \"indicator\": \"info\",\n" +
+                "      \"summary\": \"A Cervical Cytology procedure for the patient is recommended\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The patient has not had a Cervical Cytology procedure in the last 3 years\",\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
                 "          \"actions\": [\n" +
@@ -424,8 +429,9 @@ public class RulerTestBase {
                 "  ]\n" +
                 "}";
 
+        String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
         Assert.assertTrue(
-                response.toString().replaceAll("\\s+", "")
+                withoutID.replaceAll("\\s+", "")
                         .equals(expected.replaceAll("\\s+", ""))
         );
     }
@@ -462,7 +468,9 @@ public class RulerTestBase {
         String expected = "{\n" +
                 "  \"cards\": [\n" +
                 "    {\n" +
-                "      \"indicator\": \"info\",\n" +
+                "      \"summary\": \"A Fecal Occult Blood test for the patient is recommended\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The patient has not had a Fecal Occult Blood test in the last year\",\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
                 "          \"actions\": [\n" +
@@ -491,7 +499,9 @@ public class RulerTestBase {
                 "      ]\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"indicator\": \"info\",\n" +
+                "      \"summary\": \"A Flexible Sigmoidoscopy procedure for the patient is recommended\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The patient has not had a Flexible Sigmoidoscopy procedure in the last 5 years\",\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
                 "          \"actions\": [\n" +
@@ -520,7 +530,9 @@ public class RulerTestBase {
                 "      ]\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"indicator\": \"info\",\n" +
+                "      \"summary\": \"A Colonoscopy procedure for the patient is recommended\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The patient has not had a Colonoscopy procedure in the last 10 years\",\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
                 "          \"actions\": [\n" +
@@ -549,7 +561,9 @@ public class RulerTestBase {
                 "      ]\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"indicator\": \"info\",\n" +
+                "      \"summary\": \"A Colonography procedure for the patient is recommended\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The patient has not had a Colonography procedure in the last 5 years\",\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
                 "          \"actions\": [\n" +
@@ -578,7 +592,9 @@ public class RulerTestBase {
                 "      ]\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"indicator\": \"info\",\n" +
+                "      \"summary\": \"A FIT-DNA test for the patient is recommended\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The patient has not had a FIT-DNA test in the last 3 years\",\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
                 "          \"actions\": [\n" +
@@ -609,8 +625,9 @@ public class RulerTestBase {
                 "  ]\n" +
                 "}\n";
 
+        String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
         Assert.assertTrue(
-                response.toString().replaceAll("\\s+", "")
+                withoutID.replaceAll("\\s+", "")
                         .equals(expected.replaceAll("\\s+", ""))
         );
     }
