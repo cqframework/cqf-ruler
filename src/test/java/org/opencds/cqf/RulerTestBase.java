@@ -95,14 +95,11 @@ public class RulerTestBase {
     }
 
     // this test requires the OpioidManagementTerminologyKnowledge.db file to be located in the src/main/resources/cds folder
-//    @Test
+    @Test
     public void CdcOpioidGuidanceTest() throws IOException {
-        putResource("cdc-opioid-guidance-library-omtk.json", "OMTKLogic");
-        putResource("cdc-opioid-guidance-library-primary.json", "OpioidCdsStu3");
-        putResource("cdc-opioid-5.json", "cdc-opioid-guidance");
-
+        putResource("cdc-opioid-guidance-bundle.json", "");
         // Get the CDS Hooks request
-        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-cds-hooks-request.json");
+        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-request.json");
         Scanner scanner = new Scanner(is).useDelimiter("\\A");
         String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
         byte[] data = cdsHooksRequest.getBytes("UTF-8");
@@ -127,6 +124,18 @@ public class RulerTestBase {
 
         String expected = "{\n" +
                 "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"links\": [\n" +
+                "        {\n" +
+                "          \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
+                "          \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"label\": \"MME Conversion Tables\",\n" +
+                "          \"url\": \"https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
                 "    {\n" +
                 "      \"summary\": \"High risk for opioid overdose - taper now\",\n" +
                 "      \"indicator\": \"warning\",\n" +

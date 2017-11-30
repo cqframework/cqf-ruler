@@ -31,19 +31,17 @@ public class CarePlanToCdsCard {
             for (Extension extension : requestGroup.getExtension()) {
                 CdsCard.Links link = new CdsCard.Links();
 
-                if (extension.getValue() instanceof StringType) {
-                    String labelOrType = extension.getValue().toString();
-                    if (labelOrType.equals("absolute") || labelOrType.equals("relative")) {
-                        link.setType(labelOrType);
+                if (extension.getValue() instanceof Attachment) {
+                    Attachment attachment = (Attachment) extension.getValue();
+                    if (attachment.hasUrl()) {
+                        link.setUrl(attachment.getUrl());
                     }
-                    else {
-                        link.setLabel(labelOrType);
+                    if (attachment.hasTitle()) {
+                        link.setLabel(attachment.getTitle());
                     }
-                }
-
-                else if (extension.getValue() instanceof UriType) {
-                    String url = extension.getValue().toString();
-                    link.setUrl(url);
+                    if (attachment.hasExtension()) {
+                        link.setType(attachment.getExtensionFirstRep().getValue().primitiveValue());
+                    }
                 }
 
                 else {

@@ -167,19 +167,19 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         if (planDefinition.hasRelatedArtifact()) {
             List<Extension> extensions = new ArrayList<>();
             for (RelatedArtifact relatedArtifact : planDefinition.getRelatedArtifact()) {
+                AttachmentBuilder attachmentBuilder = new AttachmentBuilder();
                 ExtensionBuilder extensionBuilder = new ExtensionBuilder();
                 if (relatedArtifact.hasDisplay()) { // label
-                    extensionBuilder.buildUrl("http://example.org");
-                    extensionBuilder.buildValue(relatedArtifact.getDisplay());
+                    attachmentBuilder.buildTitle(relatedArtifact.getDisplay());
                 }
                 if (relatedArtifact.hasUrl()) { // url
-                    extensionBuilder.buildUrl("http://example.org");
-                    extensionBuilder.buildValue(new UriType(relatedArtifact.getUrl()));
+                    attachmentBuilder.buildUrl(relatedArtifact.getUrl());
                 }
                 if (relatedArtifact.hasExtension()) { // type
-                    extensionBuilder.buildUrl("http://example.org");
-                    extensionBuilder.buildValue(relatedArtifact.getExtensionFirstRep().getValue().toString());
+                    attachmentBuilder.buildExtension(relatedArtifact.getExtension());
                 }
+                extensionBuilder.buildUrl("http://example.org");
+                extensionBuilder.buildValue(attachmentBuilder.build());
                 extensions.add(extensionBuilder.build());
             }
             requestGroupBuilder.buildExtension(extensions);

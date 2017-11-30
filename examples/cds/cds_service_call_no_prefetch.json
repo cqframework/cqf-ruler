@@ -1,8 +1,0 @@
-{
-  "hookInstance" : "d1577c69-dfbe-44ad-ba6d-3e05e953b2ea",
-  "fhirServer" : "http://fhirtest.uhn.ca/baseDstu2",
-  "hook" : "medication-prescribe",
-  "user" : "Practitioner/example",
-  "context" : [],
-  "patient" : "Patient-12214"
-}
