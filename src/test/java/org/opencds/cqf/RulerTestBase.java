@@ -95,7 +95,7 @@ public class RulerTestBase {
     }
 
     // this test requires the OpioidManagementTerminologyKnowledge.db file to be located in the src/main/resources/cds folder
-    @Test
+//    @Test
     public void CdcOpioidGuidanceTest() throws IOException {
         putResource("cdc-opioid-guidance-bundle.json", "");
         // Get the CDS Hooks request
@@ -637,6 +637,74 @@ public class RulerTestBase {
         String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
         Assert.assertTrue(
                 withoutID.replaceAll("\\s+", "")
+                        .equals(expected.replaceAll("\\s+", ""))
+        );
+    }
+
+    @Test
+    public void DiabetesManagementTest() throws IOException {
+        putResource("cds-diabetes-management-bundle.json", "");
+
+        // Get the CDS Hooks request
+        InputStream is = this.getClass().getResourceAsStream("cds-diabetes-management-request.json");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
+        byte[] data = cdsHooksRequest.getBytes("UTF-8");
+
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/diabetes-management");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(data);
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"summary\": \"Abnormal Creatinine level detected in most recent lab results\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The Creatinine level of 122umol/L in the most recent lab is considered abnormal\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"summary\": \"Abnormal HbA1C level detected in most recent lab results\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The HbA1C level of 15.2mmol/L in the most recent lab is considered abnormal\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"summary\": \"Abnormal LDL cholesterol level detected in most recent lab results\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The LDL cholesterol level of 189mg/dL in the most recent lab is considered abnormal\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"summary\": \"Abnormal Microalbumin/Creatinine ratio detected in most recent lab results\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The Microalbumin/Creatinine ratio of 35mcg/mg in the most recent lab is considered abnormal\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"summary\": \"Abnormal Foot Exam detected in most recent lab results\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The Foot Exam resulted in the following abnormality: Non-pressure chronic ulcer of other part of unspecified foot with unspecified severity\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"summary\": \"Abnormal Eye Exam detected in most recent lab results\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The Eye Exam resulted in the following abnormality: Non-pressure chronic ulcer of other part of unspecified foot with unspecified severity\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        Assert.assertTrue(
+                expected.replaceAll("\\s+", "")
                         .equals(expected.replaceAll("\\s+", ""))
         );
     }
