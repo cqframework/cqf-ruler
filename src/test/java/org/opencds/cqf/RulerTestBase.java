@@ -698,10 +698,10 @@ public class RulerTestBase {
                 "    {\n" +
                 "      \"summary\": \"Abnormal Eye Exam detected in most recent lab results\",\n" +
                 "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"The Eye Exam resulted in the following abnormality: Non-pressure chronic ulcer of other part of unspecified foot with unspecified severity\"\n" +
+                "      \"detail\": \"The Eye Exam resulted in the following abnormality: Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy without macular edema, left eye\"\n" +
                 "    }\n" +
                 "  ]\n" +
-                "}";
+                "}\n";
 
         Assert.assertTrue(
                 expected.replaceAll("\\s+", "")

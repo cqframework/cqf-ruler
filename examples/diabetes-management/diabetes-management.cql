@@ -315,7 +315,7 @@ define AbnormalEyeExamSummary:
   'Abnormal Eye Exam detected in most recent lab results'
 
 define AbnormalEyeExamDetail:
-  'The Eye Exam resulted in the following abnormality: ' + "Get Foot Exam Result".value
+  'The Eye Exam resulted in the following abnormality: ' + "Get Eye Exam Result".value
 
 define AbnormalEyeExamIndicator:
   'warning'
