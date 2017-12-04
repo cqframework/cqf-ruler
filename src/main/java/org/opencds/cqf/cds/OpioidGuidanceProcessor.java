@@ -96,19 +96,12 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         executionContext.setParameter(null, "Orders", activePrescriptions);
 
         List<CdsCard> cards = resolveActions(executionContext);
-        if (cards.isEmpty()) {
+        if (cards.isEmpty() || (cards.size() == 1 && !cards.get(0).hasDetail() && !cards.get(0).hasSummary() && !cards.get(0).hasIndicator())) {
             cards.add(
                     new CdsCard()
                             .setSummary("Success")
                             .setDetail("Prescription satisfies recommendation #5 of the cdc opioid guidance.")
                             .setIndicator("info")
-                            .setLinks(
-                                    Collections.singletonList(
-                                            new CdsCard.Links()
-                                                    .setLabel("CDC Recommendations for prescribing opioids")
-                                                    .setUrl("https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420")
-                                    )
-                            )
             );
         }
 

@@ -363,12 +363,4 @@ public class CdsCard {
 //        }
 //        return card;
 //    }
-
-    public JSONObject returnSuccess() {
-        JSONObject success = new JSONObject();
-        success.put("summary", "Success");
-        success.put("indicator", "success");
-        success.put("detail", "The MME is within the recommended range.");
-        return success;
-    }
 }
