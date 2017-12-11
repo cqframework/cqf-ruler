@@ -5,6 +5,11 @@
 # RxNorm data
 src/main/resources/cds/OpioidManagementTerminologyKnowledge.db
 
+# Diabetes Management
+src/test/java/org/opencds/cqf/cds-diabetes-management-request.json
+src/test/java/org/opencds/cqf/cds-diabetes-management-bundle.json
+examples/diabetes-management/diabetes-management.cql
+
 # log files
 *.log
 

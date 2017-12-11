@@ -641,7 +641,7 @@ public class RulerTestBase {
         );
     }
 
-    @Test
+    //@Test
     public void DiabetesManagementTest() throws IOException {
         putResource("cds-diabetes-management-bundle.json", "");
 
