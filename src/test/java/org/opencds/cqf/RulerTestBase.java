@@ -709,27 +709,3 @@ public class RulerTestBase {
         );
     }
 }
-
-class RandomServerPortProvider {
-
-    private static List<Integer> ourPorts = new ArrayList<>();
-
-    static int findFreePort() {
-        ServerSocket server;
-        try {
-            server = new ServerSocket(0);
-            int port = server.getLocalPort();
-            ourPorts.add(port);
-            server.close();
-            Thread.sleep(500);
-            return port;
-        } catch (IOException | InterruptedException e) {
-            throw new Error(e);
-        }
-    }
-
-    public static List<Integer> list() {
-        return ourPorts;
-    }
-
-}
