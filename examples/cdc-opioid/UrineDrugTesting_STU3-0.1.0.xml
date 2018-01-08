@@ -1,0 +1,826 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="urn:hl7-org:elm:r1" xmlns:t="urn:hl7-org:elm-types:r1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:fhir="http://hl7.org/fhir" xmlns:a="urn:hl7-org:cql-annotations:r1">
+   <annotation startLine="31" startChar="5" endLine="31" endChar="35" message="Could not resolve membership operator for terminology target of the retrieve." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="35" startChar="6" endLine="35" endChar="38" message="Could not resolve membership operator for terminology target of the retrieve." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="35" startChar="46" endLine="35" endChar="80" message="Could not resolve membership operator for terminology target of the retrieve." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="43" startChar="52" endLine="43" endChar="57" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="64" startChar="43" endLine="64" endChar="48" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="72" startChar="74" endLine="72" endChar="79" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="89" startChar="54" endLine="89" endChar="59" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="90" startChar="60" endLine="90" endChar="65" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="91" startChar="60" endLine="91" endChar="65" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="98" startChar="66" endLine="98" endChar="71" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="100" startChar="61" endLine="100" endChar="66" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="101" startChar="67" endLine="101" endChar="72" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="102" startChar="67" endLine="102" endChar="72" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="118" startChar="74" endLine="118" endChar="88" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="121" startChar="76" endLine="121" endChar="97" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="124" startChar="64" endLine="124" endChar="80" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <identifier id="UrineDrugTesting_STU3" version="0.1.0"/>
+   <schemaIdentifier id="urn:hl7-org:elm" version="r1"/>
+   <usings>
+      <def localIdentifier="System" uri="urn:hl7-org:elm-types:r1"/>
+      <def localIdentifier="FHIR" uri="http://hl7.org/fhir" version="3.0.0"/>
+   </usings>
+   <parameters>
+      <def name="Orders" accessLevel="Public">
+         <parameterTypeSpecifier xsi:type="ListTypeSpecifier">
+            <elementType name="fhir:MedicationRequest" xsi:type="NamedTypeSpecifier"/>
+         </parameterTypeSpecifier>
+      </def>
+   </parameters>
+   <codeSystems>
+      <def name="LOINC" id="http://loinc.org" accessLevel="Public"/>
+      <def name="SNOMED" id="http://snomed.info/sct" accessLevel="Public"/>
+   </codeSystems>
+   <valueSets>
+      <def name="Positive Qualifiers" id="TODO" accessLevel="Public"/>
+   </valueSets>
+   <codes>
+      <def name="Oxycodone in urine" id="10998-3" accessLevel="Public">
+         <codeSystem name="LOINC"/>
+      </def>
+      <def name="Drugs in urine" id="12286-1" accessLevel="Public">
+         <codeSystem name="LOINC"/>
+      </def>
+      <def name="Opioids in urine" id="19295-5" accessLevel="Public">
+         <codeSystem name="LOINC"/>
+      </def>
+      <def name="Positive" id="10828004" accessLevel="Public">
+         <codeSystem name="SNOMED"/>
+      </def>
+   </codes>
+   <statements>
+      <def name="Patient" context="Patient">
+         <expression xsi:type="SingletonFrom">
+            <operand dataType="fhir:Patient" xsi:type="Retrieve"/>
+         </expression>
+      </def>
+      <def name="Has Prescription for Chronic Pain" context="Patient" accessLevel="Public">
+         <expression xsi:type="Exists">
+            <operand xsi:type="Query">
+               <source alias="O">
+                  <expression name="Orders" xsi:type="ParameterRef"/>
+               </source>
+               <where xsi:type="And">
+                  <operand xsi:type="Not">
+                     <operand xsi:type="IsNull">
+                        <operand path="reasonCode" scope="O" xsi:type="Property"/>
+                     </operand>
+                  </operand>
+                  <operand xsi:type="Equal">
+                     <operand path="value" xsi:type="Property">
+                        <source path="code" xsi:type="Property">
+                           <source xsi:type="Indexer">
+                              <operand xsi:type="Flatten">
+                                 <operand xsi:type="Query">
+                                    <source alias="$this">
+                                       <expression path="reasonCode" scope="O" xsi:type="Property"/>
+                                    </source>
+                                    <where xsi:type="Not">
+                                       <operand xsi:type="IsNull">
+                                          <operand path="coding" xsi:type="Property">
+                                             <source name="$this" xsi:type="AliasRef"/>
+                                          </operand>
+                                       </operand>
+                                    </where>
+                                    <return>
+                                       <expression path="coding" xsi:type="Property">
+                                          <source name="$this" xsi:type="AliasRef"/>
+                                       </expression>
+                                    </return>
+                                 </operand>
+                              </operand>
+                              <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+                           </source>
+                        </source>
+                     </operand>
+                     <operand valueType="t:String" value="82423001" xsi:type="Literal"/>
+                  </operand>
+               </where>
+            </operand>
+         </expression>
+      </def>
+      <def name="Illicit Drug Screening in Past 12 Months" context="Patient" accessLevel="Public">
+         <expression xsi:type="Query">
+            <source alias="IllicitDrugScreening">
+               <expression dataType="fhir:Observation" codeProperty="code" xsi:type="Retrieve">
+                  <codes name="Drugs in urine" xsi:type="CodeRef"/>
+               </expression>
+            </source>
+            <where precision="Day" xsi:type="SameOrAfter">
+               <operand path="value" xsi:type="Property">
+                  <source path="effective" scope="IllicitDrugScreening" xsi:type="Property"/>
+               </operand>
+               <operand xsi:type="Subtract">
+                  <operand xsi:type="Today"/>
+                  <operand value="1" unit="year" xsi:type="Quantity"/>
+               </operand>
+            </where>
+         </expression>
+      </def>
+      <def name="Opioid Drug Screening in Past 12 Months" context="Patient" accessLevel="Public">
+         <expression xsi:type="Query">
+            <source alias="OpioidDrugScreening">
+               <expression xsi:type="Union">
+                  <operand dataType="fhir:Observation" codeProperty="code" xsi:type="Retrieve">
+                     <codes name="Opioids in urine" xsi:type="CodeRef"/>
+                  </operand>
+                  <operand dataType="fhir:Observation" codeProperty="code" xsi:type="Retrieve">
+                     <codes name="Oxycodone in urine" xsi:type="CodeRef"/>
+                  </operand>
+               </expression>
+            </source>
+            <where precision="Day" xsi:type="SameOrAfter">
+               <operand path="value" xsi:type="Property">
+                  <source path="effective" scope="OpioidDrugScreening" xsi:type="Property"/>
+               </operand>
+               <operand xsi:type="Subtract">
+                  <operand xsi:type="Today"/>
+                  <operand value="1" unit="year" xsi:type="Quantity"/>
+               </operand>
+            </where>
+         </expression>
+      </def>
+      <def name="Drug Screenings" context="Patient" accessLevel="Public">
+         <expression xsi:type="Union">
+            <operand name="Illicit Drug Screening in Past 12 Months" xsi:type="ExpressionRef"/>
+            <operand name="Opioid Drug Screening in Past 12 Months" xsi:type="ExpressionRef"/>
+         </expression>
+      </def>
+      <def name="CodingToCode" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression classType="t:Code" xsi:type="Instance">
+            <element name="code">
+               <value path="value" xsi:type="Property">
+                  <source path="code" xsi:type="Property">
+                     <source name="coding" xsi:type="OperandRef"/>
+                  </source>
+               </value>
+            </element>
+            <element name="system">
+               <value path="value" xsi:type="Property">
+                  <source path="system" xsi:type="Property">
+                     <source name="coding" xsi:type="OperandRef"/>
+                  </source>
+               </value>
+            </element>
+            <element name="version">
+               <value path="value" xsi:type="Property">
+                  <source path="version" xsi:type="Property">
+                     <source name="coding" xsi:type="OperandRef"/>
+                  </source>
+               </value>
+            </element>
+            <element name="display">
+               <value path="value" xsi:type="Property">
+                  <source path="display" xsi:type="Property">
+                     <source name="coding" xsi:type="OperandRef"/>
+                  </source>
+               </value>
+            </element>
+         </expression>
+         <operand name="coding">
+            <operandTypeSpecifier name="fhir:Coding" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+      </def>
+      <def name="Drug Screening Component Codes" context="Patient" accessLevel="Public">
+         <expression xsi:type="Query">
+            <source alias="Screenings">
+               <expression name="Drug Screenings" xsi:type="ExpressionRef"/>
+            </source>
+            <where xsi:type="Not">
+               <operand xsi:type="IsNull">
+                  <operand path="component" scope="Screenings" xsi:type="Property"/>
+               </operand>
+            </where>
+            <return>
+               <expression name="CodingToCode" xsi:type="FunctionRef">
+                  <operand xsi:type="SingletonFrom">
+                     <operand xsi:type="Flatten">
+                        <operand xsi:type="Query">
+                           <source alias="$this">
+                              <expression xsi:type="Query">
+                                 <source alias="$this">
+                                    <expression path="component" scope="Screenings" xsi:type="Property"/>
+                                 </source>
+                                 <where xsi:type="Not">
+                                    <operand xsi:type="IsNull">
+                                       <operand path="code" xsi:type="Property">
+                                          <source name="$this" xsi:type="AliasRef"/>
+                                       </operand>
+                                    </operand>
+                                 </where>
+                                 <return>
+                                    <expression path="code" xsi:type="Property">
+                                       <source name="$this" xsi:type="AliasRef"/>
+                                    </expression>
+                                 </return>
+                              </expression>
+                           </source>
+                           <where xsi:type="Not">
+                              <operand xsi:type="IsNull">
+                                 <operand path="coding" xsi:type="Property">
+                                    <source name="$this" xsi:type="AliasRef"/>
+                                 </operand>
+                              </operand>
+                           </where>
+                           <return>
+                              <expression path="coding" xsi:type="Property">
+                                 <source name="$this" xsi:type="AliasRef"/>
+                              </expression>
+                           </return>
+                        </operand>
+                     </operand>
+                  </operand>
+               </expression>
+            </return>
+         </expression>
+      </def>
+      <def name="No Screenings in Past Year" context="Patient" accessLevel="Public">
+         <expression xsi:type="Not">
+            <operand xsi:type="Exists">
+               <operand name="Drug Screenings" xsi:type="ExpressionRef"/>
+            </operand>
+         </expression>
+      </def>
+      <def name="Has Positive Screening" context="Patient" accessLevel="Public">
+         <expression xsi:type="Exists">
+            <operand xsi:type="Query">
+               <source alias="Screenings">
+                  <expression name="Drug Screenings" xsi:type="ExpressionRef"/>
+               </source>
+               <where xsi:type="And">
+                  <operand xsi:type="And">
+                     <operand xsi:type="Not">
+                        <operand xsi:type="IsNull">
+                           <operand path="component" scope="Screenings" xsi:type="Property"/>
+                        </operand>
+                     </operand>
+                     <operand xsi:type="Not">
+                        <operand xsi:type="IsNull">
+                           <operand xsi:type="Query">
+                              <source alias="$this">
+                                 <expression path="component" scope="Screenings" xsi:type="Property"/>
+                              </source>
+                              <where xsi:type="Not">
+                                 <operand xsi:type="IsNull">
+                                    <operand path="interpretation" xsi:type="Property">
+                                       <source name="$this" xsi:type="AliasRef"/>
+                                    </operand>
+                                 </operand>
+                              </where>
+                              <return>
+                                 <expression path="interpretation" xsi:type="Property">
+                                    <source name="$this" xsi:type="AliasRef"/>
+                                 </expression>
+                              </return>
+                           </operand>
+                        </operand>
+                     </operand>
+                  </operand>
+                  <operand xsi:type="Equal">
+                     <operand path="value" xsi:type="Property">
+                        <source path="code" xsi:type="Property">
+                           <source xsi:type="Indexer">
+                              <operand xsi:type="Flatten">
+                                 <operand xsi:type="Query">
+                                    <source alias="$this">
+                                       <expression xsi:type="Query">
+                                          <source alias="$this">
+                                             <expression path="component" scope="Screenings" xsi:type="Property"/>
+                                          </source>
+                                          <where xsi:type="Not">
+                                             <operand xsi:type="IsNull">
+                                                <operand path="interpretation" xsi:type="Property">
+                                                   <source name="$this" xsi:type="AliasRef"/>
+                                                </operand>
+                                             </operand>
+                                          </where>
+                                          <return>
+                                             <expression path="interpretation" xsi:type="Property">
+                                                <source name="$this" xsi:type="AliasRef"/>
+                                             </expression>
+                                          </return>
+                                       </expression>
+                                    </source>
+                                    <where xsi:type="Not">
+                                       <operand xsi:type="IsNull">
+                                          <operand path="coding" xsi:type="Property">
+                                             <source name="$this" xsi:type="AliasRef"/>
+                                          </operand>
+                                       </operand>
+                                    </where>
+                                    <return>
+                                       <expression path="coding" xsi:type="Property">
+                                          <source name="$this" xsi:type="AliasRef"/>
+                                       </expression>
+                                    </return>
+                                 </operand>
+                              </operand>
+                              <operand valueType="t:Integer" value="0" xsi:type="Literal"/>
+                           </source>
+                        </source>
+                     </operand>
+                     <operand valueType="t:String" value="POS" xsi:type="Literal"/>
+                  </operand>
+               </where>
+            </operand>
+         </expression>
+      </def>
+      <def name="Prescribed Medications" context="Patient" accessLevel="Public">
+         <expression xsi:type="Query">
+            <source alias="Rx">
+               <expression name="Orders" xsi:type="ParameterRef"/>
+            </source>
+            <return>
+               <expression name="CodingToCode" xsi:type="FunctionRef">
+                  <operand xsi:type="SingletonFrom">
+                     <operand path="coding" xsi:type="Property">
+                        <source path="medication" scope="Rx" xsi:type="Property"/>
+                     </operand>
+                  </operand>
+               </expression>
+            </return>
+         </expression>
+      </def>
+      <def name="Found Unprescribed Opioid in Screening" context="Patient" accessLevel="Public">
+         <expression xsi:type="Exists">
+            <operand xsi:type="Query">
+               <source alias="OpioidScreening">
+                  <expression name="Opioid Drug Screening in Past 12 Months" xsi:type="ExpressionRef"/>
+               </source>
+               <where xsi:type="And">
+                  <operand xsi:type="Not">
+                     <operand xsi:type="IsNull">
+                        <operand path="component" scope="OpioidScreening" xsi:type="Property"/>
+                     </operand>
+                  </operand>
+                  <operand xsi:type="Not">
+                     <operand xsi:type="In">
+                        <operand name="CodingToCode" xsi:type="FunctionRef">
+                           <operand xsi:type="SingletonFrom">
+                              <operand xsi:type="Flatten">
+                                 <operand xsi:type="Query">
+                                    <source alias="$this">
+                                       <expression xsi:type="Query">
+                                          <source alias="$this">
+                                             <expression path="component" scope="OpioidScreening" xsi:type="Property"/>
+                                          </source>
+                                          <where xsi:type="Not">
+                                             <operand xsi:type="IsNull">
+                                                <operand path="code" xsi:type="Property">
+                                                   <source name="$this" xsi:type="AliasRef"/>
+                                                </operand>
+                                             </operand>
+                                          </where>
+                                          <return>
+                                             <expression path="code" xsi:type="Property">
+                                                <source name="$this" xsi:type="AliasRef"/>
+                                             </expression>
+                                          </return>
+                                       </expression>
+                                    </source>
+                                    <where xsi:type="Not">
+                                       <operand xsi:type="IsNull">
+                                          <operand path="coding" xsi:type="Property">
+                                             <source name="$this" xsi:type="AliasRef"/>
+                                          </operand>
+                                       </operand>
+                                    </where>
+                                    <return>
+                                       <expression path="coding" xsi:type="Property">
+                                          <source name="$this" xsi:type="AliasRef"/>
+                                       </expression>
+                                    </return>
+                                 </operand>
+                              </operand>
+                           </operand>
+                        </operand>
+                        <operand name="Prescribed Medications" xsi:type="ExpressionRef"/>
+                     </operand>
+                  </operand>
+               </where>
+            </operand>
+         </expression>
+      </def>
+      <def name="Did Not Find Prescribed Opioid" context="Patient" accessLevel="Public">
+         <expression xsi:type="Exists">
+            <operand xsi:type="Query">
+               <source alias="Rx">
+                  <expression name="Prescribed Medications" xsi:type="ExpressionRef"/>
+               </source>
+               <where xsi:type="Not">
+                  <operand xsi:type="In">
+                     <operand name="Rx" xsi:type="AliasRef"/>
+                     <operand name="Drug Screening Component Codes" xsi:type="ExpressionRef"/>
+                  </operand>
+               </where>
+            </operand>
+         </expression>
+      </def>
+      <def name="Found Illicit Drugs in Screening" context="Patient" accessLevel="Public">
+         <expression xsi:type="Exists">
+            <operand name="Illicit Drug Screening in Past 12 Months" xsi:type="ExpressionRef"/>
+         </expression>
+      </def>
+      <def name="Illicit Drugs" context="Patient" accessLevel="Public">
+         <expression xsi:type="Query">
+            <source alias="IllicitDrugs">
+               <expression name="Illicit Drug Screening in Past 12 Months" xsi:type="ExpressionRef"/>
+            </source>
+            <where xsi:type="Not">
+               <operand xsi:type="IsNull">
+                  <operand path="component" scope="IllicitDrugs" xsi:type="Property"/>
+               </operand>
+            </where>
+            <return>
+               <expression xsi:type="Concatenate">
+                  <operand xsi:type="Concatenate">
+                     <operand xsi:type="Concatenate">
+                        <operand xsi:type="Concatenate">
+                           <operand path="system" xsi:type="Property">
+                              <source name="CodingToCode" xsi:type="FunctionRef">
+                                 <operand xsi:type="SingletonFrom">
+                                    <operand xsi:type="Flatten">
+                                       <operand xsi:type="Query">
+                                          <source alias="$this">
+                                             <expression xsi:type="Query">
+                                                <source alias="$this">
+                                                   <expression path="component" scope="IllicitDrugs" xsi:type="Property"/>
+                                                </source>
+                                                <where xsi:type="Not">
+                                                   <operand xsi:type="IsNull">
+                                                      <operand path="code" xsi:type="Property">
+                                                         <source name="$this" xsi:type="AliasRef"/>
+                                                      </operand>
+                                                   </operand>
+                                                </where>
+                                                <return>
+                                                   <expression path="code" xsi:type="Property">
+                                                      <source name="$this" xsi:type="AliasRef"/>
+                                                   </expression>
+                                                </return>
+                                             </expression>
+                                          </source>
+                                          <where xsi:type="Not">
+                                             <operand xsi:type="IsNull">
+                                                <operand path="coding" xsi:type="Property">
+                                                   <source name="$this" xsi:type="AliasRef"/>
+                                                </operand>
+                                             </operand>
+                                          </where>
+                                          <return>
+                                             <expression path="coding" xsi:type="Property">
+                                                <source name="$this" xsi:type="AliasRef"/>
+                                             </expression>
+                                          </return>
+                                       </operand>
+                                    </operand>
+                                 </operand>
+                              </source>
+                           </operand>
+                           <operand valueType="t:String" value=" " xsi:type="Literal"/>
+                        </operand>
+                        <operand path="code" xsi:type="Property">
+                           <source name="CodingToCode" xsi:type="FunctionRef">
+                              <operand xsi:type="SingletonFrom">
+                                 <operand xsi:type="Flatten">
+                                    <operand xsi:type="Query">
+                                       <source alias="$this">
+                                          <expression xsi:type="Query">
+                                             <source alias="$this">
+                                                <expression path="component" scope="IllicitDrugs" xsi:type="Property"/>
+                                             </source>
+                                             <where xsi:type="Not">
+                                                <operand xsi:type="IsNull">
+                                                   <operand path="code" xsi:type="Property">
+                                                      <source name="$this" xsi:type="AliasRef"/>
+                                                   </operand>
+                                                </operand>
+                                             </where>
+                                             <return>
+                                                <expression path="code" xsi:type="Property">
+                                                   <source name="$this" xsi:type="AliasRef"/>
+                                                </expression>
+                                             </return>
+                                          </expression>
+                                       </source>
+                                       <where xsi:type="Not">
+                                          <operand xsi:type="IsNull">
+                                             <operand path="coding" xsi:type="Property">
+                                                <source name="$this" xsi:type="AliasRef"/>
+                                             </operand>
+                                          </operand>
+                                       </where>
+                                       <return>
+                                          <expression path="coding" xsi:type="Property">
+                                             <source name="$this" xsi:type="AliasRef"/>
+                                          </expression>
+                                       </return>
+                                    </operand>
+                                 </operand>
+                              </operand>
+                           </source>
+                        </operand>
+                     </operand>
+                     <operand valueType="t:String" value=" " xsi:type="Literal"/>
+                  </operand>
+                  <operand path="display" xsi:type="Property">
+                     <source name="CodingToCode" xsi:type="FunctionRef">
+                        <operand xsi:type="SingletonFrom">
+                           <operand xsi:type="Flatten">
+                              <operand xsi:type="Query">
+                                 <source alias="$this">
+                                    <expression xsi:type="Query">
+                                       <source alias="$this">
+                                          <expression path="component" scope="IllicitDrugs" xsi:type="Property"/>
+                                       </source>
+                                       <where xsi:type="Not">
+                                          <operand xsi:type="IsNull">
+                                             <operand path="code" xsi:type="Property">
+                                                <source name="$this" xsi:type="AliasRef"/>
+                                             </operand>
+                                          </operand>
+                                       </where>
+                                       <return>
+                                          <expression path="code" xsi:type="Property">
+                                             <source name="$this" xsi:type="AliasRef"/>
+                                          </expression>
+                                       </return>
+                                    </expression>
+                                 </source>
+                                 <where xsi:type="Not">
+                                    <operand xsi:type="IsNull">
+                                       <operand path="coding" xsi:type="Property">
+                                          <source name="$this" xsi:type="AliasRef"/>
+                                       </operand>
+                                    </operand>
+                                 </where>
+                                 <return>
+                                    <expression path="coding" xsi:type="Property">
+                                       <source name="$this" xsi:type="AliasRef"/>
+                                    </expression>
+                                 </return>
+                              </operand>
+                           </operand>
+                        </operand>
+                     </source>
+                  </operand>
+               </expression>
+            </return>
+         </expression>
+      </def>
+      <def name="Unprescribed Opioids" context="Patient" accessLevel="Public">
+         <expression xsi:type="Query">
+            <source alias="OpioidScreening">
+               <expression name="Opioid Drug Screening in Past 12 Months" xsi:type="ExpressionRef"/>
+            </source>
+            <where xsi:type="And">
+               <operand xsi:type="Not">
+                  <operand xsi:type="IsNull">
+                     <operand path="component" scope="OpioidScreening" xsi:type="Property"/>
+                  </operand>
+               </operand>
+               <operand xsi:type="Not">
+                  <operand xsi:type="In">
+                     <operand name="CodingToCode" xsi:type="FunctionRef">
+                        <operand xsi:type="SingletonFrom">
+                           <operand xsi:type="Flatten">
+                              <operand xsi:type="Query">
+                                 <source alias="$this">
+                                    <expression xsi:type="Query">
+                                       <source alias="$this">
+                                          <expression path="component" scope="OpioidScreening" xsi:type="Property"/>
+                                       </source>
+                                       <where xsi:type="Not">
+                                          <operand xsi:type="IsNull">
+                                             <operand path="code" xsi:type="Property">
+                                                <source name="$this" xsi:type="AliasRef"/>
+                                             </operand>
+                                          </operand>
+                                       </where>
+                                       <return>
+                                          <expression path="code" xsi:type="Property">
+                                             <source name="$this" xsi:type="AliasRef"/>
+                                          </expression>
+                                       </return>
+                                    </expression>
+                                 </source>
+                                 <where xsi:type="Not">
+                                    <operand xsi:type="IsNull">
+                                       <operand path="coding" xsi:type="Property">
+                                          <source name="$this" xsi:type="AliasRef"/>
+                                       </operand>
+                                    </operand>
+                                 </where>
+                                 <return>
+                                    <expression path="coding" xsi:type="Property">
+                                       <source name="$this" xsi:type="AliasRef"/>
+                                    </expression>
+                                 </return>
+                              </operand>
+                           </operand>
+                        </operand>
+                     </operand>
+                     <operand name="Prescribed Medications" xsi:type="ExpressionRef"/>
+                  </operand>
+               </operand>
+            </where>
+            <return>
+               <expression xsi:type="Concatenate">
+                  <operand xsi:type="Concatenate">
+                     <operand xsi:type="Concatenate">
+                        <operand xsi:type="Concatenate">
+                           <operand path="system" xsi:type="Property">
+                              <source name="CodingToCode" xsi:type="FunctionRef">
+                                 <operand xsi:type="SingletonFrom">
+                                    <operand xsi:type="Flatten">
+                                       <operand xsi:type="Query">
+                                          <source alias="$this">
+                                             <expression xsi:type="Query">
+                                                <source alias="$this">
+                                                   <expression path="component" scope="OpioidScreening" xsi:type="Property"/>
+                                                </source>
+                                                <where xsi:type="Not">
+                                                   <operand xsi:type="IsNull">
+                                                      <operand path="code" xsi:type="Property">
+                                                         <source name="$this" xsi:type="AliasRef"/>
+                                                      </operand>
+                                                   </operand>
+                                                </where>
+                                                <return>
+                                                   <expression path="code" xsi:type="Property">
+                                                      <source name="$this" xsi:type="AliasRef"/>
+                                                   </expression>
+                                                </return>
+                                             </expression>
+                                          </source>
+                                          <where xsi:type="Not">
+                                             <operand xsi:type="IsNull">
+                                                <operand path="coding" xsi:type="Property">
+                                                   <source name="$this" xsi:type="AliasRef"/>
+                                                </operand>
+                                             </operand>
+                                          </where>
+                                          <return>
+                                             <expression path="coding" xsi:type="Property">
+                                                <source name="$this" xsi:type="AliasRef"/>
+                                             </expression>
+                                          </return>
+                                       </operand>
+                                    </operand>
+                                 </operand>
+                              </source>
+                           </operand>
+                           <operand valueType="t:String" value=" " xsi:type="Literal"/>
+                        </operand>
+                        <operand path="code" xsi:type="Property">
+                           <source name="CodingToCode" xsi:type="FunctionRef">
+                              <operand xsi:type="SingletonFrom">
+                                 <operand xsi:type="Flatten">
+                                    <operand xsi:type="Query">
+                                       <source alias="$this">
+                                          <expression xsi:type="Query">
+                                             <source alias="$this">
+                                                <expression path="component" scope="OpioidScreening" xsi:type="Property"/>
+                                             </source>
+                                             <where xsi:type="Not">
+                                                <operand xsi:type="IsNull">
+                                                   <operand path="code" xsi:type="Property">
+                                                      <source name="$this" xsi:type="AliasRef"/>
+                                                   </operand>
+                                                </operand>
+                                             </where>
+                                             <return>
+                                                <expression path="code" xsi:type="Property">
+                                                   <source name="$this" xsi:type="AliasRef"/>
+                                                </expression>
+                                             </return>
+                                          </expression>
+                                       </source>
+                                       <where xsi:type="Not">
+                                          <operand xsi:type="IsNull">
+                                             <operand path="coding" xsi:type="Property">
+                                                <source name="$this" xsi:type="AliasRef"/>
+                                             </operand>
+                                          </operand>
+                                       </where>
+                                       <return>
+                                          <expression path="coding" xsi:type="Property">
+                                             <source name="$this" xsi:type="AliasRef"/>
+                                          </expression>
+                                       </return>
+                                    </operand>
+                                 </operand>
+                              </operand>
+                           </source>
+                        </operand>
+                     </operand>
+                     <operand valueType="t:String" value=" " xsi:type="Literal"/>
+                  </operand>
+                  <operand path="display" xsi:type="Property">
+                     <source name="CodingToCode" xsi:type="FunctionRef">
+                        <operand xsi:type="SingletonFrom">
+                           <operand xsi:type="Flatten">
+                              <operand xsi:type="Query">
+                                 <source alias="$this">
+                                    <expression xsi:type="Query">
+                                       <source alias="$this">
+                                          <expression path="component" scope="OpioidScreening" xsi:type="Property"/>
+                                       </source>
+                                       <where xsi:type="Not">
+                                          <operand xsi:type="IsNull">
+                                             <operand path="code" xsi:type="Property">
+                                                <source name="$this" xsi:type="AliasRef"/>
+                                             </operand>
+                                          </operand>
+                                       </where>
+                                       <return>
+                                          <expression path="code" xsi:type="Property">
+                                             <source name="$this" xsi:type="AliasRef"/>
+                                          </expression>
+                                       </return>
+                                    </expression>
+                                 </source>
+                                 <where xsi:type="Not">
+                                    <operand xsi:type="IsNull">
+                                       <operand path="coding" xsi:type="Property">
+                                          <source name="$this" xsi:type="AliasRef"/>
+                                       </operand>
+                                    </operand>
+                                 </where>
+                                 <return>
+                                    <expression path="coding" xsi:type="Property">
+                                       <source name="$this" xsi:type="AliasRef"/>
+                                    </expression>
+                                 </return>
+                              </operand>
+                           </operand>
+                        </operand>
+                     </source>
+                  </operand>
+               </expression>
+            </return>
+         </expression>
+      </def>
+      <def name="Missing Opioids" context="Patient" accessLevel="Public">
+         <expression xsi:type="Query">
+            <source alias="Rx">
+               <expression name="Prescribed Medications" xsi:type="ExpressionRef"/>
+            </source>
+            <where xsi:type="Not">
+               <operand xsi:type="In">
+                  <operand name="Rx" xsi:type="AliasRef"/>
+                  <operand name="Drug Screening Component Codes" xsi:type="ExpressionRef"/>
+               </operand>
+            </where>
+            <return>
+               <expression xsi:type="Concatenate">
+                  <operand xsi:type="Concatenate">
+                     <operand xsi:type="Concatenate">
+                        <operand xsi:type="Concatenate">
+                           <operand path="system" scope="Rx" xsi:type="Property"/>
+                           <operand valueType="t:String" value=" " xsi:type="Literal"/>
+                        </operand>
+                        <operand path="code" scope="Rx" xsi:type="Property"/>
+                     </operand>
+                     <operand valueType="t:String" value=" " xsi:type="Literal"/>
+                  </operand>
+                  <operand path="display" scope="Rx" xsi:type="Property"/>
+               </expression>
+            </return>
+         </expression>
+      </def>
+      <def name="Suggest Drug Screening" context="Patient" accessLevel="Public">
+         <expression valueType="t:String" value="A urine drug screen could not be found for the patient in the past 12 months. Patient should have a urine drug test performed." xsi:type="Literal"/>
+      </def>
+      <def name="Get Indicator" context="Patient" accessLevel="Public">
+         <expression valueType="t:String" value="warning" xsi:type="Literal"/>
+      </def>
+      <def name="Inconsistent Illicit Drugs" context="Patient" accessLevel="Public">
+         <expression xsi:type="Concatenate">
+            <operand valueType="t:String" value="Found drugs other than what is prescribed in urine drug screen: " xsi:type="Literal"/>
+            <operand xsi:type="SingletonFrom">
+               <operand name="Illicit Drugs" xsi:type="ExpressionRef"/>
+            </operand>
+         </expression>
+      </def>
+      <def name="Inconsistent Unprescribed Opioid Drugs" context="Patient" accessLevel="Public">
+         <expression xsi:type="Concatenate">
+            <operand valueType="t:String" value="Found opioids other than what is prescribed in urine drug screen: " xsi:type="Literal"/>
+            <operand xsi:type="SingletonFrom">
+               <operand name="Unprescribed Opioids" xsi:type="ExpressionRef"/>
+            </operand>
+         </expression>
+      </def>
+      <def name="Inconsistent Missing Opioid Drugs" context="Patient" accessLevel="Public">
+         <expression xsi:type="Concatenate">
+            <operand valueType="t:String" value="Did not find prescribed opioids in urine drug screen: " xsi:type="Literal"/>
+            <operand xsi:type="SingletonFrom">
+               <operand name="Missing Opioids" xsi:type="ExpressionRef"/>
+            </operand>
+         </expression>
+      </def>
+   </statements>
+</library>
+
