@@ -44,7 +44,7 @@ public class CdsCard {
         return this.indicator != null && !this.indicator.isEmpty();
     }
     public String getIndicator() {
-        return this.detail;
+        return this.indicator;
     }
     public CdsCard setIndicator(String indicator) {
         this.indicator = indicator;

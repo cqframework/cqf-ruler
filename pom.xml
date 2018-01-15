@@ -6,7 +6,7 @@
     <version>0.1.1-SNAPSHOT</version>
 
     <properties>
-        <p.type>jar</p.type>
+        <p.type>war</p.type>
     </properties>
     <packaging>${p.type}</packaging>
 

@@ -28,7 +28,7 @@
               "frequency": 3,
               "frequencyMax": 3,
               "period": 1,
-              "unit": "d"
+              "periodUnits": "d"
             }
           },
           "asNeededBoolean": false,
