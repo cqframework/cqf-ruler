@@ -157,8 +157,12 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
     }
 
     public CarePlan resolveCdsHooksPlanDefinition(Context context, CdsHooksRequest request) {
-
         PlanDefinition planDefinition = this.getDao().read(new IdType(request.getService()));
+        return resolveCdsHooksPlanDefinition(context, planDefinition, request.getPatientId());
+    }
+
+    // For library use
+    public CarePlan resolveCdsHooksPlanDefinition(Context context, PlanDefinition planDefinition, String patientId) {
 
         CarePlanBuilder carePlanBuilder = new CarePlanBuilder();
         RequestGroupBuilder requestGroupBuilder = new RequestGroupBuilder().buildStatus().buildIntent();
@@ -185,7 +189,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
             requestGroupBuilder.buildExtension(extensions);
         }
 
-        resolveActions(planDefinition.getAction(), context, request, requestGroupBuilder, new ArrayList<>());
+        resolveActions(planDefinition.getAction(), context, patientId, requestGroupBuilder, new ArrayList<>());
 
         CarePlanActivityBuilder carePlanActivityBuilder = new CarePlanActivityBuilder();
         carePlanActivityBuilder.buildReferenceTarget(requestGroupBuilder.build());
@@ -195,7 +199,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
     }
 
     private void resolveActions(List<PlanDefinition.PlanDefinitionActionComponent> actions, Context context,
-                                CdsHooksRequest request, RequestGroupBuilder requestGroupBuilder,
+                                String patientId, RequestGroupBuilder requestGroupBuilder,
                                 List<RequestGroup.RequestGroupActionComponent> actionComponents)
     {
         for (PlanDefinition.PlanDefinitionActionComponent action : actions) {
@@ -262,8 +266,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
 
                             BaseFhirDataProvider provider = (BaseFhirDataProvider) context.resolveDataProvider(new QName("http://hl7.org/fhir", ""));
                             Parameters inParams = new Parameters();
-                            inParams.addParameter().setName("patient").setValue(new StringType(request.getPatientId()));
-
+                            inParams.addParameter().setName("patient").setValue(new StringType(patientId));
                             Parameters outParams = provider.getFhirClient()
                                     .operation()
                                     .onInstance(new IdDt("ActivityDefinition", action.getDefinition().getReferenceElement().getIdPart()))
@@ -304,7 +307,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                     }
 
                     if (action.hasAction()) {
-                        resolveActions(action.getAction(), context, request, requestGroupBuilder, actionComponents);
+                        resolveActions(action.getAction(), context, patientId, requestGroupBuilder, actionComponents);
                     }
                 }
             }

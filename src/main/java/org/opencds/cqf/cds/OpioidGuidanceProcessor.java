@@ -8,7 +8,6 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.MedicationRequest;
-import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
@@ -21,7 +20,6 @@ import org.opencds.cqf.opioidcds.OmtkModelInfoProvider;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 
 public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {

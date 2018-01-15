@@ -2,9 +2,13 @@ package org.opencds.cqf;
 
 import ca.uhn.fhir.context.FhirContext;
 import org.cqframework.cql.elm.execution.Library;
+import org.hl7.fhir.convertors.NullVersionConverterAdvisor30;
+import org.hl7.fhir.convertors.VersionConvertor_10_30;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.Observation;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
@@ -16,10 +20,7 @@ import org.opencds.cqf.helpers.FhirMeasureEvaluator;
 import org.opencds.cqf.helpers.XlsxToValueSet;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLDecoder;
 import java.util.*;
 
@@ -102,5 +103,17 @@ public class RulerHelperTests {
 //        bundle = XlsxToValueSet.convertCs(csArgsZika);
 //        XlsxToValueSet.main(csArgsZika);
 //        Assert.assertTrue(!bundle.getEntry().isEmpty());
+    }
+
+    @Test
+    public void converterTest() throws FHIRException {
+        NullVersionConverterAdvisor30 advisor = new NullVersionConverterAdvisor30();
+        VersionConvertor_10_30 converter = new VersionConvertor_10_30(advisor);
+
+        InputStream is = RulerHelperTests.class.getResourceAsStream("Dstu2Observation.json");
+        Observation dstu2Obs = (Observation) FhirContext.forDstu2Hl7Org().newJsonParser().parseResource(new InputStreamReader(is));
+
+        org.hl7.fhir.dstu3.model.Observation dstu3Obs = converter.convertObservation(dstu2Obs);
+        String s = "";
     }
 }

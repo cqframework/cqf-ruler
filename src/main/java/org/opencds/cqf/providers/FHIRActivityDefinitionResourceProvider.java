@@ -45,6 +45,14 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
     {
         ActivityDefinition activityDefinition = this.getDao().read(theId);
 
+        return resolveActivityDefinition(activityDefinition, patientId, practitionerId, organizationId);
+    }
+
+    // For library use
+    public Resource resolveActivityDefinition(ActivityDefinition activityDefinition, String patientId,
+                                              String practitionerId, String organizationId)
+            throws FHIRException
+    {
         Resource result = null;
         try {
             // This is a little hacky...
