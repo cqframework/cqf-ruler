@@ -9,6 +9,7 @@ import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.ActivityDefinitionResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.StructureMapResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.api.EncodingEnum;
@@ -21,12 +22,11 @@ import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.providers.FHIRActivityDefinitionResourceProvider;
 import org.opencds.cqf.providers.FHIRMeasureResourceProvider;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
+import org.opencds.cqf.providers.FHIRStructureMapResourceProvider;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.cors.CorsConfiguration;
 
 import javax.servlet.ServletException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -111,10 +111,16 @@ public class BaseServlet extends RestfulServer {
         actDefProvider.setDao(jpaActDefProvider.getDao());
         actDefProvider.setContext(jpaActDefProvider.getContext());
 
+        FHIRStructureMapResourceProvider structureMapProvider = new FHIRStructureMapResourceProvider(getResourceProviders());
+        StructureMapResourceProvider jpaStructMapProvider = (StructureMapResourceProvider) getProvider("StructureMap");
+        structureMapProvider.setDao(jpaStructMapProvider.getDao());
+        structureMapProvider.setContext(jpaStructMapProvider.getContext());
+
         try {
             unregisterProvider(jpaMeasureProvider);
             unregisterProvider(jpaPlanDefProvider);
             unregisterProvider(jpaActDefProvider);
+            unregisterProvider(jpaStructMapProvider);
         } catch (Exception e) {
             throw new ServletException("Unable to unregister provider: " + e.getMessage());
         }
@@ -122,6 +128,7 @@ public class BaseServlet extends RestfulServer {
         registerProvider(measureProvider);
         registerProvider(planDefProvider);
         registerProvider(actDefProvider);
+        registerProvider(structureMapProvider);
 
         // Register the logging interceptor
         LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
