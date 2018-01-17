@@ -4,13 +4,16 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CarePlanBuilder extends BaseBuilder<CarePlan> {
 
     public CarePlanBuilder() {
         super(new CarePlan());
+    }
+
+    public CarePlanBuilder(CarePlan carePlan) {
+        super(carePlan);
     }
 
     public CarePlanBuilder buildIdentifier(List<Identifier> identifiers) {
@@ -243,6 +246,11 @@ public class CarePlanBuilder extends BaseBuilder<CarePlan> {
 
     public CarePlanBuilder buildLanguage(String language) {
         complexProperty.setLanguage(language);
+        return this;
+    }
+
+    public CarePlanBuilder buildContained(Resource result) {
+        complexProperty.addContained(result);
         return this;
     }
 }

@@ -2,6 +2,8 @@ package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
+import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.model.primitive.IdDt;
@@ -11,6 +13,7 @@ import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.builders.*;
@@ -18,6 +21,10 @@ import org.opencds.cqf.cds.CdsHooksRequest;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
+import org.opencds.cqf.cql.terminology.TerminologyProvider;
+import org.opencds.cqf.exceptions.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -29,8 +36,17 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
     private JpaDataProvider provider;
     private CqlExecutionProvider executionProvider;
 
+    private static final Logger logger = LoggerFactory.getLogger(FHIRPlanDefinitionResourceProvider.class);
+
     public FHIRPlanDefinitionResourceProvider(Collection<IResourceProvider> providers) {
         this.provider = new JpaDataProvider(providers);
+
+        JpaResourceProviderDstu3<ValueSet>   vs = (ValueSetResourceProvider)   provider.resolveResourceProvider("ValueSet");
+        JpaResourceProviderDstu3<CodeSystem> cs = (CodeSystemResourceProvider) provider.resolveResourceProvider("CodeSystem");
+        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(vs, cs);
+        this.provider.setTerminologyProvider(terminologyProvider);
+        this.provider.setExpandValueSets(true);
+
         this.executionProvider = new CqlExecutionProvider(providers);
     }
 
@@ -54,6 +70,8 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
             throw new IllegalArgumentException("Couldn't find PlanDefintion " + theId);
         }
 
+        logger.info("Performing $apply operation on PlanDefinition/" + theId);
+
         CarePlanBuilder builder = new CarePlanBuilder();
 
         builder
@@ -66,72 +84,80 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         if (organizationId != null) builder.buildAuthor(new Reference(organizationId));
         if (userLanguage != null) builder.buildLanguage(userLanguage);
 
-        return resolveActions(planDefinition, builder, patientId);
+        Session session =
+                new Session(planDefinition, builder, patientId, encounterId, practitionerId,
+                        organizationId, userType, userLanguage, userTaskContext, setting, settingContext);
+
+        return resolveActions(session);
     }
 
-    private CarePlan resolveActions(PlanDefinition planDefinition, CarePlanBuilder builder,
-                                        String patientId) throws FHIRException
-    {
-        for (PlanDefinition.PlanDefinitionActionComponent action : planDefinition.getAction())
-        {
+    private CarePlan resolveActions(Session session) {
+        for (PlanDefinition.PlanDefinitionActionComponent action : session.getPlanDefinition().getAction()) {
             // TODO - Apply input/output dataRequirements?
-
-            if (meetsConditions(planDefinition, patientId, action)) {
-                return resolveDynamicValues(planDefinition, builder.build(), patientId, action);
+            if (meetsConditions(session, action)) {
+                resolveDefinition(session, action);
+                resolveDynamicActions(session, action);
             }
         }
 
-        return builder.build();
+        return session.getCarePlan();
     }
 
-    public Boolean meetsConditions(PlanDefinition planDefinition, String patientId,
-                                        PlanDefinition.PlanDefinitionActionComponent action)
-    {
-        for (PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {
-            // TODO start
-            // TODO stop
-            if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
-                if (!condition.getLanguage().equals("text/cql")) {
-                    // TODO - log this
-                    continue;
-                }
+    private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
+        if (action.hasDefinition()) {
+            logger.debug("Resolving definition "+ action.getDefinition().getReference());
+            Reference definition = action.getDefinition();
+            if (definition.getReference().startsWith(session.getPlanDefinition().fhirType())) {
+                logger.error("Currently cannot resolve nested PlanDefinitions");
+                throw new NotImplementedException("Plan Definition refers to sub Plan Definition, this is not yet supported");
+            }
 
-                if (!condition.hasExpression()) {
-                    // TODO - log this
-                    continue;
-                }
+            else {
+                FHIRActivityDefinitionResourceProvider activitydefinitionProvider = (FHIRActivityDefinitionResourceProvider) provider.resolveResourceProvider("ActivityDefinition");
+                try {
+                    Resource result = activitydefinitionProvider.apply(
+                            new IdType(action.getDefinition().getReferenceElement().getIdPart()),
+                            session.getPatientId(),
+                            session.getEncounterId(),
+                            session.getPractionerId(),
+                            session.getOrganizationId(),
+                            null,
+                            session.getUserLanguage(),
+                            session.getUserTaskContext(),
+                            session.getSetting(),
+                            session.getSettingContext()
+                    );
 
-                String cql = condition.getExpression();
-                Object result = executionProvider.evaluateInContext(planDefinition, cql, patientId);
-
-                if (!(result instanceof Boolean)) {
-                    // TODO - log this
-                    // maybe try an int value check (i.e. 0 or 1)?
-                    continue;
-                }
-
-                if (!(Boolean) result) {
-                    return false;
+                    if (result.getId() == null) {
+                        logger.warn("ActivityDefintion %s returned resource with no id, setting one", action.getDefinition().getReferenceElement().getIdPart());
+                        result.setId( UUID.randomUUID().toString() );
+                    }
+                    session.getCarePlanBuilder()
+                            .buildContained(result)
+                            .buildActivity(
+                                    new CarePlanActivityBuilder()
+                                            .buildReference( new Reference("#"+result.getId()) )
+                                            .build()
+                            );
+                } catch (Exception e) {
+                    logger.error("ERROR: ActivityDefinition %s could not be applied and threw exception %s", action.getDefinition(), e.toString());
                 }
             }
         }
-
-        return true;
     }
 
-    private CarePlan resolveDynamicValues(PlanDefinition planDefinition, CarePlan carePlan, String patientId,
-                                          PlanDefinition.PlanDefinitionActionComponent action) throws FHIRException
-    {
+    private void resolveDynamicActions(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
         for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue: action.getDynamicValue())
         {
+            logger.info("Resolving dynamic value %s %s", dynamicValue.getPath(), dynamicValue.getExpression());
             if (dynamicValue.hasExpression()) {
                 Object result =
                         executionProvider
-                                .evaluateInContext(planDefinition, dynamicValue.getExpression(), patientId);
+                                .evaluateInContext(session.getPlanDefinition(), dynamicValue.getExpression(), session.getPatientId());
 
                 if (dynamicValue.hasPath() && dynamicValue.getPath().equals("$this"))
                 {
-                    carePlan = (CarePlan) result;
+                    session.setCarePlan((CarePlan) result);
                 }
 
                 else {
@@ -148,12 +174,46 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                         result = new StringType((String) result);
                     }
 
-                    provider.setValue(carePlan, dynamicValue.getPath(), result);
+                    provider.setValue(session.getCarePlan(), dynamicValue.getPath(), result);
+                }
+            }
+        }
+    }
+
+    private Boolean meetsConditions(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
+        for (PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {
+            // TODO start
+            // TODO stop
+            if (condition.hasDescription()) {
+                logger.info("Resolving condition with description: " + condition.getDescription());
+            }
+            if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
+                if (!condition.getLanguage().equals("text/cql")) {
+                    logger.warn("An action language other than CQL was found: " + condition.getLanguage());
+                    continue;
+                }
+
+                if (!condition.hasExpression()) {
+                    logger.info("Evaluating action condition expression " + condition.getExpression());
+                    continue;
+                }
+
+                String cql = condition.getExpression();
+                Object result = executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
+
+                if (!(result instanceof Boolean)) {
+                    logger.warn("The condition returned a non-boolean value: " + result.getClass().getSimpleName());
+                    continue;
+                }
+
+                if (!(Boolean) result) {
+                    logger.info("The result of the condition is false");
+                    return false;
                 }
             }
         }
 
-        return carePlan;
+        return true;
     }
 
     public CarePlan resolveCdsHooksPlanDefinition(Context context, CdsHooksRequest request) {
@@ -263,6 +323,19 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                                 referenceBuilder.buildDisplay(((ActivityDefinition) action.getDefinition().getResource()).getDescription());
                                 actionBuilder.buildResource(referenceBuilder.build());
                             }
+
+                            // TODO - fix this
+//                            FHIRActivityDefinitionResourceProvider activitydefinitionProvider = (FHIRActivityDefinitionResourceProvider) provider.resolveResourceProvider("ActivityDefinition");
+//                            Resource resource = null;
+//                            try {
+//                                resource = activitydefinitionProvider.apply(
+//                                        new IdType(action.getDefinition().getReferenceElement().getIdPart()), patientId,
+//                                        null, null, null, null,
+//                                        null, null, null, null
+//                                ).setId(UUID.randomUUID().toString());
+//                            } catch (FHIRException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+//                                throw new RuntimeException("Error applying ActivityDefinition " + e.getMessage());
+//                            }
 
                             BaseFhirDataProvider provider = (BaseFhirDataProvider) context.resolveDataProvider(new QName("http://hl7.org/fhir", ""));
                             Parameters inParams = new Parameters();
@@ -451,5 +524,88 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         } finally {
             endRequest(theServletRequest);
         }
+    }
+}
+
+class Session {
+    private final String patientId;
+    private final PlanDefinition planDefinition;
+    private final String practionerId;
+    private final String organizationId;
+    private final String userType;
+    private final String userLanguage;
+    private final String userTaskContext;
+    private final String setting;
+    private final String settingContext;
+    private CarePlanBuilder carePlanBuilder;
+    private String encounterId;
+
+    public Session(PlanDefinition planDefinition, CarePlanBuilder builder, String patientId, String encounterId,
+                   String practitionerId, String organizationId, String userType, String userLanguage,
+                   String userTaskContext, String setting, String settingContext)
+    {
+        this.patientId = patientId;
+        this.planDefinition = planDefinition;
+        this.carePlanBuilder = builder;
+        this.encounterId = encounterId;
+        this.practionerId = practitionerId;
+        this.organizationId = organizationId;
+        this.userType = userType;
+        this.userLanguage = userLanguage;
+        this.userTaskContext = userTaskContext;
+        this.setting = setting;
+        this.settingContext = settingContext;
+    }
+
+    public PlanDefinition getPlanDefinition() {
+        return this.planDefinition;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public CarePlan getCarePlan() {
+        return carePlanBuilder.build();
+    }
+
+    public void setCarePlan(CarePlan carePlan) {
+        this.carePlanBuilder = new CarePlanBuilder(carePlan);
+    }
+
+    public String getEncounterId() {
+        return this.encounterId;
+    }
+
+    public String getPractionerId() {
+        return practionerId;
+    }
+
+    public String getOrganizationId() {
+        return organizationId;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public String getUserLanguage() {
+        return userLanguage;
+    }
+
+    public String getUserTaskContext() {
+        return userTaskContext;
+    }
+
+    public String getSetting() {
+        return setting;
+    }
+
+    public String getSettingContext() {
+        return settingContext;
+    }
+
+    public CarePlanBuilder getCarePlanBuilder() {
+        return carePlanBuilder;
     }
 }
