@@ -10,6 +10,7 @@ import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.runtime.Code;
+import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
 
@@ -85,12 +86,13 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             DateParam low = null;
             DateParam high = null;
             if (dateRange.getLow() != null) {
-                low = new DateParam(ParamPrefixEnum.GREATERTHAN_OR_EQUALS, convertPathToSearchParam(dateLowPath != null ? dateLowPath : datePath));
+                low = new DateParam(ParamPrefixEnum.GREATERTHAN_OR_EQUALS, ((DateTime) dateRange.getLow()).getJodaDateTime().toDate());
             }
 
             if (dateRange.getHigh() != null) {
-                high = new DateParam(ParamPrefixEnum.LESSTHAN_OR_EQUALS, convertPathToSearchParam(dateHighPath != null ? dateHighPath : datePath));
+                high = new DateParam(ParamPrefixEnum.LESSTHAN_OR_EQUALS, ((DateTime) dateRange.getLow()).getJodaDateTime().toDate());
             }
+
             DateRangeParam rangeParam;
             if (low == null && high != null) {
                 rangeParam = new DateRangeParam(high);
