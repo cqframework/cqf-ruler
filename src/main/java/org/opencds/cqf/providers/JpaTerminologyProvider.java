@@ -43,6 +43,13 @@ public class JpaTerminologyProvider implements TerminologyProvider {
         for (ValueSet.ValueSetExpansionContainsComponent expansion : vs.getExpansion().getContains()) {
             codes.add(new Code().withCode(expansion.getCode()).withSystem(expansion.getSystem()));
         }
+
+        if (codes.isEmpty()) {
+            for (ValueSet.ConceptReferenceComponent component : vs.getCompose().getInclude().get(0).getConcept()) {
+                codes.add(new Code().withCode(component.getCode()).withSystem(vs.getCompose().getInclude().get(0).getSystem()));
+            }
+        }
+
         return codes;
     }
 

@@ -69,7 +69,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
 
         if (codePath != null && !codePath.equals("")) {
 
-            if (terminologyProvider != null && expandValueSets) {
+            if (valueSet != null && terminologyProvider != null && expandValueSets) {
                 ValueSetInfo valueSetInfo = new ValueSetInfo().withId(valueSet);
                 codes = terminologyProvider.expand(valueSetInfo);
             }
@@ -78,7 +78,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
                 for (Code code : codes) {
                     codeParams.addOr(new TokenParam(code.getSystem(), code.getCode()));
                 }
-                map.add(convertPathToSearchParam(codePath), codeParams);
+                map.add(convertCodePath(codePath), codeParams);
             }
         }
 
@@ -101,10 +101,10 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
                 rangeParam = new DateRangeParam(low);
             }
             else {
-                rangeParam = new DateRangeParam(high, low);
+                rangeParam = new DateRangeParam(low, high);
             }
 
-            map.add(convertPathToSearchParam(datePath), rangeParam);
+            map.add(convertDatePath(datePath), rangeParam);
         }
 
         JpaResourceProviderDstu3<? extends IAnyResource> jpaResProvider = resolveResourceProvider(dataType);
@@ -125,5 +125,21 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
 
     public JpaResourceProviderDstu3<? extends IAnyResource> resolveResourceProvider(String datatype) {
         return (JpaResourceProviderDstu3<? extends IAnyResource>) providers.get(datatype);
+    }
+
+    public String convertDatePath(String path) {
+        if (path.contains("effective")) {
+            return "date";
+        }
+
+        return path;
+    }
+
+    public String convertCodePath(String path) {
+        if (path.contains("medication")) {
+            return "code";
+        }
+
+        return path;
     }
 }
