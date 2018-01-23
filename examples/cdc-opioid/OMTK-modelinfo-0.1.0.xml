@@ -15,10 +15,6 @@
         <ns4:element name="DRUG_RXCUI" type="System.Code"/>
         <ns4:element name="DRUG_TYPE" type="System.String"/>
         <ns4:element name="DRUG_NAME" type="System.String"/>
-        <ns4:element name="UPDATE_DTM" type="System.DateTime"/>
-    </ns4:typeInfo>
-    <ns4:typeInfo xsi:type="ns4:ClassInfo" name="OMTK.MED_DRUG_DOSE_FORM" baseType="System.Any" retrievable="true">
-        <ns4:element name="DRUG_RXCUI" type="System.Code"/>
         <ns4:element name="DOSE_FORM_RXCUI" type="System.Code"/>
         <ns4:element name="UPDATE_DTM" type="System.DateTime"/>
     </ns4:typeInfo>
@@ -26,6 +22,10 @@
         <ns4:element name="DRUG_RXCUI" type="System.Code"/>
         <ns4:element name="DOSE_FORM_GROUP_RXCUI" type="System.Code"/>
         <ns4:element name="UPDATE_DTM" type="System.DateTime"/>
+    </ns4:typeInfo>
+    <ns4:typeInfo xsi:type="ns4:ClassInfo" name="OMTK.MED_DRUG_VALUE_SET" baseType="System.Any" retrievable="true">
+        <ns4:element name="VALUE_SET_ID" type="System.Integer"/>
+        <ns4:element name="DRUG_RXCUI" type="System.Code"/>
     </ns4:typeInfo>
     <ns4:typeInfo xsi:type="ns4:ClassInfo" name="OMTK.MED_DRUG_WITH_INGREDIENT" baseType="System.Any" retrievable="true">
         <ns4:element name="INGREDIENT_RXCUI" type="System.Code"/>
@@ -35,11 +35,12 @@
     <ns4:typeInfo xsi:type="ns4:ClassInfo" name="OMTK.MED_INGREDIENT" baseType="System.Any" retrievable="true">
         <ns4:element name="INGREDIENT_RXCUI" type="System.Code"/>
         <ns4:element name="INGREDIENT_NAME" type="System.String"/>
-        <ns4:element name="MANUALLY_ENTERED" type="System.Integer"/>
+        <ns4:element name="USE_TO_POPULATE_DB" type="System.Integer"/>
+        <ns4:element name="SKIP" type="System.Integer"/>
         <ns4:element name="UPDATE_DTM" type="System.DateTime"/>
     </ns4:typeInfo>
-    <ns4:typeInfo xsi:type="ns4:ClassInfo" name="OMTK.MED_INGREDIENT_FOR_SCDC" baseType="System.Any" retrievable="true">
-        <ns4:element name="SCDC_RXCUI" type="System.Code"/>
+    <ns4:typeInfo xsi:type="ns4:ClassInfo" name="OMTK.MED_INGREDIENT_IN_CLASS" baseType="System.Any" retrievable="true">
+        <ns4:element name="MED_CLASS_ID" type="System.Integer"/>
         <ns4:element name="INGREDIENT_RXCUI" type="System.Code"/>
         <ns4:element name="UPDATE_DTM" type="System.DateTime"/>
     </ns4:typeInfo>
@@ -51,6 +52,7 @@
     <ns4:typeInfo xsi:type="ns4:ClassInfo" name="OMTK.MED_SCDC" baseType="System.Any" retrievable="true">
         <ns4:element name="SCDC_RXCUI" type="System.Code"/>
         <ns4:element name="SCDC_NAME" type="System.String"/>
+        <ns4:element name="INGREDIENT_RXCUI" type="System.Code"/>
         <ns4:element name="STRENGTH" type="System.String"/>
         <ns4:element name="STRENGTH_VALUE" type="System.Decimal"/>
         <ns4:element name="STRENGTH_UNIT" type="System.String"/>
@@ -61,7 +63,13 @@
         <ns4:element name="SCDC_RXCUI" type="System.Code"/>
         <ns4:element name="UPDATE_DTM" type="System.DateTime"/>
     </ns4:typeInfo>
-    <ns4:typeInfo xsi:type="ns4:ClassInfo" name="OMTK.NON_SURGICAL_OPIOID_TO_INCLUDE" baseType="System.Any" retrievable="true">
-        <ns4:element name="DRUG_RXCUI" type="System.Code"/>
+    <ns4:typeInfo xsi:type="ns4:ClassInfo" name="OMTK.VALUE_SET" baseType="System.Any" retrievable="true">
+        <ns4:element name="VALUE_SET_ID" type="System.Integer"/>
+        <ns4:element name="EXECUTE_ORDER" type="System.Integer"/>
+        <ns4:element name="VALUE_SET_NAME" type="System.String"/>
+        <ns4:element name="DESCRIPTION" type="System.String"/>
+        <ns4:element name="SQL" type="System.String"/>
+        <ns4:element name="COMMENTS" type="System.String"/>
+        <ns4:element name="UPDATE_DTM" type="System.DateTime"/>
     </ns4:typeInfo>
 </ns4:modelInfo>

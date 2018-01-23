@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<library xmlns="urn:hl7-org:elm:r1" xmlns:t="urn:hl7-org:elm-types:r1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:fhir="http://hl7.org/fhir" xmlns:a="urn:hl7-org:cql-annotations:r1">
+<library xmlns="urn:hl7-org:elm:r1" xmlns:t="urn:hl7-org:elm-types:r1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:fhir="http://hl7.org/fhir" xmlns:qdm43="urn:healthit-gov:qdm:v4_3" xmlns:qdm53="urn:healthit-gov:qdm:v5_3" xmlns:a="urn:hl7-org:cql-annotations:r1">
    <identifier id="OpioidCDS_DSTU2" version="0.1.0"/>
    <schemaIdentifier id="urn:hl7-org:elm" version="r1"/>
    <usings>
@@ -7,12 +7,16 @@
       <def localIdentifier="FHIR" uri="http://hl7.org/fhir" version="1.0.2"/>
    </usings>
    <includes>
-      <def localIdentifier="FHIRHelpers" path="FHIRHelpers" version="1.0.2"/>
       <def localIdentifier="OMTKLogic" path="OMTKLogic" version="0.1.0"/>
    </includes>
    <parameters>
       <def name="UserID" accessLevel="Public">
          <parameterTypeSpecifier name="t:String" xsi:type="NamedTypeSpecifier"/>
+      </def>
+      <def name="Orders" accessLevel="Public">
+         <parameterTypeSpecifier xsi:type="ListTypeSpecifier">
+            <elementType name="fhir:MedicationOrder" xsi:type="NamedTypeSpecifier"/>
+         </parameterTypeSpecifier>
       </def>
    </parameters>
    <statements>
@@ -21,181 +25,75 @@
             <operand dataType="fhir:Patient" xsi:type="Retrieve"/>
          </expression>
       </def>
-      <def name="Orders" context="Patient" accessLevel="Public">
-         <expression dataType="fhir:MedicationOrder" xsi:type="Retrieve"/>
-      </def>
       <def name="IsForChronicPain" context="Patient" accessLevel="Public">
          <expression valueType="t:Boolean" value="true" xsi:type="Literal"/>
       </def>
       <def name="HasMetastaticCancer" context="Patient" accessLevel="Public">
          <expression valueType="t:Boolean" value="false" xsi:type="Literal"/>
       </def>
-      <def name="ToDaily" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
-         <expression xsi:type="Case">
-            <comparand path="unit" xsi:type="Property">
-               <source name="period" xsi:type="OperandRef"/>
-            </comparand>
-            <caseItem>
-               <when valueType="t:String" value="h" xsi:type="Literal"/>
-               <then xsi:type="Multiply">
-                  <operand xsi:type="ToDecimal">
-                     <operand name="frequency" xsi:type="OperandRef"/>
-                  </operand>
-                  <operand xsi:type="Divide">
-                     <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
-                     <operand path="value" xsi:type="Property">
-                        <source name="period" xsi:type="OperandRef"/>
-                     </operand>
-                  </operand>
-               </then>
-            </caseItem>
-            <caseItem>
-               <when valueType="t:String" value="min" xsi:type="Literal"/>
-               <then xsi:type="Multiply">
-                  <operand xsi:type="Multiply">
-                     <operand xsi:type="ToDecimal">
-                        <operand name="frequency" xsi:type="OperandRef"/>
-                     </operand>
-                     <operand xsi:type="Divide">
-                        <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
-                        <operand path="value" xsi:type="Property">
-                           <source name="period" xsi:type="OperandRef"/>
-                        </operand>
-                     </operand>
-                  </operand>
-                  <operand xsi:type="ToDecimal">
-                     <operand valueType="t:Integer" value="60" xsi:type="Literal"/>
-                  </operand>
-               </then>
-            </caseItem>
-            <caseItem>
-               <when valueType="t:String" value="s" xsi:type="Literal"/>
-               <then xsi:type="Multiply">
-                  <operand xsi:type="Multiply">
-                     <operand xsi:type="Multiply">
-                        <operand xsi:type="ToDecimal">
-                           <operand name="frequency" xsi:type="OperandRef"/>
-                        </operand>
-                        <operand xsi:type="Divide">
-                           <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
-                           <operand path="value" xsi:type="Property">
-                              <source name="period" xsi:type="OperandRef"/>
-                           </operand>
-                        </operand>
-                     </operand>
-                     <operand xsi:type="ToDecimal">
-                        <operand valueType="t:Integer" value="60" xsi:type="Literal"/>
-                     </operand>
-                  </operand>
-                  <operand xsi:type="ToDecimal">
-                     <operand valueType="t:Integer" value="60" xsi:type="Literal"/>
-                  </operand>
-               </then>
-            </caseItem>
-            <caseItem>
-               <when valueType="t:String" value="d" xsi:type="Literal"/>
-               <then xsi:type="Divide">
-                  <operand xsi:type="Multiply">
-                     <operand xsi:type="ToDecimal">
-                        <operand name="frequency" xsi:type="OperandRef"/>
-                     </operand>
-                     <operand xsi:type="Divide">
-                        <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
-                        <operand path="value" xsi:type="Property">
-                           <source name="period" xsi:type="OperandRef"/>
-                        </operand>
-                     </operand>
-                  </operand>
-                  <operand xsi:type="ToDecimal">
-                     <operand valueType="t:Integer" value="24" xsi:type="Literal"/>
-                  </operand>
-               </then>
-            </caseItem>
-            <caseItem>
-               <when valueType="t:String" value="wk" xsi:type="Literal"/>
-               <then xsi:type="Divide">
-                  <operand xsi:type="Multiply">
-                     <operand xsi:type="ToDecimal">
-                        <operand name="frequency" xsi:type="OperandRef"/>
-                     </operand>
-                     <operand xsi:type="Divide">
-                        <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
-                        <operand path="value" xsi:type="Property">
-                           <source name="period" xsi:type="OperandRef"/>
-                        </operand>
-                     </operand>
-                  </operand>
-                  <operand xsi:type="ToDecimal">
-                     <operand xsi:type="Multiply">
-                        <operand valueType="t:Integer" value="24" xsi:type="Literal"/>
-                        <operand valueType="t:Integer" value="7" xsi:type="Literal"/>
-                     </operand>
-                  </operand>
-               </then>
-            </caseItem>
-            <caseItem>
-               <when valueType="t:String" value="mo" xsi:type="Literal"/>
-               <then xsi:type="Divide">
-                  <operand xsi:type="Multiply">
-                     <operand xsi:type="ToDecimal">
-                        <operand name="frequency" xsi:type="OperandRef"/>
-                     </operand>
-                     <operand xsi:type="Divide">
-                        <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
-                        <operand path="value" xsi:type="Property">
-                           <source name="period" xsi:type="OperandRef"/>
-                        </operand>
-                     </operand>
-                  </operand>
-                  <operand xsi:type="ToDecimal">
-                     <operand xsi:type="Multiply">
-                        <operand valueType="t:Integer" value="24" xsi:type="Literal"/>
-                        <operand valueType="t:Integer" value="30" xsi:type="Literal"/>
-                     </operand>
-                  </operand>
-               </then>
-            </caseItem>
-            <caseItem>
-               <when valueType="t:String" value="a" xsi:type="Literal"/>
-               <then xsi:type="Divide">
-                  <operand xsi:type="Multiply">
-                     <operand xsi:type="ToDecimal">
-                        <operand name="frequency" xsi:type="OperandRef"/>
-                     </operand>
-                     <operand xsi:type="Divide">
-                        <operand valueType="t:Decimal" value="24.0" xsi:type="Literal"/>
-                        <operand path="value" xsi:type="Property">
-                           <source name="period" xsi:type="OperandRef"/>
-                        </operand>
-                     </operand>
-                  </operand>
-                  <operand xsi:type="ToDecimal">
-                     <operand xsi:type="Multiply">
-                        <operand valueType="t:Integer" value="24" xsi:type="Literal"/>
-                        <operand valueType="t:Integer" value="365" xsi:type="Literal"/>
-                     </operand>
-                  </operand>
-               </then>
-            </caseItem>
-            <else asType="t:Decimal" xsi:type="As">
-               <operand xsi:type="Null"/>
-               <asTypeSpecifier name="t:Decimal" xsi:type="NamedTypeSpecifier"/>
-            </else>
+      <def name="ToCode" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression classType="t:Code" xsi:type="Instance">
+            <element name="code">
+               <value path="value" xsi:type="Property">
+                  <source path="code" xsi:type="Property">
+                     <source name="coding" xsi:type="OperandRef"/>
+                  </source>
+               </value>
+            </element>
+            <element name="system">
+               <value path="value" xsi:type="Property">
+                  <source path="system" xsi:type="Property">
+                     <source name="coding" xsi:type="OperandRef"/>
+                  </source>
+               </value>
+            </element>
+            <element name="version">
+               <value path="value" xsi:type="Property">
+                  <source path="version" xsi:type="Property">
+                     <source name="coding" xsi:type="OperandRef"/>
+                  </source>
+               </value>
+            </element>
+            <element name="display">
+               <value path="value" xsi:type="Property">
+                  <source path="display" xsi:type="Property">
+                     <source name="coding" xsi:type="OperandRef"/>
+                  </source>
+               </value>
+            </element>
          </expression>
-         <operand name="frequency">
-            <operandTypeSpecifier name="t:Integer" xsi:type="NamedTypeSpecifier"/>
+         <operand name="coding">
+            <operandTypeSpecifier name="fhir:Coding" xsi:type="NamedTypeSpecifier"/>
          </operand>
-         <operand name="period">
-            <operandTypeSpecifier name="t:Quantity" xsi:type="NamedTypeSpecifier"/>
+      </def>
+      <def name="ToQuantity" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression classType="t:Quantity" xsi:type="Instance">
+            <element name="value">
+               <value path="value" xsi:type="Property">
+                  <source path="value" xsi:type="Property">
+                     <source name="quantity" xsi:type="OperandRef"/>
+                  </source>
+               </value>
+            </element>
+            <element name="unit">
+               <value path="value" xsi:type="Property">
+                  <source path="unit" xsi:type="Property">
+                     <source name="quantity" xsi:type="OperandRef"/>
+                  </source>
+               </value>
+            </element>
+         </expression>
+         <operand name="quantity">
+            <operandTypeSpecifier name="fhir:Quantity" xsi:type="NamedTypeSpecifier"/>
          </operand>
       </def>
       <def name="Prescriptions" context="Patient" accessLevel="Public">
          <expression xsi:type="Query">
             <source alias="O">
-               <expression name="Orders" xsi:type="ExpressionRef"/>
+               <expression name="Orders" xsi:type="ParameterRef"/>
             </source>
             <let identifier="rxNormCode">
-               <expression name="ToCode" libraryName="FHIRHelpers" xsi:type="FunctionRef">
+               <expression name="ToCode" xsi:type="FunctionRef">
                   <operand xsi:type="Indexer">
                      <operand path="coding" xsi:type="Property">
                         <source path="medicationCodeableConcept" scope="O" xsi:type="Property"/>
@@ -224,106 +122,73 @@
             </let>
             <let identifier="frequency">
                <expression xsi:type="Coalesce">
-                  <operand path="frequencyMax" xsi:type="Property">
-                     <source name="repeat" xsi:type="QueryLetRef"/>
+                  <operand path="value" xsi:type="Property">
+                     <source path="frequencyMax" xsi:type="Property">
+                        <source name="repeat" xsi:type="QueryLetRef"/>
+                     </source>
                   </operand>
-                  <operand path="frequency" xsi:type="Property">
-                     <source name="repeat" xsi:type="QueryLetRef"/>
+                  <operand path="value" xsi:type="Property">
+                     <source path="frequency" xsi:type="Property">
+                        <source name="repeat" xsi:type="QueryLetRef"/>
+                     </source>
                   </operand>
                </expression>
             </let>
             <let identifier="period">
                <expression classType="t:Quantity" xsi:type="Instance">
                   <element name="value">
-                     <value name="ToDecimal" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                        <operand path="period" xsi:type="Property">
+                     <value path="value" xsi:type="Property">
+                        <source path="period" xsi:type="Property">
                            <source name="repeat" xsi:type="QueryLetRef"/>
-                        </operand>
+                        </source>
                      </value>
                   </element>
                   <element name="unit">
-                     <value name="ToString" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                        <operand path="periodUnits" xsi:type="Property">
+                     <value path="value" xsi:type="Property">
+                        <source path="periodUnits" xsi:type="Property">
                            <source name="repeat" xsi:type="QueryLetRef"/>
-                        </operand>
+                        </source>
                      </value>
                   </element>
                </expression>
             </let>
             <let identifier="doseDescription">
-               <expression xsi:type="Coalesce">
-                  <operand xsi:type="ToString">
-                     <operand name="ToQuantity" libraryName="FHIRHelpers" xsi:type="FunctionRef">
+               <expression xsi:type="ToString">
+                  <operand name="ToQuantity" xsi:type="FunctionRef">
+                     <operand strict="false" xsi:type="As">
                         <operand path="doseQuantity" xsi:type="Property">
                            <source name="dosageInstruction" xsi:type="QueryLetRef"/>
                         </operand>
-                     </operand>
-                  </operand>
-                  <operand xsi:type="Add">
-                     <operand xsi:type="Add">
-                        <operand xsi:type="Add">
-                           <operand xsi:type="ToString">
-                              <operand name="ToDecimal" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                                 <operand path="value" xsi:type="Property">
-                                    <source path="low" xsi:type="Property">
-                                       <source path="doseRange" xsi:type="Property">
-                                          <source name="dosageInstruction" xsi:type="QueryLetRef"/>
-                                       </source>
-                                    </source>
-                                 </operand>
-                              </operand>
-                           </operand>
-                           <operand valueType="t:String" value="-" xsi:type="Literal"/>
-                        </operand>
-                        <operand xsi:type="ToString">
-                           <operand name="ToDecimal" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                              <operand path="value" xsi:type="Property">
-                                 <source path="high" xsi:type="Property">
-                                    <source path="doseRange" xsi:type="Property">
-                                       <source name="dosageInstruction" xsi:type="QueryLetRef"/>
-                                    </source>
-                                 </source>
-                              </operand>
-                           </operand>
-                        </operand>
-                     </operand>
-                     <operand name="ToString" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                        <operand path="unit" xsi:type="Property">
-                           <source path="high" xsi:type="Property">
-                              <source path="doseRange" xsi:type="Property">
-                                 <source name="dosageInstruction" xsi:type="QueryLetRef"/>
-                              </source>
-                           </source>
-                        </operand>
+                        <asTypeSpecifier name="fhir:SimpleQuantity" xsi:type="NamedTypeSpecifier"/>
                      </operand>
                   </operand>
                </expression>
             </let>
             <let identifier="frequencyDescription">
-               <expression xsi:type="Add">
+               <expression xsi:type="Concatenate">
                   <operand xsi:type="ToString">
-                     <operand name="ToInteger" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                        <operand path="frequency" xsi:type="Property">
+                     <operand path="value" xsi:type="Property">
+                        <source path="frequency" xsi:type="Property">
                            <source path="repeat" xsi:type="Property">
                               <source path="timing" xsi:type="Property">
                                  <source name="dosageInstruction" xsi:type="QueryLetRef"/>
                               </source>
                            </source>
-                        </operand>
+                        </source>
                      </operand>
                   </operand>
                   <operand xsi:type="Coalesce">
-                     <operand xsi:type="Add">
+                     <operand xsi:type="Concatenate">
                         <operand valueType="t:String" value="-" xsi:type="Literal"/>
                         <operand xsi:type="ToString">
-                           <operand name="ToInteger" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                              <operand path="frequencyMax" xsi:type="Property">
+                           <operand path="value" xsi:type="Property">
+                              <source path="frequencyMax" xsi:type="Property">
                                  <source path="repeat" xsi:type="Property">
                                     <source path="timing" xsi:type="Property">
                                        <source name="dosageInstruction" xsi:type="QueryLetRef"/>
                                     </source>
                                  </source>
-                              </operand>
+                              </source>
                            </operand>
                         </operand>
                      </operand>
@@ -338,8 +203,8 @@
                   </element>
                   <element name="isDraft">
                      <value xsi:type="Equal">
-                        <operand name="ToString" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                           <operand path="status" scope="O" xsi:type="Property"/>
+                        <operand path="value" xsi:type="Property">
+                           <source path="status" scope="O" xsi:type="Property"/>
                         </operand>
                         <operand valueType="t:String" value="draft" xsi:type="Literal"/>
                      </value>
@@ -351,29 +216,31 @@
                   </element>
                   <element name="prescription">
                      <value xsi:type="If">
-                        <condition xsi:type="Not">
-                           <operand xsi:type="IsNull">
-                              <operand path="text" xsi:type="Property">
-                                 <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                        <condition asType="t:Boolean" xsi:type="As">
+                           <operand xsi:type="Not">
+                              <operand xsi:type="IsNull">
+                                 <operand path="text" xsi:type="Property">
+                                    <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                 </operand>
                               </operand>
                            </operand>
                         </condition>
-                        <then xsi:type="Add">
-                           <operand xsi:type="Add">
+                        <then xsi:type="Concatenate">
+                           <operand xsi:type="Concatenate">
                               <operand name="medicationName" xsi:type="QueryLetRef"/>
                               <operand valueType="t:String" value=" " xsi:type="Literal"/>
                            </operand>
-                           <operand name="ToString" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                              <operand path="text" xsi:type="Property">
+                           <operand path="value" xsi:type="Property">
+                              <source path="text" xsi:type="Property">
                                  <source name="dosageInstruction" xsi:type="QueryLetRef"/>
-                              </operand>
+                              </source>
                            </operand>
                         </then>
-                        <else xsi:type="Add">
-                           <operand xsi:type="Add">
-                              <operand xsi:type="Add">
-                                 <operand xsi:type="Add">
-                                    <operand xsi:type="Add">
+                        <else xsi:type="Concatenate">
+                           <operand xsi:type="Concatenate">
+                              <operand xsi:type="Concatenate">
+                                 <operand xsi:type="Concatenate">
+                                    <operand xsi:type="Concatenate">
                                        <operand name="medicationName" xsi:type="QueryLetRef"/>
                                        <operand valueType="t:String" value=" " xsi:type="Literal"/>
                                     </operand>
@@ -384,10 +251,12 @@
                               <operand name="frequencyDescription" xsi:type="QueryLetRef"/>
                            </operand>
                            <operand xsi:type="If">
-                              <condition path="value" xsi:type="Property">
-                                 <source path="asNeededBoolean" xsi:type="Property">
-                                    <source name="dosageInstruction" xsi:type="QueryLetRef"/>
-                                 </source>
+                              <condition asType="t:Boolean" xsi:type="As">
+                                 <operand path="value" xsi:type="Property">
+                                    <source path="asNeededBoolean" xsi:type="Property">
+                                       <source name="dosageInstruction" xsi:type="QueryLetRef"/>
+                                    </source>
+                                 </operand>
                               </condition>
                               <then valueType="t:String" value=" PRN" xsi:type="Literal"/>
                               <else valueType="t:String" value="" xsi:type="Literal"/>
@@ -396,25 +265,16 @@
                      </value>
                   </element>
                   <element name="dose">
-                     <value name="ToQuantity" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                        <operand xsi:type="Coalesce">
-                           <operand path="doseQuantity" xsi:type="Property">
-                              <source name="dosageInstruction" xsi:type="QueryLetRef"/>
-                           </operand>
-                           <operand path="high" xsi:type="Property">
-                              <source path="doseRange" xsi:type="Property">
-                                 <source name="dosageInstruction" xsi:type="QueryLetRef"/>
-                              </source>
-                           </operand>
+                     <value name="ToQuantity" xsi:type="FunctionRef">
+                        <operand path="doseQuantity" xsi:type="Property">
+                           <source name="dosageInstruction" xsi:type="QueryLetRef"/>
                         </operand>
                      </value>
                   </element>
                   <element name="dosesPerDay">
                      <value xsi:type="Coalesce">
-                        <operand name="ToDaily" xsi:type="FunctionRef">
-                           <operand name="ToInteger" libraryName="FHIRHelpers" xsi:type="FunctionRef">
-                              <operand name="frequency" xsi:type="QueryLetRef"/>
-                           </operand>
+                        <operand name="ToDaily" libraryName="OMTKLogic" xsi:type="FunctionRef">
+                           <operand name="frequency" xsi:type="QueryLetRef"/>
                            <operand name="period" xsi:type="QueryLetRef"/>
                         </operand>
                         <operand valueType="t:Decimal" value="1.0" xsi:type="Literal"/>
@@ -482,7 +342,9 @@
             <sort>
                <by direction="asc" xsi:type="ByExpression">
                   <expression xsi:type="If">
-                     <condition name="isDraft" xsi:type="IdentifierRef"/>
+                     <condition asType="t:Boolean" xsi:type="As">
+                        <operand name="isDraft" xsi:type="IdentifierRef"/>
+                     </condition>
                      <then valueType="t:Integer" value="0" xsi:type="Literal"/>
                      <else valueType="t:Integer" value="1" xsi:type="Literal"/>
                   </expression>
@@ -518,8 +380,10 @@
       </def>
       <def name="IsMME50OrMore" context="Patient" accessLevel="Public">
          <expression xsi:type="If">
-            <condition xsi:type="IsNull">
-               <operand name="Orders" xsi:type="ExpressionRef"/>
+            <condition asType="t:Boolean" xsi:type="As">
+               <operand xsi:type="IsNull">
+                  <operand name="Orders" xsi:type="ParameterRef"/>
+               </operand>
             </condition>
             <then valueType="t:Boolean" value="false" xsi:type="Literal"/>
             <else xsi:type="GreaterOrEqual">

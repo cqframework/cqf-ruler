@@ -3,7 +3,7 @@
 .DS_Store
 
 # RxNorm data
-src/main/resources/cds/OpioidManagementTerminologyKnowledge.db
+src/main/resources/cds/LocalDataStore_RxNav_OpioidCds.db
 
 # Diabetes Management
 src/test/java/org/opencds/cqf/cds-diabetes-management-request.json

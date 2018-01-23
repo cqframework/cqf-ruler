@@ -79,9 +79,14 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         // read opioid library
         Library library = getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("OpioidCdsStu3").withVersion("0.1.0"));
 
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         // resolve data providers
         // the db file is issued to properly licensed implementers -- see README for more info
-        String path = Paths.get("src/main/resources/cds/OpioidManagementTerminologyKnowledge.db").toAbsolutePath().toString().replace("\\", "/");
+        String path = Paths.get("src/main/resources/cds/LocalDataStore_RxNav_OpioidCds.db").toAbsolutePath().toString().replace("\\", "/");
         String connString = "jdbc:sqlite://" + path;
         OmtkDataProvider omtkProvider = new OmtkDataProvider(connString);
         BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServerEndpoint());
