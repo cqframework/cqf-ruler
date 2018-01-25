@@ -113,20 +113,30 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
             }
 
             else {
-                FHIRActivityDefinitionResourceProvider activitydefinitionProvider = (FHIRActivityDefinitionResourceProvider) provider.resolveResourceProvider("ActivityDefinition");
+                FHIRActivityDefinitionResourceProvider activitydefinitionProvider = new FHIRActivityDefinitionResourceProvider(provider.getCollectionProviders());
+                Resource result;
                 try {
-                    Resource result = activitydefinitionProvider.apply(
-                            new IdType(action.getDefinition().getReferenceElement().getIdPart()),
-                            session.getPatientId(),
-                            session.getEncounterId(),
-                            session.getPractionerId(),
-                            session.getOrganizationId(),
-                            null,
-                            session.getUserLanguage(),
-                            session.getUserTaskContext(),
-                            session.getSetting(),
-                            session.getSettingContext()
-                    );
+                    if (action.getDefinition().getReferenceElement().getIdPart().startsWith("#")) {
+                        result = activitydefinitionProvider.resolveActivityDefinition(
+                                (ActivityDefinition) resolveContained(session.getPlanDefinition(),
+                                        action.getDefinition().getReferenceElement().getIdPart()),
+                                session.getPatientId(), session.getPractionerId(), session.getOrganizationId()
+                        );
+                    }
+                    else {
+                        result = activitydefinitionProvider.apply(
+                                new IdType(action.getDefinition().getReferenceElement().getIdPart()),
+                                session.getPatientId(),
+                                session.getEncounterId(),
+                                session.getPractionerId(),
+                                session.getOrganizationId(),
+                                null,
+                                session.getUserLanguage(),
+                                session.getUserTaskContext(),
+                                session.getSetting(),
+                                session.getSettingContext()
+                        );
+                    }
 
                     if (result.getId() == null) {
                         logger.warn("ActivityDefintion %s returned resource with no id, setting one", action.getDefinition().getReferenceElement().getIdPart());
@@ -194,10 +204,11 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                 }
 
                 if (!condition.hasExpression()) {
-                    logger.info("Evaluating action condition expression " + condition.getExpression());
-                    continue;
+                    logger.error("Missing condition expression");
+                    throw new RuntimeException("Missing condition expression");
                 }
 
+                logger.info("Evaluating action condition expression " + condition.getExpression());
                 String cql = condition.getExpression();
                 Object result = executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
 
@@ -207,7 +218,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                 }
 
                 if (!(Boolean) result) {
-                    logger.info("The result of the condition is false");
+                    logger.info("The result of condition expression %s is false", condition.getExpression());
                     return false;
                 }
             }
@@ -386,6 +397,18 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
             }
         }
         requestGroupBuilder.buildAction(new ArrayList<>(actionComponents));
+    }
+
+    public Resource resolveContained(DomainResource resource, String id) {
+        for (Resource res : resource.getContained()) {
+            if (res.hasIdElement()) {
+                if (res.getIdElement().getIdPart().equals(id)) {
+                    return res;
+                }
+            }
+        }
+
+        throw new RuntimeException(String.format("Resource %s does not contain resource with id %s", resource.fhirType(), id));
     }
 
     @Search(allowUnknownParams=true)

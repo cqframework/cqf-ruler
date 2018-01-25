@@ -87,6 +87,10 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
             case "Communication":
                 result = resolveCommunication(activityDefinition, patientId);
                 break;
+
+            case "CommunicationRequest":
+                result = resolveCommunicationRequest(activityDefinition, patientId);
+                break;
         }
 
         // TODO: Apply expression extensions on any element?
@@ -328,6 +332,23 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
         }
 
         return communication;
+    }
+
+    // TODO - extend this to be more complete
+    private CommunicationRequest resolveCommunicationRequest(ActivityDefinition activityDefinition, String patientId) {
+        CommunicationRequest communicationRequest = new CommunicationRequest();
+
+        communicationRequest.setStatus(CommunicationRequest.CommunicationRequestStatus.UNKNOWN);
+        communicationRequest.setSubject(new Reference(patientId));
+
+        // Unsure if this is correct - this is the way Motive is doing it...
+        if (activityDefinition.hasCode()) {
+            if (activityDefinition.getCode().hasText()) {
+                communicationRequest.addPayload().setContent(new StringType(activityDefinition.getCode().getText()));
+            }
+        }
+
+        return communicationRequest;
     }
 
     @Search(allowUnknownParams=true)

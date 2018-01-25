@@ -26,8 +26,14 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
 
     // need these to access the dao
     private HashMap<String, IResourceProvider> providers;
+    private Collection<IResourceProvider> collectionProviders;
+
+    public Collection<IResourceProvider> getCollectionProviders() {
+        return this.collectionProviders;
+    }
 
     public JpaDataProvider(Collection<IResourceProvider> providers) {
+        this.collectionProviders = providers;
         this.providers = new HashMap<>();
         for (IResourceProvider i : providers) {
             this.providers.put(i.getResourceType().getSimpleName(), i);
@@ -90,7 +96,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             }
 
             if (dateRange.getHigh() != null) {
-                high = new DateParam(ParamPrefixEnum.LESSTHAN_OR_EQUALS, ((DateTime) dateRange.getLow()).getJodaDateTime().toDate());
+                high = new DateParam(ParamPrefixEnum.LESSTHAN_OR_EQUALS, ((DateTime) dateRange.getHigh()).getJodaDateTime().toDate());
             }
 
             DateRangeParam rangeParam;
@@ -138,6 +144,9 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
     public String convertCodePath(String path) {
         if (path.contains("medication")) {
             return "code";
+        }
+        else if (path.equals("vaccineCode")) {
+            return "vaccine-code";
         }
 
         return path;

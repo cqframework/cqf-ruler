@@ -1,6 +1,9 @@
 package org.opencds.cqf.providers;
 
+import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
+import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -10,6 +13,7 @@ import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.helpers.LibraryHelper;
 
 import java.util.ArrayList;
@@ -24,6 +28,12 @@ public class CqlExecutionProvider {
 
     public CqlExecutionProvider(Collection<IResourceProvider> providers) {
         this.provider = new JpaDataProvider(providers);
+
+        JpaResourceProviderDstu3<ValueSet> vs = (ValueSetResourceProvider)   provider.resolveResourceProvider("ValueSet");
+        JpaResourceProviderDstu3<CodeSystem> cs = (CodeSystemResourceProvider) provider.resolveResourceProvider("CodeSystem");
+        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(vs, cs);
+        this.provider.setTerminologyProvider(terminologyProvider);
+        this.provider.setExpandValueSets(true);
     }
 
     private ModelManager modelManager;
@@ -142,7 +152,7 @@ public class CqlExecutionProvider {
         context.setExpressionCaching(true);
         context.registerLibraryLoader(getLibraryLoader());
         context.setContextValue("Patient", patientId);
-        context.registerDataProvider("http://hl7.org/fhir", new FhirDataProviderStu3().setEndpoint("http://localhost:8080/cqf-ruler/baseDstu3"));
+        context.registerDataProvider("http://hl7.org/fhir", provider);
         return context.resolveExpressionRef("Expression").evaluate(context);
     }
 }
