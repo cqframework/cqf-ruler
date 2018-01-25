@@ -219,6 +219,7 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
         }
 
         context.setContextValue("Patient", patientId);
+        context.setExpressionCaching(true);
 
         report = evaluator.evaluate(context, measure, patient, measurementPeriod);
         validateReport();
