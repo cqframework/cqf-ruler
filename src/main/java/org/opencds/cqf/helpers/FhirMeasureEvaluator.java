@@ -114,6 +114,8 @@ public class FhirMeasureEvaluator {
         report.setPeriod(reportPeriod);
         report.setType(type);
 
+        measurementPeriod = new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
+                DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true);
         context.setParameter(null, "Measurement Period", measurementPeriod);
 
         HashMap<String,Resource> resources = new HashMap<>();
@@ -128,7 +130,7 @@ public class FhirMeasureEvaluator {
                 int count = 0;
                 // Worried about performance here with big populations...
                 for (Patient patient : population) {
-                    context.setContextValue("Patient", patient);
+                    context.setContextValue("Patient", patient.getIdElement().getIdPart());
                     Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
                     if (result instanceof Boolean) {
                         count += (Boolean) result ? 1 : 0;
