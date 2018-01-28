@@ -1,0 +1,143 @@
+{
+  "hook": "medication-prescribe",
+  "hookInstance": "5bacb720-f493-4fe7-8750-c02595cbb72b",
+  "fhirServer": "http://localhost:8080/cqf-ruler/baseDstu3",
+  "user": "Practitioner-2516",
+  "patient": "Patient-1121",
+  "context": [
+    {
+      "resourceType": "MedicationRequest",
+      "authoredOn": "2017-01-01",
+      "status": "active",
+      "medicationCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+            "code": "197696"
+          }
+        ]
+      },
+      "subject": {
+        "reference": "Patient/Patient-1121",
+        "display": "Jerry Phillip Goodwall"
+      },
+      "reasonCode": [
+        {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "82423001",
+              "display": "Chronic pain"
+            }
+          ],
+          "text": "Chronic pain"
+        }
+      ],
+      "dosageInstruction": [
+        {
+          "timing": {
+            "repeat": {
+              "count": 1,
+              "durationUnit": "d",
+              "frequency": 1,
+              "period": 3,
+              "periodUnit": "d"
+            }
+          },
+          "asNeededBoolean": false,
+          "doseQuantity": {
+            "value": 1,
+            "unit": "patch",
+            "system": "http://hl7.org/fhir/v3/orderableDrugForm",
+            "code": "patch"
+          }
+        }
+      ],
+      "dispenseRequest": {
+        "quantity": {
+          "value": 10,
+          "unit": "patch",
+          "system": "http://hl7.org/fhir/v3/orderableDrugForm",
+          "code": "patch"
+        }
+      }
+    }
+  ],
+  "prefetch": {
+    "medication": {
+      "resource": {
+        "resourceType": "Bundle",
+        "id": "25c04bfd-8996-445f-9bbd-3725614c1508",
+        "meta": {
+          "lastUpdated": "2017-10-21T20:55:54.241+00:00"
+        },
+        "type": "searchset",
+        "link": [
+          {
+            "relation": "self",
+            "url": "https://sb-fhir-dstu2.smarthealthit.org/smartdstu2/open/MedicationOrder?patient=Patient-12214&status=active"
+          }
+        ],
+        "entry": [
+          {
+            "resourceType": "MedicationRequest",
+            "authoredOn": "2017-01-01",
+            "status": "active",
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "197696"
+                }
+              ]
+            },
+            "subject": {
+              "reference": "Patient/Patient-1121",
+              "display": "Jerry Phillip Goodwall"
+            },
+            "reasonCode": [
+              {
+                "coding": [
+                  {
+                    "system": "http://snomed.info/sct",
+                    "code": "82423001",
+                    "display": "Chronic pain"
+                  }
+                ],
+                "text": "Chronic pain"
+              }
+            ],
+            "dosageInstruction": [
+              {
+                "timing": {
+                  "repeat": {
+                    "count": 1,
+                    "durationUnit": "d",
+                    "frequency": 1,
+                    "period": 3,
+                    "periodUnit": "d"
+                  }
+                },
+                "asNeededBoolean": false,
+                "doseQuantity": {
+                  "value": 1,
+                  "unit": "patch",
+                  "system": "http://hl7.org/fhir/v3/orderableDrugForm",
+                  "code": "patch"
+                }
+              }
+            ],
+            "dispenseRequest": {
+              "quantity": {
+                "value": 10,
+                "unit": "patch",
+                "system": "http://hl7.org/fhir/v3/orderableDrugForm",
+                "code": "patch"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

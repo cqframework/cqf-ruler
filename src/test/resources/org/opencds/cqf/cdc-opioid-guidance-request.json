@@ -55,18 +55,6 @@
     "medication": {
       "resource": {
         "resourceType": "Bundle",
-        "id": "25c04bfd-8996-445f-9bbd-3725614c1508",
-        "meta": {
-          "lastUpdated": "2017-10-21T20:55:54.241+00:00"
-        },
-        "type": "searchset",
-        "total": 1,
-        "link": [
-          {
-            "relation": "self",
-            "url": "https://sb-fhir-dstu2.smarthealthit.org/smartdstu2/open/MedicationOrder?patient=Patient-12214&status=active"
-          }
-        ],
         "entry": [
           {
             "fullUrl": "https://sb-fhir-dstu2.smarthealthit.org/smartdstu2/open/MedicationOrder/medrx002",
@@ -117,15 +105,9 @@
                   "code": "mg"
                 }
               }
-            },
-            "search": {
-              "mode": "match"
             }
           }
         ]
-      },
-      "response": {
-        "status": "200 HTTP/1.1 200"
       }
     }
   }

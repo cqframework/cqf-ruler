@@ -99,7 +99,7 @@ public class RulerTestBase {
     public void CdcOpioidGuidanceTest() throws IOException {
         putResource("cdc-opioid-guidance-bundle.json", "");
         // Get the CDS Hooks request
-        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-request.json");
+        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-request-stu3.json");
         Scanner scanner = new Scanner(is).useDelimiter("\\A");
         String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
         byte[] data = cdsHooksRequest.getBytes("UTF-8");
@@ -139,7 +139,12 @@ public class RulerTestBase {
                 "    {\n" +
                 "      \"summary\": \"High risk for opioid overdose - taper now\",\n" +
                 "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"Total morphine milligram equivalent (MME) is 20200.700mg/d. Taper to less than 50.\"\n" +
+                "      \"detail\": \"Total morphine milligram equivalent (MME) is 179.99999820mg/d. Taper to less than 50.\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"summary\": \"Patient has not had a urine screening in the past 12 months\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"When prescribing opioids for chronic pain, clinicians should use urine drug testing before starting opioid therapy and consider urine drug testing at least annually to assess for prescribed medications as well as other controlled prescription drugs and illicit drugs\"\n" +
                 "    }\n" +
                 "  ]\n" +
                 "}";

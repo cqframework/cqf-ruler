@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <library xmlns="urn:hl7-org:elm:r1" xmlns:t="urn:hl7-org:elm-types:r1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:fhir="http://hl7.org/fhir" xmlns:qdm43="urn:healthit-gov:qdm:v4_3" xmlns:qdm53="urn:healthit-gov:qdm:v5_3" xmlns:a="urn:hl7-org:cql-annotations:r1">
    <annotation startLine="161" startChar="44" endLine="161" endChar="49" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
-   <annotation startLine="167" startChar="9" endLine="167" endChar="47" message="Could not resolve membership operator for terminology target of the retrieve." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
-   <annotation startLine="175" startChar="9" endLine="175" endChar="46" message="Could not resolve membership operator for terminology target of the retrieve." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
-   <annotation startLine="215" startChar="70" endLine="215" endChar="75" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
-   <annotation startLine="215" startChar="79" endLine="215" endChar="92" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
-   <annotation startLine="239" startChar="64" endLine="239" endChar="80" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="217" startChar="70" endLine="217" endChar="75" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="217" startChar="79" endLine="217" endChar="92" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
+   <annotation startLine="241" startChar="64" endLine="241" endChar="80" message="List-valued expression was demoted to a singleton." errorType="semantic" errorSeverity="warning" xsi:type="a:CqlToElmError"/>
    <identifier id="OpioidCDS_STU3" version="0.1.0"/>
    <schemaIdentifier id="urn:hl7-org:elm" version="r1"/>
    <usings>
@@ -636,21 +634,55 @@
             </operand>
          </expression>
       </def>
+      <def name="ToConcept" context="Patient" accessLevel="Public" xsi:type="FunctionDef">
+         <expression classType="t:Concept" xsi:type="Instance">
+            <element name="codes">
+               <value xsi:type="Query">
+                  <source alias="C">
+                     <expression path="coding" xsi:type="Property">
+                        <source name="concept" xsi:type="OperandRef"/>
+                     </expression>
+                  </source>
+                  <return>
+                     <expression name="CodingToCode" xsi:type="FunctionRef">
+                        <operand name="C" xsi:type="AliasRef"/>
+                     </expression>
+                  </return>
+               </value>
+            </element>
+            <element name="display">
+               <value path="value" xsi:type="Property">
+                  <source path="text" xsi:type="Property">
+                     <source name="concept" xsi:type="OperandRef"/>
+                  </source>
+               </value>
+            </element>
+         </expression>
+         <operand name="concept">
+            <operandTypeSpecifier name="fhir:CodeableConcept" xsi:type="NamedTypeSpecifier"/>
+         </operand>
+      </def>
       <def name="Illicit Drug Screening in Past 12 Months" context="Patient" accessLevel="Public">
          <expression xsi:type="First">
             <source xsi:type="Query">
                <source alias="IllicitDrugScreening">
-                  <expression dataType="fhir:Observation" codeProperty="code" xsi:type="Retrieve">
-                     <codes name="Illicit Drug Screening" xsi:type="ValueSetRef"/>
-                  </expression>
+                  <expression name="Screenings" xsi:type="ParameterRef"/>
                </source>
-               <where precision="Day" xsi:type="SameOrAfter">
-                  <operand path="value" xsi:type="Property">
-                     <source path="effective" scope="IllicitDrugScreening" xsi:type="Property"/>
+               <where xsi:type="And">
+                  <operand xsi:type="InValueSet">
+                     <code name="ToConcept" xsi:type="FunctionRef">
+                        <operand path="code" scope="IllicitDrugScreening" xsi:type="Property"/>
+                     </code>
+                     <valueset name="Illicit Drug Screening"/>
                   </operand>
-                  <operand xsi:type="Subtract">
-                     <operand xsi:type="Today"/>
-                     <operand value="1" unit="year" xsi:type="Quantity"/>
+                  <operand precision="Day" xsi:type="SameOrAfter">
+                     <operand path="value" xsi:type="Property">
+                        <source path="effective" scope="IllicitDrugScreening" xsi:type="Property"/>
+                     </operand>
+                     <operand xsi:type="Subtract">
+                        <operand xsi:type="Today"/>
+                        <operand value="1" unit="year" xsi:type="Quantity"/>
+                     </operand>
                   </operand>
                </where>
                <sort>
@@ -667,17 +699,23 @@
          <expression xsi:type="First">
             <source xsi:type="Query">
                <source alias="OpioidDrugScreening">
-                  <expression dataType="fhir:Observation" codeProperty="code" xsi:type="Retrieve">
-                     <codes name="Opioid Drug Screening" xsi:type="ValueSetRef"/>
-                  </expression>
+                  <expression name="Screenings" xsi:type="ParameterRef"/>
                </source>
-               <where precision="Day" xsi:type="SameOrAfter">
-                  <operand path="value" xsi:type="Property">
-                     <source path="effective" scope="OpioidDrugScreening" xsi:type="Property"/>
+               <where xsi:type="And">
+                  <operand xsi:type="InValueSet">
+                     <code name="ToConcept" xsi:type="FunctionRef">
+                        <operand path="code" scope="OpioidDrugScreening" xsi:type="Property"/>
+                     </code>
+                     <valueset name="Opioid Drug Screening"/>
                   </operand>
-                  <operand xsi:type="Subtract">
-                     <operand xsi:type="Today"/>
-                     <operand value="1" unit="year" xsi:type="Quantity"/>
+                  <operand precision="Day" xsi:type="SameOrAfter">
+                     <operand path="value" xsi:type="Property">
+                        <source path="effective" scope="OpioidDrugScreening" xsi:type="Property"/>
+                     </operand>
+                     <operand xsi:type="Subtract">
+                        <operand xsi:type="Today"/>
+                        <operand value="1" unit="year" xsi:type="Quantity"/>
+                     </operand>
                   </operand>
                </where>
                <sort>

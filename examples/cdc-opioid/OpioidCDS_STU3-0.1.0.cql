@@ -164,16 +164,18 @@ define "Is Medication Prescribed for Chronic Pain?":
 // Most recent drug screening in past year
 define "Illicit Drug Screening in Past 12 Months":
     First(
-        [Observation: "Illicit Drug Screening"] IllicitDrugScreening
-            where IllicitDrugScreening.effective.value same day or after Today() - 1 year
+        Screenings IllicitDrugScreening
+            where ToConcept(IllicitDrugScreening.code) in "Illicit Drug Screening"
+            and IllicitDrugScreening.effective.value same day or after Today() - 1 year
                 sort by effective.value
     )
 
 // Most recent opioid screening in past year
 define "Opioid Drug Screening in Past 12 Months":
     First(
-        [Observation: "Opioid Drug Screening"] OpioidDrugScreening
-            where OpioidDrugScreening.effective.value same day or after Today() - 1 year
+        Screenings OpioidDrugScreening
+            where ToConcept(OpioidDrugScreening.code) in "Opioid Drug Screening"
+            and OpioidDrugScreening.effective.value same day or after Today() - 1 year
                 sort by effective.value
     )
 
@@ -302,3 +304,9 @@ define function CodingToCode(coding FHIR.Coding):
 		version: coding.version.value,
 		display: coding.display.value
 	}
+
+define function ToConcept(concept FHIR.CodeableConcept):
+    System.Concept {
+        codes: concept.coding C return CodingToCode(C),
+        display: concept.text.value
+    }

@@ -89,7 +89,8 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         String path = Paths.get("src/main/resources/cds/LocalDataStore_RxNav_OpioidCds.db").toAbsolutePath().toString().replace("\\", "/");
         String connString = "jdbc:sqlite://" + path;
         OmtkDataProvider omtkProvider = new OmtkDataProvider(connString);
-        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServerEndpoint());
+        // TODO - add in Urine Screening Analysis parameter and JpaTerminologyProvider
+        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3();// .setEndpoint(request.getFhirServerEndpoint());
 
         Context executionContext = new Context(library);
         executionContext.registerLibraryLoader(getLibraryLoader());
