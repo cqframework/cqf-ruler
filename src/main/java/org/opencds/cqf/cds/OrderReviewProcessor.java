@@ -51,6 +51,6 @@ public class OrderReviewProcessor extends CdsRequestProcessor {
         }
 
         // Assuming STU3 here as per the example here: http://cds-hooks.org/#radiology-appropriateness
-        this.contextOrder = (ProcedureRequest) FhirContext.forDstu3().newJsonParser().parseResource(request.getContext().get(0).toString());
+        this.contextOrder = (ProcedureRequest) FhirContext.forDstu3().newJsonParser().parseResource(request.getContext().toString());
     }
 }

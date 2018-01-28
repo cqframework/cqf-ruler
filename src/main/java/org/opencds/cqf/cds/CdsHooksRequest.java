@@ -23,7 +23,7 @@ public class CdsHooksRequest {
     private String userReference; // this is really a Reference (Resource/ID)
     private String patientId;
     private String encounterId;
-    private JsonArray context;
+    private JsonObject context;
     private JsonObject prefetch;
 
     // Not an standard request element
@@ -98,10 +98,10 @@ public class CdsHooksRequest {
         return encounterId;
     }
 
-    public JsonArray getContext() {
+    public JsonObject getContext() {
         if (context == null) {
-            JsonArray temp = requestJson.getAsJsonArray("context");
-            this.context = temp == null ? new JsonArray() : temp;
+            JsonObject temp = requestJson.getAsJsonObject("context");
+            this.context = temp == null ? new JsonObject() : temp;
         }
         return context;
     }

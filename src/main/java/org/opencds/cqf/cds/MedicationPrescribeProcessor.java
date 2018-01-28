@@ -60,12 +60,12 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
             throw new MissingContextException("The medication-prescribe request requires the context to contain a prescription order.");
         }
 
-        String resourceName = request.getContext().get(0).getAsJsonObject().getAsJsonPrimitive("resourceType").getAsString();
+        String resourceName = request.getContext().getAsJsonPrimitive("resourceType").getAsString();
         if (!isStu3) {
-            this.contextPrescription = getMedicationRequest(resourceName, FhirContext.forDstu2().newJsonParser().parseResource(request.getContext().get(0).toString()));
+            this.contextPrescription = getMedicationRequest(resourceName, FhirContext.forDstu2().newJsonParser().parseResource(request.getContext().toString()));
         }
         else {
-            this.contextPrescription = getMedicationRequest(resourceName, FhirContext.forDstu3().newJsonParser().parseResource(request.getContext().get(0).toString()));
+            this.contextPrescription = getMedicationRequest(resourceName, FhirContext.forDstu3().newJsonParser().parseResource(request.getContext().toString()));
         }
     }
 
