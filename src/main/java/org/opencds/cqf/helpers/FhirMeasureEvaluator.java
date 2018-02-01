@@ -89,19 +89,23 @@ public class FhirMeasureEvaluator {
     }
 
     // Population evaluation
-//    public MeasureReport evaluate(Context context, Measure measure, List<Patient> patients,
-//                                  Interval measurementPeriod, MeasureReport.MeasureReportType type)
-//    {
-//        MeasureReport report = new MeasureReport();
-//        report.setMeasure(new Reference(measure));
-//        Period reportPeriod = new Period();
-//        reportPeriod.setStart((Date) measurementPeriod.getStart());
-//        reportPeriod.setEnd((Date) measurementPeriod.getEnd());
-//        report.setPeriod(reportPeriod);
-//        report.setType(type);
-//
-//        return resolveGroupings(report, measure, context, patients);
-//    }
+    public List<Patient> initalPopulation(Measure measure, List<Patient> population, Context context) {
+        List<Patient> initalPop = new ArrayList<>();
+        for (Measure.MeasureGroupComponent group : measure.getGroup()) {
+            for (Measure.MeasureGroupPopulationComponent pop : group.getPopulation()) {
+                if (pop.getCode().getCodingFirstRep().getCode().equals("initial-population")) {
+                    for (Patient patient : population) {
+                        context.setContextValue("Patient", patient.getIdElement().getIdPart());
+                        Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
+                        if ((Boolean) result) {
+                            initalPop.add(patient);
+                        }
+                    }
+                }
+            }
+        }
+        return initalPop;
+    }
 
     public MeasureReport evaluate(Context context, Measure measure, List<Patient> population,
                                   Interval measurementPeriod, MeasureReport.MeasureReportType type)
@@ -120,6 +124,8 @@ public class FhirMeasureEvaluator {
 
         HashMap<String,Resource> resources = new HashMap<>();
 
+        List<Patient> initialPopulation = initalPopulation(measure, population, context);
+
         // for each measure group
         for (Measure.MeasureGroupComponent group : measure.getGroup()) {
             MeasureReport.MeasureReportGroupComponent reportGroup = new MeasureReport.MeasureReportGroupComponent();
@@ -129,7 +135,7 @@ public class FhirMeasureEvaluator {
             for (Measure.MeasureGroupPopulationComponent pop : group.getPopulation()) {
                 int count = 0;
                 // Worried about performance here with big populations...
-                for (Patient patient : population) {
+                for (Patient patient : initialPopulation) {
                     context.setContextValue("Patient", patient.getIdElement().getIdPart());
                     Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
                     if (result instanceof Boolean) {
