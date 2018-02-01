@@ -73,6 +73,10 @@ public class RulerTestBase {
         putResource("general-practitioner.json", "Practitioner-12208");
         putResource("general-patient.json", "Patient-12214");
         putResource("general-fhirhelpers-3.json", "FHIRHelpers");
+        putResource("population-measure-network.json", "");
+        putResource("population-measure-patients.json", "");
+        putResource("population-measure-resources-bundle.json", "");
+        putResource("population-measure-terminology-bundle.json", "");
     }
 
     @AfterClass
@@ -713,5 +717,66 @@ public class RulerTestBase {
                 expected.replaceAll("\\s+", "")
                         .equals(expected.replaceAll("\\s+", ""))
         );
+    }
+
+    private void validatePopulationMeasure(String startPeriod, String endPeriod, String measureId) {
+        Parameters inParams = new Parameters();
+        inParams.addParameter().setName("reportType").setValue(new StringType("population"));
+        inParams.addParameter().setName("startPeriod").setValue(new DateType(startPeriod));
+        inParams.addParameter().setName("endPeriod").setValue(new DateType(endPeriod));
+
+        Parameters outParams = ourClient
+                .operation()
+                .onInstance(new IdDt("Measure", measureId))
+                .named("$evaluate")
+                .withParameters(inParams)
+                .useHttpGet()
+                .execute();
+
+        List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+
+        Assert.assertTrue(!response.isEmpty());
+
+        Parameters.ParametersParameterComponent component = response.get(0);
+
+        Assert.assertTrue(component.getResource() instanceof MeasureReport);
+
+        MeasureReport report = (MeasureReport) component.getResource();
+
+        Assert.assertTrue(report.getEvaluatedResources() != null);
+
+        for (MeasureReport.MeasureReportGroupComponent group : report.getGroup()) {
+            for (MeasureReport.MeasureReportGroupPopulationComponent pop : group.getPopulation()) {
+                if (pop.getCode().getCodingFirstRep().getCode().equals("initial-population")) {
+                    Assert.assertTrue(pop.getCount() > 0);
+                }
+
+                if (pop.getCode().getCodingFirstRep().getCode().equals("numerator")) {
+                    Assert.assertTrue(pop.getCount() > 0);
+                }
+
+                if (pop.getCode().getCodingFirstRep().getCode().equals("denominator")) {
+                    Assert.assertTrue(pop.getCount() > 0);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void populationMeasureBCS() {
+        putResource("population-measure-bcs-bundle.json", "");
+        validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-bcs");
+    }
+
+    @Test
+    public void populationMeasureCCS() {
+        putResource("population-measure-ccs-bundle.json", "");
+        validatePopulationMeasure("2017-01-01", "2017-12-31", "measure-ccs");
+    }
+
+    @Test
+    public void populationMeasureCOL() {
+        putResource("population-measure-col-bundle.json", "");
+        validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-col");
     }
 }

@@ -1,0 +1,4926 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType" : "Practitioner",
+        "id" : "Practitioner-2533",
+        "identifier" : [
+          {
+            "use" : "official",
+            "type" : {
+              "coding" : [
+                {
+                  "system" : "http://hl7.org/fhir/identifier-type",
+                  "code" : "SB",
+                  "display" : "Social Beneficiary Identifier"
+                }
+              ],
+              "text" : "US Social Security Number"
+            },
+            "system" : "http://hl7.org/fhir/sid/us-ssn",
+            "value" : "000002533"
+          },
+          {
+            "use" : "official",
+            "type" : {
+              "coding" : [
+                {
+                  "system" : "http://hl7.org/fhir/v2/0203",
+                  "code" : "PRN",
+                  "display" : "Provider number"
+                }
+              ],
+              "text" : "US National Provider Identifier"
+            },
+            "system" : "http://hl7.org/fhir/sid/us-npi",
+            "value" : "999992533"
+          }
+        ],
+        "name" : [
+          {
+            "family" : "Ballard",
+            "given" : [
+              "Lena",
+              "Dickerson"
+            ],
+            "suffix" : [
+              "MD"
+            ]
+          }
+        ],
+        "telecom" : [
+          {
+            "system" : "phone",
+            "value" : "810-555-5228",
+            "use" : "work"
+          },
+          {
+            "system" : "phone",
+            "value" : "810-555-0118",
+            "use" : "mobile"
+          }
+        ],
+        "address" : [
+          {
+            "use" : "work",
+            "type" : "postal",
+            "line" : [
+              "474 Fourth Drive",
+              "#56"
+            ],
+            "city" : "Taylor",
+            "district" : "Wayne County",
+            "state" : "MI",
+            "postalCode" : "48180"
+          }
+        ],
+        "gender" : "female",
+        "birthDate" : "1985-06-13"
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Practitioner/Practitioner-2533"
+      }
+    },
+    {
+      "resource": {
+        "resourceType" : "Location",
+        "id" : "Location-1106",
+        "identifier" : [
+          {
+            "use" : "official",
+            "system" : "http://www.hl7.org/oid/",
+            "value" : "1.2.3.4.1106"
+          }
+        ],
+        "status" : "active",
+        "name" : "Cranston Family Medical",
+        "mode" : "instance",
+        "telecom" : [
+          {
+            "system" : "phone",
+            "value" : "(616) 555-1930",
+            "use" : "work"
+          }
+        ],
+        "address" : {
+          "use" : "work",
+          "type" : "physical",
+          "line" : [
+            "910 SE Columbia Avenue"
+          ],
+          "city" : "Dearborn",
+          "district" : "Wayne County",
+          "state" : "MI",
+          "postalCode" : "48126"
+        },
+        "physicalType" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/location-physical-type",
+              "code" : "bu",
+              "display" : "Building"
+            }
+          ]
+        },
+        "position" : {
+          "longitude" : -85.6343800035714,
+          "latitude" : 42.97765947569625
+        },
+        "managingOrganization" : {
+          "reference" : "Organization/Organization-1106",
+          "display" : "Cranston Family Medical"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Location/Location-1106"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-2636",
+      "resource" : {
+        "resourceType" : "Encounter",
+        "id" : "Encounter-2636",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-encounter"
+          ]
+        },
+        "status" : "finished",
+        "class" : {
+          "system" : "http://hl7.org/fhir/encounter-class",
+          "code" : "outpatient",
+          "display" : "Outpatient"
+        },
+        "type" : [
+          {
+            "coding" : [
+              {
+                "system" : "http://snomed.info/sct",
+                "code" : "185349003",
+                "display" : "Wellness Visit"
+              }
+            ]
+          }
+        ],
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "participant" : [
+          {
+            "period" : {
+              "start" : "2015-11-06T00:00:00-05:00",
+              "end" : "2015-11-06T00:00:00-05:00"
+            },
+            "individual" : {
+              "reference" : "Practitioner/Practitioner-2533",
+              "display" : "Lena Dickerson Ballard MD"
+            }
+          }
+        ],
+        "period" : {
+          "start" : "2015-11-06T00:00:00-05:00",
+          "end" : "2015-11-06T00:00:00-05:00"
+        },
+        "location" : [
+          {
+            "location" : {
+              "reference" : "Location/Location-1106",
+              "display" : "Cranston Family Medical"
+            }
+          }
+        ],
+        "serviceProvider" : {
+          "reference" : "Organization/Organization-1106",
+          "display" : "Cranston Family Medical"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-2636"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Immunization/Immunization-539396",
+      "resource" : {
+        "resourceType" : "Immunization",
+        "id" : "Immunization-539396",
+        "status" : "completed",
+        "notGiven" : false,
+        "vaccineCode" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/sid/cvx",
+              "code" : "140",
+              "display" : "Influenza, seasonal, injectable, preservative free"
+            }
+          ]
+        },
+        "patient" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "date" : "2015-11-06T00:00:00-05:00",
+        "primarySource" : true,
+        "location" : {
+          "reference" : "Location/Location-1106",
+          "display" : "Cranston Family Medical"
+        },
+        "practitioner" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2533",
+              "display" : "Lena Dickerson Ballard MD"
+            }
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Immunization/Immunization-539396"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Immunization/Immunization-539397",
+      "resource" : {
+        "resourceType" : "Immunization",
+        "id" : "Immunization-539397",
+        "status" : "completed",
+        "notGiven" : false,
+        "vaccineCode" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/sid/cvx",
+              "code" : "113",
+              "display" : "Td (adult) preservative free"
+            }
+          ]
+        },
+        "patient" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "date" : "2015-11-06T00:00:00-05:00",
+        "primarySource" : true,
+        "location" : {
+          "reference" : "Location/Location-1106",
+          "display" : "Cranston Family Medical"
+        },
+        "practitioner" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2533",
+              "display" : "Lena Dickerson Ballard MD"
+            }
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Immunization/Immunization-539397"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-621139",
+      "resource" : {
+        "resourceType" : "Procedure",
+        "id" : "Procedure-621139",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-procedure"
+          ]
+        },
+        "status" : "completed",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "713107002",
+              "display" : "Screening for alcohol abuse (procedure)"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "performedPeriod" : {
+          "start" : "2015-11-06T00:00:00-05:00",
+          "end" : "2015-11-06T00:00:00-05:00"
+        },
+        "performer" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2533",
+              "display" : "Lena Dickerson Ballard MD"
+            }
+          }
+        ],
+        "location" : {
+          "reference" : "Location/Location-1106",
+          "display" : "Cranston Family Medical"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-621139"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621140",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621140",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "704198001",
+              "display" : "Denies alcohol use (finding)"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 0.0,
+          "unit" : "drinks/day"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621140"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621141",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621141",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8480-6",
+              "display" : "Systolic blood pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 121.98054863337836,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621141"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621142",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621142",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8462-4",
+              "display" : "Diastolic blood pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 111.13288452161335,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621142"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-621143",
+      "resource" : {
+        "resourceType" : "Condition",
+        "id" : "Condition-621143",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-condition"
+          ]
+        },
+        "clinicalStatus" : "active",
+        "verificationStatus" : "confirmed",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "TBD",
+              "code" : "TBD",
+              "display" : "TBD"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "onsetDateTime" : "2015-11-06T00:00:00-05:00",
+        "assertedDate" : "2015-11-06T00:00:00-05:00",
+        "asserter" : {
+          "reference" : "Practitioner/Practitioner-2533",
+          "display" : "Lena Dickerson Ballard MD"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-621143"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-621144",
+      "resource" : {
+        "resourceType" : "Procedure",
+        "id" : "Procedure-621144",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-procedure"
+          ]
+        },
+        "status" : "completed",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://www.ama-assn.org/go/cpt",
+              "code" : "87622",
+              "display" : "Infectious agent detection by nucleic acid (DNA or RNA); papillomavirus, human, quantification"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "performedPeriod" : {
+          "start" : "2015-11-06T00:00:00-05:00",
+          "end" : "2015-11-06T00:00:00-05:00"
+        },
+        "performer" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2533",
+              "display" : "Lena Dickerson Ballard MD"
+            }
+          }
+        ],
+        "location" : {
+          "reference" : "Location/Location-1106",
+          "display" : "Cranston Family Medical"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-621144"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621145",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621145",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "289829007",
+              "display" : "Normal uterine cervix (finding)"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueString" : "NEGATIVE"
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621145"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-621146",
+      "resource" : {
+        "resourceType" : "DiagnosticReport",
+        "id" : "DiagnosticReport-621146",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-diagnosticreport"
+          ]
+        },
+        "status" : "final",
+        "category" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+              "code" : "CP",
+              "display" : "Cytopathology"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+              "code" : "G0148",
+              "display" : "Screening cytopathology smears, cervical or vaginal, performed by automated system with manual rescreening"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectivePeriod" : {
+          "start" : "2015-11-06T00:00:00-05:00",
+          "end" : "2015-11-06T00:00:00-05:00"
+        },
+        "issued" : "2015-11-06T00:00:00.000-05:00",
+        "result" : [
+          {
+            "reference" : "Observation/Observation-621145",
+            "display" : "No_Cancer_Detected"
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-621146"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621147",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621147",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8302-2",
+              "display" : "Body Height"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 155.0,
+          "unit" : "cm"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621147"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621148",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621148",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "29463-7",
+              "display" : "Body Weight"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 52.5,
+          "unit" : "kg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621148"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621149",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621149",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "39156-5",
+              "display" : "Body Mass Index"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 21.8522372528616,
+          "unit" : "kg/m2"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621149"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621152",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621152",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "55284-4",
+              "display" : "Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "valueQuantity" : {
+          "value" : 111.13288452161335,
+          "unit" : "mmHg"
+        },
+        "component" : [
+          {
+            "code" : {
+              "coding" : [
+                {
+                  "system" : "http://loinc.org",
+                  "code" : "8480-6",
+                  "display" : "Systolic Blood Pressure"
+                }
+              ]
+            }
+          },
+          {
+            "code" : {
+              "coding" : [
+                {
+                  "system" : "http://loinc.org",
+                  "code" : "8462-4",
+                  "display" : "Diastolic Blood Pressure"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621152"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621154",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621154",
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8302-2",
+              "display" : "Height"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 155.0,
+          "unit" : "cm"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621154"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621155",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621155",
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "29463-7",
+              "display" : "Weight"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 52.5,
+          "unit" : "kg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621155"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621156",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621156",
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "39156-5",
+              "display" : "BMI"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 21.8522372528616,
+          "unit" : "kg/m2"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621156"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621157",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621157",
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8310-5",
+              "display" : "Temperature"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 37.0,
+          "unit" : "C"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621157"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621158",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621158",
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8459-0",
+              "display" : "Systolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 121.98054863337836,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621158"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621159",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-621159",
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8453-3",
+              "display" : "Diastolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "2015-11-06T00:00:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 111.13288452161335,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-621159"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-621153",
+      "resource" : {
+        "resourceType" : "DiagnosticReport",
+        "id" : "DiagnosticReport-621153",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-diagnosticreport"
+          ]
+        },
+        "status" : "final",
+        "category" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+              "code" : "LAB",
+              "display" : "Laboratory"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8716-3",
+              "display" : "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-1136",
+          "display" : "Angelica Desiree Jones"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2636",
+          "display" : "Wellness Visit"
+        },
+        "effectivePeriod" : {
+          "start" : "2015-11-06T00:00:00-05:00",
+          "end" : "2015-11-06T00:00:00-05:00"
+        },
+        "issued" : "2015-11-06T00:00:00.000-05:00",
+        "result" : [
+          {
+            "reference" : "Observation/Observation-621154",
+            "display" : "Height"
+          },
+          {
+            "reference" : "Observation/Observation-621155",
+            "display" : "Weight"
+          },
+          {
+            "reference" : "Observation/Observation-621156",
+            "display" : "BMI"
+          },
+          {
+            "reference" : "Observation/Observation-621157",
+            "display" : "Temperature"
+          },
+          {
+            "reference" : "Observation/Observation-621158",
+            "display" : "Systolic Blood Pressure"
+          },
+          {
+            "reference" : "Observation/Observation-621159",
+            "display" : "Diastolic Blood Pressure"
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-621153"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-2387",
+      "resource" : {
+        "resourceType" : "Encounter",
+        "id" : "Encounter-2387",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-encounter"
+          ]
+        },
+        
+        "status" : "finished",
+        "class" : {
+          "system" : "http://hl7.org/fhir/encounter-class",
+          "code" : "inpatient",
+          "display" : "Inpatient"
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "participant" : [
+          {
+            "period" : {
+              "start" : "2007-05-02T00:00:00-04:00",
+              "end" : "2007-05-02T03:02:00-04:00"
+            },
+            "individual" : {
+              "reference" : "Practitioner/Practitioner-2533",
+              "display" : "Lena Dickerson Ballard MD"
+            }
+          }
+        ],
+        "period" : {
+          "start" : "2007-05-02T00:00:00-04:00",
+          "end" : "2007-05-02T03:02:00-04:00"
+        },
+        "hospitalization" : {
+          "dischargeDisposition" : {
+            "coding" : [
+              {
+                "system" : "http://hl7.org/fhir/discharge-disposition",
+                "code" : "home",
+                "display" : "Home"
+              }
+            ]
+          }
+        },
+        "location" : [
+          {
+            "location" : {
+              "reference" : "Location/Location-1001",
+              "display" : "Windward General Hospital"
+            }
+          }
+        ],
+        "serviceProvider" : {
+          "reference" : "Organization/Organization-1001",
+          "display" : "Windward General Hospital"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-2387"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-415537",
+      "resource" : {
+        "resourceType" : "Procedure",
+        "id" : "Procedure-415537",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-procedure"
+          ]
+        },
+        
+        "status" : "completed",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "https://www.cms.gov/Medicare/Coding/ICD10/index.html",
+              "code" : "0HTV0ZZ",
+              "display" : "Resection of Bilateral Breast, Open Approach"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2387",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "performedPeriod" : {
+          "start" : "2007-05-02T03:02:00-04:00",
+          "end" : "2007-05-02T03:02:00-04:00"
+        },
+        "performer" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2533",
+              "display" : "Lena Dickerson Ballard MD"
+            }
+          }
+        ],
+        "location" : {
+          "reference" : "Location/Location-1001",
+          "display" : "Windward General Hospital"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-415537"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415540",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-415540",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8302-2",
+              "display" : "Height"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2387",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "2007-05-02T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 163.3,
+          "unit" : "cm"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415540"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415541",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-415541",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "29463-7",
+              "display" : "Weight"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2387",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "2007-05-02T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 96.11534302250132,
+          "unit" : "kg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415541"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415542",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-415542",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "39156-5",
+              "display" : "BMI"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2387",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "2007-05-02T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 36.042951773716894,
+          "unit" : "kg/m2"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415542"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415543",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-415543",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8310-5",
+              "display" : "Temperature"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2387",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "2007-05-02T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 37.0,
+          "unit" : "C"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415543"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415544",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-415544",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8459-0",
+              "display" : "Systolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2387",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "2007-05-02T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 154.8042596871617,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415544"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415545",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-415545",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8453-3",
+              "display" : "Diastolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2387",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "2007-05-02T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2533",
+            "display" : "Lena Dickerson Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 65.94017578829103,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-415545"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-415539",
+      "resource" : {
+        "resourceType" : "DiagnosticReport",
+        "id" : "DiagnosticReport-415539",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-diagnosticreport"
+          ]
+        },
+        
+        "status" : "final",
+        "category" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+              "code" : "LAB",
+              "display" : "Laboratory"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8716-3",
+              "display" : "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-2387",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectivePeriod" : {
+          "start" : "2007-05-02T00:00:00-04:00",
+          "end" : "2007-05-02T00:00:00-04:00"
+        },
+        "issued" : "2007-05-02T00:00:00.000-04:00",
+        "result" : [
+          {
+            "reference" : "Observation/Observation-415540",
+            "display" : "Height"
+          },
+          {
+            "reference" : "Observation/Observation-415541",
+            "display" : "Weight"
+          },
+          {
+            "reference" : "Observation/Observation-415542",
+            "display" : "BMI"
+          },
+          {
+            "reference" : "Observation/Observation-415543",
+            "display" : "Temperature"
+          },
+          {
+            "reference" : "Observation/Observation-415544",
+            "display" : "Systolic Blood Pressure"
+          },
+          {
+            "reference" : "Observation/Observation-415545",
+            "display" : "Diastolic Blood Pressure"
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-415539"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-4882",
+      "resource" : {
+        "resourceType" : "Encounter",
+        "id" : "Encounter-4882",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-encounter"
+          ]
+        },
+        
+        "status" : "finished",
+        "class" : {
+          "system" : "http://hl7.org/fhir/encounter-class",
+          "code" : "inpatient",
+          "display" : "Inpatient"
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "participant" : [
+          {
+            "period" : {
+              "start" : "1989-02-15T00:46:00-05:00",
+              "end" : "1989-02-15T03:46:00-05:00"
+            },
+            "individual" : {
+              "reference" : "Practitioner/Practitioner-2525",
+              "display" : "Kyle Christian Ballard MD"
+            }
+          }
+        ],
+        "period" : {
+          "start" : "1989-02-15T00:46:00-05:00",
+          "end" : "1989-02-15T03:46:00-05:00"
+        },
+        "hospitalization" : {
+          "dischargeDisposition" : {
+            "coding" : [
+              {
+                "system" : "http://hl7.org/fhir/discharge-disposition",
+                "code" : "home",
+                "display" : "Home"
+              }
+            ]
+          }
+        },
+        "location" : [
+          {
+            "location" : {
+              "reference" : "Location/Location-1001",
+              "display" : "Windward General Hospital"
+            }
+          }
+        ],
+        "serviceProvider" : {
+          "reference" : "Organization/Organization-1001",
+          "display" : "Windward General Hospital"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-4882"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-694054",
+      "resource" : {
+        "resourceType" : "Procedure",
+        "id" : "Procedure-694054",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-procedure"
+          ]
+        },
+        
+        "status" : "completed",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "https://www.cms.gov/Medicare/Coding/ICD10/index.html",
+              "code" : "0DTE7ZZ",
+              "display" : "Resection of Large Intestine, Via Natural or Artificial Opening"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-4882",
+          "display" : "Colectomy_Encounter"
+        },
+        "performedPeriod" : {
+          "start" : "1989-02-15T03:46:00-05:00",
+          "end" : "1989-02-15T03:46:00-05:00"
+        },
+        "performer" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2525",
+              "display" : "Kyle Christian Ballard MD"
+            }
+          }
+        ],
+        "location" : {
+          "reference" : "Location/Location-1001",
+          "display" : "Windward General Hospital"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-694054"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694057",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-694057",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8302-2",
+              "display" : "Height"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-4882",
+          "display" : "Colectomy_Encounter"
+        },
+        "effectiveDateTime" : "1989-02-15T00:46:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2525",
+            "display" : "Kyle Christian Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 163.3,
+          "unit" : "cm"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694057"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694058",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-694058",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "29463-7",
+              "display" : "Weight"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-4882",
+          "display" : "Colectomy_Encounter"
+        },
+        "effectiveDateTime" : "1989-02-15T00:46:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2525",
+            "display" : "Kyle Christian Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 98.54308048850028,
+          "unit" : "kg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694058"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694059",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-694059",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "39156-5",
+              "display" : "BMI"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-4882",
+          "display" : "Colectomy_Encounter"
+        },
+        "effectiveDateTime" : "1989-02-15T00:46:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2525",
+            "display" : "Kyle Christian Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 36.95334569891738,
+          "unit" : "kg/m2"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694059"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694060",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-694060",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8310-5",
+              "display" : "Temperature"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-4882",
+          "display" : "Colectomy_Encounter"
+        },
+        "effectiveDateTime" : "1989-02-15T00:46:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2525",
+            "display" : "Kyle Christian Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 37.0,
+          "unit" : "C"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694060"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694061",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-694061",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8459-0",
+              "display" : "Systolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-4882",
+          "display" : "Colectomy_Encounter"
+        },
+        "effectiveDateTime" : "1989-02-15T00:46:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2525",
+            "display" : "Kyle Christian Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 152.8248968318184,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694061"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694062",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-694062",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8453-3",
+              "display" : "Diastolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-4882",
+          "display" : "Colectomy_Encounter"
+        },
+        "effectiveDateTime" : "1989-02-15T00:46:00-05:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2525",
+            "display" : "Kyle Christian Ballard MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 99.94400951967445,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-694062"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-694056",
+      "resource" : {
+        "resourceType" : "DiagnosticReport",
+        "id" : "DiagnosticReport-694056",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-diagnosticreport"
+          ]
+        },
+        
+        "status" : "final",
+        "category" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+              "code" : "LAB",
+              "display" : "Laboratory"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8716-3",
+              "display" : "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6484",
+          "display" : "Irma Carol Johnson"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-4882",
+          "display" : "Colectomy_Encounter"
+        },
+        "effectivePeriod" : {
+          "start" : "1989-02-15T00:46:00-05:00",
+          "end" : "1989-02-15T00:46:00-05:00"
+        },
+        "issued" : "1989-02-15T00:46:00.000-05:00",
+        "result" : [
+          {
+            "reference" : "Observation/Observation-694057",
+            "display" : "Height"
+          },
+          {
+            "reference" : "Observation/Observation-694058",
+            "display" : "Weight"
+          },
+          {
+            "reference" : "Observation/Observation-694059",
+            "display" : "BMI"
+          },
+          {
+            "reference" : "Observation/Observation-694060",
+            "display" : "Temperature"
+          },
+          {
+            "reference" : "Observation/Observation-694061",
+            "display" : "Systolic Blood Pressure"
+          },
+          {
+            "reference" : "Observation/Observation-694062",
+            "display" : "Diastolic Blood Pressure"
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-694056"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-789",
+      "resource" : {
+        "resourceType" : "Encounter",
+        "id" : "Encounter-789",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-encounter"
+          ]
+        },
+        
+        "status" : "finished",
+        "class" : {
+          "system" : "http://hl7.org/fhir/encounter-class",
+          "code" : "inpatient",
+          "display" : "Inpatient"
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6520",
+          "display" : "Terry Harvey Waller"
+        },
+        "participant" : [
+          {
+            "period" : {
+              "start" : "1995-06-22T00:00:00-04:00",
+              "end" : "1995-06-22T14:19:00-04:00"
+            },
+            "individual" : {
+              "reference" : "Practitioner/Practitioner-2519",
+              "display" : "Stanley Jason Garrett MD"
+            }
+          }
+        ],
+        "period" : {
+          "start" : "1995-06-22T00:00:00-04:00",
+          "end" : "1995-06-22T14:19:00-04:00"
+        },
+        "hospitalization" : {
+          "dischargeDisposition" : {
+            "coding" : [
+              {
+                "system" : "http://hl7.org/fhir/discharge-disposition",
+                "code" : "home",
+                "display" : "Home"
+              }
+            ]
+          }
+        },
+        "location" : [
+          {
+            "location" : {
+              "reference" : "Location/Location-1001",
+              "display" : "Windward General Hospital"
+            }
+          }
+        ],
+        "serviceProvider" : {
+          "reference" : "Organization/Organization-1001",
+          "display" : "Windward General Hospital"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-789"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-147475",
+      "resource" : {
+        "resourceType" : "Procedure",
+        "id" : "Procedure-147475",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-procedure"
+          ]
+        },
+        
+        "status" : "completed",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://www.ama-assn.org/go/cpt",
+              "code" : "58150",
+              "display" : "Total abdominal hysterectomy (corpus and cervix), with or without removal of tube(s), with or without removal of ovary(s)"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6520",
+          "display" : "Terry Harvey Waller"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-789",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "performedPeriod" : {
+          "start" : "1995-06-22T14:19:00-04:00",
+          "end" : "1995-06-22T14:19:00-04:00"
+        },
+        "performer" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2519",
+              "display" : "Stanley Jason Garrett MD"
+            }
+          }
+        ],
+        "location" : {
+          "reference" : "Location/Location-1001",
+          "display" : "Windward General Hospital"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-147475"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147478",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-147478",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8302-2",
+              "display" : "Height"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6520",
+          "display" : "Terry Harvey Waller"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-789",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "1995-06-22T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2519",
+            "display" : "Stanley Jason Garrett MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 167.7,
+          "unit" : "cm"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147478"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147479",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-147479",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "29463-7",
+              "display" : "Weight"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6520",
+          "display" : "Terry Harvey Waller"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-789",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "1995-06-22T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2519",
+            "display" : "Stanley Jason Garrett MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 96.66104743745993,
+          "unit" : "kg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147479"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147480",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-147480",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "39156-5",
+              "display" : "BMI"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6520",
+          "display" : "Terry Harvey Waller"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-789",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "1995-06-22T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2519",
+            "display" : "Stanley Jason Garrett MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 34.37046214630648,
+          "unit" : "kg/m2"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147480"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147481",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-147481",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8310-5",
+              "display" : "Temperature"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6520",
+          "display" : "Terry Harvey Waller"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-789",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "1995-06-22T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2519",
+            "display" : "Stanley Jason Garrett MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 37.0,
+          "unit" : "C"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147481"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147482",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-147482",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8459-0",
+              "display" : "Systolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6520",
+          "display" : "Terry Harvey Waller"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-789",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "1995-06-22T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2519",
+            "display" : "Stanley Jason Garrett MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 130.20366288912476,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147482"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147483",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-147483",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8453-3",
+              "display" : "Diastolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6520",
+          "display" : "Terry Harvey Waller"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-789",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectiveDateTime" : "1995-06-22T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2519",
+            "display" : "Stanley Jason Garrett MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 68.00043652118453,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-147483"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-147477",
+      "resource" : {
+        "resourceType" : "DiagnosticReport",
+        "id" : "DiagnosticReport-147477",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-diagnosticreport"
+          ]
+        },
+        
+        "status" : "final",
+        "category" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+              "code" : "LAB",
+              "display" : "Laboratory"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8716-3",
+              "display" : "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6520",
+          "display" : "Terry Harvey Waller"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-789",
+          "display" : "Cancer_Treatment_Encounter"
+        },
+        "effectivePeriod" : {
+          "start" : "1995-06-22T00:00:00-04:00",
+          "end" : "1995-06-22T00:00:00-04:00"
+        },
+        "issued" : "1995-06-22T00:00:00.000-04:00",
+        "result" : [
+          {
+            "reference" : "Observation/Observation-147478",
+            "display" : "Height"
+          },
+          {
+            "reference" : "Observation/Observation-147479",
+            "display" : "Weight"
+          },
+          {
+            "reference" : "Observation/Observation-147480",
+            "display" : "BMI"
+          },
+          {
+            "reference" : "Observation/Observation-147481",
+            "display" : "Temperature"
+          },
+          {
+            "reference" : "Observation/Observation-147482",
+            "display" : "Systolic Blood Pressure"
+          },
+          {
+            "reference" : "Observation/Observation-147483",
+            "display" : "Diastolic Blood Pressure"
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-147477"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-902",
+      "resource" : {
+        "resourceType" : "Encounter",
+        "id" : "Encounter-902",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-encounter"
+          ]
+        },
+        
+        "status" : "finished",
+        "class" : {
+          "system" : "http://hl7.org/fhir/encounter-class",
+          "code" : "outpatient",
+          "display" : "Outpatient"
+        },
+        "type" : [
+          {
+            "coding" : [
+              {
+                "system" : "http://snomed.info/sct",
+                "code" : "185349003",
+                "display" : "Wellness Visit"
+              }
+            ]
+          }
+        ],
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "participant" : [
+          {
+            "period" : {
+              "start" : "1997-06-06T00:00:00-04:00",
+              "end" : "1997-06-06T00:00:00-04:00"
+            },
+            "individual" : {
+              "reference" : "Practitioner/Practitioner-2520",
+              "display" : "Kimberly Christy Ashley MD"
+            }
+          }
+        ],
+        "period" : {
+          "start" : "1997-06-06T00:00:00-04:00",
+          "end" : "1997-06-06T00:00:00-04:00"
+        },
+        "location" : [
+          {
+            "location" : {
+              "reference" : "Location/Location-1105",
+              "display" : "Bayside Medical Group"
+            }
+          }
+        ],
+        "serviceProvider" : {
+          "reference" : "Organization/Organization-1105",
+          "display" : "Bayside Medical Group"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-902"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Immunization/Immunization-163959",
+      "resource" : {
+        "resourceType" : "Immunization",
+        "id" : "Immunization-163959",
+        
+        "status" : "completed",
+        "notGiven" : false,
+        "vaccineCode" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/sid/cvx",
+              "code" : "140",
+              "display" : "Influenza, seasonal, injectable, preservative free"
+            }
+          ]
+        },
+        "patient" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "date" : "1997-06-06T00:00:00-04:00",
+        "primarySource" : true,
+        "location" : {
+          "reference" : "Location/Location-1105",
+          "display" : "Bayside Medical Group"
+        },
+        "practitioner" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2520",
+              "display" : "Kimberly Christy Ashley MD"
+            }
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Immunization/Immunization-163959"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Immunization/Immunization-163960",
+      "resource" : {
+        "resourceType" : "Immunization",
+        "id" : "Immunization-163960",
+        
+        "status" : "completed",
+        "notGiven" : false,
+        "vaccineCode" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/sid/cvx",
+              "code" : "113",
+              "display" : "Td (adult) preservative free"
+            }
+          ]
+        },
+        "patient" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "date" : "1997-06-06T00:00:00-04:00",
+        "primarySource" : true,
+        "location" : {
+          "reference" : "Location/Location-1105",
+          "display" : "Bayside Medical Group"
+        },
+        "practitioner" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2520",
+              "display" : "Kimberly Christy Ashley MD"
+            }
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Immunization/Immunization-163960"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-184862",
+      "resource" : {
+        "resourceType" : "Procedure",
+        "id" : "Procedure-184862",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-procedure"
+          ]
+        },
+        
+        "status" : "completed",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "713107002",
+              "display" : "Screening for alcohol abuse (procedure)"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "performedPeriod" : {
+          "start" : "1997-06-06T00:00:00-04:00",
+          "end" : "1997-06-06T00:00:00-04:00"
+        },
+        "performer" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2520",
+              "display" : "Kimberly Christy Ashley MD"
+            }
+          }
+        ],
+        "location" : {
+          "reference" : "Location/Location-1105",
+          "display" : "Bayside Medical Group"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-184862"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184863",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184863",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "704198001",
+              "display" : "Denies alcohol use (finding)"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 0.0,
+          "unit" : "drinks/day"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184863"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-184864",
+      "resource" : {
+        "resourceType" : "Procedure",
+        "id" : "Procedure-184864",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-procedure"
+          ]
+        },
+        
+        "status" : "completed",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://www.ama-assn.org/go/cpt",
+              "code" : "77063",
+              "display" : "Screening digital breast tomosynthesis, bilateral (List separately in addition to code for primary procedure)"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "performedPeriod" : {
+          "start" : "1997-06-06T00:00:00-04:00",
+          "end" : "1997-06-06T00:00:00-04:00"
+        },
+        "performer" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2520",
+              "display" : "Kimberly Christy Ashley MD"
+            }
+          }
+        ],
+        "location" : {
+          "reference" : "Location/Location-1105",
+          "display" : "Bayside Medical Group"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-184864"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184865",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184865",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "168749009",
+              "display" : "Mammography normal (finding)"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueString" : "NEGATIVE"
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184865"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-184866",
+      "resource" : {
+        "resourceType" : "DiagnosticReport",
+        "id" : "DiagnosticReport-184866",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-diagnosticreport"
+          ]
+        },
+        
+        "status" : "final",
+        "category" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+              "code" : "RAD",
+              "display" : "Radiology"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "TBD",
+              "code" : "TBD",
+              "display" : "TBD"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectivePeriod" : {
+          "start" : "1997-06-06T00:00:00-04:00",
+          "end" : "1997-06-06T00:00:00-04:00"
+        },
+        "issued" : "1997-06-06T00:00:00.000-04:00",
+        "result" : [
+          {
+            "reference" : "Observation/Observation-184865",
+            "display" : "No_Cancer_Detected"
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-184866"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184867",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184867",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8480-6",
+              "display" : "Systolic blood pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 171.7249674809783,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184867"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184868",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184868",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8462-4",
+              "display" : "Diastolic blood pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 97.55374172489388,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184868"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-184869",
+      "resource" : {
+        "resourceType" : "Condition",
+        "id" : "Condition-184869",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-condition"
+          ]
+        },
+        
+        "clinicalStatus" : "active",
+        "verificationStatus" : "confirmed",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "TBD",
+              "code" : "TBD",
+              "display" : "TBD"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "onsetDateTime" : "1997-06-06T00:00:00-04:00",
+        "assertedDate" : "1997-06-06T00:00:00-04:00",
+        "asserter" : {
+          "reference" : "Practitioner/Practitioner-2520",
+          "display" : "Kimberly Christy Ashley MD"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Condition/Condition-184869"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-184870",
+      "resource" : {
+        "resourceType" : "Procedure",
+        "id" : "Procedure-184870",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-procedure"
+          ]
+        },
+        
+        "status" : "completed",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://www.ama-assn.org/go/cpt",
+              "code" : "82274",
+              "display" : "Blood, occult, by fecal hemoglobin determination by immunoassay, qualitative, feces, 1-3 simultaneous determinations"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "performedPeriod" : {
+          "start" : "1997-06-06T00:00:00-04:00",
+          "end" : "1997-06-06T00:00:00-04:00"
+        },
+        "performer" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2520",
+              "display" : "Kimberly Christy Ashley MD"
+            }
+          }
+        ],
+        "location" : {
+          "reference" : "Location/Location-1105",
+          "display" : "Bayside Medical Group"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-184870"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184871",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184871",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://www.ama-assn.org/go/cpt",
+              "code" : "82270",
+              "display" : "Blood, occult, by peroxidase activity (eg, guaiac), qualitative; feces, consecutive collected specimens with single determination, for colorectal neoplasm screening (ie, patient was provided 3 cards or single triple card for consecutive collection)"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueString" : "NEGATIVE"
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184871"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184872",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184872",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8302-2",
+              "display" : "Body Height"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 152.7,
+          "unit" : "cm"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184872"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184873",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184873",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "29463-7",
+              "display" : "Body Weight"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 66.74936483315179,
+          "unit" : "kg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184873"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184874",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184874",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "39156-5",
+              "display" : "Body Mass Index"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 28.626553443025237,
+          "unit" : "kg/m2"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184874"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184877",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184877",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "55284-4",
+              "display" : "Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "valueQuantity" : {
+          "value" : 97.55374172489388,
+          "unit" : "mmHg"
+        },
+        "component" : [
+          {
+            "code" : {
+              "coding" : [
+                {
+                  "system" : "http://loinc.org",
+                  "code" : "8480-6",
+                  "display" : "Systolic Blood Pressure"
+                }
+              ]
+            }
+          },
+          {
+            "code" : {
+              "coding" : [
+                {
+                  "system" : "http://loinc.org",
+                  "code" : "8462-4",
+                  "display" : "Diastolic Blood Pressure"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184877"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184878",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184878",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "4548-4",
+              "display" : "Hemoglobin A1c/Hemoglobin.total in Blood"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 5.28175402254477,
+          "unit" : "%"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184878"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184879",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184879",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "2339-0",
+              "display" : "Glucose"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 64.36015609860236,
+          "unit" : "mg/dL"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184879"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184880",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184880",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "6299-2",
+              "display" : "Urea Nitrogen"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 11.299580611480273,
+          "unit" : "mg/dL"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184880"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184881",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184881",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "38483-4",
+              "display" : "Creatinine"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 0.9407194060414946,
+          "unit" : "mg/dL"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184881"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184882",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184882",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "49765-1",
+              "display" : "Calcium"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 1.7696101860650721,
+          "unit" : "mmol/L"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184882"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184883",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184883",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "2947-0",
+              "display" : "Sodium"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 141.46117947196421,
+          "unit" : "mmol/L"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184883"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184884",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184884",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "6298-4",
+              "display" : "Potassium"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 4.321405701702811,
+          "unit" : "mmol/L"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184884"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184885",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184885",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "2069-3",
+              "display" : "Chloride"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 105.82904965698238,
+          "unit" : "mmol/L"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184885"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184886",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184886",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "20565-8",
+              "display" : "Carbon Dioxide"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 21.996950174699407,
+          "unit" : "mmol/L"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184886"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-184887",
+      "resource" : {
+        "resourceType" : "DiagnosticReport",
+        "id" : "DiagnosticReport-184887",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-diagnosticreport"
+          ]
+        },
+        
+        "status" : "final",
+        "category" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+              "code" : "LAB",
+              "display" : "Laboratory"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "51990-0",
+              "display" : "Basic Metabolic Panel"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectivePeriod" : {
+          "start" : "1997-06-06T00:00:00-04:00",
+          "end" : "1997-06-06T00:00:00-04:00"
+        },
+        "issued" : "1997-06-06T00:00:00.000-04:00",
+        "result" : [
+          {
+            "reference" : "Observation/Observation-184879",
+            "display" : "Record_Glucose"
+          },
+          {
+            "reference" : "Observation/Observation-184880",
+            "display" : "Record_UreaNitrogen"
+          },
+          {
+            "reference" : "Observation/Observation-184881",
+            "display" : "Record_Creatinine"
+          },
+          {
+            "reference" : "Observation/Observation-184882",
+            "display" : "Record_Calcium"
+          },
+          {
+            "reference" : "Observation/Observation-184883",
+            "display" : "Record_Sodium"
+          },
+          {
+            "reference" : "Observation/Observation-184884",
+            "display" : "Record_Potassium"
+          },
+          {
+            "reference" : "Observation/Observation-184885",
+            "display" : "Record_Chloride"
+          },
+          {
+            "reference" : "Observation/Observation-184886",
+            "display" : "Record_CO2"
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-184887"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184888",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184888",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "2093-3",
+              "display" : "Total Cholesterol"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 143.79249453191431,
+          "unit" : "mg/dL"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184888"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184889",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184889",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "2571-8",
+              "display" : "Triglycerides"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 51.79679525205482,
+          "unit" : "mg/dL"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184889"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184890",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184890",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "18262-6",
+              "display" : "Low Density Lipoprotein Cholesterol"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 91.36606130186163,
+          "unit" : "mg/dL"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184890"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184891",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184891",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "2085-9",
+              "display" : "High Density Lipoprotein Cholesterol"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 42.06707417964171,
+          "unit" : "mg/dL"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184891"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-184892",
+      "resource" : {
+        "resourceType" : "DiagnosticReport",
+        "id" : "DiagnosticReport-184892",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-diagnosticreport"
+          ]
+        },
+        
+        "status" : "final",
+        "category" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+              "code" : "LAB",
+              "display" : "Laboratory"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "57698-3",
+              "display" : "Lipid Panel"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectivePeriod" : {
+          "start" : "1997-06-06T00:00:00-04:00",
+          "end" : "1997-06-06T00:00:00-04:00"
+        },
+        "issued" : "1997-06-06T00:00:00.000-04:00",
+        "result" : [
+          {
+            "reference" : "Observation/Observation-184888",
+            "display" : "Record_Cholesterol"
+          },
+          {
+            "reference" : "Observation/Observation-184889",
+            "display" : "Record_Triglycerides"
+          },
+          {
+            "reference" : "Observation/Observation-184890",
+            "display" : "Record_LDL"
+          },
+          {
+            "reference" : "Observation/Observation-184891",
+            "display" : "Record_HDL"
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-184892"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184894",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184894",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8302-2",
+              "display" : "Height"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 152.7,
+          "unit" : "cm"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184894"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184895",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184895",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "29463-7",
+              "display" : "Weight"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 66.74936483315179,
+          "unit" : "kg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184895"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184896",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184896",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "39156-5",
+              "display" : "BMI"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 28.626553443025237,
+          "unit" : "kg/m2"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184896"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184897",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184897",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8310-5",
+              "display" : "Temperature"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 37.0,
+          "unit" : "C"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184897"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184898",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184898",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8459-0",
+              "display" : "Systolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 171.7249674809783,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184898"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184899",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-184899",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8453-3",
+              "display" : "Diastolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectiveDateTime" : "1997-06-06T00:00:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2520",
+            "display" : "Kimberly Christy Ashley MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 97.55374172489388,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-184899"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-184893",
+      "resource" : {
+        "resourceType" : "DiagnosticReport",
+        "id" : "DiagnosticReport-184893",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-diagnosticreport"
+          ]
+        },
+        
+        "status" : "final",
+        "category" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+              "code" : "LAB",
+              "display" : "Laboratory"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8716-3",
+              "display" : "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-902",
+          "display" : "Wellness Visit"
+        },
+        "effectivePeriod" : {
+          "start" : "1997-06-06T00:00:00-04:00",
+          "end" : "1997-06-06T00:00:00-04:00"
+        },
+        "issued" : "1997-06-06T00:00:00.000-04:00",
+        "result" : [
+          {
+            "reference" : "Observation/Observation-184894",
+            "display" : "Height"
+          },
+          {
+            "reference" : "Observation/Observation-184895",
+            "display" : "Weight"
+          },
+          {
+            "reference" : "Observation/Observation-184896",
+            "display" : "BMI"
+          },
+          {
+            "reference" : "Observation/Observation-184897",
+            "display" : "Temperature"
+          },
+          {
+            "reference" : "Observation/Observation-184898",
+            "display" : "Systolic Blood Pressure"
+          },
+          {
+            "reference" : "Observation/Observation-184899",
+            "display" : "Diastolic Blood Pressure"
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-184893"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-1328",
+      "resource" : {
+        "resourceType" : "Encounter",
+        "id" : "Encounter-1328",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-encounter"
+          ]
+        },
+        
+        "status" : "finished",
+        "class" : {
+          "system" : "http://hl7.org/fhir/encounter-class",
+          "code" : "inpatient",
+          "display" : "Inpatient"
+        },
+        "type" : [
+          {
+            "coding" : [
+              {
+                "system" : "http://snomed.info/sct",
+                "code" : "34285007",
+                "display" : "Hospital admission"
+              }
+            ]
+          }
+        ],
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "participant" : [
+          {
+            "period" : {
+              "start" : "1988-04-25T00:09:00-04:00",
+              "end" : "1988-04-25T01:23:00-04:00"
+            },
+            "individual" : {
+              "reference" : "Practitioner/Practitioner-2534",
+              "display" : "Pearl Rita Dawson MD"
+            }
+          }
+        ],
+        "period" : {
+          "start" : "1988-04-25T00:09:00-04:00",
+          "end" : "1988-04-25T01:23:00-04:00"
+        },
+        "hospitalization" : {
+          "dischargeDisposition" : {
+            "coding" : [
+              {
+                "system" : "http://hl7.org/fhir/discharge-disposition",
+                "code" : "home",
+                "display" : "Home"
+              }
+            ]
+          }
+        },
+        "location" : [
+          {
+            "location" : {
+              "reference" : "Location/Location-1001",
+              "display" : "Windward General Hospital"
+            }
+          }
+        ],
+        "serviceProvider" : {
+          "reference" : "Organization/Organization-1001",
+          "display" : "Windward General Hospital"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Encounter/Encounter-1328"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-271175",
+      "resource" : {
+        "resourceType" : "Procedure",
+        "id" : "Procedure-271175",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-procedure"
+          ]
+        },
+        
+        "status" : "completed",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://www.ama-assn.org/go/cpt",
+              "code" : "45388",
+              "display" : "Colonoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-1328",
+          "display" : "Colonoscopy_Encounter"
+        },
+        "performedPeriod" : {
+          "start" : "1988-04-25T01:23:00-04:00",
+          "end" : "1988-04-25T01:23:00-04:00"
+        },
+        "performer" : [
+          {
+            "actor" : {
+              "reference" : "Practitioner/Practitioner-2534",
+              "display" : "Pearl Rita Dawson MD"
+            }
+          }
+        ],
+        "location" : {
+          "reference" : "Location/Location-1001",
+          "display" : "Windward General Hospital"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Procedure/Procedure-271175"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271176",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-271176",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-observation"
+          ]
+        },
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "TBD",
+              "code" : "TBD",
+              "display" : "TBD"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-1328",
+          "display" : "Colonoscopy_Encounter"
+        },
+        "effectiveDateTime" : "1988-04-25T01:23:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2534",
+            "display" : "Pearl Rita Dawson MD"
+          }
+        ],
+        "valueString" : "NEGATIVE"
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271176"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-271177",
+      "resource" : {
+        "resourceType" : "DiagnosticReport",
+        "id" : "DiagnosticReport-271177",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-diagnosticreport"
+          ]
+        },
+        
+        "status" : "final",
+        "category" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+              "code" : "CP",
+              "display" : "Cytopathology"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://www.ama-assn.org/go/cpt",
+              "code" : "44404",
+              "display" : "Colonoscopy through stoma; with directed submucosal injection(s), any substance"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-1328",
+          "display" : "Colonoscopy_Encounter"
+        },
+        "effectivePeriod" : {
+          "start" : "1988-04-25T01:23:00-04:00",
+          "end" : "1988-04-25T01:23:00-04:00"
+        },
+        "issued" : "1988-04-25T01:23:00.000-04:00",
+        "result" : [
+          {
+            "reference" : "Observation/Observation-271176",
+            "display" : "Negative_Colonoscopy_Observation"
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-271177"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271180",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-271180",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8302-2",
+              "display" : "Height"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-1328",
+          "display" : "Colonoscopy_Encounter"
+        },
+        "effectiveDateTime" : "1988-04-25T00:09:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2534",
+            "display" : "Pearl Rita Dawson MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 152.7,
+          "unit" : "cm"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271180"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271181",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-271181",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "29463-7",
+              "display" : "Weight"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-1328",
+          "display" : "Colonoscopy_Encounter"
+        },
+        "effectiveDateTime" : "1988-04-25T00:09:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2534",
+            "display" : "Pearl Rita Dawson MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 67.97106370778826,
+          "unit" : "kg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271181"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271182",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-271182",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "39156-5",
+              "display" : "BMI"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-1328",
+          "display" : "Colonoscopy_Encounter"
+        },
+        "effectiveDateTime" : "1988-04-25T00:09:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2534",
+            "display" : "Pearl Rita Dawson MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 29.1504989249558,
+          "unit" : "kg/m2"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271182"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271183",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-271183",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8310-5",
+              "display" : "Temperature"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-1328",
+          "display" : "Colonoscopy_Encounter"
+        },
+        "effectiveDateTime" : "1988-04-25T00:09:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2534",
+            "display" : "Pearl Rita Dawson MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 37.0,
+          "unit" : "C"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271183"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271184",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-271184",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8459-0",
+              "display" : "Systolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-1328",
+          "display" : "Colonoscopy_Encounter"
+        },
+        "effectiveDateTime" : "1988-04-25T00:09:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2534",
+            "display" : "Pearl Rita Dawson MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 170.4586203394794,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271184"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271185",
+      "resource" : {
+        "resourceType" : "Observation",
+        "id" : "Observation-271185",
+        
+        "status" : "final",
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8453-3",
+              "display" : "Diastolic Blood Pressure"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-1328",
+          "display" : "Colonoscopy_Encounter"
+        },
+        "effectiveDateTime" : "1988-04-25T00:09:00-04:00",
+        "performer" : [
+          {
+            "reference" : "Practitioner/Practitioner-2534",
+            "display" : "Pearl Rita Dawson MD"
+          }
+        ],
+        "valueQuantity" : {
+          "value" : 84.12067172275782,
+          "unit" : "mmHg"
+        }
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/Observation/Observation-271185"
+      }
+    },
+    {
+      "fullUrl" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-271179",
+      "resource" : {
+        "resourceType" : "DiagnosticReport",
+        "id" : "DiagnosticReport-271179",
+        "meta" : {
+          "profile" : [
+            "http://hl7.org/fhir/us/hedis/StructureDefinition/hedis-diagnosticreport"
+          ]
+        },
+        
+        "status" : "final",
+        "category" : {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/ValueSet/diagnostic-service-sections",
+              "code" : "LAB",
+              "display" : "Laboratory"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "8716-3",
+              "display" : "Vital Signs Panel"
+            }
+          ]
+        },
+        "subject" : {
+          "reference" : "Patient/Patient-6523",
+          "display" : "Wendy Danielle Vaughn"
+        },
+        "context" : {
+          "reference" : "Encounter/Encounter-1328",
+          "display" : "Colonoscopy_Encounter"
+        },
+        "effectivePeriod" : {
+          "start" : "1988-04-25T00:09:00-04:00",
+          "end" : "1988-04-25T00:09:00-04:00"
+        },
+        "issued" : "1988-04-25T00:09:00.000-04:00",
+        "result" : [
+          {
+            "reference" : "Observation/Observation-271180",
+            "display" : "Height"
+          },
+          {
+            "reference" : "Observation/Observation-271181",
+            "display" : "Weight"
+          },
+          {
+            "reference" : "Observation/Observation-271182",
+            "display" : "BMI"
+          },
+          {
+            "reference" : "Observation/Observation-271183",
+            "display" : "Temperature"
+          },
+          {
+            "reference" : "Observation/Observation-271184",
+            "display" : "Systolic Blood Pressure"
+          },
+          {
+            "reference" : "Observation/Observation-271185",
+            "display" : "Diastolic Blood Pressure"
+          }
+        ]
+      },
+      "request" : {
+        "method" : "PUT",
+        "url" : "http://localhost:8080/cqf-ruler/baseDstu3/DiagnosticReport/DiagnosticReport-271179"
+      }
+    }
+  ]
+}
