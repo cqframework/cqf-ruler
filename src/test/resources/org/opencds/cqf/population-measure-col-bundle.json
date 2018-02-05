@@ -5,7 +5,7 @@
     {
       "resource": {
         "resourceType": "Library",
-        "id": "library-col-logic",
+        "id": "measure-col-logic",
         "version": "1.0.0",
         "status": "active",
         "experimental": true,
@@ -222,7 +222,7 @@
         ],
         "library": [
           {
-            "reference": "Library/library-col-logic"
+            "reference": "Library/measure-col-logic"
           }
         ],
         "scoring": {

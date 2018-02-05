@@ -41,6 +41,7 @@ public class FhirMeasureEvaluator {
                 MeasureReport.MeasureReportGroupPopulationComponent populationReport = new MeasureReport.MeasureReportGroupPopulationComponent();
                 populationReport.setCount(count);
                 populationReport.setCode(population.getCode());
+                populationReport.setIdentifier(population.getIdentifier());
 
                 reportGroup.getPopulation().add(populationReport);
             }
@@ -153,6 +154,7 @@ public class FhirMeasureEvaluator {
                 MeasureReport.MeasureReportGroupPopulationComponent populationReport = new MeasureReport.MeasureReportGroupPopulationComponent();
                 populationReport.setCount(count);
                 populationReport.setCode(pop.getCode());
+                populationReport.setIdentifier(pop.getIdentifier());
 
                 /*
                     TODO - it is a reference to a list...
