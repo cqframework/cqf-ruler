@@ -44,17 +44,37 @@ public class CdsHooksHelper {
 //
 //        jsonArray.add(medicationPrescribe);
 //
-        JSONObject patientView = new JSONObject();
-        patientView.put("hook", "patient-view");
-        patientView.put("name", "Zika Virus Intervention");
-        patientView.put("description", "Identifies possible Zika exposure and offers suggestions for suggested actions for pregnant patients");
-        patientView.put("id", "zika-virus-intervention");
+        JSONObject zika = new JSONObject();
+        zika.put("hook", "patient-view");
+        zika.put("name", "Zika Virus Intervention");
+        zika.put("description", "Identifies possible Zika exposure and offers suggestions for suggested actions for pregnant patients");
+        zika.put("id", "zika-virus-intervention");
 
         prefetchContent = new JSONObject();
         prefetchContent.put("patient", "Patient/{{Patient.id}}");
-        patientView.put("prefetch", prefetchContent);
+        zika.put("prefetch", prefetchContent);
 
-        jsonArray.add(patientView);
+        jsonArray.add(zika);
+
+        JSONObject diabetesManagement = new JSONObject();
+        diabetesManagement.put("hook", "patient-view");
+        diabetesManagement.put("name", "Diabetes Management");
+        diabetesManagement.put("description", "Identifies abnormal lab results and makes suggestions for service requests for diabetic patients");
+        diabetesManagement.put("id", "diabetes-management");
+
+        prefetchContent = new JSONObject();
+        prefetchContent.put("patient", "Patient/{{Patient.id}}");
+        prefetchContent.put("Diabetes Conditions", "Condition?patient={{Patient.id}}&code=250.00,E11.9,313436004,73211009");
+        prefetchContent.put("Creatinine Labs", "Observation?patient={{Patient.id}}&code=20005");
+        prefetchContent.put("HbA1C Labs", "Observation?patient={{Patient.id}}&code=20006");
+        prefetchContent.put("LDL Labs", "Observation?patient={{Patient.id}}&code=20007");
+        prefetchContent.put("MicroalbCr Labs", "Observation?patient={{Patient.id}}&code=20008");
+        prefetchContent.put("Foot Exams", "Observation?patient={{Patient.id}}&code=20009");
+        prefetchContent.put("Eye Exams", "Observation?patient={{Patient.id}}&code=20010");
+        prefetchContent.put("ACE or ARB Medications", "MedicationStatement?patient={{Patient.id}}&code=999996");
+        diabetesManagement.put("prefetch", prefetchContent);
+
+        jsonArray.add(zika);
 
         jsonResponse.put("services", jsonArray);
 

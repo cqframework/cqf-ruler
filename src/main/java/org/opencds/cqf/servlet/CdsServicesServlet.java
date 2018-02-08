@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cds.*;
+import org.opencds.cqf.helpers.Dstu2ToStu3;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 
 import javax.servlet.ServletException;
@@ -57,6 +58,16 @@ public class CdsServicesServlet extends BaseServlet {
             resolveMedicationPrescribePrefetch(cdsHooksRequest);
             try {
                 processor = new OpioidGuidanceProcessor(cdsHooksRequest, libraryResourceProvider, planDefinitionResourceProvider, isStu3);
+            } catch (FHIRException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+
+        else if (request.getRequestURL().toString().endsWith("diabetes-management")) {
+            try {
+                resolveDiabetesManagementPrefetch(cdsHooksRequest);
+                processor = new DiabetesManagementProcessor(cdsHooksRequest, libraryResourceProvider, planDefinitionResourceProvider, isStu3);
             } catch (FHIRException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);
@@ -137,6 +148,55 @@ public class CdsServicesServlet extends BaseServlet {
                         .execute();
                 cdsHooksRequest.setPrefetch(postfetch, "medication");
             }
+        }
+    }
+
+    private Bundle getPrefetchElement(String searchUrl, String fhirServerEndpoint) throws FHIRException {
+        Bundle postfetch;
+        if (isStu3) {
+            postfetch = FhirContext.forDstu3()
+                    .newRestfulGenericClient(fhirServerEndpoint)
+                    .search()
+                    .byUrl(searchUrl)
+                    .returnBundle(Bundle.class)
+                    .execute();
+        }
+        else {
+            postfetch = Dstu2ToStu3.convertBundle(FhirContext.forDstu2()
+                    .newRestfulGenericClient(fhirServerEndpoint)
+                    .search()
+                    .byUrl(searchUrl)
+                    .returnBundle(org.hl7.fhir.instance.model.Bundle.class)
+                    .execute());
+        }
+        return postfetch;
+    }
+
+    public void resolveDiabetesManagementPrefetch(CdsHooksRequest cdsHooksRequest) throws FHIRException {
+        if (cdsHooksRequest.getPrefetch().size() == 0) {
+            String searchUrl = String.format("Condition?patient=%s&code=250.00,E11.9,313436004,73211009", cdsHooksRequest.getPatientId());
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "Diabetes Conditions");
+
+            searchUrl = String.format("Observation?patient=%s&code=20005", cdsHooksRequest.getPatientId());
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "Creatinine Labs");
+
+            searchUrl = String.format("Observation?patient=%s&code=20006", cdsHooksRequest.getPatientId());
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "HbA1C Labs");
+
+            searchUrl = String.format("Observation?patient=%s&code=20007", cdsHooksRequest.getPatientId());
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "LDL Labs");
+
+            searchUrl = String.format("Observation?patient=%s&code=20008", cdsHooksRequest.getPatientId());
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "MicroalbCr Labs");
+
+            searchUrl = String.format("Observation?patient=%s&code=20009", cdsHooksRequest.getPatientId());
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "Foot Exams");
+
+            searchUrl = String.format("Observation?patient=%s&code=20010", cdsHooksRequest.getPatientId());
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "Eye Exams");
+
+            searchUrl = String.format("MedicationStatement?patient=%s&code=999996", cdsHooksRequest.getPatientId());
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "ACE or ARB Medications");
         }
     }
 

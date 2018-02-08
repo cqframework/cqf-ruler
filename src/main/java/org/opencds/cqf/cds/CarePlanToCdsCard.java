@@ -95,6 +95,10 @@ public class CarePlanToCdsCard {
                     suggestions.setLabel(action.getLabel());
                     hasSuggestions = true;
                 }
+                if (action.hasDescription()) {
+                    actions.setDescription(action.getDescription());
+                    hasSuggestions = true;
+                }
                 if (action.hasType()) {
                     String code = action.getType().getCode();
                     actions.setType(CdsCard.Suggestions.Action.ActionType.valueOf(code.equals("remove") ? "delete" : code));

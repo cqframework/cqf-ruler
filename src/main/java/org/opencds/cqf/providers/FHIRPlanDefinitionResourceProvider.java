@@ -330,9 +330,14 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                     if (action.hasDefinition()) {
                         if (action.getDefinition().getReferenceElement().getResourceType().equals("ActivityDefinition")) {
                             if (action.getDefinition().getResource() != null) {
+                                ActivityDefinition activityDefinition = (ActivityDefinition) action.getDefinition().getResource();
                                 ReferenceBuilder referenceBuilder = new ReferenceBuilder();
-                                referenceBuilder.buildDisplay(((ActivityDefinition) action.getDefinition().getResource()).getDescription());
+                                referenceBuilder.buildDisplay(activityDefinition.getDescription());
                                 actionBuilder.buildResource(referenceBuilder.build());
+
+                                if (activityDefinition.hasDescription()) {
+                                    actionBuilder.buildDescripition(activityDefinition.getDescription());
+                                }
                             }
 
                             // TODO - fix this
@@ -347,6 +352,14 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
 //                            } catch (FHIRException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 //                                throw new RuntimeException("Error applying ActivityDefinition " + e.getMessage());
 //                            }
+
+                            ActivityDefinition activityDefinition =
+                                    (ActivityDefinition) provider.resolveResourceProvider("ActivityDefinition")
+                                            .getDao().read(action.getDefinition().getReferenceElement());
+
+                            if (activityDefinition.hasDescription()) {
+                                actionBuilder.buildDescripition(activityDefinition.getDescription());
+                            }
 
                             BaseFhirDataProvider provider = (BaseFhirDataProvider) context.resolveDataProvider(new QName("http://hl7.org/fhir", ""));
                             Parameters inParams = new Parameters();
