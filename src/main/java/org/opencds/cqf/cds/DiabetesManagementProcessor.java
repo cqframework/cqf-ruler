@@ -4,8 +4,6 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Condition;
-import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
@@ -24,7 +22,7 @@ public class DiabetesManagementProcessor extends PatientViewProcessor {
 
     @Override
     public List<CdsCard> process() {
-        Library library = providers.getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("patient-view"));
+        Library library = providers.getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("diabetes-management"));
         BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServerEndpoint());
         // TODO - assuming terminology service is same as data provider - not a great assumption...
         dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint(request.getFhirServerEndpoint()));

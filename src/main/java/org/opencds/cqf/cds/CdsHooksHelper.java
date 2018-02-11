@@ -74,7 +74,7 @@ public class CdsHooksHelper {
         prefetchContent.put("ACE or ARB Medications", "MedicationStatement?patient={{Patient.id}}&code=999996");
         diabetesManagement.put("prefetch", prefetchContent);
 
-        jsonArray.add(zika);
+        jsonArray.add(diabetesManagement);
 
         jsonResponse.put("services", jsonArray);
 

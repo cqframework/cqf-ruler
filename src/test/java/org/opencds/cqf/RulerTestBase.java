@@ -349,6 +349,7 @@ public class RulerTestBase {
                 "        {\n" +
                 "          \"actions\": [\n" +
                 "            {\n" +
+                "              \"description\": \"The patient has not had a Mammogram procedure in the last 39 months\",\n" +
                 "              \"type\": \"create\",\n" +
                 "              \"resource\": {\n" +
                 "                \"resourceType\": \"ProcedureRequest\",\n" +
@@ -373,7 +374,7 @@ public class RulerTestBase {
                 "      ]\n" +
                 "    }\n" +
                 "  ]\n" +
-                "}\n";
+                "}";
 
         String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
         Assert.assertTrue(
@@ -421,6 +422,7 @@ public class RulerTestBase {
                 "        {\n" +
                 "          \"actions\": [\n" +
                 "            {\n" +
+                "              \"description\": \"The patient has not had a Cervical Cytology procedure in the last 3 years\",\n" +
                 "              \"type\": \"create\",\n" +
                 "              \"resource\": {\n" +
                 "                \"resourceType\": \"ProcedureRequest\",\n" +
@@ -719,11 +721,12 @@ public class RulerTestBase {
         );
     }
 
-    private void validatePopulationMeasure(String startPeriod, String endPeriod, String measureId) {
+    private void validatePopulationMeasure(String startPeriod, String endPeriod, String measureId, String primaryLibraryName) {
         Parameters inParams = new Parameters();
         inParams.addParameter().setName("reportType").setValue(new StringType("population"));
         inParams.addParameter().setName("startPeriod").setValue(new DateType(startPeriod));
         inParams.addParameter().setName("endPeriod").setValue(new DateType(endPeriod));
+        inParams.addParameter().setName("primaryLibraryName").setValue(new StringType(primaryLibraryName));
 
         Parameters outParams = ourClient
                 .operation()
@@ -765,18 +768,18 @@ public class RulerTestBase {
     @Test
     public void populationMeasureBCS() {
         putResource("population-measure-bcs-bundle.json", "");
-        validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-bcs");
+        validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-bcs", "library-bcs-logic");
     }
 
     @Test
     public void populationMeasureCCS() {
         putResource("population-measure-ccs-bundle.json", "");
-        validatePopulationMeasure("2017-01-01", "2017-12-31", "measure-ccs");
+        validatePopulationMeasure("2017-01-01", "2017-12-31", "measure-ccs", "library-ccs-logic");
     }
 
     @Test
     public void populationMeasureCOL() {
         putResource("population-measure-col-bundle.json", "");
-        validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-col");
+        validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-col", "library-col-logic");
     }
 }
