@@ -20,6 +20,12 @@
 	<!-- Servlets -->
 
 	<servlet>
+		<servlet-name>bulkDataResults</servlet-name>
+		<servlet-class>org.opencds.cqf.servlet.BulkDataServlet</servlet-class>
+		<load-on-startup>4</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>cdsServicesServlet</servlet-name>
 		<servlet-class>org.opencds.cqf.servlet.CdsServicesServlet</servlet-class>
 		<load-on-startup>3</load-on-startup>
@@ -72,6 +78,11 @@
 	<servlet-mapping>
 		<servlet-name>cdsServicesServlet</servlet-name>
 		<url-pattern>/cds-services/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>bulkDataResults</servlet-name>
+		<url-pattern>/baseDstu3/export-results/*</url-pattern>
 	</servlet-mapping>
 
 	<!-- This filters provide support for Cross Origin Resource Sharing (CORS) -->

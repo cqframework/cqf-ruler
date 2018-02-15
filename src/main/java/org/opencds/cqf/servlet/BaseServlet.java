@@ -6,10 +6,7 @@ import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
-import ca.uhn.fhir.jpa.rp.dstu3.ActivityDefinitionResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.StructureMapResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.*;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.api.EncodingEnum;
@@ -19,10 +16,7 @@ import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
-import org.opencds.cqf.providers.FHIRActivityDefinitionResourceProvider;
-import org.opencds.cqf.providers.FHIRMeasureResourceProvider;
-import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
-import org.opencds.cqf.providers.FHIRStructureMapResourceProvider;
+import org.opencds.cqf.providers.*;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -99,28 +93,41 @@ public class BaseServlet extends RestfulServer {
 
         // PlanDefinition processing
         FHIRPlanDefinitionResourceProvider planDefProvider = new FHIRPlanDefinitionResourceProvider(getResourceProviders());
-        PlanDefinitionResourceProvider jpaPlanDefProvider =
-                (PlanDefinitionResourceProvider) getProvider("PlanDefinition");
+        PlanDefinitionResourceProvider jpaPlanDefProvider = (PlanDefinitionResourceProvider) getProvider("PlanDefinition");
         planDefProvider.setDao(jpaPlanDefProvider.getDao());
         planDefProvider.setContext(jpaPlanDefProvider.getContext());
 
         // ActivityDefinition processing
         FHIRActivityDefinitionResourceProvider actDefProvider = new FHIRActivityDefinitionResourceProvider(getResourceProviders());
-        ActivityDefinitionResourceProvider jpaActDefProvider =
-                (ActivityDefinitionResourceProvider) getProvider("ActivityDefinition");
+        ActivityDefinitionResourceProvider jpaActDefProvider = (ActivityDefinitionResourceProvider) getProvider("ActivityDefinition");
         actDefProvider.setDao(jpaActDefProvider.getDao());
         actDefProvider.setContext(jpaActDefProvider.getContext());
 
+        // StructureMap processing
         FHIRStructureMapResourceProvider structureMapProvider = new FHIRStructureMapResourceProvider(getResourceProviders());
         StructureMapResourceProvider jpaStructMapProvider = (StructureMapResourceProvider) getProvider("StructureMap");
         structureMapProvider.setDao(jpaStructMapProvider.getDao());
         structureMapProvider.setContext(jpaStructMapProvider.getContext());
+
+        // Patient processing - for bulk data export
+        BulkDataPatientProvider bulkDataPatientProvider = new BulkDataPatientProvider(getResourceProviders());
+        PatientResourceProvider jpaPatientProvider = (PatientResourceProvider) getProvider("Patient");
+        bulkDataPatientProvider.setDao(jpaPatientProvider.getDao());
+        bulkDataPatientProvider.setContext(jpaPatientProvider.getContext());
+
+        // Group processing - for bulk data export
+        BulkDataGroupProvider bulkDataGroupProvider = new BulkDataGroupProvider(getResourceProviders());
+        GroupResourceProvider jpaGroupProvider = (GroupResourceProvider) getProvider("Group");
+        bulkDataGroupProvider.setDao(jpaGroupProvider.getDao());
+        bulkDataGroupProvider.setContext(jpaGroupProvider.getContext());
 
         try {
             unregisterProvider(jpaMeasureProvider);
             unregisterProvider(jpaPlanDefProvider);
             unregisterProvider(jpaActDefProvider);
             unregisterProvider(jpaStructMapProvider);
+            unregisterProvider(jpaPatientProvider);
+            unregisterProvider(jpaGroupProvider);
         } catch (Exception e) {
             throw new ServletException("Unable to unregister provider: " + e.getMessage());
         }
@@ -129,6 +136,8 @@ public class BaseServlet extends RestfulServer {
         registerProvider(planDefProvider);
         registerProvider(actDefProvider);
         registerProvider(structureMapProvider);
+        registerProvider(bulkDataPatientProvider);
+        registerProvider(bulkDataGroupProvider);
 
         // Register the logging interceptor
         LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
