@@ -26,6 +26,12 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>cdsAsyncServlet</servlet-name>
+		<servlet-class>org.opencds.cqf.servlet.AsyncServicesServlet</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>spring</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
@@ -72,6 +78,16 @@
 	<servlet-mapping>
 		<servlet-name>cdsServicesServlet</servlet-name>
 		<url-pattern>/cds-services/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>cdsAsyncServlet</servlet-name>
+		<url-pattern>/async-services</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>cdsAsyncServlet</servlet-name>
+		<url-pattern>/async-services/*</url-pattern>
 	</servlet-mapping>
 
 	<!-- This filters provide support for Cross Origin Resource Sharing (CORS) -->

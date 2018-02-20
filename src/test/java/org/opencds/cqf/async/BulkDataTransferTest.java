@@ -1,0 +1,336 @@
+package org.opencds.cqf.async;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.json.simple.JSONArray;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.opencds.cqf.TestUtil;
+import org.opencds.cqf.helpers.ResourceCreator;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Scanner;
+
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.*;
+
+public class BulkDataTransferTest {
+
+    private static Bundle allPatientData;
+
+    @BeforeClass
+    public static void startServer() throws Exception {
+        TestUtil.startServer();
+
+        List<IBaseResource> resources = new ArrayList<>();
+        ResourceCreator resourceCreator = new ResourceCreator();
+        {
+            Practitioner practitioner = resourceCreator.createPractitioner("BD-Pr1", "1949-01-23");
+            Patient patient = resourceCreator.createPatient("BD-Pa1", "1986-01-15", practitioner);
+            Encounter encounter = resourceCreator.createEncounter(patient, 1);
+            Procedure procedure = resourceCreator.createProcedure( "BD-Pr1", 1, patient, practitioner, "2018-01-23" );
+            resources.add(practitioner);
+            resources.add(patient);
+            resources.add(encounter);
+            resources.add(procedure);
+        }
+        {
+            Practitioner practitioner = resourceCreator.createPractitioner("BD-Pr2", "1949-02-23");
+            Patient patient = resourceCreator.createPatient("BD-Pa2", "1986-02-15", practitioner);
+            Encounter encounter = resourceCreator.createEncounter(patient, 2);
+            Procedure procedure = resourceCreator.createProcedure( "BD-Pr2", 2, patient, practitioner, "2018-01-23" );
+            resources.add(practitioner);
+            resources.add(patient);
+            resources.add(encounter);
+            resources.add(procedure);
+        }
+
+        for (IBaseResource baseResource : resources) {
+            TestUtil.putResource(baseResource);
+        }
+
+        allPatientData = retrieveAllPatientEverything();
+    }
+
+    @Test
+    public void callBulkDataServer() throws Exception {
+        HttpResponse response  = callBulkDataService("");
+
+        String sessionUrl = getSessionUrl( response );
+        response = getSessionStatus( sessionUrl );
+
+        response = waitForCompleteness(response, sessionUrl);
+
+        List<String> links = getLinks(response);
+
+        for (String link : links) {
+            checkLink(link);
+        }
+    }
+
+    @Test
+    public void callBulkDataServerOutcomeFilter() throws Exception {
+        String filterType = "Encounter";
+        HttpResponse response  = callBulkDataService(filterType);
+
+        String sessionUrl = getSessionUrl( response );
+        response = getSessionStatus( sessionUrl );
+
+        response = waitForCompleteness(response, sessionUrl);
+
+        List<String> links = getLinks(response);
+
+        // check absense of
+        links.stream()
+                .forEach( link ->
+                        assertTrue("patient or "+filterType+" is only one to be present: "+link, link.endsWith("Patient")||link.endsWith(filterType))
+                );
+        // check presence of Patient
+        assertEquals( "Check presence of Patient",1, links.stream().filter( link -> link.endsWith("Patient")).count());
+        assertEquals( "Check presence of "+filterType, 1, links.stream().filter( link -> link.endsWith(filterType)).count());
+
+        for (String link : links) {
+            checkLink(link);
+        }
+    }
+
+    @Test
+    public void callBulkDataServerOutcomeFilter2() throws Exception {
+        String filterType1 = "Procedure";
+        String filterType2 = "Encounter";
+        HttpResponse response  = callBulkDataService(filterType1+","+filterType2);
+
+        String sessionUrl = getSessionUrl( response );
+        response = getSessionStatus( sessionUrl );
+
+        response = waitForCompleteness(response, sessionUrl);
+
+        List<String> links = getLinks(response);
+
+        // check absense of
+        links.stream()
+                .forEach( link ->
+                        assertTrue("patient or "+filterType1+", "+filterType2+" are the only one to be present: "+link, link.endsWith("Patient")||link.endsWith(filterType1)||link.endsWith(filterType2))
+                );
+        // check presence of Patient
+        assertEquals( "Check presence of Patient",1, links.stream().filter( link -> link.endsWith("Patient")).count());
+        assertEquals( "Check presence of "+filterType1, 1, links.stream().filter( link -> link.endsWith(filterType1)).count());
+        assertEquals( "Check presence of "+filterType2, 1, links.stream().filter( link -> link.endsWith(filterType2)).count());
+
+        for (String link : links) {
+            checkLink(link);
+        }
+    }
+    @Test
+    public void testBulkDataServerDelete() throws Exception {
+        HttpResponse response  = callBulkDataService("Procedure");
+        String sessionUrl = getSessionUrl( response );
+
+        deleteSession( sessionUrl );
+
+        response = getSessionStatus( sessionUrl );
+        assertEquals( 404,  response.getStatusLine().getStatusCode());
+
+    }
+
+    private void deleteSession(String sessionUrl) throws IOException {
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        Gson gson             = new Gson();
+//        HttpGet get         = new HttpGet( TestUtil.getOurClient().getServerBase()+"/Patient/"+ patientId +"" );
+        HttpDelete delete     = new HttpDelete( sessionUrl );
+
+        HttpResponse response = httpClient.execute(delete);
+    }
+
+    private List<String> getLinks(HttpResponse response) throws IOException {
+        assertNotNull(response);
+
+        InputStream inputStream = response.getEntity().getContent();
+        Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        String result = s.hasNext() ? s.next() : "";
+
+        JsonObject jobject = (JsonObject) new JsonParser().parse(result);
+        JsonArray jsonArray = (JsonArray) jobject.get("output");
+        ArrayList<String> links = new ArrayList<>();
+        for ( int i=0; i<jsonArray.size();i++){
+            String linkProto =  ((JsonObject) jsonArray.get(i)).get("url").toString();
+            links.add(linkProto.substring(1, linkProto.length()-1)); // remove quotes
+        }
+
+        return links;
+    }
+
+    private void checkLink(String link) throws IOException {
+
+        List<Resource> resourcesNdjson = new ArrayList<>();
+        String resourceTypeNdjson = getResourcesFromLink(link, resourcesNdjson, true);
+
+        List<Resource> resourcesBundleList = new ArrayList<>();
+        getResourcesFromLink(link, resourcesBundleList, false);
+        assertEquals( 1, resourcesBundleList.size());
+        assertTrue( resourcesBundleList.get(0) instanceof  Bundle );
+        Bundle resourceBundle = (Bundle)resourcesBundleList.get(0);
+
+        // resources contains ndjson resources.
+        String resourceType = resourceTypeNdjson;
+        long numberOfResources  = allPatientData.getEntry().stream()
+                .map(Bundle.BundleEntryComponent::getResource)
+                .filter( bdleResource -> bdleResource.fhirType()== resourceType)
+                .count();
+        assertEquals( "number of "+resourceType+" resources must be equal.", resourcesNdjson.size(), numberOfResources );
+        assertEquals( "number of "+resourceType+" resources must be equal.", resourceBundle.getEntry().size(), numberOfResources );
+
+        for ( Resource resource : resourcesNdjson) {
+            assertTrue( allPatientData.getEntry().stream()
+                    .map(Bundle.BundleEntryComponent::getResource)
+                    .filter( res -> res.fhirType()==resourceType)
+                    .filter( res2 -> res2.getId().endsWith(resource.getId()))
+                    .findFirst().isPresent()
+            );
+        }
+
+        for ( Bundle.BundleEntryComponent bundleEntryComponent : resourceBundle.getEntry()) {
+            Resource resource = bundleEntryComponent.getResource();
+            assertTrue( allPatientData.getEntry().stream()
+                    .map(allPatientBundleEntryComponent -> allPatientBundleEntryComponent.getResource())
+                    .filter( res -> res.fhirType()==resourceType)
+                    .filter( res2 -> res2.getId().endsWith(resource.getId()))
+                    .findFirst().isPresent());
+            assertEquals( resourceType, resource.fhirType());
+        }
+    }
+
+    private String getResourcesFromLink(String link, List<Resource> resources, boolean ndjson) throws IOException {
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet get         = new HttpGet( link );
+        if ( ndjson ) {
+            get.setHeader("Content-type", "application/fhir+ndjson");
+        }
+        else{
+            get.setHeader("Content-type", "application/json");
+        }
+        HttpResponse response = httpClient.execute(get);
+        assertNotNull(response);
+
+        InputStream inputStream = response.getEntity().getContent();
+        Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        String result = s.hasNext() ? s.next() : "";
+
+        String resourceType = null;
+        for ( String str : result.split("\\n")){
+            Resource resource = (Resource) TestUtil.getCtx().newJsonParser().parseResource(str);
+            if ( resourceType ==null ) {
+                resourceType = resource.fhirType();
+            } else {
+                assertEquals(resourceType, resource.fhirType());
+            }
+            resources.add( resource );
+        }
+        ;
+        return resourceType;
+    }
+
+
+    public static HttpResponse callBulkDataService(String outcome) throws Exception {
+
+        TestUtil.startServer();
+
+        JSONArray context = new JSONArray();
+
+        Bundle allPatientData = retrieveAllPatientEverything();
+
+        assertNotNull(allPatientData);
+        assertTrue(allPatientData.getEntry().size()>1 );
+
+        String url = TestUtil.getOurClient().getServerBase()+"/Patient/$export";
+        URIBuilder uriBuilder = new URIBuilder(url);
+        if ( outcome!=null || !outcome.isEmpty() ){
+            uriBuilder.addParameter("type", outcome);
+        }
+
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet get = new HttpGet( uriBuilder.build() );
+        get.setHeader("Content-type", "application/fhir+ndjson");
+        get.setHeader("Prefer", "respond-async");
+
+
+        HttpResponse response = httpClient.execute(get);
+
+        return response;
+    }
+
+    private HttpResponse waitForCompleteness(HttpResponse response, String sessionUrl ) throws InterruptedException, IOException {
+        int i=0;
+        while( response.getStatusLine().getStatusCode()==202 && i<3000) {
+            Thread.sleep(100);
+            i++;
+            response = getSessionStatus(sessionUrl);
+        }
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        assertNotEquals("Session not ready in time.", 3000, i);
+        return response;
+    }
+
+    private static HttpResponse getSessionStatus(String sessionUrl) throws IOException {
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        Gson gson             = new Gson();
+//        HttpGet get         = new HttpGet( TestUtil.getOurClient().getServerBase()+"/Patient/"+ patientId +"" );
+        HttpGet get         = new HttpGet( sessionUrl );
+
+        HttpResponse response = httpClient.execute(get);
+        return response;
+    }
+
+    private static String getSessionUrl(HttpResponse response) throws Exception {
+        InputStream inputStream = response.getEntity().getContent();
+
+        Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        String result = s.hasNext() ? s.next() : "";
+
+        IBaseResource iBaseResource = TestUtil.getCtx().newJsonParser().parseResource(result);
+        assertTrue( iBaseResource instanceof OperationOutcome );
+        OperationOutcome operationOutcome = (OperationOutcome)iBaseResource;
+        assertNotNull( response.getFirstHeader("Content-Location") );
+        String contentLocation = response.getFirstHeader("Content-Location").getValue();
+
+        return  contentLocation;
+    }
+
+
+    private static Bundle retrieveAllPatientEverything() throws Exception {
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet    get        = new HttpGet( TestUtil.getOurClient().getServerBase()+"/Patient/$everything" );
+
+        HttpResponse response = httpClient.execute(get);
+        InputStream inputStream = response.getEntity().getContent();
+
+        Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        String result = s.hasNext() ? s.next() : "";
+
+        IBaseResource iBaseResource = TestUtil.getCtx().newJsonParser().parseResource(result);
+        assertTrue( iBaseResource instanceof Bundle );
+        Bundle bundle = (Bundle)iBaseResource;
+
+        AsyncResult asyncResult = new AsyncResult();
+        asyncResult.addBundle(bundle);
+        AsyncSession.processBundle( asyncResult, bundle, new HashMap<String,String>());
+
+        return asyncResult.resultBundle;
+    }
+
+
+}
