@@ -33,12 +33,13 @@ public class BulkDataTransferTest {
     private static Bundle allPatientData;
     private static Bundle allPatientDataPa2;
     private static String patientId;
+    private static String groupId;
+    private static List<IBaseResource> resources = new ArrayList<>();
 
     @BeforeClass
     public static void startServer() throws Exception {
         TestUtil.startServer();
 
-        List<IBaseResource> resources = new ArrayList<>();
         ResourceCreator resourceCreator = new ResourceCreator();
         {
             Practitioner practitioner = resourceCreator.createPractitioner("BD-Pr1", "1949-01-23");
@@ -61,6 +62,31 @@ public class BulkDataTransferTest {
             resources.add(encounter);
             resources.add(procedure);
         }
+        {
+            Practitioner practitioner = resourceCreator.createPractitioner("BD-Pr3", "1949-03-23");
+            Patient patient1 = resourceCreator.createPatient("BD-Pa3", "1986-03-15", practitioner);
+            Encounter encounter = resourceCreator.createEncounter(patient1, 3);
+            Procedure procedure = resourceCreator.createProcedure( "BD-Pro3", 3, patient1, practitioner, "2018-01-23" );
+            Patient patient2 = resourceCreator.createPatient("BD-Pa4", "1986-04-15", practitioner);
+            Patient patient3 = resourceCreator.createPatient("BD-Pa5", "1986-05-15", practitioner);
+            Group group = (Group) new Group()
+                    .setActive(true)
+                    .setType(Group.GroupType.PERSON)
+                    .setName("My bulk data test group")
+                    .addMember( new Group.GroupMemberComponent().setEntity( new Reference(patient1) ))
+                    .addMember( new Group.GroupMemberComponent().setEntity( new Reference(patient2) ))
+                    .addMember( new Group.GroupMemberComponent().setEntity( new Reference(patient3) ))
+                    .addMember( new Group.GroupMemberComponent().setEntity( new Reference(practitioner) ))
+                    .setId("Group-BD-Grp1");
+            resources.add( practitioner );
+            resources.add( patient1 );
+            resources.add( patient2 );
+            resources.add( patient3 );
+            resources.add( encounter );
+            resources.add( procedure );
+            resources.add( group );
+            groupId=group.getId();
+        }
 
         for (IBaseResource baseResource : resources) {
             TestUtil.putResource(baseResource);
@@ -73,6 +99,8 @@ public class BulkDataTransferTest {
         allPatientDataPa2 = retrieveAllPatientEverything( patientId );
         assertNotNull(allPatientDataPa2);
         assertTrue(allPatientDataPa2.getEntry().size()>1 );
+
+        TestUtil.saveResources( resources, "bulkdata");
 
     }
 
@@ -107,10 +135,9 @@ public class BulkDataTransferTest {
         // check absense of
         links.stream()
                 .forEach( link ->
-                        assertTrue("patient or "+filterType+" is only one to be present: "+link, link.endsWith("Patient")||link.endsWith(filterType))
+                        assertTrue(filterType+" is only one to be present: "+link, link.endsWith(filterType))
                 );
         // check presence of Patient
-        assertEquals( "Check presence of Patient",1, links.stream().filter( link -> link.endsWith("Patient")).count());
         assertEquals( "Check presence of "+filterType, 1, links.stream().filter( link -> link.endsWith(filterType)).count());
 
         for (String link : links) {
@@ -134,10 +161,9 @@ public class BulkDataTransferTest {
         // check absense of
         links.stream()
                 .forEach( link ->
-                        assertTrue("patient or "+filterType1+", "+filterType2+" are the only one to be present: "+link, link.endsWith("Patient")||link.endsWith(filterType1)||link.endsWith(filterType2))
+                        assertTrue(filterType1+", "+filterType2+" are the only one to be present: "+link, link.endsWith(filterType1)||link.endsWith(filterType2))
                 );
         // check presence of Patient
-        assertEquals( "Check presence of Patient",1, links.stream().filter( link -> link.endsWith("Patient")).count());
         assertEquals( "Check presence of "+filterType1, 1, links.stream().filter( link -> link.endsWith(filterType1)).count());
         assertEquals( "Check presence of "+filterType2, 1, links.stream().filter( link -> link.endsWith(filterType2)).count());
 
@@ -146,6 +172,31 @@ public class BulkDataTransferTest {
         }
     }
 
+    @Test
+    public void callGroupExport() throws Exception {
+
+        JSONArray context = new JSONArray();
+
+        String url = TestUtil.getOurClient().getServerBase()+"/Group/"+groupId+"/$export";
+
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet get = new HttpGet( url );
+        get.setHeader("Content-type", "application/fhir+ndjson");
+        get.setHeader("Prefer", "respond-async");
+        get.setHeader("Accept", "application/fhir+json");
+
+
+        HttpResponse response = httpClient.execute(get);
+
+        String sessionUrl = getSessionUrl( response );
+        response = getSessionStatus( sessionUrl );
+
+        response = waitForCompleteness(response, sessionUrl);
+
+        List<String> links = getLinks(response);
+
+        assertTrue("at least two links are expected", links.size()>1);
+    }
     @Test
     public void callBulkDataServerPatientSpecific() throws Exception {
         HttpResponse response  = callBulkDataService(null, patientId );

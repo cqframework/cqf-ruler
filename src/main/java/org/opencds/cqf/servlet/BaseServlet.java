@@ -6,11 +6,7 @@ import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
-import ca.uhn.fhir.jpa.rp.dstu3.ActivityDefinitionResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.PatientResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.StructureMapResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.*;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.api.EncodingEnum;
@@ -23,11 +19,7 @@ import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.opencds.cqf.async.AsyncHelper;
-import org.opencds.cqf.providers.FHIRActivityDefinitionResourceProvider;
-import org.opencds.cqf.providers.FHIRMeasureResourceProvider;
-import org.opencds.cqf.providers.FHIRPatientResourceProvider;
-import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
-import org.opencds.cqf.providers.FHIRStructureMapResourceProvider;
+import org.opencds.cqf.providers.*;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -139,7 +131,7 @@ public class BaseServlet extends RestfulServer {
             }
             registerProvider(planDefProvider);
         }
-        // Ásync Patient export processing
+        // Patient export processing
         {
             FHIRPatientResourceProvider fhirPatientResourceProvider = new FHIRPatientResourceProvider(getResourceProviders());
             PatientResourceProvider patientResourceProvider =
@@ -150,6 +142,18 @@ public class BaseServlet extends RestfulServer {
             try { unregisterProvider(patientResourceProvider);
             } catch (Exception e) { throw new ServletException("Unable to unregister provider: " + e.getMessage()); }
             registerProvider(fhirPatientResourceProvider);
+        }
+        // Group export processing
+        {
+            FHIRGroupProvider fhirProvider = new FHIRGroupProvider(getResourceProviders());
+            GroupResourceProvider resourceProvider =
+                    (GroupResourceProvider) getProvider("Group");
+            ca.uhn.fhir.jpa.dao.dstu3.FhirResourceDaoPatientDstu3 dao;
+            fhirProvider.setDao(resourceProvider.getDao());
+            fhirProvider.setContext(resourceProvider.getContext());
+            try { unregisterProvider(resourceProvider);
+            } catch (Exception e) { throw new ServletException("Unable to unregister provider: " + e.getMessage()); }
+            registerProvider(fhirProvider);
         }
         // Register the logging interceptor
         LoggingInterceptor loggingInterceptor = new LoggingInterceptor();

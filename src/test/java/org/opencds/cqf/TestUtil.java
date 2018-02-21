@@ -18,8 +18,7 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.junit.Assert;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -263,6 +262,24 @@ public class TestUtil {
         assertNotNull( carePlan );
 
         return carePlan;
+    }
+
+    public static void saveResources(List<IBaseResource> resources, String directory) throws IOException {
+        String root = "./examples/"+directory;
+        new File(root).mkdirs();
+
+        for ( IBaseResource iBaseResource: resources ){
+            Resource resource = (Resource)iBaseResource;
+            String json = TestUtil.getCtx().newJsonParser().setPrettyPrint(true).encodeResourceToString(resource);
+
+            BufferedWriter bufferedWriter = null;
+            FileWriter fileWriter = null;
+            String filename= String.format("%s/%s_%s.json", root, resource.fhirType(), resource.getId());
+            fileWriter = new FileWriter(filename);
+            bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(json);
+            bufferedWriter.close();
+        }
     }
 
 }
