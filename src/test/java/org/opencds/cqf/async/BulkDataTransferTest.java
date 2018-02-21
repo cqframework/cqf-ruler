@@ -295,6 +295,7 @@ public class BulkDataTransferTest {
         HttpGet get = new HttpGet( uriBuilder.build() );
         get.setHeader("Content-type", "application/fhir+ndjson");
         get.setHeader("Prefer", "respond-async");
+        get.setHeader("Accept", "application/fhir+json");
 
 
         HttpResponse response = httpClient.execute(get);

@@ -14,6 +14,7 @@ import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.exceptions.NotImplementedException;
 
 import java.util.ArrayList;
@@ -33,35 +34,17 @@ public class FHIRPatientResourceProvider extends PatientResourceProvider {
         this.provider = new JpaDataProvider(providers);
     }
 
-//    @Operation(name = "export", idempotent = true, bundleType= BundleTypeEnum.SEARCHSET)
-//    public Bundle  export(
-//        javax.servlet.http.HttpServletRequest theServletRequest,
-//
-//        @IdParam IdType theId,
-//        @Description(formalDefinition="Indicates the preferred output form for the call.")
-//        @OptionalParam(name="outputFormat") String outputFormat,
-//
-//        @Description(formalDefinition="Resources updated after this period will be included in the response.")
-//        @OptionalParam(name="since") InstantType since,
-//
-//        @Description(formalDefinition="string of comma-delimited FHIR resource types.")
-//        @OptionalParam(name="type") String  type,
-//
-//        RequestDetails theRequestDetails
-//        ) throws FHIRException  {
-//        Resource result = null;
-//
-//        return  new Bundle();
-//    }
+
     /**
-     * Patient/123/$everything
+     * Patient/123/$export
      * @param theRequestDetails
      */
     //@formatter:off
     @Operation(name = "export", idempotent = true, bundleType=BundleTypeEnum.SEARCHSET)
-    public Bundle patientInstanceEverything(
+    public IBaseResource patientInstanceEverything(
 
             javax.servlet.http.HttpServletRequest theServletRequest,
+            RequestDetails theRequestDetails,
 
             @IdParam IdType theId,
 
@@ -72,10 +55,16 @@ public class FHIRPatientResourceProvider extends PatientResourceProvider {
             @OptionalParam(name="since") InstantType since,
 
             @Description(formalDefinition="string of comma-delimited FHIR resource types.")
-            @OperationParam(name = "type", min=0, max=OperationParam.MAX_UNLIMITED) String  type,
+            @OperationParam(name = "type", min=0, max=OperationParam.MAX_UNLIMITED) String  type
 
-            RequestDetails theRequestDetails
     ) {
+
+        if (theRequestDetails.getHeader("Accept") == null) {
+            return createErrorOutcome("Please provide the Accept header, which must be set to application/fhir+json");
+        } else if (!theRequestDetails.getHeader("Accept").equals("application/fhir+json")) {
+            return createErrorOutcome("Only the application/fhir+json value for the Accept header is currently supported");
+        }
+
         DateRangeParam theLastUpdated = null;
         if ( since !=null ) {
             theLastUpdated = new DateRangeParam();
@@ -96,12 +85,12 @@ public class FHIRPatientResourceProvider extends PatientResourceProvider {
 
 
     /**
-     * /Patient/$everything
+     * /Patient/$export
      * @param theRequestDetails
      */
     //@formatter:off
     @Operation(name = "export", idempotent = true, bundleType=BundleTypeEnum.SEARCHSET)
-    public Bundle patientTypeEverything(
+    public IBaseResource patientTypeEverything(
 
             javax.servlet.http.HttpServletRequest theServletRequest,
 
@@ -116,6 +105,12 @@ public class FHIRPatientResourceProvider extends PatientResourceProvider {
 
             RequestDetails theRequestDetails
     ) {
+        if (theRequestDetails.getHeader("Accept") == null) {
+            return createErrorOutcome("Please provide the Accept header, which must be set to application/fhir+json");
+        } else if (!theRequestDetails.getHeader("Accept").equals("application/fhir+json")) {
+            return createErrorOutcome("Only the application/fhir+json value for the Accept header is currently supported");
+        }
+
         //@formatter:on
         DateRangeParam theLastUpdated = null;
         if ( since !=null ) {
@@ -165,5 +160,15 @@ public class FHIRPatientResourceProvider extends PatientResourceProvider {
                 );
 
         return bundle;
+    }
+
+    public OperationOutcome createErrorOutcome(String display) {
+        Coding code = new Coding().setDisplay(display);
+        return new OperationOutcome().addIssue(
+                new OperationOutcome.OperationOutcomeIssueComponent()
+                        .setSeverity(OperationOutcome.IssueSeverity.ERROR)
+                        .setCode(OperationOutcome.IssueType.PROCESSING)
+                        .setDetails(new CodeableConcept().addCoding(code))
+        );
     }
 }
