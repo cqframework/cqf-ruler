@@ -5,6 +5,8 @@ import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.model.dstu2.composite.SimpleQuantityDt;
 import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
 import ca.uhn.fhir.model.primitive.BooleanDt;
+import org.hl7.fhir.convertors.NullVersionConverterAdvisor30;
+import org.hl7.fhir.convertors.VersionConvertor_10_30;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 
@@ -12,6 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Dstu2ToStu3 {
+
+    public static Bundle convertBundle(org.hl7.fhir.instance.model.Bundle bundle) throws FHIRException {
+        NullVersionConverterAdvisor30 advisor = new NullVersionConverterAdvisor30();
+        VersionConvertor_10_30 converter = new VersionConvertor_10_30(advisor);
+
+        return converter.convertBundle(bundle);
+    }
 
     // MedicationRequest
     public static MedicationRequest resolveMedicationRequest(MedicationOrder order) throws FHIRException {

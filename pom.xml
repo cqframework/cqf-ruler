@@ -374,6 +374,12 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.4.6.v20170531</version>
                 <configuration>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>org.eclipse.jetty.server.Request.maxFormContentSize</name>
+                            <value>500000</value> <!-- or any other value -1 is for max -->
+                        </systemProperty>
+                    </systemProperties>
                     <webApp>
                         <contextPath>/cqf-ruler</contextPath>
                         <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>

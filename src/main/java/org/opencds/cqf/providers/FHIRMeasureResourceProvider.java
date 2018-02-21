@@ -142,7 +142,7 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
 
             if (vid.getId().equals(measure.getIdElement().getIdPart() + "-logic")
                     || vid.getId().equals("Library/" + measure.getIdElement().getIdPart() + "-logic")
-                    || (primaryLibraryName != null && temp.getIdentifier().getId().equals(primaryLibraryName)))
+                    || (primaryLibraryName != null && ref.getReferenceElement().getIdPart().equals(primaryLibraryName)))
             {
                 primary = temp;
                 context = new Context(primary);
