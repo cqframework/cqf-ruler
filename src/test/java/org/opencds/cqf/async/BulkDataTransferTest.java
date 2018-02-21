@@ -31,6 +31,8 @@ import static org.junit.Assert.*;
 public class BulkDataTransferTest {
 
     private static Bundle allPatientData;
+    private static Bundle allPatientDataPa2;
+    private static String patientId;
 
     @BeforeClass
     public static void startServer() throws Exception {
@@ -51,6 +53,7 @@ public class BulkDataTransferTest {
         {
             Practitioner practitioner = resourceCreator.createPractitioner("BD-Pr2", "1949-02-23");
             Patient patient = resourceCreator.createPatient("BD-Pa2", "1986-02-15", practitioner);
+            patientId = patient.getId();
             Encounter encounter = resourceCreator.createEncounter(patient, 2);
             Procedure procedure = resourceCreator.createProcedure( "BD-Pr2", 2, patient, practitioner, "2018-01-23" );
             resources.add(practitioner);
@@ -63,12 +66,19 @@ public class BulkDataTransferTest {
             TestUtil.putResource(baseResource);
         }
 
-        allPatientData = retrieveAllPatientEverything();
+        allPatientData = retrieveAllPatientEverything(null);
+        assertNotNull(allPatientData);
+        assertTrue(allPatientData.getEntry().size()>1 );
+
+        allPatientDataPa2 = retrieveAllPatientEverything( patientId );
+        assertNotNull(allPatientDataPa2);
+        assertTrue(allPatientDataPa2.getEntry().size()>1 );
+
     }
 
     @Test
     public void callBulkDataServer() throws Exception {
-        HttpResponse response  = callBulkDataService("");
+        HttpResponse response  = callBulkDataService();
 
         String sessionUrl = getSessionUrl( response );
         response = getSessionStatus( sessionUrl );
@@ -78,14 +88,14 @@ public class BulkDataTransferTest {
         List<String> links = getLinks(response);
 
         for (String link : links) {
-            checkLink(link);
+            checkLink(link, allPatientData);
         }
     }
 
     @Test
     public void callBulkDataServerOutcomeFilter() throws Exception {
         String filterType = "Encounter";
-        HttpResponse response  = callBulkDataService(filterType);
+        HttpResponse response  = callBulkDataService(filterType );
 
         String sessionUrl = getSessionUrl( response );
         response = getSessionStatus( sessionUrl );
@@ -104,7 +114,7 @@ public class BulkDataTransferTest {
         assertEquals( "Check presence of "+filterType, 1, links.stream().filter( link -> link.endsWith(filterType)).count());
 
         for (String link : links) {
-            checkLink(link);
+            checkLink(link, allPatientData);
         }
     }
 
@@ -112,7 +122,7 @@ public class BulkDataTransferTest {
     public void callBulkDataServerOutcomeFilter2() throws Exception {
         String filterType1 = "Procedure";
         String filterType2 = "Encounter";
-        HttpResponse response  = callBulkDataService(filterType1+","+filterType2);
+        HttpResponse response  = callBulkDataService(filterType1+","+filterType2 );
 
         String sessionUrl = getSessionUrl( response );
         response = getSessionStatus( sessionUrl );
@@ -132,12 +142,29 @@ public class BulkDataTransferTest {
         assertEquals( "Check presence of "+filterType2, 1, links.stream().filter( link -> link.endsWith(filterType2)).count());
 
         for (String link : links) {
-            checkLink(link);
+            checkLink(link, allPatientData);
         }
     }
+
+    @Test
+    public void callBulkDataServerPatientSpecific() throws Exception {
+        HttpResponse response  = callBulkDataService(null, patientId );
+
+        String sessionUrl = getSessionUrl( response );
+        response = getSessionStatus( sessionUrl );
+
+        response = waitForCompleteness(response, sessionUrl);
+
+        List<String> links = getLinks(response);
+
+        for (String link : links) {
+            checkLink(link, allPatientDataPa2);
+        }
+    }
+
     @Test
     public void testBulkDataServerDelete() throws Exception {
-        HttpResponse response  = callBulkDataService("Procedure");
+        HttpResponse response  = callBulkDataService("Procedure", "Patient/BD-Pa1");
         String sessionUrl = getSessionUrl( response );
 
         deleteSession( sessionUrl );
@@ -149,8 +176,6 @@ public class BulkDataTransferTest {
 
     private void deleteSession(String sessionUrl) throws IOException {
         HttpClient httpClient = HttpClientBuilder.create().build();
-        Gson gson             = new Gson();
-//        HttpGet get         = new HttpGet( TestUtil.getOurClient().getServerBase()+"/Patient/"+ patientId +"" );
         HttpDelete delete     = new HttpDelete( sessionUrl );
 
         HttpResponse response = httpClient.execute(delete);
@@ -174,7 +199,7 @@ public class BulkDataTransferTest {
         return links;
     }
 
-    private void checkLink(String link) throws IOException {
+    private void checkLink(String link, Bundle patientData) throws IOException {
 
         List<Resource> resourcesNdjson = new ArrayList<>();
         String resourceTypeNdjson = getResourcesFromLink(link, resourcesNdjson, true);
@@ -187,7 +212,7 @@ public class BulkDataTransferTest {
 
         // resources contains ndjson resources.
         String resourceType = resourceTypeNdjson;
-        long numberOfResources  = allPatientData.getEntry().stream()
+        long numberOfResources  = patientData.getEntry().stream()
                 .map(Bundle.BundleEntryComponent::getResource)
                 .filter( bdleResource -> bdleResource.fhirType()== resourceType)
                 .count();
@@ -195,7 +220,7 @@ public class BulkDataTransferTest {
         assertEquals( "number of "+resourceType+" resources must be equal.", resourceBundle.getEntry().size(), numberOfResources );
 
         for ( Resource resource : resourcesNdjson) {
-            assertTrue( allPatientData.getEntry().stream()
+            assertTrue( resource.fhirType()+" not present", patientData.getEntry().stream()
                     .map(Bundle.BundleEntryComponent::getResource)
                     .filter( res -> res.fhirType()==resourceType)
                     .filter( res2 -> res2.getId().endsWith(resource.getId()))
@@ -205,7 +230,7 @@ public class BulkDataTransferTest {
 
         for ( Bundle.BundleEntryComponent bundleEntryComponent : resourceBundle.getEntry()) {
             Resource resource = bundleEntryComponent.getResource();
-            assertTrue( allPatientData.getEntry().stream()
+            assertTrue( patientData.getEntry().stream()
                     .map(allPatientBundleEntryComponent -> allPatientBundleEntryComponent.getResource())
                     .filter( res -> res.fhirType()==resourceType)
                     .filter( res2 -> res2.getId().endsWith(resource.getId()))
@@ -244,21 +269,25 @@ public class BulkDataTransferTest {
         return resourceType;
     }
 
-
+    public static HttpResponse callBulkDataService() throws Exception {
+        return callBulkDataService(null, null);
+    }
     public static HttpResponse callBulkDataService(String outcome) throws Exception {
+        return callBulkDataService(outcome, null);
+    }
+    public static HttpResponse callBulkDataService(String outcome, String patientId) throws Exception {
 
         TestUtil.startServer();
 
         JSONArray context = new JSONArray();
 
-        Bundle allPatientData = retrieveAllPatientEverything();
-
-        assertNotNull(allPatientData);
-        assertTrue(allPatientData.getEntry().size()>1 );
-
         String url = TestUtil.getOurClient().getServerBase()+"/Patient/$export";
+        if ( patientId!=null ){
+            url = TestUtil.getOurClient().getServerBase()+"/Patient/"+patientId+"/$export";
+        }
+
         URIBuilder uriBuilder = new URIBuilder(url);
-        if ( outcome!=null || !outcome.isEmpty() ){
+        if ( outcome!=null ){
             uriBuilder.addParameter("type", outcome);
         }
 
@@ -311,9 +340,11 @@ public class BulkDataTransferTest {
     }
 
 
-    private static Bundle retrieveAllPatientEverything() throws Exception {
+    private static Bundle retrieveAllPatientEverything( String patientId ) throws Exception {
         HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet    get        = new HttpGet( TestUtil.getOurClient().getServerBase()+"/Patient/$everything" );
+
+        String url = TestUtil.getOurClient().getServerBase()+( patientId==null? "/Patient/$everything":"/Patient/"+patientId+"/$everything" );
+        HttpGet    get        = new HttpGet( url );
 
         HttpResponse response = httpClient.execute(get);
         InputStream inputStream = response.getEntity().getContent();

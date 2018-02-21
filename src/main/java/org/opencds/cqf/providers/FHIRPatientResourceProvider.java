@@ -63,8 +63,7 @@ public class FHIRPatientResourceProvider extends PatientResourceProvider {
 
             javax.servlet.http.HttpServletRequest theServletRequest,
 
-            @IdParam
-                    IdType theId,
+            @IdParam IdType theId,
 
             @Description(formalDefinition="Indicates the preferred output form for the call.")
             @OptionalParam(name="outputFormat") String outputFormat,
