@@ -64,14 +64,14 @@ public class CdsHooksHelper {
 
         prefetchContent = new JSONObject();
         prefetchContent.put("patient", "Patient/{{Patient.id}}");
-        prefetchContent.put("Diabetes Conditions", "Condition?patient={{Patient.id}}&code=250.00,E11.9,313436004,73211009");
-        prefetchContent.put("Creatinine Labs", "Observation?patient={{Patient.id}}&code=20005");
-        prefetchContent.put("HbA1C Labs", "Observation?patient={{Patient.id}}&code=20006");
-        prefetchContent.put("LDL Labs", "Observation?patient={{Patient.id}}&code=20007");
-        prefetchContent.put("MicroalbCr Labs", "Observation?patient={{Patient.id}}&code=20008");
-        prefetchContent.put("Foot Exams", "Observation?patient={{Patient.id}}&code=20009");
-        prefetchContent.put("Eye Exams", "Observation?patient={{Patient.id}}&code=20010");
-        prefetchContent.put("ACE or ARB Medications", "MedicationStatement?patient={{Patient.id}}&code=999996");
+        prefetchContent.put("DiabetesConditions", "Condition?patient={{Patient.id}}&code=250.00,E11.9,313436004,73211009");
+        prefetchContent.put("CreatinineLabs", "Observation?patient={{Patient.id}}&code=2160-0");
+        prefetchContent.put("HbA1CLabs", "Observation?patient={{Patient.id}}&code=59261-8");
+        prefetchContent.put("LDLLabs", "Observation?patient={{Patient.id}}&code=13457-7");
+        prefetchContent.put("MicroalbCrLabs", "Observation?patient={{Patient.id}}&code=20008");
+        prefetchContent.put("FootExams", "Observation?patient={{Patient.id}}&code=20009");
+        prefetchContent.put("EyeExams", "Observation?patient={{Patient.id}}&code=20010");
+        prefetchContent.put("ACEorARBMedications", "MedicationStatement?patient={{Patient.id}}&code=999996");
         diabetesManagement.put("prefetch", prefetchContent);
 
         jsonArray.add(diabetesManagement);

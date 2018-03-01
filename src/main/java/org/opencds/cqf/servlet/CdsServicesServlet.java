@@ -175,28 +175,28 @@ public class CdsServicesServlet extends BaseServlet {
     public void resolveDiabetesManagementPrefetch(CdsHooksRequest cdsHooksRequest) throws FHIRException {
         if (cdsHooksRequest.getPrefetch().size() == 0) {
             String searchUrl = String.format("Condition?patient=%s&code=250.00,E11.9,313436004,73211009", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "Diabetes Conditions");
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "DiabetesConditions");
 
             searchUrl = String.format("Observation?patient=%s&code=20005", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "Creatinine Labs");
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "CreatinineLabs");
 
             searchUrl = String.format("Observation?patient=%s&code=20006", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "HbA1C Labs");
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "HbA1CLabs");
 
             searchUrl = String.format("Observation?patient=%s&code=20007", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "LDL Labs");
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "LDLLabs");
 
             searchUrl = String.format("Observation?patient=%s&code=20008", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "MicroalbCr Labs");
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "MicroalbCrLabs");
 
             searchUrl = String.format("Observation?patient=%s&code=20009", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "Foot Exams");
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "FootExams");
 
             searchUrl = String.format("Observation?patient=%s&code=20010", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "Eye Exams");
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "EyeExams");
 
             searchUrl = String.format("MedicationStatement?patient=%s&code=999996", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "ACE or ARB Medications");
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "ACEorARBMedications");
         }
     }
 
