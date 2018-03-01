@@ -6,6 +6,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cds.*;
@@ -177,13 +181,13 @@ public class CdsServicesServlet extends BaseServlet {
             String searchUrl = String.format("Condition?patient=%s&code=250.00,E11.9,313436004,73211009", cdsHooksRequest.getPatientId());
             cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "DiabetesConditions");
 
-            searchUrl = String.format("Observation?patient=%s&code=20005", cdsHooksRequest.getPatientId());
+            searchUrl = String.format("Observation?patient=%s&code=2160-0", cdsHooksRequest.getPatientId());
             cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "CreatinineLabs");
 
-            searchUrl = String.format("Observation?patient=%s&code=20006", cdsHooksRequest.getPatientId());
+            searchUrl = String.format("Observation?patient=%s&code=59261-8", cdsHooksRequest.getPatientId());
             cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "HbA1CLabs");
 
-            searchUrl = String.format("Observation?patient=%s&code=20007", cdsHooksRequest.getPatientId());
+            searchUrl = String.format("Observation?patient=%s&code=13457-7", cdsHooksRequest.getPatientId());
             cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "LDLLabs");
 
             searchUrl = String.format("Observation?patient=%s&code=20008", cdsHooksRequest.getPatientId());
