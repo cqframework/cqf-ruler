@@ -2,8 +2,8 @@ package org.opencds.cqf.exceptions;
 
 public class MissingContextException extends RuntimeException {
 
-    public MissingContextException(String message) {
-        super(message);
+    @Override
+    public String getMessage() {
+        return "CDS Hooks requests require a context object be specified and populated.";
     }
-
 }

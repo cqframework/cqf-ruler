@@ -48,8 +48,8 @@ public class CdsServicesServlet extends BaseServlet {
         cdsHooksRequest.setService(request.getPathInfo().replace("/", ""));
 
         //
-        if (cdsHooksRequest.getFhirServerEndpoint() != null) {
-            isStu3 = isStu3(cdsHooksRequest.getFhirServerEndpoint());
+        if (cdsHooksRequest.getFhirServer() != null) {
+            isStu3 = isStu3(cdsHooksRequest.getFhirServer());
         }
         CdsRequestProcessor processor = null;
 
@@ -133,9 +133,9 @@ public class CdsServicesServlet extends BaseServlet {
     private void resolveMedicationPrescribePrefetch(CdsHooksRequest cdsHooksRequest) {
         if (cdsHooksRequest.getPrefetch().size() == 0) {
             if (isStu3) {
-                String searchUrl = String.format("MedicationRequest?patient=%s&status=active", cdsHooksRequest.getPatientId());
+                String searchUrl = String.format("MedicationRequest?patient=%s&status=active", cdsHooksRequest.getContextProperty("patientId"));
                 Bundle postfetch = FhirContext.forDstu3()
-                        .newRestfulGenericClient(cdsHooksRequest.getFhirServerEndpoint())
+                        .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
                         .search()
                         .byUrl(searchUrl)
                         .returnBundle(Bundle.class)
@@ -143,12 +143,12 @@ public class CdsServicesServlet extends BaseServlet {
                 cdsHooksRequest.setPrefetch(postfetch, "medication");
             }
             else {
-                String searchUrl = String.format("MedicationOrder?patient=%s&status=active", cdsHooksRequest.getPatientId());
-                ca.uhn.fhir.model.dstu2.resource.Bundle postfetch = FhirContext.forDstu2()
-                        .newRestfulGenericClient(cdsHooksRequest.getFhirServerEndpoint())
+                String searchUrl = String.format("MedicationOrder?patient=%s&status=active", cdsHooksRequest.getContextProperty("patientId"));
+                org.hl7.fhir.instance.model.Bundle postfetch = FhirContext.forDstu2Hl7Org()
+                        .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
                         .search()
                         .byUrl(searchUrl)
-                        .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
+                        .returnBundle(org.hl7.fhir.instance.model.Bundle.class)
                         .execute();
                 cdsHooksRequest.setPrefetch(postfetch, "medication");
             }
@@ -166,7 +166,7 @@ public class CdsServicesServlet extends BaseServlet {
                     .execute();
         }
         else {
-            postfetch = Dstu2ToStu3.convertBundle(FhirContext.forDstu2()
+            postfetch = (Bundle) Dstu2ToStu3.convertResource(FhirContext.forDstu2Hl7Org()
                     .newRestfulGenericClient(fhirServerEndpoint)
                     .search()
                     .byUrl(searchUrl)
@@ -178,29 +178,29 @@ public class CdsServicesServlet extends BaseServlet {
 
     public void resolveDiabetesManagementPrefetch(CdsHooksRequest cdsHooksRequest) throws FHIRException {
         if (cdsHooksRequest.getPrefetch().size() == 0) {
-            String searchUrl = String.format("Condition?patient=%s&code=250.00,E11.9,313436004,73211009", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "DiabetesConditions");
+            String searchUrl = String.format("Condition?patient=%s&code=250.00,E11.9,313436004,73211009", cdsHooksRequest.getContextProperty("patientId"));
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServer()), "DiabetesConditions");
 
-            searchUrl = String.format("Observation?patient=%s&code=2160-0", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "CreatinineLabs");
+            searchUrl = String.format("Observation?patient=%s&code=2160-0", cdsHooksRequest.getContextProperty("patientId"));
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServer()), "CreatinineLabs");
 
-            searchUrl = String.format("Observation?patient=%s&code=59261-8", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "HbA1CLabs");
+            searchUrl = String.format("Observation?patient=%s&code=59261-8", cdsHooksRequest.getContextProperty("patientId"));
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServer()), "HbA1CLabs");
 
-            searchUrl = String.format("Observation?patient=%s&code=13457-7", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "LDLLabs");
+            searchUrl = String.format("Observation?patient=%s&code=13457-7", cdsHooksRequest.getContextProperty("patientId"));
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServer()), "LDLLabs");
 
-            searchUrl = String.format("Observation?patient=%s&code=20008", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "MicroalbCrLabs");
+            searchUrl = String.format("Observation?patient=%s&code=20008", cdsHooksRequest.getContextProperty("patientId"));
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServer()), "MicroalbCrLabs");
 
-            searchUrl = String.format("Observation?patient=%s&code=20009", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "FootExams");
+            searchUrl = String.format("Observation?patient=%s&code=20009", cdsHooksRequest.getContextProperty("patientId"));
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServer()), "FootExams");
 
-            searchUrl = String.format("Observation?patient=%s&code=20010", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "EyeExams");
+            searchUrl = String.format("Observation?patient=%s&code=20010", cdsHooksRequest.getContextProperty("patientId"));
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServer()), "EyeExams");
 
-            searchUrl = String.format("MedicationStatement?patient=%s&code=999996", cdsHooksRequest.getPatientId());
-            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServerEndpoint()), "ACEorARBMedications");
+            searchUrl = String.format("MedicationStatement?patient=%s&code=999996", cdsHooksRequest.getContextProperty("patientId"));
+            cdsHooksRequest.setPrefetch(getPrefetchElement(searchUrl, cdsHooksRequest.getFhirServer()), "ACEorARBMedications");
         }
     }
 
@@ -211,48 +211,50 @@ public class CdsServicesServlet extends BaseServlet {
         // TODO - clean this up
 
         if (cdsHooksRequest.getPrefetch().size() == 0) {
-            String searchUrl = String.format("MedicationOrder?patient=%s&encounter=%s", cdsHooksRequest.getPatientId(), cdsHooksRequest.getEncounterId());
-            ca.uhn.fhir.model.dstu2.resource.Bundle postfetch = FhirContext.forDstu2()
-                    .newRestfulGenericClient(cdsHooksRequest.getFhirServerEndpoint())
+            String searchUrl = String.format("MedicationOrder?patient=%s&encounter=%s",
+                    cdsHooksRequest.getContextProperty("patientId"), cdsHooksRequest.getContextProperty("encounterId")
+            );
+            org.hl7.fhir.instance.model.Bundle postfetch = FhirContext.forDstu2Hl7Org()
+                    .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
                     .search()
                     .byUrl(searchUrl)
-                    .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
+                    .returnBundle(org.hl7.fhir.instance.model.Bundle.class)
                     .execute();
             cdsHooksRequest.setPrefetch(postfetch, "medication");
 
-            searchUrl = String.format("DiagnosticOrder?patient=%s&encounter=%s", cdsHooksRequest.getPatientId(), cdsHooksRequest.getEncounterId());
-            ca.uhn.fhir.model.dstu2.resource.Bundle diagnosticOrders = FhirContext.forDstu2()
-                    .newRestfulGenericClient(cdsHooksRequest.getFhirServerEndpoint())
+            searchUrl = String.format("DiagnosticOrder?patient=%s&encounter=%s", cdsHooksRequest.getContextProperty("patientId"), cdsHooksRequest.getContextProperty("encounterId"));
+            org.hl7.fhir.instance.model.Bundle diagnosticOrders = FhirContext.forDstu2()
+                    .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
                     .search()
                     .byUrl(searchUrl)
-                    .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
+                    .returnBundle(org.hl7.fhir.instance.model.Bundle.class)
                     .execute();
             cdsHooksRequest.setPrefetch(diagnosticOrders, "diagnosticOrders");
 
-            searchUrl = String.format("DeviceUseRequest?patient=%s&encounter=%s", cdsHooksRequest.getPatientId(), cdsHooksRequest.getEncounterId());
-            ca.uhn.fhir.model.dstu2.resource.Bundle deviceUseRequests = FhirContext.forDstu2()
-                    .newRestfulGenericClient(cdsHooksRequest.getFhirServerEndpoint())
+            searchUrl = String.format("DeviceUseRequest?patient=%s&encounter=%s", cdsHooksRequest.getContextProperty("patientId"), cdsHooksRequest.getContextProperty("encounterId"));
+            org.hl7.fhir.instance.model.Bundle deviceUseRequests = FhirContext.forDstu2()
+                    .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
                     .search()
                     .byUrl(searchUrl)
-                    .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
+                    .returnBundle(org.hl7.fhir.instance.model.Bundle.class)
                     .execute();
             cdsHooksRequest.setPrefetch(deviceUseRequests, "deviceUseRequests");
 
-            searchUrl = String.format("ProcedureRequest?patient=%s&encounter=%s", cdsHooksRequest.getPatientId(), cdsHooksRequest.getEncounterId());
-            ca.uhn.fhir.model.dstu2.resource.Bundle procedureRequests = FhirContext.forDstu2()
-                    .newRestfulGenericClient(cdsHooksRequest.getFhirServerEndpoint())
+            searchUrl = String.format("ProcedureRequest?patient=%s&encounter=%s", cdsHooksRequest.getContextProperty("patientId"), cdsHooksRequest.getContextProperty("encounterId"));
+            org.hl7.fhir.instance.model.Bundle procedureRequests = FhirContext.forDstu2()
+                    .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
                     .search()
                     .byUrl(searchUrl)
-                    .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
+                    .returnBundle(org.hl7.fhir.instance.model.Bundle.class)
                     .execute();
             cdsHooksRequest.setPrefetch(procedureRequests, "procedureRequests");
 
-            searchUrl = String.format("SupplyRequest?patient=%s&encounter=%s", cdsHooksRequest.getPatientId(), cdsHooksRequest.getEncounterId());
-            ca.uhn.fhir.model.dstu2.resource.Bundle supplyRequests = FhirContext.forDstu2()
-                    .newRestfulGenericClient(cdsHooksRequest.getFhirServerEndpoint())
+            searchUrl = String.format("SupplyRequest?patient=%s&encounter=%s", cdsHooksRequest.getContextProperty("patientId"), cdsHooksRequest.getContextProperty("encounterId"));
+            org.hl7.fhir.instance.model.Bundle supplyRequests = FhirContext.forDstu2()
+                    .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
                     .search()
                     .byUrl(searchUrl)
-                    .returnBundle(ca.uhn.fhir.model.dstu2.resource.Bundle.class)
+                    .returnBundle(org.hl7.fhir.instance.model.Bundle.class)
                     .execute();
             cdsHooksRequest.setPrefetch(supplyRequests, "supplyRequests");
         }

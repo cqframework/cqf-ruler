@@ -8,6 +8,7 @@ import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.dstu3.model.MedicationRequest;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.Resource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
@@ -41,9 +42,9 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
         // TODO - need a better way to determine library id
         Library library = providers.getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("medication-prescribe"));
 
-        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServerEndpoint());
+        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServer());
         // TODO - assuming terminology service is same as data provider - not a great assumption...
-        dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint(request.getFhirServerEndpoint()));
+        dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint(request.getFhirServer()));
         dstu3Provider.setExpandValueSets(true);
 
         Context executionContext = new Context(library);
@@ -56,10 +57,6 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
     }
 
     private void resolveContextPrescription() throws FHIRException {
-        if (request.getContext().size() == 0) {
-            throw new MissingContextException("The medication-prescribe request requires the context to contain a prescription order.");
-        }
-
         String resourceName = request.getContext().getAsJsonPrimitive("resourceType").getAsString();
         if (!isStu3) {
             this.contextPrescription = getMedicationRequest(resourceName, FhirContext.forDstu2().newJsonParser().parseResource(request.getContext().toString()));
@@ -73,7 +70,7 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
         this.activePrescriptions.add(contextPrescription); // include the context prescription
 
         if (!isStu3) {
-            Bundle bundle = (Bundle) FhirContext.forDstu2().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medication").getAsJsonObject("resource").toString());
+            Bundle bundle = (Bundle) FhirContext.forDstu2Hl7Org().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medication").getAsJsonObject("resource").toString());
             if (bundle.getEntry() == null) {
                 return;
             }
@@ -94,8 +91,7 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
 
     private MedicationRequest getMedicationRequest(String resourceName, IBaseResource resource) throws FHIRException {
         if (resourceName.equals("MedicationOrder")) {
-            MedicationOrder order = (MedicationOrder) resource;
-            return Dstu2ToStu3.resolveMedicationRequest(order);
+            return (MedicationRequest) Dstu2ToStu3.convertResource((Resource) resource);
         }
 
         return (MedicationRequest) resource;

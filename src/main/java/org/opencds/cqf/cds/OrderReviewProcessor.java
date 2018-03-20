@@ -29,16 +29,16 @@ public class OrderReviewProcessor extends CdsRequestProcessor {
         // TODO - need a better way to determine library id
         Library library = providers.getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("OrderReview"));
 
-        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServerEndpoint());
+        BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServer());
         // TODO - assuming terminology service is same as data provider - not a great assumption...
-        dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint(request.getFhirServerEndpoint()));
+        dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint(request.getFhirServer()));
         dstu3Provider.setExpandValueSets(true);
 
         Context executionContext = new Context(library);
         executionContext.registerLibraryLoader(providers.getLibraryLoader());
         executionContext.registerDataProvider("http://hl7.org/fhir", dstu3Provider);
         executionContext.registerTerminologyProvider(dstu3Provider.getTerminologyProvider());
-        executionContext.setContextValue("Patient", request.getPatientId());
+        executionContext.setContextValue("Patient", request.getContextProperty("patientId"));
         executionContext.setParameter(null, "Order", contextOrder);
         executionContext.setExpressionCaching(true);
 
@@ -46,10 +46,6 @@ public class OrderReviewProcessor extends CdsRequestProcessor {
     }
 
     private void resolveOrder() {
-        if (request.getContext().size() == 0) {
-            throw new MissingContextException("The order-review request requires the context to contain an order.");
-        }
-
         // Assuming STU3 here as per the example here: http://cds-hooks.org/#radiology-appropriateness
         this.contextOrder = (ProcedureRequest) FhirContext.forDstu3().newJsonParser().parseResource(request.getContext().toString());
     }

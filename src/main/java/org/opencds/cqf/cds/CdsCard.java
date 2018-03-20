@@ -3,9 +3,9 @@ package org.opencds.cqf.cds;
 import ca.uhn.fhir.context.FhirContext;
 import com.google.gson.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +14,32 @@ import java.util.List;
  */
 public class CdsCard {
 
-    private String summary;
-    private String detail;
-    private String indicator;
+    /*
+    *
+    * Specification v1.0:
+    *   summary     - REQUIRED  - String
+    *   detail      - OPTIONAL  - String
+    *   indicator   - REQUIRED  - String
+    *   source      - REQUIRED  - Object
+    *   suggestions - OPTIONAL  - Array[suggestion]
+    *   links       - OPTIONAL  - Array[link]
+    *
+    * */
 
+    public CdsCard() {
+        this.source = new Source();
+        this.suggestions = new ArrayList<>();
+        this.links = new ArrayList<>();
+    }
+
+    // Required elements cstor
+    public CdsCard(String summary, String indicator, Source source) {
+        this.summary = summary;
+        this.indicator = IndicatorCode.valueOf(indicator);
+        this.source = source;
+    }
+
+    private String summary;
     public boolean hasSummary() {
         return this.summary != null && !this.summary.isEmpty();
     }
@@ -29,6 +51,7 @@ public class CdsCard {
         return this;
     }
 
+    private String detail;
     public boolean hasDetail() {
         return this.detail != null && !this.detail.isEmpty();
     }
@@ -40,23 +63,44 @@ public class CdsCard {
         return this;
     }
 
-    public boolean hasIndicator() {
-        return this.indicator != null && !this.indicator.isEmpty();
+    private IndicatorCode indicator;
+    public enum IndicatorCode {
+        INFO("info"),
+        WARN("warning"),
+        HARDSTOP("hard-stop");
+
+        public final String code;
+        IndicatorCode(String code) {
+            this.code = code;
+        }
     }
-    public String getIndicator() {
+    public boolean hasIndicator() {
+        return this.indicator != null;
+    }
+    public IndicatorCode getIndicator() {
         return this.indicator;
     }
-    public CdsCard setIndicator(String indicator) {
+    public CdsCard setIndicator(IndicatorCode indicator) {
         this.indicator = indicator;
         return this;
     }
+    public CdsCard setIndicator(String indicator) {
+        this.indicator = IndicatorCode.valueOf(indicator);
+        return this;
+    }
 
-
+    /*
+    *
+    * label - REQUIRED  - String
+    * url   - OPTIONAL  - URL
+    * icon  - OPTIONAL  - URL
+    *
+    * */
     private Source source;
     public static class Source {
         private String label;
-        private String url;
-        private String icon;
+        private URL url;
+        private URL icon;
 
         public boolean hasLabel() {
             return this.label != null && !this.label.isEmpty();
@@ -70,29 +114,45 @@ public class CdsCard {
         }
 
         public boolean hasUrl() {
-            return this.url != null && !this.url.isEmpty();
+            return this.url != null;
         }
-        public String getUrl() {
+        public URL getUrl() {
             return this.url;
         }
-        public CdsCard.Source setUrl(String url) {
+        public CdsCard.Source setUrl(URL url) {
             this.url = url;
+            return this;
+        }
+        public CdsCard.Source setUrl(String url) {
+            try {
+                this.url = new URL(url);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Malformed CDS Hooks Card source URL: " + url);
+            }
             return this;
         }
 
         public boolean hasIcon() {
-            return this.icon != null && !this.icon.isEmpty();
+            return this.icon != null;
         }
-        public String getIcon() {
+        public URL getIcon() {
             return this.icon;
         }
-        public CdsCard.Source setIcon(String icon) {
+        public CdsCard.Source setIcon(URL icon) {
             this.icon = icon;
+            return this;
+        }
+        public CdsCard.Source setIcon(String icon) {
+            try {
+                this.icon = new URL(icon);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Malformed CDS Hooks Card source icon URL: " + url);
+            }
             return this;
         }
     }
     public boolean hasSource() {
-        return  source.hasLabel() || source.hasUrl();
+        return source.hasLabel();
     }
     public Source getSource() {
         return this.source;
@@ -102,7 +162,13 @@ public class CdsCard {
         return this;
     }
 
-
+    /*
+    *
+    * label   - REQUIRED    - String
+    * uuid    - OPTIONAL    - String
+    * actions - OPTIONAL    - Array[action]
+    *
+    * */
     private List<Suggestions> suggestions;
     public static class Suggestions {
         private String label;
@@ -148,6 +214,13 @@ public class CdsCard {
             this.actions.add(action);
         }
 
+        /*
+        *
+        * type        - REQUIRED    - String
+        * description - REQUIRED    - String
+        * resource    - OPTIONAL    - FHIR Resource (create/update) or ID (delete)
+        *
+        * */
         public static class Action {
             enum ActionType {create, update, delete}
 
@@ -203,11 +276,20 @@ public class CdsCard {
         this.suggestions.add(suggestions);
     }
 
+    /*
+    *
+    * label      - REQUIRED     - String
+    * url        - REQUIRED     - URL
+    * type       - REQUIRED     - String
+    * appContext - OPTIONAL     - String
+    *
+    * */
     private List<Links> links;
     public static class Links {
         private String label;
-        private String url;
+        private URL url;
         private String type;
+        private String appContext;
 
         public boolean hasLabel() {
             return this.label != null && !this.label.isEmpty();
@@ -221,13 +303,21 @@ public class CdsCard {
         }
 
         public boolean hasUrl() {
-            return this.url != null && !this.url.isEmpty();
+            return this.url != null;
         }
-        public String getUrl() {
+        public URL getUrl() {
             return this.url;
         }
-        public CdsCard.Links setUrl(String url) {
+        public CdsCard.Links setUrl(URL url) {
             this.url = url;
+            return this;
+        }
+        public CdsCard.Links setUrl(String url) {
+            try {
+                this.url = new URL(url);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Malformed CDS Hooks Card link URL: " + url);
+            }
             return this;
         }
 
@@ -241,6 +331,17 @@ public class CdsCard {
             this.type = type;
             return this;
         }
+
+        public boolean hasAppContext() {
+            return this.appContext != null && !this.appContext.isEmpty();
+        }
+        public String getAppContext() {
+            return this.appContext;
+        }
+        public CdsCard.Links setAppContext(String appContext) {
+            this.appContext = appContext;
+            return this;
+        }
     }
     public boolean hasLinks() {
         return this.links != null && !this.links.isEmpty();
@@ -252,38 +353,35 @@ public class CdsCard {
         this.links = links;
         return this;
     }
-
-
-    public CdsCard() {
-        this.source = new Source();
-        this.suggestions = new ArrayList<>();
-        this.links = new ArrayList<>();
+    public void addLink(Links link) {
+        this.links.add(link);
     }
 
     public JsonObject toJson() {
         JsonObject card = new JsonObject();
-        if (hasSummary()) {
-            card.addProperty("summary", summary);
-        }
 
-        if (hasIndicator()) {
-            card.addProperty("indicator", indicator);
-        }
-
+        card.addProperty("summary", getSummary());
+        card.addProperty("indicator", getIndicator().code);
         if (hasDetail()) {
-            card.addProperty("detail", detail);
+            card.addProperty("detail", getDetail());
         }
 
-        // TODO: Source
-
+        JsonObject sourceObject = new JsonObject();
+        Source source = getSource();
+        sourceObject.addProperty("label", source.getLabel());
+        if (source.hasUrl()) {
+            sourceObject.addProperty("url", source.getUrl().toString());
+        }
+        if (source.hasIcon()) {
+            sourceObject.addProperty("icon", source.getIcon().toString());
+        }
+        card.add("source", sourceObject);
 
         if (hasSuggestions()) {
             JsonArray suggestionArray = new JsonArray();
             for (Suggestions suggestion : getSuggestions()) {
                 JsonObject suggestionObj = new JsonObject();
-                if (suggestion.hasLabel()) {
-                    suggestionObj.addProperty("label", suggestion.getLabel());
-                }
+                suggestionObj.addProperty("label", suggestion.getLabel());
                 if (suggestion.hasUuid()) {
                     suggestionObj.addProperty("uuid", suggestion.getUuid());
                 }
@@ -291,12 +389,8 @@ public class CdsCard {
                     JsonArray actionArray = new JsonArray();
                     for (Suggestions.Action action : suggestion.getActions()) {
                         JsonObject actionObj = new JsonObject();
-                        if (action.hasDescription()) {
-                            actionObj.addProperty("description", action.getDescription());
-                        }
-                        if (action.hasType()) {
-                            actionObj.addProperty("type", action.getType().toString());
-                        }
+                        actionObj.addProperty("type", action.getType().toString());
+                        actionObj.addProperty("description", action.getDescription());
                         if (action.hasResource()) {
                             JsonElement res = new JsonParser().parse(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(action.getResource()));
                             actionObj.add("resource", res);
@@ -314,16 +408,11 @@ public class CdsCard {
             JsonArray linksArray = new JsonArray();
             for (Links linkElement : getLinks()) {
                 JsonObject link = new JsonObject();
-                if (linkElement.hasLabel()) {
-                    link.addProperty("label", linkElement.getLabel());
-                }
-
-                if (linkElement.hasUrl()) {
-                    link.addProperty("url", linkElement.getUrl());
-                }
-
-                if (linkElement.hasType()) {
-                    link.addProperty("type", linkElement.getType());
+                link.addProperty("label", linkElement.getLabel());
+                link.addProperty("url", linkElement.getUrl().toString());
+                link.addProperty("type", linkElement.getType());
+                if (linkElement.hasAppContext()) {
+                    link.addProperty("appContext", linkElement.getAppContext());
                 }
                 linksArray.add(link);
             }
@@ -331,36 +420,4 @@ public class CdsCard {
         }
         return card;
     }
-
-//    public JSONObject toJson() {
-//        JSONObject card = new JSONObject();
-//        if (hasSummary()) {
-//            card.put("summary", summary);
-//        }
-//        if (hasIndicator()) {
-//            card.put("indicator", indicator);
-//        }
-//        if (hasDetail()) {
-//            card.put("detail", detail);
-//        }
-//        // TODO: Source & Suggestions
-//        if (hasLinks()) {
-//            JSONArray linksArray = new JSONArray();
-//            for (Links linkElement : getLinks()) {
-//                JSONObject link = new JSONObject();
-//                if (linkElement.hasLabel()) {
-//                    link.put("label", linkElement.getLabel());
-//                }
-//                if (linkElement.hasUrl()) {
-//                    link.put("url", linkElement.getUrl());
-//                }
-//                if (linkElement.hasType()) {
-//                    link.put("type", linkElement.getType());
-//                }
-//                linksArray.add(link);
-//            }
-//            card.put("links", linksArray);
-//        }
-//        return card;
-//    }
 }

@@ -229,7 +229,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
 
     public CarePlan resolveCdsHooksPlanDefinition(Context context, CdsHooksRequest request) {
         PlanDefinition planDefinition = this.getDao().read(new IdType(request.getService()));
-        return resolveCdsHooksPlanDefinition(context, planDefinition, request.getPatientId());
+        return resolveCdsHooksPlanDefinition(context, planDefinition, request.getContextProperty("patientId"));
     }
 
     // For library use

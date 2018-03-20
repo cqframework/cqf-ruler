@@ -2,8 +2,8 @@ package org.opencds.cqf.exceptions;
 
 public class MissingHookException extends RuntimeException {
 
-    public MissingHookException(String message) {
-        super(message);
+    @Override
+    public String getMessage() {
+        return "CDS Hooks requests require a hook ID be specified.";
     }
-
 }
