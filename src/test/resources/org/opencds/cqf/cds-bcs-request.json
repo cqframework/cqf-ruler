@@ -3,7 +3,66 @@
   "fhirServer": "http://localhost:8080/cqf-ruler/baseDstu3",
   "hook": "patient-view",
   "user": "Practitioner/example",
-  "context": [],
-  "patient": "Patient/Patient-6535",
+  "context": {
+    "patientId": "Patient/Patient-6535",
+    "patient": {
+      "resourceType": "Patient",
+      "id": "Patient-6535",
+      "identifier": [
+        {
+          "use": "official",
+          "type": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/identifier-type",
+                "code": "SB",
+                "display": "Social Beneficiary Identifier"
+              }
+            ],
+            "text": "US Social Security Number"
+          },
+          "system": "http://hl7.org/fhir/sid/us-ssn",
+          "value": "000006535"
+        }
+      ],
+      "active": true,
+      "name": [
+        {
+          "family": "Howe",
+          "given": [
+            "Barbara",
+            "April"
+          ]
+        }
+      ],
+      "telecom": [
+        {
+          "system": "phone",
+          "value": "313-555-2144",
+          "use": "home"
+        },
+        {
+          "system": "phone",
+          "value": "313-555-6448",
+          "use": "mobile"
+        }
+      ],
+      "gender": "female",
+      "birthDate": "1955-10-19",
+      "address": [
+        {
+          "use": "home",
+          "type": "postal",
+          "line": [
+            "531 SW Jefferson Avenue"
+          ],
+          "city": "Detroit",
+          "district": "Wayne County",
+          "state": "MI",
+          "postalCode": "48211"
+        }
+      ]
+    }
+  },
   "prefetch": {}
 }

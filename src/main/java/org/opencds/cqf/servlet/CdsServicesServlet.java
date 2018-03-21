@@ -58,7 +58,7 @@ public class CdsServicesServlet extends BaseServlet {
         FHIRPlanDefinitionResourceProvider planDefinitionResourceProvider = (FHIRPlanDefinitionResourceProvider) getProvider("PlanDefinition");
 
         // Custom cds services - requires customized terminology/data providers
-        if (request.getRequestURL().toString().endsWith("cdc-opioid-guidance")) {
+        if (cdsHooksRequest.getService().startsWith("cdc-opioid-guidance")) {
             resolveMedicationPrescribePrefetch(cdsHooksRequest);
             try {
                 processor = new OpioidGuidanceProcessor(cdsHooksRequest, libraryResourceProvider, planDefinitionResourceProvider, isStu3);
@@ -140,7 +140,7 @@ public class CdsServicesServlet extends BaseServlet {
                         .byUrl(searchUrl)
                         .returnBundle(Bundle.class)
                         .execute();
-                cdsHooksRequest.setPrefetch(postfetch, "medication");
+                cdsHooksRequest.setPrefetch(postfetch, "medications");
             }
             else {
                 String searchUrl = String.format("MedicationOrder?patient=%s&status=active", cdsHooksRequest.getContextProperty("patientId"));
@@ -150,7 +150,7 @@ public class CdsServicesServlet extends BaseServlet {
                         .byUrl(searchUrl)
                         .returnBundle(org.hl7.fhir.instance.model.Bundle.class)
                         .execute();
-                cdsHooksRequest.setPrefetch(postfetch, "medication");
+                cdsHooksRequest.setPrefetch(postfetch, "medications");
             }
         }
     }
@@ -220,10 +220,10 @@ public class CdsServicesServlet extends BaseServlet {
                     .byUrl(searchUrl)
                     .returnBundle(org.hl7.fhir.instance.model.Bundle.class)
                     .execute();
-            cdsHooksRequest.setPrefetch(postfetch, "medication");
+            cdsHooksRequest.setPrefetch(postfetch, "medications");
 
             searchUrl = String.format("DiagnosticOrder?patient=%s&encounter=%s", cdsHooksRequest.getContextProperty("patientId"), cdsHooksRequest.getContextProperty("encounterId"));
-            org.hl7.fhir.instance.model.Bundle diagnosticOrders = FhirContext.forDstu2()
+            org.hl7.fhir.instance.model.Bundle diagnosticOrders = FhirContext.forDstu2Hl7Org()
                     .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
                     .search()
                     .byUrl(searchUrl)
@@ -232,7 +232,7 @@ public class CdsServicesServlet extends BaseServlet {
             cdsHooksRequest.setPrefetch(diagnosticOrders, "diagnosticOrders");
 
             searchUrl = String.format("DeviceUseRequest?patient=%s&encounter=%s", cdsHooksRequest.getContextProperty("patientId"), cdsHooksRequest.getContextProperty("encounterId"));
-            org.hl7.fhir.instance.model.Bundle deviceUseRequests = FhirContext.forDstu2()
+            org.hl7.fhir.instance.model.Bundle deviceUseRequests = FhirContext.forDstu2Hl7Org()
                     .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
                     .search()
                     .byUrl(searchUrl)
@@ -241,7 +241,7 @@ public class CdsServicesServlet extends BaseServlet {
             cdsHooksRequest.setPrefetch(deviceUseRequests, "deviceUseRequests");
 
             searchUrl = String.format("ProcedureRequest?patient=%s&encounter=%s", cdsHooksRequest.getContextProperty("patientId"), cdsHooksRequest.getContextProperty("encounterId"));
-            org.hl7.fhir.instance.model.Bundle procedureRequests = FhirContext.forDstu2()
+            org.hl7.fhir.instance.model.Bundle procedureRequests = FhirContext.forDstu2Hl7Org()
                     .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
                     .search()
                     .byUrl(searchUrl)
@@ -250,7 +250,7 @@ public class CdsServicesServlet extends BaseServlet {
             cdsHooksRequest.setPrefetch(procedureRequests, "procedureRequests");
 
             searchUrl = String.format("SupplyRequest?patient=%s&encounter=%s", cdsHooksRequest.getContextProperty("patientId"), cdsHooksRequest.getContextProperty("encounterId"));
-            org.hl7.fhir.instance.model.Bundle supplyRequests = FhirContext.forDstu2()
+            org.hl7.fhir.instance.model.Bundle supplyRequests = FhirContext.forDstu2Hl7Org()
                     .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
                     .search()
                     .byUrl(searchUrl)

@@ -35,7 +35,7 @@ public class CdsCard {
     // Required elements cstor
     public CdsCard(String summary, String indicator, Source source) {
         this.summary = summary;
-        this.indicator = IndicatorCode.valueOf(indicator);
+        this.indicator = IndicatorCode.toCode(indicator);
         this.source = source;
     }
 
@@ -73,6 +73,15 @@ public class CdsCard {
         IndicatorCode(String code) {
             this.code = code;
         }
+
+        public static IndicatorCode toCode(String indicator) {
+            switch (indicator) {
+                case "info": return IndicatorCode.INFO;
+                case "warning": return IndicatorCode.WARN;
+                case "hard-stop": return IndicatorCode.HARDSTOP;
+                default: throw new RuntimeException("Invalid indicator code: " + indicator);
+            }
+        }
     }
     public boolean hasIndicator() {
         return this.indicator != null;
@@ -85,7 +94,7 @@ public class CdsCard {
         return this;
     }
     public CdsCard setIndicator(String indicator) {
-        this.indicator = IndicatorCode.valueOf(indicator);
+        this.indicator = IndicatorCode.toCode(indicator);
         return this;
     }
 

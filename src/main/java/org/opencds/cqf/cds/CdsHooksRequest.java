@@ -9,6 +9,8 @@ import org.opencds.cqf.helpers.Dstu2ToStu3;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CdsHooksRequest {
 
@@ -127,9 +129,24 @@ public class CdsHooksRequest {
     public JsonObject getContextObject(String property) {
         return this.context.getAsJsonObject(property);
     }
-    public Resource getContextResource(String property) {
+    public List<Resource> getContextResources(String property) {
+        List<Resource> resources = new ArrayList<>();
         Gson gson = new Gson();
-        String resource = gson.toJson(this.context.getAsJsonObject(property));
+        String resource;
+        if (this.context.get(property) instanceof JsonArray) {
+            for (JsonElement res: (JsonArray)this.context.get(property)) {
+                resource = gson.toJson(res);
+                resources.add(parseResource(resource));
+            }
+        }
+        else {
+            resource = gson.toJson(this.context.getAsJsonObject(property));
+            resources.add(parseResource(resource));
+        }
+        return resources;
+    }
+
+    private Resource parseResource(String resource) {
         try {
             return (Resource) FhirContext.forDstu3().newJsonParser().parseResource(resource);
         } catch (Exception e) {

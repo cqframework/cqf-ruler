@@ -311,7 +311,7 @@ public class RulerTestBase {
     }
 
     // TODO - refactor CDS Hooks tests to match new framework
-    //@Test
+    @Test
     public void BCSCdsHooksPatientViewTest() throws IOException {
         putResource("cds-bcs-bundle.json", "");
         putResource("cds-codesystems.json", "");
@@ -346,12 +346,13 @@ public class RulerTestBase {
                 "      \"summary\": \"A Mammogram procedure for the patient is recommended\",\n" +
                 "      \"indicator\": \"warning\",\n" +
                 "      \"detail\": \"The patient has not had a Mammogram procedure in the last 39 months\",\n" +
+                "      \"source\": {},\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
                 "          \"actions\": [\n" +
                 "            {\n" +
-                "              \"description\": \"The patient has not had a Mammogram procedure in the last 39 months\",\n" +
                 "              \"type\": \"create\",\n" +
+                "              \"description\": \"The patient has not had a Mammogram procedure in the last 39 months\",\n" +
                 "              \"resource\": {\n" +
                 "                \"resourceType\": \"ProcedureRequest\",\n" +
                 "                \"status\": \"draft\",\n" +
@@ -384,7 +385,7 @@ public class RulerTestBase {
         );
     }
 
-    //@Test
+    @Test
     public void CCSCdsHooksPatientViewTest() throws IOException {
         putResource("cds-ccs-bundle.json", "");
         putResource("cds-codesystems.json", "");
@@ -419,12 +420,13 @@ public class RulerTestBase {
                 "      \"summary\": \"A Cervical Cytology procedure for the patient is recommended\",\n" +
                 "      \"indicator\": \"warning\",\n" +
                 "      \"detail\": \"The patient has not had a Cervical Cytology procedure in the last 3 years\",\n" +
+                "      \"source\": {},\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
                 "          \"actions\": [\n" +
                 "            {\n" +
-                "              \"description\": \"The patient has not had a Cervical Cytology procedure in the last 3 years\",\n" +
                 "              \"type\": \"create\",\n" +
+                "              \"description\": \"The patient has not had a Cervical Cytology procedure in the last 3 years\",\n" +
                 "              \"resource\": {\n" +
                 "                \"resourceType\": \"ProcedureRequest\",\n" +
                 "                \"status\": \"draft\",\n" +

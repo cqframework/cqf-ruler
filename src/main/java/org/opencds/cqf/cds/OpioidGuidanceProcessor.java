@@ -71,10 +71,10 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
     public List<CdsCard> process() {
 
         // validate resources
-        validateContextAndPrefetchResources(contextPrescription);
-        for (MedicationRequest request : activePrescriptions) {
-            validateContextAndPrefetchResources(request);
-        }
+//        validateContextAndPrefetchResources(contextPrescriptions);
+//        for (MedicationRequest request : activePrescriptions) {
+//            validateContextAndPrefetchResources(request);
+//        }
 
         // read opioid library
         Library library = getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("OpioidCdsStu3").withVersion("0.1.0"));
@@ -113,21 +113,21 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
     }
 
     // TODO - finish this
-    private void validateContextAndPrefetchResources(MedicationRequest prescription) {
-        if (!prescription.hasMedication()) {
-            throw new RuntimeException("Missing medication code in prescrition " + prescription.getId());
-        }
-
-        if (prescription.hasDosageInstruction()) {
-            if (!prescription.getDosageInstructionFirstRep().hasAsNeededBooleanType()) {
-                throw new RuntimeException("Missing/invalid asNeededBoolean field in dosageInstruction for prescription " + prescription.getId());
-            }
-            if (!prescription.getDosageInstructionFirstRep().hasDoseSimpleQuantity()) {
-                throw new RuntimeException("Missing/invalid doseQuantity field in dosageInstruction for prescription " + prescription.getId());
-            }
-        }
-        else {
-            throw new RuntimeException("Missing dosageInstruction structure in prescription " + prescription.getId());
-        }
-    }
+//    private void validateContextAndPrefetchResources(MedicationRequest prescription) {
+//        if (!prescription.hasMedication()) {
+//            throw new RuntimeException("Missing medication code in prescrition " + prescription.getId());
+//        }
+//
+//        if (prescription.hasDosageInstruction()) {
+//            if (!prescription.getDosageInstructionFirstRep().hasAsNeededBooleanType()) {
+//                throw new RuntimeException("Missing/invalid asNeededBoolean field in dosageInstruction for prescription " + prescription.getId());
+//            }
+//            if (!prescription.getDosageInstructionFirstRep().hasDoseSimpleQuantity()) {
+//                throw new RuntimeException("Missing/invalid doseQuantity field in dosageInstruction for prescription " + prescription.getId());
+//            }
+//        }
+//        else {
+//            throw new RuntimeException("Missing dosageInstruction structure in prescription " + prescription.getId());
+//        }
+//    }
 }

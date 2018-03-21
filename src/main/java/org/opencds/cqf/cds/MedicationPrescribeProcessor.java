@@ -23,7 +23,7 @@ import java.util.List;
 
 public class MedicationPrescribeProcessor extends CdsRequestProcessor {
 
-    MedicationRequest contextPrescription;
+    List<MedicationRequest> contextPrescriptions;
     List<MedicationRequest> activePrescriptions;
 
     public MedicationPrescribeProcessor(CdsHooksRequest request, LibraryResourceProvider libraryResourceProvider,
@@ -32,6 +32,7 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
     {
         super(request, libraryResourceProvider, planDefinitionResourceProvider, isStu3);
 
+        this.contextPrescriptions = new ArrayList<>();
         this.activePrescriptions = new ArrayList<>();
         resolveContextPrescription();
         resolveActivePrescriptions();
@@ -57,25 +58,24 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
     }
 
     private void resolveContextPrescription() throws FHIRException {
-        String resourceName = request.getContext().getAsJsonPrimitive("resourceType").getAsString();
-        if (!isStu3) {
-            this.contextPrescription = getMedicationRequest(resourceName, FhirContext.forDstu2().newJsonParser().parseResource(request.getContext().toString()));
-        }
-        else {
-            this.contextPrescription = getMedicationRequest(resourceName, FhirContext.forDstu3().newJsonParser().parseResource(request.getContext().toString()));
+        for (org.hl7.fhir.dstu3.model.Resource resource : request.getContextResources("medications")) {
+            this.contextPrescriptions.add((MedicationRequest) resource);
         }
     }
 
     private void resolveActivePrescriptions() throws FHIRException {
-        this.activePrescriptions.add(contextPrescription); // include the context prescription
+        this.activePrescriptions.addAll(this.contextPrescriptions); // include the context prescription
 
         if (!isStu3) {
-            Bundle bundle = (Bundle) FhirContext.forDstu2Hl7Org().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medication").getAsJsonObject("resource").toString());
-            if (bundle.getEntry() == null) {
-                return;
-            }
-            for (Bundle.Entry entry : bundle.getEntry()) {
-                this.activePrescriptions.add(getMedicationRequest(entry.getResource().getResourceName(), entry.getResource()));
+            IBaseResource resource = FhirContext.forDstu2Hl7Org().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medication").getAsJsonObject("resource").toString());
+            if (resource instanceof org.hl7.fhir.instance.model.Bundle) {
+                org.hl7.fhir.instance.model.Bundle bundle = (org.hl7.fhir.instance.model.Bundle) resource;
+                if (bundle.getEntry() == null) {
+                    return;
+                }
+                for (org.hl7.fhir.instance.model.Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+                    this.activePrescriptions.add(getMedicationRequest(entry.getResource()));
+                }
             }
         }
         else {
@@ -84,13 +84,13 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
                 return;
             }
             for (org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent entry : bundle.getEntry()) {
-                this.activePrescriptions.add(getMedicationRequest(entry.getResource().getResourceType().name(), entry.getResource()));
+                this.activePrescriptions.add(getMedicationRequest(entry.getResource()));
             }
         }
     }
 
-    private MedicationRequest getMedicationRequest(String resourceName, IBaseResource resource) throws FHIRException {
-        if (resourceName.equals("MedicationOrder")) {
+    private MedicationRequest getMedicationRequest(IBaseResource resource) throws FHIRException {
+        if (resource.getIdElement().getResourceType().equals("MedicationOrder")) {
             return (MedicationRequest) Dstu2ToStu3.convertResource((Resource) resource);
         }
 
