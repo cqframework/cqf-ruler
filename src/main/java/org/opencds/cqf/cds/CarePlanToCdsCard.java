@@ -87,31 +87,34 @@ public class CarePlanToCdsCard {
                 }
 
                 // suggestions
-                // TODO - uuid
-                boolean hasSuggestions = false;
-                CdsCard.Suggestions suggestions = new CdsCard.Suggestions();
-                CdsCard.Suggestions.Action actions = new CdsCard.Suggestions.Action();
-                if (action.hasLabel()) {
-                    suggestions.setLabel(action.getLabel());
-                    hasSuggestions = true;
+                if (action.hasType() && !"fire-event".equals(action.getType().getCode())) {
+	                // TODO - uuid
+	                boolean hasSuggestions = false;
+	                CdsCard.Suggestions suggestions = new CdsCard.Suggestions();
+	                CdsCard.Suggestions.Action actions = new CdsCard.Suggestions.Action();
+	                if (action.hasLabel()) {
+	                    suggestions.setLabel(action.getLabel());
+	                    hasSuggestions = true;
+	                }
+	                if (action.hasDescription()) {
+	                    actions.setDescription(action.getDescription());
+	                    hasSuggestions = true;
+	                }
+	                if (action.hasType()) {
+	                    String code = action.getType().getCode();
+	                    actions.setType(CdsCard.Suggestions.Action.ActionType.valueOf(code.equals("remove") ? "delete" : code));
+	                    hasSuggestions = true;
+	                }
+	                if (action.hasResource()) {
+	                    actions.setResource(action.getResourceTarget());
+	                    hasSuggestions = true;
+	                }
+	                if (hasSuggestions) {
+	                    suggestions.addAction(actions);
+	                    card.addSuggestion(suggestions);
+	                }
                 }
-                if (action.hasDescription()) {
-                    actions.setDescription(action.getDescription());
-                    hasSuggestions = true;
-                }
-                if (action.hasType()) {
-                    String code = action.getType().getCode();
-                    actions.setType(CdsCard.Suggestions.Action.ActionType.valueOf(code.equals("remove") ? "delete" : code));
-                    hasSuggestions = true;
-                }
-                if (action.hasResource()) {
-                    actions.setResource(action.getResourceTarget());
-                    hasSuggestions = true;
-                }
-                if (hasSuggestions) {
-                    suggestions.addAction(actions);
-                    card.addSuggestion(suggestions);
-                }
+                
                 cards.add(card);
             }
         }

@@ -3,6 +3,7 @@ package org.opencds.cqf.providers;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.api.annotation.Description;
@@ -13,13 +14,20 @@ import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
-import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
+
+import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.elm.execution.Library;
+import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.builders.*;
 import org.opencds.cqf.cds.CdsHooksRequest;
+import org.opencds.cqf.config.STU3LibraryLoader;
+import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.exceptions.NotImplementedException;
@@ -48,6 +56,89 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         this.provider.setExpandValueSets(true);
 
         this.executionProvider = new CqlExecutionProvider(providers);
+    }
+
+    public PlanDefinition resolveCdsHooksPlanDefinition(CdsHooksRequest request) {
+        return this.getDao().read(new IdType(request.getService()));
+    }
+
+    private LibraryResourceProvider getLibraryResourceProvider() {
+        return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
+    }
+
+    public Context createExecutionContext(CdsHooksRequest request) {
+    	String planId = request.getService();
+    	PlanDefinition planDefinition = this.getDao().read(new IdType(planId));
+        if (planDefinition == null) {
+            throw new IllegalArgumentException("Couldn't find PlanDefintion " + planId);
+        }
+        
+        Context context = null;
+        
+        // load libraries referenced in planDefinition
+        // TODO: need better way to determine primary library
+        //   - for now using a name convention: <planDefinition ID>-library
+        for (Reference ref : planDefinition.getLibrary()) {
+            VersionedIdentifier vid = new VersionedIdentifier().withId(ref.getReference());
+            Library library = getLibraryLoader().load(vid);
+
+            // select the first library as 'primary'
+            if (context == null) {
+            	logger.info("Context library: " + ref.getReference());
+            	context = new Context(library);
+            }
+
+            // select the first library as 'primary', unless one is found with naming convention <planDefinition ID>-logic
+            if (vid.getId().equals(planDefinition.getIdElement().getIdPart() + "-logic")
+                    || vid.getId().equals("Library/" + planDefinition.getIdElement().getIdPart() + "-logic"))
+            {
+                context = new Context(library);
+            }
+        }
+        if (((STU3LibraryLoader)getLibraryLoader()).getLibraries().isEmpty()) {
+            throw new IllegalArgumentException(String.format("Could not load library source for libraries referenced in %s planDefinition.", planDefinition.getId()));
+        }
+
+        if (context != null) {
+	        // Prep - defining the context
+	        context.registerLibraryLoader(getLibraryLoader());
+        }
+    	
+    	return context;
+    }
+
+    private ModelManager modelManager;
+    private ModelManager getModelManager() {
+        if (modelManager == null) {
+            modelManager = new ModelManager();
+        }
+        return modelManager;
+    }
+
+    private LibraryManager libraryManager;
+    private LibraryManager getLibraryManager() {
+        if (libraryManager == null) {
+            libraryManager = new LibraryManager(getModelManager());
+            libraryManager.getLibrarySourceLoader().clearProviders();
+            libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
+        }
+        return libraryManager;
+    }
+
+    private LibraryLoader libraryLoader;
+    private LibraryLoader getLibraryLoader() {
+        if (libraryLoader == null) {
+            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager(), getModelManager());
+        }
+        return libraryLoader;
+    }
+
+    private STU3LibrarySourceProvider librarySourceProvider;
+    private STU3LibrarySourceProvider getLibrarySourceProvider() {
+        if (librarySourceProvider == null) {
+            librarySourceProvider = new STU3LibrarySourceProvider(getLibraryResourceProvider());
+        }
+        return librarySourceProvider;
     }
 
     @Operation(name = "$apply", idempotent = true)

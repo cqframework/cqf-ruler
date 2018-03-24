@@ -370,7 +370,8 @@ public class CdsCard {
         JsonObject card = new JsonObject();
 
         card.addProperty("summary", getSummary());
-        card.addProperty("indicator", getIndicator().code);
+        IndicatorCode indicatorCode = hasIndicator() ? getIndicator() : IndicatorCode.INFO;
+        card.addProperty("indicator", indicatorCode.code);
         if (hasDetail()) {
             card.addProperty("detail", getDetail());
         }
@@ -398,8 +399,12 @@ public class CdsCard {
                     JsonArray actionArray = new JsonArray();
                     for (Suggestions.Action action : suggestion.getActions()) {
                         JsonObject actionObj = new JsonObject();
-                        actionObj.addProperty("type", action.getType().toString());
-                        actionObj.addProperty("description", action.getDescription());
+                        if (action.hasType()) {
+                        	actionObj.addProperty("type", action.getType().toString());
+                        }
+                        if (action.hasDescription()) {
+                        	actionObj.addProperty("description", action.getDescription());
+                        }
                         if (action.hasResource()) {
                             JsonElement res = new JsonParser().parse(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(action.getResource()));
                             actionObj.add("resource", res);
