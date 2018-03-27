@@ -110,7 +110,7 @@
         "id": "ccs-decision-support",
         "status": "draft",
         "library": {
-          "reference": "Library/patient-view"
+          "reference": "Library/ccs-decision-support-logic"
         },
         "action": [
           {
@@ -207,7 +207,7 @@
     {
       "resource": {
         "resourceType": "Library",
-        "id": "patient-view",
+        "id": "ccs-decision-support-logic",
         "version": "1.0.0",
         "status": "active",
         "experimental": true,

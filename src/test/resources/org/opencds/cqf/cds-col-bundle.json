@@ -130,7 +130,7 @@
     {
       "resource": {
         "resourceType": "Library",
-        "id": "patient-view",
+        "id": "col-decision-support-logic",
         "version": "1.0",
         "status": "active",
         "experimental": true,
@@ -323,7 +323,7 @@
         "id": "col-decision-support",
         "status": "draft",
         "library": {
-          "reference": "Library/patient-view"
+          "reference": "Library/col-decision-support-logic"
         },
         "action": [
           {

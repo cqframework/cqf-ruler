@@ -7,6 +7,7 @@ import org.cqframework.cql.cql2elm.ModelInfoProvider;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.elm.r1.VersionedIdentifier;
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.MedicationRequest;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.config.STU3LibraryLoader;
@@ -76,9 +77,6 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
 //            validateContextAndPrefetchResources(request);
 //        }
 
-        // read opioid library
-        Library library = getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("OpioidCdsStu3").withVersion("0.1.0"));
-
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
@@ -97,19 +95,13 @@ public class OpioidGuidanceProcessor extends MedicationPrescribeProcessor {
         executionContext.registerDataProvider("http://org.opencds/opioid-cds", omtkProvider);
         executionContext.registerDataProvider("http://hl7.org/fhir", dstu3Provider);
         executionContext.setExpressionCaching(true);
-        executionContext.setParameter(null, "Orders", activePrescriptions);
+        executionContext.setParameter(null, "ContextPrescription", contextPrescriptions);
 
-        List<CdsCard> cards = resolveActions(executionContext);
-        if (cards.isEmpty() || (cards.size() == 1 && !cards.get(0).hasDetail() && !cards.get(0).hasSummary() && !cards.get(0).hasIndicator())) {
-            cards.add(
-                    new CdsCard()
-                            .setSummary("Success")
-                            .setDetail("Prescription satisfies recommendation #5 of the cdc opioid guidance.")
-                            .setIndicator("info")
-            );
+        for (String parameter : request.getPrefetch().keySet()) {
+            executionContext.setParameter(null, parameter, request.getPrefetchResource(parameter));
         }
 
-        return cards;
+        return resolveActions(executionContext);
     }
 
     // TODO - finish this

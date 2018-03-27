@@ -22,7 +22,6 @@ public class DiabetesManagementProcessor extends PatientViewProcessor {
 
     @Override
     public List<CdsCard> process() {
-        Library library = providers.getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("diabetes-management"));
         BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServer());
         // TODO - assuming terminology service is same as data provider - not a great assumption...
         dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint(request.getFhirServer()));

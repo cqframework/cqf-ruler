@@ -110,7 +110,7 @@
         "id": "bcs-decision-support",
         "status": "draft",
         "library": {
-          "reference": "Library/patient-view"
+          "reference": "Library/bcs-decision-support-logic"
         },
         "action": [
           {
@@ -207,7 +207,7 @@
     {
       "resource": {
         "resourceType": "Library",
-        "id": "patient-view",
+        "id": "bcs-decision-support-logic",
         "version": "1.0.0",
         "status": "active",
         "experimental": true,

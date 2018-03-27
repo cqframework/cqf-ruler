@@ -40,9 +40,6 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
 
     @Override
     public List<CdsCard> process() {
-        // TODO - need a better way to determine library id
-        Library library = providers.getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("medication-prescribe"));
-
         BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServer());
         // TODO - assuming terminology service is same as data provider - not a great assumption...
         dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint(request.getFhirServer()));
@@ -67,7 +64,7 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
         this.activePrescriptions.addAll(this.contextPrescriptions); // include the context prescription
 
         if (!isStu3) {
-            IBaseResource resource = FhirContext.forDstu2Hl7Org().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medication").getAsJsonObject("resource").toString());
+            IBaseResource resource = FhirContext.forDstu2Hl7Org().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medications").getAsJsonObject("resource").toString());
             if (resource instanceof org.hl7.fhir.instance.model.Bundle) {
                 org.hl7.fhir.instance.model.Bundle bundle = (org.hl7.fhir.instance.model.Bundle) resource;
                 if (bundle.getEntry() == null) {
@@ -79,7 +76,7 @@ public class MedicationPrescribeProcessor extends CdsRequestProcessor {
             }
         }
         else {
-            org.hl7.fhir.dstu3.model.Bundle bundle = (org.hl7.fhir.dstu3.model.Bundle) FhirContext.forDstu3().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medication").getAsJsonObject("resource").toString());
+            org.hl7.fhir.dstu3.model.Bundle bundle = (org.hl7.fhir.dstu3.model.Bundle) FhirContext.forDstu3().newJsonParser().parseResource(request.getPrefetch().getAsJsonObject("medications").getAsJsonObject("resource").toString());
             if (!bundle.hasEntry()) {
                 return;
             }

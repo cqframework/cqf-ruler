@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -59,7 +60,24 @@ public class CdsServicesServlet extends BaseServlet {
 
         // Custom cds services - requires customized terminology/data providers
         if (cdsHooksRequest.getService().startsWith("cdc-opioid-guidance")) {
-            resolveMedicationPrescribePrefetch(cdsHooksRequest);
+            if (cdsHooksRequest.getService().endsWith("04")) {
+                resolveRecommendationFourPrefetch(cdsHooksRequest);
+            }
+            else if (cdsHooksRequest.getService().endsWith("05")) {
+
+            }
+            else if (cdsHooksRequest.getService().endsWith("07")) {
+
+            }
+            else if (cdsHooksRequest.getService().endsWith("08")) {
+
+            }
+            else if (cdsHooksRequest.getService().endsWith("10")) {
+
+            }
+            else if (cdsHooksRequest.getService().endsWith("11")) {
+
+            }
             try {
                 processor = new OpioidGuidanceProcessor(cdsHooksRequest, libraryResourceProvider, planDefinitionResourceProvider, isStu3);
             } catch (FHIRException e) {
@@ -125,6 +143,70 @@ public class CdsServicesServlet extends BaseServlet {
         }
 
         return !response.toString().contains("Conformance");
+    }
+
+    private void resolveRecommendationFourPrefetch(CdsHooksRequest cdsHooksRequest) {
+        if (cdsHooksRequest.getPrefetch().size() == 0) {
+            String dateRangeLow = LocalDate.now().minusDays(91L).toString();
+            String dateRangeHigh = LocalDate.now().minusDays(1L).toString();
+            if (isStu3) {
+                String searchUrl =
+                        String.format(
+                                "MedicationRequest?patient=%s&date=gt%s&date=lt%s",
+                                cdsHooksRequest.getContextProperty("patientId"), dateRangeLow, dateRangeHigh
+                        );
+                Bundle postfetch = FhirContext.forDstu3()
+                        .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
+                        .search()
+                        .byUrl(searchUrl)
+                        .returnBundle(Bundle.class)
+                        .execute();
+                cdsHooksRequest.setPrefetch(postfetch, "Orders");
+
+                dateRangeLow = LocalDate.now().minusMonths(12L).toString();
+                searchUrl =
+                        String.format(
+                                "Encounter?patient=%s&date=gt%s&date=lt%s",
+                                cdsHooksRequest.getContextProperty("patientId"), dateRangeLow, dateRangeHigh
+                        );
+                postfetch = FhirContext.forDstu3()
+                        .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
+                        .search()
+                        .byUrl(searchUrl)
+                        .returnBundle(Bundle.class)
+                        .execute();
+                cdsHooksRequest.setPrefetch(postfetch, "Encounters");
+            }
+            else {
+                String searchUrl =
+                        String.format(
+                                "MedicationOrder?patient=%s&date=gt%s&date=lt%s",
+                                cdsHooksRequest.getContextProperty("patientId"), dateRangeLow, dateRangeHigh
+                        );
+                org.hl7.fhir.instance.model.Bundle postfetch = FhirContext.forDstu2Hl7Org()
+                        .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
+                        .search()
+                        .byUrl(searchUrl)
+                        .returnBundle(org.hl7.fhir.instance.model.Bundle.class)
+                        .execute();
+                cdsHooksRequest.setPrefetch(postfetch, "Orders");
+
+                dateRangeLow = LocalDate.now().minusMonths(12L).toString();
+                searchUrl =
+                        String.format(
+                                "Encounter?patient=%s&date=gt%s&date=lt%s",
+                                cdsHooksRequest.getContextProperty("patientId"), dateRangeLow, dateRangeHigh
+                        );
+                postfetch = FhirContext.forDstu2Hl7Org()
+                        .newRestfulGenericClient(cdsHooksRequest.getFhirServer())
+                        .search()
+                        .byUrl(searchUrl)
+                        .returnBundle(org.hl7.fhir.instance.model.Bundle.class)
+                        .execute();
+                cdsHooksRequest.setPrefetch(postfetch, "Encounters");
+            }
+        }
+
     }
 
     // If the EHR did not provide the prefetch resources, fetch them

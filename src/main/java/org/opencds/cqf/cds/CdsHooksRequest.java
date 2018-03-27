@@ -76,6 +76,9 @@ public class CdsHooksRequest {
     }
 
     public String getFhirServer() {
+        if (this.fhirServer == null) {
+            this.fhirServer = this.requestJson.getAsJsonPrimitive("fhirServer").getAsString();
+        }
         return this.fhirServer;
     }
 
@@ -175,6 +178,9 @@ public class CdsHooksRequest {
             this.prefetch = temp == null ? new JsonObject() : temp;
         }
         return this.prefetch;
+    }
+    public Resource getPrefetchResource(String propertyName) {
+        return parseResource(new Gson().toJson(this.prefetch.getAsJsonObject(propertyName)));
     }
     public void setPrefetch(JsonObject prefetch) {
         this.prefetch = prefetch;

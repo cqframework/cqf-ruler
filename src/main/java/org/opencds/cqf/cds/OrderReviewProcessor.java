@@ -26,9 +26,6 @@ public class OrderReviewProcessor extends CdsRequestProcessor {
 
     @Override
     public List<CdsCard> process() {
-        // TODO - need a better way to determine library id
-        Library library = providers.getLibraryLoader().load(new org.cqframework.cql.elm.execution.VersionedIdentifier().withId("OrderReview"));
-
         BaseFhirDataProvider dstu3Provider = new FhirDataProviderStu3().setEndpoint(request.getFhirServer());
         // TODO - assuming terminology service is same as data provider - not a great assumption...
         dstu3Provider.setTerminologyProvider(new FhirTerminologyProvider().withEndpoint(request.getFhirServer()));
