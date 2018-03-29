@@ -1,0 +1,104 @@
+<Bundle xmlns="http://hl7.org/fhir">
+   <id value="example-rec-04-long-acting-opioid"/>
+   <type value="transaction"/>
+   <entry>
+      <fullUrl value="http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/MedicationRequest/example-rec-04-long-acting-opioid-prefetch"/>
+      <resource>
+         <MedicationRequest xmlns="http://hl7.org/fhir">
+            <id value="example-rec-04-long-acting-opioid-prefetch"/>
+            <status value="active"/>
+            <intent value="order"/>
+            <medicationCodeableConcept>
+               <coding>
+                  <system value="http://www.nlm.nih.gov/research/umls/rxnorm"/>
+                  <code value="1049502"/>
+                  <display value="12 HR Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet"/>
+               </coding>
+            </medicationCodeableConcept>
+            <subject>
+               <reference value="Patient/example-rec-04-long-acting-opioid"/>
+            </subject>
+            <context>
+               <reference value="Encounter/example-rec-04-long-acting-opioid-prefetch"/>
+            </context>
+            <authoredOn>
+               <extension url="http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression">
+                  <valueString value="Today() - 4 months"/>
+               </extension>
+            </authoredOn>
+            <dosageInstruction>
+               <timing>
+                  <repeat>
+                     <frequency value="1"/>
+                     <period value="3.0"/>
+                     <periodUnit value="d"/>
+                  </repeat>
+               </timing>
+               <asNeededBoolean value="false"/>
+               <doseQuantity>
+                  <value value="1.0"/>
+                  <unit value="patch"/>
+               </doseQuantity>
+            </dosageInstruction>
+            <dispenseRequest>
+               <validityPeriod>
+                  <extension url="http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression">
+                     <valueString value="FHIR.Period { start: FHIR.dateTime { value: Today() - 4 months }, end: FHIR.dateTime { value: Today() + 3 months } }"/>
+                  </extension>
+               </validityPeriod>
+               <numberOfRepeatsAllowed value="3"/>
+               <expectedSupplyDuration>
+                  <value value="30.0"/>
+                  <unit value="d"/>
+               </expectedSupplyDuration>
+            </dispenseRequest>
+         </MedicationRequest>
+      </resource>
+      <request>
+         <method value="PUT"/>
+         <url value="http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/MedicationRequest/example-rec-04-long-acting-opioid-prefetch"/>
+      </request>
+   </entry>
+   <entry>
+      <fullUrl value="http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/example-rec-04-long-acting-opioid-prefetch"/>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="example-rec-04-long-acting-opioid-prefetch"/>
+            <status value="finished"/>
+            <subject>
+               <reference value="Patient/example-rec-04-long-acting-opioid"/>
+            </subject>
+            <period>
+               <extension url="http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression">
+                  <valueString value="FHIR.Period { start: FHIR.dateTime { value: Today() - 4 months }, end: FHIR.dateTime { value: Today() - 4 months } }"/>
+               </extension>
+            </period>
+         </Encounter>
+      </resource>
+      <request>
+         <method value="PUT"/>
+         <url value="http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/example-rec-04-long-acting-opioid-prefetch"/>
+      </request>
+   </entry>
+   <entry>
+      <fullUrl value="http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/example-rec-04-long-acting-opioid-context"/>
+      <resource>
+         <Encounter xmlns="http://hl7.org/fhir">
+            <id value="example-rec-04-long-acting-opioid-context"/>
+            <status value="finished"/>
+            <subject>
+               <reference value="Patient/example-rec-04-long-acting-opioid"/>
+            </subject>
+            <period>
+               <extension url="http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression">
+                  <valueString value="FHIR.Period { start: FHIR.dateTime { value: Today() }, end: FHIR.dateTime { value: Today() } }"/>
+               </extension>
+            </period>
+         </Encounter>
+      </resource>
+      <request>
+         <method value="PUT"/>
+         <url value="http://measure.eval.kanvix.com/cqf-ruler/baseDstu3/Encounter/example-rec-04-long-acting-opioid-context"/>
+      </request>
+   </entry>
+</Bundle>

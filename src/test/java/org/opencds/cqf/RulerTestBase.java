@@ -9,6 +9,7 @@ import org.cqframework.cql.elm.execution.Library;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -20,6 +21,7 @@ import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.helpers.FhirMeasureEvaluator;
+import org.opencds.cqf.providers.FHIRBundleResourceProvider;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
@@ -28,6 +30,9 @@ import java.net.ServerSocket;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class RulerTestBase {
@@ -66,9 +71,6 @@ public class RulerTestBase {
         ourClient.registerInterceptor(new LoggingInterceptor(true));
 
         // Load test data
-        // Normally, I would use a transaction bundle, but issues with the random ports prevents that...
-        // So, doing it the old-fashioned way =)
-
         // General
         putResource("general-practitioner.json", "Practitioner-12208");
         putResource("general-patient.json", "Patient-12214");
@@ -784,5 +786,32 @@ public class RulerTestBase {
     public void populationMeasureCOL() {
         putResource("population-measure-col-bundle.json", "");
         validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-col", "library-col-logic");
+    }
+
+    @Test
+    public void applyCqlTest() throws FHIRException, ParseException {
+        InputStream is = this.getClass().getResourceAsStream("bundle-example-rec-04-long-acting-opioid.xml");
+        Bundle bundle = (Bundle) FhirContext.forDstu3().newXmlParser().parseResource(new InputStreamReader(is));
+        bundle = FHIRBundleResourceProvider.applyCql(bundle);
+
+        MedicationRequest medReq = (MedicationRequest) bundle.getEntry().get(0).getResource();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.MONTH, -4);
+        Date todayMinus4Months = cal.getTime();
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date expected = formatter.parse(formatter.format(todayMinus4Months));
+        Date actual = formatter.parse(formatter.format(medReq.getAuthoredOn()));
+        Assert.assertEquals(expected, actual);
+
+//        TODO - uncomment once engine issue #97 (https://github.com/DBCG/cql_engine/issues/97) is resolved
+//        actual = formatter.parse(formatter.format(medReq.getDispenseRequest().getValidityPeriod().getStart()));
+//        Assert.assertEquals(expected, actual);
+//
+//        cal.setTime(new Date());
+//        cal.add(Calendar.MONTH, 3);
+//        expected = formatter.parse(formatter.format(cal.getTime()));
+//        actual = formatter.parse(formatter.format(medReq.getDispenseRequest().getValidityPeriod().getEnd()));
+//        Assert.assertEquals(expected, actual);
     }
 }
