@@ -1,15 +1,21 @@
 package org.opencds.cqf.providers;
 
+import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
+import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ValueSet;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.terminology.CodeSystemInfo;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +44,24 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 
     @Override
     public Iterable<Code> expand(ValueSetInfo valueSet) throws ResourceNotFoundException {
-        ValueSet vs = valueSetProvider.getDao().read(new IdType(valueSet.getId()));
+        ValueSet vs = null;
+        try {
+            URL url = new URL(valueSet.getId());
+            // Get valueset by url
+            IBundleProvider bundleProvider =
+                    valueSetProvider.getDao().search(new SearchParameterMap().add(ValueSet.SP_URL, new UriParam(url.toString())));
+            List<IBaseResource> resources = bundleProvider.getResources(0,1);
+            if (!resources.isEmpty()) {
+                vs = (ValueSet) resources.get(0);
+            }
+        } catch (MalformedURLException mfe) {
+            // continue
+        }
+
+        if (vs == null) {
+            vs = valueSetProvider.getDao().read(new IdType(valueSet.getId()));
+        }
+
         List<Code> codes = new ArrayList<>();
         for (ValueSet.ValueSetExpansionContainsComponent expansion : vs.getExpansion().getContains()) {
             codes.add(new Code().withCode(expansion.getCode()).withSystem(expansion.getSystem()));

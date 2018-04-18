@@ -1,4 +1,4 @@
-package org.opencds.cqf.cds;
+package org.opencds.cqf.cdshooks.response;
 
 import org.hl7.fhir.dstu3.model.*;
 
@@ -25,9 +25,8 @@ public class CarePlanToCdsCard {
         List<CdsCard> cards = new ArrayList<>();
 
         // links
+        List<CdsCard.Links> links = new ArrayList<>();
         if (requestGroup.hasExtension()) {
-            CdsCard card = new CdsCard();
-            List<CdsCard.Links> links = new ArrayList<>();
             for (Extension extension : requestGroup.getExtension()) {
                 CdsCard.Links link = new CdsCard.Links();
 
@@ -50,8 +49,6 @@ public class CarePlanToCdsCard {
 
                 links.add(link);
             }
-            card.setLinks(links);
-            cards.add(card);
         }
 
         if (requestGroup.hasAction()) {
@@ -94,23 +91,23 @@ public class CarePlanToCdsCard {
                 if (action.hasLabel()) {
                     suggestions.setLabel(action.getLabel());
                     hasSuggestions = true;
-                }
-                if (action.hasDescription()) {
-                    actions.setDescription(action.getDescription());
-                    hasSuggestions = true;
-                }
-                if (action.hasType()) {
-                    String code = action.getType().getCode();
-                    actions.setType(CdsCard.Suggestions.Action.ActionType.valueOf(code.equals("remove") ? "delete" : code));
-                    hasSuggestions = true;
-                }
-                if (action.hasResource()) {
-                    actions.setResource(action.getResourceTarget());
-                    hasSuggestions = true;
+                    if (action.hasDescription()) {
+                        actions.setDescription(action.getDescription());
+                    }
+                    if (action.hasType() && !action.getType().getCode().equals("fire-event")) {
+                        String code = action.getType().getCode();
+                        actions.setType(CdsCard.Suggestions.Action.ActionType.valueOf(code.equals("remove") ? "delete" : code));
+                    }
+                    if (action.hasResource()) {
+                        actions.setResource(action.getResourceTarget());
+                    }
                 }
                 if (hasSuggestions) {
                     suggestions.addAction(actions);
                     card.addSuggestion(suggestions);
+                }
+                if (!links.isEmpty()) {
+                    card.setLinks(links);
                 }
                 cards.add(card);
             }

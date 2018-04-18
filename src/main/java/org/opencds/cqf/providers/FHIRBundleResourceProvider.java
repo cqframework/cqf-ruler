@@ -24,9 +24,17 @@ import java.util.List;
 
 public class FHIRBundleResourceProvider extends JpaResourceProviderDstu3<Bundle> {
 
+    private ModelManager modelManager;
+    private BaseFhirDataProvider provider;
+    public FHIRBundleResourceProvider() {
+        modelManager = new ModelManager();
+        FhirModelInfoProvider fhirProvider = new FhirModelInfoProvider().withVersion("3.0.0");
+        ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("FHIR").withVersion("3.0.0"), fhirProvider);
+        provider = new FhirDataProviderStu3();
+    }
 
     @Operation(name = "$apply-cql", idempotent = true)
-    public Bundle evaluateMeasure(@IdParam IdType id) throws FHIRException {
+    public Bundle apply(@IdParam IdType id) throws FHIRException {
         Bundle bundle = this.getDao().read(id);
         if (bundle == null) {
             throw new IllegalArgumentException("Could not find Bundle/" + id.getIdPart());
@@ -35,50 +43,53 @@ public class FHIRBundleResourceProvider extends JpaResourceProviderDstu3<Bundle>
     }
 
     @Operation(name = "$apply-cql", idempotent = true)
-    public Bundle evaluateMeasure(@ResourceParam Bundle bundle) throws FHIRException {
+    public Bundle apply(@ResourceParam Bundle bundle) throws FHIRException {
         return applyCql(bundle);
     }
 
-    public static Bundle applyCql(Bundle bundle) throws FHIRException {
-        ModelManager modelManager = new ModelManager();
-        FhirModelInfoProvider fhirProvider = new FhirModelInfoProvider().withVersion("3.0.0");
-        ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("FHIR").withVersion("3.0.0"), fhirProvider);
-        BaseFhirDataProvider provider = new FhirDataProviderStu3();
-        Resource resource;
-        Library library;
-        Context context;
+    @Operation(name = "$apply-cql", idempotent = true)
+    public Resource apply(@ResourceParam Resource resource) throws FHIRException {
+        return applyCql(resource);
+    }
 
+    public Bundle applyCql(Bundle bundle) throws FHIRException {
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.hasResource()) {
-                resource = entry.getResource();
-                for (Property child : resource.children()) {
-                    for (Base base : child.getValues()) {
-                        if (base != null) {
-                            List<String> extension = getExtension(base);
-                            if (!extension.isEmpty()) {
-                                String cql = String.format("using FHIR version '3.0.0' define x: %s", extension.get(1));
-                                library = LibraryHelper.translateLibrary(cql, new LibraryManager(modelManager), modelManager);
-                                context = new Context(library);
-                                context.registerDataProvider("http://hl7.org/fhir", provider);
-                                Object result = context.resolveExpressionRef("x").getExpression().evaluate(context);
-                                if (extension.get(0).equals("extension")) {
-                                    resource.setProperty(child.getName(), resolveType(result, base.fhirType()));
-                                }
-                                else {
-                                    String type = base.getChildByName(extension.get(0)).getTypeCode();
-                                    base.setProperty(extension.get(0), resolveType(result, type));
-                                }
-                            }
-                        }
-                    }
-                }
+                applyCql(entry.getResource());
             }
         }
 
         return bundle;
     }
 
-    private static List<String> getExtension(Base base) {
+    public Resource applyCql(Resource resource) throws FHIRException {
+        Library library;
+        Context context;
+        for (Property child : resource.children()) {
+            for (Base base : child.getValues()) {
+                if (base != null) {
+                    List<String> extension = getExtension(base);
+                    if (!extension.isEmpty()) {
+                        String cql = String.format("using FHIR version '3.0.0' define x: %s", extension.get(1));
+                        library = LibraryHelper.translateLibrary(cql, new LibraryManager(modelManager), modelManager);
+                        context = new Context(library);
+                        context.registerDataProvider("http://hl7.org/fhir", provider);
+                        Object result = context.resolveExpressionRef("x").getExpression().evaluate(context);
+                        if (extension.get(0).equals("extension")) {
+                            resource.setProperty(child.getName(), resolveType(result, base.fhirType()));
+                        }
+                        else {
+                            String type = base.getChildByName(extension.get(0)).getTypeCode();
+                            base.setProperty(extension.get(0), resolveType(result, type));
+                        }
+                    }
+                }
+            }
+        }
+        return resource;
+    }
+
+    private List<String> getExtension(Base base) {
         List<String> retVal = new ArrayList<>();
         for (Property child : base.children()) {
             for (Base childBase : child.getValues()) {
@@ -101,7 +112,7 @@ public class FHIRBundleResourceProvider extends JpaResourceProviderDstu3<Bundle>
         return retVal;
     }
 
-    private static Base resolveType(Object source, String type) {
+    private Base resolveType(Object source, String type) {
         if (source instanceof Integer) {
             return new IntegerType((Integer) source);
         }

@@ -1,8 +1,9 @@
-package org.opencds.cqf.cds;
+package org.opencds.cqf.cdshooks.response;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.google.gson.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.exceptions.MissingRequiredFieldException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -367,66 +368,102 @@ public class CdsCard {
     }
 
     public JsonObject toJson() {
-        JsonObject card = new JsonObject();
+        try {
+            JsonObject card = new JsonObject();
+            if (!hasSummary()) {
+                throw new MissingRequiredFieldException("The summary field must be specified in the action.title or action.dynamicValue field in the PlanDefinition");
+            }
+            card.addProperty("summary", getSummary());
+            if (!hasIndicator()) {
+                throw new MissingRequiredFieldException("The indicator field must be specified in the action.dynamicValue field in the PlanDefinition");
+            }
+            card.addProperty("indicator", getIndicator().code);
+            if (hasDetail()) {
+                card.addProperty("detail", getDetail());
+            }
 
-        card.addProperty("summary", getSummary());
-        card.addProperty("indicator", getIndicator().code);
-        if (hasDetail()) {
-            card.addProperty("detail", getDetail());
-        }
+            // todo - the source requirements have been relaxed here - throw an error if missing label
+            JsonObject sourceObject = new JsonObject();
+            Source source = getSource();
+            sourceObject.addProperty("label", source.getLabel());
+            if (source.hasUrl()) {
+                sourceObject.addProperty("url", source.getUrl().toString());
+            }
+            if (source.hasIcon()) {
+                sourceObject.addProperty("icon", source.getIcon().toString());
+            }
+            card.add("source", sourceObject);
 
-        JsonObject sourceObject = new JsonObject();
-        Source source = getSource();
-        sourceObject.addProperty("label", source.getLabel());
-        if (source.hasUrl()) {
-            sourceObject.addProperty("url", source.getUrl().toString());
-        }
-        if (source.hasIcon()) {
-            sourceObject.addProperty("icon", source.getIcon().toString());
-        }
-        card.add("source", sourceObject);
-
-        if (hasSuggestions()) {
-            JsonArray suggestionArray = new JsonArray();
-            for (Suggestions suggestion : getSuggestions()) {
-                JsonObject suggestionObj = new JsonObject();
-                suggestionObj.addProperty("label", suggestion.getLabel());
-                if (suggestion.hasUuid()) {
-                    suggestionObj.addProperty("uuid", suggestion.getUuid());
-                }
-                if (suggestion.hasActions()) {
-                    JsonArray actionArray = new JsonArray();
-                    for (Suggestions.Action action : suggestion.getActions()) {
-                        JsonObject actionObj = new JsonObject();
-                        actionObj.addProperty("type", action.getType().toString());
-                        actionObj.addProperty("description", action.getDescription());
-                        if (action.hasResource()) {
-                            JsonElement res = new JsonParser().parse(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(action.getResource()));
-                            actionObj.add("resource", res);
-                        }
-                        actionArray.add(actionObj);
+            if (hasSuggestions()) {
+                JsonArray suggestionArray = new JsonArray();
+                for (Suggestions suggestion : getSuggestions()) {
+                    JsonObject suggestionObj = new JsonObject();
+                    if (!suggestion.hasLabel()) {
+                        throw new MissingRequiredFieldException("The suggestion.label field must be specified in the action.label field in the PlanDefinition");
                     }
-                    suggestionObj.add("actions", actionArray);
+                    suggestionObj.addProperty("label", suggestion.getLabel());
+                    if (suggestion.hasUuid()) {
+                        suggestionObj.addProperty("uuid", suggestion.getUuid());
+                    }
+                    if (suggestion.hasActions()) {
+                        JsonArray actionArray = new JsonArray();
+                        for (Suggestions.Action action : suggestion.getActions()) {
+                            JsonObject actionObj = new JsonObject();
+                            if (!action.hasType()) {
+                                throw new MissingRequiredFieldException("The suggestion.action.type field must be specified as either create, update, or remove in the action.type field in the PlanDefinition");
+                            }
+                            actionObj.addProperty("type", action.getType().toString());
+                            if (!action.hasDescription()) {
+                                throw new MissingRequiredFieldException("The suggestion.action.description field must be specified in the description field in the ActivityDefinition referenced in the PlanDefinition");
+                            }
+                            actionObj.addProperty("description", action.getDescription());
+                            if (action.hasResource()) {
+                                JsonElement res = new JsonParser().parse(FhirContext.forDstu3().newJsonParser().setPrettyPrint(true).encodeResourceToString(action.getResource()));
+                                actionObj.add("resource", res);
+                            }
+                            actionArray.add(actionObj);
+                        }
+                        suggestionObj.add("actions", actionArray);
+                    }
+                    suggestionArray.add(suggestionObj);
                 }
-                suggestionArray.add(suggestionObj);
+                card.add("suggestions", suggestionArray);
             }
-            card.add("suggestions", suggestionArray);
-        }
 
-        if (hasLinks()) {
-            JsonArray linksArray = new JsonArray();
-            for (Links linkElement : getLinks()) {
-                JsonObject link = new JsonObject();
-                link.addProperty("label", linkElement.getLabel());
-                link.addProperty("url", linkElement.getUrl().toString());
-                link.addProperty("type", linkElement.getType());
-                if (linkElement.hasAppContext()) {
-                    link.addProperty("appContext", linkElement.getAppContext());
+            if (hasLinks()) {
+                JsonArray linksArray = new JsonArray();
+                for (Links linkElement : getLinks()) {
+                    JsonObject link = new JsonObject();
+                    if (!linkElement.hasLabel()) {
+                        throw new MissingRequiredFieldException("The link.label field must be specified in the relatedArtifact.display field in the PlanDefinition");
+                    }
+                    link.addProperty("label", linkElement.getLabel());
+                    if (!linkElement.hasUrl()) {
+                        throw new MissingRequiredFieldException("The link.url field must be specified in the relatedArtifact.url field in the PlanDefinition");
+                    }
+                    link.addProperty("url", linkElement.getUrl().toString());
+                    // todo - relaxed requirements for type - throw error
+                    link.addProperty("type", linkElement.getType());
+                    if (linkElement.hasAppContext()) {
+                        link.addProperty("appContext", linkElement.getAppContext());
+                    }
+                    linksArray.add(link);
                 }
-                linksArray.add(link);
+                card.add("links", linksArray);
             }
-            card.add("links", linksArray);
+            return card;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorCard(e).toJson();
         }
-        return card;
+    }
+
+    public static CdsCard errorCard(Exception e) {
+        CdsCard errorCard = new CdsCard();
+        errorCard.setIndicator(CdsCard.IndicatorCode.HARDSTOP);
+        errorCard.setSummary(e.getClass().getSimpleName() + " encountered during execution");
+        errorCard.setDetail(e.getMessage());
+        errorCard.setSource(new CdsCard.Source());
+        return errorCard;
     }
 }

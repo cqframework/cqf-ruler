@@ -12,10 +12,13 @@ public class Dstu2ToStu3 {
         NullVersionConverterAdvisor30 advisor = new NullVersionConverterAdvisor30();
         VersionConvertor_10_30 converter = new VersionConvertor_10_30(advisor);
 
+        // TODO - need to convert DiagnosticOrder to ProcedureRequest, and DeviceUseRequest to DeviceRequest
         try {
             switch (resource.getResourceType().name()) {
                 case "MedicationOrder":
                     return resolveMedicationRequest((MedicationOrder) resource, converter);
+                case "Bundle":
+                    return resolveBundle((org.hl7.fhir.instance.model.Bundle) resource);
                 default:
                     return converter.convertResource(resource);
             }
@@ -23,6 +26,24 @@ public class Dstu2ToStu3 {
             fe.printStackTrace();
             throw new RuntimeException("Error converting type: " + resource.getResourceType().name() + "\nMessage: " + fe.getMessage());
         }
+    }
+
+    // TODO - complete conversion - only interested in the type and entry resources currently
+    public static Bundle resolveBundle(org.hl7.fhir.instance.model.Bundle bundle) {
+        Bundle returnBundle = new Bundle();
+        try {
+            returnBundle.setType(Bundle.BundleType.fromCode(bundle.getType().toCode()));
+        } catch (FHIRException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+        Bundle.BundleEntryComponent returnEntry = new Bundle.BundleEntryComponent();
+        for (org.hl7.fhir.instance.model.Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            if (entry.hasResource()) {
+                returnEntry.setResource(convertResource(entry.getResource()));
+                returnBundle.addEntry(returnEntry);
+            }
+        }
+        return returnBundle;
     }
 
     // MedicationRequest
@@ -40,7 +61,7 @@ public class Dstu2ToStu3 {
         */
         MedicationRequest request =
                 new MedicationRequest()
-                        .setStatus(MedicationRequest.MedicationRequestStatus.fromCode(order.getStatus().toCode()))
+                        .setStatus(order.hasStatus() ? MedicationRequest.MedicationRequestStatus.fromCode(order.getStatus().toCode()) : MedicationRequest.MedicationRequestStatus.UNKNOWN)
                         .setIntent(MedicationRequest.MedicationRequestIntent.ORDER)
                         .setMedication(converter.convertCodeableConcept(order.getMedicationCodeableConcept()))
                         .setDispenseRequest(convertDispenseRequest(order.getDispenseRequest()));

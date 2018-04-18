@@ -1,12 +1,19 @@
 package org.opencds.cqf;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
+import ca.uhn.fhir.rest.server.IResourceProvider;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.cqframework.cql.elm.execution.Library;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -15,18 +22,17 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
-import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
-import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.helpers.FhirMeasureEvaluator;
 import org.opencds.cqf.providers.FHIRBundleResourceProvider;
+import org.opencds.cqf.providers.JpaDataProvider;
+import org.opencds.cqf.providers.JpaTerminologyProvider;
+import org.opencds.cqf.servlet.BaseServlet;
 
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.ServerSocket;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Paths;
@@ -38,13 +44,11 @@ import java.util.*;
 public class RulerTestBase {
     private static IGenericClient ourClient;
     private static FhirContext ourCtx = FhirContext.forDstu3();
-
     private static int ourPort;
-
     private static Server ourServer;
     private static String ourServerBase;
+    private static JpaDataProvider dataProvider;
 
-//    private static Collection<IResourceProvider> providers;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -64,6 +68,16 @@ public class RulerTestBase {
         ourServer.setHandler(webAppContext);
         ourServer.start();
 
+        Collection<IResourceProvider> resourceProviders = null;
+        for (ServletHolder servletHolder : webAppContext.getServletHandler().getServlets()) {
+            if (servletHolder.getServlet() instanceof BaseServlet) {
+                resourceProviders = ((BaseServlet) servletHolder.getServlet()).getResourceProviders();
+                break;
+            }
+        }
+
+        dataProvider = new JpaDataProvider(resourceProviders);
+
         ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
         ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
         ourServerBase = "http://localhost:" + ourPort + "/cqf-ruler/baseDstu3";
@@ -78,7 +92,8 @@ public class RulerTestBase {
         putResource("population-measure-network.json", "");
         putResource("population-measure-patients.json", "");
         putResource("population-measure-resources-bundle.json", "");
-        putResource("population-measure-terminology-bundle.json", "");
+        putResource("cds-codesystems.json", "");
+        putResource("cds-valuesets.json", "");
     }
 
     @AfterClass
@@ -100,18 +115,19 @@ public class RulerTestBase {
         }
     }
 
-    // this test requires the LocalDataStore_RxNav_OpioidCds.db file to be located in the src/main/resources/cds folder
-//    @Test
-    public void CdcOpioidGuidanceTest() throws IOException {
+    // NOTE - the opioid guidance tests require the LocalDataStore_RxNav_OpioidCds.db file to be located in the src/main/resources/cds folder
+    @Test
+    public void CdcOpioidGuidanceRecommendationFourTest() throws IOException {
         putResource("cdc-opioid-guidance-bundle.json", "");
+        putResource("cdc-opioid-guidance-terminology.json", "");
         // Get the CDS Hooks request
-        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-request-stu3.json");
+        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-04-request.json");
         Scanner scanner = new Scanner(is).useDelimiter("\\A");
         String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
         byte[] data = cdsHooksRequest.getBytes("UTF-8");
 
         // Unsure how to use Hapi to make this request...
-        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/cdc-opioid-guidance");
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/cdc-opioid-guidance-04");
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -131,32 +147,310 @@ public class RulerTestBase {
         String expected = "{\n" +
                 "  \"cards\": [\n" +
                 "    {\n" +
-                "      \"links\": [\n" +
-                "        {\n" +
-                "          \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
-                "          \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"label\": \"MME Conversion Tables\",\n" +
-                "          \"url\": \"https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf\"\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"summary\": \"High risk for opioid overdose - taper now\",\n" +
+                "      \"summary\": \"Recommend use of immediate-release opioids instead of extended release/long acting opioids when starting patient on opioids.\",\n" +
                 "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"Total morphine milligram equivalent (MME) is 179.99999820mg/d. Taper to less than 50.\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"summary\": \"Patient has not had a urine screening in the past 12 months\",\n" +
-                "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"When prescribing opioids for chronic pain, clinicians should use urine drug testing before starting opioid therapy and consider urine drug testing at least annually to assess for prescribed medications as well as other controlled prescription drugs and illicit drugs\"\n" +
+                "      \"detail\": \"The following medication requests(s) release rates should be re-evaluated: MedicationRequest/example-rec-04-long-acting-opioid-context \",\n" +
+                "      \"source\": {\n" +
+                "        \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
+                "        \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
+                "      }\n" +
                 "    }\n" +
                 "  ]\n" +
                 "}";
 
         Assert.assertTrue(
                 response.toString().replaceAll("\\s+", "")
+                        .equals(expected.replaceAll("\\s+", ""))
+        );
+    }
+
+    @Test
+    public void CdcOpioidGuidanceRecommendationFiveTest() throws IOException {
+        putResource("cdc-opioid-guidance-bundle.json", "");
+        putResource("cdc-opioid-guidance-terminology.json", "");
+        // Get the CDS Hooks request
+        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-05-request.json");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
+        byte[] data = cdsHooksRequest.getBytes("UTF-8");
+
+        // Unsure how to use Hapi to make this request...
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/cdc-opioid-guidance-05");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(data);
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"summary\": \"High risk for opioid overdose - taper now\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"Total morphine milligram equivalent (MME) is 179.99999820mg/d. Taper to less than 50.\",\n" +
+                "      \"source\": {\n" +
+                "        \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
+                "        \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
+                "      },\n" +
+                "      \"links\": [\n" +
+                "        {\n" +
+                "          \"label\": \"MME Conversion Tables\",\n" +
+                "          \"url\": \"https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        Assert.assertTrue(
+                response.toString().replaceAll("\\s+", "")
+                        .equals(expected.replaceAll("\\s+", ""))
+        );
+    }
+
+    // this test requires the LocalDataStore_RxNav_OpioidCds.db file to be located in the src/main/resources/cds folder
+    @Test
+    public void CdcOpioidGuidanceRecommendationSevenTest() throws IOException {
+        putResource("cdc-opioid-guidance-bundle.json", "");
+        putResource("cdc-opioid-guidance-terminology.json", "");
+        // Get the CDS Hooks request
+        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-07-request.json");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
+        byte[] data = cdsHooksRequest.getBytes("UTF-8");
+
+        // Unsure how to use Hapi to make this request...
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/cdc-opioid-guidance-07");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(data);
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"summary\": \"Patients on opioid therapy should be evaluated for benefits and harms within 1 to 4 weeks of starting opioid therapy and every 3 months or more subsequently.\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"No evaluation for benefits and harms associated with opioid therapy has been performed for the patient in the past 3 months\",\n" +
+                "      \"source\": {\n" +
+                "        \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
+                "        \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
+                "      },\n" +
+                "      \"suggestions\": [\n" +
+                "        {\n" +
+                "          \"label\": \"Assessment of risk for opioid use procedure\",\n" +
+                "          \"actions\": [\n" +
+                "            {\n" +
+                "              \"type\": \"create\",\n" +
+                "              \"description\": \"No evaluation for benefits and harms associated with opioid therapy has been performed for the patient in the past 3 months\",\n" +
+                "              \"resource\": {\n" +
+                "                \"resourceType\": \"ProcedureRequest\",\n" +
+                "                \"status\": \"draft\",\n" +
+                "                \"intent\": \"order\",\n" +
+                "                \"code\": {\n" +
+                "                  \"coding\": [\n" +
+                "                    {\n" +
+                "                      \"system\": \"http://snomed.info/sct\",\n" +
+                "                      \"code\": \"454281000124100\",\n" +
+                "                      \"display\": \"Assessment of risk for opioid abuse (procedure)\"\n" +
+                "                    }\n" +
+                "                  ]\n" +
+                "                },\n" +
+                "                \"subject\": {\n" +
+                "                  \"reference\": \"Patient/example-rec-07-seven-of-past-ten-days\"\n" +
+                "                }\n" +
+                "              }\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}\n";
+
+        String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
+        Assert.assertTrue(
+                withoutID.replaceAll("\\s+", "")
+                        .equals(expected.replaceAll("\\s+", ""))
+        );
+    }
+
+    @Test
+    public void CdcOpioidGuidanceRecommendationEightTest() throws IOException {
+        putResource("cdc-opioid-guidance-bundle.json", "");
+        putResource("cdc-opioid-guidance-terminology.json", "");
+        // Get the CDS Hooks request
+        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-08-request.json");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
+        byte[] data = cdsHooksRequest.getBytes("UTF-8");
+
+        // Unsure how to use Hapi to make this request...
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/cdc-opioid-guidance-08");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(data);
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"summary\": \"Incorporate into the management plan strategies to mitigate risk; including considering offering naloxone when factors that increase risk for opioid overdose are present\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"Consider offering naloxone given following risk factor(s) for opioid overdose: Average MME (54.000000mg/d) \\u003e\\u003d 50 mg/day, \",\n" +
+                "      \"source\": {\n" +
+                "        \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
+                "        \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
+                "      },\n" +
+                "      \"links\": [\n" +
+                "        {\n" +
+                "          \"label\": \"MME Conversion Tables\",\n" +
+                "          \"url\": \"https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
+        Assert.assertTrue(
+                withoutID.replaceAll("\\s+", "")
+                        .equals(expected.replaceAll("\\s+", ""))
+        );
+    }
+
+    @Test
+    public void CdcOpioidGuidanceRecommendationTenTest() throws IOException {
+        putResource("cdc-opioid-guidance-bundle.json", "");
+        putResource("cdc-opioid-guidance-terminology.json", "");
+        // Get the CDS Hooks request
+        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-10-request.json");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
+        byte[] data = cdsHooksRequest.getBytes("UTF-8");
+
+        // Unsure how to use Hapi to make this request...
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/cdc-opioid-guidance-10");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(data);
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        conn.disconnect();
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"summary\": \"Prescribed Opioids Not Found In Urine Screening\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The following opioids are missing from the screening: fentanyl\",\n" +
+                "      \"source\": {\n" +
+                "        \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
+                "        \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
+        Assert.assertTrue(
+                withoutID.replaceAll("\\s+", "")
+                        .equals(expected.replaceAll("\\s+", ""))
+        );
+    }
+
+    @Test
+    public void CdcOpioidGuidanceRecommendationElevenTest() throws IOException {
+        putResource("cdc-opioid-guidance-bundle.json", "");
+        putResource("cdc-opioid-guidance-terminology.json", "");
+        // Get the CDS Hooks request
+        JsonObject request = new Gson().fromJson(new InputStreamReader(this.getClass().getResourceAsStream("cdc-opioid-guidance-11-request.json")), JsonObject.class);
+
+        InputStream is = this.getClass().getResourceAsStream("cdc-opioid-guidance-11-request.json");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
+        byte[] data = cdsHooksRequest.getBytes("UTF-8");
+
+        // Unsure how to use Hapi to make this request...
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/cdc-opioid-guidance-11");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(data);
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        conn.disconnect();
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"summary\": \"Avoid prescribing opioid pain medication and benzodiazepine concurrently whenever possible.\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The benzodiazepine prescription request is concurrent with an active opioid prescription\",\n" +
+                "      \"source\": {\n" +
+                "        \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
+                "        \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
+        Assert.assertTrue(
+                withoutID.replaceAll("\\s+", "")
                         .equals(expected.replaceAll("\\s+", ""))
         );
     }
@@ -268,21 +562,22 @@ public class RulerTestBase {
 
         Context context = new Context(library);
 
-        BaseFhirDataProvider provider = new FhirDataProviderStu3().setEndpoint(ourServerBase);
-
-        FhirTerminologyProvider terminologyProvider = new FhirTerminologyProvider().withEndpoint(ourServerBase);
-        provider.setTerminologyProvider(terminologyProvider);
+        JpaTerminologyProvider jpaTermSvc = new JpaTerminologyProvider(
+                (ValueSetResourceProvider) dataProvider.resolveResourceProvider("ValueSet"),
+                (CodeSystemResourceProvider) dataProvider.resolveResourceProvider("CodeSystem")
+        );
+        dataProvider.setTerminologyProvider(jpaTermSvc);
 //        provider.setExpandValueSets(true);
 
-        context.registerDataProvider("http://hl7.org/fhir", provider);
-        context.registerTerminologyProvider(terminologyProvider);
+        context.registerDataProvider("http://hl7.org/fhir", dataProvider);
+        context.registerTerminologyProvider(jpaTermSvc);
 
         xmlFile = new File(URLDecoder.decode(RulerHelperTests.class.getResource("measure-col.xml").getFile(), "UTF-8"));
-        Measure measure = provider.getFhirClient().getFhirContext().newXmlParser().parseResource(Measure.class, new FileReader(xmlFile));
+        Measure measure = FhirContext.forDstu3().newXmlParser().parseResource(Measure.class, new FileReader(xmlFile));
 
         String patientId = "Patient-12214";
-        Patient patient = provider.getFhirClient().read().resource(Patient.class).withId(patientId).execute();
-        // TODO: Couldn't figure out what matcher to use here, gave up.
+        Patient patient = (Patient) dataProvider.resolveResourceProvider("Patient").getDao().read(new IdType(patientId));
+
         if (patient == null) {
             throw new RuntimeException("Patient is null");
         }
@@ -312,12 +607,9 @@ public class RulerTestBase {
         System.out.println(String.format("Bundle url: %s", report.getEvaluatedResources().getReference()));
     }
 
-    // TODO - refactor CDS Hooks tests to match new framework
     @Test
     public void BCSCdsHooksPatientViewTest() throws IOException {
         putResource("cds-bcs-bundle.json", "");
-        putResource("cds-codesystems.json", "");
-        putResource("cds-valuesets.json", "");
 
         // Get the CDS Hooks request
         InputStream is = this.getClass().getResourceAsStream("cds-bcs-request.json");
@@ -351,6 +643,7 @@ public class RulerTestBase {
                 "      \"source\": {},\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
+                "          \"label\": \"Mammogram request\",\n" +
                 "          \"actions\": [\n" +
                 "            {\n" +
                 "              \"type\": \"create\",\n" +
@@ -378,7 +671,7 @@ public class RulerTestBase {
                 "      ]\n" +
                 "    }\n" +
                 "  ]\n" +
-                "}";
+                "}\n";
 
         String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
         Assert.assertTrue(
@@ -387,11 +680,54 @@ public class RulerTestBase {
         );
     }
 
+    // Testing request without indicator specified
+    @Test
+    public void BCSCdsHooksPatientViewTestError() throws IOException {
+        putResource("cds-bcs-bundle-error.json", "");
+
+        // Get the CDS Hooks request
+        InputStream is = this.getClass().getResourceAsStream("cds-bcs-request.json");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
+        byte[] data = cdsHooksRequest.getBytes("UTF-8");
+
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services/bcs-decision-support");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        conn.setDoOutput(true);
+        conn.getOutputStream().write(data);
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"summary\": \"MissingRequiredFieldException encountered during execution\",\n" +
+                "      \"indicator\": \"hard-stop\",\n" +
+                "      \"detail\": \"The indicator field must be specified in the action.dynamicValue field in the PlanDefinition\",\n" +
+                "      \"source\": {}\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        Assert.assertTrue(
+                response.toString().replaceAll("\\s+", "")
+                        .equals(expected.replaceAll("\\s+", ""))
+        );
+    }
+
     @Test
     public void CCSCdsHooksPatientViewTest() throws IOException {
         putResource("cds-ccs-bundle.json", "");
-        putResource("cds-codesystems.json", "");
-        putResource("cds-valuesets.json", "");
 
         // Get the CDS Hooks request
         InputStream is = this.getClass().getResourceAsStream("cds-ccs-request.json");
@@ -425,6 +761,7 @@ public class RulerTestBase {
                 "      \"source\": {},\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
+                "          \"label\": \"Cervical Cytology request\",\n" +
                 "          \"actions\": [\n" +
                 "            {\n" +
                 "              \"type\": \"create\",\n" +
@@ -452,7 +789,7 @@ public class RulerTestBase {
                 "      ]\n" +
                 "    }\n" +
                 "  ]\n" +
-                "}";
+                "}\n";
 
         String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
         Assert.assertTrue(
@@ -461,12 +798,9 @@ public class RulerTestBase {
         );
     }
 
-    // TODO: Fix
-    //@Test
+    @Test
     public void COLCdsHooksPatientViewTest() throws IOException {
         putResource("cds-col-bundle.json", "");
-        putResource("cds-codesystems.json", "");
-        putResource("cds-valuesets.json", "");
 
         // Get the CDS Hooks request
         InputStream is = this.getClass().getResourceAsStream("cds-col-request.json");
@@ -497,11 +831,14 @@ public class RulerTestBase {
                 "      \"summary\": \"A Fecal Occult Blood test for the patient is recommended\",\n" +
                 "      \"indicator\": \"warning\",\n" +
                 "      \"detail\": \"The patient has not had a Fecal Occult Blood test in the last year\",\n" +
+                "      \"source\": {},\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
+                "          \"label\": \"FOBT request\",\n" +
                 "          \"actions\": [\n" +
                 "            {\n" +
                 "              \"type\": \"create\",\n" +
+                "              \"description\": \"The patient has not had a Fecal Occult Blood test in the last year\",\n" +
                 "              \"resource\": {\n" +
                 "                \"resourceType\": \"ProcedureRequest\",\n" +
                 "                \"status\": \"draft\",\n" +
@@ -528,11 +865,14 @@ public class RulerTestBase {
                 "      \"summary\": \"A Flexible Sigmoidoscopy procedure for the patient is recommended\",\n" +
                 "      \"indicator\": \"warning\",\n" +
                 "      \"detail\": \"The patient has not had a Flexible Sigmoidoscopy procedure in the last 5 years\",\n" +
+                "      \"source\": {},\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
+                "          \"label\": \"Flexible Sigmoidoscopy request\",\n" +
                 "          \"actions\": [\n" +
                 "            {\n" +
                 "              \"type\": \"create\",\n" +
+                "              \"description\": \"The patient has not had a Flexible Sigmoidoscopy procedure in the last 5 years\",\n" +
                 "              \"resource\": {\n" +
                 "                \"resourceType\": \"ProcedureRequest\",\n" +
                 "                \"status\": \"draft\",\n" +
@@ -559,11 +899,14 @@ public class RulerTestBase {
                 "      \"summary\": \"A Colonoscopy procedure for the patient is recommended\",\n" +
                 "      \"indicator\": \"warning\",\n" +
                 "      \"detail\": \"The patient has not had a Colonoscopy procedure in the last 10 years\",\n" +
+                "      \"source\": {},\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
+                "          \"label\": \"Colonoscopy request\",\n" +
                 "          \"actions\": [\n" +
                 "            {\n" +
                 "              \"type\": \"create\",\n" +
+                "              \"description\": \"The patient has not had a Colonoscopy procedure in the last 10 years\",\n" +
                 "              \"resource\": {\n" +
                 "                \"resourceType\": \"ProcedureRequest\",\n" +
                 "                \"status\": \"draft\",\n" +
@@ -590,11 +933,14 @@ public class RulerTestBase {
                 "      \"summary\": \"A Colonography procedure for the patient is recommended\",\n" +
                 "      \"indicator\": \"warning\",\n" +
                 "      \"detail\": \"The patient has not had a Colonography procedure in the last 5 years\",\n" +
+                "      \"source\": {},\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
+                "          \"label\": \"CT Colonography request\",\n" +
                 "          \"actions\": [\n" +
                 "            {\n" +
                 "              \"type\": \"create\",\n" +
+                "              \"description\": \"The patient has not had a Colonography procedure in the last 5 years\",\n" +
                 "              \"resource\": {\n" +
                 "                \"resourceType\": \"ProcedureRequest\",\n" +
                 "                \"status\": \"draft\",\n" +
@@ -621,11 +967,14 @@ public class RulerTestBase {
                 "      \"summary\": \"A FIT-DNA test for the patient is recommended\",\n" +
                 "      \"indicator\": \"warning\",\n" +
                 "      \"detail\": \"The patient has not had a FIT-DNA test in the last 3 years\",\n" +
+                "      \"source\": {},\n" +
                 "      \"suggestions\": [\n" +
                 "        {\n" +
+                "          \"label\": \"FIT-DNA request\",\n" +
                 "          \"actions\": [\n" +
                 "            {\n" +
                 "              \"type\": \"create\",\n" +
+                "              \"description\": \"The patient has not had a FIT-DNA test in the last 3 years\",\n" +
                 "              \"resource\": {\n" +
                 "                \"resourceType\": \"ProcedureRequest\",\n" +
                 "                \"status\": \"draft\",\n" +
@@ -773,18 +1122,21 @@ public class RulerTestBase {
     @Test
     public void populationMeasureBCS() {
         putResource("population-measure-bcs-bundle.json", "");
+        putResource("population-measure-terminology-bundle.json", "");
         validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-bcs", "library-bcs-logic");
     }
 
     @Test
     public void populationMeasureCCS() {
         putResource("population-measure-ccs-bundle.json", "");
+        putResource("population-measure-terminology-bundle.json", "");
         validatePopulationMeasure("2017-01-01", "2017-12-31", "measure-ccs", "library-ccs-logic");
     }
 
     @Test
     public void populationMeasureCOL() {
         putResource("population-measure-col-bundle.json", "");
+        putResource("population-measure-terminology-bundle.json", "");
         validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-col", "library-col-logic");
     }
 
@@ -792,7 +1144,9 @@ public class RulerTestBase {
     public void applyCqlTest() throws FHIRException, ParseException {
         InputStream is = this.getClass().getResourceAsStream("bundle-example-rec-04-long-acting-opioid.xml");
         Bundle bundle = (Bundle) FhirContext.forDstu3().newXmlParser().parseResource(new InputStreamReader(is));
-        bundle = FHIRBundleResourceProvider.applyCql(bundle);
+
+        FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider();
+        bundle = bundleProvider.applyCql(bundle);
 
         MedicationRequest medReq = (MedicationRequest) bundle.getEntry().get(0).getResource();
         Calendar cal = Calendar.getInstance();
@@ -805,13 +1159,31 @@ public class RulerTestBase {
         Assert.assertEquals(expected, actual);
 
 //        TODO - uncomment once engine issue #97 (https://github.com/DBCG/cql_engine/issues/97) is resolved
-//        actual = formatter.parse(formatter.format(medReq.getDispenseRequest().getValidityPeriod().getStart()));
-//        Assert.assertEquals(expected, actual);
-//
-//        cal.setTime(new Date());
-//        cal.add(Calendar.MONTH, 3);
-//        expected = formatter.parse(formatter.format(cal.getTime()));
-//        actual = formatter.parse(formatter.format(medReq.getDispenseRequest().getValidityPeriod().getEnd()));
-//        Assert.assertEquals(expected, actual);
+        actual = formatter.parse(formatter.format(medReq.getDispenseRequest().getValidityPeriod().getStart()));
+        Assert.assertEquals(expected, actual);
+
+        cal.setTime(new Date());
+        cal.add(Calendar.MONTH, 3);
+        expected = formatter.parse(formatter.format(cal.getTime()));
+        actual = formatter.parse(formatter.format(medReq.getDispenseRequest().getValidityPeriod().getEnd()));
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testDynamicDiscovery() throws IOException {
+        URL url = new URL("http://localhost:" + ourPort + "/cqf-ruler/cds-services");
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+
+        StringBuilder response = new StringBuilder();
+        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
+        {
+            for (int i; (i = in.read()) >= 0;) {
+                response.append((char) i);
+            }
+        }
+
+        System.out.println(StringEscapeUtils.unescapeJava(response.toString()));
     }
 }

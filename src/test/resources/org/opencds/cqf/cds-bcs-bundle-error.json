@@ -155,10 +155,6 @@
                   {
                     "path": "action.description",
                     "expression": "MammogramDetail"
-                  },
-                  {
-                    "path": "activity.extension",
-                    "expression": "MammogramIndicator"
                   }
                 ]
               }

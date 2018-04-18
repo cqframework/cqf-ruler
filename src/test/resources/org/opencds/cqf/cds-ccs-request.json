@@ -4,65 +4,6 @@
   "hook": "patient-view",
   "user": "Practitioner/example",
   "context": {
-    "patientId": "Patient/Patient-6532",
-    "patient": {
-      "resourceType": "Patient",
-      "id": "Patient-6532",
-      "identifier": [
-        {
-          "use": "official",
-          "type": {
-            "coding": [
-              {
-                "system": "http://hl7.org/fhir/identifier-type",
-                "code": "SB",
-                "display": "Social Beneficiary Identifier"
-              }
-            ],
-            "text": "US Social Security Number"
-          },
-          "system": "http://hl7.org/fhir/sid/us-ssn",
-          "value": "000006532"
-        }
-      ],
-      "active": true,
-      "name": [
-        {
-          "family": "Brandt",
-          "given": [
-            "Edith",
-            "Elaine"
-          ]
-        }
-      ],
-      "telecom": [
-        {
-          "system": "phone",
-          "value": "616-555-1082",
-          "use": "home"
-        },
-        {
-          "system": "phone",
-          "value": "616-555-1211",
-          "use": "mobile"
-        }
-      ],
-      "gender": "female",
-      "birthDate": "1987-07-16",
-      "address": [
-        {
-          "use": "home",
-          "type": "postal",
-          "line": [
-            "893 N Elm Drive"
-          ],
-          "city": "Grand Rapids",
-          "district": "Kent County",
-          "state": "MI",
-          "postalCode": "49504"
-        }
-      ]
-    }
-  },
-  "prefetch": {}
+    "patientId": "Patient/Patient-6532"
+  }
 }
