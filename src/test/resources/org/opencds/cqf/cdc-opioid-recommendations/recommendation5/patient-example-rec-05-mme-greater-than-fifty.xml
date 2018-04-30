@@ -1,0 +1,5 @@
+<Patient xmlns="http://hl7.org/fhir">
+   <id value="example-rec-05-mme-greater-than-fifty"/>
+   <gender value="female"/>
+   <birthDate value="1982-01-07"/>
+</Patient>

@@ -500,8 +500,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                                 try {
                                     def.getExpression().evaluate(context);
                                 } catch (Exception e) {
-                                    // do nothing
-                                    String s = "s";
+                                    e.printStackTrace();
                                 }
                             }
                             return discoveryDataProvider.getPrefetchUrls();

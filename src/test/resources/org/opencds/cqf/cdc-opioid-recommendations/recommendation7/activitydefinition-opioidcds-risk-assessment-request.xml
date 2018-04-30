@@ -1,0 +1,66 @@
+<ActivityDefinition xmlns="http://hl7.org/fhir">
+    <id value="opioidcds-risk-assessment-request"/>
+    <version value="0.1.0"/>
+    <name value="ActivityDefinition - Recommendation #7 Risk Assessment ProcedureRequest"/>
+    <title value="CDC Opioid Prescribing Guideline Recommendation #7 - Risk Assessment ProcedureRequest"/>
+    <status value="draft"/>
+    <date value="2018-04-24"/>
+    <publisher value="Centers for Disease Control and Prevention (CDC)"/>
+    <description value="As part of the workflow for recommendation 7, it is recommended that a risk assessment be conducted if the inclusion criteria is met."/>
+    <purpose value="Provides dynamic risk assessment suggestion as part of recommendation 7 workflow."/>
+    <usage value="Used to create a risk assessment ProcedureRequest when the inclusion criteria is satisfied for recommendation 7."/>
+    <useContext>
+        <code>
+            <system value="http://hl7.org/fhir/usage-context-type"/>
+            <code value="focus"/>
+            <display value="Clinical Focus"/>
+        </code>
+        <valueCodeableConcept>
+            <coding>
+                <system value="http://snomed.info/sct"/>
+                <code value="225314003"/>
+                <display value="Risk management (procedure)"/>
+            </coding>
+        </valueCodeableConcept>
+    </useContext>
+    <jurisdiction>
+        <coding>
+            <system value="urn:iso:std:iso:3166"/>
+            <code value="US"/>
+            <display value="United States of America"/>
+        </coding>
+    </jurisdiction>
+    <topic>
+        <coding>
+            <system value="http://hl7.org/fhir/definition-topic"/>
+            <code value="assessment"/>
+            <display value="Assessment"/>
+        </coding>
+        <text value="Opioid Prescribing"/>
+    </topic>
+    <contributor>
+        <type value="author" />
+        <name value="Kensaku Kawamoto, MD, PhD, MHS"/>
+    </contributor>
+    <contributor>
+        <type value="author" />
+        <name value="Bryn Rhodes"/>
+    </contributor>
+    <contributor>
+        <type value="author" />
+        <name value="Floyd Eisenberg, MD, MPH"/>
+    </contributor>
+    <contributor>
+        <type value="author" />
+        <name value="Robert McClure, MD, MPH"/>
+    </contributor>
+    <copyright value="© CDC 2016+."/>
+    <kind value="ProcedureRequest"/>
+    <code>
+        <coding>
+            <system value="http://snomed.info/sct"/>
+            <code value="454281000124100"/>
+            <display value="Assessment of risk for opioid abuse (procedure)"/>
+        </coding>
+    </code>
+</ActivityDefinition>

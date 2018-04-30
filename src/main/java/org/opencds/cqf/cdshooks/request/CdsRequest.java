@@ -104,6 +104,7 @@ public abstract class CdsRequest {
             try {
                 bundleResourceProvider.applyCql((Resource) res);
             } catch (FHIRException e) {
+                e.printStackTrace();
                 throw new RuntimeException("Error applying cql expression extensions: " + e.getMessage());
             }
         }

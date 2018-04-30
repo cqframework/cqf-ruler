@@ -171,8 +171,8 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
             terminologyProvider = new JpaTerminologyProvider(vs, cs);
         }
         else {
-            terminologyProvider = user == null || pass == null ? new FhirTerminologyProvider().withEndpoint(source)
-                    : new FhirTerminologyProvider().withBasicAuth(user, pass).withEndpoint(source);
+            terminologyProvider = user == null || pass == null ? new FhirTerminologyProvider().setEndpoint(source, true)
+                    : new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(source, true);
         }
         provider.setTerminologyProvider(terminologyProvider);
         provider.setExpandValueSets(true);
