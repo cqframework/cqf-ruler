@@ -1,93 +1,126 @@
 package org.opencds.cqf.helpers;
 
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.CodingDt;
-import ca.uhn.fhir.model.dstu2.composite.SimpleQuantityDt;
-import ca.uhn.fhir.model.dstu2.resource.MedicationOrder;
-import ca.uhn.fhir.model.primitive.BooleanDt;
 import org.hl7.fhir.convertors.NullVersionConverterAdvisor30;
 import org.hl7.fhir.convertors.VersionConvertor_10_30;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.hl7.fhir.instance.model.MedicationOrder;
 
 public class Dstu2ToStu3 {
 
-    public static Bundle convertBundle(org.hl7.fhir.instance.model.Bundle bundle) throws FHIRException {
+    public static Resource convertResource(org.hl7.fhir.instance.model.Resource resource) {
         NullVersionConverterAdvisor30 advisor = new NullVersionConverterAdvisor30();
         VersionConvertor_10_30 converter = new VersionConvertor_10_30(advisor);
 
-        return converter.convertBundle(bundle);
+        // TODO - need to convert DiagnosticOrder to ProcedureRequest, and DeviceUseRequest to DeviceRequest
+        try {
+            switch (resource.getResourceType().name()) {
+                case "MedicationOrder":
+                    return resolveMedicationRequest((MedicationOrder) resource, converter);
+                case "Bundle":
+                    return resolveBundle((org.hl7.fhir.instance.model.Bundle) resource);
+                default:
+                    return converter.convertResource(resource);
+            }
+        } catch (FHIRException fe) {
+            fe.printStackTrace();
+            throw new RuntimeException("Error converting type: " + resource.getResourceType().name() + "\nMessage: " + fe.getMessage());
+        }
+    }
+
+    // TODO - complete conversion - only interested in the type and entry resources currently
+    public static Bundle resolveBundle(org.hl7.fhir.instance.model.Bundle bundle) {
+        Bundle returnBundle = new Bundle();
+        try {
+            returnBundle.setType(Bundle.BundleType.fromCode(bundle.getType().toCode()));
+        } catch (FHIRException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+        Bundle.BundleEntryComponent returnEntry = new Bundle.BundleEntryComponent();
+        for (org.hl7.fhir.instance.model.Bundle.BundleEntryComponent entry : bundle.getEntry()) {
+            if (entry.hasResource()) {
+                returnEntry.setResource(convertResource(entry.getResource()));
+                returnBundle.addEntry(returnEntry);
+            }
+        }
+        return returnBundle;
     }
 
     // MedicationRequest
-    public static MedicationRequest resolveMedicationRequest(MedicationOrder order) throws FHIRException {
+    public static MedicationRequest resolveMedicationRequest(MedicationOrder order, VersionConvertor_10_30 converter) throws FHIRException {
         /*
         *   Required fields:
-        *   MedicationOrder -> MedicationRequest
-        *   medication -> medication
+        *   MedicationOrder              -> MedicationRequest
+        *   status                       -> status
+        *   null                         -> intent (default to order)
+        *   medication                   -> medication (assuming CodeableConcept)
+        *   dateWritten                  -> authoredOn
+        *   encounter                    -> context
         *   dosageInstruction (Backbone) -> Dosage (Element)
+        *   dispenseRequest              -> dispenseRequest
         */
-        return new MedicationRequest()
-                .setStatus(MedicationRequest.MedicationRequestStatus.fromCode(order.getStatus()))
-                .setMedication(convertToCodeableConcept((CodeableConceptDt) order.getMedication()))
-                .setDosageInstruction(convertToDosage(order.getDosageInstruction()));
-    }
+        MedicationRequest request =
+                new MedicationRequest()
+                        .setStatus(order.hasStatus() ? MedicationRequest.MedicationRequestStatus.fromCode(order.getStatus().toCode()) : MedicationRequest.MedicationRequestStatus.UNKNOWN)
+                        .setIntent(MedicationRequest.MedicationRequestIntent.ORDER)
+                        .setMedication(converter.convertCodeableConcept(order.getMedicationCodeableConcept()))
+                        .setDispenseRequest(convertDispenseRequest(order.getDispenseRequest()));
 
-    private static CodeableConcept convertToCodeableConcept(CodeableConceptDt conceptDt) {
-        CodeableConcept concept = new CodeableConcept().setText(conceptDt.getText() == null ? "" : conceptDt.getText());
-        concept.setId(conceptDt.getElementSpecificId());
-        List<Coding> codes = new ArrayList<>();
-        for (CodingDt code : conceptDt.getCoding()) {
-            codes.add(new Coding()
-                    .setCode(code.getCode())
-                    .setSystem(code.getSystem())
-                    .setDisplay(code.getDisplay())
-                    .setVersion(code.getVersion())
-            );
-        }
-        return concept.setCoding(codes);
-    }
-
-    private static List<Dosage> convertToDosage(List<MedicationOrder.DosageInstruction> instructions) throws FHIRException {
-        List<Dosage> dosages = new ArrayList<>();
-
-        for (MedicationOrder.DosageInstruction dosageInstruction : instructions) {
-            Dosage dosage = new Dosage();
-            dosage.setText(dosageInstruction.getText());
-            dosage.setAsNeeded(dosageInstruction.getAsNeeded() == null ? new BooleanType(true) : new BooleanType(((BooleanDt) dosageInstruction.getAsNeeded()).getValue()));
-
-
-            Integer frequency = dosageInstruction.getTiming().getRepeat().getFrequency();
-            Integer frequencyMax = dosageInstruction.getTiming().getRepeat().getFrequencyMax();
-
-            Timing.TimingRepeatComponent repeat = new Timing.TimingRepeatComponent();
-            if (frequency != null) {
-                repeat.setFrequency(frequency);
-            }
-            if (frequencyMax != null) {
-                repeat.setFrequencyMax(frequencyMax);
-            }
-            repeat.setPeriod(dosageInstruction.getTiming().getRepeat().getPeriod())
-                    .setPeriodUnit(Timing.UnitsOfTime.fromCode(dosageInstruction.getTiming().getRepeat().getPeriodUnits()));
-
-            Timing timing = new Timing();
-            timing.setRepeat(repeat);
-            dosage.setTiming(timing);
-
-            SimpleQuantityDt quantityDt = (SimpleQuantityDt) dosageInstruction.getDose();
-            dosage.setDose(new SimpleQuantity()
-                    .setValue(quantityDt.getValue())
-                    .setUnit(quantityDt.getUnit())
-                    .setCode(quantityDt.getCode())
-                    .setSystem(quantityDt.getSystem())
-            );
-
-            dosages.add(dosage);
+        for (MedicationOrder.MedicationOrderDosageInstructionComponent dosageInstruction : order.getDosageInstruction()) {
+            request.addDosageInstruction(converter.convertMedicationOrderDosageInstructionComponent(dosageInstruction));
         }
 
-        return dosages;
+        if (order.hasDateWritten()) {
+            request.setAuthoredOn(order.getDateWritten());
+        }
+
+        if (order.hasEncounter()) {
+            request.setContext(new Reference().setReference(order.getEncounter().getReference()));
+        }
+
+        return request;
+    }
+
+    private static MedicationRequest.MedicationRequestDispenseRequestComponent convertDispenseRequest(
+            MedicationOrder.MedicationOrderDispenseRequestComponent orderComponent)
+    {
+        if (orderComponent == null) {
+            return null;
+        }
+
+        MedicationRequest.MedicationRequestDispenseRequestComponent requestComponent =
+                new MedicationRequest.MedicationRequestDispenseRequestComponent();
+
+        if (orderComponent.hasValidityPeriod()) {
+            requestComponent.setValidityPeriod(
+                    new Period()
+                            .setStart(orderComponent.getValidityPeriod().getStart())
+                            .setEnd(orderComponent.getValidityPeriod().getEnd())
+            );
+        }
+
+        if (orderComponent.hasNumberOfRepeatsAllowed()) {
+            requestComponent.setNumberOfRepeatsAllowed(orderComponent.getNumberOfRepeatsAllowed());
+        }
+
+        if (orderComponent.hasQuantity()) {
+            requestComponent.setQuantity(
+                    (SimpleQuantity) new SimpleQuantity()
+                            .setValue(orderComponent.getQuantity().getValue())
+                            .setUnit(orderComponent.getQuantity().getUnit())
+                            .setSystem(orderComponent.getQuantity().getSystem())
+                            .setCode(orderComponent.getQuantity().getCode())
+            );
+        }
+
+        if (orderComponent.hasExpectedSupplyDuration()) {
+            requestComponent.setExpectedSupplyDuration(
+                    (Duration) new Duration()
+                            .setValue(orderComponent.getExpectedSupplyDuration().getValue())
+                            .setUnit(orderComponent.getExpectedSupplyDuration().getUnit())
+            );
+        }
+
+        return requestComponent;
     }
 }

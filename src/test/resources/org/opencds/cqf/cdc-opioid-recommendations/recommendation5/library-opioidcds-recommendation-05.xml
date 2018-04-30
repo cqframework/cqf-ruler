@@ -1,0 +1,119 @@
+<Library xmlns="http://hl7.org/fhir">
+    <id value="opioidcds-recommendation-05"/>
+    <identifier>
+        <use value="official"/>
+        <value value="OpioidCDS_REC_05"/>
+    </identifier>
+    <version value="0.1.0"/>
+    <name value="Library - Logic for Recommendation #5"/>
+    <title value="Opioid CDS Logic for recommendation #5"/>
+    <status value="active"/>
+    <experimental value="false"/>
+    <type>
+        <coding>
+            <system value="http://hl7.org/fhir/library-type"/>
+            <code value="logic-library"/>
+            <display value="Logic Library"/>
+        </coding>
+    </type>
+    <date value="2018-04-15T13:49:09-06:00"/>
+    <publisher value="Centers for Disease Control and Prevention (CDC)"/>
+    <description value="Opioid Decision Support Logic for use in implementing CDC Opioid Prescribing Guidelines."/>
+    <purpose value="This library works in concert with the OMTK logic library to provide decision support for Morphine Milligram Equivalence calculations and dynamic value resolution."/>
+    <usage value="This library is to notify the prescriber/user whether the current prescription exceeds the recommended MME."/>
+    <useContext>
+        <code>
+            <system value="http://hl7.org/fhir/usage-context-type"/>
+            <code value="focus"/>
+            <display value="Clinical Focus"/>
+        </code>
+        <valueCodeableConcept>
+            <coding>
+                <system value="http://snomed.info/sct"/>
+                <code value="182888003"/>
+                <display value="Medication requested (situation)"/>
+            </coding>
+        </valueCodeableConcept>
+    </useContext>
+    <useContext>
+        <code>
+            <system value="http://hl7.org/fhir/usage-context-type"/>
+            <code value="focus"/>
+            <display value="Clinical Focus"/>
+        </code>
+        <valueCodeableConcept>
+            <coding>
+                <system value="http://snomed.info/sct"/>
+                <code value="82423001"/>
+                <display value="Chronic pain (finding)"/>
+            </coding>
+        </valueCodeableConcept>
+    </useContext>
+    <jurisdiction>
+        <coding>
+            <system value="urn:iso:std:iso:3166"/>
+            <code value="US"/>
+            <display value="United States of America"/>
+        </coding>
+    </jurisdiction>
+    <topic>
+        <text value="Opioid Prescribing"/>
+    </topic>
+    <contributor>
+        <type value="author"/>
+        <name value="Kensaku Kawamoto, MD, PhD, MHS"/>
+    </contributor>
+    <contributor>
+        <type value="author"/>
+        <name value="Bryn Rhodes"/>
+    </contributor>
+    <contributor>
+        <type value="author"/>
+        <name value="Floyd Eisenberg, MD, MPH"/>
+    </contributor>
+    <contributor>
+        <type value="author"/>
+        <name value="Robert McClure, MD, MPH"/>
+    </contributor>
+    <copyright value="© CDC 2016+."/>
+    <relatedArtifact>
+        <type value="documentation"/>
+        <display value="CDC guideline for prescribing opioids for chronic pain"/>
+        <url value="https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420"/>
+    </relatedArtifact>
+    <relatedArtifact>
+        <type value="depends-on"/>
+        <resource>
+            <reference value="Library/opioidcds-common"/>
+        </resource>
+    </relatedArtifact>
+    <relatedArtifact>
+        <type value="documentation"/>
+        <display value="MME Conversion Tables"/>
+        <url value="https://www.cdc.gov/drugoverdose/pdf/calculating_total_daily_dose-a.pdf"/>
+    </relatedArtifact>
+    <dataRequirement id="medications">
+        <type value="MedicationRequest"/>
+        <codeFilter>
+            <path value="status"/>
+            <valueCode value="active"/>
+        </codeFilter>
+        <codeFilter>
+            <path value="category"/>
+            <valueCoding>
+                <system value="http://hl7.org/fhir/medication-request-category"/>
+                <code value="outpatient"/>
+            </valueCoding>
+        </codeFilter>
+    </dataRequirement>
+    <content>
+        <contentType value="application/elm+xml"/>
+        <data value="PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPGxpYnJhcnkgeG1sbnM9InVybjpobDctb3JnOmVsbTpyMSIgeG1sbnM6dD0idXJuOmhsNy1vcmc6ZWxtLXR5cGVzOnIxIiB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4bWxuczp4c2Q9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hIiB4bWxuczpmaGlyPSJodHRwOi8vaGw3Lm9yZy9maGlyIiB4bWxuczpxZG00Mz0idXJuOmhlYWx0aGl0LWdvdjpxZG06djRfMyIgeG1sbnM6cWRtNTM9InVybjpoZWFsdGhpdC1nb3Y6cWRtOnY1XzMiIHhtbG5zOmE9InVybjpobDctb3JnOmNxbC1hbm5vdGF0aW9uczpyMSI+CiAgIDxpZGVudGlmaWVyIGlkPSJPcGlvaWRDRFNfU1RVM19SRUNfMDUiIHZlcnNpb249IjAuMS4wIi8+CiAgIDxzY2hlbWFJZGVudGlmaWVyIGlkPSJ1cm46aGw3LW9yZzplbG0iIHZlcnNpb249InIxIi8+CiAgIDx1c2luZ3M+CiAgICAgIDxkZWYgbG9jYWxJZGVudGlmaWVyPSJTeXN0ZW0iIHVyaT0idXJuOmhsNy1vcmc6ZWxtLXR5cGVzOnIxIi8+CiAgICAgIDxkZWYgbG9jYWxJZGVudGlmaWVyPSJGSElSIiB1cmk9Imh0dHA6Ly9obDcub3JnL2ZoaXIiIHZlcnNpb249IjMuMC4wIi8+CiAgIDwvdXNpbmdzPgogICA8aW5jbHVkZXM+CiAgICAgIDxkZWYgbG9jYWxJZGVudGlmaWVyPSJDb21tb24iIHBhdGg9Ik9waW9pZENEU0NvbW1vblNUVTMiIHZlcnNpb249IjAuMS4wIi8+CiAgIDwvaW5jbHVkZXM+CiAgIDxwYXJhbWV0ZXJzPgogICAgICA8ZGVmIG5hbWU9IlVzZXJJRCIgYWNjZXNzTGV2ZWw9IlB1YmxpYyI+CiAgICAgICAgIDxwYXJhbWV0ZXJUeXBlU3BlY2lmaWVyIG5hbWU9InQ6U3RyaW5nIiB4c2k6dHlwZT0iTmFtZWRUeXBlU3BlY2lmaWVyIi8+CiAgICAgIDwvZGVmPgogICAgICA8ZGVmIG5hbWU9IkNvbnRleHRQcmVzY3JpcHRpb25zIiBhY2Nlc3NMZXZlbD0iUHVibGljIj4KICAgICAgICAgPHBhcmFtZXRlclR5cGVTcGVjaWZpZXIgeHNpOnR5cGU9Ikxpc3RUeXBlU3BlY2lmaWVyIj4KICAgICAgICAgICAgPGVsZW1lbnRUeXBlIG5hbWU9ImZoaXI6TWVkaWNhdGlvblJlcXVlc3QiIHhzaTp0eXBlPSJOYW1lZFR5cGVTcGVjaWZpZXIiLz4KICAgICAgICAgPC9wYXJhbWV0ZXJUeXBlU3BlY2lmaWVyPgogICAgICA8L2RlZj4KICAgPC9wYXJhbWV0ZXJzPgogICA8c3RhdGVtZW50cz4KICAgICAgPGRlZiBuYW1lPSJQYXRpZW50IiBjb250ZXh0PSJQYXRpZW50Ij4KICAgICAgICAgPGV4cHJlc3Npb24geHNpOnR5cGU9IlNpbmdsZXRvbkZyb20iPgogICAgICAgICAgICA8b3BlcmFuZCBkYXRhVHlwZT0iZmhpcjpQYXRpZW50IiB4c2k6dHlwZT0iUmV0cmlldmUiLz4KICAgICAgICAgPC9leHByZXNzaW9uPgogICAgICA8L2RlZj4KICAgICAgPGRlZiBuYW1lPSJFeGNsdXNpb24gQ3JpdGVyaWEiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPgogICAgICAgICA8ZXhwcmVzc2lvbiB4c2k6dHlwZT0iT3IiPgogICAgICAgICAgICA8b3BlcmFuZCBuYW1lPSJFbmQgb2YgTGlmZSBBc3Nlc3NtZW50IiBsaWJyYXJ5TmFtZT0iQ29tbW9uIiB4c2k6dHlwZT0iRXhwcmVzc2lvblJlZiIvPgogICAgICAgICAgICA8b3BlcmFuZCBuYW1lPSJJcyBDb250ZXh0IFByZXNjcmlwdGlvbiBFbmQgb2YgTGlmZSBPcGlvaWQ/IiBsaWJyYXJ5TmFtZT0iQ29tbW9uIiB4c2k6dHlwZT0iRnVuY3Rpb25SZWYiPgogICAgICAgICAgICAgICA8b3BlcmFuZCBuYW1lPSJDb250ZXh0UHJlc2NyaXB0aW9ucyIgeHNpOnR5cGU9IlBhcmFtZXRlclJlZiIvPgogICAgICAgICAgICA8L29wZXJhbmQ+CiAgICAgICAgIDwvZXhwcmVzc2lvbj4KICAgICAgPC9kZWY+CiAgICAgIDxkZWYgbmFtZT0iVG90YWwgTU1FIiBjb250ZXh0PSJQYXRpZW50IiBhY2Nlc3NMZXZlbD0iUHVibGljIj4KICAgICAgICAgPGV4cHJlc3Npb24gbmFtZT0iVG90YWxNTUUiIGxpYnJhcnlOYW1lPSJDb21tb24iIHhzaTp0eXBlPSJGdW5jdGlvblJlZiI+CiAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJVbmlvbiI+CiAgICAgICAgICAgICAgIDxvcGVyYW5kIG5hbWU9IkNvbnRleHRQcmVzY3JpcHRpb25zIiB4c2k6dHlwZT0iUGFyYW1ldGVyUmVmIi8+CiAgICAgICAgICAgICAgIDxvcGVyYW5kIG5hbWU9IkFjdGl2ZSBBbWJ1bGF0b3J5IE9waW9pZCBSeCIgbGlicmFyeU5hbWU9IkNvbW1vbiIgeHNpOnR5cGU9IkV4cHJlc3Npb25SZWYiLz4KICAgICAgICAgICAgPC9vcGVyYW5kPgogICAgICAgICA8L2V4cHJlc3Npb24+CiAgICAgIDwvZGVmPgogICAgICA8ZGVmIG5hbWU9IkluY2x1c2lvbiBDcml0ZXJpYSIgY29udGV4dD0iUGF0aWVudCIgYWNjZXNzTGV2ZWw9IlB1YmxpYyI+CiAgICAgICAgIDxleHByZXNzaW9uIHhzaTp0eXBlPSJBbmQiPgogICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iTm90Ij4KICAgICAgICAgICAgICAgPG9wZXJhbmQgbmFtZT0iRXhjbHVzaW9uIENyaXRlcmlhIiB4c2k6dHlwZT0iRXhwcmVzc2lvblJlZiIvPgogICAgICAgICAgICA8L29wZXJhbmQ+CiAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJHcmVhdGVyT3JFcXVhbCI+CiAgICAgICAgICAgICAgIDxvcGVyYW5kIG5hbWU9IlRvdGFsIE1NRSIgeHNpOnR5cGU9IkV4cHJlc3Npb25SZWYiLz4KICAgICAgICAgICAgICAgPG9wZXJhbmQgdmFsdWU9IjUwIiB1bml0PSJtZy9kIiB4c2k6dHlwZT0iUXVhbnRpdHkiLz4KICAgICAgICAgICAgPC9vcGVyYW5kPgogICAgICAgICA8L2V4cHJlc3Npb24+CiAgICAgIDwvZGVmPgogICAgICA8ZGVmIG5hbWU9IkdldCBJbmRpY2F0b3IiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPgogICAgICAgICA8ZXhwcmVzc2lvbiB2YWx1ZVR5cGU9InQ6U3RyaW5nIiB2YWx1ZT0id2FybmluZyIgeHNpOnR5cGU9IkxpdGVyYWwiLz4KICAgICAgPC9kZWY+CiAgICAgIDxkZWYgbmFtZT0iR2V0IFN1bW1hcnkiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPgogICAgICAgICA8ZXhwcmVzc2lvbiB4c2k6dHlwZT0iQ29uY2F0ZW5hdGUiPgogICAgICAgICAgICA8b3BlcmFuZCB2YWx1ZVR5cGU9InQ6U3RyaW5nIiB2YWx1ZT0iSGlnaCByaXNrIGZvciBvcGlvaWQgb3ZlcmRvc2UgLSAiIHhzaTp0eXBlPSJMaXRlcmFsIi8+CiAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJDYXNlIj4KICAgICAgICAgICAgICAgPGNhc2VJdGVtPgogICAgICAgICAgICAgICAgICA8d2hlbiB4c2k6dHlwZT0iR3JlYXRlck9yRXF1YWwiPgogICAgICAgICAgICAgICAgICAgICA8b3BlcmFuZCBwYXRoPSJ2YWx1ZSIgeHNpOnR5cGU9IlByb3BlcnR5Ij4KICAgICAgICAgICAgICAgICAgICAgICAgPHNvdXJjZSBuYW1lPSJUb3RhbCBNTUUiIHhzaTp0eXBlPSJFeHByZXNzaW9uUmVmIi8+CiAgICAgICAgICAgICAgICAgICAgIDwvb3BlcmFuZD4KICAgICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgeHNpOnR5cGU9IlRvRGVjaW1hbCI+CiAgICAgICAgICAgICAgICAgICAgICAgIDxvcGVyYW5kIHZhbHVlVHlwZT0idDpJbnRlZ2VyIiB2YWx1ZT0iOTAiIHhzaTp0eXBlPSJMaXRlcmFsIi8+CiAgICAgICAgICAgICAgICAgICAgIDwvb3BlcmFuZD4KICAgICAgICAgICAgICAgICAgPC93aGVuPgogICAgICAgICAgICAgICAgICA8dGhlbiB2YWx1ZVR5cGU9InQ6U3RyaW5nIiB2YWx1ZT0idGFwZXIgbm93IiB4c2k6dHlwZT0iTGl0ZXJhbCIvPgogICAgICAgICAgICAgICA8L2Nhc2VJdGVtPgogICAgICAgICAgICAgICA8ZWxzZSB2YWx1ZVR5cGU9InQ6U3RyaW5nIiB2YWx1ZT0iY29uc2lkZXIgdGFwZXJpbmciIHhzaTp0eXBlPSJMaXRlcmFsIi8+CiAgICAgICAgICAgIDwvb3BlcmFuZD4KICAgICAgICAgPC9leHByZXNzaW9uPgogICAgICA8L2RlZj4KICAgICAgPGRlZiBuYW1lPSJHZXQgRGV0YWlsIiBjb250ZXh0PSJQYXRpZW50IiBhY2Nlc3NMZXZlbD0iUHVibGljIj4KICAgICAgICAgPGV4cHJlc3Npb24geHNpOnR5cGU9IkNvbmNhdGVuYXRlIj4KICAgICAgICAgICAgPG9wZXJhbmQgeHNpOnR5cGU9IkNvbmNhdGVuYXRlIj4KICAgICAgICAgICAgICAgPG9wZXJhbmQgdmFsdWVUeXBlPSJ0OlN0cmluZyIgdmFsdWU9IlRvdGFsIG1vcnBoaW5lIG1pbGxpZ3JhbSBlcXVpdmFsZW50IChNTUUpIGlzICIgeHNpOnR5cGU9IkxpdGVyYWwiLz4KICAgICAgICAgICAgICAgPG9wZXJhbmQgeHNpOnR5cGU9IlRvU3RyaW5nIj4KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgbmFtZT0iVG90YWwgTU1FIiB4c2k6dHlwZT0iRXhwcmVzc2lvblJlZiIvPgogICAgICAgICAgICAgICA8L29wZXJhbmQ+CiAgICAgICAgICAgIDwvb3BlcmFuZD4KICAgICAgICAgICAgPG9wZXJhbmQgdmFsdWVUeXBlPSJ0OlN0cmluZyIgdmFsdWU9Ii4gVGFwZXIgdG8gbGVzcyB0aGFuIDUwLiIgeHNpOnR5cGU9IkxpdGVyYWwiLz4KICAgICAgICAgPC9leHByZXNzaW9uPgogICAgICA8L2RlZj4KICAgPC9zdGF0ZW1lbnRzPgo8L2xpYnJhcnk+Cg=="/>
+        <title value="STU3 logic"/>
+    </content>
+    <content>
+        <contentType value="application/elm+xml"/>
+        <data value="PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjxsaWJyYXJ5IHhtbG5zPSJ1cm46aGw3LW9yZzplbG06cjEiIHhtbG5zOnQ9InVybjpobDctb3JnOmVsbS10eXBlczpyMSIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSIgeG1sbnM6eHNkPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYSIgeG1sbnM6Zmhpcj0iaHR0cDovL2hsNy5vcmcvZmhpciIgeG1sbnM6cWRtNDM9InVybjpoZWFsdGhpdC1nb3Y6cWRtOnY0XzMiIHhtbG5zOnFkbTUzPSJ1cm46aGVhbHRoaXQtZ292OnFkbTp2NV8zIiB4bWxuczphPSJ1cm46aGw3LW9yZzpjcWwtYW5ub3RhdGlvbnM6cjEiPg0KICAgPGlkZW50aWZpZXIgaWQ9Ik9waW9pZENEU19EU1RVMl9SRUNfMDUiIHZlcnNpb249IjAuMS4wIi8+DQogICA8c2NoZW1hSWRlbnRpZmllciBpZD0idXJuOmhsNy1vcmc6ZWxtIiB2ZXJzaW9uPSJyMSIvPg0KICAgPHVzaW5ncz4NCiAgICAgIDxkZWYgbG9jYWxJZGVudGlmaWVyPSJTeXN0ZW0iIHVyaT0idXJuOmhsNy1vcmc6ZWxtLXR5cGVzOnIxIi8+DQogICAgICA8ZGVmIGxvY2FsSWRlbnRpZmllcj0iRkhJUiIgdXJpPSJodHRwOi8vaGw3Lm9yZy9maGlyIiB2ZXJzaW9uPSIxLjAuMiIvPg0KICAgPC91c2luZ3M+DQogICA8aW5jbHVkZXM+DQogICAgICA8ZGVmIGxvY2FsSWRlbnRpZmllcj0iQ29tbW9uIiBwYXRoPSJPcGlvaWRDRFNDb21tb25EU1RVMiIgdmVyc2lvbj0iMC4xLjAiLz4NCiAgIDwvaW5jbHVkZXM+DQogICA8cGFyYW1ldGVycz4NCiAgICAgIDxkZWYgbmFtZT0iVXNlcklEIiBhY2Nlc3NMZXZlbD0iUHVibGljIj4NCiAgICAgICAgIDxwYXJhbWV0ZXJUeXBlU3BlY2lmaWVyIG5hbWU9InQ6U3RyaW5nIiB4c2k6dHlwZT0iTmFtZWRUeXBlU3BlY2lmaWVyIi8+DQogICAgICA8L2RlZj4NCiAgICAgIDxkZWYgbmFtZT0iQ29udGV4dFByZXNjcmlwdGlvbnMiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPg0KICAgICAgICAgPHBhcmFtZXRlclR5cGVTcGVjaWZpZXIgeHNpOnR5cGU9Ikxpc3RUeXBlU3BlY2lmaWVyIj4NCiAgICAgICAgICAgIDxlbGVtZW50VHlwZSBuYW1lPSJmaGlyOk1lZGljYXRpb25PcmRlciIgeHNpOnR5cGU9Ik5hbWVkVHlwZVNwZWNpZmllciIvPg0KICAgICAgICAgPC9wYXJhbWV0ZXJUeXBlU3BlY2lmaWVyPg0KICAgICAgPC9kZWY+DQogICA8L3BhcmFtZXRlcnM+DQogICA8c3RhdGVtZW50cz4NCiAgICAgIDxkZWYgbmFtZT0iUGF0aWVudCIgY29udGV4dD0iUGF0aWVudCI+DQogICAgICAgICA8ZXhwcmVzc2lvbiB4c2k6dHlwZT0iU2luZ2xldG9uRnJvbSI+DQogICAgICAgICAgICA8b3BlcmFuZCBkYXRhVHlwZT0iZmhpcjpQYXRpZW50IiB4c2k6dHlwZT0iUmV0cmlldmUiLz4NCiAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgIDwvZGVmPg0KICAgICAgPGRlZiBuYW1lPSJFeGNsdXNpb24gQ3JpdGVyaWEiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPg0KICAgICAgICAgPGV4cHJlc3Npb24geHNpOnR5cGU9Ik9yIj4NCiAgICAgICAgICAgIDxvcGVyYW5kIG5hbWU9IkVuZCBvZiBMaWZlIEFzc2Vzc21lbnQiIGxpYnJhcnlOYW1lPSJDb21tb24iIHhzaTp0eXBlPSJFeHByZXNzaW9uUmVmIi8+DQogICAgICAgICAgICA8b3BlcmFuZCBuYW1lPSJJcyBDb250ZXh0IFByZXNjcmlwdGlvbiBFbmQgb2YgTGlmZSBPcGlvaWQ/IiBsaWJyYXJ5TmFtZT0iQ29tbW9uIiB4c2k6dHlwZT0iRnVuY3Rpb25SZWYiPg0KICAgICAgICAgICAgICAgPG9wZXJhbmQgbmFtZT0iQ29udGV4dFByZXNjcmlwdGlvbnMiIHhzaTp0eXBlPSJQYXJhbWV0ZXJSZWYiLz4NCiAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgIDwvZGVmPg0KICAgICAgPGRlZiBuYW1lPSJUb3RhbCBNTUUiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPg0KICAgICAgICAgPGV4cHJlc3Npb24gbmFtZT0iVG90YWxNTUUiIGxpYnJhcnlOYW1lPSJDb21tb24iIHhzaTp0eXBlPSJGdW5jdGlvblJlZiI+DQogICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iVW5pb24iPg0KICAgICAgICAgICAgICAgPG9wZXJhbmQgbmFtZT0iQ29udGV4dFByZXNjcmlwdGlvbnMiIHhzaTp0eXBlPSJQYXJhbWV0ZXJSZWYiLz4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIG5hbWU9IkFjdGl2ZSBBbWJ1bGF0b3J5IE9waW9pZCBSeCIgbGlicmFyeU5hbWU9IkNvbW1vbiIgeHNpOnR5cGU9IkV4cHJlc3Npb25SZWYiLz4NCiAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgIDwvZGVmPg0KICAgICAgPGRlZiBuYW1lPSJJbmNsdXNpb24gQ3JpdGVyaWEiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPg0KICAgICAgICAgPGV4cHJlc3Npb24geHNpOnR5cGU9IkFuZCI+DQogICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iTm90Ij4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIG5hbWU9IkV4Y2x1c2lvbiBDcml0ZXJpYSIgeHNpOnR5cGU9IkV4cHJlc3Npb25SZWYiLz4NCiAgICAgICAgICAgIDwvb3BlcmFuZD4NCiAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJHcmVhdGVyT3JFcXVhbCI+DQogICAgICAgICAgICAgICA8b3BlcmFuZCBuYW1lPSJUb3RhbCBNTUUiIHhzaTp0eXBlPSJFeHByZXNzaW9uUmVmIi8+DQogICAgICAgICAgICAgICA8b3BlcmFuZCB2YWx1ZT0iNTAiIHVuaXQ9Im1nL2QiIHhzaTp0eXBlPSJRdWFudGl0eSIvPg0KICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgPC9leHByZXNzaW9uPg0KICAgICAgPC9kZWY+DQogICAgICA8ZGVmIG5hbWU9IkdldCBJbmRpY2F0b3IiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPg0KICAgICAgICAgPGV4cHJlc3Npb24gdmFsdWVUeXBlPSJ0OlN0cmluZyIgdmFsdWU9Indhcm5pbmciIHhzaTp0eXBlPSJMaXRlcmFsIi8+DQogICAgICA8L2RlZj4NCiAgICAgIDxkZWYgbmFtZT0iR2V0IFN1bW1hcnkiIGNvbnRleHQ9IlBhdGllbnQiIGFjY2Vzc0xldmVsPSJQdWJsaWMiPg0KICAgICAgICAgPGV4cHJlc3Npb24geHNpOnR5cGU9IkNvbmNhdGVuYXRlIj4NCiAgICAgICAgICAgIDxvcGVyYW5kIHZhbHVlVHlwZT0idDpTdHJpbmciIHZhbHVlPSJIaWdoIHJpc2sgZm9yIG9waW9pZCBvdmVyZG9zZSAtICIgeHNpOnR5cGU9IkxpdGVyYWwiLz4NCiAgICAgICAgICAgIDxvcGVyYW5kIHhzaTp0eXBlPSJDYXNlIj4NCiAgICAgICAgICAgICAgIDxjYXNlSXRlbT4NCiAgICAgICAgICAgICAgICAgIDx3aGVuIHhzaTp0eXBlPSJHcmVhdGVyT3JFcXVhbCI+DQogICAgICAgICAgICAgICAgICAgICA8b3BlcmFuZCBwYXRoPSJ2YWx1ZSIgeHNpOnR5cGU9IlByb3BlcnR5Ij4NCiAgICAgICAgICAgICAgICAgICAgICAgIDxzb3VyY2UgbmFtZT0iVG90YWwgTU1FIiB4c2k6dHlwZT0iRXhwcmVzc2lvblJlZiIvPg0KICAgICAgICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgeHNpOnR5cGU9IlRvRGVjaW1hbCI+DQogICAgICAgICAgICAgICAgICAgICAgICA8b3BlcmFuZCB2YWx1ZVR5cGU9InQ6SW50ZWdlciIgdmFsdWU9IjkwIiB4c2k6dHlwZT0iTGl0ZXJhbCIvPg0KICAgICAgICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgICAgICAgPC93aGVuPg0KICAgICAgICAgICAgICAgICAgPHRoZW4gdmFsdWVUeXBlPSJ0OlN0cmluZyIgdmFsdWU9InRhcGVyIG5vdyIgeHNpOnR5cGU9IkxpdGVyYWwiLz4NCiAgICAgICAgICAgICAgIDwvY2FzZUl0ZW0+DQogICAgICAgICAgICAgICA8ZWxzZSB2YWx1ZVR5cGU9InQ6U3RyaW5nIiB2YWx1ZT0iY29uc2lkZXIgdGFwZXJpbmciIHhzaTp0eXBlPSJMaXRlcmFsIi8+DQogICAgICAgICAgICA8L29wZXJhbmQ+DQogICAgICAgICA8L2V4cHJlc3Npb24+DQogICAgICA8L2RlZj4NCiAgICAgIDxkZWYgbmFtZT0iR2V0IERldGFpbCIgY29udGV4dD0iUGF0aWVudCIgYWNjZXNzTGV2ZWw9IlB1YmxpYyI+DQogICAgICAgICA8ZXhwcmVzc2lvbiB4c2k6dHlwZT0iQ29uY2F0ZW5hdGUiPg0KICAgICAgICAgICAgPG9wZXJhbmQgeHNpOnR5cGU9IkNvbmNhdGVuYXRlIj4NCiAgICAgICAgICAgICAgIDxvcGVyYW5kIHZhbHVlVHlwZT0idDpTdHJpbmciIHZhbHVlPSJUb3RhbCBtb3JwaGluZSBtaWxsaWdyYW0gZXF1aXZhbGVudCAoTU1FKSBpcyAiIHhzaTp0eXBlPSJMaXRlcmFsIi8+DQogICAgICAgICAgICAgICA8b3BlcmFuZCB4c2k6dHlwZT0iVG9TdHJpbmciPg0KICAgICAgICAgICAgICAgICAgPG9wZXJhbmQgbmFtZT0iVG90YWwgTU1FIiB4c2k6dHlwZT0iRXhwcmVzc2lvblJlZiIvPg0KICAgICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgPC9vcGVyYW5kPg0KICAgICAgICAgICAgPG9wZXJhbmQgdmFsdWVUeXBlPSJ0OlN0cmluZyIgdmFsdWU9Ii4gVGFwZXIgdG8gbGVzcyB0aGFuIDUwLiIgeHNpOnR5cGU9IkxpdGVyYWwiLz4NCiAgICAgICAgIDwvZXhwcmVzc2lvbj4NCiAgICAgIDwvZGVmPg0KICAgPC9zdGF0ZW1lbnRzPg0KPC9saWJyYXJ5Pg0K"/>
+        <title value="DSTU2 logic"/>
+    </content>
+</Library>

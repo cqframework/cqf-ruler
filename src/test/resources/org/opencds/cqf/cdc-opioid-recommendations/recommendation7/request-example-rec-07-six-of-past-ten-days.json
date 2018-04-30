@@ -1,0 +1,199 @@
+{
+  "hookInstance": "d23ec776-f58a-4902-b0a4-6ef3d9f59309",
+  "fhirServer": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3",
+  "hook": "medication-prescribe",
+  "user": "Practitioner/example",
+  "applyCql": true,
+  "context": {
+    "patientId": "Patient/example-rec-07-six-of-past-ten-days",
+    "encounterId": "Encounter/example-rec-07-six-of-past-ten-days-context",
+    "medications": [
+      {
+        "resourceType": "MedicationRequest",
+        "id": "example-rec-07-six-of-past-ten-days-context",
+        "status": "active",
+        "intent": "order",
+        "category": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/medication-request-category",
+              "code": "outpatient"
+            }
+          ]
+        },
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049502",
+              "display": "12 HR Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/example-rec-07-six-of-past-ten-days"
+        },
+        "context": {
+          "reference": "Encounter/example-rec-07-six-of-past-ten-days-context"
+        },
+        "_authoredOn": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression",
+              "valueString": "Today()"
+            }
+          ]
+        },
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseQuantity": {
+              "value": 1.0,
+              "unit": "tablet"
+            }
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression",
+                "valueString": "FHIR.Period { start: FHIR.dateTime { value: Today() }, end: FHIR.dateTime { value: Today() + 3 months } }"
+              }
+            ]
+          },
+          "numberOfRepeatsAllowed": 1,
+          "expectedSupplyDuration": {
+            "value": 6.0,
+            "unit": "d"
+          }
+        }
+      }
+    ]
+  },
+  "prefetch": {
+    "item1": {
+      "response": {
+        "status": "200 OK"
+      },
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "example-rec-07-six-of-past-ten-days-prefetch",
+        "status": "active",
+        "intent": "order",
+        "category": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/medication-request-category",
+              "code": "outpatient"
+            }
+          ]
+        },
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1049502",
+              "display": "12 HR Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/example-rec-07-six-of-past-ten-days"
+        },
+        "context": {
+          "reference": "Encounter/example-rec-07-six-of-past-ten-days-prefetch"
+        },
+        "_authoredOn": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression",
+              "valueString": "Today() - 10 days"
+            }
+          ]
+        },
+        "dosageInstruction": [
+          {
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 1.0,
+                "periodUnit": "d"
+              }
+            },
+            "asNeededBoolean": false,
+            "doseQuantity": {
+              "value": 1.0,
+              "unit": "tablet"
+            }
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression",
+                "valueString": "FHIR.Period { start: FHIR.dateTime { value: Today() - 10 days }, end: FHIR.dateTime { value: Today() } }"
+              }
+            ]
+          },
+          "numberOfRepeatsAllowed": 1,
+          "expectedSupplyDuration": {
+            "value": 6.0,
+            "unit": "d"
+          }
+        }
+      }
+    },
+    "item2": {
+      "response": {
+        "status": "200 OK"
+      },
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "example-rec-07-six-of-past-ten-days-prefetch",
+        "status": "finished",
+        "subject": {
+          "reference": "Patient/example-rec-07-six-of-past-ten-days"
+        },
+        "period": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression",
+              "valueString": "FHIR.Period { start: FHIR.dateTime { value: Today() - 10 days }, end: FHIR.dateTime { value: Today() - 10 days } }"
+            }
+          ]
+        }
+      }
+    },
+    "item3": {
+      "response": {
+        "status": "200 OK"
+      },
+      "resource": {
+        "resourceType": "Patient",
+        "id": "example-rec-07-six-of-past-ten-days",
+        "gender": "male",
+        "birthDate": "1982-01-07"
+      }
+    },
+    "item4": null,
+    "item5": null,
+    "item6": null,
+    "item7": null,
+    "item8": null,
+    "item9": null,
+    "item10": null,
+    "item11": null,
+    "item12": null,
+    "item13": null,
+    "item14": null
+  }
+}

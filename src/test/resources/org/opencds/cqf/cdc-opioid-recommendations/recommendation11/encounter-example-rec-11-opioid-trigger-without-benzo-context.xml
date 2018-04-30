@@ -1,0 +1,12 @@
+<Encounter xmlns="http://hl7.org/fhir">
+   <id value="example-rec-11-opioid-trigger-without-benzo-context"/>
+   <status value="finished"/>
+   <subject>
+      <reference value="Patient/example-rec-11-opioid-trigger-without-benzo"/>
+   </subject>
+   <period>
+      <extension url="http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression">
+         <valueString value="FHIR.Period { start: FHIR.dateTime { value: Today() }, end: FHIR.dateTime { value: Today() } }"/>
+      </extension>
+   </period>
+</Encounter>

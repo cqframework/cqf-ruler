@@ -52,11 +52,6 @@ public class MockWorker implements IWorkerContext {
     }
 
     @Override
-    public IResourceValidator newValidator() throws FHIRException {
-        throw new NotImplementedException();
-    }
-
-    @Override
     public <T extends Resource> T fetchResource(Class<T> aClass, String s) {
         throw new NotImplementedException();
     }
