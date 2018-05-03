@@ -36,6 +36,9 @@ public class STU3LibraryLoader implements LibraryLoader {
     public Map<String, Library> getLibraries() {
         return this.libraries;
     }
+    public void putLibrary(String id, Library library) {
+        libraries.put(id, library);
+    }
 
     public STU3LibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager, ModelManager modelManager) {
         this.libraryManager = libraryManager;
@@ -58,7 +61,7 @@ public class STU3LibraryLoader implements LibraryLoader {
             throw new IllegalArgumentException(String.format("Could not load library %s, version %s because version %s is already loaded.",
                     libraryIdentifier.getId(), libraryIdentifier.getVersion(), library.getIdentifier().getVersion()));
         }
-        else {
+        else if (library == null) {
             library = loadLibrary(libraryIdentifier);
             libraries.put(libraryIdentifier.getId(), library);
         }

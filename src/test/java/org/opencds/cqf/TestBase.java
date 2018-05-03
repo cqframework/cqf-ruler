@@ -25,9 +25,8 @@ public class TestBase {
     @Test
     public void runMeasureEvaluationTests() throws IOException, JAXBException {
         MeasureEvaluationTests measureTests = new MeasureEvaluationTests(server);
-        measureTests.MeasureEvaluationTest();
-        measureTests.TestMeasureEvaluator();
-
+        measureTests.patientMeasureCCS_PatientNotInInitialPopulation();
+        measureTests.patientListMeasureCCS();
         measureTests.populationMeasureBCS();
         measureTests.populationMeasureCCS();
         measureTests.populationMeasureCOL();
@@ -73,7 +72,6 @@ public class TestBase {
     @Test
     public void runHedisCdsTests() throws IOException {
         HedisCdsHooksTests hedisTests = new HedisCdsHooksTests(server);
-
         hedisTests.BCSCdsHooksPatientViewTest();
         hedisTests.BCSCdsHooksPatientViewTestError();
         hedisTests.CCSCdsHooksPatientViewTest();
@@ -83,7 +81,6 @@ public class TestBase {
     @Test
     public void runDefinitionApplyTests() throws ClassNotFoundException {
         DefinitionApplyTests applyTests = new DefinitionApplyTests(server);
-
         applyTests.PlanDefinitionApplyTest();
         applyTests.ActivityDefinitionApplyTest();
     }

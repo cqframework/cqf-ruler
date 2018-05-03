@@ -9313,6 +9313,11 @@
             "state": "MI",
             "postalCode": "49325"
           }
+        ],
+        "generalPractitioner": [
+          {
+            "reference": "Practitioner/Practitioner-2520"
+          }
         ]
       },
       "request": {
@@ -10137,6 +10142,11 @@
             "district": "Oakland County",
             "state": "MI",
             "postalCode": "48374"
+          }
+        ],
+        "generalPractitioner": [
+          {
+            "reference": "Practitioner/Practitioner-2520"
           }
         ]
       },

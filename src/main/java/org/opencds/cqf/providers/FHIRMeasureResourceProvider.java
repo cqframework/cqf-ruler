@@ -2,10 +2,7 @@ package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
-import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.PatientResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.*;
@@ -13,270 +10,316 @@ import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.elm.execution.IncludeDef;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.builders.MeasureReportBuilder;
 import org.opencds.cqf.config.STU3LibraryLoader;
-import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
-import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.helpers.DateHelper;
-import org.opencds.cqf.helpers.FhirMeasureEvaluator;
+import org.opencds.cqf.helpers.FhirMeasureBundler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
-
-/*
-    IN	periodStart	1..1	date
-    The start of the measurement period. In keeping with the semantics of the date parameter used in the FHIR search operation, the period will start at the beginning of the period implied by the supplied timestamp. E.g. a value of 2014 would set the period start to be 2014-01-01T00:00:00 inclusive
-
-    IN	periodEnd	1..1	date
-    The end of the measurement period. The period will end at the end of the period implied by the supplied timestamp. E.g. a value of 2014 would set the period end to be 2014-12-31T23:59:59 inclusive
-
-    IN	measure	0..1	Reference
-    The measure to evaluate. This parameter is only required when the operation is invoked on the resource type, it is not used when invoking the operation on a Measure instance
-
-    IN	reportType	0..1	code
-    The type of measure report, patient, patient-list, or population. If not specified, a default value of patient will be used if the patient parameter is supplied, otherwise, population will be used
-
-    IN	patient	0..1	Reference
-    Patient to evaluate against. If not specified, the measure will be evaluated for all patients that meet the requirements of the measure. If specified, only the referenced patient will be evaluated
-
-    IN	practitioner	0..1	Reference
-    Practitioner to evaluate. If specified, the measure will be evaluated only for patients whose primary practitioner is the identified practitioner
-
-    IN	lastReceivedOn	0..1	dateTime
-    The date the results of this measure were last received. This parameter is only valid for patient-level reports and is used to indicate when the last time a result for this patient was received. This information can be used to limit the set of resources returned for a patient-level report
-
-    OUT	return	1..1	MeasureReport
-    The results of the measure calculation. See the MeasureReport resource for a complete description of the output of this operation
-*/
 
 public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measure> {
 
     private JpaDataProvider provider;
-    private TerminologyProvider terminologyProvider;
+    private STU3LibraryLoader libraryLoader;
 
-    private Context context;
     private Interval measurementPeriod;
-    private MeasureReport report = new MeasureReport();
-    private FhirMeasureEvaluator evaluator = new FhirMeasureEvaluator();
 
-    public FHIRMeasureResourceProvider(Collection<IResourceProvider> providers) {
-        this.provider = new JpaDataProvider(providers);
-    }
+    private static final Logger logger = LoggerFactory.getLogger(FHIRMeasureResourceProvider.class);
 
-    private LibraryResourceProvider getLibraryResourceProvider() {
-        return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
-    }
-
-    private ModelManager modelManager;
-    private ModelManager getModelManager() {
-        if (modelManager == null) {
-            modelManager = new ModelManager();
-        }
-        return modelManager;
-    }
-
-    private LibraryManager libraryManager;
-    private LibraryManager getLibraryManager() {
-        if (libraryManager == null) {
-            libraryManager = new LibraryManager(getModelManager());
-            libraryManager.getLibrarySourceLoader().clearProviders();
-            libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
-        }
-        return libraryManager;
-    }
-
-    private LibraryLoader libraryLoader;
-    private LibraryLoader getLibraryLoader() {
-        if (libraryLoader == null) {
-            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager(), getModelManager());
-        }
-        return libraryLoader;
-    }
-
-    private STU3LibrarySourceProvider librarySourceProvider;
-    private STU3LibrarySourceProvider getLibrarySourceProvider() {
-        if (librarySourceProvider == null) {
-            librarySourceProvider = new STU3LibrarySourceProvider(getLibraryResourceProvider());
-        }
-        return librarySourceProvider;
+    public FHIRMeasureResourceProvider(JpaDataProvider dataProvider) {
+        this.provider = dataProvider;
+        this.libraryLoader =
+                new STU3LibraryLoader(
+                        (LibraryResourceProvider) provider.resolveResourceProvider("Library"),
+                        new LibraryManager(new ModelManager()), new ModelManager()
+                );
     }
 
     /*
-        This is not "pure" FHIR.
-        The "source", "user", "pass", and "primaryLibraryName" parameters were added to simplify the operation.
-    */
-    @Operation(name = "$evaluate", idempotent = true)
+    *
+    * NOTE that the source, user, and pass parameters are not standard parameters for the FHIR $evaluate-measure operation
+    *
+    * */
+    @Operation(name = "$evaluate-measure", idempotent = true)
     public MeasureReport evaluateMeasure(
             @IdParam IdType theId,
+            @RequiredParam(name="periodStart") String periodStart,
+            @RequiredParam(name="periodEnd") String periodEnd,
+            @OptionalParam(name="measure") String measureRef,
             @OptionalParam(name="reportType") String reportType,
-            @OptionalParam(name="patient") String patientId,
-            @OptionalParam(name="practitioner") String practitioner,
+            @OptionalParam(name="patient") String patientRef,
+            @OptionalParam(name="practitioner") String practitionerRef,
             @OptionalParam(name="lastReceivedOn") String lastReceivedOn,
-            @RequiredParam(name="startPeriod") String startPeriod,
-            @RequiredParam(name="endPeriod") String endPeriod,
             @OptionalParam(name="source") String source,
             @OptionalParam(name="user") String user,
-            @OptionalParam(name="pass") String pass,
-            @OptionalParam(name="primaryLibraryName") String primaryLibraryName) throws InternalErrorException, FHIRException
+            @OptionalParam(name="pass") String pass) throws InternalErrorException, FHIRException
     {
-        Measure measure = this.getDao().read(theId);
-
-        // load libraries referenced in measure
-        // TODO: need better way to determine primary library
-        //   - for now using a name convention: <measure ID>-library or primaryLibraryName param
-        Library primary = null;
-        for (Reference ref : measure.getLibrary()) {
-            VersionedIdentifier vid = new VersionedIdentifier().withId(ref.getReference());
-            Library temp = getLibraryLoader().load(vid);
-
-            if (vid.getId().equals(measure.getIdElement().getIdPart() + "-logic")
-                    || vid.getId().equals("Library/" + measure.getIdElement().getIdPart() + "-logic")
-                    || (primaryLibraryName != null && ref.getReferenceElement().getIdPart().equals(primaryLibraryName)))
-            {
-                primary = temp;
-                context = new Context(primary);
-            }
+        // fetch the measure
+        Measure measure = this.getDao().read(measureRef == null ? theId : new IdType(measureRef));
+        if (measure == null) {
+            throw new IllegalArgumentException("Could not find Measure/" + theId);
         }
-        if (primary == null) {
-            throw new IllegalArgumentException(
-                    "Primary library not found.\nFollow the naming conventions <measureID>-library or specify primary library in request."
+
+        logger.info("Evaluating Measure/" + measure.getIdElement().getIdPart());
+
+        // load libraries
+        for (Reference ref : measure.getLibrary()) {
+            // if library is contained in measure, load it into server
+            if (ref.getReferenceElement().getIdPart().startsWith("#")) {
+                for (Resource resource : measure.getContained()) {
+                    if (resource instanceof org.hl7.fhir.dstu3.model.Library
+                            && resource.getIdElement().getIdPart().equals(ref.getReferenceElement().getIdPart().substring(1))) {
+                        provider.resolveResourceProvider("Library")
+                                .getDao().getDao(org.hl7.fhir.dstu3.model.Library.class)
+                                .update((org.hl7.fhir.dstu3.model.Library) resource);
+                    }
+                }
+            }
+            libraryLoader.load(
+                    new VersionedIdentifier()
+                            .withVersion(ref.getReferenceElement().getVersionIdPart())
+                            .withId(ref.getReferenceElement().getIdPart())
             );
         }
-        if (((STU3LibraryLoader)getLibraryLoader()).getLibraries().isEmpty()) {
-            throw new IllegalArgumentException(String.format("Could not load library source for libraries referenced in %s measure.", measure.getId()));
+
+        if (libraryLoader.getLibraries().isEmpty()) {
+            throw new IllegalArgumentException(String.format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
         }
 
-        // Prep - defining the context, measurementPeriod, terminology provider, and data provider
-        context.registerLibraryLoader(getLibraryLoader());
-        measurementPeriod =
-                new Interval(
-                        DateHelper.resolveRequestDate(startPeriod, true), true,
-                        DateHelper.resolveRequestDate(endPeriod, false), true
-                );
-
-        if (source == null) {
-            JpaResourceProviderDstu3<ValueSet> vs = (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet");
-            JpaResourceProviderDstu3<CodeSystem> cs = (CodeSystemResourceProvider) provider.resolveResourceProvider("CodeSystem");
-            terminologyProvider = new JpaTerminologyProvider(vs, cs);
+        // resolve primary library
+        Library library;
+        if (libraryLoader.getLibraries().size() == 1) {
+            library = libraryLoader.getLibraries().values().iterator().next();
         }
         else {
-            terminologyProvider = user == null || pass == null ? new FhirTerminologyProvider().setEndpoint(source, true)
-                    : new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(source, true);
+            library = resolvePrimaryLibrary(measure);
         }
-        provider.setTerminologyProvider(terminologyProvider);
-        provider.setExpandValueSets(true);
+
+        logger.info("Resolved primary library as Library/" + library.getLocalId());
+
+        // resolve execution context
+        Context context = new Context(library);
+        context.registerLibraryLoader(libraryLoader);
+
+        // resolve remote term svc if provided
+        if (source != null) {
+            logger.info("Remote terminology service provided");
+            FhirTerminologyProvider terminologyProvider = user == null || pass == null
+                    ? new FhirTerminologyProvider().setEndpoint(source, true)
+                    : new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(source, true);
+            provider.setTerminologyProvider(terminologyProvider);
+        }
+
         context.registerDataProvider("http://hl7.org/fhir", provider);
 
-        // determine the report type (patient, patient-list, or population (summary))
+        // resolve the measurement period
+        measurementPeriod =
+                new Interval(
+                        DateHelper.resolveRequestDate(periodStart, true), true,
+                        DateHelper.resolveRequestDate(periodEnd, false), true
+                );
+
+        logger.info("Measurement period defined as [" + measurementPeriod.getStart().toString() + ", " + measurementPeriod.getEnd().toString() + "]");
+
+        context.setParameter(
+                null, "Measurement Period",
+                new Interval(
+                        DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
+                        DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true
+                )
+        );
+
+        // resolve report type
         if (reportType != null) {
             switch (reportType) {
-                case "patient": return evaluatePatientMeasure(measure, patientId);
-                case "patient-list": return evaluatePatientListMeasure(measure, practitioner);
-                case "population": return evaluatePopulationMeasure(measure);
-                case "summary": return evaluatePopulationMeasure(measure);
-                default:
-                    throw new IllegalArgumentException("Invalid report type " + reportType);
+                case "patient": return evaluatePatientMeasure(measure, context, patientRef);
+                case "patient-list": return  evaluatePatientListMeasure(measure, context, practitionerRef);
+                case "population": return evaluatePopulationMeasure(measure, context);
+                default: throw new IllegalArgumentException("Invalid report type: " + reportType);
             }
         }
 
-        // default behavior
-        else {
-            if (patientId != null) return evaluatePatientMeasure(measure, patientId);
-            if (practitioner != null) return evaluatePatientListMeasure(measure, practitioner);
-            return evaluatePopulationMeasure(measure);
-        }
+        // default report type is patient
+        return evaluatePatientMeasure(measure, context, patientRef);
     }
 
-    private void validateReport() {
-        if (report == null) {
-            throw new InternalErrorException("MeasureReport is null");
+    private Library resolvePrimaryLibrary(Measure measure) {
+        // default is the first library reference
+        Library library = libraryLoader.getLibraries().get(measure.getLibraryFirstRep().getReferenceElement().getIdPart());
+
+        // gather all the population criteria expressions
+        List<String> criteriaExpressions = new ArrayList<>();
+        for (Measure.MeasureGroupComponent grouping : measure.getGroup()) {
+            for (Measure.MeasureGroupPopulationComponent population : grouping.getPopulation()) {
+                criteriaExpressions.add(population.getCriteria());
+            }
         }
 
-        if (report.getEvaluatedResources() == null) {
-            throw new InternalErrorException("EvaluatedResources is null");
+        // check each library to see if it includes the expression namespace - return if true
+        for (Library candidate : libraryLoader.getLibraries().values()) {
+            for (String expression : criteriaExpressions) {
+                String namespace = expression.split("\\.")[0];
+                if (!namespace.equals(expression)) {
+                    for (IncludeDef include : candidate.getIncludes().getDef()) {
+                        if (include.getLocalIdentifier().equals(namespace)) {
+                            return candidate;
+                        }
+                    }
+                }
+            }
         }
+
+        return library;
     }
 
-    private MeasureReport evaluatePatientMeasure(Measure measure, String patientId) {
+    private MeasureReport evaluatePatientMeasure(Measure measure, Context context, String patientId) {
+        logger.info("Generating individual report");
+
         if (patientId == null) {
-            throw new IllegalArgumentException("Patient id must be provided for patient type measure evaluation");
+            return evaluatePopulationMeasure(measure, context);
         }
-
-        Patient patient = ((PatientResourceProvider) provider.resolveResourceProvider("Patient")).getDao().read(new IdType(patientId));
-        if (patient == null) {
-            throw new InternalErrorException("Patient is null");
-        }
-
-        context.setContextValue("Patient", patientId);
-        context.setExpressionCaching(true);
-
-        report = evaluator.evaluate(context, measure, patient, measurementPeriod);
-        validateReport();
-        return report;
+        Patient patient = (Patient) provider.resolveResourceProvider("Patient").getDao().read(new IdType(patientId));
+        return evaluate(measure, context, patient == null ? Collections.emptyList() : Collections.singletonList(patient), MeasureReport.MeasureReportType.INDIVIDUAL);
     }
 
-    private MeasureReport evaluatePatientListMeasure(Measure measure, String practitioner) {
-        SearchParameterMap map = new SearchParameterMap();
-        map.add("general-practitioner", new ReferenceParam(practitioner));
-        IBundleProvider patientProvider = ((PatientResourceProvider) provider.resolveResourceProvider("Patient")).getDao().search(map);
+    private MeasureReport evaluatePatientListMeasure(Measure measure, Context context, String practitionerRef)
+    {
+        logger.info("Generating patient-list report");
+
+        List<Patient> patients = new ArrayList<>();
+        if (practitionerRef != null) {
+            SearchParameterMap map = new SearchParameterMap();
+            map.add(
+                    "general-practitioner",
+                    new ReferenceParam(
+                            practitionerRef.startsWith("Practitioner/")
+                                    ? practitionerRef
+                                    : "Practitioner/" + practitionerRef
+                    )
+            );
+            IBundleProvider patientProvider = provider.resolveResourceProvider("Patient").getDao().search(map);
+            List<IBaseResource> patientList = patientProvider.getResources(0, patientProvider.size());
+            patientList.forEach(x -> patients.add((Patient) x));
+        }
+        return evaluate(measure, context, patients, MeasureReport.MeasureReportType.PATIENTLIST);
+    }
+
+    private MeasureReport evaluatePopulationMeasure(Measure measure, Context context) {
+        logger.info("Generating summary report");
+
+        List<Patient> patients = new ArrayList<>();
+        IBundleProvider patientProvider = provider.resolveResourceProvider("Patient").getDao().search(new SearchParameterMap());
         List<IBaseResource> patientList = patientProvider.getResources(0, patientProvider.size());
-
-        if (patientList.isEmpty()) {
-            throw new IllegalArgumentException("No patients were found with practitioner reference " + practitioner);
-        }
-
-        List<Patient> patients = new ArrayList<>();
         patientList.forEach(x -> patients.add((Patient) x));
-
-//        context.setContextValue("Population", patients);
-
-        report = evaluator.evaluate(context, measure, patients, measurementPeriod, MeasureReport.MeasureReportType.PATIENTLIST);
-        validateReport();
-        return report;
+        return evaluate(measure, context, patients, MeasureReport.MeasureReportType.SUMMARY);
     }
 
-    private MeasureReport evaluatePopulationMeasure(Measure measure) {
-        IBundleProvider patientProvider = ((PatientResourceProvider) provider.resolveResourceProvider("Patient")).getDao().search(new SearchParameterMap());
-        List<IBaseResource> population = patientProvider.getResources(0, patientProvider.size());
+    private MeasureReport evaluate(Measure measure, Context context, List<Patient> patients, MeasureReport.MeasureReportType type)
+    {
+        MeasureReportBuilder reportBuilder = new MeasureReportBuilder();
+        reportBuilder.buildStatus("complete");
+        reportBuilder.buildType(type);
+        reportBuilder.buildMeasureReference(measure.getIdElement().getValue());
+        if (type == MeasureReport.MeasureReportType.INDIVIDUAL && !patients.isEmpty()) {
+            reportBuilder.buildPatientReference(patients.get(0).getIdElement().getValue());
+        }
+        reportBuilder.buildPeriod(measurementPeriod);
 
-        if (population.isEmpty()) {
-            throw new IllegalArgumentException("No patients were found in the data provider at endpoint " + provider.getEndpoint());
+        MeasureReport report = reportBuilder.build();
+
+        List<Patient> initialPopulation = getInitalPopulation(measure, patients, context);
+        HashMap<String,Resource> resources = new HashMap<>();
+
+        for (Measure.MeasureGroupComponent group : measure.getGroup()) {
+            MeasureReport.MeasureReportGroupComponent reportGroup = new MeasureReport.MeasureReportGroupComponent();
+            reportGroup.setIdentifier(group.getIdentifier());
+            report.getGroup().add(reportGroup);
+
+            for (Measure.MeasureGroupPopulationComponent pop : group.getPopulation()) {
+                int count = 0;
+                // Worried about performance here with big populations...
+                for (Patient patient : initialPopulation) {
+                    context.setContextValue("Patient", patient.getIdElement().getIdPart());
+                    Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
+                    if (result instanceof Boolean) {
+                        count += (Boolean) result ? 1 : 0;
+                    }
+                    else if (result instanceof Iterable) {
+                        for (Object item : (Iterable) result) {
+                            count++;
+                            if (item instanceof Resource) {
+                                resources.put(((Resource) item).getId(), (Resource) item);
+                            }
+                        }
+                    }
+                }
+                MeasureReport.MeasureReportGroupPopulationComponent populationReport = new MeasureReport.MeasureReportGroupPopulationComponent();
+                populationReport.setCount(count);
+                populationReport.setCode(pop.getCode());
+                populationReport.setIdentifier(pop.getIdentifier());
+                reportGroup.getPopulation().add(populationReport);
+            }
         }
 
-        List<Patient> patients = new ArrayList<>();
-        population.forEach(x -> patients.add((Patient) x));
-
-        report = evaluator.evaluate(context, measure, patients, measurementPeriod, MeasureReport.MeasureReportType.SUMMARY);
-        validateReport();
+        FhirMeasureBundler bundler = new FhirMeasureBundler();
+        org.hl7.fhir.dstu3.model.Bundle evaluatedResources = bundler.bundle(resources.values());
+        evaluatedResources.setId(UUID.randomUUID().toString());
+        report.setEvaluatedResources(new Reference('#' + evaluatedResources.getId()));
+        report.addContained(evaluatedResources);
         return report;
     }
 
+    private List<Patient> getInitalPopulation(Measure measure, List<Patient> population, Context context) {
+        List<Patient> initalPop = new ArrayList<>();
+        for (Measure.MeasureGroupComponent group : measure.getGroup()) {
+            for (Measure.MeasureGroupPopulationComponent pop : group.getPopulation()) {
+                if (pop.getCode().getCodingFirstRep().getCode().equals("initial-population")) {
+                    for (Patient patient : population) {
+                        context.setContextValue("Patient", patient.getIdElement().getIdPart());
+                        Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
+                        if (result == null) {
+                            continue;
+                        }
+                        if ((Boolean) result) {
+                            initalPop.add(patient);
+                        }
+                    }
+                }
+            }
+        }
+        return initalPop;
+    }
+
+    // TODO - this needs a lot of work
     @Operation(name = "$data-requirements", idempotent = true)
-    public org.hl7.fhir.dstu3.model.Library dataRequirements(@IdParam IdType theId,
-                                                             @RequiredParam(name="startPeriod") String startPeriod,
-                                                             @RequiredParam(name="endPeriod") String endPeriod)
+    public org.hl7.fhir.dstu3.model.Library dataRequirements(
+            @IdParam IdType theId,
+            @RequiredParam(name="startPeriod") String startPeriod,
+            @RequiredParam(name="endPeriod") String endPeriod)
             throws InternalErrorException, FHIRException
     {
         Measure measure = this.getDao().read(theId);
 
         // NOTE: This assumes there is only one library and it is the primary library for the measure.
         org.hl7.fhir.dstu3.model.Library libraryResource =
-                getLibraryResourceProvider()
+                (org.hl7.fhir.dstu3.model.Library) provider.resolveResourceProvider("Library")
                         .getDao()
                         .read(new IdType(measure.getLibraryFirstRep().getReference()));
-
-        // TODO: what are the period params for? Library.effectivePeriod?
 
         List<RelatedArtifact> dependencies = new ArrayList<>();
         for (RelatedArtifact dependency : libraryResource.getRelatedArtifact()) {
@@ -338,7 +381,7 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
                     StringAndListParam the_language,
 
             @Description(shortDefinition="What resource is being referenced")
-            @OptionalParam(name="composed-of", targetTypes={  } )
+            @OptionalParam(name="composed-of")
                     ReferenceAndListParam theComposed_of,
 
             @Description(shortDefinition="The measure publication date")
@@ -346,11 +389,11 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
                     DateRangeParam theDate,
 
             @Description(shortDefinition="What resource is being referenced")
-            @OptionalParam(name="depends-on", targetTypes={  } )
+            @OptionalParam(name="depends-on")
                     ReferenceAndListParam theDepends_on,
 
             @Description(shortDefinition="What resource is being referenced")
-            @OptionalParam(name="derived-from", targetTypes={  } )
+            @OptionalParam(name="derived-from")
                     ReferenceAndListParam theDerived_from,
 
             @Description(shortDefinition="The description of the measure")
@@ -374,7 +417,7 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
                     StringAndListParam theName,
 
             @Description(shortDefinition="What resource is being referenced")
-            @OptionalParam(name="predecessor", targetTypes={  } )
+            @OptionalParam(name="predecessor")
                     ReferenceAndListParam thePredecessor,
 
             @Description(shortDefinition="Name of the publisher of the measure")
@@ -386,7 +429,7 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
                     TokenAndListParam theStatus,
 
             @Description(shortDefinition="What resource is being referenced")
-            @OptionalParam(name="successor", targetTypes={  } )
+            @OptionalParam(name="successor")
                     ReferenceAndListParam theSuccessor,
 
             @Description(shortDefinition="The human-friendly name of the measure")

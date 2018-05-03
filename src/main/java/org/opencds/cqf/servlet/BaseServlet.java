@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
+import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.*;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
@@ -15,7 +16,10 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.Meta;
+import org.hl7.fhir.dstu3.model.ValueSet;
+import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.providers.*;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -85,6 +89,12 @@ public class BaseServlet extends RestfulServer {
             this.registerInterceptor(interceptor);
         }
 
+        JpaDataProvider provider = new JpaDataProvider(getResourceProviders());
+        JpaResourceProviderDstu3<ValueSet> vs = (ValueSetResourceProvider)   provider.resolveResourceProvider("ValueSet");
+        JpaResourceProviderDstu3<CodeSystem> cs = (CodeSystemResourceProvider) provider.resolveResourceProvider("CodeSystem");
+        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(vs, cs);
+        provider.setTerminologyProvider(terminologyProvider);
+
         // Bundle processing
         FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider();
         BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) getProvider("Bundle");
@@ -100,7 +110,7 @@ public class BaseServlet extends RestfulServer {
         registerProvider(bundleProvider);
 
         // Measure processing
-        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(getResourceProviders());
+        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider);
         MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) getProvider("Measure");
         measureProvider.setDao(jpaMeasureProvider.getDao());
         measureProvider.setContext(jpaMeasureProvider.getContext());

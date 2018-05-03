@@ -1,28 +1,16 @@
 package org.opencds.cqf;
 
 import ca.uhn.fhir.context.FhirContext;
-import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.convertors.NullVersionConverterAdvisor30;
 import org.hl7.fhir.convertors.VersionConvertor_10_30;
 import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.Observation;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
-import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
-import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.execution.CqlLibraryReader;
-import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
-import org.opencds.cqf.helpers.FhirMeasureEvaluator;
 import org.opencds.cqf.helpers.XlsxToValueSet;
 
-import javax.xml.bind.JAXBException;
 import java.io.*;
-import java.net.URLDecoder;
-import java.util.*;
 
 public class RulerHelperTests {
 
