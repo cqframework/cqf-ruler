@@ -9,7 +9,6 @@ import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.*;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
-import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
@@ -58,8 +57,6 @@ public class BaseServlet extends RestfulServer {
         confProvider.setImplementationDescription("Measure and Opioid Processing Server");
         setServerConformanceProvider(confProvider);
 
-        FhirContext ctx = getFhirContext();
-        ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
         setDefaultPrettyPrint(true);
         setDefaultResponseEncoding(EncodingEnum.JSON);
         setPagingProvider(myAppCtx.getBean(DatabaseBackedPagingProvider.class));

@@ -19,6 +19,9 @@ class MeasureEvaluationTests {
         this.server.putResource(measureEvalLocation + "hedis-measure-network.json", "");
         this.server.putResource(measureEvalLocation + "hedis-patients.json", "");
         this.server.putResource(measureEvalLocation + "hedis-resources-bundle.json", "");
+        server.putResource(measureEvalLocation + "hedis-bcs-bundle.json", "");
+        server.putResource(measureEvalLocation + "hedis-ccs-bundle.json", "");
+        server.putResource(measureEvalLocation + "hedis-col-bundle.json", "");
     }
 
     void patientMeasureCCS_PatientNotInInitialPopulation() {
@@ -131,17 +134,14 @@ class MeasureEvaluationTests {
     }
 
     void populationMeasureBCS() {
-        server.putResource(measureEvalLocation + "hedis-bcs-bundle.json", "");
         validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-bcs");
     }
 
     void populationMeasureCCS() {
-        server.putResource(measureEvalLocation + "hedis-ccs-bundle.json", "");
         validatePopulationMeasure("2017-01-01", "2017-12-31", "measure-ccs");
     }
 
     void populationMeasureCOL() {
-        server.putResource(measureEvalLocation + "hedis-col-bundle.json", "");
         validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-col");
     }
 }
