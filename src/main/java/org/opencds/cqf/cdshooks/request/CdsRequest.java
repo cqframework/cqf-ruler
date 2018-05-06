@@ -31,9 +31,9 @@ public abstract class CdsRequest {
 
     public CdsRequest(JsonObject requestJson) {
         this.requestJson = requestJson;
-        hook = JsonFieldResolution.getStringField(requestJson,"hook", true);
-        hookInstance = JsonFieldResolution.getStringField(requestJson,"hookInstance", true);
-        String fhirServerString = JsonFieldResolution.getStringField(requestJson,"fhirServer", false);
+        hook = JsonFieldResolution.getStringField(requestJson, "hook", true);
+        hookInstance = JsonFieldResolution.getStringField(requestJson, "hookInstance", true);
+        String fhirServerString = JsonFieldResolution.getStringField(requestJson, "fhirServer", false);
         if (fhirServerString != null) {
             try {
                 fhirServer = new URL(fhirServerString);
@@ -41,8 +41,8 @@ public abstract class CdsRequest {
                 throw new InvalidFieldTypeException("Invalid URL provided for fhirServer field: " + fhirServerString);
             }
         }
-        fhirAuthorization = new FhirAuthorization(JsonFieldResolution.getObjectField(requestJson,"fhirAuthorization", false));
-        user = new Reference(JsonFieldResolution.getStringField(requestJson,"user", true));
+        fhirAuthorization = new FhirAuthorization(JsonFieldResolution.getObjectField(requestJson, "fhirAuthorization", false));
+        user = new Reference(JsonFieldResolution.getStringField(requestJson, "user", true));
         applyCql = JsonFieldResolution.getBooleanField(requestJson, "applyCql", false);
         if (applyCql == null) {
             applyCql = false;
@@ -73,7 +73,7 @@ public abstract class CdsRequest {
 
         // resolve context resources library parameter
         List<Object> contextResources = context.getResources(providers.getVersion());
-        providers.resolveContextParameter(applyCql ? applyCqlToResources(contextResources) : contextResources);
+        providers.resolveContextParameter(applyCql ? applyCqlToResources(contextResources, providers) : contextResources);
 
         // resolve prefetch urls and resources
         if (prefetch != null) {
@@ -87,7 +87,7 @@ public abstract class CdsRequest {
 
         // resolve prefetch data provider
         List<Object> prefetchResources = prefetch.getResources(providers.getVersion());
-        providers.resolvePrefetchDataProvider(applyCql ? applyCqlToResources(prefetchResources) : prefetchResources);
+        providers.resolvePrefetchDataProvider(applyCql ? applyCqlToResources(prefetchResources, providers) : prefetchResources);
 
         // apply plandefinition and return cards
         return CarePlanToCdsCard.convert(
@@ -98,8 +98,8 @@ public abstract class CdsRequest {
         );
     }
 
-    private List<Object> applyCqlToResources(List<Object> resources) {
-        FHIRBundleResourceProvider bundleResourceProvider = new FHIRBundleResourceProvider();
+    private List<Object> applyCqlToResources(List<Object> resources, CdsHooksProviders providers) {
+        FHIRBundleResourceProvider bundleResourceProvider = new FHIRBundleResourceProvider(providers.getJpaDataProvider());
         for (Object res : resources) {
             try {
                 bundleResourceProvider.applyCql((Resource) res);

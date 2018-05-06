@@ -31,6 +31,10 @@ import java.util.Set;
 public class CdsHooksProviders {
 
     private JpaDataProvider jpaDataProvider;
+    public JpaDataProvider getJpaDataProvider() {
+        return jpaDataProvider;
+    }
+
     private TerminologyProvider jpaTermSvc;
 
     private Library library;

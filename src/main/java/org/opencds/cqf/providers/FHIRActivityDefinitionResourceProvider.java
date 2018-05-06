@@ -9,7 +9,6 @@ import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -25,9 +24,9 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
     private JpaDataProvider provider;
     private CqlExecutionProvider executionProvider;
 
-    public FHIRActivityDefinitionResourceProvider(Collection<IResourceProvider> providers) {
-        this.provider = new JpaDataProvider(providers);
-        this.executionProvider = new CqlExecutionProvider(providers);
+    public FHIRActivityDefinitionResourceProvider(JpaDataProvider provider) {
+        this.provider = provider;
+        this.executionProvider = new CqlExecutionProvider(provider);
     }
 
     @Operation(name = "$apply", idempotent = true)

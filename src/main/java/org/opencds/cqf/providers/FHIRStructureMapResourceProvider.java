@@ -5,14 +5,12 @@ import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.utils.StructureMapUtilities;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.opencds.cqf.helpers.MockWorker;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -22,8 +20,8 @@ public class FHIRStructureMapResourceProvider extends JpaResourceProviderDstu3<S
 
     private JpaDataProvider provider;
 
-    public FHIRStructureMapResourceProvider(Collection<IResourceProvider> providers) {
-        this.provider = new JpaDataProvider(providers);
+    public FHIRStructureMapResourceProvider(JpaDataProvider provider) {
+        this.provider = provider;
     }
 
     // TODO - tests for this operation

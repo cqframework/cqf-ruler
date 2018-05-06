@@ -25,7 +25,6 @@ import java.util.List;
 public class JpaDataProvider extends FhirDataProviderStu3 {
 
     // need these to access the dao
-    private HashMap<String, IResourceProvider> providers;
     private Collection<IResourceProvider> collectionProviders;
 
     public Collection<IResourceProvider> getCollectionProviders() {
@@ -34,10 +33,6 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
 
     public JpaDataProvider(Collection<IResourceProvider> providers) {
         this.collectionProviders = providers;
-        this.providers = new HashMap<>();
-        for (IResourceProvider i : providers) {
-            this.providers.put(i.getResourceType().getSimpleName(), i);
-        }
 
         // NOTE: Defaults to STU3
         setPackageName("org.hl7.fhir.dstu3.model");
@@ -130,7 +125,12 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
     }
 
     public JpaResourceProviderDstu3<? extends IAnyResource> resolveResourceProvider(String datatype) {
-        return (JpaResourceProviderDstu3<? extends IAnyResource>) providers.get(datatype);
+        for (IResourceProvider resource : collectionProviders) {
+            if (resource.getResourceType().getSimpleName().toLowerCase().equals(datatype.toLowerCase())) {
+                return (JpaResourceProviderDstu3<? extends IAnyResource>) resource;
+            }
+        }
+        throw new RuntimeException("Could not find resource provider for type: " + datatype);
     }
 
     public String convertDatePath(String path) {

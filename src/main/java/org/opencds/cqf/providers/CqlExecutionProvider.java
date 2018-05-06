@@ -1,23 +1,16 @@
 package org.opencds.cqf.providers;
 
-import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
-import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.hl7.fhir.dstu3.model.*;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
-import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.helpers.LibraryHelper;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -26,14 +19,8 @@ import java.util.List;
 public class CqlExecutionProvider {
     private JpaDataProvider provider;
 
-    public CqlExecutionProvider(Collection<IResourceProvider> providers) {
-        this.provider = new JpaDataProvider(providers);
-
-        JpaResourceProviderDstu3<ValueSet> vs = (ValueSetResourceProvider)   provider.resolveResourceProvider("ValueSet");
-        JpaResourceProviderDstu3<CodeSystem> cs = (CodeSystemResourceProvider) provider.resolveResourceProvider("CodeSystem");
-        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(vs, cs);
-        this.provider.setTerminologyProvider(terminologyProvider);
-        this.provider.setExpandValueSets(true);
+    public CqlExecutionProvider(JpaDataProvider provider) {
+        this.provider = provider;
     }
 
     private ModelManager modelManager;

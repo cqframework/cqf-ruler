@@ -4,16 +4,11 @@ import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
-import org.cqframework.cql.cql2elm.FhirModelInfoProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelInfoLoader;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
-import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
-import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.helpers.LibraryHelper;
@@ -24,13 +19,9 @@ import java.util.List;
 
 public class FHIRBundleResourceProvider extends JpaResourceProviderDstu3<Bundle> {
 
-    private ModelManager modelManager;
-    private BaseFhirDataProvider provider;
-    public FHIRBundleResourceProvider() {
-        modelManager = new ModelManager();
-        FhirModelInfoProvider fhirProvider = new FhirModelInfoProvider().withVersion("3.0.0");
-        ModelInfoLoader.registerModelInfoProvider(new VersionedIdentifier().withId("FHIR").withVersion("3.0.0"), fhirProvider);
-        provider = new FhirDataProviderStu3();
+    private JpaDataProvider provider;
+    public FHIRBundleResourceProvider(JpaDataProvider provider) {
+        this.provider = provider;
     }
 
     @Operation(name = "$apply-cql", idempotent = true)
@@ -71,7 +62,7 @@ public class FHIRBundleResourceProvider extends JpaResourceProviderDstu3<Bundle>
                     List<String> extension = getExtension(base);
                     if (!extension.isEmpty()) {
                         String cql = String.format("using FHIR version '3.0.0' define x: %s", extension.get(1));
-                        library = LibraryHelper.translateLibrary(cql, new LibraryManager(modelManager), modelManager);
+                        library = LibraryHelper.translateLibrary(cql, new LibraryManager(new ModelManager()), new ModelManager());
                         context = new Context(library);
                         context.registerDataProvider("http://hl7.org/fhir", provider);
                         Object result = context.resolveExpressionRef("x").getExpression().evaluate(context);

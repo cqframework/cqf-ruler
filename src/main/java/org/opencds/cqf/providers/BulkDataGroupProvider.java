@@ -14,7 +14,6 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.dstu3.model.*;
 import org.opencds.cqf.helpers.BulkDataHelper;
 
@@ -26,8 +25,8 @@ public class BulkDataGroupProvider extends JpaResourceProviderDstu3<Group> {
 
     private JpaDataProvider provider;
 
-    public BulkDataGroupProvider(Collection<IResourceProvider> providers) {
-        provider = new JpaDataProvider(providers);
+    public BulkDataGroupProvider(JpaDataProvider provider) {
+        this.provider = provider;
     }
 
     @Operation(name = "$export", idempotent = true)

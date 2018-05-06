@@ -2,19 +2,15 @@ package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
-import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.annotation.Count;
 import ca.uhn.fhir.rest.annotation.Sort;
 import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.*;
@@ -27,10 +23,8 @@ import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderDstu2;
 import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderStu3;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.runtime.DateTime;
-import org.opencds.cqf.cql.runtime.Interval;
-import org.opencds.cqf.cql.runtime.Tuple;
-import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.exceptions.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,26 +38,12 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
 
     private JpaDataProvider provider;
     private CqlExecutionProvider executionProvider;
-    private STU3LibraryLoader libraryLoader;
 
     private static final Logger logger = LoggerFactory.getLogger(FHIRPlanDefinitionResourceProvider.class);
 
-    public FHIRPlanDefinitionResourceProvider(Collection<IResourceProvider> providers) {
-        this.provider = new JpaDataProvider(providers);
-
-        JpaResourceProviderDstu3<ValueSet>   vs = (ValueSetResourceProvider)   provider.resolveResourceProvider("ValueSet");
-        JpaResourceProviderDstu3<CodeSystem> cs = (CodeSystemResourceProvider) provider.resolveResourceProvider("CodeSystem");
-        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(vs, cs);
-        this.provider.setTerminologyProvider(terminologyProvider);
-        this.provider.setExpandValueSets(true);
-
-        this.libraryLoader =
-                new STU3LibraryLoader(
-                        (LibraryResourceProvider) provider.resolveResourceProvider("Library"),
-                        new LibraryManager(new ModelManager()), new ModelManager()
-                );
-
-        this.executionProvider = new CqlExecutionProvider(providers);
+    public FHIRPlanDefinitionResourceProvider(JpaDataProvider provider) {
+        this.provider = provider;
+        this.executionProvider = new CqlExecutionProvider(provider);
     }
 
     @Operation(name = "$apply", idempotent = true)
@@ -129,7 +109,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
             }
 
             else {
-                FHIRActivityDefinitionResourceProvider activitydefinitionProvider = new FHIRActivityDefinitionResourceProvider(provider.getCollectionProviders());
+                FHIRActivityDefinitionResourceProvider activitydefinitionProvider = new FHIRActivityDefinitionResourceProvider(provider);
                 Resource result;
                 try {
                     if (action.getDefinition().getReferenceElement().getIdPart().startsWith("#")) {
@@ -448,6 +428,10 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
     }
 
     public Set<String> getPrefetchUrls(PlanDefinition planDefinition) {
+        LibraryLoader libraryLoader = new STU3LibraryLoader(
+                (LibraryResourceProvider) provider.resolveResourceProvider("Library"),
+                new LibraryManager(new ModelManager()), new ModelManager()
+        );
         if (planDefinition.hasType()) {
             for (Coding typeCode : planDefinition.getType().getCoding()) {
                 if (typeCode.getCode().equals("eca-rule")) {
@@ -476,7 +460,8 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                             Context context = new Context(library);
                             context.registerDataProvider("http://hl7.org/fhir", discoveryDataProvider);
                             context.registerTerminologyProvider(provider.getTerminologyProvider());
-                            context.registerLibraryLoader(libraryLoader);
+                            context.registerLibraryLoader(libraryLoader
+                            );
                             context.enterContext("Patient");
                             context.setContextValue(context.getCurrentContext(), "{{context.patientId}}");
                             // TODO - remove once engine issue is resolved

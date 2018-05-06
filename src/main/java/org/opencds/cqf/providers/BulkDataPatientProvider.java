@@ -14,7 +14,6 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.DateRangeParam;
 import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Resource;
@@ -27,8 +26,8 @@ import java.util.*;
 public class BulkDataPatientProvider extends JpaResourceProviderDstu3<Patient> {
 
     private JpaDataProvider provider;
-    public BulkDataPatientProvider(Collection<IResourceProvider> providers) {
-        provider = new JpaDataProvider(providers);
+    public BulkDataPatientProvider(JpaDataProvider provider) {
+        this.provider = provider;
     }
 
     @Operation(name = "$export", idempotent = true)
