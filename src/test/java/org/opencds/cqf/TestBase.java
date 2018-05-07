@@ -25,6 +25,7 @@ public class TestBase {
     @Test
     public void runMeasureEvaluationTests() throws IOException, JAXBException {
         MeasureEvaluationTests measureTests = new MeasureEvaluationTests(server);
+        measureTests.patientMeasureASF_IIP_Numerator_Denominator_True();
         measureTests.patientMeasureCCS_PatientNotInInitialPopulation();
         measureTests.patientListMeasureCCS();
         measureTests.populationMeasureBCS();

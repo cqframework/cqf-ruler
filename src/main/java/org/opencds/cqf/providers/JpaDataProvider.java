@@ -79,7 +79,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
                 for (Code code : codes) {
                     codeParams.addOr(new TokenParam(code.getSystem(), code.getCode()));
                 }
-                map.add(convertCodePath(codePath), codeParams);
+                map.add(convertPathToSearchParam(dataType, codePath), codeParams);
             }
         }
 
@@ -105,7 +105,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
                 rangeParam = new DateRangeParam(low, high);
             }
 
-            map.add(convertDatePath(datePath), rangeParam);
+            map.add(convertPathToSearchParam(dataType, datePath), rangeParam);
         }
 
         JpaResourceProviderDstu3<? extends IAnyResource> jpaResProvider = resolveResourceProvider(dataType);
@@ -131,24 +131,5 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             }
         }
         throw new RuntimeException("Could not find resource provider for type: " + datatype);
-    }
-
-    public String convertDatePath(String path) {
-        if (path.contains("effective")) {
-            return "date";
-        }
-
-        return path;
-    }
-
-    public String convertCodePath(String path) {
-        if (path.contains("medication")) {
-            return "code";
-        }
-        else if (path.equals("vaccineCode")) {
-            return "vaccine-code";
-        }
-
-        return path;
     }
 }
