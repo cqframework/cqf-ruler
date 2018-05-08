@@ -23,9 +23,10 @@ class MeasureEvaluationTests {
         this.server.putResource(measureEvalLocation + "hedis-bcs-bundle.json", "");
         this.server.putResource(measureEvalLocation + "hedis-ccs-bundle.json", "");
         this.server.putResource(measureEvalLocation + "hedis-col-bundle.json", "");
+        this.server.putResource(measureEvalLocation + "hedis-dms-bundle.json", "");
     }
 
-    void patientMeasureASF_IIP_Numerator_Denominator_True() {
+    void patientMeasureASF_IIP_AllNumerator_AllDenominator_True() {
         Parameters inParams = new Parameters();
         inParams.addParameter().setName("patient").setValue(new StringType("Patient/Patient-6529"));
         inParams.addParameter().setName("periodStart").setValue(new DateType("2003-01-01"));
@@ -52,6 +53,45 @@ class MeasureEvaluationTests {
         for (MeasureReport.MeasureReportGroupComponent group : report.getGroup()) {
             for (MeasureReport.MeasureReportGroupPopulationComponent population : group.getPopulation()) {
                 Assert.assertTrue(population.getCount() > 0);
+            }
+        }
+    }
+
+    void patientMeasureDMS_IIP_Numerator1_Denominator1_True() {
+        Parameters inParams = new Parameters();
+        inParams.addParameter().setName("patient").setValue(new StringType("Patient/Patient-6498"));
+        inParams.addParameter().setName("periodStart").setValue(new DateType("2017-01-01"));
+        inParams.addParameter().setName("periodEnd").setValue(new DateType("2017-12-31"));
+
+        Parameters outParams = server.ourClient
+                .operation()
+                .onInstance(new IdDt("Measure", "measure-dms"))
+                .named("$evaluate-measure")
+                .withParameters(inParams)
+                .useHttpGet()
+                .execute();
+
+        List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+
+        Assert.assertTrue(!response.isEmpty());
+
+        Parameters.ParametersParameterComponent component = response.get(0);
+
+        Assert.assertTrue(component.getResource() instanceof MeasureReport);
+
+        MeasureReport report = (MeasureReport) component.getResource();
+
+        for (MeasureReport.MeasureReportGroupComponent group : report.getGroup()) {
+            for (MeasureReport.MeasureReportGroupPopulationComponent population : group.getPopulation()) {
+                if (population.getIdentifier().getValue().equals("initial-population")) {
+                    Assert.assertTrue(population.getCount() > 0);
+                }
+                else if (population.getIdentifier().getValue().equals("numerator 1")) {
+                    Assert.assertTrue(population.getCount() > 0);
+                }
+                else if (population.getIdentifier().getValue().equals("denominator 1")) {
+                    Assert.assertTrue(population.getCount() > 0);
+                }
             }
         }
     }
