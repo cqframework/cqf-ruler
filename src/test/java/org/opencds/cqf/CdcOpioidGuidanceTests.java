@@ -135,6 +135,7 @@ class CdcOpioidGuidanceTests {
         // load necessary resources and artifacts
         server.putResource(recFourLocation + "patient-example-rec-04-long-acting-opioid-partial-prefetch.xml", "example-rec-04-long-acting-opioid-partial-prefetch");
         server.putResource(recFourLocation + "encounter-example-rec-04-long-acting-opioid-context-partial-prefetch.xml", "example-rec-04-long-acting-opioid-context-partial-prefetch");
+        server.putResource(recFourLocation + "encounter-example-rec-04-long-acting-opioid-partial-prefetch.json", "example-rec-04-long-acting-opioid-partial-prefetch");
         server.putResource(recFourLocation + "medicationrequest-example-rec-04-long-acting-opioid-partial-prefetch.json", "example-rec-04-long-acting-opioid-partial-prefetch");
 
         String response = makeRequest(recFourLocation + "request-example-rec-04-long-acting-opioid-partial-prefetch.json", "cdc-opioid-guidance-04");
