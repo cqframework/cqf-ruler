@@ -36,9 +36,11 @@ public class CdsServicesServlet extends BaseServlet {
             CdsHooksProviders cdsHooksProviders = new CdsHooksProviders(getResourceProviders(), baseUrl, request.getPathInfo().replace("/", ""));
             // TODO - check for cdc-opioid-guidance base call - runs every recommendation
             CdsRequest cdsRequest = CdsRequestFactory.createRequest(request.getReader());
+            response.setHeader("Content-Type", "application/json");
             response.getWriter().println(toJsonResponse(cdsRequest.process(cdsHooksProviders)));
         } catch (Exception e) {
             e.printStackTrace();
+            response.setHeader("Content-Type", "application/json");
             response.getWriter().println(toJsonResponse(Collections.singletonList(CdsCard.errorCard(e))));
         }
     }
@@ -88,6 +90,7 @@ public class CdsServicesServlet extends BaseServlet {
         responseJson.add("services", services);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+        response.setHeader("Content-Type", "application/json");
         response.getWriter().println(gson.toJson(responseJson));
     }
 
