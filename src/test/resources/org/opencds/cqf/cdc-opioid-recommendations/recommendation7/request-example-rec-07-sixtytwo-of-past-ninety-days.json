@@ -1,6 +1,6 @@
 {
   "hookInstance": "e0493f61-6b3e-4eab-a6f9-45cd54ef5558",
-  "fhirServer": "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3",
+  "fhirServer": "http://localhost:8080/cqf-ruler/baseDstu3",
   "hook": "medication-prescribe",
   "user": "Practitioner/example",
   "applyCql": true,

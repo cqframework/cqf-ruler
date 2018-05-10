@@ -38,6 +38,8 @@ public class TestBase {
     public void runOpioidGuidanceTests() throws Exception {
         CdcOpioidGuidanceTests opioidTests = new CdcOpioidGuidanceTests(server);
         opioidTests.CdcOpioidGuidanceRecommendationFourTest_LongActingOpioid();
+        opioidTests.CdcOpioidGuidanceRecommendationFourTest_LongActingOpioid_NoPrefetch();
+        opioidTests.CdcOpioidGuidanceRecommendationFourTest_LongActingOpioid_PartialPrefetch();
         opioidTests.CdcOpioidGuidanceRecommendationFourTest_NewPatient();
         opioidTests.CdcOpioidGuidanceRecommendationFourTest_NotLongActingOpioid();
         opioidTests.CdcOpioidGuidanceRecommendationFourTest_OpioidWithAbusePotential();

@@ -18,6 +18,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.builders.*;
+import org.opencds.cqf.cdshooks.providers.Discovery;
 import org.opencds.cqf.cdshooks.providers.DiscoveryDataProvider;
 import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderDstu2;
 import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderStu3;
@@ -412,22 +413,28 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         throw new RuntimeException(String.format("Resource %s does not contain resource with id %s", resource.fhirType(), id));
     }
 
-    public Map<PlanDefinition, Set<String>> getHooks() {
-        Map<PlanDefinition, Set<String>> discoveryMap = new HashMap<>();
+    private Map<String, Discovery> discoveryCache = new HashMap<>();
+
+    public List<Discovery> getDiscoveries() {
+        List<Discovery> discoveries = new ArrayList<>();
         IBundleProvider bundleProvider = getDao().search(new SearchParameterMap());
         for (IBaseResource resource : bundleProvider.getResources(0, bundleProvider.size())) {
             if (resource instanceof PlanDefinition) {
                 PlanDefinition planDefinition = (PlanDefinition) resource;
-                Set<String> urls = getPrefetchUrls(planDefinition);
-                if (!urls.isEmpty()) {
-                    discoveryMap.put(planDefinition, urls);
+                if (discoveryCache.containsKey(planDefinition.getIdElement().getIdPart())) {
+                    discoveries.add(discoveryCache.get(planDefinition.getIdElement().getIdPart()));
+                }
+                else {
+                    Discovery discovery = getDiscovery(planDefinition);
+                    discoveryCache.put(planDefinition.getIdElement().getIdPart(), discovery);
+                    discoveries.add(discovery);
                 }
             }
         }
-        return discoveryMap;
+        return discoveries;
     }
 
-    public Set<String> getPrefetchUrls(PlanDefinition planDefinition) {
+    public Discovery getDiscovery(PlanDefinition planDefinition) {
         LibraryLoader libraryLoader = new STU3LibraryLoader(
                 (LibraryResourceProvider) provider.resolveResourceProvider("Library"),
                 new LibraryManager(new ModelManager()), new ModelManager()
@@ -485,16 +492,16 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                                 try {
                                     def.getExpression().evaluate(context);
                                 } catch (Exception e) {
-                                    e.printStackTrace();
+                                    // ignore
                                 }
                             }
-                            return discoveryDataProvider.getPrefetchUrls();
+                            return discoveryDataProvider.getDiscovery().setPlanDefinition(planDefinition);
                         }
                     }
                 }
             }
         }
-        return Collections.emptySet();
+        return new Discovery().setPlanDefinition(planDefinition);
     }
 
     @Search(allowUnknownParams=true)

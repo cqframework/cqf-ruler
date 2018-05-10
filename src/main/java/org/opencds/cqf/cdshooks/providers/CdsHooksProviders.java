@@ -4,6 +4,8 @@ import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.gclient.IQuery;
+import ca.uhn.fhir.rest.gclient.TokenClientParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -11,6 +13,7 @@ import org.cqframework.cql.elm.execution.*;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.instance.model.Bundle;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.data.DataProvider;
@@ -26,7 +29,6 @@ import org.opencds.cqf.providers.JpaTerminologyProvider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public class CdsHooksProviders {
 
@@ -52,9 +54,9 @@ public class CdsHooksProviders {
         return planDefinitionProvider;
     }
 
-    private Set<String> prefetchUrls;
-    public Set<String> getPrefetchUrls() {
-        return prefetchUrls;
+    private Discovery discovery;
+    public Discovery getDiscovery() {
+        return discovery;
     }
 
     private PlanDefinition planDefinition;
@@ -103,7 +105,7 @@ public class CdsHooksProviders {
         }
 
         // resolve prefetch urls
-        prefetchUrls = planDefinitionProvider.getPrefetchUrls(planDefinition);
+        discovery = planDefinitionProvider.getDiscovery(planDefinition);
 
         // resolve library
         if (planDefinition.hasLibrary()) {
@@ -197,24 +199,25 @@ public class CdsHooksProviders {
         registerDataProvider(isDstu2() ? new PrefetchDataProviderDstu2(resources) : new PrefetchDataProviderStu3(resources), null);
     }
 
-    // todo - encounterId?
-    public List<Object> getPrefetchResources(String patientId) {
-        return isDstu2() ? resolveDstu2Resources(patientId) : resolveStu3Resources(patientId);
+    public List<Object> search(DiscoveryItem discoveryItem, String patientId) {
+        IGenericClient gClient = hasClient() ? client : jpaDataProvider.getFhirClient();
+        IQuery<IBaseBundle> query = gClient.search().forResource(discoveryItem.getResource());
+        if (discoveryItem.isPatientCriteria()) {
+            query = query.where(new TokenClientParam(discoveryItem.getPatientPath()).exactly().identifier(patientId));
+        }
+        for (int i = 0; i < discoveryItem.getCriteria().size(); ++i) {
+            query = i == 0 && !discoveryItem.isPatientCriteria()
+                    ? query.where(discoveryItem.getCriteria().get(i))
+                    : query.and(discoveryItem.getCriteria().get(i));
+        }
+
+        return isDstu2() ? dstu2Search(query) : stu3Search(query);
     }
 
-    private List<Object> resolveDstu2Resources(String patientId) {
+    private List<Object> dstu2Search(IQuery<IBaseBundle> query) {
+        Bundle bundle = query.returnBundle(Bundle.class).execute();
         List<Object> resources = new ArrayList<>();
-        Bundle bundle;
-        for (String url : prefetchUrls) {
-            url = url.replaceAll("\\{\\{context.patientId}}", patientId);
-            if (hasClient()) {
-                // resolve prefetch resources using remote client
-                bundle = client.search().byUrl(url).returnBundle(Bundle.class).execute();
-            }
-            else {
-                // resolve prefetch resources using jpa client
-                bundle = jpaDataProvider.getFhirClient().search().byUrl(url).returnBundle(Bundle.class).execute();
-            }
+        if (bundle.hasEntry()) {
             for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
                 if (entry.hasResource()) {
                     resources.add(entry.getResource());
@@ -224,19 +227,10 @@ public class CdsHooksProviders {
         return resources;
     }
 
-    private List<Object> resolveStu3Resources(String patientId) {
+    private List<Object> stu3Search(IQuery<IBaseBundle> query) {
+        org.hl7.fhir.dstu3.model.Bundle bundle = query.returnBundle(org.hl7.fhir.dstu3.model.Bundle.class).execute();
         List<Object> resources = new ArrayList<>();
-        org.hl7.fhir.dstu3.model.Bundle bundle;
-        for (String url : prefetchUrls) {
-            url = url.replaceAll("\\{\\{context.patientId}}", patientId);
-            if (hasClient()) {
-                // resolve prefetch resources using remote client
-                bundle = client.search().byUrl(url).returnBundle(org.hl7.fhir.dstu3.model.Bundle.class).execute();
-            }
-            else {
-                // resolve prefetch resources using jpa client
-                bundle = jpaDataProvider.getFhirClient().search().byUrl(url).returnBundle(org.hl7.fhir.dstu3.model.Bundle.class).execute();
-            }
+        if (bundle.hasEntry()) {
             for (org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent entry : bundle.getEntry()) {
                 if (entry.hasResource()) {
                     resources.add(entry.getResource());

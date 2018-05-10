@@ -26,6 +26,7 @@ public abstract class CdsRequest {
     private Boolean applyCql;
     Context context;
     private Prefetch prefetch;
+    private JsonObject prefetchObject;
 
     public abstract void setContext(JsonObject context);
 
@@ -49,10 +50,7 @@ public abstract class CdsRequest {
         }
         setContext(JsonFieldResolution.getObjectField(requestJson, "context", true));
 
-        JsonObject prefetchObject = JsonFieldResolution.getObjectField(requestJson, "prefetch", false);
-        if (prefetchObject != null) {
-            prefetch = new Prefetch(prefetchObject);
-        }
+        prefetchObject = JsonFieldResolution.getObjectField(requestJson, "prefetch", false);
     }
 
     private boolean isFhirServerLocal() {
@@ -76,17 +74,10 @@ public abstract class CdsRequest {
         providers.resolveContextParameter(applyCql ? applyCqlToResources(contextResources, providers) : contextResources);
 
         // resolve prefetch urls and resources
-        if (prefetch != null) {
-            prefetch.setPrefetchUrls(providers.getPrefetchUrls());
-        }
-        if (prefetch == null) {
-            prefetch = new Prefetch();
-            prefetch.setPrefetchUrls(providers.getPrefetchUrls());
-            prefetch.setResources(providers.getPrefetchResources(context.getPatientId()));
-        }
+        prefetch = new Prefetch(prefetchObject, providers, context.getPatientId());
 
         // resolve prefetch data provider
-        List<Object> prefetchResources = prefetch.getResources(providers.getVersion());
+        List<Object> prefetchResources = prefetch.getResources();
         providers.resolvePrefetchDataProvider(applyCql ? applyCqlToResources(prefetchResources, providers) : prefetchResources);
 
         // apply plandefinition and return cards

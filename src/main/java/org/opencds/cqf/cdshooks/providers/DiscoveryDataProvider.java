@@ -1,24 +1,28 @@
 package org.opencds.cqf.cdshooks.providers;
 
+import ca.uhn.fhir.rest.gclient.DateClientParam;
+import ca.uhn.fhir.rest.gclient.TokenClientParam;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import static org.hl7.fhir.utilities.Utilities.URLEncode;
 
 public abstract class DiscoveryDataProvider extends BaseFhirDataProvider {
 
-    private Set<String> prefetchUrls;
-    public Set<String> getPrefetchUrls() {
-        return prefetchUrls;
+    private Discovery discovery;
+    private List<Retrieve> retrieveCache;
+
+    public Discovery getDiscovery() {
+        return discovery;
     }
+
     public DiscoveryDataProvider() {
-        prefetchUrls = new TreeSet<>();
+        discovery = new Discovery();
+        retrieveCache = new ArrayList<>();
     }
 
     public abstract String convertPathToSearchParam(String dataType, String codeOrDatePath);
@@ -28,14 +32,28 @@ public abstract class DiscoveryDataProvider extends BaseFhirDataProvider {
                                      String codePath, Iterable<Code> codes, String valueSet, String datePath,
                                      String dateLowPath, String dateHighPath, Interval dateRange)
     {
+        // Avoid duplicating items
+        Retrieve retrieve = new Retrieve(context, contextValue, dataType, templateId, codePath,
+                codes, valueSet, datePath, dateLowPath, dateHighPath, dateRange);
+        if (retrieveCache.contains(retrieve)) {
+            return Collections.emptyList();
+        }
+        else {
+            retrieveCache.add(retrieve);
+        }
+
         StringBuilder prefetchUrlBuilder = new StringBuilder();
+        DiscoveryItem item = discovery.newItem().setResource(dataType);
 
         if (dataType == null) {
             throw new IllegalArgumentException("A data type (i.e. Procedure, Valueset, etc...) must be specified for clinical data retrieval");
         }
 
         if (context != null && context.equals("Patient")) {
-            prefetchUrlBuilder.append(String.format("%s=%s", getPatientSearchParam(dataType), contextValue));
+            String patientPath = getPatientSearchParam(dataType);
+            item.hasPatientCriteria();
+            item.setPatientPath(patientPath);
+            prefetchUrlBuilder.append(String.format("%s=%s", patientPath, contextValue));
         }
 
         if (codePath != null && !codePath.equals("")) {
@@ -48,10 +66,12 @@ public abstract class DiscoveryDataProvider extends BaseFhirDataProvider {
                     codes = terminologyProvider.expand(valueSetInfo);
                 }
                 else {
+                    // this should never occur... TODO - throw exception?
                     prefetchUrlBuilder.append(String.format("%s:in=%s", convertPathToSearchParam(dataType, codePath), URLEncode(valueSet)));
                 }
                 if (codes != null) {
                     StringBuilder codeList = new StringBuilder();
+                    List<String> codeValues = new ArrayList<>();
                     for (Code code : codes) {
                         if (codeList.length() > 0) {
                             codeList.append(",");
@@ -63,7 +83,13 @@ public abstract class DiscoveryDataProvider extends BaseFhirDataProvider {
                         }
 
                         codeList.append(URLEncode(code.getCode()));
+                        codeValues.add(code.getCode());
                     }
+
+                    item.addCriteria(
+                            new TokenClientParam(convertPathToSearchParam(dataType, codePath))
+                                    .exactly().codes(codeValues.toArray(new String[codeValues.size()]))
+                    );
                     prefetchUrlBuilder.append(String.format("%s=%s", convertPathToSearchParam(dataType, codePath), codeList.toString()));
                 }
             }
@@ -76,6 +102,11 @@ public abstract class DiscoveryDataProvider extends BaseFhirDataProvider {
                     throw new IllegalArgumentException("A date path or low date path must be provided when filtering on a date range.");
                 }
 
+                item.addCriteria(
+                        dateRange.getLowClosed()
+                                ? new DateClientParam(lowDatePath).afterOrEquals().day(dateRange.getLow().toString())
+                                : new DateClientParam(lowDatePath).after().day(dateRange.getLow().toString())
+                );
                 prefetchUrlBuilder.append(String.format("&%s=%s%s",
                         lowDatePath,
                         dateRange.getLowClosed() ? "ge" : "gt",
@@ -88,6 +119,11 @@ public abstract class DiscoveryDataProvider extends BaseFhirDataProvider {
                     throw new IllegalArgumentException("A date path or high date path must be provided when filtering on a date range.");
                 }
 
+                item.addCriteria(
+                        dateRange.getHighClosed()
+                                ? new DateClientParam(highDatePath).beforeOrEquals().day(dateRange.getHigh().toString())
+                                : new DateClientParam(highDatePath).before().day(dateRange.getHigh().toString())
+                );
                 prefetchUrlBuilder.append(String.format("&%s=%s%s",
                         highDatePath,
                         dateRange.getHighClosed() ? "le" : "lt",
@@ -96,12 +132,13 @@ public abstract class DiscoveryDataProvider extends BaseFhirDataProvider {
         }
 
         if (prefetchUrlBuilder.length() > 0) {
-            prefetchUrls.add(String.format("%s?%s", dataType, prefetchUrlBuilder.toString()));
+            item.setUrl(String.format("%s?%s", dataType, prefetchUrlBuilder.toString()));
         }
         else {
-            prefetchUrls.add(String.format("%s", dataType));
+            item.setUrl(String.format("%s", dataType));
         }
 
+        discovery.addItem(item);
         return Collections.emptyList();
     }
 

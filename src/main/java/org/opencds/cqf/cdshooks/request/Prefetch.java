@@ -2,63 +2,68 @@ package org.opencds.cqf.cdshooks.request;
 
 import com.google.gson.JsonObject;
 import org.opencds.cqf.cdshooks.providers.CdsHooksProviders;
+import org.opencds.cqf.cdshooks.providers.Discovery;
+import org.opencds.cqf.cdshooks.providers.DiscoveryItem;
 import org.opencds.cqf.exceptions.InvalidPrefetchException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class Prefetch {
 
     private List<Object> resources;
-    private JsonObject prefetchObject;
-    private Set<String> prefetchUrls;
 
-    public Prefetch() { }
+    public Prefetch(JsonObject prefetchObject, CdsHooksProviders providers, String patientId) {
+        Discovery discovery = providers.getDiscovery();
+        resources = new ArrayList<>();
 
-    public Prefetch(JsonObject prefetchObject) {
-        this.prefetchObject = prefetchObject;
-    }
+        if (prefetchObject == null || prefetchObject.size() == 0) {
+            // resolve elements
+            for (DiscoveryItem item : discovery.getItems()) {
+                resources.addAll(providers.search(item, patientId));
+            }
+        }
 
-    public List<Object> getResources(CdsHooksProviders.FhirVersion version) {
-        if (resources == null) {
-            resources = new ArrayList<>();
-            // prefetchUrls haven't been initialized
-            if (prefetchUrls == null) {
-                throw new RuntimeException("prefetch urls must be initialized before resolving prefetch resources");
+        else if (prefetchObject.size() != discovery.getItems().size()) {
+            // too many elements - error
+            if (prefetchObject.size() > discovery.getItems().size()) {
+                throw new InvalidPrefetchException(
+                        String.format(
+                                "Expecting %d fields in the prefetch. Found %d fields",
+                                discovery.getItems().size(), prefetchObject.size()
+                        )
+                );
             }
-            // missing fields
-            if (prefetchObject == null && !prefetchUrls.isEmpty()) {
-                throw new InvalidPrefetchException("Missing prefetch fields: " + prefetchUrls.toString());
-            }
-            // mismatched number of fields
-            if (prefetchObject != null && prefetchObject.size() != prefetchUrls.size()) {
-                throw new InvalidPrefetchException(String.format("Expecting %d fields in the prefetch. Found %d fields", prefetchUrls.size(), prefetchObject.size()));
-            }
-            // parse prefetch JSON
-            if (prefetchObject != null) {
-                for (String key : prefetchObject.keySet()) {
-                    if (prefetchObject.get(key).isJsonNull()) {
-                        continue;
-                    }
-                    JsonObject prefetchElement = JsonFieldResolution.getObjectField(prefetchObject, key, true);
-                    if (prefetchElement.get("resource").isJsonNull()) {
-                        continue;
-                    }
-                    resources.addAll(
-                            CdsHooksHelper.parseResources(
-                                    JsonFieldResolution.getObjectField(prefetchElement, "resource", true), version
-                            )
-                    );
+
+            // resolve missing elements
+            for (DiscoveryItem item : discovery.getItems()) {
+                if (prefetchObject.get(item.getItemNo()) == null) {
+                    // resolve element
+                    resources.addAll(providers.search(item, patientId));
                 }
             }
         }
+
+        else {
+            for (String key : prefetchObject.keySet()) {
+                if (prefetchObject.get(key).isJsonNull()) {
+                    continue;
+                }
+                JsonObject prefetchElement = JsonFieldResolution.getObjectField(prefetchObject, key, true);
+                if (prefetchElement.has("resource") && prefetchElement.get("resource").isJsonNull()) {
+                    continue;
+                }
+                resources.addAll(
+                        CdsHooksHelper.parseResources(
+                                JsonFieldResolution.getObjectField(prefetchElement, "resource", true), providers.getVersion()
+                        )
+                );
+            }
+        }
+    }
+
+    public List<Object> getResources() {
         return resources;
     }
-    public void setResources(List<Object> resources) {
-        this.resources = resources;
-    }
-    public void setPrefetchUrls(Set<String> prefetchUrls) {
-        this.prefetchUrls = prefetchUrls;
-    }
+
 }

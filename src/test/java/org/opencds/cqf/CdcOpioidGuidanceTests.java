@@ -103,6 +103,59 @@ class CdcOpioidGuidanceTests {
         Assert.assertTrue(response.replaceAll("\\s+", "").equals(expected.replaceAll("\\s+", "")));
     }
 
+    void CdcOpioidGuidanceRecommendationFourTest_LongActingOpioid_NoPrefetch() throws IOException {
+
+        // load necessary resources and artifacts
+        server.putResource(recFourLocation + "patient-example-rec-04-long-acting-opioid-no-prefetch.xml", "example-rec-04-long-acting-opioid-no-prefetch");
+        server.putResource(recFourLocation + "encounter-example-rec-04-long-acting-opioid-context-no-prefetch.xml", "example-rec-04-long-acting-opioid-context-no-prefetch");
+        server.putResource(recFourLocation + "encounter-example-rec-04-long-acting-opioid-no-prefetch.json", "example-rec-04-long-acting-opioid-no-prefetch");
+        server.putResource(recFourLocation + "medicationrequest-example-rec-04-long-acting-opioid-no-prefetch.json", "example-rec-04-long-acting-opioid-no-prefetch");
+
+        String response = makeRequest(recFourLocation + "request-example-rec-04-long-acting-opioid-no-prefetch.json", "cdc-opioid-guidance-04");
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"summary\": \"Recommend use of immediate-release opioids instead of extended release/long acting opioids when starting patient on opioids.\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The following medication requests(s) release rates should be re-evaluated: 12 HR Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet\",\n" +
+                "      \"source\": {\n" +
+                "        \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
+                "        \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}\n";
+
+        Assert.assertTrue(response.replaceAll("\\s+", "").equals(expected.replaceAll("\\s+", "")));
+    }
+
+    void CdcOpioidGuidanceRecommendationFourTest_LongActingOpioid_PartialPrefetch() throws IOException {
+
+        // load necessary resources and artifacts
+        server.putResource(recFourLocation + "patient-example-rec-04-long-acting-opioid-partial-prefetch.xml", "example-rec-04-long-acting-opioid-partial-prefetch");
+        server.putResource(recFourLocation + "encounter-example-rec-04-long-acting-opioid-context-partial-prefetch.xml", "example-rec-04-long-acting-opioid-context-partial-prefetch");
+        server.putResource(recFourLocation + "medicationrequest-example-rec-04-long-acting-opioid-partial-prefetch.json", "example-rec-04-long-acting-opioid-partial-prefetch");
+
+        String response = makeRequest(recFourLocation + "request-example-rec-04-long-acting-opioid-partial-prefetch.json", "cdc-opioid-guidance-04");
+
+        String expected = "{\n" +
+                "  \"cards\": [\n" +
+                "    {\n" +
+                "      \"summary\": \"Recommend use of immediate-release opioids instead of extended release/long acting opioids when starting patient on opioids.\",\n" +
+                "      \"indicator\": \"warning\",\n" +
+                "      \"detail\": \"The following medication requests(s) release rates should be re-evaluated: 12 HR Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet\",\n" +
+                "      \"source\": {\n" +
+                "        \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
+                "        \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}\n";
+
+        Assert.assertTrue(response.replaceAll("\\s+", "").equals(expected.replaceAll("\\s+", "")));
+    }
+
     void CdcOpioidGuidanceRecommendationFourTest_NewPatient() throws IOException {
 
         // load necessary resources and artifacts

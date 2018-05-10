@@ -6,6 +6,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.opencds.cqf.cdshooks.providers.CdsHooksProviders;
+import org.opencds.cqf.cdshooks.providers.Discovery;
+import org.opencds.cqf.cdshooks.providers.DiscoveryItem;
 import org.opencds.cqf.cdshooks.request.CdsRequest;
 import org.opencds.cqf.cdshooks.request.CdsRequestFactory;
 import org.opencds.cqf.cdshooks.response.CdsCard;
@@ -18,12 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-/**
- * Created by Christopher Schuler on 5/1/2017.
- */
 @WebServlet(name = "cds-services")
 public class CdsServicesServlet extends BaseServlet {
 
@@ -56,8 +53,8 @@ public class CdsServicesServlet extends BaseServlet {
         JsonArray services = new JsonArray();
 
         FHIRPlanDefinitionResourceProvider provider = (FHIRPlanDefinitionResourceProvider) getProvider("PlanDefinition");
-        for (Map.Entry<PlanDefinition, Set<String>> entrySet : provider.getHooks().entrySet()) {
-            PlanDefinition planDefinition = entrySet.getKey();
+        for (Discovery discovery : provider.getDiscoveries()) {
+            PlanDefinition planDefinition = discovery.getPlanDefinition();
             JsonObject service = new JsonObject();
             if (planDefinition.hasAction()) {
                 // TODO - this needs some work - too naive
@@ -78,11 +75,10 @@ public class CdsServicesServlet extends BaseServlet {
             }
             service.addProperty("id", planDefinition.getIdElement().getIdPart());
 
-            if (!entrySet.getValue().isEmpty()) {
+            if (!discovery.getItems().isEmpty()) {
                 JsonObject prefetchContent = new JsonObject();
-                int count = 0;
-                for (String url : entrySet.getValue()) {
-                    prefetchContent.addProperty("item" + Integer.toString(++count), url);
+                for (DiscoveryItem item : discovery.getItems()) {
+                    prefetchContent.addProperty(item.getItemNo(), item.getUrl());
                 }
                 service.add("prefetch", prefetchContent);
             }
