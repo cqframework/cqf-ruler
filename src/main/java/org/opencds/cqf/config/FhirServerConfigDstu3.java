@@ -65,10 +65,10 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     // H2 Config
     @Bean(destroyMethod = "close")
     public DataSource dataSource() {
-        Path path = Paths.get("target/jpaserver_h2_files").toAbsolutePath();
+        Path path = Paths.get("target/jpah2.db").toAbsolutePath();
         BasicDataSource retVal = new BasicDataSource();
         retVal.setDriver(new org.h2.Driver());
-        retVal.setUrl("jdbc:h2:directory:" + path.toString() + ";create=true;MV_STORE=FALSE;MVCC=FALSE");
+        retVal.setUrl("jdbc:h2:file:" + path.toString() + ";create=true;MV_STORE=FALSE;MVCC=FALSE");
         retVal.setUsername("");
         retVal.setPassword("");
         return retVal;
