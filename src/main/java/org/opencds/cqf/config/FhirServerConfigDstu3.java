@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
@@ -63,9 +65,10 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     // H2 Config
     @Bean(destroyMethod = "close")
     public DataSource dataSource() {
+        Path path = Paths.get("target/jpaserver_h2_files").toAbsolutePath();
         BasicDataSource retVal = new BasicDataSource();
         retVal.setDriver(new org.h2.Driver());
-        retVal.setUrl("jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1");
+        retVal.setUrl("jdbc:h2:directory:" + path.toString() + ";create=true");
         retVal.setUsername("");
         retVal.setPassword("");
         return retVal;

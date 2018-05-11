@@ -314,7 +314,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Library/patient-view"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Library/col-decision-support-logic"
       }
     },
     {
@@ -336,6 +336,12 @@
         },
         "action": [
           {
+            "triggerDefinition": [
+              {
+                "type": "named-event",
+                "eventName": "patient-view"
+              }
+            ],
             "condition": [
               {
                 "kind": "applicability",

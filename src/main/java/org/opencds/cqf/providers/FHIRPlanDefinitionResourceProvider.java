@@ -11,6 +11,8 @@ import ca.uhn.fhir.rest.api.SortSpec;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.*;
@@ -413,7 +415,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         throw new RuntimeException(String.format("Resource %s does not contain resource with id %s", resource.fhirType(), id));
     }
 
-    private Map<String, Discovery> discoveryCache = new HashMap<>();
+    private Map<String, Pair<PlanDefinition, Discovery> > discoveryCache = new HashMap<>();
 
     public List<Discovery> getDiscoveries() {
         List<Discovery> discoveries = new ArrayList<>();
@@ -422,11 +424,23 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
             if (resource instanceof PlanDefinition) {
                 PlanDefinition planDefinition = (PlanDefinition) resource;
                 if (discoveryCache.containsKey(planDefinition.getIdElement().getIdPart())) {
-                    discoveries.add(discoveryCache.get(planDefinition.getIdElement().getIdPart()));
+                    Pair<PlanDefinition, Discovery> pair = discoveryCache.get(planDefinition.getIdElement().getIdPart());
+                    if (pair.getLeft().hasMeta() && pair.getLeft().getMeta().hasLastUpdated()
+                            && planDefinition.hasMeta() && planDefinition.getMeta().hasLastUpdated())
+                    {
+                        if (pair.getLeft().getMeta().getLastUpdated().equals(planDefinition.getMeta().getLastUpdated())) {
+                            discoveries.add(pair.getRight());
+                        }
+                        else {
+                            Discovery discovery = getDiscovery(planDefinition);
+                            discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
+                            discoveries.add(discovery);
+                        }
+                    }
                 }
                 else {
                     Discovery discovery = getDiscovery(planDefinition);
-                    discoveryCache.put(planDefinition.getIdElement().getIdPart(), discovery);
+                    discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
                     discoveries.add(discovery);
                 }
             }
