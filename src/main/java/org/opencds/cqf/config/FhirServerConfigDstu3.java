@@ -68,7 +68,7 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
         Path path = Paths.get("target/jpaserver_h2_files").toAbsolutePath();
         BasicDataSource retVal = new BasicDataSource();
         retVal.setDriver(new org.h2.Driver());
-        retVal.setUrl("jdbc:h2:directory:" + path.toString() + ";create=true");
+        retVal.setUrl("jdbc:h2:directory:" + path.toString() + ";create=true;MV_STORE=FALSE;MVCC=FALSE");
         retVal.setUsername("");
         retVal.setPassword("");
         return retVal;
