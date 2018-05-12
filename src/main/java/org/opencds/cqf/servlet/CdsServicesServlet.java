@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.apache.http.entity.ContentType;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.opencds.cqf.cdshooks.providers.CdsHooksProviders;
 import org.opencds.cqf.cdshooks.providers.Discovery;
@@ -36,11 +37,11 @@ public class CdsServicesServlet extends BaseServlet {
             CdsHooksProviders cdsHooksProviders = new CdsHooksProviders(getResourceProviders(), baseUrl, request.getPathInfo().replace("/", ""));
             // TODO - check for cdc-opioid-guidance base call - runs every recommendation
             CdsRequest cdsRequest = CdsRequestFactory.createRequest(request.getReader());
-            response.setHeader("Content-Type", "application/json");
+            response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
             response.getWriter().println(toJsonResponse(cdsRequest.process(cdsHooksProviders)));
         } catch (Exception e) {
             e.printStackTrace();
-            response.setHeader("Content-Type", "application/json");
+            response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
             response.getWriter().println(toJsonResponse(Collections.singletonList(CdsCard.errorCard(e))));
         }
     }
@@ -90,7 +91,7 @@ public class CdsServicesServlet extends BaseServlet {
         responseJson.add("services", services);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        response.setHeader("Content-Type", "application/json");
+        response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
         response.getWriter().println(gson.toJson(responseJson));
     }
 
