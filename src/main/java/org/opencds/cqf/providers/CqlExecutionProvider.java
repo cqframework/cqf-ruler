@@ -41,8 +41,8 @@ public class CqlExecutionProvider {
         return libraryManager;
     }
 
-    private LibraryLoader libraryLoader;
-    private LibraryLoader getLibraryLoader() {
+    private STU3LibraryLoader libraryLoader;
+    private STU3LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
             libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager(), getModelManager());
         }
@@ -61,8 +61,48 @@ public class CqlExecutionProvider {
         return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
     }
 
-    public static Iterable<Reference> getLibraryReferences(DomainResource instance) {
+    private List<Reference> cleanReferences(List<Reference> references) {
+        List<Reference> cleanRefs = new ArrayList<>();
+        List<Reference> noDupes = new ArrayList<>();
+
+        for (Reference reference : references) {
+            boolean dup = false;
+            for (Reference ref : noDupes) {
+                if (ref.equalsDeep(reference))
+                {
+                    dup = true;
+                }
+            }
+            if (!dup) {
+                noDupes.add(reference);
+            }
+        }
+        for (Reference reference : noDupes) {
+            cleanRefs.add(
+                    new Reference(
+                            new IdType(
+                                    reference.getReferenceElement().getResourceType(),
+                                    reference.getReferenceElement().getIdPart().replace("#", ""),
+                                    reference.getReferenceElement().getVersionIdPart()
+                            )
+                    )
+            );
+        }
+        return cleanRefs;
+    }
+
+    private Iterable<Reference> getLibraryReferences(DomainResource instance) {
         List<Reference> references = new ArrayList<>();
+
+        if (instance.hasContained()) {
+            for (Resource resource : instance.getContained()) {
+                if (resource instanceof Library) {
+                    resource.setId(resource.getIdElement().getIdPart().replace("#", ""));
+                    getLibraryResourceProvider().getDao().update((Library) resource);
+//                    getLibraryLoader().putLibrary(resource.getIdElement().getIdPart(), getLibraryLoader().toElmLibrary((Library) resource));
+                }
+            }
+        }
 
         if (instance instanceof ActivityDefinition) {
             references.addAll(((ActivityDefinition)instance).getLibrary());
@@ -89,7 +129,7 @@ public class CqlExecutionProvider {
             }
         }
 
-        return references;
+        return cleanReferences(references);
     }
 
     private String buildIncludes(Iterable<Reference> references) {
@@ -100,21 +140,19 @@ public class CqlExecutionProvider {
                 builder.append(" ");
             }
 
-            // TODO: Would be nice not to have to resolve the reference here and just be able to specify the include...
-            Library library = getLibraryResourceProvider().getDao().read(new IdType(reference.getReference()));
             builder.append("include ");
 
             // TODO: This assumes the libraries resource id is the same as the library name, need to work this out better
-            builder.append(library.getIdElement().getIdPart());
+            builder.append(reference.getReferenceElement().getIdPart());
 
-            if (library.getVersion() != null) {
+            if (reference.getReferenceElement().getVersionIdPart() != null) {
                 builder.append(" version '");
-                builder.append(library.getVersion());
+                builder.append(reference.getReferenceElement().getVersionIdPart());
                 builder.append("'");
             }
 
             builder.append(" called ");
-            builder.append(library.getIdElement().getIdPart());
+            builder.append(reference.getReferenceElement().getIdPart());
         }
 
         return builder.toString();

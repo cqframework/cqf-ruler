@@ -19,13 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.opencds.cqf.helpers.LibraryHelper.errorsToString;
-import static org.opencds.cqf.helpers.LibraryHelper.readLibrary;
-import static org.opencds.cqf.helpers.LibraryHelper.translateLibrary;
+import static org.opencds.cqf.helpers.LibraryHelper.*;
 
-/**
- * Created by Christopher on 1/11/2017.
- */
 public class STU3LibraryLoader implements LibraryLoader {
 
     private LibraryManager libraryManager;
@@ -69,19 +64,28 @@ public class STU3LibraryLoader implements LibraryLoader {
         return library;
     }
 
+    public Library toElmLibrary(org.hl7.fhir.dstu3.model.Library library) {
+        InputStream is = null;
+        for (org.hl7.fhir.dstu3.model.Attachment content : library.getContent()) {
+            if (content.hasData()) {
+                is = new ByteArrayInputStream(content.getData());
+                if (content.getContentType().equals("application/elm+xml")) {
+                    return readLibrary(is);
+                } else if (content.getContentType().equals("text/cql")) {
+                    return translateLibrary(is, libraryManager, modelManager);
+                }
+            }
+        }
+        return null;
+    }
+
     private Library loadLibrary(VersionedIdentifier libraryIdentifier) {
         IdType id = new IdType(libraryIdentifier.getId());
         org.hl7.fhir.dstu3.model.Library library = provider.getDao().read(id);
 
-        InputStream is = null;
-        for (org.hl7.fhir.dstu3.model.Attachment content : library.getContent()) {
-            is = new ByteArrayInputStream(content.getData());
-            if (content.getContentType().equals("application/elm+xml")) {
-                return readLibrary(is);
-            }
-            else if (content.getContentType().equals("text/cql")) {
-                return translateLibrary(is, libraryManager, modelManager);
-            }
+        Library elmLibrary = toElmLibrary(library);
+        if (elmLibrary != null) {
+            return elmLibrary;
         }
 
         org.hl7.elm.r1.VersionedIdentifier identifier = new org.hl7.elm.r1.VersionedIdentifier()
@@ -95,10 +99,14 @@ public class STU3LibraryLoader implements LibraryLoader {
         if (errors.size() > 0) {
             throw new IllegalArgumentException(errorsToString(errors));
         }
-
         try {
-            return readLibrary(new ByteArrayInputStream(CqlTranslator.fromStream(is == null ? new ByteArrayInputStream(new byte[]{}) : is, modelManager, libraryManager).convertToXml(translatedLibrary).getBytes(StandardCharsets.UTF_8)));
-        } catch (JAXBException | IOException e) {
+            return readLibrary(
+                            new ByteArrayInputStream(
+                                    getTranslator("", libraryManager, modelManager)
+                                            .convertToXml(translatedLibrary).getBytes(StandardCharsets.UTF_8)
+                            )
+                    );
+        } catch (JAXBException e) {
             throw new IllegalArgumentException(String.format("Errors occurred translating library %s%s.",
                     identifier.getId(), identifier.getVersion() != null ? ("-" + identifier.getVersion()) : ""));
         }

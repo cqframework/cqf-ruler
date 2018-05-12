@@ -1,11 +1,6 @@
 package org.opencds.cqf;
 
-import ca.uhn.fhir.context.FhirContext;
-import org.hl7.fhir.convertors.NullVersionConverterAdvisor30;
-import org.hl7.fhir.convertors.VersionConvertor_10_30;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.instance.model.Observation;
+import org.hl7.fhir.dstu3.model.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opencds.cqf.helpers.XlsxToValueSet;
@@ -93,15 +88,48 @@ public class RulerHelperTests {
 //        Assert.assertTrue(!bundle.getEntry().isEmpty());
     }
 
-    @Test
-    public void converterTest() throws FHIRException {
-        NullVersionConverterAdvisor30 advisor = new NullVersionConverterAdvisor30();
-        VersionConvertor_10_30 converter = new VersionConvertor_10_30(advisor);
+//    @Test
+//    public void converterTest() throws FHIRException {
+//        NullVersionConverterAdvisor30 advisor = new NullVersionConverterAdvisor30();
+//        VersionConvertor_10_30 converter = new VersionConvertor_10_30(advisor);
+//
+//        InputStream is = RulerHelperTests.class.getResourceAsStream("Dstu2Observation.json");
+//        Observation dstu2Obs = (Observation) FhirContext.forDstu2Hl7Org().newJsonParser().parseResource(new InputStreamReader(is));
+//
+//        org.hl7.fhir.dstu3.model.Observation dstu3Obs = converter.convertObservation(dstu2Obs);
+//        String s = "";
+//    }
 
-        InputStream is = RulerHelperTests.class.getResourceAsStream("Dstu2Observation.json");
-        Observation dstu2Obs = (Observation) FhirContext.forDstu2Hl7Org().newJsonParser().parseResource(new InputStreamReader(is));
-
-        org.hl7.fhir.dstu3.model.Observation dstu3Obs = converter.convertObservation(dstu2Obs);
-        String s = "";
-    }
+//    @Test
+//    public void validationTest() {
+//        Condition condition = new Condition();
+//        condition.setCode(
+//                new CodeableConcept().addCoding(
+//                        new Coding().setSystem("ICD-9-CM").setCode("428.21")
+//                )
+//        )
+//                .setClinicalStatus(Condition.ConditionClinicalStatus.ACTIVE)
+//                .setVerificationStatus(Condition.ConditionVerificationStatus.CONFIRMED)
+//                .setSubject(new Reference().setReference("Patient/pneumo-true-2"))
+//                .setOnset(new DateTimeType().setValue(new Date()));
+//
+//        FhirContext ctx = FhirContext.forDstu3();
+//        FhirValidator validator = ctx.newValidator();
+//        ValidationResult result = validator.validateWithResult(condition);
+//
+//        if (result.isSuccessful()) {
+//            System.out.println("Validation Successful");
+//        }
+//        else {
+//            System.out.println("Validation failed");
+//        }
+//
+//        List<SingleValidationMessage> messages = result.getMessages();
+//        for (SingleValidationMessage next : messages) {
+//            System.out.println("Message:");
+//            System.out.println(" * Location: " + next.getLocationString());
+//            System.out.println(" * Severity: " + next.getSeverity());
+//            System.out.println(" * Message : " + next.getMessage());
+//        }
+//    }
 }
