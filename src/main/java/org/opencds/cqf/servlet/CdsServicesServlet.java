@@ -27,7 +27,7 @@ public class CdsServicesServlet extends BaseServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             // validate that we are dealing with JSON
-            if (!request.getContentType().equals("application/json")) {
+            if (!request.getContentType().startsWith("application/json")) {
                 throw new ServletException(String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
             }
             String baseUrl =

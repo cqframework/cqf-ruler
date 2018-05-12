@@ -64,7 +64,7 @@ public class JsonFieldResolution {
     }
 
     public static Boolean validateNull(JsonElement field, String fieldName, boolean required) {
-        if (field == null) {
+        if (field == null || field.isJsonNull()) {
             if (required) {
                 throw new MissingRequiredFieldException("The required field: " + fieldName + " is missing from the request");
             }
