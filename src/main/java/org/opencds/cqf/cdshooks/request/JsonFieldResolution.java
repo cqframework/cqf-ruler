@@ -63,8 +63,8 @@ public class JsonFieldResolution {
         throw new InvalidFieldTypeException("Expected JSON Object type for field " + field);
     }
 
-    public static Boolean validateNull(JsonElement field, String fieldName, boolean required) {
-        if (field == null || field.isJsonNull()) {
+    private static Boolean validateNull(JsonElement field, String fieldName, boolean required) {
+        if (field == null) {
             if (required) {
                 throw new MissingRequiredFieldException("The required field: " + fieldName + " is missing from the request");
             }
