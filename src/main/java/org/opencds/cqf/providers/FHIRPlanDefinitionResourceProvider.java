@@ -433,6 +433,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                         }
                         else {
                             Discovery discovery = getDiscovery(planDefinition);
+                            if (discovery == null) continue;
                             discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
                             discoveries.add(discovery);
                         }
@@ -440,6 +441,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                 }
                 else {
                     Discovery discovery = getDiscovery(planDefinition);
+                    if (discovery == null) continue;
                     discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
                     discoveries.add(discovery);
                 }
@@ -515,7 +517,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                 }
             }
         }
-        return new Discovery().setPlanDefinition(planDefinition);
+        return null;
     }
 
     @Search(allowUnknownParams=true)
