@@ -4,9 +4,12 @@ import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.gclient.IQuery;
 import ca.uhn.fhir.rest.gclient.TokenClientParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.*;
@@ -176,6 +179,7 @@ public class CdsHooksProviders {
         if (modelUri == null) {
             modelUri = "http://hl7.org/fhir";
         }
+        dataProvider.getFhirContext().getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
         dataProvider.setTerminologyProvider(jpaTermSvc);
         client = dataProvider.getFhirClient();
         context.registerDataProvider(modelUri, dataProvider);
@@ -197,6 +201,14 @@ public class CdsHooksProviders {
 
     public void resolvePrefetchDataProvider(List<Object> resources) {
         registerDataProvider(isDstu2() ? new PrefetchDataProviderDstu2(resources) : new PrefetchDataProviderStu3(resources), null);
+    }
+
+    public JsonObject nullifyPrefetch() {
+        JsonObject nullPrefetch = new JsonObject();
+        for (DiscoveryItem item : getDiscovery().getItems()) {
+            nullPrefetch.add(item.getItemNo(), JsonNull.INSTANCE);
+        }
+        return nullPrefetch;
     }
 
     public List<Object> search(DiscoveryItem discoveryItem, String patientId) {

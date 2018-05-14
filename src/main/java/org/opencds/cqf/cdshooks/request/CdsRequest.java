@@ -1,5 +1,6 @@
 package org.opencds.cqf.cdshooks.request;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Resource;
@@ -26,7 +27,7 @@ public abstract class CdsRequest {
     private Boolean applyCql;
     Context context;
     private Prefetch prefetch;
-    private JsonObject prefetchObject;
+    private JsonElement prefetchObject;
 
     public abstract void setContext(JsonObject context);
 
@@ -50,7 +51,9 @@ public abstract class CdsRequest {
         }
         setContext(JsonFieldResolution.getObjectField(requestJson, "context", true));
 
-        prefetchObject = JsonFieldResolution.getObjectField(requestJson, "prefetch", false);
+        if (requestJson.has("prefetch")) {
+            prefetchObject = requestJson.get("prefetch");
+        }
     }
 
     private boolean isFhirServerLocal() {
@@ -74,7 +77,9 @@ public abstract class CdsRequest {
         providers.resolveContextParameter(applyCql ? applyCqlToResources(contextResources, providers) : contextResources);
 
         // resolve prefetch urls and resources
-        prefetch = new Prefetch(prefetchObject, providers, context.getPatientId());
+        prefetch = prefetchObject.isJsonNull()
+                ? new Prefetch(providers.nullifyPrefetch(), providers, context.getPatientId())
+                : new Prefetch(JsonFieldResolution.getObjectField(requestJson, "prefetch", false), providers, context.getPatientId());
 
         // resolve prefetch data provider
         List<Object> prefetchResources = prefetch.getResources();

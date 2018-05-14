@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.instance.model.api.IAnyResource;
@@ -19,9 +20,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by Christopher Schuler on 7/17/2017.
- */
 public class JpaDataProvider extends FhirDataProviderStu3 {
 
     // need these to access the dao
