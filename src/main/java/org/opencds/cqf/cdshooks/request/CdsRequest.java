@@ -77,9 +77,15 @@ public abstract class CdsRequest {
         providers.resolveContextParameter(applyCql ? applyCqlToResources(contextResources, providers) : contextResources);
 
         // resolve prefetch urls and resources
-        prefetch = prefetchObject.isJsonNull()
-                ? new Prefetch(providers.nullifyPrefetch(), providers, context.getPatientId())
-                : new Prefetch(JsonFieldResolution.getObjectField(requestJson, "prefetch", false), providers, context.getPatientId());
+        if (prefetchObject == null) {
+            prefetch = new Prefetch(null, providers, context.getPatientId());
+        }
+        else if (prefetchObject.isJsonNull()) {
+            prefetch = new Prefetch(providers.nullifyPrefetch(), providers, context.getPatientId());
+        }
+        else {
+            prefetch = new Prefetch(JsonFieldResolution.getObjectField(requestJson, "prefetch", false), providers, context.getPatientId());
+        }
 
         // resolve prefetch data provider
         List<Object> prefetchResources = prefetch.getResources();
