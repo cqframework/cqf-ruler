@@ -83,10 +83,10 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
             if (ref.getReferenceElement().getIdPart().startsWith("#")) {
                 for (Resource resource : measure.getContained()) {
                     if (resource instanceof org.hl7.fhir.dstu3.model.Library
-                            && resource.getIdElement().getIdPart().equals(ref.getReferenceElement().getIdPart().substring(1))) {
-                        provider.resolveResourceProvider("Library")
-                                .getDao().getDao(org.hl7.fhir.dstu3.model.Library.class)
-                                .update((org.hl7.fhir.dstu3.model.Library) resource);
+                            && resource.getIdElement().getIdPart().equals(ref.getReferenceElement().getIdPart().substring(1)))
+                    {
+                        LibraryResourceProvider libraryResourceProvider = (LibraryResourceProvider) provider.resolveResourceProvider("Library");
+                        libraryResourceProvider.getDao().update((org.hl7.fhir.dstu3.model.Library) resource);
                     }
                 }
             }
