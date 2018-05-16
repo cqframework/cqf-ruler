@@ -1,8 +1,13 @@
 package org.opencds.cqf;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.primitive.IdDt;
+import org.hl7.fhir.ContentType;
 import org.hl7.fhir.dstu3.model.*;
 import org.junit.Assert;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 class MeasureEvaluationTests {
@@ -215,5 +220,38 @@ class MeasureEvaluationTests {
 
     void populationMeasureCOL() {
         validatePopulationMeasure("1997-01-01", "1997-12-31", "measure-col");
+    }
+
+    void bundleSourceDataMeasure_COL() {
+        InputStream is = MeasureEvaluationTests.class.getResourceAsStream("measure-evaluation/col-source-data-bundle.json");
+        Bundle bundle = (Bundle) FhirContext.forDstu3().newJsonParser().parseResource(new InputStreamReader(is));
+
+        Parameters inParams = new Parameters();
+        inParams.addParameter().setName("periodStart").setValue(new DateType("2014-01-01"));
+        inParams.addParameter().setName("periodEnd").setValue(new DateType("2014-12-31"));
+        inParams.addParameter().setName("sourceData").setResource(bundle);
+
+        Parameters outParams = server.ourClient
+                .operation()
+                .onInstance(new IdDt("Measure", "measure-col"))
+                .named("$evaluate-measure-with-source")
+                .withParameters(inParams)
+                .execute();
+
+        List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+
+        Assert.assertTrue(!response.isEmpty());
+
+        Parameters.ParametersParameterComponent component = response.get(0);
+
+        Assert.assertTrue(component.getResource() instanceof MeasureReport);
+
+        MeasureReport report = (MeasureReport) component.getResource();
+
+        for (MeasureReport.MeasureReportGroupComponent group : report.getGroup()) {
+            for (MeasureReport.MeasureReportGroupPopulationComponent population : group.getPopulation()) {
+                Assert.assertTrue(population.getCount() == 1);
+            }
+        }
     }
 }
