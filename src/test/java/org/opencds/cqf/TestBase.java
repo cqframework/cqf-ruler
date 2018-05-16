@@ -32,6 +32,7 @@ public class TestBase {
         measureTests.populationMeasureBCS();
         measureTests.populationMeasureCCS();
         measureTests.populationMeasureCOL();
+        measureTests.bundleSourceDataMeasure_COL();
     }
 
     @Test

@@ -21,17 +21,18 @@ public class BundleDataProviderStu3 extends FhirDataProviderStu3 {
         resourceMap = new HashMap<>();
 
         // populate map
-        if (sourceData.hasEntry()) {
-            for (Bundle.BundleEntryComponent entry : sourceData.getEntry()) {
-                if (entry.hasResource()) {
-                    Resource resource = entry.getResource();
-                    if (resourceMap.containsKey(resource.fhirType())) {
-                        resourceMap.get(resource.fhirType()).add(resource);
-                    }
-                    else {
-                        List<Object> resources = new ArrayList<>();
-                        resources.add(resource);
-                        resourceMap.put(resource.fhirType(), resources);
+        if (sourceData != null) {
+            if (sourceData.hasEntry()) {
+                for (Bundle.BundleEntryComponent entry : sourceData.getEntry()) {
+                    if (entry.hasResource()) {
+                        Resource resource = entry.getResource();
+                        if (resourceMap.containsKey(resource.fhirType())) {
+                            resourceMap.get(resource.fhirType()).add(resource);
+                        } else {
+                            List<Object> resources = new ArrayList<>();
+                            resources.add(resource);
+                            resourceMap.put(resource.fhirType(), resources);
+                        }
                     }
                 }
             }
