@@ -1,11 +1,15 @@
 package org.opencds.cqf;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.validation.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opencds.cqf.helpers.XlsxToValueSet;
 
 import java.io.*;
+import java.util.Date;
+import java.util.List;
 
 public class RulerHelperTests {
 
@@ -103,6 +107,7 @@ public class RulerHelperTests {
 //    @Test
 //    public void validationTest() {
 //        Condition condition = new Condition();
+//        condition.setId("condition-1");
 //        condition.setCode(
 //                new CodeableConcept().addCoding(
 //                        new Coding().setSystem("ICD-9-CM").setCode("428.21")
@@ -113,9 +118,20 @@ public class RulerHelperTests {
 //                .setSubject(new Reference().setReference("Patient/pneumo-true-2"))
 //                .setOnset(new DateTimeType().setValue(new Date()));
 //
+//        Bundle bundle = new Bundle();
+//        bundle.setType(Bundle.BundleType.TRANSACTION);
+//        bundle.addEntry(
+//                new Bundle.BundleEntryComponent().setResource(condition)
+//                        .setRequest(new Bundle.BundleEntryRequestComponent()
+//                                .setMethod(Bundle.HTTPVerb.PUT)
+//                                .setUrl("Condition/condition-1"))
+//        );
+//
 //        FhirContext ctx = FhirContext.forDstu3();
 //        FhirValidator validator = ctx.newValidator();
-//        ValidationResult result = validator.validateWithResult(condition);
+//        IValidatorModule module1 = new SchemaBaseValidator(ctx);
+//        validator.registerValidatorModule(module1);
+//        ValidationResult result = validator.validateWithResult(bundle);
 //
 //        if (result.isSuccessful()) {
 //            System.out.println("Validation Successful");
