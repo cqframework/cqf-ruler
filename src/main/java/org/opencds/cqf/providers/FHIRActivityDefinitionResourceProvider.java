@@ -13,6 +13,8 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.exceptions.ActivityDefinitionApplyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -23,6 +25,7 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
 
     private JpaDataProvider provider;
     private CqlExecutionProvider executionProvider;
+    private static final Logger logger = LoggerFactory.getLogger(FHIRPlanDefinitionResourceProvider.class );
 
     public FHIRActivityDefinitionResourceProvider(JpaDataProvider provider) {
         this.provider = provider;
@@ -42,6 +45,7 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
             throws InternalErrorException, FHIRException, ClassNotFoundException, IllegalAccessException,
             InstantiationException, ActivityDefinitionApplyException
     {
+        logger.info("apply on activity definition "+theId);
         ActivityDefinition activityDefinition = this.getDao().read(theId);
 
         return resolveActivityDefinition(activityDefinition, patientId, practitionerId, organizationId);
@@ -102,13 +106,20 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
                           but perhaps the "context" here should be the result resource?
                 */
                 Object value =
-                        executionProvider.evaluateInContext(activityDefinition, dynamicValue.getExpression(), patientId);
+                        executionProvider
+                            .evaluateInContext(activityDefinition, dynamicValue.getLanguage(), dynamicValue.getExpression(), patientId);
 
                 // TODO need to verify type... yay
                 if (value instanceof Boolean) {
                     value = new BooleanType((Boolean) value);
                 }
-                this.provider.setValue(result, dynamicValue.getPath(), value);
+                if (dynamicValue.hasPath() ){
+                    if ( dynamicValue.getPath().equals("$this") && result instanceof Resource) {
+                        result = (Resource) value;
+                    } else {
+                        this.provider.setValue(result, dynamicValue.getPath(), value);
+                    }
+                }
             }
         }
 
