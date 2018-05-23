@@ -105,7 +105,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
 
         Session session =
             new Session(planDefinition, carePlanBuilder, requestGroupBuilder, patientId, encounterId, practitionerId,
-                organizationId, userType, userLanguage, userTaskContext, setting, settingContext);
+                organizationId, userType, userLanguage, userTaskContext, setting, settingContext, null);
 
         // links
         if (planDefinition.hasRelatedArtifact()) {
@@ -320,7 +320,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         }
 
         Session session =
-            new Session(planDefinition, carePlanBuilder, requestGroupBuilder, patientId );
+            new Session(planDefinition, carePlanBuilder, requestGroupBuilder, patientId, context );
 
         resolveActions(planDefinition.getAction(), session, patientId, requestGroupBuilder, new ArrayList<>());
 
@@ -348,9 +348,13 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                     continue;
                 }
 
-                Object result = executionProvider
-                    .evaluateInContext(session.getPlanDefinition(), condition.getLanguage(), condition.getExpression(), session.getPatientId());
-//                    Object result = context.resolveExpressionRef(condition.getExpression()).getExpression().evaluate(context);
+                Object result = null;
+                if ( session.getContext()!= null ){
+                    result = session.getContext().resolveExpressionRef(condition.getExpression()).getExpression().evaluate(session.getContext());
+                } else {
+                    result = executionProvider
+                            .evaluateInContext(session.getPlanDefinition(), condition.getLanguage(), condition.getExpression(), session.getPatientId());
+                }
 
                 if (!(result instanceof Boolean)) {
                     continue;
@@ -466,26 +470,37 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                 // TODO BvdH Replace with proper dynamic value management
                 for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue : action.getDynamicValue()) {
                     if (dynamicValue.hasPath() && dynamicValue.hasExpression()) {
+
+                        Object result = null;
+                        if ( session.getContext()!= null ){
+                            result = session.getContext().resolveExpressionRef(dynamicValue.getExpression()).getExpression().evaluate(session.getContext());
+                        } else {
+                            result = executionProvider
+                                    .evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
+                        }
+
                         if (dynamicValue.getPath().endsWith("title")) { // summary
                             //String title = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
-                            String title = (String)executionProvider
-                                .evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
+//                            String title = (String)executionProvider
+//                                .evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
+                            String title = (String)result;
+//                    Object result = context.resolveExpressionRef(condition.getExpression()).getExpression().evaluate(context);
+
+
                             requestGroupActionBuilder.buildTitle(title);
                         }
                         else if (dynamicValue.getPath().endsWith("description")) { // detail
 //                                    String description = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
-                            String description = (String)executionProvider.evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
+//                            String description = (String)executionProvider.evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
+                            String description = (String)result;
                             requestGroupActionBuilder.buildDescripition(description);
                         }
                         else if (dynamicValue.getPath().endsWith("extension")) { // indicator
 //                                    String extension = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
-                            String extension = (String)executionProvider.evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
+//                            String extension = (String)executionProvider.evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
+                            String extension = (String)result;
                             requestGroupActionBuilder.buildExtension(extension);
                         } else {
-                            Object result =
-                                    executionProvider
-                                            .evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
-
                             // TODO is this correct or should &this refer to RequestGroup?
                             if (dynamicValue.hasPath() && dynamicValue.getPath().equals("$this"))
                             {
@@ -782,13 +797,14 @@ class Session {
     private final String userTaskContext;
     private final String setting;
     private final String settingContext;
+    private final Context context;
     private CarePlanBuilder carePlanBuilder;
     private String encounterId;
     private RequestGroupBuilder requestGroupBuilder;
 
     public Session(PlanDefinition planDefinition, CarePlanBuilder builder, RequestGroupBuilder requestGroupBuilder, String patientId, String encounterId,
                    String practitionerId, String organizationId, String userType, String userLanguage,
-                   String userTaskContext, String setting, String settingContext)
+                   String userTaskContext, String setting, String settingContext, Context context )
     {
         this.patientId = patientId;
         this.planDefinition = planDefinition;
@@ -802,11 +818,17 @@ class Session {
         this.userTaskContext = userTaskContext;
         this.setting = setting;
         this.settingContext = settingContext;
+        this.context = context;
     }
 
     public Session(PlanDefinition planDefinition, CarePlanBuilder carePlanBuilder, RequestGroupBuilder requestGroupBuilder, String patientId) {
-        this( planDefinition, carePlanBuilder, requestGroupBuilder, patientId, null, null, null, null, null, null, null, null );
+        this( planDefinition, carePlanBuilder, requestGroupBuilder, patientId, null, null, null, null, null, null, null, null, null );
     }
+
+    public Session(PlanDefinition planDefinition, CarePlanBuilder carePlanBuilder, RequestGroupBuilder requestGroupBuilder, String patientId, Context context) {
+        this( planDefinition, carePlanBuilder, requestGroupBuilder, patientId, null, null, null, null, null, null, null, null, context );
+    }
+
 
     public PlanDefinition getPlanDefinition() {
         return this.planDefinition;
@@ -862,5 +884,9 @@ class Session {
 
     public RequestGroupBuilder getRequestGroupBuilder() {
         return requestGroupBuilder;
+    }
+
+    public Context getContext() {
+        return this.context;
     }
 }
