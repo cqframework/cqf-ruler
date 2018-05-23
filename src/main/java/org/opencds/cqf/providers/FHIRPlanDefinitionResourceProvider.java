@@ -481,6 +481,29 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
 //                                    String extension = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
                             String extension = (String)executionProvider.evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
                             requestGroupActionBuilder.buildExtension(extension);
+                        } else {
+                            Object result =
+                                    executionProvider
+                                            .evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
+
+                            // TODO is this correct or should &this refer to RequestGroup?
+                            if (dynamicValue.hasPath() && dynamicValue.getPath().equals("$this"))
+                            {
+                                session.setCarePlan((CarePlan) result);
+                            }
+                            else {
+                                // TODO - likely need more date tranformations
+                                if (result instanceof DateTime) {
+                                    result =
+                                            new JavaDateBuilder()
+                                                    .buildFromDateTime((DateTime) result)
+                                                    .build();
+                                }
+                                else if (result instanceof String) {
+                                    result = new StringType((String) result);
+                                }
+                                provider.setValue(session.getCarePlan(), dynamicValue.getPath(), result);
+                            }
                         }
                     }
                 }

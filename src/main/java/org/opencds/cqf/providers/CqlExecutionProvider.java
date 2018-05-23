@@ -175,7 +175,8 @@ public class CqlExecutionProvider {
     public Object evaluateInContext(DomainResource instance, String language, String dynamicValue, String patientId) throws FHIRException {
         Object result = null;
         logger.info("Execute ("+language+") "+dynamicValue);
-        if ( language.equals("text/cql")) {
+
+        if ( language==null || language.equals("text/cql")) {
             result = evaluateInContext(instance,dynamicValue,patientId );
         } else if (language.equals("text/fhirpath")) {
             result = fhirPathEngine.evaluate( instance, dynamicValue );
