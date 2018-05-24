@@ -60,7 +60,7 @@ public class CarePlanToCdsCard {
         // filter out empty cards
         ArrayList<CdsCard> result = new ArrayList<>();
         for ( CdsCard card: cards ){
-            if ( card.hasSummary() ){
+            if ( card.hasSummary() /* && card.hasIndicator() */ ){
                 result.add( card );
             }
         }

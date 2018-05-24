@@ -30,18 +30,13 @@ public class BmiRequired {
     static String planDefinitionId =  "bmiProtocol";
     private static Practitioner practitioner;
 
-    //    private Practitioner practitioner;
-//    private Patient patient;
-//    private Encounter encounter;
     private String cqlString;
     private PlanDefinition planDefinition;
     private PlanDefinition planDefinitionPlain;
     private ActivityDefinition createBmiAd;
 
-    @BeforeClass
-    public static void init() throws Exception {
-        testServer = new TestServer();
-        testServer.start();
+    public BmiRequired(TestServer testServer) throws IOException {
+        this.testServer = testServer;
         testServer.putResource("general-fhirhelpers-3.json", "FHIRHelpers");
         List<IBaseResource> resources = loadResources();
         for (IBaseResource baseResource : resources) {
@@ -49,12 +44,6 @@ public class BmiRequired {
         }
     }
 
-    @AfterClass()
-    public static void stopServer() throws Exception {
-        testServer.stop();
-    }
-
-    @Test()
     public void testPatientNoData() throws Exception {
         Patient      patient      = new PatientBuilder("BMI-Pa1", "1980-01-15", practitioner ).build() ;
         Encounter    encounter    = new EncounterBuilder( "BMI-Enc", patient ).build();
@@ -71,7 +60,6 @@ public class BmiRequired {
 
     }
 
-    @Test()
     public void testPatientWeightData() throws Exception {
         Patient      patient           = new PatientBuilder("BMI-Pa2", "1980-02-15", practitioner ).build() ;
         Encounter    encounter         = new EncounterBuilder( "BMI-Enc", patient ).build();
@@ -90,7 +78,6 @@ public class BmiRequired {
     }
 
 
-    @Test()
     public void testPatientHeightData() throws Exception {
         Patient      patient           = new PatientBuilder("BMI-Pa3", "1980-03-15", practitioner ).build() ;
         Encounter    encounter         = new EncounterBuilder( "BMI-Enc", patient ).build();
@@ -108,7 +95,6 @@ public class BmiRequired {
         testServer.putResource(carePlan);
     }
 
-    @Test()
     public void testPatientWeightHeightData() throws Exception {
         Patient      patient           = new PatientBuilder("BMI-Pa4", "1980-04-15", practitioner ).build() ;
         Encounter    encounter         = new EncounterBuilder( "BMI-Enc", patient ).build();
@@ -360,7 +346,7 @@ public class BmiRequired {
         return resources;
     }
 
-    public Parameters getParameters( Patient patient) {
+    private Parameters getParameters( Patient patient) {
         Parameters parameters = new Parameters();
         parameters.addParameter().setName("patient").setValue(new StringType("Patient/"+patient.getId()));
         parameters.addParameter().setName("practitioner").setValue(new StringType("Practitioner/performance"));
