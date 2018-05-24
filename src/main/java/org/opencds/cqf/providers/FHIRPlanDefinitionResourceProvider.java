@@ -342,6 +342,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
 
     private RequestGroup.RequestGroupActionComponent resolveAction(Session session, String patientId, PlanDefinition.PlanDefinitionActionComponent action) throws FHIRException {
         boolean conditionsMet = true;
+        logger.info("Process action "+action.getTitle());
         for ( PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {
             if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
                 if (!condition.hasExpression()) {
@@ -363,6 +364,8 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                 if (!(Boolean) result) {
                     conditionsMet = false;
                 }
+                logger.info("Check Condition ("+condition.getExpression()+") => "+conditionsMet);
+
             }
         }
         if (conditionsMet) {

@@ -3,9 +3,10 @@ package org.opencds.cqf.cds;
 import ca.uhn.fhir.model.primitive.IdDt;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opencds.cqf.TestUtil;
+import org.opencds.cqf.TestServer;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.codesystems.LibraryType;
 import org.hl7.fhir.dstu3.model.codesystems.PlanDefinitionType;
@@ -19,14 +20,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
 public class BmiRequired {
-    String rootDir = "bmi";
-    private Practitioner practitioner;
-    private Patient patient;
-    private Encounter encounter;
+    private static TestServer testServer;
+    static String rootDir = "bmi";
+    static String planDefinitionId =  "bmiProtocol";
+    private static Practitioner practitioner;
+
+    //    private Practitioner practitioner;
+//    private Patient patient;
+//    private Encounter encounter;
     private String cqlString;
     private PlanDefinition planDefinition;
     private PlanDefinition planDefinitionPlain;
@@ -34,26 +40,100 @@ public class BmiRequired {
 
     @BeforeClass
     public static void init() throws Exception {
-        TestUtil.startServer();
-    }
-
-//    @AfterClass()
-//    public static void stopServer() throws Exception {
-//        TestUtil.stopServer();
-//    }
-
-    @Test()
-    public void testBasicPd() throws Exception {
+        testServer = new TestServer();
+        testServer.start();
+        testServer.putResource("general-fhirhelpers-3.json", "FHIRHelpers");
         List<IBaseResource> resources = loadResources();
         for (IBaseResource baseResource : resources) {
-            TestUtil.putResource(baseResource);
+            testServer.putResource(baseResource);
         }
+    }
 
-        Parameters outParams = TestUtil.getOurClient()
+    @AfterClass()
+    public static void stopServer() throws Exception {
+        testServer.stop();
+    }
+
+    @Test()
+    public void testPatientNoData() throws Exception {
+        Patient      patient      = new PatientBuilder("BMI-Pa1", "1980-01-15", practitioner ).build() ;
+        Encounter    encounter    = new EncounterBuilder( "BMI-Enc", patient ).build();
+
+        testServer.putResource( patient );
+
+        CarePlan carePlan = applyPlanDefinition(patient);
+        carePlan.setId("bmiCarePlanHeightWeight");
+
+        RequestGroup requestGroup = getRequestGroup( carePlan );
+        assertEquals( 2, requestGroup.getAction().size() );
+
+        testServer.putResource(carePlan);
+
+    }
+
+    @Test()
+    public void testPatientWeightData() throws Exception {
+        Patient      patient           = new PatientBuilder("BMI-Pa2", "1980-02-15", practitioner ).build() ;
+        Encounter    encounter         = new EncounterBuilder( "BMI-Enc", patient ).build();
+        Observation  weigthObservation = createWeightObservation( patient, "BMI-Obs-Pa2-1", 80 );
+
+        testServer.putResource( patient );
+        testServer.putResource(weigthObservation);
+
+        CarePlan carePlan = applyPlanDefinition(patient);
+        carePlan.setId("bmiCarePlanWeight");
+
+        RequestGroup requestGroup = getRequestGroup( carePlan );
+        assertEquals( 1, requestGroup.getAction().size() );
+
+        testServer.putResource(carePlan);
+    }
+
+
+    @Test()
+    public void testPatientHeightData() throws Exception {
+        Patient      patient           = new PatientBuilder("BMI-Pa3", "1980-03-15", practitioner ).build() ;
+        Encounter    encounter         = new EncounterBuilder( "BMI-Enc", patient ).build();
+        Observation  heigthObservation = createHeightObservation( patient, "BMI-Obs-Pa3-1", 1.80 );
+
+        testServer.putResource( patient );
+        testServer.putResource(heigthObservation);
+
+        CarePlan carePlan = applyPlanDefinition(patient);
+        carePlan.setId("bmiCarePlanHeight");
+
+        RequestGroup requestGroup = getRequestGroup(carePlan);
+        assertEquals( 1, requestGroup.getAction().size() );
+
+        testServer.putResource(carePlan);
+    }
+
+    @Test()
+    public void testPatientWeightHeightData() throws Exception {
+        Patient      patient           = new PatientBuilder("BMI-Pa4", "1980-04-15", practitioner ).build() ;
+        Encounter    encounter         = new EncounterBuilder( "BMI-Enc", patient ).build();
+        Observation  weigthObservation = createWeightObservation( patient, "BMI-Obs-Pa4-1", 70 );
+        Observation  heigthObservation = createHeightObservation( patient, "BMI-Obs-Pa4-2", 1.70 );
+
+        testServer.putResource( patient );
+        testServer.putResource( weigthObservation);
+        testServer.putResource( heigthObservation);
+
+        CarePlan carePlan = applyPlanDefinition(patient);
+        carePlan.setId("bmiCarePlanHeightWeight");
+
+        RequestGroup requestGroup = getRequestGroup(carePlan);
+        assertEquals( 1, requestGroup.getAction().size() );
+
+        testServer.putResource(carePlan);
+    }
+
+    private CarePlan applyPlanDefinition(Patient patient) {
+        Parameters outParams = testServer.getOurClient()
             .operation()
-            .onInstance(new IdDt("PlanDefinition", getPlanDefinitionId()))
+            .onInstance(new IdDt("PlanDefinition", planDefinitionId ))
             .named("$apply")
-            .withParameters(getParameters())
+            .withParameters(getParameters( patient ))
             .useHttpGet()
             .execute();
 
@@ -68,10 +148,9 @@ public class BmiRequired {
         CarePlan carePlan = (CarePlan) resource;
 
         assertNotNull( carePlan );
-        carePlan.setId("bmiCarePlan");
-        TestUtil.putResource(patient);
-        TestUtil.putResource(carePlan);
+        assertTrue( carePlan.hasActivity() );
 
+        return carePlan;
     }
 
     private Observation createHeightObservation(Patient patient, String id, double height) {
@@ -122,16 +201,39 @@ public class BmiRequired {
         return observation;
     }
 
+    private RequestGroup getRequestGroup(CarePlan carePlan) {
+        assertTrue( carePlan.hasActivity() );
+        Reference reference = carePlan.getActivity().get(0).getReference();
+
+        Resource resource = getContainedResource( carePlan, reference.getReference() );
+        assertTrue( resource instanceof  RequestGroup );
+        RequestGroup requestGroup = (RequestGroup)resource;
+
+        return requestGroup;
+    }
+
+    private Resource getContainedResource(CarePlan carePlan, String reference) {
+        List<Resource> resources = carePlan.getContained().stream()
+                .filter( resource -> resource.hasId() )
+                .filter( resource -> resource.getId().equals(reference))
+                .collect(Collectors.toList());
+        assertEquals( 1, resources.size());
+
+        return resources.get(0);
+    }
 
     ///////////////////////////////////////////////////////////////////////
 
-    public List<IBaseResource> loadResources() throws IOException {
+    public static List<IBaseResource> loadResources() throws IOException {
         ArrayList<IBaseResource> resources = new ArrayList<>();
         String baseDir = rootDir;
 
+        practitioner = new PractitionerBuilder("BMI-Pr", "1969-05-01").build();
+        resources.add( practitioner );
+
         //////////////////////////////////////////////////////////
         URL url = Resources.getResource(baseDir+"/bmi_library.cql");
-        cqlString = Resources.toString(url, Charsets.UTF_8);
+        String cqlString = Resources.toString(url, Charsets.UTF_8);
         Library library = new LibraryBuilder()
             .buildId("bmi")
             .buildVersion("0.1.0")
@@ -143,7 +245,7 @@ public class BmiRequired {
         resources.add(library);
 
         //////////////////////////////////////////////\
-        createBmiAd =
+        ActivityDefinition createBmiAd =
             new ActivityDefinitionBuilder()
                 .buildId( "createBmi")
                 .buildNameAndTitle("Creates BMI Observation")
@@ -195,8 +297,8 @@ public class BmiRequired {
         resources.add(createHeightPrAd);
 
         ////////////////////////////////////////////\
-        planDefinition = (PlanDefinition) new PlanDefinition();
-        planDefinition.setId(getPlanDefinitionId());
+        PlanDefinition planDefinition = (PlanDefinition) new PlanDefinition();
+        planDefinition.setId(planDefinitionId);
         planDefinition
             .setVersion("0.1.0")
             .setName("BMI required")
@@ -254,42 +356,15 @@ public class BmiRequired {
         resources.add(planDefinition);
 
         ///////////////////////////////////////////////////////////
-        practitioner = new PractitionerBuilder("BMI-Pr1", "1969-05-23").build();
-        patient      = new PatientBuilder("BMI-Pa1", "1980-03-15", practitioner ).build() ;
-        encounter    = new EncounterBuilder( "BMI-Enc", patient ).build();
-        resources.add(practitioner);
-        resources.add(patient);
-        resources.add(encounter);
 
         return resources;
     }
 
-    public Parameters getParameters() {
+    public Parameters getParameters( Patient patient) {
         Parameters parameters = new Parameters();
         parameters.addParameter().setName("patient").setValue(new StringType("Patient/"+patient.getId()));
         parameters.addParameter().setName("practitioner").setValue(new StringType("Practitioner/performance"));
         return parameters;
     }
-
-    public String getPlanDefinitionId() {
-        return "bmiProtocol";
-    }
-
-    public Practitioner getPractitioner() {
-        return practitioner;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public Encounter getEncounter() {
-        return encounter;
-    }
-
-    public String getCqlString() {
-        return cqlString;
-    }
-
 
 }

@@ -35,7 +35,7 @@ define lastHeight:
   normalizeLenght( Last( mostRecentObservation( 'http://loinc.org', '8302-2') ).value )
 
 define getWeightObservations:
-  mostRecentObservation( 'http://loinc.org', '8302-2')
+  mostRecentObservation( 'http://snomed.info/sct', '27113001' )
 
 define lastWeight:
   Last( mostRecentObservation( 'http://snomed.info/sct', '27113001') ).value.value

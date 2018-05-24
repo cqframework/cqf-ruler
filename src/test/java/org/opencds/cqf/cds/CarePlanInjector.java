@@ -1,9 +1,10 @@
-package org.opencds.cqf;
+package org.opencds.cqf.cds;
 
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.codesystems.*;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.junit.Test;
+import org.opencds.cqf.TestServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,16 +12,19 @@ import java.util.List;
 public class CarePlanInjector {
 
     @Test
-    public void injectCarePlan() {
+    public void injectCarePlan() throws Exception {
+        TestServer testServer = new TestServer();
+        testServer.start();
         getResources().stream().forEach(
             resource-> {
                 try {
-                    TestUtil.putResource(resource);
+                    testServer.putResource(resource);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         );
+        testServer.stop();
     }
 
     /****************************************************
