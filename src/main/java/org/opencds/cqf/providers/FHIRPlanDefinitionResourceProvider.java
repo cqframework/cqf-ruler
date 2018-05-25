@@ -28,7 +28,6 @@ import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.runtime.DateTime;
-import org.opencds.cqf.exceptions.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,11 +84,6 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         if (organizationId != null) carePlanBuilder.buildAuthor(new Reference(organizationId));
         if (userLanguage != null) carePlanBuilder.buildLanguage(userLanguage);
 
-//        RequestGroupBuilder requestGroupBuilder = new RequestGroupBuilder()
-//            .buildStatus( RequestGroup.RequestStatus.ACTIVE)
-//            .buildId("#requestgroup");
-
-//        CarePlanBuilder carePlanBuilder = new CarePlanBuilder();
         RequestGroupBuilder requestGroupBuilder = new RequestGroupBuilder()
             .buildStatus( RequestGroup.RequestStatus.ACTIVE)
             .buildId("#requestgroup")
@@ -129,14 +123,12 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
             requestGroupBuilder.buildExtension(extensions);
         }
 
-//
-        resolveActions(planDefinition.getAction(), session, patientId, requestGroupBuilder, new ArrayList<>());;
+        resolveActions(planDefinition.getAction(), session, patientId, requestGroupBuilder, new ArrayList<>());
 
         CarePlanActivityBuilder carePlanActivityBuilder = new CarePlanActivityBuilder();
         carePlanActivityBuilder.buildReferenceTarget(requestGroupBuilder.build());
         carePlanBuilder.buildActivity(carePlanActivityBuilder.build());
 
-//        return carePlanBuilder.build();
         //////////////////////////////////////////////////////////
 
         carePlanBuilder
@@ -147,149 +139,10 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
             )
             .buildContained( requestGroupBuilder.build() );
 
-//
-//        return resolveActions(session);
         return carePlanBuilder.build();
 
     }
 
-//    private CarePlan resolveActions(Session session) {
-//        for (PlanDefinition.PlanDefinitionActionComponent action : session.getPlanDefinition().getAction()) {
-//
-//
-//            // TODO - Apply input/output dataRequirements?
-//            if (meetsConditions(session, action)) {
-//                resolveDefinition(session, action);
-//                resolveDynamicActions(session, action);
-//            }
-//        }
-//
-//        return session.getCarePlan();
-//    }
-//
-//    private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
-//        if (action.hasDefinition()) {
-//            logger.debug("Resolving definition "+ action.getDefinition().getReference());
-//            Reference definition = action.getDefinition();
-//            if (definition.getReference().startsWith(session.getPlanDefinition().fhirType())) {
-//                logger.error("Currently cannot resolve nested PlanDefinitions");
-//                throw new NotImplementedException("Plan Definition refers to sub Plan Definition, this is not yet supported");
-//            }
-//
-//            else {
-//                FHIRActivityDefinitionResourceProvider activitydefinitionProvider = new FHIRActivityDefinitionResourceProvider(provider);
-//                Resource result;
-//                try {
-//                    if (action.getDefinition().getReferenceElement().getIdPart().startsWith("#")) {
-//                        result = activitydefinitionProvider.resolveActivityDefinition(
-//                                (ActivityDefinition) resolveContained(session.getPlanDefinition(),
-//                                        action.getDefinition().getReferenceElement().getIdPart()),
-//                                session.getPatientId(), session.getPractionerId(), session.getOrganizationId()
-//                        );
-//                    }
-//                    else {
-//                        result = activitydefinitionProvider.apply(
-//                                new IdType(action.getDefinition().getReferenceElement().getIdPart()),
-//                                session.getPatientId(),
-//                                session.getEncounterId(),
-//                                session.getPractionerId(),
-//                                session.getOrganizationId(),
-//                                null,
-//                                session.getUserLanguage(),
-//                                session.getUserTaskContext(),
-//                                session.getSetting(),
-//                                session.getSettingContext()
-//                        );
-//                    }
-//
-//                    if (result.getId() == null) {
-//                        logger.warn("ActivityDefintion %s returned resource with no id, setting one", action.getDefinition().getReferenceElement().getIdPart());
-//                        result.setId( UUID.randomUUID().toString() );
-//                    }
-//                    session.getCarePlanBuilder()
-//                            .buildContained(result)
-//                            .buildActivity(
-//                                    new CarePlanActivityBuilder()
-//                                            .buildReference( new Reference("#"+result.getId()) )
-//                                            .build()
-//                            );
-//                } catch (Exception e) {
-//                    logger.error("ERROR: ActivityDefinition %s could not be applied and threw exception %s", action.getDefinition(), e.toString());
-//                }
-//            }
-//        }
-//    }
-//
-//    private void resolveDynamicActions(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
-//        for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue: action.getDynamicValue())
-//        {
-//            logger.info("Resolving dynamic value %s %s", dynamicValue.getPath(), dynamicValue.getExpression());
-//            if (dynamicValue.hasExpression()) {
-//                Object result =
-//                        executionProvider
-//                                .evaluateInContext(session.getPlanDefinition(), dynamicValue.getExpression(), session.getPatientId());
-//
-//                if (dynamicValue.hasPath() && dynamicValue.getPath().equals("$this"))
-//                {
-//                    session.setCarePlan((CarePlan) result);
-//                }
-//
-//                else {
-//
-//                    // TODO - likely need more date tranformations
-//                    if (result instanceof DateTime) {
-//                        result =
-//                                new JavaDateBuilder()
-//                                        .buildFromDateTime((DateTime) result)
-//                                        .build();
-//                    }
-//
-//                    else if (result instanceof String) {
-//                        result = new StringType((String) result);
-//                    }
-//
-//                    provider.setValue(session.getCarePlan(), dynamicValue.getPath(), result);
-//                }
-//            }
-//        }
-//    }
-
-//    private Boolean meetsConditions(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
-//        for (PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {
-//            // TODO start
-//            // TODO stop
-//            if (condition.hasDescription()) {
-//                logger.info("Resolving condition with description: " + condition.getDescription());
-//            }
-//            if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
-//                if (!condition.getLanguage().equals("text/cql")) {
-//                    logger.warn("An action language other than CQL was found: " + condition.getLanguage());
-//                    continue;
-//                }
-//
-//                if (!condition.hasExpression()) {
-//                    logger.error("Missing condition expression");
-//                    throw new RuntimeException("Missing condition expression");
-//                }
-//
-//                logger.info("Evaluating action condition expression " + condition.getExpression());
-//                String cql = condition.getExpression();
-//                Object result = executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
-//
-//                if (!(result instanceof Boolean)) {
-//                    logger.warn("The condition returned a non-boolean value: " + result.getClass().getSimpleName());
-//                    continue;
-//                }
-//
-//                if (!(Boolean) result) {
-//                    logger.info("The result of condition expression %s is false", condition.getExpression());
-//                    return false;
-//                }
-//            }
-//        }
-//
-//        return true;
-//    }
 
     // For library use
     public CarePlan resolveCdsHooksPlanDefinition(Context context, PlanDefinition planDefinition, String patientId) throws FHIRException {
@@ -337,7 +190,6 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         for (PlanDefinition.PlanDefinitionActionComponent action : actions) {
             requestGroupBuilder.buildAction( resolveAction(session, patientId, action) );
         }
-//        requestGroupBuilder.buildAction(new ArrayList<>(actionComponents));
     }
 
     private RequestGroup.RequestGroupActionComponent resolveAction(Session session, String patientId, PlanDefinition.PlanDefinitionActionComponent action) throws FHIRException {
@@ -425,10 +277,6 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                         ReferenceBuilder referenceBuilder = new ReferenceBuilder();
                         referenceBuilder.buildDisplay(activityDefinition.getDescription());
                         requestGroupActionBuilder.buildResource(referenceBuilder.build());
-
-//                        if (activityDefinition.hasDescription()) {
-//                            requestGroupActionBuilder.buildDescripition(activityDefinition.getDescription());
-//                        }
                     }
 
                     // TODO - fix this
@@ -449,19 +297,6 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                         throw new RuntimeException("Error applying ActivityDefinition " + e.getMessage());
                     }
 
-//                            BaseFhirDataProvider provider = (BaseFhirDataProvider) context.resolveDataProvider(new QName("http://hl7.org/fhir", ""));
-//                            Parameters inParams = new Parameters();
-//                            inParams.addParameter().setName("patient").setValue(new StringType(patientId));
-//                            Parameters outParams = provider.getFhirClient()
-//                                    .operation()
-//                                    .onInstance(new IdDt("ActivityDefinition", action.getDefinition().getReferenceElement().getIdPart()))
-//                                    .named("$apply")
-//                                    .withParameters(inParams)
-//                                    .useHttpGet()
-//                                    .execute();
-//
-//                            List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
-//                            Resource resource = response.get(0).getResource().setId(UUID.randomUUID().toString());
                     requestGroupActionBuilder.buildResourceTarget(resource);
                     session.getCarePlanBuilder().buildContained(resource);
                     requestGroupActionBuilder.buildResource(new ReferenceBuilder().buildReference("#"+resource.getId()).build());
@@ -474,7 +309,7 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                 for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue : action.getDynamicValue()) {
                     if (dynamicValue.hasPath() && dynamicValue.hasExpression()) {
 
-                        Object result = null;
+                        Object result;
                         if ( session.getContext()!= null ){
                             result = session.getContext().resolveExpressionRef(dynamicValue.getExpression()).getExpression().evaluate(session.getContext());
                         } else {
@@ -482,25 +317,16 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                                     .evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
                         }
 
+                        // TODO address this in the standard or change
                         if (dynamicValue.getPath().endsWith("title")) { // summary
-                            //String title = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
-//                            String title = (String)executionProvider
-//                                .evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
                             String title = (String)result;
-//                    Object result = context.resolveExpressionRef(condition.getExpression()).getExpression().evaluate(context);
-
-
                             requestGroupActionBuilder.buildTitle(title);
                         }
                         else if (dynamicValue.getPath().endsWith("description")) { // detail
-//                                    String description = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
-//                            String description = (String)executionProvider.evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
                             String description = (String)result;
                             requestGroupActionBuilder.buildDescripition(description);
                         }
                         else if (dynamicValue.getPath().endsWith("extension")) { // indicator
-//                                    String extension = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
-//                            String extension = (String)executionProvider.evaluateInContext(session.getPlanDefinition(), dynamicValue.getLanguage(), dynamicValue.getExpression(), session.getPatientId());
                             String extension = (String)result;
                             requestGroupActionBuilder.buildExtension(extension);
                         } else {
@@ -532,18 +358,6 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
             return requestGroupActionBuilder.build();
         }
         return null;
-    }
-
-    public Resource resolveContained(DomainResource resource, String id) {
-        for (Resource res : resource.getContained()) {
-            if (res.hasIdElement()) {
-                if (res.getIdElement().getIdPart().equals(id)) {
-                    return res;
-                }
-            }
-        }
-
-        throw new RuntimeException(String.format("Resource %s does not contain resource with id %s", resource.fhirType(), id));
     }
 
     private Map<String, Pair<PlanDefinition, Discovery> > discoveryCache = new HashMap<>();
@@ -624,15 +438,6 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                                     if (params.getParameterTypeSpecifier() instanceof ListTypeSpecifier) {
                                         context.setParameter(null, params.getName(), new ArrayList<>());
                                     }
-//                                    else if (params.getParameterTypeSpecifier() instanceof IntervalTypeSpecifier) {
-//                                        context.setParameter(null, params.getName(), new Interval(null, true, null, true));
-//                                    }
-//                                    else if (params.getParameterTypeSpecifier() instanceof TupleTypeSpecifier) {
-//                                        context.setParameter(null, params.getName(), new Tuple());
-//                                    }
-//                                    else {
-//                                        context.setParameter(null, params.getName(), new Object());
-//                                    }
                                 }
                             }
                             for (ExpressionDef def : library.getStatements().getDef()) {
