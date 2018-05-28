@@ -2,6 +2,7 @@ package org.opencds.cqf;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.primitive.IdDt;
+import org.hl7.fhir.ContentType;
 import org.hl7.fhir.dstu3.model.*;
 import org.junit.Assert;
 

@@ -3,7 +3,7 @@
 
     <groupId>org.opencds.cqf</groupId>
     <artifactId>cqf-ruler</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.2-SNAPSHOT</version>
 
     <properties>
         <p.type>war</p.type>
@@ -31,13 +31,13 @@
         <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>cql-engine</artifactId>
-            <version>1.2.39-SNAPSHOT</version>
+            <version>1.2.41-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>cql-engine-fhir</artifactId>
-            <version>1.2.39-SNAPSHOT</version>
+            <version>1.2.41-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -394,6 +394,22 @@
                 </configuration>
             </plugin>
 
+            <!-- Use when publishing -->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-jar-plugin</artifactId>-->
+                <!--<version>3.1.0</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>make-a-jar</id>-->
+                        <!--<phase>compile</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>test-jar</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -480,19 +496,20 @@
                 </configuration>
             </plugin>
 
+            <!-- Use when publishing -->
             <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-gpg-plugin</artifactId>-->
-            <!--<version>1.6</version>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<id>sign-artifacts</id>-->
-            <!--<phase>verify</phase>-->
-            <!--<goals>-->
-            <!--<goal>sign</goal>-->
-            <!--</goals>-->
-            <!--</execution>-->
-            <!--</executions>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-gpg-plugin</artifactId>-->
+                <!--<version>1.6</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>sign-artifacts</id>-->
+                        <!--<phase>verify</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>sign</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
             <!--</plugin>-->
 
             <plugin>
