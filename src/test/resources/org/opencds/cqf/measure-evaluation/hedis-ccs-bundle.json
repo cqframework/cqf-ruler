@@ -115,10 +115,7 @@
         "description": "Cervical Cancer Screening. Cohort Definition",
         "topic": [
           {
-            "coding": {
-              "system": "http://hl7.org/fhir/c80-doc-typecodes",
-              "code": "57024-2"
-            }
+            "text": "Preventive Care and Screening"
           }
         ],
         "library": [
@@ -133,6 +130,7 @@
             }
           ]
         },
+        "ImprovementNotation": "Improvement noted as an increase in rate",
         "group": [
           {
             "population": [

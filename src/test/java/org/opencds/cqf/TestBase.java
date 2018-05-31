@@ -33,6 +33,7 @@ public class TestBase {
         measureTests.populationMeasureCCS();
         measureTests.populationMeasureCOL();
         measureTests.bundleSourceDataMeasure_COL();
+        measureTests.careGapTestBCS();
     }
 
     @Test

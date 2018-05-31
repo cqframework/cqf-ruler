@@ -5,6 +5,7 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import org.hl7.fhir.ContentType;
 import org.hl7.fhir.dstu3.model.*;
 import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -253,5 +254,33 @@ class MeasureEvaluationTests {
                 Assert.assertTrue(population.getCount() == 1);
             }
         }
+    }
+
+    void careGapTestBCS() {
+        Parameters inParams = new Parameters();
+        inParams.addParameter().setName("patient").setValue(new StringType("Patient/Patient-6484"));
+        inParams.addParameter().setName("topic").setValue(new StringType("Preventive Care and Screening"));
+        inParams.addParameter().setName("periodStart").setValue(new DateType("1997-01-01"));
+        inParams.addParameter().setName("periodEnd").setValue(new DateType("1997-12-31"));
+
+        Parameters outParams = server.ourClient
+                .operation()
+                .onInstance(new IdDt("Measure", "measure-ccs"))
+                .named("$care-gaps")
+                .withParameters(inParams)
+                .useHttpGet()
+                .execute();
+
+        List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+
+        Assert.assertTrue(!response.isEmpty());
+
+        Parameters.ParametersParameterComponent component = response.get(0);
+
+        Assert.assertTrue(component.getResource() instanceof Bundle);
+
+        Bundle bundle = (Bundle) component.getResource();
+
+        Assert.assertTrue(bundle.hasEntry() && bundle.getEntry().size() == 3);
     }
 }
