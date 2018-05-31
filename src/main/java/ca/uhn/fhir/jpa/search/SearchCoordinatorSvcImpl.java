@@ -161,7 +161,7 @@ public class SearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
             }
 
             try {
-                Thread.sleep(5);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 // ignore
             }
@@ -637,7 +637,7 @@ public class SearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
                 if (keepWaiting) {
                     ourLog.info("Waiting, as we only have {} results", mySyncedPids.size());
                     try {
-                        Thread.sleep(5);
+                        Thread.sleep(1);
                     } catch (InterruptedException theE) {
                         // ignore
                     }

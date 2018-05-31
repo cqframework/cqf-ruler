@@ -3,6 +3,7 @@ package org.opencds.cqf.providers;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.model.api.IResource;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.*;
@@ -11,6 +12,7 @@ import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.LibraryManager;
@@ -20,6 +22,8 @@ import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
@@ -69,7 +73,7 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
             @OptionalParam(name="user") String user,
             @OptionalParam(name="pass") String pass) throws InternalErrorException, FHIRException
     {
-        Pair<Measure, Context> measureSetup = setup(measureRef, theId, periodStart, periodEnd, source, user, pass);
+        Pair<Measure, Context> measureSetup = setup(measureRef == null ? "" : measureRef, theId, periodStart, periodEnd, source, user, pass);
         measureSetup.getRight().registerDataProvider("http://hl7.org/fhir", provider);
 
 
@@ -98,7 +102,7 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
         if (periodStart == null || periodEnd == null) {
             throw new IllegalArgumentException("periodStart and periodEnd are required for measure evaluation");
         }
-        Pair<Measure, Context> measureSetup = setup(null, theId, periodStart, periodEnd, null, null, null);
+        Pair<Measure, Context> measureSetup = setup("", theId, periodStart, periodEnd, null, null, null);
         BundleDataProviderStu3 bundleProvider = new BundleDataProviderStu3(sourceData);
         bundleProvider.setTerminologyProvider(provider.getTerminologyProvider());
         measureSetup.getRight().registerDataProvider("http://hl7.org/fhir", bundleProvider);
@@ -106,15 +110,127 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
         return evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), "");
     }
 
+    @Operation(name = "$care-gaps", idempotent = true)
+    public Bundle careGapsReport(
+            @IdParam IdType theId,
+            @RequiredParam(name="periodStart") String periodStart,
+            @RequiredParam(name="periodEnd") String periodEnd,
+            @RequiredParam(name="topic") String topic,
+            @RequiredParam(name="patient") String patientRef
+    ) {
+        List<IBaseResource> measures = getDao().search(new SearchParameterMap().add("topic", new TokenParam().setModifier(TokenParamModifier.TEXT).setValue(topic))).getResources(0, 1000);
+        Bundle careGapReport = new Bundle();
+        careGapReport.setType(Bundle.BundleType.DOCUMENT);
+
+        Composition composition = new Composition();
+        // TODO - this is a placeholder code for now ... replace with preferred code once identified
+        CodeableConcept typeCode = new CodeableConcept().addCoding(new Coding().setSystem("http://loinc.org").setCode("57024-2"));
+        composition.setStatus(Composition.CompositionStatus.FINAL)
+                .setType(typeCode)
+                .setSubject(new Reference(patientRef.startsWith("Patient/") ? patientRef : "Patient/" + patientRef))
+                .setTitle(topic + " Care Gap Report");
+
+        List<MeasureReport> reports = new ArrayList<>();
+        MeasureReport report = new MeasureReport();
+        for (IBaseResource resource : measures) {
+            Composition.SectionComponent section = new Composition.SectionComponent();
+
+            Measure measure = (Measure) resource;
+            section.addEntry(new Reference(measure.getIdElement().getResourceType() + "/" + measure.getIdElement().getIdPart()));
+            if (measure.hasTitle()) {
+                section.setTitle(measure.getTitle());
+            }
+            String improvementNotation = "increase"; // defaulting to "increase"
+            if (measure.hasImprovementNotation()) {
+                improvementNotation = measure.getImprovementNotation();
+                section.setText(
+                        new Narrative()
+                                .setStatus(Narrative.NarrativeStatus.GENERATED)
+                                .setDiv(new XhtmlNode().setValue(improvementNotation))
+                );
+            }
+
+            Pair<Measure, Context> measureSetup = setup(measure, theId, periodStart, periodEnd, null, null, null);
+            MeasureEvaluation evaluator = new MeasureEvaluation(provider, measurementPeriod);
+            // TODO - this is configured for patient-level evaluation only
+            report = evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
+
+            if (report.hasGroup() && measure.hasScoring()) {
+                int numerator = 0;
+                int denominator = 0;
+                for (MeasureReport.MeasureReportGroupComponent group : report.getGroup()) {
+                    if (group.hasPopulation()) {
+                        for (MeasureReport.MeasureReportGroupPopulationComponent population : group.getPopulation()) {
+                            // TODO - currently configured for measures with only 1 numerator and 1 denominator
+                            if (population.hasCode()) {
+                                if (population.getCode().hasCoding()) {
+                                    for (Coding coding : population.getCode().getCoding()) {
+                                        if (coding.hasCode()) {
+                                            if (coding.getCode().equals("numerator") && population.hasCount()) {
+                                                numerator = population.getCount();
+                                            }
+                                            else if (coding.getCode().equals("denominator") && population.hasCount()) {
+                                                denominator = population.getCount();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                double proportion = 0.0;
+                if (measure.getScoring().hasCoding()) {
+                    for (Coding coding : measure.getScoring().getCoding()) {
+                        if (coding.hasCode() && coding.getCode().equals("proportion")) {
+                            proportion = numerator / denominator;
+                        }
+                    }
+                }
+
+                // TODO - this is super hacky ... change once improvementNotation is specified as a code
+                if (improvementNotation.toLowerCase().contains("increase")) {
+                    if (proportion < 1.0) {
+                        composition.addSection(section);
+                        reports.add(report);
+                    }
+                }
+                else if (improvementNotation.toLowerCase().contains("decrease")) {
+                    if (proportion > 0.0) {
+                        composition.addSection(section);
+                        reports.add(report);
+                    }
+                }
+
+                // TODO - add other types of improvement notation cases
+            }
+        }
+
+        careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
+
+        for (MeasureReport rep : reports) {
+            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
+        }
+
+        return careGapReport;
+    }
+
     private Pair<Measure, Context> setup(String measureRef, IdType theId, String periodStart,
                                          String periodEnd, String source, String user, String pass)
     {
         // fetch the measure
-        Measure measure = this.getDao().read(measureRef == null ? theId : new IdType(measureRef));
+        Measure measure = this.getDao().read(measureRef == null || measureRef.isEmpty() ? theId : new IdType(measureRef));
         if (measure == null) {
             throw new IllegalArgumentException("Could not find Measure/" + theId);
         }
 
+        return setup(measure, theId, periodStart, periodEnd, source, user, pass);
+    }
+
+    private Pair<Measure, Context> setup(Measure measure, IdType theId, String periodStart,
+                                         String periodEnd, String source, String user, String pass)
+    {
         logger.info("Evaluating Measure/" + measure.getIdElement().getIdPart());
 
         // load libraries
@@ -164,6 +280,8 @@ public class FHIRMeasureResourceProvider extends JpaResourceProviderDstu3<Measur
                     : new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(source, true);
             provider.setTerminologyProvider(terminologyProvider);
         }
+
+        context.registerDataProvider("http://hl7.org/fhir", provider);
 
         // resolve the measurement period
         measurementPeriod =
