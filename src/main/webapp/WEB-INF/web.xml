@@ -20,6 +20,12 @@
 	<!-- Servlets -->
 
 	<servlet>
+		<servlet-name>on-measure-subscription-mrp</servlet-name>
+		<servlet-class>org.opencds.cqf.servlet.MeasureSubscriptionServlet</servlet-class>
+		<load-on-startup>5</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>bulkDataResults</servlet-name>
 		<servlet-class>org.opencds.cqf.servlet.BulkDataServlet</servlet-class>
 		<load-on-startup>4</load-on-startup>
@@ -83,6 +89,11 @@
 	<servlet-mapping>
 		<servlet-name>bulkDataResults</servlet-name>
 		<url-pattern>/baseDstu3/export-results/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>on-measure-subscription-mrp</servlet-name>
+		<url-pattern>/on-measure-subscription-mrp</url-pattern>
 	</servlet-mapping>
 
 	<!-- This filters provide support for Cross Origin Resource Sharing (CORS) -->
