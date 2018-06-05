@@ -129,6 +129,13 @@ public class MeasureEvaluation {
         }
 
         FhirMeasureBundler bundler = new FhirMeasureBundler();
+        if (resources.isEmpty()) {
+            for (Object element : context.getEvaluatedResourcesList()) {
+                if (element instanceof Resource) {
+                    resources.put(((Resource) element).getId(), (Resource) element);
+                }
+            }
+        }
         org.hl7.fhir.dstu3.model.Bundle evaluatedResources = bundler.bundle(resources.values());
         evaluatedResources.setId(UUID.randomUUID().toString());
         report.setEvaluatedResources(new Reference('#' + evaluatedResources.getId()));
