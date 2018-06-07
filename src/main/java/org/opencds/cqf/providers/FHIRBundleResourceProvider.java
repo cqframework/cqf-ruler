@@ -1,6 +1,6 @@
 package org.opencds.cqf.providers;
 
-import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
+import ca.uhn.fhir.jpa.rp.dstu3.BundleResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FHIRBundleResourceProvider extends JpaResourceProviderDstu3<Bundle> {
+public class FHIRBundleResourceProvider extends BundleResourceProvider {
 
     private JpaDataProvider provider;
     public FHIRBundleResourceProvider(JpaDataProvider provider) {

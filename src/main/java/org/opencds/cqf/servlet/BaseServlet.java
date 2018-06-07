@@ -19,6 +19,7 @@ import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
+import org.opencds.cqf.interceptors.TransactionInterceptor;
 import org.opencds.cqf.providers.*;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -44,6 +45,10 @@ public class BaseServlet extends RestfulServer {
         // Get the spring context from the web container (it's declared in web.xml)
         WebApplicationContext myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
 
+        if (myAppCtx == null) {
+            throw new ServletException("WebApplicationContext is null");
+        }
+
         String resourceProviderBeanName = "myResourceProvidersDstu3";
         List<IResourceProvider> beans = myAppCtx.getBean(resourceProviderBeanName, List.class);
         setResourceProviders(beans);
@@ -60,23 +65,6 @@ public class BaseServlet extends RestfulServer {
         setDefaultPrettyPrint(true);
         setDefaultResponseEncoding(EncodingEnum.JSON);
         setPagingProvider(myAppCtx.getBean(DatabaseBackedPagingProvider.class));
-
-        /*
-		 * Enable CORS
-		 */
-//        CorsConfiguration config = new CorsConfiguration();
-//        CorsInterceptor corsInterceptor = new CorsInterceptor(config);
-//        config.addAllowedHeader("Origin");
-//        config.addAllowedHeader("Accept");
-//        config.addAllowedHeader("X-Requested-With");
-//        config.addAllowedHeader("Content-Type");
-//        config.addAllowedHeader("Access-Control-Request-Method");
-//        config.addAllowedHeader("Access-Control-Request-Headers");
-//        config.addAllowedOrigin("*");
-//        config.addExposedHeader("Location");
-//        config.addExposedHeader("Content-Location");
-//        config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
-//        registerInterceptor(corsInterceptor);
 
         /*
 		 * Load interceptors for the server from Spring (these are defined in FhirServerConfig.java)
@@ -124,6 +112,22 @@ public class BaseServlet extends RestfulServer {
         }
 
         register(bundleProvider, provider.getCollectionProviders());
+
+        // ValueSet processing
+        FHIRValueSetResourceProvider valueSetProvider = new FHIRValueSetResourceProvider(provider);
+        ValueSetResourceProvider jpaValueSetProvider = (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet");
+        valueSetProvider.setDao(jpaValueSetProvider.getDao());
+        valueSetProvider.setContext(jpaValueSetProvider.getContext());
+
+        try {
+            unregister(jpaValueSetProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(valueSetProvider, provider.getCollectionProviders());
+        TransactionInterceptor transactionInterceptor = new TransactionInterceptor(valueSetProvider);
+        registerInterceptor(transactionInterceptor);
 
         // Measure processing
         FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider);

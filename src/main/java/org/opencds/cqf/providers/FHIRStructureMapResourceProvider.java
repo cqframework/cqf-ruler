@@ -1,7 +1,7 @@
 package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
-import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
+import ca.uhn.fhir.jpa.rp.dstu3.StructureMapResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-public class FHIRStructureMapResourceProvider extends JpaResourceProviderDstu3<StructureMap> {
+public class FHIRStructureMapResourceProvider extends StructureMapResourceProvider {
 
     private JpaDataProvider provider;
 
