@@ -258,14 +258,14 @@ class MeasureEvaluationTests {
 
     void careGapTestBCS() {
         Parameters inParams = new Parameters();
-        inParams.addParameter().setName("patient").setValue(new StringType("Patient/Patient-6484"));
+        inParams.addParameter().setName("patient").setValue(new StringType("Patient/Patient-6523"));
         inParams.addParameter().setName("topic").setValue(new StringType("Preventive Care and Screening"));
         inParams.addParameter().setName("periodStart").setValue(new DateType("1997-01-01"));
         inParams.addParameter().setName("periodEnd").setValue(new DateType("1997-12-31"));
 
         Parameters outParams = server.ourClient
                 .operation()
-                .onInstance(new IdDt("Measure", "measure-ccs"))
+                .onType(Measure.class)
                 .named("$care-gaps")
                 .withParameters(inParams)
                 .useHttpGet()
@@ -281,6 +281,6 @@ class MeasureEvaluationTests {
 
         Bundle bundle = (Bundle) component.getResource();
 
-        Assert.assertTrue(bundle.hasEntry() && bundle.getEntry().size() == 3);
+        Assert.assertTrue(bundle.hasEntry() && bundle.getEntry().size() == 2);
     }
 }

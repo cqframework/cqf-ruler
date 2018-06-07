@@ -31,8 +31,6 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
 
     public JpaDataProvider(Collection<IResourceProvider> providers) {
         this.collectionProviders = providers;
-
-        // NOTE: Defaults to STU3
         setPackageName("org.hl7.fhir.dstu3.model");
         setFhirContext(FhirContext.forDstu3());
     }
@@ -71,6 +69,9 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             if (valueSet != null && terminologyProvider != null && expandValueSets) {
                 ValueSetInfo valueSetInfo = new ValueSetInfo().withId(valueSet);
                 codes = terminologyProvider.expand(valueSetInfo);
+            }
+            else if (valueSet != null) {
+                map.add(convertPathToSearchParam(dataType, codePath), new TokenParam(null, valueSet).setModifier(TokenParamModifier.IN));
             }
             if (codes != null) {
                 TokenOrListParam codeParams = new TokenOrListParam();

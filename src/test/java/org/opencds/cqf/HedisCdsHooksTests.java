@@ -73,7 +73,7 @@ class HedisCdsHooksTests {
                 "                  ]\n" +
                 "                },\n" +
                 "                \"subject\": {\n" +
-                "                  \"reference\": \"Patient/Patient-6535\"\n" +
+                "                  \"reference\": \"Patient/Patient-66535\"\n" +
                 "                }\n" +
                 "              }\n" +
                 "            }\n" +
@@ -189,7 +189,7 @@ class HedisCdsHooksTests {
                 "                  ]\n" +
                 "                },\n" +
                 "                \"subject\": {\n" +
-                "                  \"reference\": \"Patient/Patient-6532\"\n" +
+                "                  \"reference\": \"Patient/Patient-66532\"\n" +
                 "                }\n" +
                 "              }\n" +
                 "            }\n" +
@@ -261,7 +261,7 @@ class HedisCdsHooksTests {
                 "                  ]\n" +
                 "                },\n" +
                 "                \"subject\": {\n" +
-                "                  \"reference\": \"Patient/Patient-276\"\n" +
+                "                  \"reference\": \"Patient/Patient-2276\"\n" +
                 "                }\n" +
                 "              }\n" +
                 "            }\n" +
@@ -295,7 +295,7 @@ class HedisCdsHooksTests {
                 "                  ]\n" +
                 "                },\n" +
                 "                \"subject\": {\n" +
-                "                  \"reference\": \"Patient/Patient-276\"\n" +
+                "                  \"reference\": \"Patient/Patient-2276\"\n" +
                 "                }\n" +
                 "              }\n" +
                 "            }\n" +
@@ -329,7 +329,7 @@ class HedisCdsHooksTests {
                 "                  ]\n" +
                 "                },\n" +
                 "                \"subject\": {\n" +
-                "                  \"reference\": \"Patient/Patient-276\"\n" +
+                "                  \"reference\": \"Patient/Patient-2276\"\n" +
                 "                }\n" +
                 "              }\n" +
                 "            }\n" +
@@ -363,7 +363,7 @@ class HedisCdsHooksTests {
                 "                  ]\n" +
                 "                },\n" +
                 "                \"subject\": {\n" +
-                "                  \"reference\": \"Patient/Patient-276\"\n" +
+                "                  \"reference\": \"Patient/Patient-2276\"\n" +
                 "                }\n" +
                 "              }\n" +
                 "            }\n" +
@@ -397,7 +397,7 @@ class HedisCdsHooksTests {
                 "                  ]\n" +
                 "                },\n" +
                 "                \"subject\": {\n" +
-                "                  \"reference\": \"Patient/Patient-276\"\n" +
+                "                  \"reference\": \"Patient/Patient-2276\"\n" +
                 "                }\n" +
                 "              }\n" +
                 "            }\n" +

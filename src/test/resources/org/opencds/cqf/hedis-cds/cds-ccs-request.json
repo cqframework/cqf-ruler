@@ -4,6 +4,6 @@
   "hook": "patient-view",
   "user": "Practitioner/example",
   "context": {
-    "patientId": "Patient/Patient-6532"
+    "patientId": "Patient/Patient-66532"
   }
 }

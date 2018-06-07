@@ -625,7 +625,7 @@
         "code" : {
           "coding" : [
             {
-              "system" : "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+              "system" : "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo",
               "code" : "G0148",
               "display" : "Screening cytopathology smears, cervical or vaginal, performed by automated system with manual rescreening"
             }

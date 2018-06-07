@@ -105,7 +105,6 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
     @Operation(name = "$care-gaps", idempotent = true)
     public Bundle careGapsReport(
-            @IdParam IdType theId,
             @RequiredParam(name="periodStart") String periodStart,
             @RequiredParam(name="periodEnd") String periodEnd,
             @RequiredParam(name="topic") String topic,
@@ -143,7 +142,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                 );
             }
 
-            Pair<Measure, Context> measureSetup = setup(measure, theId, periodStart, periodEnd, null, null, null);
+            Pair<Measure, Context> measureSetup = setup(measure, periodStart, periodEnd, null, null, null);
             MeasureEvaluation evaluator = new MeasureEvaluation(provider, measurementPeriod);
             // TODO - this is configured for patient-level evaluation only
             report = evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
@@ -174,7 +173,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                 }
 
                 double proportion = 0.0;
-                if (measure.getScoring().hasCoding()) {
+                if (measure.getScoring().hasCoding() && denominator != 0) {
                     for (Coding coding : measure.getScoring().getCoding()) {
                         if (coding.hasCode() && coding.getCode().equals("proportion")) {
                             proportion = numerator / denominator;
@@ -218,10 +217,10 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             throw new IllegalArgumentException("Could not find Measure/" + theId);
         }
 
-        return setup(measure, theId, periodStart, periodEnd, source, user, pass);
+        return setup(measure, periodStart, periodEnd, source, user, pass);
     }
 
-    private Pair<Measure, Context> setup(Measure measure, IdType theId, String periodStart,
+    private Pair<Measure, Context> setup(Measure measure, String periodStart,
                                          String periodEnd, String source, String user, String pass)
     {
         logger.info("Evaluating Measure/" + measure.getIdElement().getIdPart());

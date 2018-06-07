@@ -103,9 +103,19 @@ public class MeasureEvaluation {
             report.getGroup().add(reportGroup);
 
             for (Measure.MeasureGroupPopulationComponent pop : group.getPopulation()) {
+                boolean isInitialPopulation = false;
+                if (pop.hasCode() && pop.getCode().hasCoding() && pop.getCode().getCodingFirstRep().hasCode()
+                        && pop.getCode().getCodingFirstRep().getCode().equals("initial-population"))
+                {
+                    isInitialPopulation = true;
+                }
                 int count = 0;
                 // Worried about performance here with big populations...
                 for (Patient patient : initialPopulation) {
+                    if (isInitialPopulation) {
+                        ++count;
+                        continue;
+                    }
                     context.setContextValue("Patient", patient.getIdElement().getIdPart());
                     Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
                     if (result instanceof Boolean) {
@@ -113,7 +123,7 @@ public class MeasureEvaluation {
                     }
                     else if (result instanceof Iterable) {
                         for (Object item : (Iterable) result) {
-                            count++;
+                            ++count;
                             if (item instanceof Resource) {
                                 resources.put(((Resource) item).getId(), (Resource) item);
                             }

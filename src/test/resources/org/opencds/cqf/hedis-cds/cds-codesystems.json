@@ -1162,7 +1162,7 @@
       "resource": {
         "resourceType": "CodeSystem",
         "id": "2.16.840.1.113883.6.4",
-        "url": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+        "url": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo",
         "status": "active",
         "concept": [
           {

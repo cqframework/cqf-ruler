@@ -5,7 +5,7 @@
     {
       "resource": {
         "resourceType": "Patient",
-        "id": "Patient-6532",
+        "id": "Patient-66532",
         "extension": [
           {
             "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
@@ -101,7 +101,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Patient/Patient-6532"
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/Patient/Patient-66532"
       }
     },
     {
