@@ -13,6 +13,7 @@ import org.opencds.cqf.cdshooks.request.CdsRequest;
 import org.opencds.cqf.cdshooks.request.CdsRequestFactory;
 import org.opencds.cqf.cdshooks.response.CdsCard;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
+import org.opencds.cqf.providers.JpaDataProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,7 +35,7 @@ public class CdsServicesServlet extends BaseServlet {
             String baseUrl =
                     request.getRequestURL().toString()
                             .replace(request.getPathInfo(), "").replace(request.getServletPath(), "") + "/baseDstu3";
-            CdsHooksProviders cdsHooksProviders = new CdsHooksProviders(getResourceProviders(), baseUrl, request.getPathInfo().replace("/", ""));
+            CdsHooksProviders cdsHooksProviders = new CdsHooksProviders((JpaDataProvider) getProvider().setEndpoint(baseUrl), request.getPathInfo().replace("/", ""));
             // TODO - check for cdc-opioid-guidance base call - runs every recommendation
             CdsRequest cdsRequest = CdsRequestFactory.createRequest(request.getReader());
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());

@@ -15,7 +15,9 @@ import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FHIRValueSetResourceProvider extends ValueSetResourceProvider {
 
@@ -28,6 +30,8 @@ public class FHIRValueSetResourceProvider extends ValueSetResourceProvider {
     public FHIRValueSetResourceProvider(JpaDataProvider provider) {
         this.provider = provider;
     }
+
+    private Map<String, CodeSystem> codeSystems = new HashMap<>();
 
     @Override
     @Create
@@ -67,19 +71,27 @@ public class FHIRValueSetResourceProvider extends ValueSetResourceProvider {
                             .getDao()
                             .search(
                                     new SearchParameterMap()
-                                            .add("system", new UriParam(include.getSystem()))
+                                            .add("url", new UriParam(include.getSystem()))
                             );
+
                     List<IBaseResource> resources = bundleProvider.getResources(0, 1);
-                    if (resources.size() > 0) {
+                    if (!resources.isEmpty()) {
                         codeSystem = (CodeSystem) resources.get(0);
                     }
                     // if the CodeSystem doesn't exist, create it
                     else {
-                        codeSystem = new CodeSystem()
-                                .setUrl(include.getSystem())
-                                .setStatus(Enumerations.PublicationStatus.ACTIVE)
-                                .setContent(CodeSystem.CodeSystemContentMode.EXAMPLE);
-                        createCodeSystem = true;
+                        String id = "CodeSystem-" + Integer.toString(include.getSystem().hashCode());
+                        if (codeSystems.containsKey(id)) {
+                            codeSystem = codeSystems.get(id);
+                        }
+                        else {
+                            codeSystem = new CodeSystem()
+                                    .setUrl(include.getSystem())
+                                    .setStatus(Enumerations.PublicationStatus.ACTIVE)
+                                    .setContent(CodeSystem.CodeSystemContentMode.EXAMPLE);
+                            codeSystem.setId(id);
+                            codeSystems.put(id, codeSystem);
+                        }
                     }
 
                     // Go through the codes in the ValueSet and, if the codes are not included in the CodeSystem, add them
@@ -105,12 +117,7 @@ public class FHIRValueSetResourceProvider extends ValueSetResourceProvider {
                 }
                 // update the CodeSystem if missing codes were found
                 if (codeSystem != null && updateCodeSystem) {
-                    if (createCodeSystem) {
-                        codeSystemResourceProvider.getDao().create(codeSystem);
-                    }
-                    else {
-                        codeSystemResourceProvider.getDao().update(codeSystem);
-                    }
+                    codeSystemResourceProvider.getDao().update(codeSystem);
                 }
             }
         }

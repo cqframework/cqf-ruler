@@ -1,13 +1,10 @@
 package org.opencds.cqf.cdshooks.providers;
 
-import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.gclient.IQuery;
 import ca.uhn.fhir.rest.gclient.TokenClientParam;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import org.cqframework.cql.cql2elm.LibraryManager;
@@ -27,10 +24,8 @@ import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 import org.opencds.cqf.providers.JpaDataProvider;
-import org.opencds.cqf.providers.JpaTerminologyProvider;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class CdsHooksProviders {
@@ -39,8 +34,6 @@ public class CdsHooksProviders {
     public JpaDataProvider getJpaDataProvider() {
         return jpaDataProvider;
     }
-
-    private TerminologyProvider jpaTermSvc;
 
     private Library library;
 
@@ -84,15 +77,8 @@ public class CdsHooksProviders {
         return version == FhirVersion.DSTU2;
     }
 
-    public CdsHooksProviders(Collection<IResourceProvider> resourceProviders, String baseUrl, String service) {
-        // default data and terminology provider
-        jpaDataProvider = new JpaDataProvider(resourceProviders);
-        jpaDataProvider.setEndpoint(baseUrl);
-        jpaTermSvc = new JpaTerminologyProvider(
-                (ValueSetResourceProvider) jpaDataProvider.resolveResourceProvider("ValueSet"),
-                (CodeSystemResourceProvider) jpaDataProvider.resolveResourceProvider("CodeSystem")
-        );
-        jpaDataProvider.setTerminologyProvider(jpaTermSvc);
+    public CdsHooksProviders(JpaDataProvider jpaDataProvider, String service) {
+        this.jpaDataProvider = jpaDataProvider;
 
         // resolve library loader
         STU3LibraryLoader libraryLoader = new STU3LibraryLoader(
@@ -156,7 +142,7 @@ public class CdsHooksProviders {
         context = new Context(library);
         // default providers/loaders
         context.registerDataProvider("http://hl7.org/fhir", jpaDataProvider);
-        context.registerTerminologyProvider(jpaTermSvc);
+        context.registerTerminologyProvider(jpaDataProvider.getTerminologyProvider());
         context.registerLibraryLoader(libraryLoader);
         context.setExpressionCaching(true);
     }
@@ -180,7 +166,7 @@ public class CdsHooksProviders {
             modelUri = "http://hl7.org/fhir";
         }
         dataProvider.getFhirContext().getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-        dataProvider.setTerminologyProvider(jpaTermSvc);
+        dataProvider.setTerminologyProvider(jpaDataProvider.getTerminologyProvider());
         client = dataProvider.getFhirClient();
         context.registerDataProvider(modelUri, dataProvider);
     }

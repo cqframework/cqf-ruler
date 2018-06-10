@@ -5,19 +5,17 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
-import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.*;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
+import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.Meta;
-import org.hl7.fhir.dstu3.model.ValueSet;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.interceptors.TransactionInterceptor;
 import org.opencds.cqf.providers.*;
@@ -32,6 +30,11 @@ import java.util.List;
  * Created by Chris Schuler on 12/11/2016.
  */
 public class BaseServlet extends RestfulServer {
+
+    private JpaDataProvider provider;
+    public JpaDataProvider getProvider() {
+        return provider;
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -74,10 +77,8 @@ public class BaseServlet extends RestfulServer {
             this.registerInterceptor(interceptor);
         }
 
-        JpaDataProvider provider = new JpaDataProvider(getResourceProviders());
-        JpaResourceProviderDstu3<ValueSet> vs = (ValueSetResourceProvider)   provider.resolveResourceProvider("ValueSet");
-        JpaResourceProviderDstu3<CodeSystem> cs = (CodeSystemResourceProvider) provider.resolveResourceProvider("CodeSystem");
-        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(vs, cs);
+        provider = new JpaDataProvider(getResourceProviders());
+        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext());
         provider.setTerminologyProvider(terminologyProvider);
 
         resolveResourceProviders(provider);

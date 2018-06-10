@@ -10,6 +10,7 @@ import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.providers.FHIRValueSetResourceProvider;
@@ -41,15 +42,15 @@ public class TransactionInterceptor implements IServerInterceptor {
 
     @Override
     public void incomingRequestPreHandled(RestOperationTypeEnum restOperationTypeEnum, ActionRequestDetails actionRequestDetails) {
-        if (isTransaction && actionRequestDetails.getResource() instanceof Bundle) {
-            if (((Bundle) actionRequestDetails.getResource()).hasEntry()) {
-                for (Bundle.BundleEntryComponent entry : ((Bundle) actionRequestDetails.getResource()).getEntry()) {
-                    if (entry.hasResource() && entry.getResource() instanceof ValueSet) {
-                        valueSetResourceProvider.populateCodeSystem((ValueSet) entry.getResource());
-                    }
-                }
-            }
-        }
+//        if (isTransaction && actionRequestDetails.getResource() instanceof Bundle) {
+//            if (((Bundle) actionRequestDetails.getResource()).hasEntry()) {
+//                for (Bundle.BundleEntryComponent entry : ((Bundle) actionRequestDetails.getResource()).getEntry()) {
+//                    if (entry.hasResource() && entry.getResource() instanceof ValueSet) {
+//                        valueSetResourceProvider.populateCodeSystem((ValueSet) entry.getResource());
+//                    }
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -79,7 +80,23 @@ public class TransactionInterceptor implements IServerInterceptor {
 
     @Override
     public boolean outgoingResponse(RequestDetails requestDetails, ResponseDetails responseDetails, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException {
-        return true;
+        try {
+            return true;
+        } finally {
+            if (responseDetails.getResponseResource() instanceof Bundle) {
+                Bundle responseBundle = (Bundle) responseDetails.getResponseResource();
+                if (responseBundle.getType() == Bundle.BundleType.TRANSACTIONRESPONSE && responseBundle.hasEntry()) {
+                    for (Bundle.BundleEntryComponent entry : responseBundle.getEntry()) {
+                        if (entry.hasResponse() && entry.getResponse().hasLocation()) {
+                            if (entry.getResponse().getLocation().startsWith("ValueSet")) {
+                                String id = entry.getResponse().getLocation().replace("ValueSet/", "").split("/")[0];
+                                valueSetResourceProvider.populateCodeSystem(valueSetResourceProvider.getDao().read(new IdType(id)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override

@@ -87,7 +87,7 @@ public class PrefetchDataProviderDstu2 extends FhirDataProviderDstu2 {
             }
 
             if (codePath != null && !codePath.equals("") && includeResource) {
-                if (valueSet != null && terminologyProvider != null && expandValueSets) {
+                if (valueSet != null && terminologyProvider != null) {
                     if (valueSet.startsWith("urn:oid:")) {
                         valueSet = valueSet.replace("urn:oid:", "");
                     }
