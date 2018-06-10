@@ -1,15 +1,11 @@
 package org.opencds.cqf;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.validation.*;
 import org.hl7.fhir.dstu3.model.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opencds.cqf.helpers.XlsxToValueSet;
 
 import java.io.*;
-import java.util.Date;
-import java.util.List;
 
 public class RulerHelperTests {
 

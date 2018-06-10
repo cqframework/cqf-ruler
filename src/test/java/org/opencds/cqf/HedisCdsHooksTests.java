@@ -14,8 +14,6 @@ class HedisCdsHooksTests {
 
     HedisCdsHooksTests(TestServer server) {
         this.server = server;
-
-//        this.server.putResource(hedisCdsLocation + "cds-codesystems.json", "");
         this.server.putResource(hedisCdsLocation + "cds-valuesets.json", "");
     }
 

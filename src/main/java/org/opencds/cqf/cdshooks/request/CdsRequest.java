@@ -22,7 +22,7 @@ public abstract class CdsRequest {
     private String hookInstance;
     private URL fhirServer;
     private FhirAuthorization fhirAuthorization;
-    private Reference user; // this is really a Reference (Resource/ID)
+    private Reference user;
     // this is not a standard element - used for testing
     private Boolean applyCql;
     Context context;

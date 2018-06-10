@@ -19,7 +19,6 @@ class CdcOpioidGuidanceTests {
 
     CdcOpioidGuidanceTests(TestServer server) {
         this.server = server;
-//        server.putResource("cdc-opioid-recommendations/terminology/codesystems.xml", "");
         server.putResource("cdc-opioid-recommendations/terminology/valuesets.xml", "");
         server.putResource("cdc-opioid-recommendations/library-omtk-data-0.0.0.xml", "OMTKData");
         server.putResource("cdc-opioid-recommendations/library-omtk-logic-0.0.1.xml", "OMTKLogic");
