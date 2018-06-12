@@ -78,7 +78,7 @@ public class BaseServlet extends RestfulServer {
         }
 
         provider = new JpaDataProvider(getResourceProviders());
-        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext());
+        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
         provider.setTerminologyProvider(terminologyProvider);
 
         resolveResourceProviders(provider);

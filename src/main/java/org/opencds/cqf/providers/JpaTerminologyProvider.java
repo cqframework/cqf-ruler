@@ -1,10 +1,18 @@
 package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.dao.SearchParameterMap;
+import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
 import ca.uhn.fhir.jpa.term.VersionIndependentConcept;
+import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.dstu3.model.CodeSystem;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.ValueSet;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.terminology.CodeSystemInfo;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
@@ -20,10 +28,12 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 
     private IHapiTerminologySvcDstu3 terminologySvcDstu3;
     private FhirContext context;
+    private ValueSetResourceProvider valueSetResourceProvider;
 
-    public JpaTerminologyProvider(IHapiTerminologySvcDstu3 terminologySvcDstu3, FhirContext context) {
+    public JpaTerminologyProvider(IHapiTerminologySvcDstu3 terminologySvcDstu3, FhirContext context, ValueSetResourceProvider valueSetResourceProvider) {
         this.terminologySvcDstu3 = terminologySvcDstu3;
         this.context = context;
+        this.valueSetResourceProvider = valueSetResourceProvider;
     }
 
     @Override
@@ -40,6 +50,45 @@ public class JpaTerminologyProvider implements TerminologyProvider {
     @Override
     public Iterable<Code> expand(ValueSetInfo valueSet) throws ResourceNotFoundException {
         List<Code> codes = new ArrayList<>();
+        boolean needsExpand = false;
+        ValueSet vs;
+        if (valueSet.getId().startsWith("http://") || valueSet.getId().startsWith("https://")) {
+            IBundleProvider bundleProvider = valueSetResourceProvider.getDao().search(new SearchParameterMap().add(ValueSet.SP_URL, new UriParam(valueSet.getId())));
+            List<IBaseResource> valueSets = bundleProvider.getResources(0, 10);
+            if (!valueSets.isEmpty() && valueSets.size() == 1) {
+                vs = (ValueSet) valueSets.get(0);
+            }
+            else if (valueSets.size() > 1) {
+                throw new IllegalArgumentException("Found more than 1 ValueSet with url: " + valueSet.getId());
+            }
+            else {
+                vs = null;
+            }
+        }
+        else {
+            vs = valueSetResourceProvider.getDao().read(new IdType(valueSet.getId()));
+        }
+        if (vs != null) {
+            if (vs.hasCompose()) {
+                if (vs.getCompose().hasInclude()) {
+                    for (ValueSet.ConceptSetComponent include : vs.getCompose().getInclude()) {
+                        if (include.hasValueSet() || include.hasFilter()) {
+                            needsExpand = true;
+                            break;
+                        }
+                        for (ValueSet.ConceptReferenceComponent concept : include.getConcept()) {
+                            if (concept.hasCode()) {
+                                codes.add(new Code().withCode(concept.getCode()).withSystem(include.getSystem()));
+                            }
+                        }
+                    }
+                    if (!needsExpand) {
+                        return codes;
+                    }
+                }
+            }
+        }
+
         List<VersionIndependentConcept> expansion = terminologySvcDstu3.expandValueSet(valueSet.getId());
         for (VersionIndependentConcept concept : expansion) {
             codes.add(new Code().withCode(concept.getCode()).withSystem(concept.getSystem()));
