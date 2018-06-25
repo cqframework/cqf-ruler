@@ -35,7 +35,11 @@ public class DataProviderHelper {
                         precision = end.getPartial().size();
                     }
                 }
-            } else {
+            }
+            else {
+                if (dateObject == null) {
+                    continue;
+                }
                 precision = ((DateTime) dateObject).getPartial().size();
             }
         }
@@ -80,6 +84,21 @@ public class DataProviderHelper {
             }
             return codes;
         }
+        else if (codeObject instanceof Iterable) {
+            List<Object> codes = new ArrayList<>();
+            for (Object code : (Iterable) codeObject) {
+                Object obj = getDstu2Code(code);
+                if (obj instanceof Iterable) {
+                    for (Object codeObj : (Iterable) obj) {
+                        codes.add(codeObj);
+                    }
+                }
+                else {
+                    codes.add(obj);
+                }
+            }
+            return codes;
+        }
         return codeObject;
     }
 
@@ -102,13 +121,29 @@ public class DataProviderHelper {
     public static Object getStu3Code(Object codeObject) {
         if (codeObject instanceof CodeType) {
             return ((CodeType) codeObject).getValue();
-        } else if (codeObject instanceof Coding) {
+        }
+        else if (codeObject instanceof Coding) {
             return new Code().withSystem(((Coding) codeObject).getSystem()).withCode(((Coding) codeObject).getCode());
         }
         else if (codeObject instanceof CodeableConcept) {
             List<Code> codes = new ArrayList<>();
             for (Coding coding : ((CodeableConcept) codeObject).getCoding()) {
                 codes.add((Code) getStu3Code(coding));
+            }
+            return codes;
+        }
+        else if (codeObject instanceof Iterable) {
+            List<Object> codes = new ArrayList<>();
+            for (Object code : (Iterable) codeObject) {
+                Object obj = getStu3Code(code);
+                if (obj instanceof Iterable) {
+                    for (Object codeObj : (Iterable) obj) {
+                        codes.add(codeObj);
+                    }
+                }
+                else {
+                    codes.add(obj);
+                }
             }
             return codes;
         }
