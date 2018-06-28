@@ -232,7 +232,7 @@ public class CdsCard {
         *
         * */
         public static class Action {
-            enum ActionType {create, update, delete}
+            public enum ActionType {create, update, delete}
 
             private ActionType type;
             private String description;
