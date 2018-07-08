@@ -687,7 +687,14 @@
                   ]
                 },
                 "criteria": "Initial Population"
-              },
+              }
+            ]
+          },
+          {
+            "identifier": {
+              "value": "group 1"
+            },
+            "population": [
               {
                 "identifier": {
                   "value": "numerator 1"
@@ -713,7 +720,14 @@
                   ]
                 },
                 "criteria": "Denominator 1"
-              },
+              }
+            ]
+          },
+          {
+            "identifier": {
+              "value": "group 2"
+            },
+            "population": [
               {
                 "identifier": {
                   "value": "numerator 2"
@@ -739,7 +753,14 @@
                   ]
                 },
                 "criteria": "Denominator 2"
-              },
+              }
+            ]
+          },
+          {
+            "identifier": {
+              "value": "group 3"
+            },
+            "population": [
               {
                 "identifier": {
                   "value": "numerator 3"
@@ -766,36 +787,10 @@
                 },
                 "criteria": "Denominator 3"
               }
-            ],
-            "stratifier": [
-              {
-                "identifier": {
-                  "value": "stratifier 1"
-                },
-                "criteria": "Stratifier 1"
-              },
-              {
-                "identifier": {
-                  "value": "stratifier 2"
-                },
-                "criteria": "Stratifier 2"
-              },
-              {
-                "identifier": {
-                  "value": "stratifier 3"
-                },
-                "criteria": "Stratifier 3"
-              },
-              {
-                "identifier": {
-                  "value": "stratifier 4"
-                },
-                "criteria": "Stratifier 4"
-              }
             ]
           }
         ]
-      },
+          },
       "request": {
         "method": "PUT",
         "url": "http://localhost:8080/cqf-ruler/baseDstu3/Measure/measure-dms"
