@@ -23,6 +23,12 @@ public class TestBase {
     }
 
     @Test
+    public void runDiabetesManagementTests() throws IOException {
+        DiabetesManagementTests diabetesManagementTests = new DiabetesManagementTests(server);
+        diabetesManagementTests.diabetesManagementTest();;
+    }
+
+    @Test
     public void runMeasureEvaluationTests() throws IOException, JAXBException {
         MeasureEvaluationTests measureTests = new MeasureEvaluationTests(server);
         measureTests.patientMeasureASF_IIP_AllNumerator_AllDenominator_True();

@@ -51,9 +51,11 @@ public abstract class DiscoveryDataProvider extends BaseFhirDataProvider {
 
         if (context != null && context.equals("Patient")) {
             String patientPath = getPatientSearchParam(dataType);
-            item.hasPatientCriteria();
-            item.setPatientPath(patientPath);
-            prefetchUrlBuilder.append(String.format("%s=%s", patientPath, contextValue));
+            if (patientPath != null) {
+                item.hasPatientCriteria();
+                item.setPatientPath(patientPath);
+                prefetchUrlBuilder.append(String.format("%s=%s", patientPath, contextValue));
+            }
         }
 
         if (codePath != null && !codePath.equals("")) {
@@ -145,8 +147,14 @@ public abstract class DiscoveryDataProvider extends BaseFhirDataProvider {
     @Override
     public String getPatientSearchParam(String dataType) {
         switch (dataType) {
+            case "Composition": return "subject";
             case "Coverage": return "beneficiary";
+            case "Group": return "member";
             case "Patient": return "_id";
+            case "Binary": case "Bundle": case "EligibilityResponse": case "Endpoint":
+            case "EnrollmentResponse": case "HealthcareService": case "Location": case "Medication":
+            case "Organization": case "Practitioner": case "PractitionerRole": case "ProcessRequest":
+            case "ProcessResponse": case "Questionnaire": case "Substance": return null;
             default: return "patient";
         }
     }
