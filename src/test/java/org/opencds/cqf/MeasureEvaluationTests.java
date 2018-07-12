@@ -281,4 +281,43 @@ class MeasureEvaluationTests {
 
         Assert.assertTrue(bundle.hasEntry() && bundle.getEntry().size() == 2);
     }
+
+    // TODO - Need a test that is expected to fail and more stringent tests
+    void submitDataTest_NonTransaction() {
+        runSubmitDataOperation("asf-submit-data-bundle.json");
+    }
+
+    void submitDataTest_Transaction() {
+        runSubmitDataOperation("asf-submit-data-transaction-bundle.json");
+    }
+
+    private void runSubmitDataOperation(String bundleName) {
+        InputStream is = MeasureEvaluationTests.class.getResourceAsStream(measureEvalLocation + "asf-measure-report.json");
+        MeasureReport report = (MeasureReport) server.dataProvider.getFhirContext().newJsonParser().parseResource(new InputStreamReader(is));
+        is = MeasureEvaluationTests.class.getResourceAsStream(measureEvalLocation + bundleName);
+        Bundle bundle = (Bundle) server.dataProvider.getFhirContext().newJsonParser().parseResource(new InputStreamReader(is));
+
+        Parameters inParams = new Parameters();
+        inParams.addParameter().setName("measure-report").setResource(report);
+        inParams.addParameter().setName("resource").setResource(bundle);
+
+        Parameters outParams = server.ourClient
+                .operation()
+                .onInstance(new IdDt("Measure", "measure-asf"))
+                .named("$submit-data")
+                .withParameters(inParams)
+                .execute();
+
+        List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+
+        Assert.assertTrue(!response.isEmpty());
+
+        Parameters.ParametersParameterComponent component = response.get(0);
+
+        Assert.assertTrue(component.getResource() instanceof Bundle);
+
+        Bundle transactionResponse = (Bundle) component.getResource();
+
+        Assert.assertTrue(transactionResponse.hasType() && transactionResponse.getType() == Bundle.BundleType.TRANSACTIONRESPONSE);
+    }
 }

@@ -40,10 +40,8 @@ public class TestBase {
         measureTests.populationMeasureCOL();
         measureTests.bundleSourceDataMeasure_COL();
         measureTests.careGapTestBCS();
-
-        MeasureReportSubmitDataTests submitDataTests = new MeasureReportSubmitDataTests(server);
-        submitDataTests.submitDataTest_NonTransaction();
-        submitDataTests.submitDataTest_Transaction();
+        measureTests.submitDataTest_NonTransaction();
+        measureTests.submitDataTest_Transaction();
     }
 
     @Test
