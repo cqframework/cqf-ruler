@@ -1,0 +1,89 @@
+{
+  "resourceType": "MeasureReport",
+  "status": "complete",
+  "type": "individual",
+  "measure": {
+    "reference": "Measure/measure-asf"
+  },
+  "patient": {
+    "reference": "Patient/Patient-655529"
+  },
+  "period": {
+    "start": "2003-01-01T00:00:00-07:00",
+    "end": "2003-12-31T00:00:00-07:00"
+  },
+  "group": [
+    {
+      "identifier": {
+        "value": "ASF-cohort"
+      },
+      "population": [
+        {
+          "identifier": {
+            "value": "initial-population"
+          },
+          "code": {
+            "coding": [
+              {
+                "code": "initial-population"
+              }
+            ]
+          },
+          "count": 1
+        },
+        {
+          "identifier": {
+            "value": "numerator 1"
+          },
+          "code": {
+            "coding": [
+              {
+                "code": "numerator"
+              }
+            ]
+          },
+          "count": 1
+        },
+        {
+          "identifier": {
+            "value": "denominator 1"
+          },
+          "code": {
+            "coding": [
+              {
+                "code": "denominator"
+              }
+            ]
+          },
+          "count": 1
+        },
+        {
+          "identifier": {
+            "value": "numerator 2"
+          },
+          "code": {
+            "coding": [
+              {
+                "code": "numerator"
+              }
+            ]
+          },
+          "count": 1
+        },
+        {
+          "identifier": {
+            "value": "denominator 2"
+          },
+          "code": {
+            "coding": [
+              {
+                "code": "denominator"
+              }
+            ]
+          },
+          "count": 1
+        }
+      ]
+    }
+  ]
+}
