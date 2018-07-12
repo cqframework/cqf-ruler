@@ -29,7 +29,7 @@ public class TestBase {
     }
 
     @Test
-    public void runMeasureEvaluationTests() throws IOException, JAXBException {
+    public void runMeasureEvaluationAndMeasureReportSubmitDataTests() throws IOException, JAXBException {
         MeasureEvaluationTests measureTests = new MeasureEvaluationTests(server);
         measureTests.patientMeasureASF_IIP_AllNumerator_AllDenominator_True();
         measureTests.patientMeasureDMS_IIP_Numerator1_Denominator1_True();
@@ -40,6 +40,10 @@ public class TestBase {
         measureTests.populationMeasureCOL();
         measureTests.bundleSourceDataMeasure_COL();
         measureTests.careGapTestBCS();
+
+        MeasureReportSubmitDataTests submitDataTests = new MeasureReportSubmitDataTests(server);
+        submitDataTests.submitDataTest_NonTransaction();
+        submitDataTests.submitDataTest_Transaction();
     }
 
     @Test

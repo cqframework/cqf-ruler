@@ -144,6 +144,20 @@ public class BaseServlet extends RestfulServer {
 
         register(measureProvider, provider.getCollectionProviders());
 
+        // MeasureReport processing
+        FHIRMeasureReportProvider measureReportProvider = new FHIRMeasureReportProvider(provider);
+        MeasureReportResourceProvider jpaMeasureReportProvider = (MeasureReportResourceProvider) provider.resolveResourceProvider("MeasureReport");
+        measureReportProvider.setDao(jpaMeasureReportProvider.getDao());
+        measureReportProvider.setContext(jpaMeasureReportProvider.getContext());
+
+        try {
+            unregister(jpaMeasureReportProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(measureReportProvider, provider.getCollectionProviders());
+
         // ActivityDefinition processing
         FHIRActivityDefinitionResourceProvider actDefProvider = new FHIRActivityDefinitionResourceProvider(provider);
         ActivityDefinitionResourceProvider jpaActDefProvider = (ActivityDefinitionResourceProvider) provider.resolveResourceProvider("ActivityDefinition");
