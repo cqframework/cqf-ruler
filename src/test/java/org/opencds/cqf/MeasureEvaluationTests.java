@@ -282,16 +282,16 @@ class MeasureEvaluationTests {
         Assert.assertTrue(bundle.hasEntry() && bundle.getEntry().size() == 2);
     }
 
-    // TODO - Need a test that is expected to fail and more stringent tests
+    // TODO - Need a test that is expected to fail and tests with multiple resource params
     void submitDataTest_NonTransaction() {
-        runSubmitDataOperation("asf-submit-data-bundle.json");
+        runSubmitDataOperationWithBundle("asf-submit-data-bundle.json");
     }
 
     void submitDataTest_Transaction() {
-        runSubmitDataOperation("asf-submit-data-transaction-bundle.json");
+        runSubmitDataOperationWithBundle("asf-submit-data-transaction-bundle.json");
     }
 
-    private void runSubmitDataOperation(String bundleName) {
+    private void runSubmitDataOperationWithBundle(String bundleName) {
         InputStream is = MeasureEvaluationTests.class.getResourceAsStream(measureEvalLocation + "asf-measure-report.json");
         MeasureReport report = (MeasureReport) server.dataProvider.getFhirContext().newJsonParser().parseResource(new InputStreamReader(is));
         is = MeasureEvaluationTests.class.getResourceAsStream(measureEvalLocation + bundleName);

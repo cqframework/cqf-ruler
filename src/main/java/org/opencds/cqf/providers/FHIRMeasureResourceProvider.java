@@ -1,5 +1,6 @@
 package org.opencds.cqf.providers;
 
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
@@ -17,6 +18,8 @@ import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IAnyResource;
+import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.config.STU3LibraryLoader;
@@ -363,35 +366,72 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                 .setParameter(libraryResource.getParameter());
     }
 
+//    @Operation(name = "$submit-data", idempotent = true)
+//    public Resource submitData(
+//            RequestDetails details,
+//            @IdParam IdType theId,
+//            @OperationParam(name="measure-report", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
+//            @OperationParam(name="resource", type = Bundle.class) Bundle resources)
+//    {
+//        Measure measure = this.getDao().read(new IdType(theId.getIdPart()));
+//
+//        if (measure == null) {
+//            throw new IllegalArgumentException(theId.getValue() + " does not exist");
+//        }
+//
+//        // TODO - resource validation using $data-requirements operation
+//        // TODO - profile validation
+//
+//        try {
+//            provider.setEndpoint(details.getFhirServerBase());
+//            return provider.getFhirClient().transaction().withBundle(createTransactionBundle(report, resources)).execute();
+//        } catch (Exception e) {
+//            return new OperationOutcome().addIssue(
+//                    new OperationOutcome.OperationOutcomeIssueComponent()
+//                            .setSeverity(OperationOutcome.IssueSeverity.ERROR)
+//                            .setCode(OperationOutcome.IssueType.EXCEPTION)
+//                            .setDetails(new CodeableConcept().setText(e.getMessage()))
+//                            .setDiagnostics(ExceptionUtils.getStackTrace(e))
+//            );
+//        }
+//    }
+
     @Operation(name = "$submit-data", idempotent = true)
     public Resource submitData(
             RequestDetails details,
             @IdParam IdType theId,
             @OperationParam(name="measure-report", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
-            @OperationParam(name="resource", type = Bundle.class) Bundle resources)
+            @OperationParam(name="resource") List<IAnyResource> resources)
     {
-        Measure measure = this.getDao().read(new IdType(theId.getIdPart()));
+        Bundle transactionBundle = new Bundle().setType(Bundle.BundleType.TRANSACTION);
 
-        if (measure == null) {
-            throw new IllegalArgumentException(theId.getValue() + " does not exist");
+        /*
+            TODO - resource validation using $data-requirements operation
+            (params are the provided id and the measurement period from the MeasureReport)
+
+            TODO - profile validation ... not sure how that would work ...
+            (get StructureDefinition from URL or must it be stored in Ruler?)
+        */
+
+        for (IAnyResource resource : resources) {
+            Resource res = (Resource) resource;
+            if (res instanceof Bundle) {
+                for (Bundle.BundleEntryComponent entry : createTransactionBundle((Bundle) res).getEntry()) {
+                    transactionBundle.addEntry(entry);
+                }
+            }
+            else {
+                // Build transaction bundle
+                transactionBundle.addEntry(createTransactionEntry(res));
+            }
         }
 
-        // TODO - validate resources are in Measure's data requirements
-        try {
-            provider.setEndpoint(details.getFhirServerBase());
-            return provider.getFhirClient().transaction().withBundle(createTransactionBundle(report, resources)).execute();
-        } catch (Exception e) {
-            return new OperationOutcome().addIssue(
-                    new OperationOutcome.OperationOutcomeIssueComponent()
-                            .setSeverity(OperationOutcome.IssueSeverity.ERROR)
-                            .setCode(OperationOutcome.IssueType.EXCEPTION)
-                            .setDetails(new CodeableConcept().setText(e.getMessage()))
-                            .setDiagnostics(ExceptionUtils.getStackTrace(e))
-            );
-        }
+        // TODO - use FhirSystemDaoDstu3 to call transaction operation directly instead of building client
+        provider.setEndpoint(details.getFhirServerBase());
+        return provider.getFhirClient().transaction().withBundle(transactionBundle).execute();
     }
 
-    private Bundle createTransactionBundle(MeasureReport report, Bundle bundle) {
+    private Bundle createTransactionBundle(Bundle bundle) {
         Bundle transactionBundle;
         if (bundle != null) {
             if (bundle.hasType() && bundle.getType() == Bundle.BundleType.TRANSACTION) {
@@ -409,10 +449,10 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             }
         }
         else {
-            transactionBundle = new Bundle().setType(Bundle.BundleType.TRANSACTION);
+            transactionBundle = new Bundle().setType(Bundle.BundleType.TRANSACTION).setEntry(new ArrayList<>());
         }
 
-        return transactionBundle.addEntry(createTransactionEntry(report));
+        return transactionBundle;
     }
 
     private Bundle.BundleEntryComponent createTransactionEntry(Resource resource) {

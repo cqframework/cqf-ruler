@@ -709,6 +709,31 @@
                   "display": "Creatinine(Serum)"
                 }
               ]
+            },
+            {
+              "system": "http://loinc.org",
+              "concept": [
+                {
+                  "code": "2160-0",
+                  "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                },
+                {
+                  "code": "14682-9",
+                  "display": "Creatinine [Moles/volume] in Serum or Plasma"
+                },
+                {
+                  "code": "21232-4",
+                  "display": "Creatinine [Mass/volume] in Arterial blood"
+                },
+                {
+                  "code": "38483-4",
+                  "display": "Creatinine [Mass/volume] in Blood"
+                },
+                {
+                  "code": "59826-8",
+                  "display": "Creatinine [Moles/volume] in Blood"
+                }
+              ]
             }
           ]
         }
@@ -732,6 +757,27 @@
                 {
                   "code": "20006",
                   "display": "HbA1C"
+                }
+              ]
+            },
+            {
+              "system": "http://loinc.org",
+              "concept": [
+                {
+                  "code": "59261-8",
+                  "display": "Hemoglobin A1c/Hemoglobin.total in Blood by IFCC protocol"
+                },
+                {
+                  "code": "17856-6",
+                  "display": "Hemoglobin A1c/Hemoglobin.total in Blood by HPLC"
+                },
+                {
+                  "code": "4548-4",
+                  "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+                },
+                {
+                  "code": "4549-2",
+                  "display": "Hemoglobin A1c/Hemoglobin.total in Blood by Electrophoresis"
                 }
               ]
             }
@@ -759,6 +805,47 @@
                   "display": "LDL"
                 }
               ]
+            },
+            {
+              "system": "http://loinc.org",
+              "concept": [
+                {
+                  "code": "13457-7",
+                  "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by calculation"
+                },
+                {
+                  "code": "12773-8",
+                  "display": "Cholesterol in LDL [Units/volume] in Serum or Plasma by Electrophoresis"
+                },
+                {
+                  "code": "18261-8",
+                  "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma ultracentrifugate"
+                },
+                {
+                  "code": "18262-6",
+                  "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+                },
+                {
+                  "code": "2089-1",
+                  "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma"
+                },
+                {
+                  "code": "22748-8",
+                  "display": "Cholesterol in LDL [Moles/volume] in Serum or Plasma"
+                },
+                {
+                  "code": "39469-2",
+                  "display": "Cholesterol in LDL [Moles/volume] in Serum or Plasma by calculation"
+                },
+                {
+                  "code": "49132-4",
+                  "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Electrophoresis"
+                },
+                {
+                  "code": "55440-2",
+                  "display": "Cholesterol.in LDL (real) [Mass/volume] in Serum or Plasma by VAP"
+                }
+              ]
             }
           ]
         }
@@ -782,6 +869,35 @@
                 {
                   "code": "20008",
                   "display": "Microalbumin/Creatinine"
+                }
+              ]
+            },
+            {
+              "system": "http://loinc.org",
+              "concept": [
+                {
+                  "code": "14958-3",
+                  "display": "Microalbumin/Creatinine [Mass Ratio] in 24 hour Urine"
+                },
+                {
+                  "code": "14959-1",
+                  "display": "Microalbumin/Creatinine [Mass Ratio] in Urine"
+                },
+                {
+                  "code": "30000-4",
+                  "display": "Microalbumin/Creatinine [Ratio] in Urine"
+                },
+                {
+                  "code": "30001-2",
+                  "display": "Microalbumin/Creatinine [Ratio] in Urine by Test strip"
+                },
+                {
+                  "code": "44292-1",
+                  "display": "Microalbumin/Creatinine [Mass Ratio] in 12 hour Urine"
+                },
+                {
+                  "code": "59159-4",
+                  "display": "Microalbumin/Creatinine [Ratio] in 24 hour Urine"
                 }
               ]
             }
@@ -834,6 +950,15 @@
                   "display": "Foot Exam"
                 }
               ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "concept": [
+                {
+                  "code": "401191002",
+                  "display": "Diabetic foot examination (regime/therapy)"
+                }
+              ]
             }
           ]
         }
@@ -857,6 +982,15 @@
                 {
                   "code": "20010",
                   "display": "Eye Exam"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "concept": [
+                {
+                  "code": "722161008",
+                  "display": "Diabetic retinal eye exam (procedure)"
                 }
               ]
             }

@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.dao.dstu3.FhirSystemDaoDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.*;
@@ -97,6 +98,9 @@ public class BaseServlet extends RestfulServer {
 
         //setServerAddressStrategy(new HardcodedServerAddressStrategy("http://mydomain.com/fhir/baseDstu2"));
         //registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
+
+        // TODO - will need this for Measure/$submit-data operation
+//        FhirSystemDaoDstu3 systemDaoDstu3 = myAppCtx.getBean("mySystemDaoDstu3", FhirSystemDaoDstu3.class);
     }
 
     private void resolveResourceProviders(JpaDataProvider provider) throws ServletException {
