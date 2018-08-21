@@ -80,4 +80,10 @@ public class PlanDefinitionActionBuilder extends BaseBuilder<PlanDefinition.Plan
         complexProperty.setDefinition( new Reference().setReference(definition ));
         return this;
     }
+
+    public PlanDefinitionActionBuilder addAction(PlanDefinition.PlanDefinitionActionComponent actionComponent) {
+        this.complexProperty.addAction(actionComponent);
+        return  this;
+    }
+
 }

@@ -6,6 +6,7 @@ import org.hl7.fhir.dstu3.model.RequestGroup;
 import org.hl7.fhir.exceptions.FHIRException;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class RequestGroupBuilder extends BaseBuilder<RequestGroup> {
@@ -78,5 +79,23 @@ public class RequestGroupBuilder extends BaseBuilder<RequestGroup> {
         return this;
     }
 
+
+    public RequestGroupBuilder cleanActions() {
+        cleanActionList( this.complexProperty.getAction());
+        return this;
+    }
+
+    private void cleanActionList(List<RequestGroup.RequestGroupActionComponent> actionList) {
+        Iterator<RequestGroup.RequestGroupActionComponent> it = actionList.iterator();
+        while ( it.hasNext() ){
+            RequestGroup.RequestGroupActionComponent requestGroupActionComponent = it.next();
+            if ( requestGroupActionComponent.hasSelectionBehavior() &&
+                    !requestGroupActionComponent.hasAction() &&
+                    requestGroupActionComponent.getAction().isEmpty() ){
+                it.remove();
+            }
+        }
+
+    }
 
 }

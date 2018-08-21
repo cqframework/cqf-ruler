@@ -54,7 +54,8 @@ public class BmiRequired {
         carePlan.setId("bmiCarePlanHeightWeight");
 
         RequestGroup requestGroup = getRequestGroup( carePlan );
-        assertEquals( 2, requestGroup.getAction().size() );
+        assertEquals( 1, requestGroup.getAction().size() );
+        assertEquals( 2, requestGroup.getAction().get(0).getAction().size() );
 
         testServer.putResource(carePlan);
 
@@ -282,7 +283,26 @@ public class BmiRequired {
                 .setId( "createHeightPrAd");
         resources.add(createHeightPrAd);
 
-        ////////////////////////////////////////////\
+        ////////////////////////////////////////////
+        Questionnaire questionnaire = (Questionnaire) new Questionnaire()
+                .setTitle("BMI input")
+                .setName("BMI input")
+                .setDescription("Enter fields relevant for BMI calculation")
+                .setExperimental(true)
+                .addItem( new Questionnaire.QuestionnaireItemComponent()
+                        .setText("Enter Height Measurement")
+                        .setType( Questionnaire.QuestionnaireItemType.DECIMAL)
+                        .setRequired(true)
+                )
+                .addItem( new Questionnaire.QuestionnaireItemComponent()
+                        .setText("Enter Weight Measurement")
+                        .setType( Questionnaire.QuestionnaireItemType.DECIMAL)
+                        .setRequired(true)
+                )
+                .setId("bmiHeightWeight");
+        resources.add( questionnaire );
+
+        ////////////////////////////////////////////
         PlanDefinition planDefinition = (PlanDefinition) new PlanDefinition();
         planDefinition.setId(planDefinitionId);
         planDefinition
@@ -301,10 +321,10 @@ public class BmiRequired {
             .addLibrary( new Reference().setReference("Library/"+library.getId()))
             .addAction( new PlanDefinitionActionBuilder()
                 .buildTitle("BMI observation required")
-                .buildDescription("Checks whether a BMI is present if possible calculate BMI.")
+                .buildDescription("Recent Height and Weight is present. BMI has been calculated.")
                 .addCondition( new PlanDefinition.PlanDefinitionActionConditionComponent()
                     .setKind( PlanDefinition.ActionConditionKind.APPLICABILITY )
-                    .setDescription("No BMI, height and weight present")
+                    .setDescription("No BMI, height and weight present. BMI is calculated.")
                     .setLanguage("text/cql")
                     .setExpression("not(bmi.recentBmiObservation) and bmi.recentHeightMeasurement and bmi.recentWeightMeasurement")
                 )
@@ -312,30 +332,47 @@ public class BmiRequired {
                 .buildDefinition( "ActivityDefinition/"+createBmiAd.getId())
                 .build()
             )
-            .addAction( new PlanDefinitionActionBuilder()
-                .buildTitle("Height measurement required")
-                .buildDescription("Checks whether a height measurement is present, issues procedure request if not.")
-                .addCondition( new PlanDefinition.PlanDefinitionActionConditionComponent()
-                    .setKind( PlanDefinition.ActionConditionKind.APPLICABILITY )
-                    .setDescription("No height present")
-                    .setLanguage("text/cql")
-                    .setExpression("not(bmi.recentBmiObservation) and not( bmi.recentHeightMeasurement )")
+            .addAction(new PlanDefinitionActionBuilder()
+                .buildSelectionBehavior( PlanDefinition.ActionSelectionBehavior.ANY)
+                .buildDescription("Please confirm the proposed procedure requests")
+                .addAction( new PlanDefinitionActionBuilder()
+                    .buildTitle("Height measurement required")
+                    .buildDescription("A height measurement is required.")
+                    .addCondition( new PlanDefinition.PlanDefinitionActionConditionComponent()
+                        .setKind( PlanDefinition.ActionConditionKind.APPLICABILITY )
+                        .setDescription("No height present")
+                        .setLanguage("text/cql")
+                        .setExpression("not(bmi.recentBmiObservation) and not( bmi.recentHeightMeasurement )")
+                    )
+                    .buildType( ActionType.CREATE )
+                    .buildDefinition( "ActivityDefinition/"+createHeightPrAd.getId())
+                    .build()
                 )
-                .buildType( ActionType.CREATE )
-                .buildDefinition( "ActivityDefinition/"+createHeightPrAd.getId())
-                .build()
-            )
-            .addAction( new PlanDefinitionActionBuilder()
-                .buildTitle("Weight measurement required")
-                .buildDescription("Checks whether a weight measurement is present, issues procedure request if not.")
-                .addCondition( new PlanDefinition.PlanDefinitionActionConditionComponent()
-                    .setKind( PlanDefinition.ActionConditionKind.APPLICABILITY )
-                    .setDescription("No weight present")
-                    .setLanguage("text/cql")
-                    .setExpression("not(bmi.recentBmiObservation) and not( bmi.recentWeightMeasurement )")
+                .addAction( new PlanDefinitionActionBuilder()
+                    .buildTitle("Weight measurement required")
+                    .buildDescription("A weight measurement is required.")
+                    .addCondition( new PlanDefinition.PlanDefinitionActionConditionComponent()
+                        .setKind( PlanDefinition.ActionConditionKind.APPLICABILITY )
+                        .setDescription("No weight present")
+                        .setLanguage("text/cql")
+                        .setExpression("not(bmi.recentBmiObservation) and not( bmi.recentWeightMeasurement )")
+                    )
+                    .buildType( ActionType.CREATE )
+                    .buildDefinition( "ActivityDefinition/"+createWeightPrAd.getId())
+                    .build()
                 )
-                .buildType( ActionType.CREATE )
-                .buildDefinition( "ActivityDefinition/"+createWeightPrAd.getId())
+//                    .addAction( new PlanDefinitionActionBuilder()
+//                            .buildTitle("Weight measurement required")
+//                            .buildDescription("A weight measurement is required.")
+//                            .addCondition( new PlanDefinition.PlanDefinitionActionConditionComponent()
+//                                    .setKind( PlanDefinition.ActionConditionKind.APPLICABILITY )
+//                                    .setDescription("No weight present")
+//                                    .setLanguage("text/cql")
+//                                    .setExpression("not(bmi.recentBmiObservation) and not( bmi.recentWeightMeasurement )")
+//                            )
+//                            .buildDefinition( "Questionnaire/"+questionnaire.getId())
+//                            .build()
+//                    )
                 .build()
             );
 

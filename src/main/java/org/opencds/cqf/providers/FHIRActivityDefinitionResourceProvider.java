@@ -94,9 +94,20 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
             case "CommunicationRequest":
                 result = resolveCommunicationRequest(activityDefinition, patientId);
                 break;
+            case "ReferralRequest":
+                result = resolveReferralRequest(activityDefinition, patientId, practitionerId, organizationId);
+                break;
+
         }
 
         // TODO: Apply expression extensions on any element?
+        if ( activityDefinition.hasTransform() ){
+            Reference transformReference = activityDefinition.getTransform();
+            FHIRStructureMapResourceProvider fhirStructureMapResourceProvider = (FHIRStructureMapResourceProvider) provider.resolveResourceProvider("StructureMap");
+            Resource resource = fhirStructureMapResourceProvider.internalTransform( transformReference, activityDefinition, result );
+            result=resource;
+        }
+
 
         for (ActivityDefinition.ActivityDefinitionDynamicValueComponent dynamicValue : activityDefinition.getDynamicValue())
         {
@@ -126,6 +137,32 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
         return result;
     }
 
+    private Resource resolveReferralRequest(ActivityDefinition activityDefinition, String patientId,
+                                            String practitionerId, String organizationId) {
+        ReferralRequest referralRequest = new ReferralRequest();
+        referralRequest.setStatus(ReferralRequest.ReferralRequestStatus.DRAFT);
+        referralRequest.addDefinition(new Reference().setReference( activityDefinition.getId() ));
+        referralRequest.setSubject(new Reference(patientId));
+        referralRequest.setIntent( ReferralRequest.ReferralCategory.ORDER );
+
+        if (practitionerId != null) {
+            referralRequest.setRequester(
+                    new ReferralRequest.ReferralRequestRequesterComponent()
+                            .setAgent(new Reference(practitionerId))
+            );
+        }
+
+        else if (organizationId != null) {
+            referralRequest.setRequester(
+                    new ReferralRequest.ReferralRequestRequesterComponent()
+                            .setAgent(new Reference(organizationId))
+            );
+        }
+
+        return referralRequest;
+    }
+
+
     private ProcedureRequest resolveProcedureRequest(ActivityDefinition activityDefinition, String patientId,
                                                      String practitionerId, String organizationId)
             throws ActivityDefinitionApplyException
@@ -133,6 +170,7 @@ public class FHIRActivityDefinitionResourceProvider extends JpaResourceProviderD
         // status, intent, code, and subject are required
         ProcedureRequest procedureRequest = new ProcedureRequest();
         procedureRequest.setStatus(ProcedureRequest.ProcedureRequestStatus.DRAFT);
+        procedureRequest.addDefinition(new Reference().setReference(activityDefinition.getResourceType()+"/"+activityDefinition.getId()));
         procedureRequest.setIntent(ProcedureRequest.ProcedureRequestIntent.ORDER);
         procedureRequest.setSubject(new Reference(patientId));
 

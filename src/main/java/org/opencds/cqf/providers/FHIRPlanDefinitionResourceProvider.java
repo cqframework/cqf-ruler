@@ -125,8 +125,11 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
 
         resolveActions(planDefinition.getAction(), session, patientId, requestGroupBuilder, new ArrayList<>());
 
+        RequestGroup requestGroup = requestGroupBuilder.cleanActions().build();
+
+
         CarePlanActivityBuilder carePlanActivityBuilder = new CarePlanActivityBuilder();
-        carePlanActivityBuilder.buildReferenceTarget(requestGroupBuilder.build());
+        carePlanActivityBuilder.buildReferenceTarget(requestGroup);
         carePlanBuilder.buildActivity(carePlanActivityBuilder.build());
 
         //////////////////////////////////////////////////////////
@@ -134,14 +137,14 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
         carePlanBuilder
             .buildActivity(
                 new CarePlanActivityBuilder()
-                    .buildReference( new Reference().setReference(  requestGroupBuilder.build().getId() ))
+                    .buildReference( new Reference().setReference(  requestGroup.getId() ))
                     .build()
             )
-            .buildContained( requestGroupBuilder.build() );
+            .buildContained( requestGroup );
 
         return carePlanBuilder.build();
-
     }
+
 
 
     // For library use
@@ -283,9 +286,9 @@ public class FHIRPlanDefinitionResourceProvider extends JpaResourceProviderDstu3
                     FHIRActivityDefinitionResourceProvider activitydefinitionProvider = (FHIRActivityDefinitionResourceProvider) provider.resolveResourceProvider("ActivityDefinition");
                     ActivityDefinition activityDefinition =
                             activitydefinitionProvider.getDao().read(action.getDefinition().getReferenceElement());
-                    if (activityDefinition.hasDescription()) {
-                        requestGroupActionBuilder.buildDescripition(activityDefinition.getDescription());
-                    }
+//                    if (activityDefinition.hasDescription()) {
+//                        requestGroupActionBuilder.buildDescripition(activityDefinition.getDescription());
+//                    }
                     Resource resource = null;
                     try {
                         resource = activitydefinitionProvider.apply(
