@@ -7,9 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-/**
- * Created by Chris Schuler on 12/11/2016.
- */
 @Configuration
 @Import(FhirTesterMvcConfig.class)
 public class FhirTesterConfigDstu3 {
@@ -27,7 +24,7 @@ public class FhirTesterConfigDstu3 {
                 .withId("hapi")
                 .withFhirVersion(FhirVersionEnum.DSTU3)
                 .withBaseUrl("http://fhirtest.uhn.ca/baseDstu3")
-                .withName("Public HAPI Test Server");
+                .withName("Public CQFRuler Test Server using HAPI");
         return retVal;
     }
 }
