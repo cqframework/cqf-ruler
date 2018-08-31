@@ -25,7 +25,7 @@ public class TestBase {
     @Test
     public void runDiabetesManagementTests() throws IOException {
         DiabetesManagementTests diabetesManagementTests = new DiabetesManagementTests(server);
-        diabetesManagementTests.diabetesManagementTest();;
+        diabetesManagementTests.diabetesManagementTest();
     }
 
     @Test

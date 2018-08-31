@@ -61,6 +61,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.concurrent.*;
@@ -104,7 +105,7 @@ public class SearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
         for (SearchTask next : myIdToSearchTask.values()) {
             next.requestImmediateAbort();
             try {
-                next.getCompletionLatch().await();
+                next.getCompletionLatch().await(30, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 ourLog.warn("Failed to wait for completion", e);
             }
@@ -178,9 +179,9 @@ public class SearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
             @Override
             public List<Long> doInTransaction(TransactionStatus theStatus) {
                 final List<Long> resultPids = new ArrayList<Long>();
-                Page<SearchResult> searchResults = mySearchResultDao.findWithSearchUuid(foundSearch, page);
-                for (SearchResult next : searchResults) {
-                    resultPids.add(next.getResourcePid());
+                Page<Long> searchResultPids = mySearchResultDao.findWithSearchUuid(foundSearch, page);
+                for (Long next : searchResultPids) {
+                    resultPids.add(next);
                 }
                 return resultPids;
             }
@@ -257,8 +258,8 @@ public class SearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
 					 * individually for pages as we return them to clients
 					 */
                     final Set<Long> includedPids = new HashSet<Long>();
-                    includedPids.addAll(sb.loadReverseIncludes(theCallingDao, myContext, myEntityManager, pids, theParams.getRevIncludes(), true, theParams.getLastUpdated()));
-                    includedPids.addAll(sb.loadReverseIncludes(theCallingDao, myContext, myEntityManager, pids, theParams.getIncludes(), false, theParams.getLastUpdated()));
+                    includedPids.addAll(sb.loadIncludes(theCallingDao, myContext, myEntityManager, pids, theParams.getRevIncludes(), true, theParams.getLastUpdated()));
+                    includedPids.addAll(sb.loadIncludes(theCallingDao, myContext, myEntityManager, pids, theParams.getIncludes(), false, theParams.getLastUpdated()));
 
                     List<IBaseResource> resources = new ArrayList<IBaseResource>();
                     sb.loadResourcesByPid(pids, resources, includedPids, false, myEntityManager, myContext, theCallingDao);
@@ -408,7 +409,11 @@ public class SearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
         myManagedTxManager = theTxManager;
     }
 
-    static Pageable toPage(final int theFromIndex, int theToIndex) {
+    /**
+     * Creates a {@link Pageable} using a start and end index
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static @Nullable	Pageable toPage(final int theFromIndex, int theToIndex) {
         int pageSize = theToIndex - theFromIndex;
         if (pageSize < 1) {
             return null;
@@ -420,7 +425,7 @@ public class SearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public int getOffset() {
+            public long getOffset() {
                 return theFromIndex;
             }
         };
@@ -559,11 +564,13 @@ public class SearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
 
                 saveSearch();
 
-            }
+            } finally {
 
-            myIdToSearchTask.remove(mySearch.getUuid());
-            myInitialCollectionLatch.countDown();
-            myCompletionLatch.countDown();
+                myIdToSearchTask.remove(mySearch.getUuid());
+                myInitialCollectionLatch.countDown();
+                myCompletionLatch.countDown();
+
+            }
             return null;
         }
 
@@ -700,7 +707,7 @@ public class SearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
                         nextResult.setOrder(myCountSaved++);
                         resultsToSave.add(nextResult);
                     }
-                    mySearchResultDao.save(resultsToSave);
+                    mySearchResultDao.saveAll(resultsToSave);
 
                     synchronized (mySyncedPids) {
                         int numSyncedThisPass = myUnsyncedPids.size();
