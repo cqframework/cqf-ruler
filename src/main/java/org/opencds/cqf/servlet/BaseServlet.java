@@ -11,6 +11,9 @@ import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.TerminologyUploaderProviderDstu3;
+import ca.uhn.fhir.jpa.provider.r4.JpaConformanceProviderR4;
+import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
+import ca.uhn.fhir.jpa.provider.r4.TerminologyUploaderProviderR4;
 import ca.uhn.fhir.jpa.rp.dstu3.*;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
@@ -26,6 +29,7 @@ import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.config.FhirServerConfigDstu2;
 import org.opencds.cqf.config.FhirServerConfigDstu3;
+import org.opencds.cqf.config.FhirServerConfigR4;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.interceptors.TransactionInterceptor;
 import org.opencds.cqf.providers.*;
@@ -56,6 +60,7 @@ public class BaseServlet extends RestfulServer {
 
     private static final String FHIR_BASEURL_DSTU2 = "fhir.baseurl.dstu2";
     private static final String FHIR_BASEURL_DSTU3 = "fhir.baseurl.dstu3";
+    private static final String FHIR_BASEURL_R4 = "fhir.baseurl.r4";
 
     @SuppressWarnings("unchecked")
     @Override
@@ -119,24 +124,24 @@ public class BaseServlet extends RestfulServer {
                 resolveResourceProviders(provider);
                 break;
             }
-//            case "R4": {
-//                myAppCtx = new AnnotationConfigWebApplicationContext();
-//                myAppCtx.setServletConfig(getServletConfig());
-//                myAppCtx.setParent(parentAppCtx);
-//                myAppCtx.register(TestR4Config.class, WebsocketDispatcherConfig.class);
-//                baseUrlProperty = FHIR_BASEURL_R4;
-//                myAppCtx.refresh();
-//                setFhirContext(FhirContext.forR4());
-//                beans = myAppCtx.getBean("myResourceProvidersR4", List.class);
-//                plainProviders.add(myAppCtx.getBean("mySystemProviderR4", JpaSystemProviderR4.class));
-//                systemDao = myAppCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
-//                etagSupport = ETagSupportEnum.ENABLED;
-//                JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao, myAppCtx.getBean(DaoConfig.class));
-//                confProvider.setImplementationDescription(implDesc);
-//                setServerConformanceProvider(confProvider);
-//                plainProviders.add(myAppCtx.getBean(TerminologyUploaderProviderR4.class));
-//                break;
-//            }
+            case "R4": {
+                myAppCtx = new AnnotationConfigWebApplicationContext();
+                myAppCtx.setServletConfig(getServletConfig());
+                myAppCtx.setParent(parentAppCtx);
+                myAppCtx.register(FhirServerConfigR4.class, WebsocketDispatcherConfig.class);
+                baseUrlProperty = FHIR_BASEURL_R4;
+                myAppCtx.refresh();
+                setFhirContext(FhirContext.forR4());
+                beans = myAppCtx.getBean("myResourceProvidersR4", List.class);
+                plainProviders.add(myAppCtx.getBean("mySystemProviderR4", JpaSystemProviderR4.class));
+                systemDao = myAppCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
+                etagSupport = ETagSupportEnum.ENABLED;
+                JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao, myAppCtx.getBean(DaoConfig.class));
+                confProvider.setImplementationDescription(implDesc);
+                setServerConformanceProvider(confProvider);
+                plainProviders.add(myAppCtx.getBean(TerminologyUploaderProviderR4.class));
+                break;
+            }
             default:
                 throw new ServletException("Unknown FHIR version specified in init-param[FhirVersion]: " + fhirVersionParam);
         }
@@ -169,6 +174,9 @@ public class BaseServlet extends RestfulServer {
         String baseUrl = System.getProperty(baseUrlProperty);
         if (StringUtils.isBlank(baseUrl)) {
             switch (fhirVersionParam) {
+                case "R4":
+                    baseUrl = "http://measure.eval.kanvix.com/cqf-ruler/baseR4";
+                    break;
                 case "DSTU3":
                     baseUrl = "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3";
                     break;

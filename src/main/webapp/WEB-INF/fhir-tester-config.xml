@@ -8,6 +8,7 @@
             <list>
                 <value>home_dstu2, DSTU2, CQF Ruler Server (DSTU2 FHIR), http://measure.eval.kanvix.com/cqf-ruler/baseDstu2</value>
                 <value>home_stu3, DSTU3, CQF Ruler Server (DSTU3 FHIR), http://measure.eval.kanvix.com/cqf-ruler/baseDstu3</value>
+                <value>home_r4, DSTU3, CQF Ruler Server (R4 FHIR), http://measure.eval.kanvix.com/cqf-ruler/baseR4</value>
             </list>
         </property>
     </bean>

@@ -18,6 +18,11 @@ public class BaseFhirTesterConfig {
         TesterConfig config = new TesterConfig();
         config
                 .addServer()
+                .withId("home_r4")
+                .withFhirVersion(FhirVersionEnum.R4)
+                .withBaseUrl(System.getProperty("fhir.baseurl.r4"))
+                .withName("CQF Ruler Server (R4 FHIR)")
+                .addServer()
                 .withId("home_stu3")
                 .withFhirVersion(FhirVersionEnum.DSTU3)
                 .withBaseUrl(System.getProperty("fhir.baseurl.dstu3"))

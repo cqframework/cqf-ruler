@@ -20,6 +20,7 @@
         <protocolAndHost>http://localhost:8080</protocolAndHost>
         <dstu3Path>cqf-ruler/baseDstu3</dstu3Path>
         <dstu2Path>cqf-ruler/baseDstu2</dstu2Path>
+        <r4Path>cqf-ruler/baseR4</r4Path>
     </properties>
     <packaging>${p.type}</packaging>
 
@@ -379,6 +380,10 @@
                             <value>-1</value>
                         </systemProperty>
                         <systemProperty>
+                            <key>fhir.baseurl.r4</key>
+                            <value>${protocolAndHost}/${r4Path}</value>
+                        </systemProperty>
+                        <systemProperty>
                             <key>fhir.baseurl.dstu3</key>
                             <value>${protocolAndHost}/${dstu3Path}</value>
                         </systemProperty>
@@ -478,6 +483,7 @@
                     <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
                     <skipTests>${skipTests}</skipTests>
                     <systemPropertyVariables>
+                        <fhir.baseurl.r4>${protocolAndHost}/${r4Path}</fhir.baseurl.r4>
                         <fhir.baseurl.dstu3>${protocolAndHost}/${dstu3Path}</fhir.baseurl.dstu3>
                         <fhir.baseurl.dstu2>${protocolAndHost}/${dstu2Path}</fhir.baseurl.dstu2>
                         <testmode.local>${dev}</testmode.local>
@@ -510,6 +516,10 @@
                         <!--<argument>${protocolAndHost}</argument>-->
                     <!--</arguments>-->
                     <!--<systemProperties>-->
+                        <!--<systemProperty>-->
+                            <!--<key>fhir.baseurl.r4</key>-->
+                            <!--<value>${protocolAndHost}/${r4Path}</value>-->
+                        <!--</systemProperty>-->
                         <!--<systemProperty>-->
                             <!--<key>fhir.baseurl.dstu3</key>-->
                             <!--<value>${protocolAndHost}/${dstu3Path}</value>-->
