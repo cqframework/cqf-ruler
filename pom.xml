@@ -480,6 +480,8 @@
                     <includes>
                         <include>org.opencds.cqf.**</include>
                     </includes>
+                    <forkCount>3</forkCount>
+                    <reuseForks>true</reuseForks>
                     <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
                     <skipTests>${skipTests}</skipTests>
                     <systemPropertyVariables>
