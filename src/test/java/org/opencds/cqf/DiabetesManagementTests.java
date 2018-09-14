@@ -45,25 +45,25 @@ class DiabetesManagementTests {
                 "    {\n" +
                 "      \"summary\": \"Abnormal Creatinine level detected in most recent lab results\",\n" +
                 "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"The Creatinine level of 122umol/L in the most recent lab is considered abnormal\",\n" +
+                "      \"detail\": \"The Creatinine level of 122 \\u0027umol/L\\u0027 in the most recent lab is considered abnormal\",\n" +
                 "      \"source\": {}\n" +
                 "    },\n" +
                 "    {\n" +
                 "      \"summary\": \"Abnormal HbA1C level detected in most recent lab results\",\n" +
                 "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"The HbA1C level of 15.2mmol/L in the most recent lab is considered abnormal\",\n" +
+                "      \"detail\": \"The HbA1C level of 15.2 \\u0027mmol/L\\u0027 in the most recent lab is considered abnormal\",\n" +
                 "      \"source\": {}\n" +
                 "    },\n" +
                 "    {\n" +
                 "      \"summary\": \"Abnormal LDL cholesterol level detected in most recent lab results\",\n" +
                 "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"The LDL cholesterol level of 189mg/dL in the most recent lab is considered abnormal\",\n" +
+                "      \"detail\": \"The LDL cholesterol level of 189 \\u0027mg/dL\\u0027 in the most recent lab is considered abnormal\",\n" +
                 "      \"source\": {}\n" +
                 "    },\n" +
                 "    {\n" +
                 "      \"summary\": \"Abnormal Microalbumin/Creatinine ratio detected in most recent lab results\",\n" +
                 "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"The Microalbumin/Creatinine ratio of 35mcg/mg in the most recent lab is considered abnormal\",\n" +
+                "      \"detail\": \"The Microalbumin/Creatinine ratio of 35 \\u0027mcg/mg\\u0027 in the most recent lab is considered abnormal\",\n" +
                 "      \"source\": {}\n" +
                 "    },\n" +
                 "    {\n" +

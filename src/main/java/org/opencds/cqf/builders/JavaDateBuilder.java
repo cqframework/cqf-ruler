@@ -1,5 +1,7 @@
 package org.opencds.cqf.builders;
 
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.ISODateTimeFormat;
 import org.opencds.cqf.cql.runtime.DateTime;
 
 import java.time.format.DateTimeFormatter;
@@ -13,7 +15,7 @@ public class JavaDateBuilder extends BaseBuilder<Date> {
     }
 
     public JavaDateBuilder buildFromDateTime(DateTime dateTime) {
-        org.joda.time.DateTime dt = new org.joda.time.DateTime(dateTime.getPartial());
+        org.joda.time.DateTime dt = org.joda.time.DateTime.parse(dateTime.toString(), ISODateTimeFormat.basicDateTime());
         complexProperty = dt.toDate();
         return this;
     }

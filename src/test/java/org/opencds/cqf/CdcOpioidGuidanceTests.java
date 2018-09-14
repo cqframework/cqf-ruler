@@ -214,7 +214,7 @@ class CdcOpioidGuidanceTests {
                 "    {\n" +
                 "      \"summary\": \"High risk for opioid overdose - taper now\",\n" +
                 "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"Total morphine milligram equivalent (MME) is 179.99999820mg/d. Taper to less than 50.\",\n" +
+                "      \"detail\": \"Total morphine milligram equivalent (MME) is 179.99999820 \\u0027mg/d\\u0027. Taper to less than 50.\",\n" +
                 "      \"source\": {\n" +
                 "        \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
                 "        \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +
@@ -428,7 +428,7 @@ class CdcOpioidGuidanceTests {
                 "    {\n" +
                 "      \"summary\": \"Incorporate into the management plan strategies to mitigate risk; including considering offering naloxone when factors that increase risk for opioid overdose are present\",\n" +
                 "      \"indicator\": \"warning\",\n" +
-                "      \"detail\": \"Consider offering naloxone given following risk factor(s) for opioid overdose: Average MME (54.000000mg/d) \\u003e\\u003d 50 mg/day, \",\n" +
+                "      \"detail\": \"Consider offering naloxone given following risk factor(s) for opioid overdose: Average MME (54.000000 \\u0027mg/d\\u0027) \\u003e\\u003d 50 mg/day, \",\n" +
                 "      \"source\": {\n" +
                 "        \"label\": \"CDC guideline for prescribing opioids for chronic pain\",\n" +
                 "        \"url\": \"https://guidelines.gov/summaries/summary/50153/cdc-guideline-for-prescribing-opioids-for-chronic-pain---united-states-2016#420\"\n" +

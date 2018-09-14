@@ -15,6 +15,7 @@ import org.opencds.cqf.helpers.LibraryHelper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class FHIRBundleResourceProvider extends BundleResourceProvider {
@@ -118,10 +119,10 @@ public class FHIRBundleResourceProvider extends BundleResourceProvider {
         }
         else if (source instanceof DateTime) {
             if (type.equals("dateTime")) {
-                return new DateTimeType().setValue(((DateTime) source).getJodaDateTime().toDate());
+                return new DateTimeType().setValue(Date.from(((DateTime) source).getDateTime().toInstant()));
             }
             if (type.equals("date")) {
-                return new DateType().setValue(((DateTime) source).getJodaDateTime().toDate());
+                return new DateType().setValue(Date.from(((DateTime) source).getDateTime().toInstant()));
             }
         }
 

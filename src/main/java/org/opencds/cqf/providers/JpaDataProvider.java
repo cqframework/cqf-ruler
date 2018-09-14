@@ -15,10 +15,7 @@ import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class JpaDataProvider extends FhirDataProviderStu3 {
 
@@ -86,11 +83,11 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             DateParam low = null;
             DateParam high = null;
             if (dateRange.getLow() != null) {
-                low = new DateParam(ParamPrefixEnum.GREATERTHAN_OR_EQUALS, ((DateTime) dateRange.getLow()).getJodaDateTime().toDate());
+                low = new DateParam(ParamPrefixEnum.GREATERTHAN_OR_EQUALS, Date.from(((DateTime) dateRange.getLow()).getDateTime().toInstant()));
             }
 
             if (dateRange.getHigh() != null) {
-                high = new DateParam(ParamPrefixEnum.LESSTHAN_OR_EQUALS, ((DateTime) dateRange.getHigh()).getJodaDateTime().toDate());
+                high = new DateParam(ParamPrefixEnum.LESSTHAN_OR_EQUALS, Date.from(((DateTime) dateRange.getHigh()).getDateTime().toInstant()));
             }
 
             DateRangeParam rangeParam;

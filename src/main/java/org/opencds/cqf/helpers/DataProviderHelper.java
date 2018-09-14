@@ -26,13 +26,13 @@ public class DataProviderHelper {
                 DateTime end = (DateTime) ((Interval) dateObject).getEnd();
 
                 if (start != null) {
-                    if (precision > start.getPartial().size()) {
-                        precision = start.getPartial().size();
+                    if (precision > (start.getPrecision().toDateTimeIndex() + 1)) {
+                        precision = start.getPrecision().toDateTimeIndex() + 1;
                     }
                 }
                 if (end != null) {
-                    if (precision > end.getPartial().size()) {
-                        precision = end.getPartial().size();
+                    if (precision > (end.getPrecision().toDateTimeIndex() + 1)) {
+                        precision = end.getPrecision().toDateTimeIndex() + 1;
                     }
                 }
             }
@@ -40,7 +40,7 @@ public class DataProviderHelper {
                 if (dateObject == null) {
                     continue;
                 }
-                precision = ((DateTime) dateObject).getPartial().size();
+                precision = ((DateTime) dateObject).getPrecision().toDateTimeIndex() + 1;
             }
         }
 
