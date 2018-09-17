@@ -14,7 +14,7 @@ import org.opencds.cqf.qdm.types.FacilityLocation;
 import java.util.List;
 
 @ResourceDef(name="ProcedurePerformed", profile="TODO")
-public class ProcedurePerformed extends QdmBaseType {
+public abstract class ProcedurePerformed extends QdmBaseType {
 
     @Child(name="authorDatetime", order=0)
     private DateTime authorDatetime;
@@ -40,10 +40,10 @@ public class ProcedurePerformed extends QdmBaseType {
 
     @Child(name="reason", order=2)
     private Code reason;
-    public Code getreason() {
+    public Code getReason() {
         return reason;
     }
-    public ProcedurePerformed setreason(Code reason) {
+    public ProcedurePerformed setReason(Code reason) {
         this.reason = reason;
         return this;
     }
@@ -51,10 +51,10 @@ public class ProcedurePerformed extends QdmBaseType {
 	
     @Child(name="method", order=3)
     private Code method;
-    public Code getmethod() {
+    public Code getMethod() {
         return method;
     }
-    public ProcedurePerformed setmethod(Code method) {
+    public ProcedurePerformed setMethod(Code method) {
         this.method = method;
         return this;
     }	
@@ -62,10 +62,10 @@ public class ProcedurePerformed extends QdmBaseType {
 
     @Child(name="status", order=4)
     private Code status;
-    public Code getstatus() {
+    public Code getStatus() {
         return status;
     }
-    public ProcedurePerformed setstatus(Code status) {
+    public ProcedurePerformed setStatus(Code status) {
         this.status = status;
         return this;
     }		
@@ -73,10 +73,10 @@ public class ProcedurePerformed extends QdmBaseType {
 	
     @Child(name="anatomicalApproachSite", order=5)
     private Code anatomicalApproachSite;
-    public Code getanatomicalApproachSite() {
+    public Code getAnatomicalApproachSite() {
         return anatomicalApproachSite;
     }
-    public ProcedurePerformed setanatomicalApproachSite(Code anatomicalApproachSite) {
+    public ProcedurePerformed setAnatomicalApproachSite(Code anatomicalApproachSite) {
         this.anatomicalApproachSite = anatomicalApproachSite;
         return this;
     }
@@ -84,10 +84,10 @@ public class ProcedurePerformed extends QdmBaseType {
 	
     @Child(name="anatomicalLocationSite", order=6)
     private Code anatomicalLocationSite;
-    public Code getanatomicalLocationSite() {
+    public Code getAnatomicalLocationSite() {
         return anatomicalLocationSite;
     }
-    public ProcedurePerformed setanatomicalLocationSite(Code anatomicalLocationSite) {
+    public ProcedurePerformed setAnatomicalLocationSite(Code anatomicalLocationSite) {
         this.anatomicalLocationSite = anatomicalLocationSite;
         return this;
     }
@@ -95,20 +95,20 @@ public class ProcedurePerformed extends QdmBaseType {
 
     @Child(name="ordinality", order=7)
     private Code ordinality;
-    public Code getordinality() {
+    public Code getOrdinality() {
         return ordinality;
     }
-    public ProcedurePerformed setordinality(Code ordinality) {
+    public ProcedurePerformed setOrdinality(Code ordinality) {
         this.ordinality = ordinality;
         return this;
     }	
 
     @Child(name="incisionDatetime", order=8)
     private DateTime incisionDatetime;
-    public DateTime getincisionDatetime() {
+    public DateTime getIncisionDatetime() {
         return incisionDatetime;
     }
-    public ProcedurePerformed setincisionDatetime(DateTime incisionDatetime) {
+    public ProcedurePerformed setIncisionDatetime(DateTime incisionDatetime) {
         this.incisionDatetime = incisionDatetime;
         return this;
     }	
@@ -127,10 +127,10 @@ public class ProcedurePerformed extends QdmBaseType {
 	
     @Child(name="components", max=Child.MAX_UNLIMITED, order=10)
     private List<Component> components;
-    public List<Component> getcomponents() {
+    public List<Component> getComponents() {
         return components;
     }
-    public ProcedurePerformed setcomponents(List<Code> components) {
+    public ProcedurePerformed setComponents(List<Code> components) {
         this.components = components;
         return this;
     }

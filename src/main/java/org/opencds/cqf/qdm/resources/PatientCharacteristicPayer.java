@@ -4,13 +4,12 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.ResourceType;
-import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 
 import java.util.List;
 
 @ResourceDef(name="PatientCharacteristicPayer", profile="TODO")
-public class PatientCharacteristicPayer extends QdmBaseType {
+public abstract class PatientCharacteristicPayer extends QdmBaseType {
 
     @Child(name="relevantPeriod", order=0)
     private Interval relevantPeriod;

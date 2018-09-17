@@ -7,8 +7,9 @@ import org.hl7.fhir.dstu3.model.ResourceType;
 
 import java.util.List;
 
-@ResourceDef(name="PatientCharacteristicEthnicity", profile="TODO")
-public abstract class PatientCharacteristicEthnicity extends QdmBaseType {
-
+@ResourceDef(name="PatientCharacteristicRace", profile="TODO")
+public abstract class PatientCharacteristicRace extends QdmBaseType {
+	
+	
 
 }
