@@ -5,6 +5,7 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.ResourceType;
 import org.opencds.cqf.cql.runtime.DateTime;
+import org.opencds.cqf.cql.runtime.Interval;
 
 import java.util.List;
 
