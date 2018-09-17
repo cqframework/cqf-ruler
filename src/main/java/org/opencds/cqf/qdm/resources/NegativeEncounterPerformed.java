@@ -3,11 +3,11 @@ package org.opencds.cqf.qdm.resources;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.ResourceType;
 
-@ResourceDef(name="PositiveEncounterPerformed", profile="TODO")
-public class PositiveEncounterPerformed extends EncounterPerformed {
+@ResourceDef(name="NegativeEncounterPerformed", profile="TODO")
+public class NegativeEncounterPerformed extends EncounterPerformed {
     @Override
-    public PositiveEncounterPerformed copy() {
-        PositiveEncounterPerformed retVal = new PositiveEncounterPerformed();
+    public NegativeEncounterPerformed copy() {
+        NegativeEncounterPerformed retVal = new NegativeEncounterPerformed();
         super.copyValues(retVal);
 
         retVal.authorDatetime = authorDatetime;
@@ -30,6 +30,6 @@ public class PositiveEncounterPerformed extends EncounterPerformed {
 
     @Override
     public String getResourceName() {
-        return "PositiveEncounterPerformed";
+        return "NegativeEncounterPerformed";
     }
 }

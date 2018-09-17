@@ -57,4 +57,6 @@ public abstract class QdmBaseType extends DomainResource {
 
     @Override
     public abstract ResourceType getResourceType();
+
+    public abstract String getResourceName();
 }
