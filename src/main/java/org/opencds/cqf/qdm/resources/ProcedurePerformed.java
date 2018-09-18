@@ -130,7 +130,7 @@ public abstract class ProcedurePerformed extends QdmBaseType {
     public List<Component> getComponents() {
         return components;
     }
-    public ProcedurePerformed setComponents(List<Code> components) {
+    public ProcedurePerformed setComponents(List<Component> components) {
         this.components = components;
         return this;
     }
