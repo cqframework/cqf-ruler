@@ -7,7 +7,6 @@ import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.qdm.QdmBaseType;
 
-import java.util.List;
 
 @ResourceDef(name="Diagnosis", profile="TODO")
 public abstract class Diagnosis extends QdmBaseType {

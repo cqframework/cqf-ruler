@@ -14,6 +14,7 @@ public class NegativeLaboratoryTestPerformed extends LaboratoryTestPerformed {
         retVal.relevantPeriod = relevantPeriod;
         retVal.status = status;
         retVal.method = method;
+        retVal.result = result;
         retVal.resultDatetime = resultDatetime;
         retVal.reason = reason;
         retVal.referenceRange = referenceRange;

@@ -2,14 +2,11 @@ package org.opencds.cqf.qdm.resources;
 
 import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
-import org.hl7.fhir.dstu3.model.DomainResource;
-import org.hl7.fhir.dstu3.model.ResourceType;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
-import org.opencds.cqf.cql.runtime.Quantity;
 import org.opencds.cqf.qdm.QdmBaseType;
-import org.opencds.cqf.qdm.types.FacilityLocation;
+import org.opencds.cqf.qdm.types.Component;
 
 import java.util.List;
 
@@ -17,7 +14,7 @@ import java.util.List;
 public abstract class ProcedurePerformed extends QdmBaseType {
 
     @Child(name="authorDatetime", order=0)
-    private DateTime authorDatetime;
+    DateTime authorDatetime;
     public DateTime getAuthorDatetime() {
         return authorDatetime;
     }
@@ -28,7 +25,7 @@ public abstract class ProcedurePerformed extends QdmBaseType {
 
 	
     @Child(name="relevantPeriod", order=1)
-    private Interval relevantPeriod;
+    Interval relevantPeriod;
     public Interval getRelevantPeriod() {
         return relevantPeriod;
     }
@@ -39,7 +36,7 @@ public abstract class ProcedurePerformed extends QdmBaseType {
 	
 
     @Child(name="reason", order=2)
-    private Code reason;
+    Code reason;
     public Code getReason() {
         return reason;
     }
@@ -50,7 +47,7 @@ public abstract class ProcedurePerformed extends QdmBaseType {
 
 	
     @Child(name="method", order=3)
-    private Code method;
+    Code method;
     public Code getMethod() {
         return method;
     }
@@ -60,8 +57,19 @@ public abstract class ProcedurePerformed extends QdmBaseType {
     }	
 
 
-    @Child(name="status", order=4)
-    private Code status;
+    @Child(name="result", order=4)
+    Object result;
+    public Object getResult() {
+        return result;
+    }
+    public ProcedurePerformed setResult(Object result) {
+        this.result = result;
+        return this;
+    }
+	
+
+    @Child(name="status", order=5)
+    Code status;
     public Code getStatus() {
         return status;
     }
@@ -71,8 +79,8 @@ public abstract class ProcedurePerformed extends QdmBaseType {
     }		
 
 	
-    @Child(name="anatomicalApproachSite", order=5)
-    private Code anatomicalApproachSite;
+    @Child(name="anatomicalApproachSite", order=6)
+    Code anatomicalApproachSite;
     public Code getAnatomicalApproachSite() {
         return anatomicalApproachSite;
     }
@@ -82,8 +90,8 @@ public abstract class ProcedurePerformed extends QdmBaseType {
     }
 
 	
-    @Child(name="anatomicalLocationSite", order=6)
-    private Code anatomicalLocationSite;
+    @Child(name="anatomicalLocationSite", order=7)
+    Code anatomicalLocationSite;
     public Code getAnatomicalLocationSite() {
         return anatomicalLocationSite;
     }
@@ -93,8 +101,8 @@ public abstract class ProcedurePerformed extends QdmBaseType {
     }
 
 
-    @Child(name="ordinality", order=7)
-    private Code ordinality;
+    @Child(name="ordinality", order=8)
+    Code ordinality;
     public Code getOrdinality() {
         return ordinality;
     }
@@ -103,8 +111,8 @@ public abstract class ProcedurePerformed extends QdmBaseType {
         return this;
     }	
 
-    @Child(name="incisionDatetime", order=8)
-    private DateTime incisionDatetime;
+    @Child(name="incisionDatetime", order=9)
+    DateTime incisionDatetime;
     public DateTime getIncisionDatetime() {
         return incisionDatetime;
     }
@@ -114,8 +122,8 @@ public abstract class ProcedurePerformed extends QdmBaseType {
     }	
 	
 	
-    @Child(name="negationRationale", order=9)
-    private Code negationRationale;
+    @Child(name="negationRationale", order=10)
+    Code negationRationale;
     public Code getNegationRationale() {
         return negationRationale;
     }
@@ -125,8 +133,8 @@ public abstract class ProcedurePerformed extends QdmBaseType {
     }
 	
 	
-    @Child(name="components", max=Child.MAX_UNLIMITED, order=10)
-    private List<Component> components;
+    @Child(name="components", max=Child.MAX_UNLIMITED, order=11)
+    List<Component> components;
     public List<Component> getComponents() {
         return components;
     }

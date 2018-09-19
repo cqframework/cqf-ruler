@@ -46,7 +46,18 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
     }
 
 	
-    @Child(name="resultDatetime", order=3)
+    @Child(name="result", order=3)
+    Object result;
+    public Object getResult() {
+        return result;
+    }
+    public DiagnosticStudyPerformed setResult(Object result) {
+        this.result = result;
+        return this;
+    }
+
+
+    @Child(name="resultDatetime", order=4)
     DateTime resultDatetime;
     public DateTime getResultDatetime() {
         return resultDatetime;
@@ -57,7 +68,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
     }	
 	
 
-    @Child(name="status", order=4)
+    @Child(name="status", order=5)
     Code status;
     public Code getStatus() {
         return status;
@@ -68,7 +79,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
     }		
 
 	
-    @Child(name="method", order=5)
+    @Child(name="method", order=6)
     Code method;
     public Code getMethod() {
         return method;
@@ -79,7 +90,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
     }	
 
 
-    @Child(name="facilityLocation", order=6)
+    @Child(name="facilityLocation", order=7)
     Code facilityLocation;
     public Code getFacilityLocation() {
         return facilityLocation;
@@ -90,7 +101,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
     }	
 	
 	
-    @Child(name="negationRationale", order=7)
+    @Child(name="negationRationale", order=8)
     Code negationRationale;
     public Code getNegationRationale() {
         return negationRationale;
@@ -101,7 +112,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
     }
 	
 	
-    @Child(name="components", max=Child.MAX_UNLIMITED, order=8)
+    @Child(name="components", max=Child.MAX_UNLIMITED, order=9)
     List<Component> components;
     public List<Component> getComponents() {
         return components;

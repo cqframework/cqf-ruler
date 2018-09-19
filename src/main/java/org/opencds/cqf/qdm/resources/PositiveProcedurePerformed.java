@@ -13,6 +13,8 @@ public class PositiveProcedurePerformed extends ProcedurePerformed {
         retVal.authorDatetime = authorDatetime;
         retVal.relevantPeriod = relevantPeriod;
         retVal.reason = reason;
+        retVal.method = method;
+        retVal.result = result;
         retVal.status = status;
         retVal.anatomicalApproachSite = anatomicalApproachSite;
         retVal.ordinality = ordinality;

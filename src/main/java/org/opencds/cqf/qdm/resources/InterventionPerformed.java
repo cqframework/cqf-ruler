@@ -41,7 +41,18 @@ public abstract class InterventionPerformed extends QdmBaseType {
     }	
 
 	
-    @Child(name="status", order=3)
+    @Child(name="result", order=3)
+    Object result;
+    public Object getResult() {
+        return result;
+    }
+    public InterventionPerformed setResult(Object result) {
+        this.result = result;
+        return this;
+    }
+
+	
+    @Child(name="status", order=4)
     Code status;
     public Code getStatus() {
         return status;
@@ -52,8 +63,8 @@ public abstract class InterventionPerformed extends QdmBaseType {
     }	
 	
 	
-    @Child(name="negationRationale", order=4)
-    private Code negationRationale;
+    @Child(name="negationRationale", order=5)
+    Code negationRationale;
     public Code getNegationRationale() {
         return negationRationale;
     }

@@ -53,9 +53,20 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
         this.method = method;
         return this;
     }		
+
+
+    @Child(name="result", order=4)
+    Object result;
+    public Object getResult() {
+        return result;
+    }
+    public LaboratoryTestPerformed setResult(Object result) {
+        this.result = result;
+        return this;
+    }
 	
 	
-    @Child(name="resultDatetime", order=4)
+    @Child(name="resultDatetime", order=5)
     DateTime resultDatetime;
     public DateTime getResultDatetime() {
         return resultDatetime;
@@ -66,7 +77,7 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
     }	
 	
 	
-    @Child(name="reason", order=5)
+    @Child(name="reason", order=6)
     Code reason;
     public Code getReason() {
         return reason;
@@ -77,8 +88,8 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
     }	
 	
 	
-    @Child(name="referenceRange", order=6)
-    private Interval referenceRange;
+    @Child(name="referenceRange", order=7)
+    Interval referenceRange;
     public Interval getReferenceRange() {
         return referenceRange;
     }
@@ -88,8 +99,8 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
     }	
 		
 	
-    @Child(name="negationRationale", order=7)
-    private Code negationRationale;
+    @Child(name="negationRationale", order=8)
+    Code negationRationale;
     public Code getNegationRationale() {
         return negationRationale;
     }
@@ -99,8 +110,8 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
     }
 	
 	
-    @Child(name="components", max=Child.MAX_UNLIMITED, order=8)
-    private List<ResultComponent> components;
+    @Child(name="components", max=Child.MAX_UNLIMITED, order=9)
+    List<ResultComponent> components;
     public List<ResultComponent> getComponents() {
         return components;
     }

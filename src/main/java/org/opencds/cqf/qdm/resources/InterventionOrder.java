@@ -30,7 +30,7 @@ public abstract class InterventionOrder extends QdmBaseType {
 
 	
     @Child(name="negationRationale", order=2)
-    private Code negationRationale;
+    Code negationRationale;
     public Code getNegationRationale() {
         return negationRationale;
     }

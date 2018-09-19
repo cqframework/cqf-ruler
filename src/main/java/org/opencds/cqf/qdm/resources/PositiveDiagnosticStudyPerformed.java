@@ -13,6 +13,7 @@ public class PositiveDiagnosticStudyPerformed extends DiagnosticStudyPerformed {
         retVal.authorDatetime = authorDatetime;
         retVal.relevantPeriod = relevantPeriod;
         retVal.reason = reason;
+        retVal.result = result;
         retVal.resultDatetime = resultDatetime;
         retVal.status = status;
         retVal.method = method;

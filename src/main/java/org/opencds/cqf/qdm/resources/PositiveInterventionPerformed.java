@@ -13,6 +13,7 @@ public class PositiveInterventionPerformed extends InterventionPerformed {
         retVal.authorDatetime = authorDatetime;
         retVal.relevantPeriod = relevantPeriod;
         retVal.reason = reason;
+        retVal.result = result;
         retVal.status = status;
         retVal.negationRationale = negationRationale;
 
