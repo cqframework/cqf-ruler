@@ -2,8 +2,6 @@ package org.opencds.cqf.qdm.resources;
 
 import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
-import org.hl7.fhir.dstu3.model.DomainResource;
-import org.hl7.fhir.dstu3.model.ResourceType;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
@@ -15,7 +13,7 @@ import java.util.List;
 public abstract class Diagnosis extends QdmBaseType {
 
     @Child(name="authorDatetime", order=0)
-    private DateTime authorDatetime;
+    DateTime authorDatetime;
     public DateTime getAuthorDatetime() {
         return authorDatetime;
     }
@@ -26,7 +24,7 @@ public abstract class Diagnosis extends QdmBaseType {
 
 	
     @Child(name="prevalencePeriod", order=1)
-    private Interval prevalencePeriod;
+    Interval prevalencePeriod;
     public Interval getPrevalencePeriod() {
         return prevalencePeriod;
     }
@@ -37,7 +35,7 @@ public abstract class Diagnosis extends QdmBaseType {
 	
 
     @Child(name="reason", order=2)
-    private Code reason;
+    Code reason;
     public Code getReason() {
         return reason;
     }
@@ -48,7 +46,7 @@ public abstract class Diagnosis extends QdmBaseType {
 
 	
     @Child(name="anatomicalLocationSite", order=3)
-    private Code anatomicalLocationSite;
+    Code anatomicalLocationSite;
     public Code getAnatomicalLocationSite() {
         return anatomicalLocationSite;
     }

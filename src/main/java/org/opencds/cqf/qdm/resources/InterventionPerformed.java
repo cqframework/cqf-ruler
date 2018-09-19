@@ -6,8 +6,6 @@ import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.qdm.QdmBaseType;
 
-import java.util.List;
-
 public abstract class InterventionPerformed extends QdmBaseType {
 
     @Child(name="authorDatetime", order=0)

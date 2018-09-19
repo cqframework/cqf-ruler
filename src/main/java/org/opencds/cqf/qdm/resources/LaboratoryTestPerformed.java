@@ -4,9 +4,7 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
-import org.opencds.cqf.cql.runtime.Quantity;
 import org.opencds.cqf.qdm.QdmBaseType;
-import org.opencds.cqf.qdm.types.FacilityLocation;
 import org.opencds.cqf.qdm.types.ResultComponent;
 
 import java.util.List;

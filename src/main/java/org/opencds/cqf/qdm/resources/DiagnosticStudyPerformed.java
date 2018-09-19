@@ -2,14 +2,10 @@ package org.opencds.cqf.qdm.resources;
 
 import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
-import org.hl7.fhir.dstu3.model.DomainResource;
-import org.hl7.fhir.dstu3.model.ResourceType;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
-import org.opencds.cqf.cql.runtime.Quantity;
 import org.opencds.cqf.qdm.QdmBaseType;
-import org.opencds.cqf.qdm.types.FacilityLocation;
 import org.opencds.cqf.qdm.types.Component;
 
 import java.util.List;
@@ -18,7 +14,7 @@ import java.util.List;
 public abstract class DiagnosticStudyPerformed extends QdmBaseType {
 
     @Child(name="authorDatetime", order=0)
-    private DateTime authorDatetime;
+    DateTime authorDatetime;
     public DateTime getAuthorDatetime() {
         return authorDatetime;
     }
@@ -29,7 +25,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
 
 	
     @Child(name="relevantPeriod", order=1)
-    private Interval relevantPeriod;
+    Interval relevantPeriod;
     public Interval getRelevantPeriod() {
         return relevantPeriod;
     }
@@ -40,7 +36,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
 	
 
     @Child(name="reason", order=2)
-    private Code reason;
+    Code reason;
     public Code getReason() {
         return reason;
     }
@@ -51,7 +47,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
 
 	
     @Child(name="resultDatetime", order=3)
-    private DateTime resultDatetime;
+    DateTime resultDatetime;
     public DateTime getResultDatetime() {
         return resultDatetime;
     }
@@ -62,7 +58,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
 	
 
     @Child(name="status", order=4)
-    private Code status;
+    Code status;
     public Code getStatus() {
         return status;
     }
@@ -73,7 +69,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
 
 	
     @Child(name="method", order=5)
-    private Code method;
+    Code method;
     public Code getMethod() {
         return method;
     }
@@ -84,7 +80,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
 
 
     @Child(name="facilityLocation", order=6)
-    private Code facilityLocation;
+    Code facilityLocation;
     public Code getFacilityLocation() {
         return facilityLocation;
     }
@@ -95,7 +91,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
 	
 	
     @Child(name="negationRationale", order=7)
-    private Code negationRationale;
+    Code negationRationale;
     public Code getNegationRationale() {
         return negationRationale;
     }
@@ -106,7 +102,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
 	
 	
     @Child(name="components", max=Child.MAX_UNLIMITED, order=8)
-    private List<Component> components;
+    List<Component> components;
     public List<Component> getComponents() {
         return components;
     }

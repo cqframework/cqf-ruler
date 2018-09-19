@@ -4,9 +4,6 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.qdm.QdmBaseType;
-import org.opencds.cqf.qdm.types.FacilityLocation;
-
-import java.util.List;
 
 public abstract class InterventionOrder extends QdmBaseType {
 

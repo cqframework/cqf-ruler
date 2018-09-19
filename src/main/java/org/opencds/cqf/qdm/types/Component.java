@@ -10,7 +10,7 @@ import org.opencds.cqf.cql.runtime.Code;
 @DatatypeDef(name="Component")
 public class Component extends Type implements ICompositeType {
 
-    @Child(name="code", order=0)
+    @Child(name="code", min=1, order=0)
     private Code code;
     public Code getCode() {
         return code;
@@ -20,11 +20,22 @@ public class Component extends Type implements ICompositeType {
         return this;
     }
 
+    @Child(name="result", order=1)
+    private Object result;
+    public Object getResult() {
+        return result;
+    }
+    public Component setResult(Object result) {
+        this.result = result;
+        return this;
+    }
+
     @Override
     protected Component typedCopy() {
         Component retVal = new Component();
         super.copyValues(retVal);
         retVal.code = code;
+        retVal.result = result;
         return retVal;
     }
 }
