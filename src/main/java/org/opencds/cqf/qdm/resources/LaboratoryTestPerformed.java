@@ -7,6 +7,7 @@ import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.runtime.Quantity;
 import org.opencds.cqf.qdm.QdmBaseType;
 import org.opencds.cqf.qdm.types.FacilityLocation;
+import org.opencds.cqf.qdm.types.ResultComponent;
 
 import java.util.List;
 
