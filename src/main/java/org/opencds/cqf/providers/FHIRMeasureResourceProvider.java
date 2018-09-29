@@ -413,6 +413,8 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             (get StructureDefinition from URL or must it be stored in Ruler?)
         */
 
+        transactionBundle.addEntry(createTransactionEntry(report));
+
         for (IAnyResource resource : resources) {
             Resource res = (Resource) resource;
             if (res instanceof Bundle) {
