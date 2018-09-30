@@ -50,37 +50,44 @@ public class MeasureEvaluation {
     {
         logger.info("Generating patient-list report");
 
-        List<Patient> patients = new ArrayList<>();
-        if (practitionerRef != null) {
-            SearchParameterMap map = new SearchParameterMap();
-            map.add(
-                    "general-practitioner",
-                    new ReferenceParam(
-                            practitionerRef.startsWith("Practitioner/")
-                                    ? practitionerRef
-                                    : "Practitioner/" + practitionerRef
-                    )
-            );
-
-            if (provider instanceof JpaDataProvider) {
-                IBundleProvider patientProvider = ((JpaDataProvider) provider).resolveResourceProvider("Patient").getDao().search(map);
-                List<IBaseResource> patientList = patientProvider.getResources(0, patientProvider.size());
-                patientList.forEach(x -> patients.add((Patient) x));
-            }
-        }
+        List<Patient> patients = practitionerRef == null ? getAllPatients() : getPractitionerPatients(practitionerRef);
         return evaluate(measure, context, patients, MeasureReport.MeasureReportType.PATIENTLIST);
     }
 
-    public MeasureReport evaluatePopulationMeasure(Measure measure, Context context) {
-        logger.info("Generating summary report");
+    private List<Patient> getPractitionerPatients(String practitionerRef) {
+        SearchParameterMap map = new SearchParameterMap();
+        map.add(
+                "general-practitioner",
+                new ReferenceParam(
+                        practitionerRef.startsWith("Practitioner/")
+                                ? practitionerRef
+                                : "Practitioner/" + practitionerRef
+                )
+        );
 
+        List<Patient> patients = new ArrayList<>();
+        if (provider instanceof JpaDataProvider) {
+            IBundleProvider patientProvider = ((JpaDataProvider) provider).resolveResourceProvider("Patient").getDao().search(map);
+            List<IBaseResource> patientList = patientProvider.getResources(0, patientProvider.size());
+            patientList.forEach(x -> patients.add((Patient) x));
+        }
+        return patients;
+    }
+
+    private List<Patient> getAllPatients() {
         List<Patient> patients = new ArrayList<>();
         if (provider instanceof JpaDataProvider) {
             IBundleProvider patientProvider = ((JpaDataProvider) provider).resolveResourceProvider("Patient").getDao().search(new SearchParameterMap());
             List<IBaseResource> patientList = patientProvider.getResources(0, patientProvider.size());
             patientList.forEach(x -> patients.add((Patient) x));
         }
-        return evaluate(measure, context, patients, MeasureReport.MeasureReportType.SUMMARY);
+        return patients;
+    }
+
+    public MeasureReport evaluatePopulationMeasure(Measure measure, Context context) {
+        logger.info("Generating summary report");
+
+        return evaluate(measure, context, getAllPatients(), MeasureReport.MeasureReportType.SUMMARY);
     }
 
     public static enum MeasureScoring {
@@ -304,8 +311,8 @@ public class MeasureEvaluation {
     }
 
     private boolean evaluatePopulationCriteria(Context context, Patient patient,
-            Measure.MeasureGroupPopulationComponent criteria, HashMap<String, Resource> population,
-            Measure.MeasureGroupPopulationComponent exclusionCriteria, HashMap<String, Resource> exclusionPopulation
+            Measure.MeasureGroupPopulationComponent criteria, HashMap<String, Resource> population, HashMap<String, Patient> populationPatients,
+            Measure.MeasureGroupPopulationComponent exclusionCriteria, HashMap<String, Resource> exclusionPopulation, HashMap<String, Patient> exclusionPatients
     ) {
         boolean inPopulation = false;
         if (criteria != null) {
@@ -316,7 +323,7 @@ public class MeasureEvaluation {
         }
 
         if (inPopulation) {
-            // Are they in the denominator exclusion?
+            // Are they in the exclusion?
             if (exclusionCriteria != null) {
                 for (Resource resource : evaluateCriteria(context, patient, exclusionCriteria)) {
                     inPopulation = false;
@@ -326,14 +333,33 @@ public class MeasureEvaluation {
             }
         }
 
+        if (inPopulation && populationPatients != null) {
+            populationPatients.put(patient.getId(), patient);
+        }
+        if (!inPopulation && exclusionPatients != null) {
+            exclusionPatients.put(patient.getId(), patient);
+        }
+
         return inPopulation;
     }
 
-    private void addPopulationCriteriaReport(MeasureReport.MeasureReportGroupComponent reportGroup, Measure.MeasureGroupPopulationComponent populationCriteria, int populationCount) {
+    private void addPopulationCriteriaReport(MeasureReport report, MeasureReport.MeasureReportGroupComponent reportGroup, Measure.MeasureGroupPopulationComponent populationCriteria, int populationCount, Iterable<Patient> patientPopulation) {
         if (populationCriteria != null) {
             MeasureReport.MeasureReportGroupPopulationComponent populationReport = new MeasureReport.MeasureReportGroupPopulationComponent();
             populationReport.setCode(populationCriteria.getCode());
             populationReport.setIdentifier(populationCriteria.getIdentifier());
+            if (report.getType() == MeasureReport.MeasureReportType.PATIENTLIST && patientPopulation != null) {
+                ListResource patientList = new ListResource();
+                patientList.setId(UUID.randomUUID().toString());
+                populationReport.setPatients(new Reference().setReference("#" + patientList.getId()));
+                for (Patient patient : patientPopulation) {
+                    ListResource.ListEntryComponent entry = new ListResource.ListEntryComponent()
+                            .setItem(new Reference().setReference(String.format("Patient/%s", patient.getId()))
+                                    .setDisplay(patient.getNameFirstRep().getNameAsSingleString()));
+                    patientList.addEntry(entry);
+                }
+                report.addContained(patientList);
+            }
             populationReport.setCount(populationCount);
             reportGroup.addPopulation(populationReport);
         }
@@ -387,6 +413,14 @@ public class MeasureEvaluation {
             HashMap<String, Resource> measurePopulationExclusion = null;
             HashMap<String, Resource> measureObservation = null;
 
+            HashMap<String, Patient> numeratorPatients = null;
+            HashMap<String, Patient> numeratorExclusionPatients = null;
+            HashMap<String, Patient> denominatorPatients = null;
+            HashMap<String, Patient> denominatorExclusionPatients = null;
+            HashMap<String, Patient> denominatorExceptionPatients = null;
+            HashMap<String, Patient> measurePopulationPatients = null;
+            HashMap<String, Patient> measurePopulationExclusionPatients = null;
+
             for (Measure.MeasureGroupPopulationComponent pop : group.getPopulation()) {
                 MeasurePopulationType populationType = MeasurePopulationType.fromCode(pop.getCode().getCodingFirstRep().getCode());
                 if (populationType != null) {
@@ -398,30 +432,51 @@ public class MeasureEvaluation {
                         case NUMERATOR:
                             numeratorCriteria = pop;
                             numerator = new HashMap<String, Resource>();
+                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
+                                numeratorPatients = new HashMap<String, Patient>();
+                            }
                             break;
                         case NUMERATOREXCLUSION:
                             numeratorExclusionCriteria = pop;
                             numeratorExclusion = new HashMap<String, Resource>();
+                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
+                                numeratorExclusionPatients = new HashMap<String, Patient>();
+                            }
                             break;
                         case DENOMINATOR:
                             denominatorCriteria = pop;
                             denominator = new HashMap<String, Resource>();
+                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
+                                denominatorPatients = new HashMap<String, Patient>();
+                            }
                             break;
                         case DENOMINATOREXCLUSION:
                             denominatorExclusionCriteria = pop;
                             denominatorExclusion = new HashMap<String, Resource>();
+                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
+                                denominatorExclusionPatients = new HashMap<String, Patient>();
+                            }
                             break;
                         case DENOMINATOREXCEPTION:
                             denominatorExceptionCriteria = pop;
                             denominatorException = new HashMap<String, Resource>();
+                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
+                                denominatorExceptionPatients = new HashMap<String, Patient>();
+                            }
                             break;
                         case MEASUREPOPULATION:
                             measurePopulationCriteria = pop;
                             measurePopulation = new HashMap<String, Resource>();
+                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
+                                measurePopulationPatients = new HashMap<String, Patient>();
+                            }
                             break;
                         case MEASUREPOPULATIONEXCLUSION:
                             measurePopulationExclusionCriteria = pop;
                             measurePopulationExclusion = new HashMap<String, Resource>();
+                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
+                                measurePopulationExclusionPatients = new HashMap<String, Patient>();
+                            }
                             break;
                         case MEASUREOBSERVATION:
                             break;
@@ -438,24 +493,33 @@ public class MeasureEvaluation {
 
                         // Are they in the denominator?
                         boolean inDenominator = evaluatePopulationCriteria(context, patient,
-                                denominatorCriteria, denominator,
-                                denominatorExclusionCriteria, denominatorExclusion);
+                                denominatorCriteria, denominator, denominatorPatients,
+                                denominatorExclusionCriteria, denominatorExclusion, denominatorExclusionPatients);
 
                         if (inDenominator) {
                             // Are they in the numerator?
                             boolean inNumerator = evaluatePopulationCriteria(context, patient,
-                                    numeratorCriteria, numerator,
-                                    numeratorExclusionCriteria, numeratorExclusion);
+                                    numeratorCriteria, numerator, numeratorPatients,
+                                    numeratorExclusionCriteria, numeratorExclusion, numeratorExclusionPatients);
 
                             if (!inNumerator && inDenominator && (denominatorExceptionCriteria != null)) {
                                 // Are they in the denominator exception?
+                                boolean inException = false;
                                 for (Resource resource : evaluateCriteria(context, patient, denominatorExceptionCriteria)) {
+                                    inException = true;
                                     denominatorException.put(resource.getId(), resource);
                                     denominator.remove(resource.getId());
                                 }
+                                if (inException) {
+                                    if (denominatorExceptionPatients != null) {
+                                        denominatorExceptionPatients.put(patient.getId(), patient);
+                                    }
+                                    if (denominatorPatients != null) {
+                                        denominatorPatients.remove(patient.getId());
+                                    }
+                                }
                             }
                         }
-
                     }
 
                     // Calculate actual measure score, Count(numerator) / Count(denominator)
@@ -472,8 +536,8 @@ public class MeasureEvaluation {
 
                         // Are they in the measure population?
                         boolean inMeasurePopulation = evaluatePopulationCriteria(context, patient,
-                                measurePopulationCriteria, measurePopulation,
-                                measurePopulationExclusionCriteria, measurePopulationExclusion);
+                                measurePopulationCriteria, measurePopulation, measurePopulationPatients,
+                                measurePopulationExclusionCriteria, measurePopulationExclusion, measurePopulationExclusionPatients);
 
                         if (inMeasurePopulation) {
                             // TODO: Evaluate measure observations
@@ -492,14 +556,14 @@ public class MeasureEvaluation {
             }
 
             // Add population reports for each group
-            addPopulationCriteriaReport(reportGroup, initialPopulationCriteria, initialPopulation != null ? initialPopulation.size() : 0);
-            addPopulationCriteriaReport(reportGroup, numeratorCriteria, numerator != null ? numerator.size() : 0);
-            addPopulationCriteriaReport(reportGroup, numeratorExclusionCriteria, numeratorExclusion != null ? numeratorExclusion.size() : 0);
-            addPopulationCriteriaReport(reportGroup, denominatorCriteria, denominator != null ? denominator.size() : 0);
-            addPopulationCriteriaReport(reportGroup, denominatorExclusionCriteria, denominatorExclusion != null ? denominatorExclusion.size() : 0);
-            addPopulationCriteriaReport(reportGroup, denominatorExceptionCriteria, denominatorException != null ? denominatorException.size() : 0);
-            addPopulationCriteriaReport(reportGroup, measurePopulationCriteria,  measurePopulation != null ? measurePopulation.size() : 0);
-            addPopulationCriteriaReport(reportGroup, measurePopulationExclusionCriteria,  measurePopulationExclusion != null ? measurePopulationExclusion.size() : 0);
+            addPopulationCriteriaReport(report, reportGroup, initialPopulationCriteria, initialPopulation != null ? initialPopulation.size() : 0, initialPopulation);
+            addPopulationCriteriaReport(report, reportGroup, numeratorCriteria, numerator != null ? numerator.size() : 0, numeratorPatients != null ? numeratorPatients.values() : null);
+            addPopulationCriteriaReport(report, reportGroup, numeratorExclusionCriteria, numeratorExclusion != null ? numeratorExclusion.size() : 0, numeratorExclusionPatients != null ? numeratorExclusionPatients.values() : null);
+            addPopulationCriteriaReport(report, reportGroup, denominatorCriteria, denominator != null ? denominator.size() : 0, denominatorPatients != null ? denominatorPatients.values() : null);
+            addPopulationCriteriaReport(report, reportGroup, denominatorExclusionCriteria, denominatorExclusion != null ? denominatorExclusion.size() : 0, denominatorExclusionPatients != null ? denominatorExclusionPatients.values() : null);
+            addPopulationCriteriaReport(report, reportGroup, denominatorExceptionCriteria, denominatorException != null ? denominatorException.size() : 0, denominatorExceptionPatients != null ? denominatorExceptionPatients.values() : null);
+            addPopulationCriteriaReport(report, reportGroup, measurePopulationCriteria,  measurePopulation != null ? measurePopulation.size() : 0, measurePopulationPatients != null ? measurePopulationPatients.values() : null);
+            addPopulationCriteriaReport(report, reportGroup, measurePopulationExclusionCriteria,  measurePopulationExclusion != null ? measurePopulationExclusion.size() : 0, measurePopulationExclusionPatients != null ? measurePopulationExclusionPatients.values() : null);
             // TODO: Measure Observations...
         }
 
