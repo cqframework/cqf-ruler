@@ -1,11 +1,9 @@
 package org.opencds.cqf.servlet;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.config.WebsocketDispatcherConfig;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.dao.dstu3.FhirSystemDaoDstu3;
 import ca.uhn.fhir.jpa.provider.JpaConformanceProviderDstu2;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
@@ -25,8 +23,6 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.*;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.config.FhirServerConfigDstu2;
 import org.opencds.cqf.config.FhirServerConfigDstu3;
 import org.opencds.cqf.config.FhirServerConfigR4;
@@ -341,7 +337,7 @@ public class BaseServlet extends RestfulServer {
 
     private static class MyHardcodedServerAddressStrategy extends HardcodedServerAddressStrategy {
 
-        public MyHardcodedServerAddressStrategy(String theBaseUrl) {
+        MyHardcodedServerAddressStrategy(String theBaseUrl) {
             super(theBaseUrl);
         }
 
