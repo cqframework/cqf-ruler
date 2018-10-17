@@ -8,6 +8,7 @@
     <properties>
         <p.type>war</p.type>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <spring_version>5.0.3.RELEASE</spring_version>
         <jetty_version>9.4.8.v20171121</jetty_version>
