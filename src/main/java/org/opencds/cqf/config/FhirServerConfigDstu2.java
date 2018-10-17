@@ -6,7 +6,6 @@ import ca.uhn.fhir.jpa.search.LuceneSearchMappingFactory;
 import ca.uhn.fhir.rest.server.interceptor.RequestValidatingInterceptor;
 import ca.uhn.fhir.validation.ResultSeverityEnum;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +18,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 @Configuration
@@ -43,18 +40,6 @@ public class FhirServerConfigDstu2 extends BaseJavaConfigDstu2 {
         return retVal;
     }
 
-    // H2 Config
-    @Bean(name = "myPersistenceDataSourceDstu2", destroyMethod = "close")
-    public DataSource dataSource() {
-        Path path = Paths.get("target/stu2").toAbsolutePath();
-        BasicDataSource retVal = new BasicDataSource();
-        retVal.setDriver(new org.h2.Driver());
-        retVal.setUrl("jdbc:h2:file:" + path.toString() + ";create=true;MV_STORE=FALSE;MVCC=FALSE");
-        retVal.setUsername("");
-        retVal.setPassword("");
-        return retVal;
-    }
-
     @Bean(name = "entityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean retVal = new LocalContainerEntityManagerFactoryBean();
@@ -64,26 +49,6 @@ public class FhirServerConfigDstu2 extends BaseJavaConfigDstu2 {
         retVal.setPersistenceProvider(new HibernatePersistenceProvider());
         retVal.setJpaProperties(jpaProperties());
         return retVal;
-    }
-
-    // H2 config
-    private Properties jpaProperties() {
-        Properties extraProperties = new Properties();
-        extraProperties.put("hibernate.dialect", org.hibernate.dialect.H2Dialect.class.getName());
-        extraProperties.put("hibernate.format_sql", "true");
-        extraProperties.put("hibernate.show_sql", "false");
-        extraProperties.put("hibernate.hbm2ddl.auto", "update");
-        extraProperties.put("hibernate.jdbc.batch_size", "20");
-        extraProperties.put("hibernate.cache.use_query_cache", "false");
-        extraProperties.put("hibernate.cache.use_second_level_cache", "false");
-        extraProperties.put("hibernate.cache.use_structured_entries", "false");
-        extraProperties.put("hibernate.cache.use_minimal_puts", "false");
-        extraProperties.put("hibernate.search.model_mapping", LuceneSearchMappingFactory.class.getName());
-        extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
-        extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles_dstu2");
-        extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
-//		extraProperties.put("hibernate.search.default.worker.execution", "async");
-        return extraProperties;
     }
 
     @Bean
@@ -115,4 +80,68 @@ public class FhirServerConfigDstu2 extends BaseJavaConfigDstu2 {
 //    public IServerInterceptor securityInterceptor() {
 //        return new PublicSecurityInterceptor();
 //    }
+
+    // Derby config
+    @Bean(name = "myPersistenceDataSourceDstu2", destroyMethod = "close")
+    public DataSource dataSource() {
+        BasicDataSource retVal = new BasicDataSource();
+        retVal.setDriver(new org.apache.derby.jdbc.EmbeddedDriver());
+        retVal.setUrl("jdbc:derby:directory:target/dstu2;create=true");
+        retVal.setUsername("");
+        retVal.setPassword("");
+        return retVal;
+    }
+
+    // Derby config
+    private Properties jpaProperties() {
+        Properties extraProperties = new Properties();
+        extraProperties.put("hibernate.dialect", org.hibernate.dialect.DerbyTenSevenDialect.class.getName());
+        extraProperties.put("hibernate.format_sql", "true");
+        extraProperties.put("hibernate.show_sql", "false");
+        extraProperties.put("hibernate.hbm2ddl.auto", "update");
+        extraProperties.put("hibernate.jdbc.batch_size", "20");
+        extraProperties.put("hibernate.cache.use_query_cache", "false");
+        extraProperties.put("hibernate.cache.use_second_level_cache", "false");
+        extraProperties.put("hibernate.cache.use_structured_entries", "false");
+        extraProperties.put("hibernate.cache.use_minimal_puts", "false");
+        extraProperties.put("hibernate.search.model_mapping", LuceneSearchMappingFactory.class.getName());
+        extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
+        extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles_dstu2");
+        extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
+//		extraProperties.put("hibernate.search.default.worker.execution", "async");
+        return extraProperties;
+    }
+
+    // H2 Config
+//    @Bean(name = "myPersistenceDataSourceDstu2", destroyMethod = "close")
+//    public DataSource dataSource() {
+//        Path path = Paths.get("target/stu2").toAbsolutePath();
+//        BasicDataSource retVal = new BasicDataSource();
+//        retVal.setDriver(new org.h2.Driver());
+//        retVal.setUrl("jdbc:h2:file:" + path.toString() + ";create=true;MV_STORE=FALSE;MVCC=FALSE");
+//        retVal.setUsername("");
+//        retVal.setPassword("");
+//        return retVal;
+//    }
+
+    // H2 config
+//    private Properties jpaProperties() {
+//        Properties extraProperties = new Properties();
+//        extraProperties.put("hibernate.dialect", org.hibernate.dialect.H2Dialect.class.getName());
+//        extraProperties.put("hibernate.format_sql", "true");
+//        extraProperties.put("hibernate.show_sql", "false");
+//        extraProperties.put("hibernate.hbm2ddl.auto", "update");
+//        extraProperties.put("hibernate.jdbc.batch_size", "20");
+//        extraProperties.put("hibernate.cache.use_query_cache", "false");
+//        extraProperties.put("hibernate.cache.use_second_level_cache", "false");
+//        extraProperties.put("hibernate.cache.use_structured_entries", "false");
+//        extraProperties.put("hibernate.cache.use_minimal_puts", "false");
+//        extraProperties.put("hibernate.search.model_mapping", LuceneSearchMappingFactory.class.getName());
+//        extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
+//        extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles_dstu2");
+//        extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
+////		extraProperties.put("hibernate.search.default.worker.execution", "async");
+//        return extraProperties;
+//    }
+
 }

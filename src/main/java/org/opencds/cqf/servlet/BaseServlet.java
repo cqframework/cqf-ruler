@@ -1,11 +1,9 @@
 package org.opencds.cqf.servlet;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.config.WebsocketDispatcherConfig;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.dao.dstu3.FhirSystemDaoDstu3;
 import ca.uhn.fhir.jpa.provider.JpaConformanceProviderDstu2;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
@@ -25,8 +23,6 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.*;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.config.FhirServerConfigDstu2;
 import org.opencds.cqf.config.FhirServerConfigDstu3;
 import org.opencds.cqf.config.FhirServerConfigR4;
@@ -36,11 +32,13 @@ import org.opencds.cqf.providers.*;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.cors.CorsConfiguration;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -158,7 +156,22 @@ public class BaseServlet extends RestfulServer {
 
         setPlainProviders(plainProviders);
 
-        CorsInterceptor corsInterceptor = new CorsInterceptor();
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedHeader("x-fhir-starter");
+        config.addAllowedHeader("Origin");
+        config.addAllowedHeader("Accept");
+        config.addAllowedHeader("X-Requested-With");
+        config.addAllowedHeader("Content-Type");
+        config.addAllowedHeader("Authorization");
+
+        config.addAllowedOrigin("*");
+
+        config.addExposedHeader("Location");
+        config.addExposedHeader("Content-Location");
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+        // Create the interceptor and register it
+        CorsInterceptor corsInterceptor = new CorsInterceptor(config);
         registerInterceptor(corsInterceptor);
 
         ResponseHighlighterInterceptor responseHighlighterInterceptor = new ResponseHighlighterInterceptor();
@@ -341,7 +354,7 @@ public class BaseServlet extends RestfulServer {
 
     private static class MyHardcodedServerAddressStrategy extends HardcodedServerAddressStrategy {
 
-        public MyHardcodedServerAddressStrategy(String theBaseUrl) {
+        MyHardcodedServerAddressStrategy(String theBaseUrl) {
             super(theBaseUrl);
         }
 
