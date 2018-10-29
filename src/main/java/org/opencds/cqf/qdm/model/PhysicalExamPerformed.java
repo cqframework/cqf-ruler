@@ -6,11 +6,8 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Type;
-//import org.opencds.cqf.qdm.QdmBaseType;
-//import org.opencds.cqf.qdm.types.Component;
 
 import java.util.List;
-
 
 @ResourceDef(name="PhysicalExamPerformed", profile="TODO")
 public abstract class PhysicalExamPerformed extends QdmBaseType {
@@ -24,7 +21,6 @@ public abstract class PhysicalExamPerformed extends QdmBaseType {
         this.authorDatetime = authorDatetime;
         return this;
     }
-	
 
     @Child(name="relevantPeriod", order=1)
     Period relevantPeriod;
@@ -34,8 +30,7 @@ public abstract class PhysicalExamPerformed extends QdmBaseType {
     public PhysicalExamPerformed setRelevantPeriod(Period relevantPeriod) {
         this.relevantPeriod = relevantPeriod;
         return this;
-    }	
-	
+    }
 	
 	@Child(name="reason", order=2)
     Coding reason;
@@ -45,8 +40,7 @@ public abstract class PhysicalExamPerformed extends QdmBaseType {
     public PhysicalExamPerformed setReason(Coding reason) {
         this.reason = reason;
         return this;
-    }	
-	
+    }
 	
     @Child(name="method", order=3)
     Coding method;
@@ -56,8 +50,7 @@ public abstract class PhysicalExamPerformed extends QdmBaseType {
     public PhysicalExamPerformed setMethod(Coding method) {
         this.method = method;
         return this;
-    }	
-	
+    }
 
     @Child(name="result", order=4)
     Type result;
@@ -69,7 +62,6 @@ public abstract class PhysicalExamPerformed extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="anatomicalLocationSite", order=5)
     Coding anatomicalLocationSite;
     public Coding getanAtomicalLocationSite() {
@@ -80,7 +72,6 @@ public abstract class PhysicalExamPerformed extends QdmBaseType {
         return this;
     }	
 
-	
     @Child(name="negationRationale", order=6)
     Coding negationRationale;
     public Coding getNegationRationale() {
@@ -91,7 +82,6 @@ public abstract class PhysicalExamPerformed extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="components", max=Child.MAX_UNLIMITED, order=7)
     List<Component> components;
     public List<Component> getComponents() {
@@ -101,6 +91,4 @@ public abstract class PhysicalExamPerformed extends QdmBaseType {
         this.components = components;
         return this;
     }
-	
-	
 }

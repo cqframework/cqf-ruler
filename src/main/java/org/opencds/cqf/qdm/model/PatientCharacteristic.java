@@ -5,7 +5,6 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 
-
 @ResourceDef(name="PatientCharacteristic", profile="TODO")
 public class PatientCharacteristic extends QdmBaseType {
 
@@ -19,7 +18,6 @@ public class PatientCharacteristic extends QdmBaseType {
         return this;
     }	
 
-	
     @Override
     public PatientCharacteristic copy() {
         PatientCharacteristic retVal = new PatientCharacteristic();
@@ -37,5 +35,4 @@ public class PatientCharacteristic extends QdmBaseType {
     public String getResourceName() {
         return "PatientCharacteristic";
     }
-
 }

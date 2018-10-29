@@ -6,7 +6,6 @@ import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Coding;
 
-
 @ResourceDef(name="FamilyHistory", profile="TODO")
 public class FamilyHistory extends QdmBaseType {
 
@@ -18,8 +17,7 @@ public class FamilyHistory extends QdmBaseType {
     public FamilyHistory setAuthorDatetime(DateTimeType authorDatetime) {
         this.authorDatetime = authorDatetime;
         return this;
-    }	
-
+    }
 	
     @Child(name="relationship", order=1)
     private Coding relationship;
@@ -31,7 +29,6 @@ public class FamilyHistory extends QdmBaseType {
         return this;
     }	
 
-	
     @Override
     public FamilyHistory copy() {
         FamilyHistory retVal = new FamilyHistory();
@@ -50,5 +47,4 @@ public class FamilyHistory extends QdmBaseType {
     public String getResourceName() {
         return "FamilyHistory";
     }
-
 }

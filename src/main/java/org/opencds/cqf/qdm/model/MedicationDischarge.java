@@ -5,9 +5,7 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Quantity;
-//import org.opencds.cqf.qdm.QdmBaseType;
 import java.lang.Integer;
-
 
 @ResourceDef(name="MedicationDischarge", profile="TODO")
 public abstract class MedicationDischarge extends QdmBaseType {
@@ -22,7 +20,6 @@ public abstract class MedicationDischarge extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="refills", order=1)
     Integer refills;
     public Integer getRefills() {
@@ -32,7 +29,6 @@ public abstract class MedicationDischarge extends QdmBaseType {
         this.refills = refills;
         return this;
     }
-
 
     @Child(name="dosage", order=2)
     Quantity dosage;
@@ -44,7 +40,6 @@ public abstract class MedicationDischarge extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="supply", order=3)
     Quantity supply;
     public Quantity getSupply() {
@@ -53,8 +48,7 @@ public abstract class MedicationDischarge extends QdmBaseType {
     public MedicationDischarge setSupply(Quantity supply) {
         this.supply = supply;
         return this;
-    }	
-	
+    }
 	
     @Child(name="frequency", order=4)
     Coding frequency;
@@ -66,7 +60,6 @@ public abstract class MedicationDischarge extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="route", order=5)
     Coding route;
     public Coding getRoute() {
@@ -76,7 +69,6 @@ public abstract class MedicationDischarge extends QdmBaseType {
         this.route = route;
         return this;
     }
-	
 
     @Child(name="negationRationale", order=6)
     Coding negationRationale;
@@ -87,6 +79,4 @@ public abstract class MedicationDischarge extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-
-	
 }

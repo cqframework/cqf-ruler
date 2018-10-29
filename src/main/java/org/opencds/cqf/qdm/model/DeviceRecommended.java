@@ -4,8 +4,6 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
-//import org.opencds.cqf.qdm.QdmBaseType;
-
 
 @ResourceDef(name="DeviceRecommended", profile="TODO")
 public abstract class DeviceRecommended extends QdmBaseType {
@@ -19,7 +17,6 @@ public abstract class DeviceRecommended extends QdmBaseType {
         this.authorDatetime = authorDatetime;
         return this;
     }
-
 	
     @Child(name="negationRationale", order=1)
     Coding negationRationale;
@@ -31,7 +28,6 @@ public abstract class DeviceRecommended extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="reason", order=2)
     Coding reason;
     public Coding getReason() {
@@ -40,6 +36,5 @@ public abstract class DeviceRecommended extends QdmBaseType {
     public DeviceRecommended setReason(Coding reason) {
         this.reason = reason;
         return this;
-    }	
-	
+    }
 }

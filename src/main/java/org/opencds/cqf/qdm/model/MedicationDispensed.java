@@ -6,9 +6,7 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Quantity;
-//import org.opencds.cqf.qdm.QdmBaseType;
 import java.lang.Integer;
-
 
 @ResourceDef(name="MedicationDispensed", profile="TODO")
 public abstract class MedicationDispensed extends QdmBaseType {
@@ -23,7 +21,6 @@ public abstract class MedicationDispensed extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="relevantPeriod", order=1)
     Period relevantPeriod;
     public Period getRelevantPeriod() {
@@ -33,8 +30,7 @@ public abstract class MedicationDispensed extends QdmBaseType {
         this.relevantPeriod = relevantPeriod;
         return this;
     }	
-	
-	
+
     @Child(name="refills", order=2)
     Integer refills;
     public Integer getRefills() {
@@ -44,7 +40,6 @@ public abstract class MedicationDispensed extends QdmBaseType {
         this.refills = refills;
         return this;
     }
-
 
     @Child(name="dosage", order=3)
     Quantity dosage;
@@ -56,7 +51,6 @@ public abstract class MedicationDispensed extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="supply", order=4)
     Quantity supply;
     public Quantity getSupply() {
@@ -65,8 +59,7 @@ public abstract class MedicationDispensed extends QdmBaseType {
     public MedicationDispensed setSupply(Quantity supply) {
         this.supply = supply;
         return this;
-    }	
-	
+    }
 	
     @Child(name="frequency", order=5)
     Coding frequency;
@@ -78,7 +71,6 @@ public abstract class MedicationDispensed extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="route", order=6)
     Coding route;
     public Coding getRoute() {
@@ -88,7 +80,6 @@ public abstract class MedicationDispensed extends QdmBaseType {
         this.route = route;
         return this;
     }
-	
 
     @Child(name="negationRationale", order=7)
     Coding negationRationale;
@@ -99,6 +90,4 @@ public abstract class MedicationDispensed extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-
-	
 }

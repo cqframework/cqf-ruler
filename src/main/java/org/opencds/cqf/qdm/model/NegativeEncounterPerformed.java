@@ -14,7 +14,7 @@ public class NegativeEncounterPerformed extends EncounterPerformed {
         retVal.admissionSource = admissionSource;
         retVal.relevantPeriod = relevantPeriod;
         retVal.dischargeDisposition = dischargeDisposition;
-        retVal.diagnosis = diagnosis;
+        retVal.diagnoses = diagnoses;
         retVal.facilityLocation = facilityLocation;
         retVal.principalDiagnosis = principalDiagnosis;
         retVal.negationRationale = negationRationale;

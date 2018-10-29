@@ -6,9 +6,7 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Quantity;
-//import org.opencds.cqf.qdm.QdmBaseType;
 import java.lang.Integer;
-
 
 @ResourceDef(name="MedicationOrder", profile="TODO")
 public abstract class MedicationOrder extends QdmBaseType {
@@ -22,7 +20,6 @@ public abstract class MedicationOrder extends QdmBaseType {
         this.activeDatetime = activeDatetime;
         return this;
     }
-
 	
     @Child(name="relevantPeriod", order=1)
     Period relevantPeriod;
@@ -32,8 +29,7 @@ public abstract class MedicationOrder extends QdmBaseType {
     public MedicationOrder setRelevantPeriod(Period relevantPeriod) {
         this.relevantPeriod = relevantPeriod;
         return this;
-    }	
-	
+    }
 
     @Child(name="authorDatetime", order=2)
     DateTimeType authorDatetime;
@@ -45,8 +41,6 @@ public abstract class MedicationOrder extends QdmBaseType {
         return this;
     }
 
-	
-
     @Child(name="refills", order=3)
     Integer refills;
     public Integer getRefills() {
@@ -56,7 +50,6 @@ public abstract class MedicationOrder extends QdmBaseType {
         this.refills = refills;
         return this;
     }
-
 
     @Child(name="dosage", order=4)
     Quantity dosage;
@@ -68,7 +61,6 @@ public abstract class MedicationOrder extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="supply", order=5)
     Quantity supply;
     public Quantity getSupply() {
@@ -77,8 +69,7 @@ public abstract class MedicationOrder extends QdmBaseType {
     public MedicationOrder setSupply(Quantity supply) {
         this.supply = supply;
         return this;
-    }	
-	
+    }
 	
     @Child(name="frequency", order=6)
     Coding frequency;
@@ -90,7 +81,6 @@ public abstract class MedicationOrder extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="route", order=7)
     Coding route;
     public Coding getRoute() {
@@ -100,7 +90,6 @@ public abstract class MedicationOrder extends QdmBaseType {
         this.route = route;
         return this;
     }
-	
 
     @Child(name="method", order=8)
     Coding method;
@@ -111,8 +100,7 @@ public abstract class MedicationOrder extends QdmBaseType {
         this.method = method;
         return this;
     }	
-	
-	
+
     @Child(name="reason", order=9)
     Coding reason;
     public Coding getReason() {
@@ -121,9 +109,7 @@ public abstract class MedicationOrder extends QdmBaseType {
     public MedicationOrder setReason(Coding reason) {
         this.reason = reason;
         return this;
-    }	
-
-
+    }
 	
     @Child(name="negationRationale", order=10)
     Coding negationRationale;
@@ -134,6 +120,4 @@ public abstract class MedicationOrder extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-
-	
 }

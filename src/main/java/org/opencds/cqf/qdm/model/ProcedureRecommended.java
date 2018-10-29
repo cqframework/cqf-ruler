@@ -4,8 +4,6 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
-//import org.opencds.cqf.qdm.QdmBaseType;
-
 
 @ResourceDef(name="ProcedureRecommended", profile="TODO")
 public abstract class ProcedureRecommended extends QdmBaseType {
@@ -20,7 +18,6 @@ public abstract class ProcedureRecommended extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="reason", order=1)
     Coding reason;
     public Coding getReason() {
@@ -30,7 +27,6 @@ public abstract class ProcedureRecommended extends QdmBaseType {
         this.reason = reason;
         return this;
     }
-
 	
     @Child(name="method", order=2)
     Coding method;
@@ -40,8 +36,7 @@ public abstract class ProcedureRecommended extends QdmBaseType {
     public ProcedureRecommended setMethod(Coding method) {
         this.method = method;
         return this;
-    }	
-
+    }
 	
     @Child(name="anatomicalApproachSite", order=3)
     Coding anatomicalApproachSite;
@@ -52,7 +47,6 @@ public abstract class ProcedureRecommended extends QdmBaseType {
         this.anatomicalApproachSite = anatomicalApproachSite;
         return this;
     }
-
 	
     @Child(name="anatomicalLocationSite", order=4)
     Coding anatomicalLocationSite;
@@ -64,7 +58,6 @@ public abstract class ProcedureRecommended extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="ordinality", order=5)
     Coding ordinality;
     public Coding getOrdinality() {
@@ -73,8 +66,7 @@ public abstract class ProcedureRecommended extends QdmBaseType {
     public ProcedureRecommended setOrdinality(Coding ordinality) {
         this.ordinality = ordinality;
         return this;
-    }	
-
+    }
 	
     @Child(name="negationRationale", order=6)
     Coding negationRationale;
@@ -85,6 +77,4 @@ public abstract class ProcedureRecommended extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-	
-	
 }

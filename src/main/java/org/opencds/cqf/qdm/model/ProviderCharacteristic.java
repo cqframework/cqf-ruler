@@ -5,7 +5,6 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 
-
 @ResourceDef(name="ProviderCharacteristic", profile="TODO")
 public class ProviderCharacteristic extends QdmBaseType {
 
@@ -18,8 +17,7 @@ public class ProviderCharacteristic extends QdmBaseType {
         this.authorDatetime = authorDatetime;
         return this;
     }
-	
-	
+
     @Override
     public ProviderCharacteristic copy() {
         ProviderCharacteristic retVal = new ProviderCharacteristic();
@@ -37,5 +35,4 @@ public class ProviderCharacteristic extends QdmBaseType {
     public String getResourceName() {
         return "ProviderCharacteristic";
     }
-
 }

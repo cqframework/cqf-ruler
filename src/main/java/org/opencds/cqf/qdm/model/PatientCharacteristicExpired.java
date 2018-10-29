@@ -6,7 +6,6 @@ import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Coding;
 
-
 @ResourceDef(name="PatientCharacteristicExpired", profile="TODO")
 public class PatientCharacteristicExpired extends QdmBaseType {
 
@@ -20,7 +19,6 @@ public class PatientCharacteristicExpired extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="cause", order=1)
     private Coding cause;
     public Coding getCause() {
@@ -31,7 +29,6 @@ public class PatientCharacteristicExpired extends QdmBaseType {
         return this;
     }
 
-	
     @Override
     public PatientCharacteristicExpired copy() {
         PatientCharacteristicExpired retVal = new PatientCharacteristicExpired();
@@ -50,5 +47,4 @@ public class PatientCharacteristicExpired extends QdmBaseType {
     public String getResourceName() {
         return "PatientCharacteristicExpired";
     }
-
 }

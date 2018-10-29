@@ -4,8 +4,6 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
-//import org.opencds.cqf.qdm.QdmBaseType;
-//import org.opencds.cqf.qdm.types.Id;
 
 import java.util.List;
 
@@ -22,7 +20,6 @@ public abstract class CommunicationFromProviderToPatient extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="relatedTo", max=Child.MAX_UNLIMITED, order=1)
     List<Id> relatedTo;
     public List<Id> getRelatedTo() {
@@ -32,8 +29,7 @@ public abstract class CommunicationFromProviderToPatient extends QdmBaseType {
         this.relatedTo = relatedTo;
         return this;
     }
-	
-	
+
     @Child(name="negationRationale", order=2)
     Coding negationRationale;
     public Coding getNegationRationale() {
@@ -43,6 +39,4 @@ public abstract class CommunicationFromProviderToPatient extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-
-	
 }

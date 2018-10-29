@@ -21,7 +21,6 @@ public class CareGoal extends QdmBaseType {
         return this;
     }	
 
-	
     @Child(name="relatedTo", order=1)
     private List<Id> relatedTo;
     public List<Id> getRelatedTo() {
@@ -30,8 +29,7 @@ public class CareGoal extends QdmBaseType {
     public CareGoal setRelatedTo(List<Id> relatedTo) {
         this.relatedTo = relatedTo;
         return this;
-    }		
-	
+    }
 	
     @Child(name="targetOutcome", order=2)
     private Type targetOutcome;
@@ -43,7 +41,6 @@ public class CareGoal extends QdmBaseType {
         return this;
     }	
 
-	
     @Override
     public CareGoal copy() {
         CareGoal retVal = new CareGoal();
@@ -63,5 +60,4 @@ public class CareGoal extends QdmBaseType {
     public String getResourceName() {
         return "CareGoal";
     }
-
 }

@@ -5,7 +5,6 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Type;
-//import org.opencds.cqf.qdm.QdmBaseType;
 
 public abstract class InterventionPerformed extends QdmBaseType {
 
@@ -18,8 +17,7 @@ public abstract class InterventionPerformed extends QdmBaseType {
         this.authorDatetime = authorDatetime;
         return this;
     }
-	
-	
+
     @Child(name="relevantPeriod", order=1)
     Period relevantPeriod;
     public Period getRelevantPeriod() {
@@ -30,7 +28,6 @@ public abstract class InterventionPerformed extends QdmBaseType {
         return this;
     }	
 
-	
     @Child(name="reason", order=2)
     Coding reason;
     public Coding getReason() {
@@ -39,8 +36,7 @@ public abstract class InterventionPerformed extends QdmBaseType {
     public InterventionPerformed setReason(Coding reason) {
         this.reason = reason;
         return this;
-    }	
-
+    }
 	
     @Child(name="result", order=3)
     Type result;
@@ -52,7 +48,6 @@ public abstract class InterventionPerformed extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="status", order=4)
     Coding status;
     public Coding getStatus() {
@@ -62,8 +57,7 @@ public abstract class InterventionPerformed extends QdmBaseType {
         this.status = status;
         return this;
     }	
-	
-	
+
     @Child(name="negationRationale", order=5)
     Coding negationRationale;
     public Coding getNegationRationale() {
@@ -73,8 +67,4 @@ public abstract class InterventionPerformed extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-	
-	
-
-	
 }

@@ -6,8 +6,6 @@ import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Period;
 
-
-
 @ResourceDef(name="PatientCharacteristicClinicalTrialParticipant", profile="TODO")
 public class PatientCharacteristicClinicalTrialParticipant extends QdmBaseType {
 
@@ -21,7 +19,6 @@ public class PatientCharacteristicClinicalTrialParticipant extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="relevantPeriod", order=1)
     private Period relevantPeriod;
     public Period getRelevantPeriod() {
@@ -32,7 +29,6 @@ public class PatientCharacteristicClinicalTrialParticipant extends QdmBaseType {
         return this;
     }
 
-
     @Override
     public PatientCharacteristicClinicalTrialParticipant copy() {
         PatientCharacteristicClinicalTrialParticipant retVal = new PatientCharacteristicClinicalTrialParticipant();
@@ -41,7 +37,6 @@ public class PatientCharacteristicClinicalTrialParticipant extends QdmBaseType {
         retVal.relevantPeriod = relevantPeriod;
         return retVal;
     }
-
 
     @Override
     public ResourceType getResourceType() {
@@ -52,5 +47,4 @@ public class PatientCharacteristicClinicalTrialParticipant extends QdmBaseType {
     public String getResourceName() {
         return "PatientCharacteristicClinicalTrialParticipant";
     }
-
 }

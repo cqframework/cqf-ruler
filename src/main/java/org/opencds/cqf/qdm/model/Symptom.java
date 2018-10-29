@@ -6,7 +6,6 @@ import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Coding;
 
-
 @ResourceDef(name="Symptom", profile="TODO")
 public class Symptom extends QdmBaseType {
 
@@ -20,7 +19,6 @@ public class Symptom extends QdmBaseType {
         return this;
     }	
 
-	
     @Child(name="severity", order=1)
     private Coding severity;
     public Coding getSeverity() {
@@ -31,7 +29,6 @@ public class Symptom extends QdmBaseType {
         return this;
     }	
 
-	
     @Override
     public Symptom copy() {
         Symptom retVal = new Symptom();
@@ -50,5 +47,4 @@ public class Symptom extends QdmBaseType {
     public String getResourceName() {
         return "Symptom";
     }
-
 }

@@ -4,8 +4,6 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
-//import org.opencds.cqf.qdm.QdmBaseType;
-
 
 @ResourceDef(name="EncounterOrder", profile="TODO")
 public abstract class EncounterOrder extends QdmBaseType {
@@ -20,7 +18,6 @@ public abstract class EncounterOrder extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="reason", order=1)
     Coding reason;
     public Coding getReason() {
@@ -30,7 +27,6 @@ public abstract class EncounterOrder extends QdmBaseType {
         this.reason = reason;
         return this;
     }
-
 
     @Child(name="facilityLocation", order=2)
     Coding facilityLocation;
@@ -42,7 +38,6 @@ public abstract class EncounterOrder extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="negationRationale", order=3)
     Coding negationRationale;
     public Coding getNegationRationale() {
@@ -52,11 +47,4 @@ public abstract class EncounterOrder extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-
-	
-
-
-
-
-	
 }

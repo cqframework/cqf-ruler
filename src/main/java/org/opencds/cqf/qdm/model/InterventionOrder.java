@@ -3,7 +3,6 @@ package org.opencds.cqf.qdm.model;
 import ca.uhn.fhir.model.api.annotation.Child;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
-//import org.opencds.cqf.qdm.QdmBaseType;
 
 public abstract class InterventionOrder extends QdmBaseType {
 
@@ -16,7 +15,6 @@ public abstract class InterventionOrder extends QdmBaseType {
         this.authorDatetime = authorDatetime;
         return this;
     }
-
 	
     @Child(name="reason", order=1)
     Coding reason;
@@ -28,7 +26,6 @@ public abstract class InterventionOrder extends QdmBaseType {
         return this;
     }	
 
-	
     @Child(name="negationRationale", order=2)
     Coding negationRationale;
     public Coding getNegationRationale() {
@@ -38,8 +35,4 @@ public abstract class InterventionOrder extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-	
-	
-
-	
 }

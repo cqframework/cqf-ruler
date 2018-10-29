@@ -2,8 +2,6 @@ package org.opencds.cqf.qdm.model;
 
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.ResourceType;
-//import org.opencds.cqf.qdm.QdmBaseType;
-
 
 @ResourceDef(name="PatientCharacteristicRace", profile="TODO")
 public class PatientCharacteristicRace extends QdmBaseType {
@@ -25,5 +23,4 @@ public class PatientCharacteristicRace extends QdmBaseType {
     public String getResourceName() {
         return "PatientCharacteristicRace";
     }
-
 }

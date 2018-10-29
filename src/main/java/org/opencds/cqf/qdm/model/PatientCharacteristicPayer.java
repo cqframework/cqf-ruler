@@ -4,8 +4,6 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.ResourceType;
 import org.hl7.fhir.dstu3.model.Period;
-//import org.opencds.cqf.qdm.QdmBaseType;
-
 
 @ResourceDef(name="PatientCharacteristicPayer", profile="TODO")
 public class PatientCharacteristicPayer extends QdmBaseType {
@@ -19,7 +17,6 @@ public class PatientCharacteristicPayer extends QdmBaseType {
         this.relevantPeriod = relevantPeriod;
         return this;
     }	
-
 
     @Override
     public PatientCharacteristicPayer copy() {
@@ -38,5 +35,4 @@ public class PatientCharacteristicPayer extends QdmBaseType {
     public String getResourceName() {
         return "PatientCharacteristicPayer";
     }
-
 }

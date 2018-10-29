@@ -4,7 +4,6 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.DatatypeDef;
 import org.hl7.fhir.dstu3.model.Range;
 
-
 @DatatypeDef(name="ResultComponent")
 public class ResultComponent extends Component {
 

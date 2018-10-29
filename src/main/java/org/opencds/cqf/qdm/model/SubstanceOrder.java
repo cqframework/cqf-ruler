@@ -5,9 +5,7 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Quantity;
-//import org.opencds.cqf.qdm.QdmBaseType;
 import java.lang.Integer;
-
 
 @ResourceDef(name="SubstanceOrder", profile="TODO")
 public abstract class SubstanceOrder extends QdmBaseType {
@@ -22,7 +20,6 @@ public abstract class SubstanceOrder extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="reason", order=1)
     Coding reason;
     public Coding getReason() {
@@ -32,7 +29,6 @@ public abstract class SubstanceOrder extends QdmBaseType {
         this.reason = reason;
         return this;
     }
-
 
     @Child(name="dosage", order=2)
     Quantity dosage;
@@ -44,7 +40,6 @@ public abstract class SubstanceOrder extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="supply", order=3)
     Quantity supply;
     public Quantity getSupply() {
@@ -53,8 +48,7 @@ public abstract class SubstanceOrder extends QdmBaseType {
     public SubstanceOrder setSupply(Quantity supply) {
         this.supply = supply;
         return this;
-    }	
-	
+    }
 	
     @Child(name="frequency", order=4)
     Coding frequency;
@@ -65,7 +59,6 @@ public abstract class SubstanceOrder extends QdmBaseType {
         this.frequency = frequency;
         return this;
     }
-
 	
     @Child(name="method", order=5)
     Coding method;
@@ -77,7 +70,6 @@ public abstract class SubstanceOrder extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="refills", order=6)
     Integer refills;
     public Integer getRefills() {
@@ -87,8 +79,7 @@ public abstract class SubstanceOrder extends QdmBaseType {
         this.refills = refills;
         return this;
     }	
-	
-	
+
     @Child(name="route", order=7)
     Coding route;
     public Coding getRoute() {
@@ -98,7 +89,6 @@ public abstract class SubstanceOrder extends QdmBaseType {
         this.route = route;
         return this;
     }
-	
 
     @Child(name="negationRationale", order=8)
     Coding negationRationale;
@@ -109,6 +99,4 @@ public abstract class SubstanceOrder extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-
-	
 }

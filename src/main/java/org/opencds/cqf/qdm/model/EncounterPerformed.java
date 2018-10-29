@@ -5,8 +5,6 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Quantity;
-//import org.opencds.cqf.qdm.QdmBaseType;
-//import org.opencds.cqf.qdm.types.FacilityLocation;
 
 import java.util.List;
 
@@ -52,13 +50,13 @@ public abstract class EncounterPerformed extends QdmBaseType {
         return this;
     }
 
-    @Child(name="diagnosis", max=Child.MAX_UNLIMITED, order=4)
-    List<Coding> diagnosis;
-    public List<Coding> getDiagnosis() {
-        return diagnosis;
+    @Child(name="diagnoses", max=Child.MAX_UNLIMITED, order=4)
+    List<Coding> diagnoses;
+    public List<Coding> getDiagnoses() {
+        return diagnoses;
     }
-    public EncounterPerformed setDiagnosis(List<Coding> diagnosis) {
-        this.diagnosis = diagnosis;
+    public EncounterPerformed setDiagnoses(List<Coding> diagnoses) {
+        this.diagnoses = diagnoses;
         return this;
     }
 

@@ -5,8 +5,6 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Period;
-//import org.opencds.cqf.qdm.QdmBaseType;
-
 
 @ResourceDef(name="DeviceApplied", profile="TODO")
 public abstract class DeviceApplied extends QdmBaseType {
@@ -20,7 +18,6 @@ public abstract class DeviceApplied extends QdmBaseType {
         this.authorDatetime = authorDatetime;
         return this;
     }
-
 	
     @Child(name="relevantPeriod", order=1)
     Period relevantPeriod;
@@ -30,9 +27,7 @@ public abstract class DeviceApplied extends QdmBaseType {
     public DeviceApplied setRelevantPeriod(Period relevantPeriod) {
         this.relevantPeriod = relevantPeriod;
         return this;
-    }	
-	
-	
+    }
 	
     @Child(name="negationRationale", order=2)
     Coding negationRationale;
@@ -44,7 +39,6 @@ public abstract class DeviceApplied extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="reason", order=3)
     Coding reason;
     public Coding getReason() {
@@ -54,7 +48,6 @@ public abstract class DeviceApplied extends QdmBaseType {
         this.reason = reason;
         return this;
     }
-
 
     @Child(name="anatomicalLocationSite", order=4)
     Coding anatomicalLocationSite;
@@ -66,7 +59,6 @@ public abstract class DeviceApplied extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="anatomicalApproachSite", order=5)
     Coding anatomicalApproachSite;
     public Coding getAnatomicalApproachSite() {
@@ -75,6 +67,5 @@ public abstract class DeviceApplied extends QdmBaseType {
     public DeviceApplied setAnatomicalApproachSite(Coding anatomicalApproachSite) {
         this.anatomicalApproachSite = anatomicalApproachSite;
         return this;
-    }	
-	
+    }
 }

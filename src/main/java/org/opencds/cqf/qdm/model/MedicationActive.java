@@ -7,7 +7,6 @@ import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Quantity;
 import org.hl7.fhir.dstu3.model.Coding;
 
-
 @ResourceDef(name="MedicationActive", profile="TODO")
 public class MedicationActive extends QdmBaseType {
 
@@ -21,7 +20,6 @@ public class MedicationActive extends QdmBaseType {
         return this;
     }
 
-
 	@Child(name="dosage", order=1)
     private Quantity dosage;
     public Quantity getDosage() {
@@ -31,7 +29,6 @@ public class MedicationActive extends QdmBaseType {
         this.dosage = dosage;
         return this;
     }
-
 
 	@Child(name="supply", order=2)
     private Quantity supply;
@@ -43,7 +40,6 @@ public class MedicationActive extends QdmBaseType {
         return this;
     }
 	
-	
     @Child(name="frequency", order=3)
     private Coding frequency;
     public Coding getFrequency() {
@@ -52,8 +48,7 @@ public class MedicationActive extends QdmBaseType {
     public MedicationActive setFrequency(Coding frequency) {
         this.frequency = frequency;
         return this;
-    }	
-
+    }
 
     @Child(name="route", order=4)
     private Coding route;
@@ -64,7 +59,6 @@ public class MedicationActive extends QdmBaseType {
         this.route = route;
         return this;
     }
-
 	
     @Override
     public MedicationActive copy() {
@@ -87,5 +81,4 @@ public class MedicationActive extends QdmBaseType {
     public String getResourceName() {
         return "MedicationActive";
     }
-
 }

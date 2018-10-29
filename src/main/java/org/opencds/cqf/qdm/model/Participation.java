@@ -5,7 +5,6 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.ResourceType;
 
-
 @ResourceDef(name="Participation", profile="TODO")
 public class Participation extends QdmBaseType {
 
@@ -36,5 +35,4 @@ public class Participation extends QdmBaseType {
     public String getResourceName() {
         return "Participation";
     }
-
 }

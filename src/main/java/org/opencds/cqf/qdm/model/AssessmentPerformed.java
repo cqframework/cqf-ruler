@@ -5,9 +5,6 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Type;
-//import org.opencds.cqf.qdm.QdmBaseType;
-//import org.opencds.cqf.qdm.types.Component;
-//import org.opencds.cqf.qdm.types.Id;
 
 import java.util.List;
 
@@ -23,7 +20,6 @@ public abstract class AssessmentPerformed extends QdmBaseType {
         this.authorDatetime = authorDatetime;
         return this;
     }
-	
 
     @Child(name="negationRationale", order=1)
     Coding negationRationale;
@@ -34,7 +30,6 @@ public abstract class AssessmentPerformed extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-
 
 	@Child(name="reason", order=2)
     Coding reason;
@@ -56,7 +51,6 @@ public abstract class AssessmentPerformed extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="result", order=4)
     Type result;
     public Type getResult() {
@@ -66,7 +60,6 @@ public abstract class AssessmentPerformed extends QdmBaseType {
         this.result = result;
         return this;
     }
-
 	
     @Child(name="components", max=Child.MAX_UNLIMITED, order=5)
     List<Component> components;
@@ -78,7 +71,6 @@ public abstract class AssessmentPerformed extends QdmBaseType {
         return this;
     }	
 
-	
     @Child(name="relatedTo", max=Child.MAX_UNLIMITED, order=6)
     List<Id> relatedTo;
     public List<Id> getRelatedTo() {
@@ -88,5 +80,4 @@ public abstract class AssessmentPerformed extends QdmBaseType {
         this.relatedTo = relatedTo;
         return this;
     }
-	
 }

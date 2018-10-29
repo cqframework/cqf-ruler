@@ -7,7 +7,6 @@ import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Period;
 
-
 @ResourceDef(name="AllergyIntolerance", profile="TODO")
 public class AllergyIntolerance extends QdmBaseType {
 
@@ -21,7 +20,6 @@ public class AllergyIntolerance extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="prevalencePeriod", order=1)
     private Period prevalencePeriod;
     public Period getPrevalencePeriod() {
@@ -31,8 +29,7 @@ public class AllergyIntolerance extends QdmBaseType {
         this.prevalencePeriod = prevalencePeriod;
         return this;
     }	
-	
-	
+
     @Child(name="type", order=2)
     private Coding type;
     public Coding getType() {
@@ -43,7 +40,6 @@ public class AllergyIntolerance extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="severity", order=3)
     private Coding severity;
     public Coding getSeverity() {
@@ -53,8 +49,7 @@ public class AllergyIntolerance extends QdmBaseType {
         this.severity = severity;
         return this;
     }	
-	
-	
+
     @Override
     public AllergyIntolerance copy() {
         AllergyIntolerance retVal = new AllergyIntolerance();
@@ -75,5 +70,4 @@ public class AllergyIntolerance extends QdmBaseType {
     public String getResourceName() {
         return "AllergyIntolerance";
     }
-
 }

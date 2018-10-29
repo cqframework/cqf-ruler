@@ -7,7 +7,6 @@ import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Period;
 
-
 @ResourceDef(name="AdverseEvent", profile="TODO")
 public class AdverseEvent extends QdmBaseType {
 
@@ -21,7 +20,6 @@ public class AdverseEvent extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="relevantPeriod", order=1)
     private Period relevantPeriod;
     public Period getRelevantPeriod() {
@@ -30,8 +28,7 @@ public class AdverseEvent extends QdmBaseType {
     public AdverseEvent setRelevantPeriod(Period relevantPeriod) {
         this.relevantPeriod = relevantPeriod;
         return this;
-    }	
-	
+    }
 	
     @Child(name="severity", order=2)
     private Coding severity;
@@ -41,8 +38,7 @@ public class AdverseEvent extends QdmBaseType {
     public AdverseEvent setSeverity(Coding severity) {
         this.severity = severity;
         return this;
-    }	
-	
+    }
 
     @Child(name="facilityLocation", order=3)
     private Coding facilityLocation;
@@ -54,7 +50,6 @@ public class AdverseEvent extends QdmBaseType {
         return this;
     }	
 
-	
     @Child(name="type", order=4)
     private Coding type;
     public Coding getType() {
@@ -64,7 +59,6 @@ public class AdverseEvent extends QdmBaseType {
         this.type = type;
         return this;
     }	
-
 
     @Override
     public AdverseEvent copy() {
@@ -78,7 +72,6 @@ public class AdverseEvent extends QdmBaseType {
         return retVal;
     }
 
-
     @Override
     public ResourceType getResourceType() {
         return null;
@@ -88,5 +81,4 @@ public class AdverseEvent extends QdmBaseType {
     public String getResourceName() {
         return "AdverseEvent";
     }
-
 }

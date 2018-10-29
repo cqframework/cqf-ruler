@@ -4,8 +4,6 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
-//import org.opencds.cqf.qdm.QdmBaseType;
-
 
 @ResourceDef(name="PhysicalExamOrder", profile="TODO")
 public abstract class PhysicalExamOrder extends QdmBaseType {
@@ -19,7 +17,6 @@ public abstract class PhysicalExamOrder extends QdmBaseType {
         this.authorDatetime = authorDatetime;
         return this;
     }
-	
 
 	@Child(name="reason", order=1)
     Coding reason;
@@ -29,8 +26,7 @@ public abstract class PhysicalExamOrder extends QdmBaseType {
     public PhysicalExamOrder setReason(Coding reason) {
         this.reason = reason;
         return this;
-    }	
-	
+    }
 	
     @Child(name="method", order=2)
     Coding method;
@@ -40,8 +36,7 @@ public abstract class PhysicalExamOrder extends QdmBaseType {
     public PhysicalExamOrder setMethod(Coding method) {
         this.method = method;
         return this;
-    }	
-	
+    }
 	
     @Child(name="anatomicalLocationSite", order=3)
     Coding anatomicalLocationSite;
@@ -51,8 +46,7 @@ public abstract class PhysicalExamOrder extends QdmBaseType {
     public PhysicalExamOrder setAnatomicalLocationSite(Coding anatomicalLocationSite) {
         this.anatomicalLocationSite = anatomicalLocationSite;
         return this;
-    }	
-
+    }
 	
     @Child(name="negationRationale", order=4)
     Coding negationRationale;
@@ -63,6 +57,4 @@ public abstract class PhysicalExamOrder extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-
-	
 }

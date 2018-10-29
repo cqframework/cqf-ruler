@@ -5,11 +5,10 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Period;
-//import org.opencds.cqf.qdm.QdmBaseType;
-
+import org.hl7.fhir.dstu3.model.ResourceType;
 
 @ResourceDef(name="Diagnosis", profile="TODO")
-public abstract class Diagnosis extends QdmBaseType {
+public class Diagnosis extends QdmBaseType {
 
     @Child(name="authorDatetime", order=0)
     DateTimeType authorDatetime;
@@ -20,7 +19,6 @@ public abstract class Diagnosis extends QdmBaseType {
         this.authorDatetime = authorDatetime;
         return this;
     }
-
 	
     @Child(name="prevalencePeriod", order=1)
     Period prevalencePeriod;
@@ -30,8 +28,7 @@ public abstract class Diagnosis extends QdmBaseType {
     public Diagnosis setPrevalencePeriod(Period prevalencePeriod) {
         this.prevalencePeriod = prevalencePeriod;
         return this;
-    }	
-	
+    }
 
     @Child(name="reason", order=2)
     Coding reason;
@@ -42,7 +39,6 @@ public abstract class Diagnosis extends QdmBaseType {
         this.reason = reason;
         return this;
     }
-
 	
     @Child(name="anatomicalLocationSite", order=3)
     Coding anatomicalLocationSite;
@@ -54,7 +50,6 @@ public abstract class Diagnosis extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="severity", order=4)
     Coding severity;
     public Coding getSeverity() {
@@ -64,7 +59,28 @@ public abstract class Diagnosis extends QdmBaseType {
         this.severity = severity;
         return this;
     }
-	
 
+    @Override
+    public QdmBaseType copy() {
+        Diagnosis retVal = new Diagnosis();
+        super.copyValues(retVal);
 
+        retVal.authorDatetime = authorDatetime;
+        retVal.prevalencePeriod = prevalencePeriod;
+        retVal.reason = reason;
+        retVal.anatomicalLocationSite = anatomicalLocationSite;
+        retVal.severity = severity;
+
+        return retVal;
+    }
+
+    @Override
+    public ResourceType getResourceType() {
+        return null;
+    }
+
+    @Override
+    public String getResourceName() {
+        return "Diagnosis";
+    }
 }

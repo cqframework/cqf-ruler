@@ -6,8 +6,6 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Type;
-//import org.opencds.cqf.qdm.QdmBaseType;
-//import org.opencds.cqf.qdm.types.Component;
 
 import java.util.List;
 
@@ -24,7 +22,6 @@ public abstract class ProcedurePerformed extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="relevantPeriod", order=1)
     Period relevantPeriod;
     public Period getRelevantPeriod() {
@@ -34,7 +31,6 @@ public abstract class ProcedurePerformed extends QdmBaseType {
         this.relevantPeriod = relevantPeriod;
         return this;
     }	
-	
 
     @Child(name="reason", order=2)
     Coding reason;
@@ -46,7 +42,6 @@ public abstract class ProcedurePerformed extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="method", order=3)
     Coding method;
     public Coding getMethod() {
@@ -55,8 +50,7 @@ public abstract class ProcedurePerformed extends QdmBaseType {
     public ProcedurePerformed setMethod(Coding method) {
         this.method = method;
         return this;
-    }	
-
+    }
 
     @Child(name="result", order=4)
     Type result;
@@ -67,7 +61,6 @@ public abstract class ProcedurePerformed extends QdmBaseType {
         this.result = result;
         return this;
     }
-	
 
     @Child(name="status", order=5)
     Coding status;
@@ -79,7 +72,6 @@ public abstract class ProcedurePerformed extends QdmBaseType {
         return this;
     }		
 
-	
     @Child(name="anatomicalApproachSite", order=6)
     Coding anatomicalApproachSite;
     public Coding getAnatomicalApproachSite() {
@@ -89,7 +81,6 @@ public abstract class ProcedurePerformed extends QdmBaseType {
         this.anatomicalApproachSite = anatomicalApproachSite;
         return this;
     }
-
 	
     @Child(name="anatomicalLocationSite", order=7)
     Coding anatomicalLocationSite;
@@ -100,7 +91,6 @@ public abstract class ProcedurePerformed extends QdmBaseType {
         this.anatomicalLocationSite = anatomicalLocationSite;
         return this;
     }
-
 
     @Child(name="ordinality", order=8)
     Coding ordinality;
@@ -120,8 +110,7 @@ public abstract class ProcedurePerformed extends QdmBaseType {
     public ProcedurePerformed setIncisionDatetime(DateTimeType incisionDatetime) {
         this.incisionDatetime = incisionDatetime;
         return this;
-    }	
-	
+    }
 	
     @Child(name="negationRationale", order=10)
     Coding negationRationale;
@@ -132,8 +121,7 @@ public abstract class ProcedurePerformed extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-	
-	
+
     @Child(name="components", max=Child.MAX_UNLIMITED, order=11)
     List<Component> components;
     public List<Component> getComponents() {
@@ -143,7 +131,4 @@ public abstract class ProcedurePerformed extends QdmBaseType {
         this.components = components;
         return this;
     }
-	
-
-
 }

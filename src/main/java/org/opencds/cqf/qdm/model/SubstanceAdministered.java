@@ -6,8 +6,6 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Quantity;
-//import org.opencds.cqf.qdm.QdmBaseType;
-
 
 @ResourceDef(name="SubstanceAdministered", profile="TODO")
 public abstract class SubstanceAdministered extends QdmBaseType {
@@ -22,7 +20,6 @@ public abstract class SubstanceAdministered extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="relevantPeriod", order=1)
     Period relevantPeriod;
     public Period getRelevantPeriod() {
@@ -32,8 +29,7 @@ public abstract class SubstanceAdministered extends QdmBaseType {
         this.relevantPeriod = relevantPeriod;
         return this;
     }	
-	
-	
+
     @Child(name="dosage", order=2)
     Quantity dosage;
     public Quantity getDosage() {
@@ -44,7 +40,6 @@ public abstract class SubstanceAdministered extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="supply", order=3)
     Quantity supply;
     public Quantity getSupply() {
@@ -53,8 +48,7 @@ public abstract class SubstanceAdministered extends QdmBaseType {
     public SubstanceAdministered setSupply(Quantity supply) {
         this.supply = supply;
         return this;
-    }	
-	
+    }
 	
     @Child(name="frequency", order=4)
     Coding frequency;
@@ -66,7 +60,6 @@ public abstract class SubstanceAdministered extends QdmBaseType {
         return this;
     }
 	
-	
     @Child(name="route", order=5)
     Coding route;
     public Coding getRoute() {
@@ -76,7 +69,6 @@ public abstract class SubstanceAdministered extends QdmBaseType {
         this.route = route;
         return this;
     }
-	
 
     @Child(name="negationRationale", order=6)
     Coding negationRationale;
@@ -87,6 +79,4 @@ public abstract class SubstanceAdministered extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-
-	
 }

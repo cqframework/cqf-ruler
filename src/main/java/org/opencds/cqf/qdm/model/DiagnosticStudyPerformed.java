@@ -6,8 +6,6 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Type;
-//import org.opencds.cqf.qdm.QdmBaseType;
-//import org.opencds.cqf.qdm.types.Component;
 
 import java.util.List;
 
@@ -24,7 +22,6 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="relevantPeriod", order=1)
     Period relevantPeriod;
     public Period getRelevantPeriod() {
@@ -34,7 +31,6 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
         this.relevantPeriod = relevantPeriod;
         return this;
     }	
-	
 
     @Child(name="reason", order=2)
     Coding reason;
@@ -46,7 +42,6 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="result", order=3)
     Type result;
     public Type getResult() {
@@ -57,7 +52,6 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="resultDatetime", order=4)
     DateTimeType resultDatetime;
     public DateTimeType getResultDatetime() {
@@ -66,8 +60,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
     public DiagnosticStudyPerformed setResultDatetime(DateTimeType resultDatetime) {
         this.resultDatetime = resultDatetime;
         return this;
-    }	
-	
+    }
 
     @Child(name="status", order=5)
     Coding status;
@@ -79,7 +72,6 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
         return this;
     }		
 
-	
     @Child(name="method", order=6)
     Coding method;
     public Coding getMethod() {
@@ -90,7 +82,6 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
         return this;
     }	
 
-
     @Child(name="facilityLocation", order=7)
     Coding facilityLocation;
     public Coding getFacilityLocation() {
@@ -100,8 +91,7 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
         this.facilityLocation = facilityLocation;
         return this;
     }	
-	
-	
+
     @Child(name="negationRationale", order=8)
     Coding negationRationale;
     public Coding getNegationRationale() {
@@ -112,7 +102,6 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
         return this;
     }
 	
-	
     @Child(name="components", max=Child.MAX_UNLIMITED, order=9)
     List<Component> components;
     public List<Component> getComponents() {
@@ -122,5 +111,4 @@ public abstract class DiagnosticStudyPerformed extends QdmBaseType {
         this.components = components;
         return this;
     }
-
 }

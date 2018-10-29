@@ -4,8 +4,6 @@ import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
-//import org.opencds.cqf.qdm.QdmBaseType;
-
 
 @ResourceDef(name="DiagnosticStudyRecommended", profile="TODO")
 public abstract class DiagnosticStudyRecommended extends QdmBaseType {
@@ -19,7 +17,6 @@ public abstract class DiagnosticStudyRecommended extends QdmBaseType {
         this.authorDatetime = authorDatetime;
         return this;
     }
-
 	
     @Child(name="method", order=1)
     Coding method;
@@ -30,7 +27,6 @@ public abstract class DiagnosticStudyRecommended extends QdmBaseType {
         this.method = method;
         return this;
     }
-
 	
     @Child(name="negationRationale", order=2)
     Coding negationRationale;
@@ -41,11 +37,4 @@ public abstract class DiagnosticStudyRecommended extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-
-	
-
-
-
-
-	
 }

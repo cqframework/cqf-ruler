@@ -1,12 +1,7 @@
 package org.opencds.cqf.qdm.model;
 
 import ca.uhn.fhir.model.api.annotation.Child;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.DateTimeType;
-import org.hl7.fhir.dstu3.model.Period;
-import org.hl7.fhir.dstu3.model.Type;
-//import org.opencds.cqf.qdm.QdmBaseType;
-//import org.opencds.cqf.qdm.types.ResultComponent;
+import org.hl7.fhir.dstu3.model.*;
 
 import java.util.List;
 
@@ -22,7 +17,6 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="relevantPeriod", order=1)
     Period relevantPeriod;
     public Period getRelevantPeriod() {
@@ -31,8 +25,7 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
     public LaboratoryTestPerformed setRelevantPeriod(Period relevantPeriod) {
         this.relevantPeriod = relevantPeriod;
         return this;
-    }	
-	
+    }
 	
     @Child(name="status", order=2)
     Coding status;
@@ -43,8 +36,7 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
         this.status = status;
         return this;
     }	
-	
-	
+
     @Child(name="method", order=3)
     Coding method;
     public Coding getMethod() {
@@ -54,7 +46,6 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
         this.method = method;
         return this;
     }		
-
 
     @Child(name="result", order=4)
     Type result;
@@ -66,7 +57,6 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
         return this;
     }
 	
-	
     @Child(name="resultDatetime", order=5)
     DateTimeType resultDatetime;
     public DateTimeType getResultDatetime() {
@@ -75,8 +65,7 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
     public LaboratoryTestPerformed setResultDatetime(DateTimeType resultDatetime) {
         this.resultDatetime = resultDatetime;
         return this;
-    }	
-	
+    }
 	
     @Child(name="reason", order=6)
     Coding reason;
@@ -86,19 +75,17 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
     public LaboratoryTestPerformed setReason(Coding reason) {
         this.reason = reason;
         return this;
-    }	
-	
+    }
 	
     @Child(name="referenceRange", order=7)
-    Period referenceRange;
-    public Period getReferenceRange() {
+    Range referenceRange;
+    public Range getReferenceRange() {
         return referenceRange;
     }
-    public LaboratoryTestPerformed setReferenceRange(Period referenceRange) {
+    public LaboratoryTestPerformed setReferenceRange(Range referenceRange) {
         this.referenceRange = referenceRange;
         return this;
-    }	
-		
+    }
 	
     @Child(name="negationRationale", order=8)
     Coding negationRationale;
@@ -110,7 +97,6 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
         return this;
     }
 	
-	
     @Child(name="components", max=Child.MAX_UNLIMITED, order=9)
     List<ResultComponent> components;
     public List<ResultComponent> getComponents() {
@@ -119,7 +105,5 @@ public abstract class LaboratoryTestPerformed extends QdmBaseType {
     public LaboratoryTestPerformed setComponents(List<ResultComponent> components) {
         this.components = components;
         return this;
-    }	
-	
-	
+    }
 }

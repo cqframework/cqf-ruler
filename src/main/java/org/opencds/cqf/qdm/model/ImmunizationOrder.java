@@ -5,8 +5,6 @@ import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DateTimeType;
 import org.hl7.fhir.dstu3.model.Quantity;
-//import org.opencds.cqf.qdm.QdmBaseType;
-
 
 @ResourceDef(name="ImmunizationOrder", profile="TODO")
 public abstract class ImmunizationOrder extends QdmBaseType {
@@ -21,7 +19,6 @@ public abstract class ImmunizationOrder extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="authorDatetime", order=1)
     DateTimeType authorDatetime;
     public DateTimeType getAuthorDatetime() {
@@ -32,7 +29,6 @@ public abstract class ImmunizationOrder extends QdmBaseType {
         return this;
     }
 
-	
     @Child(name="dosage", order=2)
     Quantity dosage;
     public Quantity getDosage() {
@@ -41,8 +37,7 @@ public abstract class ImmunizationOrder extends QdmBaseType {
     public ImmunizationOrder setDosage(Quantity dosage) {
         this.dosage = dosage;
         return this;
-    }	
-	
+    }
 
     @Child(name="supply", order=3)
     Quantity supply;
@@ -52,8 +47,7 @@ public abstract class ImmunizationOrder extends QdmBaseType {
     public ImmunizationOrder setSupply(Quantity supply) {
         this.supply = supply;
         return this;
-    }	
-
+    }
 	
     @Child(name="reason", order=4)
     Coding reason;
@@ -65,7 +59,6 @@ public abstract class ImmunizationOrder extends QdmBaseType {
         return this;
     }
 
-
     @Child(name="route", order=5)
     Coding route;
     public Coding getRoute() {
@@ -74,8 +67,7 @@ public abstract class ImmunizationOrder extends QdmBaseType {
     public ImmunizationOrder setRoute(Coding route) {
         this.route = route;
         return this;
-    }	
-
+    }
 	
     @Child(name="negationRationale", order=6)
     Coding negationRationale;
@@ -86,11 +78,4 @@ public abstract class ImmunizationOrder extends QdmBaseType {
         this.negationRationale = negationRationale;
         return this;
     }
-
-	
-
-
-
-
-	
 }
