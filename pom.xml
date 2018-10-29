@@ -12,7 +12,7 @@
         <spring_version>5.0.3.RELEASE</spring_version>
         <jetty_version>9.4.8.v20171121</jetty_version>
         <hapi_version>3.5.0-SNAPSHOT</hapi_version>
-        <cql_engine_version>1.2.50-SNAPSHOT</cql_engine_version>
+        <cql_engine_version>1.2.51-SNAPSHOT</cql_engine_version>
 
         <!-- Exec plugin properties (used when starting server) -->
         <skipTests>false</skipTests>

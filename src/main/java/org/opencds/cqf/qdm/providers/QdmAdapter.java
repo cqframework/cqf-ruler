@@ -103,7 +103,7 @@ public class QdmAdapter {
             case "PositiveEncounterPerformed": case "NegativeEncounterPerformed": {
                 switch (qdmPath) {
                     case "code":
-                        return "type";
+                        return "class";
                 }
             }
             case "PatientCharacteristicSex": return "gender";

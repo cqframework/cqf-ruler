@@ -1,0 +1,665 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.666.5.307",
+        "url": "http://localhost:8080/cqf-ruler/baseDstu3/ValueSet/2.16.840.1.113883.3.666.5.307",
+        "version": "20170504",
+        "name": "Encounter Inpatient",
+        "status": "active",
+        "date": "2017-05-04T01:00:13-04:00",
+        "publisher": "Lantana EH Steward",
+        "compose": {
+          "include": [
+            {
+              "system": "http://snomed.info/sct",
+              "concept": [
+                {
+                  "code": "183452005",
+                  "display": "Emergency hospital admission (procedure)"
+                },
+                {
+                  "code": "32485007",
+                  "display": "Hospital admission (procedure)"
+                },
+                {
+                  "code": "8715000",
+                  "display": "Hospital admission, elective (procedure)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.666.5.307"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.108.12.1018",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2018-09-20T19:29:06.373+00:00"
+        },
+        "title": "Mammography",
+        "status": "active",
+        "publisher": "National Committee for Quality Assurance",
+        "compose": {
+          "include": [
+            {
+              "system": "http://loinc.org",
+              "version": "2.64",
+              "concept": [
+                {
+                  "code": "24604-1",
+                  "display": "MG Breast Diagnostic Limited Views"
+                },
+                {
+                  "code": "24605-8",
+                  "display": "MG Breast Diagnostic"
+                },
+                {
+                  "code": "24606-6",
+                  "display": "MG Breast Screening"
+                },
+                {
+                  "code": "24610-8",
+                  "display": "MG Breast Limited Views"
+                },
+                {
+                  "code": "26175-0",
+                  "display": "MG Breast - bilateral Screening"
+                },
+                {
+                  "code": "26176-8",
+                  "display": "MG Breast - left Screening"
+                },
+                {
+                  "code": "26177-6",
+                  "display": "MG Breast - right Screening"
+                },
+                {
+                  "code": "26287-3",
+                  "display": "MG Breast - bilateral Limited Views"
+                },
+                {
+                  "code": "26289-9",
+                  "display": "MG Breast - left Limited Views"
+                },
+                {
+                  "code": "26291-5",
+                  "display": "MG Breast - right Limited Views"
+                },
+                {
+                  "code": "26346-7",
+                  "display": "MG Breast - bilateral Diagnostic"
+                },
+                {
+                  "code": "26347-5",
+                  "display": "MG Breast - left Diagnostic"
+                },
+                {
+                  "code": "26348-3",
+                  "display": "MG Breast - right Diagnostic"
+                },
+                {
+                  "code": "26349-1",
+                  "display": "MG Breast - bilateral Diagnostic Limited Views"
+                },
+                {
+                  "code": "26350-9",
+                  "display": "MG Breast - left Diagnostic Limited Views"
+                },
+                {
+                  "code": "26351-7",
+                  "display": "MG Breast - right Diagnostic Limited Views"
+                },
+                {
+                  "code": "36319-2",
+                  "display": "MG Breast 4 Views"
+                },
+                {
+                  "code": "36625-2",
+                  "display": "MG Breast Views"
+                },
+                {
+                  "code": "36626-0",
+                  "display": "MG Breast - bilateral Views"
+                },
+                {
+                  "code": "36627-8",
+                  "display": "MG Breast - left Views"
+                },
+                {
+                  "code": "36642-7",
+                  "display": "MG Breast - left 2 Views"
+                },
+                {
+                  "code": "36962-9",
+                  "display": "MG Breast Axillary"
+                },
+                {
+                  "code": "37005-6",
+                  "display": "MG Breast - left Magnification"
+                },
+                {
+                  "code": "37006-4",
+                  "display": "MG Breast - bilateral MLO"
+                },
+                {
+                  "code": "37016-3",
+                  "display": "MG Breast - bilateral Rolled Views"
+                },
+                {
+                  "code": "37017-1",
+                  "display": "MG Breast - left Rolled Views"
+                },
+                {
+                  "code": "37028-8",
+                  "display": "MG Breast Tangential"
+                },
+                {
+                  "code": "37029-6",
+                  "display": "MG Breast - bilateral Tangential"
+                },
+                {
+                  "code": "37030-4",
+                  "display": "MG Breast - left Tangential"
+                },
+                {
+                  "code": "37037-9",
+                  "display": "MG Breast True lateral"
+                },
+                {
+                  "code": "37038-7",
+                  "display": "MG Breast - bilateral True lateral"
+                },
+                {
+                  "code": "37052-8",
+                  "display": "MG Breast - bilateral XCCL"
+                },
+                {
+                  "code": "37053-6",
+                  "display": "MG Breast - left XCCL"
+                },
+                {
+                  "code": "37539-4",
+                  "display": "MG Breast Grid Views"
+                },
+                {
+                  "code": "37542-8",
+                  "display": "MG Breast Magnification Views"
+                },
+                {
+                  "code": "37543-6",
+                  "display": "MG Breast - bilateral Magnification Views"
+                },
+                {
+                  "code": "37551-9",
+                  "display": "MG Breast Spot Views"
+                },
+                {
+                  "code": "37552-7",
+                  "display": "MG Breast - bilateral Spot Views"
+                },
+                {
+                  "code": "37553-5",
+                  "display": "MG Breast - left Spot Views compression"
+                },
+                {
+                  "code": "37554-3",
+                  "display": "MG Breast - bilateral Magnification and Spot"
+                },
+                {
+                  "code": "37768-9",
+                  "display": "MG Breast - right 2 Views"
+                },
+                {
+                  "code": "37769-7",
+                  "display": "MG Breast - right Magnification and Spot"
+                },
+                {
+                  "code": "37770-5",
+                  "display": "MG Breast - right Tangential"
+                },
+                {
+                  "code": "37771-3",
+                  "display": "MG Breast - right True lateral"
+                },
+                {
+                  "code": "37772-1",
+                  "display": "MG Breast - right XCCL"
+                },
+                {
+                  "code": "37773-9",
+                  "display": "MG Breast - right Magnification"
+                },
+                {
+                  "code": "37774-7",
+                  "display": "MG Breast - right Views"
+                },
+                {
+                  "code": "37775-4",
+                  "display": "MG Breast - right Rolled Views"
+                },
+                {
+                  "code": "38070-9",
+                  "display": "MG Breast Views for implant"
+                },
+                {
+                  "code": "38071-7",
+                  "display": "MG Breast - bilateral Views for implant"
+                },
+                {
+                  "code": "38072-5",
+                  "display": "MG Breast - left Views for implant"
+                },
+                {
+                  "code": "38090-7",
+                  "display": "MG Breast - bilateral Air gap Views"
+                },
+                {
+                  "code": "38091-5",
+                  "display": "MG Breast - left Air gap Views"
+                },
+                {
+                  "code": "38807-4",
+                  "display": "MG Breast - right Spot Views"
+                },
+                {
+                  "code": "38820-7",
+                  "display": "MG Breast - right Views for implant"
+                },
+                {
+                  "code": "38854-6",
+                  "display": "MG Breast - left Magnification and Spot"
+                },
+                {
+                  "code": "38855-3",
+                  "display": "MG Breast - left True lateral"
+                },
+                {
+                  "code": "39150-8",
+                  "display": "FFD mammogram Breast Views Post Localization"
+                },
+                {
+                  "code": "39152-4",
+                  "display": "FFD mammogram Breast Diagnostic"
+                },
+                {
+                  "code": "39153-2",
+                  "display": "FFD mammogram Breast Screening"
+                },
+                {
+                  "code": "39154-0",
+                  "display": "FFD mammogram Breast - bilateral Diagnostic"
+                },
+                {
+                  "code": "42168-5",
+                  "display": "FFD mammogram Breast - right Diagnostic"
+                },
+                {
+                  "code": "42169-3",
+                  "display": "FFD mammogram Breast - left Diagnostic"
+                },
+                {
+                  "code": "42174-3",
+                  "display": "FFD mammogram Breast - bilateral Screening"
+                },
+                {
+                  "code": "42415-0",
+                  "display": "MG Breast - bilateral Views Post Wire Placement"
+                },
+                {
+                  "code": "42416-8",
+                  "display": "MG Breast - left Views Post Wire Placement"
+                },
+                {
+                  "code": "46335-6",
+                  "display": "MG Breast - bilateral Single view"
+                },
+                {
+                  "code": "46336-4",
+                  "display": "MG Breast - left Single view"
+                },
+                {
+                  "code": "46337-2",
+                  "display": "MG Breast - right Single view"
+                },
+                {
+                  "code": "46338-0",
+                  "display": "MG Breast - unilateral Single view"
+                },
+                {
+                  "code": "46339-8",
+                  "display": "MG Breast - unilateral Views"
+                },
+                {
+                  "code": "46342-2",
+                  "display": "FFD mammogram Breast Views"
+                },
+                {
+                  "code": "46350-5",
+                  "display": "MG Breast - unilateral Diagnostic"
+                },
+                {
+                  "code": "46351-3",
+                  "display": "MG Breast - bilateral Displacement Views for Implant"
+                },
+                {
+                  "code": "46354-7",
+                  "display": "FFD mammogram Breast - right Screening"
+                },
+                {
+                  "code": "46355-4",
+                  "display": "FFD mammogram Breast - left Screening"
+                },
+                {
+                  "code": "46356-2",
+                  "display": "MG Breast - unilateral Screening"
+                },
+                {
+                  "code": "46380-2",
+                  "display": "MG Breast - unilateral Views for implant"
+                },
+                {
+                  "code": "48475-8",
+                  "display": "MG Breast - bilateral Diagnostic for implant"
+                },
+                {
+                  "code": "48492-3",
+                  "display": "MG Breast - bilateral Screening for implant"
+                },
+                {
+                  "code": "69150-1",
+                  "display": "MG Breast - left Diagnostic for implant"
+                },
+                {
+                  "code": "69251-7",
+                  "display": "MG Breast Views Post Wire Placement"
+                },
+                {
+                  "code": "69259-0",
+                  "display": "MG Breast - right Diagnostic for implant"
+                },
+                {
+                  "code": "72137-3",
+                  "display": "DBT Breast - right diagnostic"
+                },
+                {
+                  "code": "72138-1",
+                  "display": "DBT Breast - left diagnostic"
+                },
+                {
+                  "code": "72139-9",
+                  "display": "DBT Breast - bilateral diagnostic"
+                },
+                {
+                  "code": "72140-7",
+                  "display": "DBT Breast - right screening"
+                },
+                {
+                  "code": "72141-5",
+                  "display": "DBT Breast - left screening"
+                },
+                {
+                  "code": "72142-3",
+                  "display": "DBT Breast - bilateral screening"
+                },
+                {
+                  "code": "86462-9",
+                  "display": "DBT Breast - unilateral"
+                },
+                {
+                  "code": "86463-7",
+                  "display": "DBT Breast - bilateral"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.108.12.1018"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113762.1.4.1108.15",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1108.15",
+        "version": "20170504",
+        "name": "Hospice care ambulatory",
+        "status": "active",
+        "date": "2017-05-04T01:00:13-04:00",
+        "publisher": "Mathematica",
+        "compose": {
+          "include": [
+            {
+              "system": "http://snomed.info/sct",
+              "concept": [
+                {
+                  "code": "385763009",
+                  "display": "Hospice care (regime/therapy)"
+                },
+                {
+                  "code": "385765002",
+                  "display": "Hospice care management (procedure)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113762.1.4.1108.15"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.198.12.1011",
+        "title": "Fecal Occult Blood Test (FOBT)",
+        "status": "active",
+        "publisher": "National Committee for Quality Assurance",
+        "compose": {
+          "include": [
+            {
+              "system": "http://loinc.org",
+              "version": "2.64",
+              "concept": [
+                {
+                  "code": "12503-9",
+                  "display": "Hemoglobin.gastrointestinal [Presence] in Stool --4th specimen"
+                },
+                {
+                  "code": "12504-7",
+                  "display": "Hemoglobin.gastrointestinal [Presence] in Stool --5th specimen"
+                },
+                {
+                  "code": "14563-1",
+                  "display": "Hemoglobin.gastrointestinal [Presence] in Stool --1st specimen"
+                },
+                {
+                  "code": "14564-9",
+                  "display": "Hemoglobin.gastrointestinal [Presence] in Stool --2nd specimen"
+                },
+                {
+                  "code": "14565-6",
+                  "display": "Hemoglobin.gastrointestinal [Presence] in Stool --3rd specimen"
+                },
+                {
+                  "code": "2335-8",
+                  "display": "Hemoglobin.gastrointestinal [Presence] in Stool"
+                },
+                {
+                  "code": "27396-1",
+                  "display": "Hemoglobin.gastrointestinal [Mass/mass] in Stool"
+                },
+                {
+                  "code": "27401-9",
+                  "display": "Hemoglobin.gastrointestinal [Presence] in Stool --6th specimen"
+                },
+                {
+                  "code": "27925-7",
+                  "display": "Hemoglobin.gastrointestinal [Presence] in Stool --7th specimen"
+                },
+                {
+                  "code": "27926-5",
+                  "display": "Hemoglobin.gastrointestinal [Presence] in Stool --8th specimen"
+                },
+                {
+                  "code": "29771-3",
+                  "display": "Hemoglobin.gastrointestinal.lower [Presence] in Stool by Immunoassay"
+                },
+                {
+                  "code": "56490-6",
+                  "display": "Hemoglobin.gastrointestinal.lower [Presence] in Stool by Immunoassay --2nd specimen"
+                },
+                {
+                  "code": "56491-4",
+                  "display": "Hemoglobin.gastrointestinal.lower [Presence] in Stool by Immunoassay --3rd specimen"
+                },
+                {
+                  "code": "57905-2",
+                  "display": "Hemoglobin.gastrointestinal.lower [Presence] in Stool by Immunoassay --1st specimen"
+                },
+                {
+                  "code": "58453-2",
+                  "display": "Hemoglobin.gastrointestinal.lower [Mass/volume] in Stool by Immunoassay"
+                },
+                {
+                  "code": "80372-6",
+                  "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Rapid immunoassay"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.198.12.1011"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.198.12.1010",
+        "title": "Flexible Sigmoidoscopy",
+        "status": "active",
+        "publisher": "National Committee for Quality Assurance",
+        "compose": {
+          "include": [
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2018-09",
+              "concept": [
+                {
+                  "code": "396226005",
+                  "display": "Flexible fiberoptic sigmoidoscopy with biopsy (procedure)"
+                },
+                {
+                  "code": "425634007",
+                  "display": "Diagnostic endoscopic examination of lower bowel and sampling for bacterial overgrowth using fiberoptic sigmoidoscope (procedure)"
+                },
+                {
+                  "code": "44441009",
+                  "display": "Flexible fiberoptic sigmoidoscopy (procedure)"
+                }
+              ]
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "45330",
+                  "display": "Sigmoidoscopy, flexible; diagnostic, including collection of specimen(s) by brushing or washing, when performed (separate procedure)"
+                },
+                {
+                  "code": "45331",
+                  "display": "Sigmoidoscopy, flexible; with biopsy, single or multiple"
+                },
+                {
+                  "code": "45332",
+                  "display": "Sigmoidoscopy, flexible; with removal of foreign body(s)"
+                },
+                {
+                  "code": "45333",
+                  "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by hot biopsy forceps"
+                },
+                {
+                  "code": "45334",
+                  "display": "Sigmoidoscopy, flexible; with control of bleeding, any method"
+                },
+                {
+                  "code": "45335",
+                  "display": "Sigmoidoscopy, flexible; with directed submucosal injection(s), any substance"
+                },
+                {
+                  "code": "45337",
+                  "display": "Sigmoidoscopy, flexible; with decompression (for pathologic distention) (eg, volvulus, megacolon), including placement of decompression tube, when performed"
+                },
+                {
+                  "code": "45338",
+                  "display": "Sigmoidoscopy, flexible; with removal of tumor(s), polyp(s), or other lesion(s) by snare technique"
+                },
+                {
+                  "code": "45340",
+                  "display": "Sigmoidoscopy, flexible; with transendoscopic balloon dilation"
+                },
+                {
+                  "code": "45341",
+                  "display": "Sigmoidoscopy, flexible; with endoscopic ultrasound examination"
+                },
+                {
+                  "code": "45342",
+                  "display": "Sigmoidoscopy, flexible; with transendoscopic ultrasound guided intramural or transmural fine needle aspiration/biopsy(s)"
+                },
+                {
+                  "code": "45346",
+                  "display": "Sigmoidoscopy, flexible; with ablation of tumor(s), polyp(s), or other lesion(s) (includes pre- and post-dilation and guide wire passage, when performed)"
+                },
+                {
+                  "code": "45347",
+                  "display": "Sigmoidoscopy, flexible; with placement of endoscopic stent (includes pre- and post-dilation and guide wire passage, when performed)"
+                },
+                {
+                  "code": "45349",
+                  "display": "Sigmoidoscopy, flexible; with endoscopic mucosal resection"
+                },
+                {
+                  "code": "45350",
+                  "display": "Sigmoidoscopy, flexible; with band ligation(s) (eg, hemorrhoids)"
+                }
+              ]
+            },
+            {
+              "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "G0104",
+                  "display": "Colorectal cancer screening; flexible sigmoidoscopy"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.198.12.1010"
+      }
+    }
+  ]
+}
