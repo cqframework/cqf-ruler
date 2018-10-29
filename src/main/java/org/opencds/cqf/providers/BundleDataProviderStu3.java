@@ -80,7 +80,7 @@ public class BundleDataProviderStu3 extends FhirDataProviderStu3 {
                         includeResource = false;
                     }
 
-                    else if (dateInterval != null && !((Boolean) IncludesEvaluator.includes(dateRange, dateInterval, precision))) {
+                    else if (dateInterval != null && !IncludesEvaluator.includes(dateRange, dateInterval, precision)) {
                         includeResource = false;
                     }
                 } else {
@@ -95,7 +95,7 @@ public class BundleDataProviderStu3 extends FhirDataProviderStu3 {
 
                     Interval interval = new Interval(lowDate, true, highDate, true);
 
-                    if (!(Boolean) IncludesEvaluator.includes(dateRange, interval, precision)) {
+                    if (!IncludesEvaluator.includes(dateRange, interval, precision)) {
                         includeResource = false;
                     }
                 }
@@ -110,13 +110,7 @@ public class BundleDataProviderStu3 extends FhirDataProviderStu3 {
                     codes = terminologyProvider.expand(valueSetInfo);
                 }
                 if (codes != null) {
-                    Object codeObject = DataProviderHelper
-                            .getStu3Code(
-                                    resolvePath(
-                                            resource,
-                                            DataProviderHelper.convertStu3PathToSearchParam(dataType, codePath)
-                                    )
-                            );
+                    Object codeObject = DataProviderHelper.getStu3Code(resolvePath(resource, codePath));
                     includeResource = DataProviderHelper.checkCodeMembership(codes, codeObject);
                 }
 

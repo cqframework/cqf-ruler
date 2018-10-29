@@ -20,8 +20,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 @Configuration
@@ -44,18 +42,6 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
         return retVal;
     }
 
-    // H2 Config
-    @Bean(name = "myPersistenceDataSourceR4", destroyMethod = "close")
-    public DataSource dataSource() {
-        Path path = Paths.get("target/r4").toAbsolutePath();
-        BasicDataSource retVal = new BasicDataSource();
-        retVal.setDriver(new org.h2.Driver());
-        retVal.setUrl("jdbc:h2:file:" + path.toString() + ";create=true;MV_STORE=FALSE;MVCC=FALSE");
-        retVal.setUsername("");
-        retVal.setPassword("");
-        return retVal;
-    }
-
     @Override
     @Bean(autowire = Autowire.BY_TYPE)
     public DatabaseBackedPagingProvider databaseBackedPagingProvider() {
@@ -74,26 +60,6 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
         retVal.setPersistenceProvider(new HibernatePersistenceProvider());
         retVal.setJpaProperties(jpaProperties());
         return retVal;
-    }
-
-    // H2 config
-    private Properties jpaProperties() {
-        Properties extraProperties = new Properties();
-        extraProperties.put("hibernate.dialect", org.hibernate.dialect.H2Dialect.class.getName());
-        extraProperties.put("hibernate.format_sql", "true");
-        extraProperties.put("hibernate.show_sql", "false");
-        extraProperties.put("hibernate.hbm2ddl.auto", "update");
-        extraProperties.put("hibernate.jdbc.batch_size", "20");
-        extraProperties.put("hibernate.cache.use_query_cache", "false");
-        extraProperties.put("hibernate.cache.use_second_level_cache", "false");
-        extraProperties.put("hibernate.cache.use_structured_entries", "false");
-        extraProperties.put("hibernate.cache.use_minimal_puts", "false");
-        extraProperties.put("hibernate.search.model_mapping", LuceneSearchMappingFactory.class.getName());
-        extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
-        extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles_r4");
-        extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
-//		extraProperties.put("hibernate.search.default.worker.execution", "async");
-        return extraProperties;
     }
 
     @Bean
@@ -120,4 +86,67 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
+
+    // Derby config
+    @Bean(name = "myPersistenceDataSourceR4", destroyMethod = "close")
+    public DataSource dataSource() {
+        BasicDataSource retVal = new BasicDataSource();
+        retVal.setDriver(new org.apache.derby.jdbc.EmbeddedDriver());
+        retVal.setUrl("jdbc:derby:directory:target/r4;create=true");
+        retVal.setUsername("");
+        retVal.setPassword("");
+        return retVal;
+    }
+
+    // Derby config
+    private Properties jpaProperties() {
+        Properties extraProperties = new Properties();
+        extraProperties.put("hibernate.dialect", org.hibernate.dialect.DerbyTenSevenDialect.class.getName());
+        extraProperties.put("hibernate.format_sql", "true");
+        extraProperties.put("hibernate.show_sql", "false");
+        extraProperties.put("hibernate.hbm2ddl.auto", "update");
+        extraProperties.put("hibernate.jdbc.batch_size", "20");
+        extraProperties.put("hibernate.cache.use_query_cache", "false");
+        extraProperties.put("hibernate.cache.use_second_level_cache", "false");
+        extraProperties.put("hibernate.cache.use_structured_entries", "false");
+        extraProperties.put("hibernate.cache.use_minimal_puts", "false");
+        extraProperties.put("hibernate.search.model_mapping", LuceneSearchMappingFactory.class.getName());
+        extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
+        extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles_r4");
+        extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
+//		extraProperties.put("hibernate.search.default.worker.execution", "async");
+        return extraProperties;
+    }
+
+    // H2 Config
+//    @Bean(name = "myPersistenceDataSourceR4", destroyMethod = "close")
+//    public DataSource dataSource() {
+//        Path path = Paths.get("target/r4").toAbsolutePath();
+//        BasicDataSource retVal = new BasicDataSource();
+//        retVal.setDriver(new org.h2.Driver());
+//        retVal.setUrl("jdbc:h2:file:" + path.toString() + ";create=true;MV_STORE=FALSE;MVCC=FALSE");
+//        retVal.setUsername("");
+//        retVal.setPassword("");
+//        return retVal;
+//    }
+
+    // H2 config
+//    private Properties jpaProperties() {
+//        Properties extraProperties = new Properties();
+//        extraProperties.put("hibernate.dialect", org.hibernate.dialect.H2Dialect.class.getName());
+//        extraProperties.put("hibernate.format_sql", "true");
+//        extraProperties.put("hibernate.show_sql", "false");
+//        extraProperties.put("hibernate.hbm2ddl.auto", "update");
+//        extraProperties.put("hibernate.jdbc.batch_size", "20");
+//        extraProperties.put("hibernate.cache.use_query_cache", "false");
+//        extraProperties.put("hibernate.cache.use_second_level_cache", "false");
+//        extraProperties.put("hibernate.cache.use_structured_entries", "false");
+//        extraProperties.put("hibernate.cache.use_minimal_puts", "false");
+//        extraProperties.put("hibernate.search.model_mapping", LuceneSearchMappingFactory.class.getName());
+//        extraProperties.put("hibernate.search.default.directory_provider", "filesystem");
+//        extraProperties.put("hibernate.search.default.indexBase", "target/lucenefiles_r4");
+//        extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
+////		extraProperties.put("hibernate.search.default.worker.execution", "async");
+//        return extraProperties;
+//    }
 }

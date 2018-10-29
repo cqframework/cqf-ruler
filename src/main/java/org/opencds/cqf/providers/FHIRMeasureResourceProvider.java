@@ -6,6 +6,7 @@ import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -430,6 +431,14 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
         // TODO - use FhirSystemDaoDstu3 to call transaction operation directly instead of building client
         provider.setEndpoint(details.getFhirServerBase());
+        if (details.getHeader("Authorization") != null) {
+            String[] splitAuth = details.getHeader("Authorization").split(" ");
+            if (splitAuth.length > 1) {
+                String token = splitAuth[1];
+                BearerTokenAuthInterceptor authInterceptor = new BearerTokenAuthInterceptor(token);
+                provider.getFhirClient().registerInterceptor(authInterceptor);
+            }
+        }
         return provider.getFhirClient().transaction().withBundle(transactionBundle).execute();
     }
 
