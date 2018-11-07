@@ -1,7 +1,9 @@
 package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
+import ca.uhn.fhir.jpa.dao.dstu3.FhirSystemDaoDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.rest.annotation.*;
@@ -38,14 +40,16 @@ import java.util.*;
 public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
     private JpaDataProvider provider;
+    private IFhirSystemDao systemDao;
     private STU3LibraryLoader libraryLoader;
 
     private Interval measurementPeriod;
 
     private static final Logger logger = LoggerFactory.getLogger(FHIRMeasureResourceProvider.class);
 
-    public FHIRMeasureResourceProvider(JpaDataProvider dataProvider) {
+    public FHIRMeasureResourceProvider(JpaDataProvider dataProvider, IFhirSystemDao systemDao) {
         this.provider = dataProvider;
+        this.systemDao = systemDao;
         this.libraryLoader =
                 new STU3LibraryLoader(
                         (LibraryResourceProvider) provider.resolveResourceProvider("Library"),
@@ -429,17 +433,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             }
         }
 
-        // TODO - use FhirSystemDaoDstu3 to call transaction operation directly instead of building client
-        provider.setEndpoint(details.getFhirServerBase());
-        if (details.getHeader("Authorization") != null) {
-            String[] splitAuth = details.getHeader("Authorization").split(" ");
-            if (splitAuth.length > 1) {
-                String token = splitAuth[1];
-                BearerTokenAuthInterceptor authInterceptor = new BearerTokenAuthInterceptor(token);
-                provider.getFhirClient().registerInterceptor(authInterceptor);
-            }
-        }
-        return provider.getFhirClient().transaction().withBundle(transactionBundle).execute();
+        return (Resource) systemDao.transaction(details, transactionBundle);
     }
 
     private Bundle createTransactionBundle(Bundle bundle) {
