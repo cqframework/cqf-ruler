@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.config.WebsocketDispatcherConfig;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.dao.dstu3.FhirSystemDaoDstu3;
 import ca.uhn.fhir.jpa.provider.JpaConformanceProviderDstu2;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
@@ -119,7 +120,7 @@ public class BaseServlet extends RestfulServer {
                 provider = new JpaDataProvider(beans);
                 TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
                 provider.setTerminologyProvider(terminologyProvider);
-                resolveResourceProviders(provider);
+                resolveResourceProviders(provider, systemDao);
                 break;
             }
             case "R4": {
@@ -218,7 +219,7 @@ public class BaseServlet extends RestfulServer {
         myAppCtx.close();
     }
 
-    private void resolveResourceProviders(JpaDataProvider provider) throws ServletException {
+    private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao systemDao) throws ServletException {
         // Bundle processing
         FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
         BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
@@ -250,7 +251,7 @@ public class BaseServlet extends RestfulServer {
         registerInterceptor(transactionInterceptor);
 
         // Measure processing
-        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider);
+        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao);
         MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) provider.resolveResourceProvider("Measure");
         measureProvider.setDao(jpaMeasureProvider.getDao());
         measureProvider.setContext(jpaMeasureProvider.getContext());
