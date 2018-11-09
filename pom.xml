@@ -11,17 +11,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <jetty_version>9.4.12.v20180830</jetty_version>
+        <jackson_version>2.9.5</jackson_version>
         <hapi_version>3.5.0</hapi_version>
         <cql_engine_version>1.2.51-SNAPSHOT</cql_engine_version>
         <derby_version>10.14.2.0</derby_version>
-
-        <!-- Exec plugin properties (used when starting server) -->
-        <skipTests>false</skipTests>
-        <dev>true</dev>
-        <protocolAndHost>http://localhost:8080</protocolAndHost>
-        <dstu3Path>cqf-ruler/baseDstu3</dstu3Path>
-        <dstu2Path>cqf-ruler/baseDstu2</dstu2Path>
-        <r4Path>cqf-ruler/baseR4</r4Path>
     </properties>
     <packaging>${p.type}</packaging>
 
@@ -64,13 +57,13 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.5</version>
+            <version>${jackson_version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.9.5</version>
+            <version>${jackson_version}</version>
         </dependency>
 
         <!-- This dependency includes the core HAPI-FHIR classes -->
@@ -196,49 +189,41 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlets</artifactId>
             <version>${jetty_version}</version>
-            <!--<scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
             <version>${jetty_version}</version>
-            <!--<scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <version>${jetty_version}</version>
-            <!--<scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-util</artifactId>
             <version>${jetty_version}</version>
-            <!--<scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
             <version>${jetty_version}</version>
-            <!--<scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
             <artifactId>websocket-client</artifactId>
             <version>${jetty_version}</version>
-            <!--<scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
             <artifactId>websocket-server</artifactId>
             <version>${jetty_version}</version>
-            <!--<scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-client</artifactId>
             <version>${jetty_version}</version>
-            <!--<scope>test</scope>-->
         </dependency>
 
         <dependency>
@@ -305,22 +290,6 @@
                         <systemProperty>
                             <name>org.eclipse.jetty.server.Request.maxFormContentSize</name>
                             <value>-1</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>fhir.baseurl.r4</key>
-                            <value>${protocolAndHost}/${r4Path}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>fhir.baseurl.dstu3</key>
-                            <value>${protocolAndHost}/${dstu3Path}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>fhir.baseurl.dstu2</key>
-                            <value>${protocolAndHost}/${dstu2Path}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>testmode.local</key>
-                            <value>${dev}</value>
                         </systemProperty>
                     </systemProperties>
                     <webApp>
@@ -410,13 +379,6 @@
                     <forkCount>3</forkCount>
                     <reuseForks>true</reuseForks>
                     <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
-                    <skipTests>${skipTests}</skipTests>
-                    <systemPropertyVariables>
-                        <fhir.baseurl.r4>${protocolAndHost}/${r4Path}</fhir.baseurl.r4>
-                        <fhir.baseurl.dstu3>${protocolAndHost}/${dstu3Path}</fhir.baseurl.dstu3>
-                        <fhir.baseurl.dstu2>${protocolAndHost}/${dstu2Path}</fhir.baseurl.dstu2>
-                        <testmode.local>${dev}</testmode.local>
-                    </systemPropertyVariables>
                 </configuration>
                 <dependencies>
                     <dependency>
