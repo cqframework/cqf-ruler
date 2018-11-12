@@ -3,16 +3,16 @@
 
     <groupId>org.opencds.cqf</groupId>
     <artifactId>cqf-ruler</artifactId>
-    <version>0.1.7-SNAPSHOT</version>
+    <version>0.1.8-SNAPSHOT</version>
 
     <properties>
         <p.type>war</p.type>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jetty_version>9.4.12.v20180830</jetty_version>
+        <jetty_version>9.4.8.v20171121</jetty_version>
         <jackson_version>2.9.5</jackson_version>
-        <hapi_version>3.5.0</hapi_version>
+        <hapi_version>3.4.0</hapi_version>
         <cql_engine_version>1.2.51-SNAPSHOT</cql_engine_version>
         <derby_version>10.14.2.0</derby_version>
     </properties>
@@ -320,21 +320,6 @@
             </plugin>
 
             <!-- Use when publishing -->
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-jar-plugin</artifactId>-->
-                <!--<version>3.1.0</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>make-a-jar</id>-->
-                        <!--<phase>compile</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>test-jar</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -344,11 +329,26 @@
                         <id>make-a-jar</id>
                         <phase>compile</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>test-jar</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-jar-plugin</artifactId>-->
+                <!--<version>3.1.0</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>make-a-jar</id>-->
+                        <!--<phase>compile</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>jar</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
 
             <!-- This is to run the integration tests -->
             <plugin>
@@ -388,44 +388,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>exec-maven-plugin</artifactId>-->
-                <!--<version>1.5.0</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>java</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-                <!--<configuration>-->
-                    <!--<executable>maven</executable>-->
-                    <!--<mainClass>org.opencds.cqf.CqfRulerApp</mainClass>-->
-                    <!--<arguments>-->
-                        <!--<argument>${protocolAndHost}</argument>-->
-                    <!--</arguments>-->
-                    <!--<systemProperties>-->
-                        <!--<systemProperty>-->
-                            <!--<key>fhir.baseurl.r4</key>-->
-                            <!--<value>${protocolAndHost}/${r4Path}</value>-->
-                        <!--</systemProperty>-->
-                        <!--<systemProperty>-->
-                            <!--<key>fhir.baseurl.dstu3</key>-->
-                            <!--<value>${protocolAndHost}/${dstu3Path}</value>-->
-                        <!--</systemProperty>-->
-                        <!--<systemProperty>-->
-                            <!--<key>fhir.baseurl.dstu2</key>-->
-                            <!--<value>${protocolAndHost}/${dstu2Path}</value>-->
-                        <!--</systemProperty>-->
-                        <!--<systemProperty>-->
-                            <!--<key>testmode.local</key>-->
-                            <!--<value>${dev}</value>-->
-                        <!--</systemProperty>-->
-                    <!--</systemProperties>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
