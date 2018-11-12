@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+/**
+ * Created by Chris Schuler on 12/11/2016.
+ */
 @Configuration
 @Import(FhirTesterMvcConfig.class)
 public class FhirTesterConfigDstu3 {

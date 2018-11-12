@@ -22,6 +22,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+/**
+ * Created by Chris Schuler on 12/11/2016.
+ */
 @Configuration
 @EnableTransactionManagement()
 public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {

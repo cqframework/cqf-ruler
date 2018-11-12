@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.dao.dstu3.FhirSystemDaoDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.rp.dstu3.*;
@@ -12,7 +13,6 @@ import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
-import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
@@ -22,13 +22,14 @@ import org.opencds.cqf.interceptors.TransactionInterceptor;
 import org.opencds.cqf.providers.*;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.cors.CorsConfiguration;
 
 import javax.servlet.ServletException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Created by Chris Schuler on 12/11/2016.
+ */
 public class BaseServlet extends RestfulServer {
 
     private JpaDataProvider provider;
@@ -69,25 +70,6 @@ public class BaseServlet extends RestfulServer {
         setDefaultResponseEncoding(EncodingEnum.JSON);
         setPagingProvider(myAppCtx.getBean(DatabaseBackedPagingProvider.class));
 
-        CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedHeader("x-fhir-starter");
-        config.addAllowedHeader("Origin");
-        config.addAllowedHeader("Accept");
-        config.addAllowedHeader("X-Requested-With");
-        config.addAllowedHeader("Content-Type");
-        config.addAllowedHeader("Authorization");
-        config.addAllowedHeader("Cache-Control");
-
-        config.addAllowedOrigin("*");
-
-        config.addExposedHeader("Location");
-        config.addExposedHeader("Content-Location");
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-
-        // Create the interceptor and register it
-        CorsInterceptor corsInterceptor = new CorsInterceptor(config);
-        registerInterceptor(corsInterceptor);
-
         /*
 		 * Load interceptors for the server from Spring (these are defined in FhirServerConfig.java)
 		 */
@@ -121,7 +103,7 @@ public class BaseServlet extends RestfulServer {
 //        FhirSystemDaoDstu3 systemDaoDstu3 = myAppCtx.getBean("mySystemDaoDstu3", FhirSystemDaoDstu3.class);
     }
 
-    private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao fhirSystemDao) throws ServletException {
+    private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao systemDao) throws ServletException {
         // Bundle processing
         FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
         BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
@@ -153,7 +135,7 @@ public class BaseServlet extends RestfulServer {
         registerInterceptor(transactionInterceptor);
 
         // Measure processing
-        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, fhirSystemDao);
+        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao);
         MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) provider.resolveResourceProvider("Measure");
         measureProvider.setDao(jpaMeasureProvider.getDao());
         measureProvider.setContext(jpaMeasureProvider.getContext());
