@@ -98,4 +98,19 @@ public class TestBase {
         applyTests.PlanDefinitionApplyTest();
         applyTests.ActivityDefinitionApplyTest();
     }
+
+    @Test
+    public void runQdmTests() {
+        QdmDataProviderTests qdmTests = new QdmDataProviderTests(server);
+        qdmTests.SimpleEncounterPerformedTest();
+        qdmTests.EncounterPerformedWithCodeFilterTest();
+        qdmTests.DiagnosisTest();
+        qdmTests.DiagnosticStudyPerformedTest();
+        qdmTests.InterventionOrderTest();
+        qdmTests.InterventionPerformedTest();
+        qdmTests.LaboratoryTestPerformedTest();
+        qdmTests.ProcedurePerformedTest();
+        qdmTests.PatientCharacteristicBirthdateTest();
+        qdmTests.PatientCharacteristicSexTest();
+    }
 }

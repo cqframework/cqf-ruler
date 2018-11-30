@@ -1,0 +1,694 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "qdm-test-patient",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime",
+            "valueDateTime": "1974-12-25T22:33:01.000"
+          }
+        ],
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/v2/0203",
+                  "code": "MR"
+                }
+              ]
+            },
+            "system": "urn:oid:1.2.36.146.595.217.0.1",
+            "value": "12345",
+            "period": {
+              "start": "2001-05-06"
+            },
+            "assigner": {
+              "display": "Acme Healthcare"
+            }
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Chalmers",
+            "given": [
+              "Peter",
+              "James"
+            ]
+          },
+          {
+            "use": "usual",
+            "given": [
+              "Jim"
+            ]
+          },
+          {
+            "use": "maiden",
+            "family": "Windsor",
+            "given": [
+              "Peter",
+              "James"
+            ],
+            "period": {
+              "end": "2002"
+            }
+          }
+        ],
+        "telecom": [
+          {
+            "use": "home"
+          },
+          {
+            "system": "phone",
+            "value": "(03) 5555 6473",
+            "use": "work",
+            "rank": 1
+          },
+          {
+            "system": "phone",
+            "value": "(03) 3410 5613",
+            "use": "mobile",
+            "rank": 2
+          },
+          {
+            "system": "phone",
+            "value": "(03) 5555 8834",
+            "use": "old",
+            "period": {
+              "end": "2014"
+            }
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1974-12-25",
+        "_birthDate": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime",
+              "valueDateTime": "1974-12-25T14:35:45-05:00"
+            }
+          ]
+        },
+        "deceasedBoolean": false,
+        "address": [
+          {
+            "use": "home",
+            "type": "both",
+            "text": "534 Erewhon St PeasantVille, Rainbow, Vic  3999",
+            "line": [
+              "534 Erewhon St"
+            ],
+            "city": "PleasantVille",
+            "district": "Rainbow",
+            "state": "Vic",
+            "postalCode": "3999",
+            "period": {
+              "start": "1974-12-25"
+            }
+          }
+        ],
+        "contact": [
+          {
+            "relationship": [
+              {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/v2/0131",
+                    "code": "N"
+                  }
+                ]
+              }
+            ],
+            "name": {
+              "family": "du Marché",
+              "_family": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/StructureDefinition/humanname-own-prefix",
+                    "valueString": "VV"
+                  }
+                ]
+              },
+              "given": [
+                "Bénédicte"
+              ]
+            },
+            "telecom": [
+              {
+                "system": "phone",
+                "value": "+33 (237) 998327"
+              }
+            ],
+            "address": {
+              "use": "home",
+              "type": "both",
+              "line": [
+                "534 Erewhon St"
+              ],
+              "city": "PleasantVille",
+              "district": "Rainbow",
+              "state": "Vic",
+              "postalCode": "3999",
+              "period": {
+                "start": "1974-12-25"
+              }
+            },
+            "gender": "female",
+            "period": {
+              "start": "2012"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/qdm-test-patient"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "qdm-test-procedure",
+        "status": "completed",
+        "notDoneReason": {
+          "coding": [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "440621003",
+              "display" : "Referral declined by patient (situation)"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "385763009",
+              "display": "Hospice care (regime/therapy)"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/qdm-test-patient"
+        },
+        "performedDateTime": "2003-04-05",
+        "reasonCode": [
+          {
+            "text": "Generalized abdominal pain 24 hours. Localized in RIF with rebound and guarding"
+          }
+        ],
+        "outcome": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "170936009",
+              "display": "Shared care - hospice and general practitioner (finding)"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Procedure/qdm-test-procedure"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "qdm-test-procedure-2",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/procedure-incisionDateTime",
+            "valueDateTime": "2003-04-05T12:30:00.000"
+          }
+        ],
+        "status": "completed",
+        "notDoneReason": {
+          "coding": [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "440621003",
+              "display" : "Referral declined by patient (situation)"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "396226005",
+              "display": "Flexible fiberoptic sigmoidoscopy with biopsy (procedure)"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/qdm-test-patient"
+        },
+        "performedDateTime": "2003-04-05",
+        "reasonCode": [
+          {
+            "text": "Generalized abdominal pain 24 hours. Localized in RIF with rebound and guarding"
+          }
+        ],
+        "bodySite": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "34381000",
+              "display": "Anal canal structure (body structure)"
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Procedure/qdm-test-procedure-2"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "qdm-test-location",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/location-alias",
+            "valueString": "Burgers University Medical Center, South Wing, second floor"
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/location-alias",
+            "valueString": "BU MC, SW, F2"
+          }
+        ],
+        "identifier": [
+          {
+            "value": "B1-S.F2"
+          }
+        ],
+        "status": "active",
+        "name": "South Wing, second floor",
+        "description": "Second floor of the Old South Wing, formerly in use by Psychiatry",
+        "mode": "instance",
+        "type": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/v3/RoleCode",
+              "code": "HOSP",
+              "display": "Hospital"
+            }
+          ]
+        },
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "2328",
+            "use": "work"
+          },
+          {
+            "system": "fax",
+            "value": "2329",
+            "use": "work"
+          },
+          {
+            "system": "email",
+            "value": "second wing admissions"
+          },
+          {
+            "system": "url",
+            "value": "http://sampleorg.com/southwing",
+            "use": "work"
+          }
+        ],
+        "address": {
+          "use": "work",
+          "line": [
+            "Galapagosweg 91, Building A"
+          ],
+          "city": "Den Burg",
+          "postalCode": "9105 PZ",
+          "country": "NLD"
+        },
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/location-physical-type",
+              "code": "wi",
+              "display": "Wing"
+            }
+          ]
+        },
+        "position": {
+          "longitude": -83.6945691,
+          "latitude": 42.25475478,
+          "altitude": 0
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Location/qdm-location-example"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "qdm-test-encounter",
+        "status": "finished",
+        "class": {
+          "system": "http://snomed.info/sct",
+          "code": "32485007",
+          "display": "Hospital admission (procedure)"
+        },
+        "period": {
+          "start": "2003-01-17T16:00:00.000",
+          "end": "2003-01-17T16:30:00.000"
+        },
+        "length": {
+          "value": 90,
+          "unit": "min",
+          "system": "http://unitsofmeasure.org",
+          "code": "min"
+        },
+        "diagnosis": [
+          {
+            "condition": {
+              "reference": "Procedure/qdm-test-procedure",
+              "role": {
+                "coding": [
+                  {
+                    "system": "http://hl7.org/fhir/diagnosis-role",
+                    "code": "billing",
+                    "display": "Billing"
+                  }
+                ]
+              },
+              "rank": 1
+            }
+          }
+        ],
+        "hospitalization": {
+          "admitSource": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/admit-source",
+                "code": "hosp-trans",
+                "display": "Transferred from other hospital"
+              }
+            ]
+          },
+          "dischargeDisposition": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "306689006",
+                "display": "Discharge to home"
+              }
+            ]
+          }
+        },
+        "location": [
+          {
+            "location": {
+              "reference": "Location/qdm-test-location"
+            },
+            "status": "completed",
+            "period": {
+              "start": "2003-01-17T16:00:00.000",
+              "end": "2003-01-17T16:30:00.000"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Encounter/qdm-test-encounter"
+      }
+    },
+    {
+      "resource": {
+        "resourceType" : "Condition",
+        "id" : "qdm-test-condition",
+        "clinicalStatus" : "active",
+        "verificationStatus" : "confirmed",
+        "category" : [
+          {
+            "coding" : [
+              {
+                "system" : "http://hl7.org/fhir/condition-category",
+                "code" : "problem-list-item",
+                "display" : "Problem List Item"
+              },
+              {
+                "system" : "http://snomed.info/sct",
+                "code" : "439401001",
+                "display" : "Diagnosis"
+              }
+            ]
+          }
+        ],
+        "severity" : {
+          "coding" : [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "255604002",
+              "display" : "Mild"
+            }
+          ]
+        },
+        "code" : {
+          "coding" : [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "37687000",
+              "display" : "Congenital absence of cervix (disorder)"
+            }
+          ]
+        },
+        "bodySite" : [
+          {
+            "coding" : [
+              {
+                "system" : "http://snomed.info/sct",
+                "code" : "279882009",
+                "display" : "Vaginal cervix (body structure)"
+              }
+            ]
+          }
+        ],
+        "subject" : {
+          "reference" : "Patient/qdm-test-patient"
+        },
+        "onsetDateTime" : "2012-05-24T00:00:00+00:00",
+        "abatementDateTime" : "2012-06-24T00:00:00+00:00",
+        "assertedDate" : "2012-05-24T00:00:00+00:00"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Condition/qdm-test-condition"
+      }
+    },
+    {
+      "resource": {
+        "resourceType" : "DiagnosticReport",
+        "id" : "qdm-test-diagnosticreport",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/diagnosticReport-locationPerformed",
+            "valueReference": "Location/qdm-test-location"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "24604-1",
+              "display" : "MG Breast Diagnostic Limited Views"
+            }
+          ]
+        },
+        "effectiveDateTime" : "2012-05-24T00:00:00+00:00",
+        "issued" : "2012-05-25T00:00:00+00:00",
+        "result": [
+          {
+            "reference": "Observation/qdm-test-observation"
+          }
+        ],
+        "imagingStudy": [
+          {
+            "reference": "ImagingStudy/qdm-test-imagingstudy"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "DiagnosticReport/qdm-test-diagnosticreport"
+      }
+    },
+    {
+      "resource": {
+        "resourceType" : "Observation",
+        "id" : "qdm-test-observation",
+        "basedOn": {
+          "reference": "ProcedureRequest/qdm-test-procedurerequest"
+        },
+        "status": "final",
+        "code": {
+          "coding" : [
+            {
+              "system" : "http://loinc.org",
+              "code" : "12503-9",
+              "display" : "Hemoglobin.gastrointestinal [Presence] in Stool --4th specimen"
+            }
+          ]
+        },
+        "effectiveDateTime" : "2012-05-24T00:00:00+00:00",
+        "issued" : "2012-05-25T00:00:00+00:00",
+        "valueQuantity": {
+          "value": 2.3,
+          "unit": "mg"
+        },
+        "dataAbsentReason": {
+          "coding" : [
+            {
+              "system" : "http://hl7.org/fhir/data-absent-reason",
+              "code" : "not-asked",
+              "display" : "Not Asked"
+            }
+          ]
+        },
+        "method": {
+          "coding" : [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "104435004",
+              "display" : "Screening for occult blood in feces (procedure)"
+            }
+          ]
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 1.5,
+              "system": "http://unitsofmeasure.org",
+              "unit": "mg"
+            },
+            "high": {
+              "value": 3.2,
+              "system": "http://unitsofmeasure.org",
+              "unit": "mg"
+            }
+          }
+        ],
+        "component": [
+          {
+            "code": {
+              "coding" : [
+                {
+                  "system" : "http://loinc.org",
+                  "code" : "12503-9",
+                  "display" : "Hemoglobin.gastrointestinal [Presence] in Stool --4th specimen"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 2.3,
+              "unit": "mg"
+            },
+            "referenceRange": [
+              {
+                "low": {
+                  "value": 1.5,
+                  "unit": "mg"
+                },
+                "high": {
+                  "value": 3.2,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Observation/qdm-test-observation"
+      }
+    },
+    {
+      "resource": {
+        "resourceType" : "ImagingStudy",
+        "id" : "qdm-test-imagingstudy",
+        "modalityList": [
+          {
+            "system" : "http://dicom.nema.org/resources/ontology/DCM",
+            "code" : "MG",
+            "display" : "Mammography"
+          }
+        ],
+        "patient": {
+          "reference": "Patient/qdm-test-patient"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ImagingStudy/qdm-test-imagingstudy"
+      }
+    },
+    {
+      "resource": {
+        "resourceType" : "ProcedureRequest",
+        "id" : "qdm-test-procedurerequest",
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/procedurerequest-reasonRefused",
+            "valueCodeableConcept": {
+              "coding" : [
+                {
+                  "system" : "http://snomed.info/sct",
+                  "code" : "440621003",
+                  "display" : "Referral declined by patient (situation)"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "completed",
+        "intent": "order",
+        "code": {
+          "coding" : [
+            {
+              "system" : "http://snomed.info/sct",
+              "code" : "385763009",
+              "display" : "Hospice care (regime/therapy)"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/qdm-test-patient"
+        },
+        "authoredOn": "2012-05-24T00:00:00+00:00",
+        "reasonCode": [
+          {
+            "coding" : [
+              {
+                "system" : "http://snomed.info/sct",
+                "code" : "42343007",
+                "display" : "Congestive heart failure (disorder)"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ProcedureRequest/qdm-test-procedurerequest"
+      }
+    }
+  ]
+}
