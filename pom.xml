@@ -3,7 +3,7 @@
 
     <groupId>org.opencds.cqf</groupId>
     <artifactId>cqf-ruler</artifactId>
-    <version>0.1.6-SNAPSHOT</version>
+    <version>0.1.7-SNAPSHOT</version>
 
     <properties>
         <p.type>war</p.type>

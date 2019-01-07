@@ -95,10 +95,10 @@ public class BulkDataGroupProvider extends JpaResourceProviderDstu3<Group> {
                     for (String param : helper.getPatientInclusionPath(theType.getValue())) {
                         newMap.add(param, patientParams);
                     }
-                    resolvedResources = helper.resolveType(theType.getValue(), newMap);
-                    if (!resolvedResources.isEmpty()) {
-                        resources.add(resolvedResources);
-                    }
+//                    resolvedResources = helper.resolveType(theType.getValue(), newMap);
+//                    if (!resolvedResources.isEmpty()) {
+//                        resources.add(resolvedResources);
+//                    }
                 }
             }
         }
@@ -108,10 +108,10 @@ public class BulkDataGroupProvider extends JpaResourceProviderDstu3<Group> {
                 for (String param : helper.getPatientInclusionPath(theType)) {
                     newMap.add(param, patientParams);
                 }
-                resolvedResources = helper.resolveType(theType, newMap);
-                if (!resolvedResources.isEmpty()) {
-                    resources.add(resolvedResources);
-                }
+//                resolvedResources = helper.resolveType(theType, newMap);
+//                if (!resolvedResources.isEmpty()) {
+//                    resources.add(resolvedResources);
+//                }
             }
         }
 

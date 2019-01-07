@@ -1,5 +1,6 @@
 package org.opencds.cqf.helpers;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -37,22 +38,24 @@ public class BulkDataHelper {
         this.provider = provider;
     }
 
-    public List<Resource> resolveResourceList(List<IBaseResource> resourceList) {
-        List<Resource> ret = new ArrayList<>();
+    public List<String> resolveResourceList(List<IBaseResource> resourceList) {
+        List<String> ret = new ArrayList<>();
         for (IBaseResource res : resourceList) {
-            Class clazz = res.getClass();
-            ret.add((Resource) clazz.cast(res));
+            ret.add(provider.getFhirContext().newJsonParser().encodeResourceToString(res).replaceAll("\n", "").replaceAll("\r", ""));
         }
         return ret;
     }
 
-    public List<Resource> resolveType(String type, SearchParameterMap searchMap) {
+    public List<String> resolveType(String type, SearchParameterMap searchMap) {
         if (type.equals("List")) {
             type = "ListResource";
         }
         if (compartmentPatient.contains(type)) {
             IBundleProvider bundleProvider = provider.resolveResourceProvider(type).getDao().search(searchMap);
-            List<IBaseResource> resources = bundleProvider.getResources(0, 10000);
+            if (bundleProvider.size() == 0) {
+                return Collections.emptyList();
+            }
+            List<IBaseResource> resources = bundleProvider.getResources(0, bundleProvider.size());
             return resolveResourceList(resources);
         }
         else {
