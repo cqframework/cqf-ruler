@@ -4,6 +4,8 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.ReferenceOrListParam;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
@@ -38,29 +40,39 @@ public class BulkDataHelper {
         this.provider = provider;
     }
 
-    public List<String> resolveResourceList(List<IBaseResource> resourceList) {
-        List<String> ret = new ArrayList<>();
+    public Set<String> resolveResourceList(List<IBaseResource> resourceList) {
+        Set<String> ret = new HashSet<>();
         for (IBaseResource res : resourceList) {
             ret.add(provider.getFhirContext().newJsonParser().encodeResourceToString(res).replaceAll("\n", "").replaceAll("\r", ""));
         }
         return ret;
     }
 
-    public List<String> resolveType(String type, SearchParameterMap searchMap) {
+    public Set<String> resolveType(String type, SearchParameterMap searchMap) {
         if (type.equals("List")) {
             type = "ListResource";
         }
         if (compartmentPatient.contains(type)) {
             IBundleProvider bundleProvider = provider.resolveResourceProvider(type).getDao().search(searchMap);
             if (bundleProvider.size() == 0) {
-                return Collections.emptyList();
+                return Collections.emptySet();
             }
             List<IBaseResource> resources = bundleProvider.getResources(0, bundleProvider.size());
             return resolveResourceList(resources);
         }
         else {
-            throw new IllegalArgumentException("Invalid _type parameter: " + type);
+            throw new IllegalArgumentException("Invalid type: " + type);
         }
+    }
+
+    public Set<String> resolveGroupType(String type, ReferenceOrListParam patientParams, SearchParameterMap map) {
+        Set<String> resolvedResources = new HashSet<>();
+        for (String param : getPatientInclusionPath(type)) {
+            SearchParameterMap newMap = (SearchParameterMap) map.clone();
+            newMap.add(param, patientParams);
+            resolvedResources.addAll(resolveType(type, newMap));
+        }
+        return resolvedResources;
     }
 
     public OperationOutcome createOutcome(List<List<Resource> > resources, javax.servlet.http.HttpServletRequest theServletRequest,

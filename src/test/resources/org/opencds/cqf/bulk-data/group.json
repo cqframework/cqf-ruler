@@ -1,0 +1,17 @@
+{
+  "resourceType": "Group",
+  "id": "bulk-data-group",
+  "type": "person",
+  "actual": true,
+  "code": {
+    "text": "Patient"
+  },
+  "quantity": 1,
+  "member": [
+    {
+      "entity": {
+        "reference": "Patient/Patient-12214"
+      }
+    }
+  ]
+}

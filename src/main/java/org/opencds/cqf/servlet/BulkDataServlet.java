@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.GroupResourceProvider;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.param.StringAndListParam;
+import org.hl7.fhir.dstu3.model.Group;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.opencds.cqf.bulkdata.BulkDataRequest;
 import org.opencds.cqf.bulkdata.BulkDataResponse;
@@ -25,6 +26,9 @@ public class BulkDataServlet extends BaseServlet {
     private static Map<String, BulkDataRequest> requests = new HashMap<>();
     public static void registerRequest(String id, String requestUrl, Date since, StringAndListParam type, JpaDataProvider provider) {
         requests.put(id, new BulkDataRequest(id, requestUrl, since, type, provider));
+    }
+    public static void registerRequest(String id, String requestUrl, Date since, StringAndListParam type, Group group, JpaDataProvider provider) {
+        requests.put(id, new BulkDataRequest(id, requestUrl, since, type, group, provider));
     }
     public static void fireRequest(String id) {
         if (requests.containsKey(id)) {
