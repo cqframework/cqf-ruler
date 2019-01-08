@@ -104,6 +104,10 @@ public class BulkDataHelper {
         );
     }
 
+    public String getErrorOutcomeString(String display) {
+        return provider.getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(createErrorOutcome(display));
+    }
+
     public List<String> getPatientInclusionPath(String dataType) {
         switch (dataType) {
             case "Account":

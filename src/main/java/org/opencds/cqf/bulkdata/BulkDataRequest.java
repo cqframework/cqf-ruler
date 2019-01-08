@@ -89,26 +89,32 @@ public class BulkDataRequest implements Runnable {
         if (type != null) {
             for (StringOrListParam stringOrListParam : type.getValuesAsQueryTokens()) {
                 for (StringParam theType : stringOrListParam.getValuesAsQueryTokens()) {
-                    if (this.group != null) {
-                        resolvedResources = helper.resolveGroupType(theType.getValue(), patientParams, searchMap);
-                        attachArrayToResponse(theType.getValue(), resolvedResources, response);
-                    }
-                    else {
-                        resolvedResources = helper.resolveType(theType.getValue(), searchMap);
-                        attachArrayToResponse(theType.getValue(), resolvedResources, response);
+                    try {
+                        if (this.group != null) {
+                            resolvedResources = helper.resolveGroupType(theType.getValue(), patientParams, searchMap);
+                            attachArrayToResponse(theType.getValue(), resolvedResources, response);
+                        } else {
+                            resolvedResources = helper.resolveType(theType.getValue(), searchMap);
+                            attachArrayToResponse(theType.getValue(), resolvedResources, response);
+                        }
+                    } catch (Exception e) {
+                        response.addError(helper.getErrorOutcomeString(e.getMessage()));
                     }
                 }
             }
         }
         else {
             for (String theType : helper.compartmentPatient) {
-                if (this.group != null) {
-                    resolvedResources = helper.resolveGroupType(theType, patientParams, searchMap);
-                    attachArrayToResponse(theType, resolvedResources, response);
-                }
-                else {
-                    resolvedResources = helper.resolveType(theType, searchMap);
-                    attachArrayToResponse(theType, resolvedResources, response);
+                try {
+                    if (this.group != null) {
+                        resolvedResources = helper.resolveGroupType(theType, patientParams, searchMap);
+                        attachArrayToResponse(theType, resolvedResources, response);
+                    } else {
+                        resolvedResources = helper.resolveType(theType, searchMap);
+                        attachArrayToResponse(theType, resolvedResources, response);
+                    }
+                } catch (Exception e) {
+                    response.addError(helper.getErrorOutcomeString(e.getMessage()));
                 }
             }
         }

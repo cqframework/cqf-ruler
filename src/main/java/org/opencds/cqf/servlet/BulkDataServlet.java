@@ -46,7 +46,13 @@ public class BulkDataServlet extends BaseServlet {
     {
         if (request.getPathInfo().lastIndexOf("/") > request.getPathInfo().indexOf("/")) {
             String[] idAndType = request.getPathInfo().replaceFirst("/", "").split("/");
-            response.getWriter().println(responses.get(idAndType[0]).getResources().get(idAndType[1]));
+            if (idAndType[1].contains("error")) {
+                int idx = Integer.valueOf(idAndType[1].split("_")[1]) - 1;
+                response.getWriter().println(responses.get(idAndType[0]).getError().get(idx));
+            }
+            else {
+                response.getWriter().println(responses.get(idAndType[0]).getResources().get(idAndType[1]));
+            }
         }
         else {
             String id = request.getPathInfo().replace("/", "");
