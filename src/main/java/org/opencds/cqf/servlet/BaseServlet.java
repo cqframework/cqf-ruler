@@ -11,6 +11,7 @@ import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.TerminologyUploaderProviderDstu3;
 import ca.uhn.fhir.jpa.provider.r4.JpaConformanceProviderR4;
+import ca.uhn.fhir.jpa.provider.r4.JpaResourceProviderR4;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.provider.r4.TerminologyUploaderProviderR4;
 import ca.uhn.fhir.jpa.rp.dstu3.*;
@@ -24,6 +25,7 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.*;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.opencds.cqf.config.FhirServerConfigDstu2;
 import org.opencds.cqf.config.FhirServerConfigDstu3;
 import org.opencds.cqf.config.FhirServerConfigR4;
@@ -139,6 +141,19 @@ public class BaseServlet extends RestfulServer {
                 confProvider.setImplementationDescription(implDesc);
                 setServerConformanceProvider(confProvider);
                 plainProviders.add(myAppCtx.getBean(TerminologyUploaderProviderR4.class));
+
+                R4MeasureResourceProvider measureProvider = new R4MeasureResourceProvider(systemDao);
+                ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider jpaMeasureProvider = (ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider) resolveR4ResourceProvider("Measure", beans);
+                measureProvider.setDao(jpaMeasureProvider.getDao());
+                measureProvider.setContext(jpaMeasureProvider.getContext());
+                try {
+                    unregister(jpaMeasureProvider, beans);
+                } catch (Exception e) {
+                    throw new ServletException("Unable to unregister provider: " + e.getMessage());
+                }
+
+                register(measureProvider, beans);
+
                 break;
             }
             default:
@@ -352,6 +367,15 @@ public class BaseServlet extends RestfulServer {
         }
 
         throw new IllegalArgumentException("This should never happen!");
+    }
+
+    public JpaResourceProviderR4<? extends IAnyResource> resolveR4ResourceProvider(String datatype, Collection<IResourceProvider> providers) {
+        for (IResourceProvider resource : providers) {
+            if (resource.getResourceType().getSimpleName().toLowerCase().equals(datatype.toLowerCase())) {
+                return (JpaResourceProviderR4<? extends IAnyResource>) resource;
+            }
+        }
+        throw new RuntimeException("Could not find resource provider for type: " + datatype);
     }
 
     private static class MyHardcodedServerAddressStrategy extends HardcodedServerAddressStrategy {

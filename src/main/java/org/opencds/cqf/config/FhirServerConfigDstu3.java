@@ -31,9 +31,6 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     @Bean()
     public DaoConfig daoConfig() {
         DaoConfig retVal = new DaoConfig();
-        retVal.setSubscriptionEnabled(true);
-        retVal.setSubscriptionPollDelay(5000);
-        retVal.setSubscriptionPurgeInactiveAfterMillis(DateUtils.MILLIS_PER_HOUR);
         retVal.setAllowMultipleDelete(true);
         retVal.setAllowInlineMatchUrlReferences(true);
         retVal.setAllowExternalReferences(true);
@@ -41,7 +38,7 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
         retVal.getTreatBaseUrlsAsLocal().add("https://measure.eval.kanvix.com/cqf-ruler/baseDstu3");
         retVal.setCountSearchResultsUpTo(50000);
         retVal.setIndexMissingFields(DaoConfig.IndexEnabledEnum.ENABLED);
-        retVal.setFetchSizeDefaultMaximum(10000);
+        retVal.setFetchSizeDefaultMaximum(50000);
         retVal.setAllowMultipleDelete(true);
         return retVal;
     }
