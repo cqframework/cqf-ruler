@@ -79,7 +79,7 @@ public class FHIREndpointProvider extends EndpointResourceProvider {
         }
     }
 
-    private ValueSet cleanExpandedValueSet(ValueSet expandedValueSet) {
+    private ValueSet getCachedValueSet(ValueSet expandedValueSet) {
         ValueSet clean = expandedValueSet.copy().setExpansion(null);
 
         Map<String, ValueSet.ConceptSetComponent> concepts = new HashMap<>();
@@ -132,7 +132,7 @@ public class FHIREndpointProvider extends EndpointResourceProvider {
         }
 
         if (expand) {
-            return cleanExpandedValueSet(
+            return getCachedValueSet(
                     client
                             .operation()
                             .onInstance(new IdType("ValueSet", valuesetId))
