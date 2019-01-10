@@ -120,12 +120,12 @@ public class FHIREndpointProvider extends EndpointResourceProvider {
     }
 
     private ValueSet resolveValueSet(IGenericClient client, String valuesetId) {
-        ValueSet valueSet = client.fetchResourceFromUrl(ValueSet.class, client.getServerBase() + "/ValueSet/" + valuesetId);//.read().resource(ValueSet.class).withId(valuesetId).execute();
+        ValueSet valueSet = client.fetchResourceFromUrl(ValueSet.class, client.getServerBase() + "/ValueSet/" + valuesetId);
 
         boolean expand = false;
         if (valueSet.hasCompose()) {
             for (ValueSet.ConceptSetComponent component : valueSet.getCompose().getInclude()) {
-                if (component.hasValueSet()) {
+                if (!component.hasConcept() || component.getConcept() == null) {
                     expand = true;
                 }
             }
