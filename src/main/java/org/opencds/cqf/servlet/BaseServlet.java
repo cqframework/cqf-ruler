@@ -348,6 +348,20 @@ public class BaseServlet extends RestfulServer {
         }
 
         register(bulkDataGroupProvider, provider.getCollectionProviders());
+
+        // Endpoint processing
+        FHIREndpointProvider endpointProvider = new FHIREndpointProvider(provider, systemDao);
+        EndpointResourceProvider jpaEndpointProvider = (EndpointResourceProvider) provider.resolveResourceProvider("Endpoint");
+        endpointProvider.setDao(jpaEndpointProvider.getDao());
+        endpointProvider.setContext(jpaEndpointProvider.getContext());
+
+        try {
+            unregister(jpaEndpointProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(endpointProvider, provider.getCollectionProviders());
     }
 
     private void register(IResourceProvider provider, Collection<IResourceProvider> providers) {
