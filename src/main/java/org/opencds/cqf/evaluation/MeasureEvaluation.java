@@ -354,7 +354,10 @@ public class MeasureEvaluation {
                 populationReport.setPatients(new Reference().setReference("#" + patientList.getId()));
                 for (Patient patient : patientPopulation) {
                     ListResource.ListEntryComponent entry = new ListResource.ListEntryComponent()
-                            .setItem(new Reference().setReference(String.format("Patient/%s", patient.getId()))
+                            .setItem(new Reference().setReference(
+                                patient.getId().startsWith("Patient/") ? 
+                                    patient.getId() :
+                                    String.format("Patient/%s", patient.getId()))
                                     .setDisplay(patient.getNameFirstRep().getNameAsSingleString()));
                     patientList.addEntry(entry);
                 }
@@ -524,7 +527,7 @@ public class MeasureEvaluation {
 
                     // Calculate actual measure score, Count(numerator) / Count(denominator)
                     if (denominator != null && numerator != null && denominator.size() > 0) {
-                        reportGroup.setMeasureScore(numerator.size() / denominator.size());
+                        reportGroup.setMeasureScore(numerator.size() / (double)denominator.size());
                     }
 
                     break;
