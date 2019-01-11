@@ -570,7 +570,6 @@ public class MeasureEvaluation {
             // TODO: Measure Observations...
         }
 
-        FhirMeasureBundler bundler = new FhirMeasureBundler();
         if (resources.isEmpty()) {
             for (Object element : context.getEvaluatedResourcesList()) {
                 if (element instanceof Resource) {
@@ -578,10 +577,32 @@ public class MeasureEvaluation {
                 }
             }
         }
-        org.hl7.fhir.dstu3.model.Bundle evaluatedResources = bundler.bundle(resources.values());
-        evaluatedResources.setId(UUID.randomUUID().toString());
-        report.setEvaluatedResources(new Reference('#' + evaluatedResources.getId()));
-        report.addContained(evaluatedResources);
+
+        for (String key : context.getEvaluatedResources().keySet()) {
+            org.hl7.fhir.dstu3.model.ListResource list = new org.hl7.fhir.dstu3.model.ListResource();
+            for (Object element : context.getEvaluatedResources().get(key)) {
+                if (element instanceof Resource) {
+                    org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent();
+                    comp.setItem(new Reference('#' + ((Resource)element).getId()));
+                    list.addEntry(comp);
+                }
+            }
+
+            if (!list.isEmpty()) {
+                list.setId(UUID.randomUUID().toString());
+                list.setTitle(key);
+                resources.put(list.getId(), list);
+            }
+        }
+
+        if (!resources.isEmpty()) {
+            FhirMeasureBundler bundler = new FhirMeasureBundler();
+            org.hl7.fhir.dstu3.model.Bundle evaluatedResources = bundler.bundle(resources.values());
+            evaluatedResources.setId(UUID.randomUUID().toString());
+            report.setEvaluatedResources(new Reference('#' + evaluatedResources.getId()));
+            report.addContained(evaluatedResources);
+        }
+
         return report;
     }
 
