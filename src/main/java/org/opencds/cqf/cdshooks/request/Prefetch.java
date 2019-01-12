@@ -1,69 +1,52 @@
 package org.opencds.cqf.cdshooks.request;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.opencds.cqf.cdshooks.providers.CdsHooksProviders;
-import org.opencds.cqf.cdshooks.providers.Discovery;
-import org.opencds.cqf.cdshooks.providers.DiscoveryItem;
-import org.opencds.cqf.exceptions.InvalidPrefetchException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Prefetch {
 
-    private List<Object> resources;
+    private JsonObject prefetchJson;
+    private JsonObject discoveryPrefetchJson;
+    private Map<String, JsonElement> resourceMap;
 
-    public Prefetch(JsonObject prefetchObject, CdsHooksProviders providers, String patientId) {
-        Discovery discovery = providers.getDiscovery();
-        resources = new ArrayList<>();
+    public Prefetch(JsonObject prefetchJson, JsonObject discoveryPrefetchJson) {
+        this.prefetchJson = prefetchJson;
+        this.discoveryPrefetchJson = discoveryPrefetchJson;
+        resourceMap = new HashMap<>();
 
-        if (prefetchObject == null || prefetchObject.size() == 0) {
-            // resolve elements
-            for (DiscoveryItem item : discovery.getItems()) {
-                resources.addAll(providers.search(item, patientId));
-            }
-        }
-
-        else if (prefetchObject.size() != discovery.getItems().size()) {
-            // too many elements - error
-            if (prefetchObject.size() > discovery.getItems().size()) {
-                throw new InvalidPrefetchException(
-                        String.format(
-                                "Expecting %d fields in the prefetch. Found %d fields",
-                                discovery.getItems().size(), prefetchObject.size()
-                        )
-                );
-            }
-
-            // resolve missing elements
-            for (DiscoveryItem item : discovery.getItems()) {
-                if (prefetchObject.get(item.getItemNo()) == null) {
-                    // resolve element
-                    resources.addAll(providers.search(item, patientId));
+        if (prefetchJson != null) {
+            for (Map.Entry<String, JsonElement> entry : prefetchJson.entrySet()) {
+                if (entry.getValue().isJsonObject()) {
+                    JsonObject obj = entry.getValue().getAsJsonObject();
+                    if (obj.has("response") && obj.get("response").isJsonObject()) {
+                        String status = JsonHelper.getStringRequired(obj.get("response").getAsJsonObject(), "status");
+                        if (status.startsWith("200") && obj.has("resource")) {
+                            resourceMap.put(entry.getKey(), obj.get("resource"));
+                        }
+                    }
+                    else {
+                        resourceMap.put(entry.getKey(), obj);
+                    }
                 }
-            }
-        }
-
-        else {
-            for (String key : prefetchObject.keySet()) {
-                if (prefetchObject.get(key).isJsonNull()) {
-                    continue;
+                else {
+                    resourceMap.put(entry.getKey(), entry.getValue());
                 }
-                JsonObject prefetchElement = JsonFieldResolution.getObjectField(prefetchObject, key, true);
-                if (prefetchElement.has("resource") && prefetchElement.get("resource").isJsonNull()) {
-                    continue;
-                }
-                resources.addAll(
-                        CdsHooksHelper.parseResources(
-                                JsonFieldResolution.getObjectField(prefetchElement, "resource", true), providers.getVersion()
-                        )
-                );
             }
         }
     }
 
-    public List<Object> getResources() {
-        return resources;
+    public JsonObject getPrefetchJson() {
+        return prefetchJson;
     }
 
+    public JsonObject getDiscoveryPrefetchJson() {
+        return discoveryPrefetchJson;
+    }
+
+    public Map<String, JsonElement> getResourceMap() {
+        return resourceMap;
+    }
 }

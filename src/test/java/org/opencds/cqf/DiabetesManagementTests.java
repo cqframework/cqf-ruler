@@ -23,7 +23,7 @@ class DiabetesManagementTests {
         String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
         byte[] data = cdsHooksRequest.getBytes("UTF-8");
 
-        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/cds-services/diabetes-management");
+        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/dstu3/cds-services/diabetes-management");
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");

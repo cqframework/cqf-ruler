@@ -7,7 +7,9 @@ import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hl7.fhir.utilities.Utilities.URLEncode;
 

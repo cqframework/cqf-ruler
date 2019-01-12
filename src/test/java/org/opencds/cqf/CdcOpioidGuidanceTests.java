@@ -57,7 +57,7 @@ class CdcOpioidGuidanceTests {
         String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
         byte[] data = cdsHooksRequest.getBytes("UTF-8");
 
-        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/cds-services/" + hookName);
+        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/dstu3/cds-services/" + hookName);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");

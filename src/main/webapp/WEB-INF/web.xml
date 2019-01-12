@@ -22,18 +22,24 @@
     <servlet>
         <servlet-name>on-measure-subscription-mrp</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.MeasureSubscriptionServlet</servlet-class>
-        <load-on-startup>7</load-on-startup>
+        <load-on-startup>8</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>bulkDataResults</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.BulkDataServlet</servlet-class>
+        <load-on-startup>7</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>cdsHooksStu3</servlet-name>
+        <servlet-class>org.opencds.cqf.servlet.CdsHooksStu3Servlet</servlet-class>
         <load-on-startup>6</load-on-startup>
     </servlet>
 
     <servlet>
-        <servlet-name>cdsServicesServlet</servlet-name>
-        <servlet-class>org.opencds.cqf.servlet.CdsServicesServlet</servlet-class>
+        <servlet-name>cdsHooksDstu2</servlet-name>
+        <servlet-class>org.opencds.cqf.servlet.CdsHooksDstu2Servlet</servlet-class>
         <load-on-startup>5</load-on-startup>
     </servlet>
 
@@ -114,13 +120,23 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>cdsServicesServlet</servlet-name>
-        <url-pattern>/cds-services</url-pattern>
+        <servlet-name>cdsHooksDstu2</servlet-name>
+        <url-pattern>dstu2/cds-services</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>cdsServicesServlet</servlet-name>
-        <url-pattern>/cds-services/*</url-pattern>
+        <servlet-name>cdsHooksDstu2</servlet-name>
+        <url-pattern>dstu2/cds-services/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>cdsHooksStu3</servlet-name>
+        <url-pattern>dstu3/cds-services</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>cdsHooksStu3</servlet-name>
+        <url-pattern>dstu3/cds-services/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

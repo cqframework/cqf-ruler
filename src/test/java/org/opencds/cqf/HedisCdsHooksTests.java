@@ -26,7 +26,7 @@ class HedisCdsHooksTests {
         String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
         byte[] data = cdsHooksRequest.getBytes("UTF-8");
 
-        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/cds-services/bcs-decision-support");
+        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/dstu3/cds-services/bcs-decision-support");
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -99,7 +99,7 @@ class HedisCdsHooksTests {
         String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
         byte[] data = cdsHooksRequest.getBytes("UTF-8");
 
-        URL url = new URL("http://localhost:" + this.server.ourPort + "/cqf-ruler/cds-services/bcs-decision-support");
+        URL url = new URL("http://localhost:" + this.server.ourPort + "/cqf-ruler/dstu3/cds-services/bcs-decision-support");
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -142,7 +142,7 @@ class HedisCdsHooksTests {
         String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
         byte[] data = cdsHooksRequest.getBytes("UTF-8");
 
-        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/cds-services/ccs-decision-support");
+        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/dstu3/cds-services/ccs-decision-support");
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -214,7 +214,7 @@ class HedisCdsHooksTests {
         String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
         byte[] data = cdsHooksRequest.getBytes("UTF-8");
 
-        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/cds-services/col-decision-support");
+        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/dstu3/cds-services/col-decision-support");
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");

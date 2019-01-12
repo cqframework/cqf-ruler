@@ -1,17 +1,17 @@
 package org.opencds.cqf.servlet;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import com.google.gson.*;
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
-import org.opencds.cqf.cdshooks.providers.CdsHooksProviders;
+import org.opencds.cqf.cdshooks.evaluation.EvaluationContext;
+import org.opencds.cqf.cdshooks.hooks.*;
 import org.opencds.cqf.cdshooks.providers.Discovery;
 import org.opencds.cqf.cdshooks.providers.DiscoveryItem;
-import org.opencds.cqf.cdshooks.request.CdsRequest;
-import org.opencds.cqf.cdshooks.request.CdsRequestFactory;
+import org.opencds.cqf.cdshooks.request.JsonHelper;
+import org.opencds.cqf.cdshooks.request.Request;
 import org.opencds.cqf.cdshooks.response.CdsCard;
+import org.opencds.cqf.exceptions.InvalidRequestException;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 import org.opencds.cqf.providers.JpaDataProvider;
 
@@ -24,22 +24,48 @@ import java.util.Collections;
 import java.util.List;
 
 @WebServlet(name = "cds-services")
-public class CdsServicesServlet extends BaseServlet {
+public class CdsHooksServlet extends BaseServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private FhirVersionEnum version;
+    public FhirVersionEnum getVersion() {
+        return version;
+    }
+    public void setVersion(FhirVersionEnum version) {
+        this.version = version;
+    }
+
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException
+    {
         try {
             // validate that we are dealing with JSON
             if (!request.getContentType().startsWith("application/json")) {
-                throw new ServletException(String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
+                throw new ServletException(
+                        String.format(
+                                "Invalid content type %s. Please use application/json.",
+                                request.getContentType()
+                        )
+                );
             }
+
             String baseUrl =
                     request.getRequestURL().toString()
                             .replace(request.getPathInfo(), "").replace(request.getServletPath(), "") + "/baseDstu3";
-            CdsHooksProviders cdsHooksProviders = new CdsHooksProviders((JpaDataProvider) getProvider().setEndpoint(baseUrl), request.getPathInfo().replace("/", ""));
-            // TODO - check for cdc-opioid-guidance base call - runs every recommendation
-            CdsRequest cdsRequest = CdsRequestFactory.createRequest(request.getReader());
+            String service = request.getPathInfo().replace("/", "");
+
+            JsonParser parser = new JsonParser();
+            Request cdsHooksRequest =
+                    new Request(
+                            service,
+                            parser.parse(request.getReader()).getAsJsonObject(),
+                            JsonHelper.getObjectRequired(getService(service), "prefetch")
+                    );
+            Hook hook = HookFactory.createHook(cdsHooksRequest);
+            EvaluationContext evaluationContext = new EvaluationContext(hook, version, (JpaDataProvider) getProvider().setEndpoint(baseUrl));
+
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
-            response.getWriter().println(toJsonResponse(cdsRequest.process(cdsHooksProviders)));
+            response.getWriter().println(toJsonResponse(HookEvaluator.evaluate(evaluationContext)));
         } catch (Exception e) {
             e.printStackTrace();
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
@@ -47,12 +73,27 @@ public class CdsServicesServlet extends BaseServlet {
         }
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException
+    {
         if (!request.getRequestURL().toString().endsWith("cds-services")) {
             throw new ServletException("This servlet is not configured to handle GET requests.");
         }
 
+        response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
+        response.getWriter().println(new GsonBuilder().setPrettyPrinting().create().toJson(getServices()));
+    }
+
+    private JsonObject getService(String service) {
+        for (JsonElement element : getServices().get("services").getAsJsonArray()) {
+            if (element.isJsonObject() && element.getAsJsonObject().get("id").getAsString().equals(service)) {
+                return element.getAsJsonObject();
+            }
+        }
+        throw new InvalidRequestException("Cannot resolve service: " + service);
+    }
+
+    private JsonObject getServices() {
         JsonObject responseJson = new JsonObject();
         JsonArray services = new JsonArray();
 
@@ -90,10 +131,7 @@ public class CdsServicesServlet extends BaseServlet {
         }
 
         responseJson.add("services", services);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
-        response.getWriter().println(gson.toJson(responseJson));
+        return responseJson;
     }
 
     private String toJsonResponse(List<CdsCard> cards) {
