@@ -1,6 +1,7 @@
 package org.opencds.cqf.servlet;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.config.WebsocketDispatcherConfig;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
@@ -25,6 +26,8 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.*;
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.opencds.cqf.config.FhirServerConfigDstu2;
 import org.opencds.cqf.config.FhirServerConfigDstu3;
@@ -57,11 +60,11 @@ public class BaseServlet extends RestfulServer {
         return provider;
     }
 
-    private AnnotationConfigWebApplicationContext myAppCtx;
-
-    private static final String FHIR_BASEURL_DSTU2 = "fhir.baseurl.dstu2";
-    private static final String FHIR_BASEURL_DSTU3 = "fhir.baseurl.dstu3";
-    private static final String FHIR_BASEURL_R4 = "fhir.baseurl.r4";
+//    private AnnotationConfigWebApplicationContext myAppCtx;
+//
+//    private static final String FHIR_BASEURL_DSTU2 = "fhir.baseurl.dstu2";
+//    private static final String FHIR_BASEURL_DSTU3 = "fhir.baseurl.dstu3";
+//    private static final String FHIR_BASEURL_R4 = "fhir.baseurl.r4";
 
     @SuppressWarnings("unchecked")
     @Override
@@ -69,108 +72,58 @@ public class BaseServlet extends RestfulServer {
 
         super.initialize();
 
-        WebApplicationContext parentAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
+        FhirVersionEnum fhirVersion = FhirVersionEnum.DSTU3;
+        setFhirContext(new FhirContext(fhirVersion));
 
-        String implDesc = getInitParameter("ImplementationDescription");
-        String fhirVersionParam = getInitParameter("FhirVersion");
-        if (StringUtils.isBlank(fhirVersionParam)) {
-            fhirVersionParam = "DSTU3";
-        }
-        fhirVersionParam = fhirVersionParam.trim().toUpperCase();
+        // Get the spring context from the web container (it's declared in web.xml)
+        WebApplicationContext myAppCtx = ContextLoaderListener.getCurrentWebApplicationContext();
 
-        List<IResourceProvider> beans;
-        @SuppressWarnings("rawtypes")
-        IFhirSystemDao systemDao;
-        ETagSupportEnum etagSupport;
-        String baseUrlProperty;
-        List<Object> plainProviders = new ArrayList<>();
-
-        switch (fhirVersionParam) {
-            case "DSTU2": {
-                myAppCtx = new AnnotationConfigWebApplicationContext();
-                myAppCtx.setServletConfig(getServletConfig());
-                myAppCtx.setParent(parentAppCtx);
-                myAppCtx.register(FhirServerConfigDstu2.class, WebsocketDispatcherConfig.class);
-                baseUrlProperty = FHIR_BASEURL_DSTU2;
-                myAppCtx.refresh();
-                setFhirContext(FhirContext.forDstu2());
-                beans = myAppCtx.getBean("myResourceProvidersDstu2", List.class);
-                plainProviders.add(myAppCtx.getBean("mySystemProviderDstu2", JpaSystemProviderDstu2.class));
-                systemDao = myAppCtx.getBean("mySystemDaoDstu2", IFhirSystemDao.class);
-                etagSupport = ETagSupportEnum.ENABLED;
-                JpaConformanceProviderDstu2 confProvider = new JpaConformanceProviderDstu2(this, systemDao, myAppCtx.getBean(DaoConfig.class));
-                confProvider.setImplementationDescription(implDesc);
-                setServerConformanceProvider(confProvider);
-                break;
-            }
-            case "DSTU3": {
-                myAppCtx = new AnnotationConfigWebApplicationContext();
-                myAppCtx.setServletConfig(getServletConfig());
-                myAppCtx.setParent(parentAppCtx);
-                myAppCtx.register(FhirServerConfigDstu3.class, WebsocketDispatcherConfig.class);
-                baseUrlProperty = FHIR_BASEURL_DSTU3;
-                myAppCtx.refresh();
-                setFhirContext(FhirContext.forDstu3());
-                beans = myAppCtx.getBean("myResourceProvidersDstu3", List.class);
-                plainProviders.add(myAppCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class));
-                systemDao = myAppCtx.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
-                etagSupport = ETagSupportEnum.ENABLED;
-                JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao, myAppCtx.getBean(DaoConfig.class));
-                confProvider.setImplementationDescription(implDesc);
-                setServerConformanceProvider(confProvider);
-                plainProviders.add(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
-                provider = new JpaDataProvider(beans);
-                TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
-                provider.setTerminologyProvider(terminologyProvider);
-                resolveResourceProviders(provider, systemDao);
-                break;
-            }
-            case "R4": {
-                myAppCtx = new AnnotationConfigWebApplicationContext();
-                myAppCtx.setServletConfig(getServletConfig());
-                myAppCtx.setParent(parentAppCtx);
-                myAppCtx.register(FhirServerConfigR4.class, WebsocketDispatcherConfig.class);
-                baseUrlProperty = FHIR_BASEURL_R4;
-                myAppCtx.refresh();
-                setFhirContext(FhirContext.forR4());
-                beans = myAppCtx.getBean("myResourceProvidersR4", List.class);
-                plainProviders.add(myAppCtx.getBean("mySystemProviderR4", JpaSystemProviderR4.class));
-                systemDao = myAppCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
-                etagSupport = ETagSupportEnum.ENABLED;
-                JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao, myAppCtx.getBean(DaoConfig.class));
-                confProvider.setImplementationDescription(implDesc);
-                setServerConformanceProvider(confProvider);
-                plainProviders.add(myAppCtx.getBean(TerminologyUploaderProviderR4.class));
-
-                R4MeasureResourceProvider measureProvider = new R4MeasureResourceProvider(systemDao);
-                ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider jpaMeasureProvider = (ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider) resolveR4ResourceProvider("Measure", beans);
-                measureProvider.setDao(jpaMeasureProvider.getDao());
-                measureProvider.setContext(jpaMeasureProvider.getContext());
-                try {
-                    unregister(jpaMeasureProvider, beans);
-                } catch (Exception e) {
-                    throw new ServletException("Unable to unregister provider: " + e.getMessage());
-                }
-
-                register(measureProvider, beans);
-
-                break;
-            }
-            default:
-                throw new ServletException("Unknown FHIR version specified in init-param[FhirVersion]: " + fhirVersionParam);
+        if (myAppCtx == null) {
+            throw new ServletException("WebApplicationContext is null");
         }
 
-        setETagSupport(etagSupport);
-
-        FhirContext ctx = getFhirContext();
-        ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
-
-        for (IResourceProvider nextResourceProvider : beans) {
-            ourLog.info(" * Have resource provider for: {}", nextResourceProvider.getResourceType().getSimpleName());
-        }
+        String resourceProviderBeanName = "myResourceProvidersDstu3";
+        List<IResourceProvider> beans = myAppCtx.getBean(resourceProviderBeanName, List.class);
         setResourceProviders(beans);
 
-        setPlainProviders(plainProviders);
+        Object systemProvider = myAppCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
+        setPlainProviders(systemProvider);
+
+        IFhirSystemDao<Bundle, Meta> systemDao = myAppCtx.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
+        JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao,
+                myAppCtx.getBean(DaoConfig.class));
+        confProvider.setImplementationDescription("Measure and Opioid Processing Server");
+        setServerConformanceProvider(confProvider);
+
+        setDefaultPrettyPrint(true);
+        setDefaultResponseEncoding(EncodingEnum.JSON);
+        setPagingProvider(myAppCtx.getBean(DatabaseBackedPagingProvider.class));
+
+        /*
+		 * Load interceptors for the server from Spring (these are defined in FhirServerConfig.java)
+		 */
+        Collection<IServerInterceptor> interceptorBeans = myAppCtx.getBeansOfType(IServerInterceptor.class).values();
+        for (IServerInterceptor interceptor : interceptorBeans) {
+            this.registerInterceptor(interceptor);
+        }
+
+        provider = new JpaDataProvider(getResourceProviders());
+        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
+        provider.setTerminologyProvider(terminologyProvider);
+
+        resolveResourceProviders(provider, systemDao);
+
+        // Register the logging interceptor
+        LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+        this.registerInterceptor(loggingInterceptor);
+
+        // The SLF4j logger "test.accesslog" will receive the logging events
+        loggingInterceptor.setLoggerName("logging.accesslog");
+
+        // This is the format for each line. A number of substitution variables may
+        // be used here. See the JavaDoc for LoggingInterceptor for information on
+        // what is available.
+        loggingInterceptor.setMessageFormat("Source[${remoteAddr}] Operation[${operationType} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}]");
 
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedHeader("x-fhir-starter");
@@ -189,49 +142,22 @@ public class BaseServlet extends RestfulServer {
 
         // Create the interceptor and register it
         CorsInterceptor corsInterceptor = new CorsInterceptor(config);
+        corsInterceptor.getConfig().addAllowedOrigin("http://sandbox.cds-hooks.org");
+//        corsInterceptor.getConfig().addAllowedOrigin("*");
         registerInterceptor(corsInterceptor);
 
-        ResponseHighlighterInterceptor responseHighlighterInterceptor = new ResponseHighlighterInterceptor();
-        responseHighlighterInterceptor.setShowRequestHeaders(false);
-        responseHighlighterInterceptor.setShowResponseHeaders(true);
-        registerInterceptor(responseHighlighterInterceptor);
+        //setServerAddressStrategy(new HardcodedServerAddressStrategy("http://mydomain.com/fhir/baseDstu2"));
+        //registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
 
-        registerInterceptor(new BanUnsupportedHttpMethodsInterceptor());
-
-        setDefaultPrettyPrint(true);
-        setDefaultResponseEncoding(EncodingEnum.JSON);
-
-        String baseUrl = System.getProperty(baseUrlProperty);
-        if (StringUtils.isBlank(baseUrl)) {
-            switch (fhirVersionParam) {
-                case "R4":
-                    baseUrl = "http://measure.eval.kanvix.com/cqf-ruler/baseR4";
-                    break;
-                case "DSTU3":
-                    baseUrl = "http://measure.eval.kanvix.com/cqf-ruler/baseDstu3";
-                    break;
-                case "DSTU2":
-                    baseUrl = "http://measure.eval.kanvix.com/cqf-ruler/baseDstu2";
-                    break;
-                default:
-                    throw new ServletException("Unexpected fhir version encountered: " + fhirVersionParam);
-            }
-        }
-        setServerAddressStrategy(new MyHardcodedServerAddressStrategy(baseUrl));
-
-        setPagingProvider(myAppCtx.getBean(DatabaseBackedPagingProvider.class));
-
-        Collection<IServerInterceptor> interceptorBeans = myAppCtx.getBeansOfType(IServerInterceptor.class).values();
-        for (IServerInterceptor interceptor : interceptorBeans) {
-            this.registerInterceptor(interceptor);
-        }
+        // TODO - will need this for Measure/$submit-data operation
+//        FhirSystemDaoDstu3 systemDaoDstu3 = myAppCtx.getBean("mySystemDaoDstu3", FhirSystemDaoDstu3.class);
     }
 
     @Override
     public void destroy() {
         super.destroy();
         ourLog.info("Server is shutting down");
-        myAppCtx.close();
+//        myAppCtx.close();
     }
 
     private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao systemDao) throws ServletException {
@@ -383,14 +309,14 @@ public class BaseServlet extends RestfulServer {
         throw new IllegalArgumentException("This should never happen!");
     }
 
-    public JpaResourceProviderR4<? extends IAnyResource> resolveR4ResourceProvider(String datatype, Collection<IResourceProvider> providers) {
-        for (IResourceProvider resource : providers) {
-            if (resource.getResourceType().getSimpleName().toLowerCase().equals(datatype.toLowerCase())) {
-                return (JpaResourceProviderR4<? extends IAnyResource>) resource;
-            }
-        }
-        throw new RuntimeException("Could not find resource provider for type: " + datatype);
-    }
+//    public JpaResourceProviderR4<? extends IAnyResource> resolveR4ResourceProvider(String datatype, Collection<IResourceProvider> providers) {
+//        for (IResourceProvider resource : providers) {
+//            if (resource.getResourceType().getSimpleName().toLowerCase().equals(datatype.toLowerCase())) {
+//                return (JpaResourceProviderR4<? extends IAnyResource>) resource;
+//            }
+//        }
+//        throw new RuntimeException("Could not find resource provider for type: " + datatype);
+//    }
 
     private static class MyHardcodedServerAddressStrategy extends HardcodedServerAddressStrategy {
 
