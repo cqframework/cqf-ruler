@@ -13,7 +13,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            org.opencds.cqf.config.FhirServerConfigDstu3
+            org.opencds.cqf.config.BaseServerConfig
         </param-value>
     </context-param>
 
@@ -22,25 +22,25 @@
     <servlet>
         <servlet-name>on-measure-subscription-mrp</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.MeasureSubscriptionServlet</servlet-class>
-        <load-on-startup>6</load-on-startup>
+        <load-on-startup>8</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>bulkDataResults</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.BulkDataServlet</servlet-class>
-        <load-on-startup>5</load-on-startup>
+        <load-on-startup>7</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>cdsHooksStu3</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.CdsHooksStu3Servlet</servlet-class>
-        <load-on-startup>4</load-on-startup>
+        <load-on-startup>6</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>cdsHooksDstu2</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.CdsHooksDstu2Servlet</servlet-class>
-        <load-on-startup>3</load-on-startup>
+        <load-on-startup>5</load-on-startup>
     </servlet>
 
     <servlet>
@@ -54,36 +54,36 @@
             <param-name>contextConfigLocation</param-name>
             <param-value>org.opencds.cqf.config.BaseFhirTesterConfig</param-value>
         </init-param>
-        <load-on-startup>2</load-on-startup>
+        <load-on-startup>4</load-on-startup>
     </servlet>
 
-    <!--<servlet>-->
-        <!--<servlet-name>fhirServletDstu2</servlet-name>-->
-        <!--<servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>-->
-        <!--<init-param>-->
-            <!--<param-name>ImplementationDescription</param-name>-->
-            <!--<param-value>FHIR CQF Ruler-of-All-Knowledge JPA Server (DSTU2 Resources)</param-value>-->
-        <!--</init-param>-->
-        <!--<init-param>-->
-            <!--<param-name>FhirVersion</param-name>-->
-            <!--<param-value>DSTU2</param-value>-->
-        <!--</init-param>-->
-        <!--<load-on-startup>3</load-on-startup>-->
-    <!--</servlet>-->
+    <servlet>
+        <servlet-name>fhirServletDstu2</servlet-name>
+        <servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>
+        <init-param>
+            <param-name>ImplementationDescription</param-name>
+            <param-value>FHIR CQF Ruler-of-All-Knowledge JPA Server (DSTU2 Resources)</param-value>
+        </init-param>
+        <init-param>
+            <param-name>FhirVersion</param-name>
+            <param-value>DSTU2</param-value>
+        </init-param>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
 
-    <!--<servlet>-->
-        <!--<servlet-name>fhirServletR4</servlet-name>-->
-        <!--<servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>-->
-        <!--<init-param>-->
-            <!--<param-name>ImplementationDescription</param-name>-->
-            <!--<param-value>FHIR CQF Ruler-of-All-Knowledge JPA Server (R4 Resources)</param-value>-->
-        <!--</init-param>-->
-        <!--<init-param>-->
-            <!--<param-name>FhirVersion</param-name>-->
-            <!--<param-value>R4</param-value>-->
-        <!--</init-param>-->
-        <!--<load-on-startup>2</load-on-startup>-->
-    <!--</servlet>-->
+    <servlet>
+        <servlet-name>fhirServletR4</servlet-name>
+        <servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>
+        <init-param>
+            <param-name>ImplementationDescription</param-name>
+            <param-value>FHIR CQF Ruler-of-All-Knowledge JPA Server (R4 Resources)</param-value>
+        </init-param>
+        <init-param>
+            <param-name>FhirVersion</param-name>
+            <param-value>R4</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
 
     <servlet>
         <servlet-name>fhirServletDstu3</servlet-name>
@@ -99,20 +99,20 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-    <!--<servlet-mapping>-->
-        <!--<servlet-name>fhirServletDstu2</servlet-name>-->
-        <!--<url-pattern>/baseDstu2/*</url-pattern>-->
-    <!--</servlet-mapping>-->
+    <servlet-mapping>
+        <servlet-name>fhirServletDstu2</servlet-name>
+        <url-pattern>/baseDstu2/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>fhirServletDstu3</servlet-name>
         <url-pattern>/baseDstu3/*</url-pattern>
     </servlet-mapping>
 
-    <!--<servlet-mapping>-->
-        <!--<servlet-name>fhirServletR4</servlet-name>-->
-        <!--<url-pattern>/baseR4/*</url-pattern>-->
-    <!--</servlet-mapping>-->
+    <servlet-mapping>
+        <servlet-name>fhirServletR4</servlet-name>
+        <url-pattern>/baseR4/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>spring</servlet-name>
