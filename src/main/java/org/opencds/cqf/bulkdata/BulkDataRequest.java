@@ -48,7 +48,7 @@ public class BulkDataRequest implements Runnable {
 
     private void attachArrayToResponse(String theType, Set<String> resolvedResources, BulkDataResponse response) {
         if (!resolvedResources.isEmpty()) {
-            response.addResource(theType, "[" + StringUtils.join(resolvedResources, ",") + "]");
+            response.addResource(theType, StringUtils.join(resolvedResources, "\n"));
         }
     }
 
