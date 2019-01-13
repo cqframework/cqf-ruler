@@ -1,11 +1,7 @@
 package org.opencds.cqf.servlet;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.rp.dstu3.GroupResourceProvider;
-import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.param.StringAndListParam;
 import org.hl7.fhir.dstu3.model.Group;
-import org.hl7.fhir.dstu3.model.Resource;
 import org.opencds.cqf.bulkdata.BulkDataRequest;
 import org.opencds.cqf.bulkdata.BulkDataResponse;
 import org.opencds.cqf.providers.JpaDataProvider;
@@ -17,27 +13,26 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @WebServlet(name = "bulk-data")
 public class BulkDataServlet extends BaseServlet {
 
     private static Map<String, BulkDataRequest> requests = new HashMap<>();
-    public static void registerRequest(String id, String requestUrl, Date since, StringAndListParam type, JpaDataProvider provider) {
+    public synchronized static void registerRequest(String id, String requestUrl, Date since, StringAndListParam type, JpaDataProvider provider) {
         requests.put(id, new BulkDataRequest(id, requestUrl, since, type, provider));
     }
-    public static void registerRequest(String id, String requestUrl, Date since, StringAndListParam type, Group group, JpaDataProvider provider) {
+    public synchronized static void registerRequest(String id, String requestUrl, Date since, StringAndListParam type, Group group, JpaDataProvider provider) {
         requests.put(id, new BulkDataRequest(id, requestUrl, since, type, group, provider));
     }
-    public static void fireRequest(String id) {
+    public synchronized static void fireRequest(String id) {
         if (requests.containsKey(id)) {
             new Thread(requests.get(id)).start();
         }
     }
 
     private static Map<String, BulkDataResponse> responses = new HashMap<>();
-    public static void registerResponse(String id, BulkDataResponse response) {
+    public synchronized static void registerResponse(String id, BulkDataResponse response) {
         responses.put(id, response);
     }
 
