@@ -1,0 +1,10 @@
+.git
+.gitignore
+.vscode
+.classpath
+.project
+examples
+target
+derby.log
+Dockerfile
+!target/stu3
