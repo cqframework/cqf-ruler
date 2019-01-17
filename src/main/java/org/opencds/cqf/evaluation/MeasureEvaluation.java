@@ -122,13 +122,13 @@ public class MeasureEvaluation {
 
         public String toCode() {
             switch(ordinal()) {
-                case 1:
+                case 0:
                     return "proportion";
-                case 2:
+                case 1:
                     return "ratio";
-                case 3:
+                case 2:
                     return "continuous-variable";
-                case 4:
+                case 3:
                     return "cohort";
                 default:
                     return "?";
@@ -141,13 +141,13 @@ public class MeasureEvaluation {
 
         public String getDefinition() {
             switch(ordinal()) {
-                case 1:
+                case 0:
                     return "The measure score is defined using a proportion";
-                case 2:
+                case 1:
                     return "The measure score is defined using a ratio";
-                case 3:
+                case 2:
                     return "The score is defined by a calculation of some quantity";
-                case 4:
+                case 3:
                     return "The measure is a cohort definition";
                 default:
                     return "?";
@@ -156,13 +156,13 @@ public class MeasureEvaluation {
 
         public String getDisplay() {
             switch(ordinal()) {
-                case 1:
+                case 0:
                     return "Proportion";
-                case 2:
+                case 1:
                     return "Ratio";
-                case 3:
+                case 2:
                     return "Continuous Variable";
-                case 4:
+                case 3:
                     return "Cohort";
                 default:
                     return "?";
@@ -217,23 +217,23 @@ public class MeasureEvaluation {
 
         public String toCode() {
             switch(ordinal()) {
-                case 1:
+                case 0:
                     return "initial-population";
-                case 2:
+                case 1:
                     return "numerator";
-                case 3:
+                case 2:
                     return "numerator-exclusion";
-                case 4:
+                case 3:
                     return "denominator";
-                case 5:
+                case 4:
                     return "denominator-exclusion";
-                case 6:
+                case 5:
                     return "denominator-exception";
-                case 7:
+                case 6:
                     return "measure-population";
-                case 8:
+                case 7:
                     return "measure-population-exclusion";
-                case 9:
+                case 8:
                     return "measure-observation";
                 default:
                     return "?";
@@ -246,23 +246,23 @@ public class MeasureEvaluation {
 
         public String getDefinition() {
             switch(ordinal()) {
-                case 1:
+                case 0:
                     return "The initial population refers to all patients or events to be evaluated by a quality measure involving patients who share a common set of specified characterstics. All patients or events counted (for example, as numerator, as denominator) are drawn from the initial population";
-                case 2:
+                case 1:
                     return "\tThe upper portion of a fraction used to calculate a rate, proportion, or ratio. Also called the measure focus, it is the target process, condition, event, or outcome. Numerator criteria are the processes or outcomes expected for each patient, or event defined in the denominator. A numerator statement describes the clinical action that satisfies the conditions of the measure";
-                case 3:
+                case 2:
                     return "Numerator exclusion criteria define patients or events to be removed from the numerator. Numerator exclusions are used in proportion and ratio measures to help narrow the numerator (for inverted measures)";
-                case 4:
+                case 3:
                     return "The lower portion of a fraction used to calculate a rate, proportion, or ratio. The denominator can be the same as the initial population, or a subset of the initial population to further constrain the population for the purpose of the measure";
-                case 5:
+                case 4:
                     return "Denominator exclusion criteria define patients or events that should be removed from the denominator before determining if numerator criteria are met. Denominator exclusions are used in proportion and ratio measures to help narrow the denominator. For example, patients with bilateral lower extremity amputations would be listed as a denominator exclusion for a measure requiring foot exams";
-                case 6:
+                case 5:
                     return "Denominator exceptions are conditions that should remove a patient or event from the denominator of a measure only if the numerator criteria are not met. Denominator exception allows for adjustment of the calculated score for those providers with higher risk populations. Denominator exception criteria are only used in proportion measures";
-                case 7:
+                case 6:
                     return "Measure population criteria define the patients or events for which the individual observation for the measure should be taken. Measure populations are used for continuous variable measures rather than numerator and denominator criteria";
-                case 8:
+                case 7:
                     return "Measure population criteria define the patients or events that should be removed from the measure population before determining the outcome of one or more continuous variables defined for the measure observation. Measure population exclusion criteria are used within continuous variable measures to help narrow the measure population";
-                case 9:
+                case 8:
                     return "Defines the individual observation to be performed for each patient or event in the measure population. Measure observations for each case in the population are aggregated to determine the overall measure score for the population";
                 default:
                     return "?";
@@ -271,23 +271,23 @@ public class MeasureEvaluation {
 
         public String getDisplay() {
             switch(ordinal()) {
-                case 1:
+                case 0:
                     return "Initial Population";
-                case 2:
+                case 1:
                     return "Numerator";
-                case 3:
+                case 2:
                     return "Numerator Exclusion";
-                case 4:
+                case 3:
                     return "Denominator";
-                case 5:
+                case 4:
                     return "Denominator Exclusion";
-                case 6:
+                case 5:
                     return "Denominator Exception";
-                case 7:
+                case 6:
                     return "Measure Population";
-                case 8:
+                case 7:
                     return "Measure Population Exclusion";
-                case 9:
+                case 8:
                     return "Measure Observation";
                 default:
                     return "?";
@@ -382,7 +382,11 @@ public class MeasureEvaluation {
         MeasureReport report = reportBuilder.build();
 
         List<Patient> initialPopulation = getInitalPopulation(measure, patients, context);
+
         HashMap<String,Resource> resources = new HashMap<>();
+        HashMap<String,HashSet<String>> codeToResourceMap = new HashMap<>();
+
+        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
 
         MeasureScoring measureScoring = MeasureScoring.fromCode(measure.getScoring().getCodingFirstRep().getCode());
         if (measureScoring == null) {
@@ -498,12 +502,14 @@ public class MeasureEvaluation {
                         boolean inDenominator = evaluatePopulationCriteria(context, patient,
                                 denominatorCriteria, denominator, denominatorPatients,
                                 denominatorExclusionCriteria, denominatorExclusion, denominatorExclusionPatients);
+                        populateResourceMap(context, MeasurePopulationType.DENOMINATOR, resources, codeToResourceMap);
 
                         if (inDenominator) {
                             // Are they in the numerator?
                             boolean inNumerator = evaluatePopulationCriteria(context, patient,
                                     numeratorCriteria, numerator, numeratorPatients,
                                     numeratorExclusionCriteria, numeratorExclusion, numeratorExclusionPatients);
+                            populateResourceMap(context, MeasurePopulationType.NUMERATOR, resources, codeToResourceMap);
 
                             if (!inNumerator && inDenominator && (denominatorExceptionCriteria != null)) {
                                 // Are they in the denominator exception?
@@ -512,6 +518,7 @@ public class MeasureEvaluation {
                                     inException = true;
                                     denominatorException.put(resource.getId(), resource);
                                     denominator.remove(resource.getId());
+                                    populateResourceMap(context, MeasurePopulationType.DENOMINATOREXCEPTION, resources, codeToResourceMap);
                                 }
                                 if (inException) {
                                     if (denominatorExceptionPatients != null) {
@@ -570,22 +577,12 @@ public class MeasureEvaluation {
             // TODO: Measure Observations...
         }
 
-        if (resources.isEmpty()) {
-            for (Object element : context.getEvaluatedResourcesList()) {
-                if (element instanceof Resource) {
-                    resources.put(((Resource) element).getId(), (Resource) element);
-                }
-            }
-        }
-
-        for (String key : context.getEvaluatedResources().keySet()) {
+        for (String key : codeToResourceMap.keySet()) {
             org.hl7.fhir.dstu3.model.ListResource list = new org.hl7.fhir.dstu3.model.ListResource();
-            for (Object element : context.getEvaluatedResources().get(key)) {
-                if (element instanceof Resource) {
-                    org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent();
-                    comp.setItem(new Reference('#' + ((Resource)element).getId()));
-                    list.addEntry(comp);
-                }
+            for (String element : codeToResourceMap.get(key)) {
+                org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent();
+                comp.setItem(new Reference('#' + element));
+                list.addEntry(comp);
             }
 
             if (!list.isEmpty()) {
@@ -604,6 +601,34 @@ public class MeasureEvaluation {
         }
 
         return report;
+    }
+
+    private void populateResourceMap(Context context, MeasurePopulationType type, HashMap<String, Resource> resources,  HashMap<String,HashSet<String>> codeToResourceMap) {
+        if (context.getEvaluatedResources().isEmpty()) {
+            return;
+        }
+
+        if (!codeToResourceMap.containsKey(type.toCode())) {
+            codeToResourceMap.put(type.toCode(), new HashSet<>());
+        }
+
+        HashSet<String> codeHashSet = codeToResourceMap.get((type.toCode()));
+
+        for (Object o : context.getEvaluatedResources()) {
+            if (o instanceof Resource){
+                Resource r = (Resource)o;
+                String id = r.getId();
+                if (!codeHashSet.contains(id)) {
+                    codeHashSet.add(id);
+                }
+
+                if (!resources.containsKey(id)) {
+                    resources.put(id, r);
+                }
+            }
+        }
+
+        context.clearEvaluatedResources();
     }
 
     private List<Patient> getInitalPopulation(Measure measure, List<Patient> population, Context context) {
@@ -625,6 +650,7 @@ public class MeasureEvaluation {
                 }
             }
         }
+
         return initalPop;
     }
 }
