@@ -118,9 +118,9 @@
           ]
         },
         "status": "draft",
-        "library": {
+        "library": [{
           "reference": "Library/ccs-decision-support-logic"
-        },
+        }],
         "action": [
           {
             "triggerDefinition": [

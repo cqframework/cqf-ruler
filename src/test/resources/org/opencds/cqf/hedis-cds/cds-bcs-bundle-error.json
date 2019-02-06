@@ -118,9 +118,9 @@
           ]
         },
         "status": "draft",
-        "library": {
+        "library": [{
           "reference": "Library/bcs-decision-support-logic"
-        },
+        }],
         "action": [
           {
             "triggerDefinition": [

@@ -11,11 +11,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <jetty_version>9.4.12.v20180830</jetty_version>
+        <jackson_version>2.9.8</jackson_version>
         <hapi_version>3.5.0</hapi_version>
         <cql_engine_version>1.2.51-SNAPSHOT</cql_engine_version>
         <derby_version>10.14.2.0</derby_version>
 
-        <!-- Exec plugin properties (used when starting server) -->
+        <!-- Exec plugin properties (used when starting server locally) -->
         <skipTests>false</skipTests>
         <dev>true</dev>
         <protocolAndHost>http://localhost:8080</protocolAndHost>
@@ -64,13 +65,13 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.5</version>
+            <version>${jackson_version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.9.5</version>
+            <version>${jackson_version}</version>
         </dependency>
 
         <!-- This dependency includes the core HAPI-FHIR classes -->
@@ -126,7 +127,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.1.7</version>
+            <version>1.2.3</version>
         </dependency>
 
         <dependency>
@@ -289,7 +290,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.8.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -326,6 +327,9 @@
                     <webApp>
                         <contextPath>/cqf-ruler</contextPath>
                         <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
+                        <!-- Prevent unnecessary scanning to reduce start time -->
+                        <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+                        <containerIncludeJarPattern>^$</containerIncludeJarPattern>
                     </webApp>
                 </configuration>
             </plugin>
@@ -388,6 +392,8 @@
                 <version>2.19.1</version>
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <useManifestOnlyJar>false</useManifestOnlyJar>
+                    <useSystemClassLoader>false</useSystemClassLoader>
                 </configuration>
                 <executions>
                     <execution>

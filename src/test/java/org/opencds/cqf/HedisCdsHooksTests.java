@@ -15,18 +15,20 @@ class HedisCdsHooksTests {
     HedisCdsHooksTests(TestServer server) {
         this.server = server;
         this.server.putResource(hedisCdsLocation + "cds-valuesets.json", "");
+
+        this.server.putResource(hedisCdsLocation + "cds-bcs-bundle.json", "");
+        this.server.putResource(hedisCdsLocation + "cds-ccs-bundle.json", "");
+        this.server.putResource(hedisCdsLocation + "cds-col-bundle.json", "");
     }
 
-    void BCSCdsHooksPatientViewTest() throws IOException {
-        server.putResource(hedisCdsLocation + "cds-bcs-bundle.json", "");
-
+    private String makeRequest(String requestFileName, String serviceId) throws IOException {
         // Get the CDS Hooks request
-        InputStream is = this.getClass().getResourceAsStream(hedisCdsLocation + "cds-bcs-request.json");
+        InputStream is = this.getClass().getResourceAsStream(hedisCdsLocation + requestFileName);
         Scanner scanner = new Scanner(is).useDelimiter("\\A");
         String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
         byte[] data = cdsHooksRequest.getBytes("UTF-8");
 
-        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/dstu3/cds-services/bcs-decision-support");
+        URL url = new URL(String.format("http://localhost:%s/cqf-ruler/dstu3/cds-services/%s", server.ourPort, serviceId));
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
@@ -43,6 +45,10 @@ class HedisCdsHooksTests {
             }
         }
 
+        return response.toString().replaceAll("\"id\":.*\\s", "");
+    }
+
+    void BCSCdsHooksPatientViewTest() throws IOException {
         String expected = "{\n" +
                 "  \"cards\": [\n" +
                 "    {\n" +
@@ -82,83 +88,14 @@ class HedisCdsHooksTests {
                 "  ]\n" +
                 "}\n";
 
-        String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
+        String response = makeRequest("cds-bcs-request.json", "bcs-decision-support");
         Assert.assertTrue(
-                withoutID.replaceAll("\\s+", "")
-                        .equals(expected.replaceAll("\\s+", ""))
-        );
-    }
-
-    // Testing request without indicator specified
-    void BCSCdsHooksPatientViewTestError() throws IOException {
-        this.server.putResource(hedisCdsLocation + "cds-bcs-bundle-error.json", "");
-
-        // Get the CDS Hooks request
-        InputStream is = this.getClass().getResourceAsStream(hedisCdsLocation + "cds-bcs-request.json");
-        Scanner scanner = new Scanner(is).useDelimiter("\\A");
-        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
-        byte[] data = cdsHooksRequest.getBytes("UTF-8");
-
-        URL url = new URL("http://localhost:" + this.server.ourPort + "/cqf-ruler/dstu3/cds-services/bcs-decision-support");
-
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
-        conn.setDoOutput(true);
-        conn.getOutputStream().write(data);
-
-        StringBuilder response = new StringBuilder();
-        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
-        {
-            for (int i; (i = in.read()) >= 0;) {
-                response.append((char) i);
-            }
-        }
-
-        String expected = "{\n" +
-                "  \"cards\": [\n" +
-                "    {\n" +
-                "      \"summary\": \"MissingRequiredFieldException encountered during execution\",\n" +
-                "      \"indicator\": \"hard-stop\",\n" +
-                "      \"detail\": \"The indicator field must be specified in the action.dynamicValue field in the PlanDefinition\",\n" +
-                "      \"source\": {}\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}";
-
-        Assert.assertTrue(
-                response.toString().replaceAll("\\s+", "")
+                response.replaceAll("\\s+", "")
                         .equals(expected.replaceAll("\\s+", ""))
         );
     }
 
     void CCSCdsHooksPatientViewTest() throws IOException {
-        server.putResource(hedisCdsLocation + "cds-ccs-bundle.json", "");
-
-        // Get the CDS Hooks request
-        InputStream is = this.getClass().getResourceAsStream(hedisCdsLocation + "cds-ccs-request.json");
-        Scanner scanner = new Scanner(is).useDelimiter("\\A");
-        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
-        byte[] data = cdsHooksRequest.getBytes("UTF-8");
-
-        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/dstu3/cds-services/ccs-decision-support");
-
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
-        conn.setDoOutput(true);
-        conn.getOutputStream().write(data);
-
-        StringBuilder response = new StringBuilder();
-        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
-        {
-            for (int i; (i = in.read()) >= 0;) {
-                response.append((char) i);
-            }
-        }
-
         String expected = "{\n" +
                 "  \"cards\": [\n" +
                 "    {\n" +
@@ -198,39 +135,14 @@ class HedisCdsHooksTests {
                 "  ]\n" +
                 "}\n";
 
-        String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
+        String response = makeRequest("cds-ccs-request.json", "ccs-decision-support");
         Assert.assertTrue(
-                withoutID.replaceAll("\\s+", "")
+                response.replaceAll("\\s+", "")
                         .equals(expected.replaceAll("\\s+", ""))
         );
     }
 
     void COLCdsHooksPatientViewTest() throws IOException {
-        server.putResource(hedisCdsLocation + "cds-col-bundle.json", "");
-
-        // Get the CDS Hooks request
-        InputStream is = this.getClass().getResourceAsStream(hedisCdsLocation + "cds-col-request.json");
-        Scanner scanner = new Scanner(is).useDelimiter("\\A");
-        String cdsHooksRequest = scanner.hasNext() ? scanner.next() : "";
-        byte[] data = cdsHooksRequest.getBytes("UTF-8");
-
-        URL url = new URL("http://localhost:" + server.ourPort + "/cqf-ruler/dstu3/cds-services/col-decision-support");
-
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Content-Length", String.valueOf(data.length));
-        conn.setDoOutput(true);
-        conn.getOutputStream().write(data);
-
-        StringBuilder response = new StringBuilder();
-        try(Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8")))
-        {
-            for (int i; (i = in.read()) >= 0;) {
-                response.append((char) i);
-            }
-        }
-
         String expected = "{\n" +
                 "  \"cards\": [\n" +
                 "    {\n" +
@@ -406,9 +318,9 @@ class HedisCdsHooksTests {
                 "  ]\n" +
                 "}\n";
 
-        String withoutID = response.toString().replaceAll("\"id\":.*\\s", "");
+        String response = makeRequest("cds-col-request.json", "col-decision-support");
         Assert.assertTrue(
-                withoutID.replaceAll("\\s+", "")
+                response.replaceAll("\\s+", "")
                         .equals(expected.replaceAll("\\s+", ""))
         );
     }

@@ -87,7 +87,6 @@ public class TestBase {
     public void runHedisCdsTests() throws IOException {
         HedisCdsHooksTests hedisTests = new HedisCdsHooksTests(server);
         hedisTests.BCSCdsHooksPatientViewTest();
-        hedisTests.BCSCdsHooksPatientViewTestError();
         hedisTests.CCSCdsHooksPatientViewTest();
         hedisTests.COLCdsHooksPatientViewTest();
     }

@@ -331,9 +331,9 @@
           ]
         },
         "status": "draft",
-        "library": {
+        "library": [{
           "reference": "Library/col-decision-support-logic"
-        },
+        }],
         "action": [
           {
             "triggerDefinition": [

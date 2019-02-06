@@ -20,6 +20,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -85,12 +86,15 @@ public class CdsHooksServlet extends BaseServlet {
     }
 
     private JsonObject getService(String service) {
-        for (JsonElement element : getServices().get("services").getAsJsonArray()) {
+        JsonArray services = getServices().get("services").getAsJsonArray();
+        List<String> ids = new ArrayList<>();
+        for (JsonElement element : services) {
+            ids.add(element.getAsJsonObject().get("id").getAsString());
             if (element.isJsonObject() && element.getAsJsonObject().get("id").getAsString().equals(service)) {
                 return element.getAsJsonObject();
             }
         }
-        throw new InvalidRequestException("Cannot resolve service: " + service);
+        throw new InvalidRequestException("Cannot resolve service: " + service + "\nAvailable services: " + ids.toString());
     }
 
     private JsonObject getServices() {
