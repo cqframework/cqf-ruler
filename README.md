@@ -6,8 +6,12 @@ knowledge artifact repository and clinical decision support service.
 
 ## Usage 
 
- - `$ mvn install`
- - `$ mvn -Djetty.http.port=XXXX jetty:run`
+ - `mvn jetty:run`
+   - Starts embedded Jetty server accessible at base URL `http://localhost:8080/cqf-ruler/`
+
+ - `mvn package -DskipTests=false`
+   - Builds the project war file (cqf-ruler.war in the project's target directory) 
+   - Runs the test suite (tests are skipped by default)
  
 Visit the [wiki](https://github.com/DBCG/cqf-ruler/wiki) for more documentation.
 

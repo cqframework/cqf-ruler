@@ -84,14 +84,6 @@ public class TestBase {
     }
 
     @Test
-    public void runHedisCdsTests() throws IOException {
-        HedisCdsHooksTests hedisTests = new HedisCdsHooksTests(server);
-        hedisTests.BCSCdsHooksPatientViewTest();
-        hedisTests.CCSCdsHooksPatientViewTest();
-        hedisTests.COLCdsHooksPatientViewTest();
-    }
-
-    @Test
     public void runDefinitionApplyTests() throws ClassNotFoundException {
         DefinitionApplyTests applyTests = new DefinitionApplyTests(server);
         applyTests.PlanDefinitionApplyTest();

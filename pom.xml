@@ -17,7 +17,7 @@
         <derby_version>10.14.2.0</derby_version>
 
         <!-- Exec plugin properties (used when starting server locally) -->
-        <skipTests>false</skipTests>
+        <skipTests>true</skipTests>
         <dev>true</dev>
         <protocolAndHost>http://localhost:8080</protocolAndHost>
         <dstu3Path>cqf-ruler/baseDstu3</dstu3Path>
