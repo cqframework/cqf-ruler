@@ -123,6 +123,9 @@ public class BaseServlet extends RestfulServer {
                 TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
                 provider.setTerminologyProvider(terminologyProvider);
                 resolveResourceProviders(provider, systemDao);
+
+                CqlExecutionProvider cql = new CqlExecutionProvider(provider);
+                plainProviders.add(cql);
                 break;
             }
             case "R4": {
