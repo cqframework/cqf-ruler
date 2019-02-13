@@ -241,7 +241,7 @@ public class CqlExecutionProvider {
         context.registerLibraryLoader(getLibraryLoader());
 
         if (parameters != null){
-            for (ParametersParameterComponent pc : parameters.getParameter())
+            for (org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent pc : parameters.getParameter())
             {
                 context.setParameter(library.getLocalId(), pc.getName(), pc.getValue());
             }    
