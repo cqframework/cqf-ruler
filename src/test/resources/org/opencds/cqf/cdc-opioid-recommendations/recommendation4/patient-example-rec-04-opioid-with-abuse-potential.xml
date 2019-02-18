@@ -1,5 +1,0 @@
-<Patient xmlns="http://hl7.org/fhir">
-   <id value="example-rec-04-opioid-with-abuse-potential"/>
-   <gender value="male"/>
-   <birthDate value="1982-01-07"/>
-</Patient>

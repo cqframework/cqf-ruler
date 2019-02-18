@@ -4,7 +4,6 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.instance.model.api.IAnyResource;
@@ -22,7 +21,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
     // need these to access the dao
     private Collection<IResourceProvider> collectionProviders;
 
-    public Collection<IResourceProvider> getCollectionProviders() {
+    public synchronized Collection<IResourceProvider> getCollectionProviders() {
         return this.collectionProviders;
     }
 
@@ -32,7 +31,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
         setFhirContext(FhirContext.forDstu3());
     }
 
-    public Iterable<Object> retrieve(String context, Object contextValue, String dataType, String templateId,
+    public synchronized Iterable<Object> retrieve(String context, Object contextValue, String dataType, String templateId,
                                      String codePath, Iterable<Code> codes, String valueSet, String datePath,
                                      String dateLowPath, String dateHighPath, Interval dateRange)
     {
@@ -113,7 +112,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
         return resolveResourceList(resourceList);
     }
 
-    public Iterable<Object> resolveResourceList(List<IBaseResource> resourceList) {
+    public synchronized Iterable<Object> resolveResourceList(List<IBaseResource> resourceList) {
         List<Object> ret = new ArrayList<>();
         for (IBaseResource res : resourceList) {
             Class clazz = res.getClass();
@@ -123,7 +122,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
         return ret;
     }
 
-    public JpaResourceProviderDstu3<? extends IAnyResource> resolveResourceProvider(String datatype) {
+    public synchronized JpaResourceProviderDstu3<? extends IAnyResource> resolveResourceProvider(String datatype) {
         for (IResourceProvider resource : collectionProviders) {
             if (resource.getResourceType().getSimpleName().toLowerCase().equals(datatype.toLowerCase())) {
                 return (JpaResourceProviderDstu3<? extends IAnyResource>) resource;

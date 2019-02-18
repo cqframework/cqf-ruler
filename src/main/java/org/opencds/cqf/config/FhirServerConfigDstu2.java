@@ -31,8 +31,8 @@ public class FhirServerConfigDstu2 extends BaseJavaConfigDstu2 {
         retVal.setAllowMultipleDelete(true);
         retVal.setAllowInlineMatchUrlReferences(true);
         retVal.setAllowExternalReferences(true);
-        retVal.getTreatBaseUrlsAsLocal().add("http://measure.eval.kanvix.com/cqf-ruler/baseDstu2");
-        retVal.getTreatBaseUrlsAsLocal().add("https://measure.eval.kanvix.com/cqf-ruler/baseDstu2");
+//        retVal.getTreatBaseUrlsAsLocal().add("http://measure.eval.kanvix.com/cqf-ruler/baseDstu2");
+//        retVal.getTreatBaseUrlsAsLocal().add("https://measure.eval.kanvix.com/cqf-ruler/baseDstu2");
         retVal.setCountSearchResultsUpTo(50000);
         retVal.setIndexMissingFields(DaoConfig.IndexEnabledEnum.ENABLED);
         retVal.setFetchSizeDefaultMaximum(50000);

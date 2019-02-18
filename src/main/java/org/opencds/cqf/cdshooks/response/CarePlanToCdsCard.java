@@ -3,7 +3,6 @@ package org.opencds.cqf.cdshooks.response;
 import org.hl7.fhir.dstu3.model.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CarePlanToCdsCard {

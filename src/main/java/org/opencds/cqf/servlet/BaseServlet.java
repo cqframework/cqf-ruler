@@ -192,6 +192,8 @@ public class BaseServlet extends RestfulServer {
 
         // Create the interceptor and register it
         CorsInterceptor corsInterceptor = new CorsInterceptor(config);
+//        corsInterceptor.getConfig().addAllowedOrigin("http://sandbox.cds-hooks.org");
+//        corsInterceptor.getConfig().addAllowedOrigin("*");
         registerInterceptor(corsInterceptor);
 
         ResponseHighlighterInterceptor responseHighlighterInterceptor = new ResponseHighlighterInterceptor();

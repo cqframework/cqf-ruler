@@ -22,18 +22,24 @@
     <servlet>
         <servlet-name>on-measure-subscription-mrp</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.MeasureSubscriptionServlet</servlet-class>
-        <load-on-startup>7</load-on-startup>
+        <load-on-startup>8</load-on-startup>
     </servlet>
 
     <servlet>
         <servlet-name>bulkDataResults</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.BulkDataServlet</servlet-class>
+        <load-on-startup>7</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>cdsHooksStu3</servlet-name>
+        <servlet-class>org.opencds.cqf.servlet.CdsHooksStu3Servlet</servlet-class>
         <load-on-startup>6</load-on-startup>
     </servlet>
 
     <servlet>
-        <servlet-name>cdsServicesServlet</servlet-name>
-        <servlet-class>org.opencds.cqf.servlet.CdsServicesServlet</servlet-class>
+        <servlet-name>cdsHooksDstu2</servlet-name>
+        <servlet-class>org.opencds.cqf.servlet.CdsHooksDstu2Servlet</servlet-class>
         <load-on-startup>5</load-on-startup>
     </servlet>
 
@@ -114,13 +120,23 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>cdsServicesServlet</servlet-name>
-        <url-pattern>/cds-services</url-pattern>
+        <servlet-name>cdsHooksDstu2</servlet-name>
+        <url-pattern>dstu2/cds-services</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>cdsServicesServlet</servlet-name>
-        <url-pattern>/cds-services/*</url-pattern>
+        <servlet-name>cdsHooksDstu2</servlet-name>
+        <url-pattern>dstu2/cds-services/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>cdsHooksStu3</servlet-name>
+        <url-pattern>dstu3/cds-services</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>cdsHooksStu3</servlet-name>
+        <url-pattern>dstu3/cds-services/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -133,54 +149,54 @@
         <url-pattern>/on-measure-subscription-mrp</url-pattern>
     </servlet-mapping>
 
-    <!-- This filters provide support for Cross Origin Resource Sharing (CORS) -->
+     <!--This filters provide support for Cross Origin Resource Sharing (CORS)-->
     <!--<filter>-->
-    <!--<filter-name>CORS Filter</filter-name>-->
-    <!--<filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>-->
-    <!--&lt;!&ndash;<init-param>&ndash;&gt;-->
-    <!--&lt;!&ndash;<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>&ndash;&gt;-->
-    <!--&lt;!&ndash;<param-name>cors.allowed.origins</param-name>&ndash;&gt;-->
-    <!--&lt;!&ndash;<param-value>http://sandbox.cds-hooks.org, http://clinfhir.com, *</param-value>&ndash;&gt;-->
-    <!--&lt;!&ndash;</init-param>&ndash;&gt;-->
-    <!--<init-param>-->
-    <!--<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>-->
-    <!--<param-name>cors.allowed.origins</param-name>-->
-    <!--<param-value>*</param-value>-->
-    <!--</init-param>-->
-    <!--<init-param>-->
-    <!--<description>A comma separated list of HTTP verbs, using which a CORS request can be made.</description>-->
-    <!--<param-name>cors.allowed.methods</param-name>-->
-    <!--<param-value>GET,POST,PUT,DELETE,OPTIONS</param-value>-->
-    <!--</init-param>-->
-    <!--<init-param>-->
-    <!--<description>A comma separated list of allowed headers when making a non simple CORS request.</description>-->
-    <!--<param-name>cors.allowed.headers</param-name>-->
-    <!--<param-value>X-FHIR-Starter,Origin,Accept,Authorization,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>-->
-    <!--</init-param>-->
-    <!--<init-param>-->
-    <!--<description>A comma separated list non-standard response headers that will be exposed to XHR2 object.</description>-->
-    <!--<param-name>cors.exposed.headers</param-name>-->
-    <!--<param-value>Location,Content-Location</param-value>-->
-    <!--</init-param>-->
-    <!--<init-param>-->
-    <!--<description>A flag that suggests if CORS is supported with cookies</description>-->
-    <!--<param-name>cors.support.credentials</param-name>-->
-    <!--<param-value>true</param-value>-->
-    <!--</init-param>-->
-    <!--<init-param>-->
-    <!--<description>A flag to control logging</description>-->
-    <!--<param-name>cors.logging.enabled</param-name>-->
-    <!--<param-value>true</param-value>-->
-    <!--</init-param>-->
-    <!--<init-param>-->
-    <!--<description>Indicates how long (in seconds) the results of a preflight request can be cached in a preflight result cache.</description>-->
-    <!--<param-name>cors.preflight.maxage</param-name>-->
-    <!--<param-value>300</param-value>-->
-    <!--</init-param>-->
+        <!--<filter-name>CORS Filter</filter-name>-->
+        <!--<filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>-->
+        <!--<init-param>-->
+            <!--<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>-->
+            <!--<param-name>cors.allowed.origins</param-name>-->
+            <!--<param-value>http://sandbox.cds-hooks.org, http://clinfhir.com, *</param-value>-->
+        <!--</init-param>-->
+        <!--&lt;!&ndash;<init-param>&ndash;&gt;-->
+        <!--&lt;!&ndash;<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>&ndash;&gt;-->
+        <!--&lt;!&ndash;<param-name>cors.allowed.origins</param-name>&ndash;&gt;-->
+        <!--&lt;!&ndash;<param-value>*</param-value>&ndash;&gt;-->
+        <!--&lt;!&ndash;</init-param>&ndash;&gt;-->
+        <!--<init-param>-->
+            <!--<description>A comma separated list of HTTP verbs, using which a CORS request can be made.</description>-->
+            <!--<param-name>cors.allowed.methods</param-name>-->
+            <!--<param-value>GET,POST,PUT,DELETE,OPTIONS</param-value>-->
+        <!--</init-param>-->
+        <!--<init-param>-->
+            <!--<description>A comma separated list of allowed headers when making a non simple CORS request.</description>-->
+            <!--<param-name>cors.allowed.headers</param-name>-->
+            <!--<param-value>X-FHIR-Starter,Origin,Accept,Authorization,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>-->
+        <!--</init-param>-->
+        <!--<init-param>-->
+            <!--<description>A comma separated list non-standard response headers that will be exposed to XHR2 object.</description>-->
+            <!--<param-name>cors.exposed.headers</param-name>-->
+            <!--<param-value>Location,Content-Location</param-value>-->
+        <!--</init-param>-->
+        <!--<init-param>-->
+            <!--<description>A flag that suggests if CORS is supported with cookies</description>-->
+            <!--<param-name>cors.support.credentials</param-name>-->
+            <!--<param-value>true</param-value>-->
+        <!--</init-param>-->
+        <!--<init-param>-->
+            <!--<description>A flag to control logging</description>-->
+            <!--<param-name>cors.logging.enabled</param-name>-->
+            <!--<param-value>true</param-value>-->
+        <!--</init-param>-->
+        <!--<init-param>-->
+            <!--<description>Indicates how long (in seconds) the results of a preflight request can be cached in a preflight result cache.</description>-->
+            <!--<param-name>cors.preflight.maxage</param-name>-->
+            <!--<param-value>300</param-value>-->
+        <!--</init-param>-->
     <!--</filter>-->
     <!--<filter-mapping>-->
-    <!--<filter-name>CORS Filter</filter-name>-->
-    <!--<url-pattern>/*</url-pattern>-->
+        <!--<filter-name>CORS Filter</filter-name>-->
+        <!--<url-pattern>/*</url-pattern>-->
     <!--</filter-mapping>-->
 
 </web-app>

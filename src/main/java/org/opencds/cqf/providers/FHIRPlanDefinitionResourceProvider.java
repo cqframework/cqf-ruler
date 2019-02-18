@@ -1,5 +1,6 @@
 package org.opencds.cqf.providers;
 
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider;
@@ -411,7 +412,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
 
     private Map<String, Pair<PlanDefinition, Discovery> > discoveryCache = new HashMap<>();
 
-    public List<Discovery> getDiscoveries() {
+    public List<Discovery> getDiscoveries(FhirVersionEnum version) {
         List<Discovery> discoveries = new ArrayList<>();
         IBundleProvider bundleProvider = getDao().search(new SearchParameterMap());
         for (IBaseResource resource : bundleProvider.getResources(0, bundleProvider.size())) {
@@ -426,7 +427,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                             discoveries.add(pair.getRight());
                         }
                         else {
-                            Discovery discovery = getDiscovery(planDefinition);
+                            Discovery discovery = getDiscovery(planDefinition, version);
                             if (discovery == null) continue;
                             discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
                             discoveries.add(discovery);
@@ -434,7 +435,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                     }
                 }
                 else {
-                    Discovery discovery = getDiscovery(planDefinition);
+                    Discovery discovery = getDiscovery(planDefinition, version);
                     if (discovery == null) continue;
                     discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
                     discoveries.add(discovery);
@@ -444,7 +445,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
         return discoveries;
     }
 
-    public Discovery getDiscovery(PlanDefinition planDefinition) {
+    public Discovery getDiscovery(PlanDefinition planDefinition, FhirVersionEnum version) {
         LibraryLoader libraryLoader = new STU3LibraryLoader(
                 (LibraryResourceProvider) provider.resolveResourceProvider("Library"),
                 new LibraryManager(new ModelManager()), new ModelManager()
@@ -462,10 +463,10 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
 
                             DiscoveryDataProvider discoveryDataProvider = null;
                             for (UsingDef using : library.getUsings().getDef()) {
-                                if (using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("3.0.0")) {
+                                if (version == FhirVersionEnum.DSTU3 && using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("3.0.0")) {
                                     discoveryDataProvider = new DiscoveryDataProviderStu3();
                                 }
-                                else if (using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("1.0.2")) {
+                                else if (version == FhirVersionEnum.DSTU2 && using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("1.0.2")) {
                                     discoveryDataProvider = new DiscoveryDataProviderDstu2();
                                 }
                             }

@@ -37,7 +37,7 @@ public class JpaTerminologyProvider implements TerminologyProvider {
     }
 
     @Override
-    public boolean in(Code code, ValueSetInfo valueSet) throws ResourceNotFoundException {
+    public synchronized boolean in(Code code, ValueSetInfo valueSet) throws ResourceNotFoundException {
         for (Code c : expand(valueSet)) {
             if (c == null) continue;
             if (c.getCode().equals(code.getCode()) && c.getSystem().equals(code.getSystem())) {
@@ -48,13 +48,13 @@ public class JpaTerminologyProvider implements TerminologyProvider {
     }
 
     @Override
-    public Iterable<Code> expand(ValueSetInfo valueSet) throws ResourceNotFoundException {
+    public synchronized Iterable<Code> expand(ValueSetInfo valueSet) throws ResourceNotFoundException {
         List<Code> codes = new ArrayList<>();
         boolean needsExpand = false;
         ValueSet vs;
         if (valueSet.getId().startsWith("http://") || valueSet.getId().startsWith("https://")) {
             IBundleProvider bundleProvider = valueSetResourceProvider.getDao().search(new SearchParameterMap().add(ValueSet.SP_URL, new UriParam(valueSet.getId())));
-            List<IBaseResource> valueSets = bundleProvider.getResources(0, 10);
+            List<IBaseResource> valueSets = bundleProvider.getResources(0, bundleProvider.size());
             if (!valueSets.isEmpty() && valueSets.size() == 1) {
                 vs = (ValueSet) valueSets.get(0);
             }
@@ -98,7 +98,7 @@ public class JpaTerminologyProvider implements TerminologyProvider {
     }
 
     @Override
-    public Code lookup(Code code, CodeSystemInfo codeSystem) throws ResourceNotFoundException {
+    public synchronized Code lookup(Code code, CodeSystemInfo codeSystem) throws ResourceNotFoundException {
         CodeSystem cs = terminologySvcDstu3.fetchCodeSystem(context, codeSystem.getId());
         for (CodeSystem.ConceptDefinitionComponent concept : cs.getConcept()) {
             if (concept.getCode().equals(code.getCode()))

@@ -33,8 +33,8 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
         retVal.setAllowMultipleDelete(true);
         retVal.setAllowInlineMatchUrlReferences(true);
         retVal.setAllowExternalReferences(true);
-        retVal.getTreatBaseUrlsAsLocal().add("http://measure.eval.kanvix.com/cqf-ruler/baseR4");
-        retVal.getTreatBaseUrlsAsLocal().add("https://measure.eval.kanvix.com/cqf-ruler/baseR4");
+//        retVal.getTreatBaseUrlsAsLocal().add("http://measure.eval.kanvix.com/cqf-ruler/baseR4");
+//        retVal.getTreatBaseUrlsAsLocal().add("https://measure.eval.kanvix.com/cqf-ruler/baseR4");
         retVal.setCountSearchResultsUpTo(50000);
         retVal.setIndexMissingFields(DaoConfig.IndexEnabledEnum.ENABLED);
         retVal.setFetchSizeDefaultMaximum(50000);

@@ -1,7 +1,10 @@
 package org.opencds.cqf.cdshooks.response;
 
 import ca.uhn.fhir.context.FhirContext;
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.exceptions.MissingRequiredFieldException;
 
