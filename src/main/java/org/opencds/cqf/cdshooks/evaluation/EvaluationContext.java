@@ -132,6 +132,7 @@ public class EvaluationContext {
             context = new Context(getLibrary());
             context.registerDataProvider("http://hl7.org/fhir", getRemoteProvider() == null ? systemProvider : getRemoteProvider());
             context.registerLibraryLoader(getLibraryLoader());
+            context.setContextValue("Patient", hook.getRequest().getContext().getPatientId());
             context.setExpressionCaching(true);
         }
         return context;

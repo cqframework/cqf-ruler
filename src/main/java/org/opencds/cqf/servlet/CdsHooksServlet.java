@@ -102,7 +102,7 @@ public class CdsHooksServlet extends BaseServlet {
         JsonArray services = new JsonArray();
 
         FHIRPlanDefinitionResourceProvider provider = (FHIRPlanDefinitionResourceProvider) getProvider("PlanDefinition");
-        for (Discovery discovery : provider.getDiscoveries()) {
+        for (Discovery discovery : provider.getDiscoveries(version)) {
             PlanDefinition planDefinition = discovery.getPlanDefinition();
             JsonObject service = new JsonObject();
             if (planDefinition.hasAction()) {

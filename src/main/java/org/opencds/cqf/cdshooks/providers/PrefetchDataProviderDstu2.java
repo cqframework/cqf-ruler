@@ -94,8 +94,8 @@ public class PrefetchDataProviderDstu2 extends FhirDataProviderDstu2 {
                     ValueSetInfo valueSetInfo = new ValueSetInfo().withId(valueSet);
                     codes = terminologyProvider.expand(valueSetInfo);
                 }
-                else if (codes != null) {
-                    Object codeObject = PrefetchDataProviderHelper.getDstu2Code(resolvePath(resource, codePath));
+                if (codes != null) {
+                    Object codeObject = PrefetchDataProviderHelper.getDstu2Code(resolvePath(resource, convertPathFromCodeParam(dataType, codePath)));
                     includeResource = PrefetchDataProviderHelper.checkCodeMembership(codes, codeObject);
                 }
             }
@@ -106,5 +106,14 @@ public class PrefetchDataProviderDstu2 extends FhirDataProviderDstu2 {
         }
 
         return returnList;
+    }
+
+    private String convertPathFromCodeParam(String dataType, String codeOrDatePath) {
+        switch (dataType) {
+            case "MedicationOrder":
+                if (codeOrDatePath.equals("code")) return "medication";
+                break;
+        }
+        return codeOrDatePath;
     }
 }

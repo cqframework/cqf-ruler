@@ -20,7 +20,7 @@ public class HookEvaluator {
 
         // resolve context resources parameter
         // TODO - this will need some work for libraries with multiple parameters
-        if (context.getLibrary().getParameters() != null) {
+        if (context.getLibrary().getParameters() != null && !(context.getHook() instanceof PatientViewHook)) {
             for (ParameterDef params : context.getLibrary().getParameters().getDef()) {
                 if (params.getParameterTypeSpecifier() instanceof ListTypeSpecifier) {
                     context.getContext().setParameter(null, params.getName(), context.getContextResources());

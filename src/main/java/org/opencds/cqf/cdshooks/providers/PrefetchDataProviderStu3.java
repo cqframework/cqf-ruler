@@ -78,7 +78,7 @@ public class PrefetchDataProviderStu3 extends FhirDataProviderStu3 {
                     Interval interval = new Interval(lowDate, true, highDate, true);
 
                     // TODO - add precision to includes evaluator
-                    if (!(Boolean) IncludesEvaluator.includes(dateRange, interval, precision)) {
+                    if (!IncludesEvaluator.includes(dateRange, interval, precision)) {
                         includeResource = false;
                     }
                 }
@@ -96,10 +96,10 @@ public class PrefetchDataProviderStu3 extends FhirDataProviderStu3 {
                     Object codeObject = PrefetchDataProviderHelper.getStu3Code(resolvePath(resource, convertPathFromCodeParam(dataType, codePath)));
                     includeResource = PrefetchDataProviderHelper.checkCodeMembership(codes, codeObject);
                 }
+            }
 
-                if (includeResource) {
-                    returnList.add(resource);
-                }
+            if (includeResource) {
+                returnList.add(resource);
             }
         }
 
