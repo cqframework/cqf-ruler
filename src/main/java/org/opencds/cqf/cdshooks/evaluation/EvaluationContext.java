@@ -3,6 +3,7 @@ package org.opencds.cqf.cdshooks.evaluation;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
@@ -81,6 +82,14 @@ public class EvaluationContext {
                         throw new NotImplementedException("This CDS Hooks implementation is not configured for FHIR version: " + fhirVersion.getFhirVersionString());
                 }
                 remoteProvider.setTerminologyProvider(systemProvider.getTerminologyProvider());
+            }
+            if (hook.getRequest().getFhirAuthorization() != null
+                    && hook.getRequest().getFhirAuthorization().getTokenType().equals("Bearer"))
+            {
+                BearerTokenAuthInterceptor authInterceptor = new BearerTokenAuthInterceptor(hook.getRequest().getFhirAuthorization().getAccessToken());
+                remoteProvider.getFhirClient().registerInterceptor(authInterceptor);
+
+                // TODO: account for the expires_in, scope and subject properties within workflow
             }
         }
         return remoteProvider;
