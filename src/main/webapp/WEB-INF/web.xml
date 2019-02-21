@@ -121,22 +121,22 @@
 
     <servlet-mapping>
         <servlet-name>cdsHooksDstu2</servlet-name>
-        <url-pattern>dstu2/cds-services</url-pattern>
+        <url-pattern>/dstu2/cds-services</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>cdsHooksDstu2</servlet-name>
-        <url-pattern>dstu2/cds-services/*</url-pattern>
+        <url-pattern>/dstu2/cds-services/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>cdsHooksStu3</servlet-name>
-        <url-pattern>dstu3/cds-services</url-pattern>
+        <url-pattern>/dstu3/cds-services</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>cdsHooksStu3</servlet-name>
-        <url-pattern>dstu3/cds-services/*</url-pattern>
+        <url-pattern>/dstu3/cds-services/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
