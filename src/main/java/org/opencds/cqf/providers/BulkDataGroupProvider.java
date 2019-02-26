@@ -29,94 +29,94 @@ public class BulkDataGroupProvider extends JpaResourceProviderDstu3<Group> {
         this.provider = provider;
     }
 
-//    @Operation(name = "$export", idempotent = true)
-//    public OperationOutcome exportGroupData(
-//            javax.servlet.http.HttpServletRequest theServletRequest,
-//            RequestDetails theRequestDetails,
-//            @IdParam IdType theId,
-//            @OperationParam(name="_outputFormat") String outputFormat,
-//            @OperationParam(name="_since") DateParam since,
-//            @OperationParam(name="_type") StringAndListParam type) throws ServletException, IOException
-//    {
-//        BulkDataHelper helper = new BulkDataHelper(provider);
-//
-//        if (theRequestDetails.getHeader("Accept") == null) {
-//            return helper.createErrorOutcome("Please provide the Accept header, which must be set to application/fhir+json");
-//        } else if (!theRequestDetails.getHeader("Accept").equals("application/fhir+json")) {
-//            return helper.createErrorOutcome("Only the application/fhir+json value for the Accept header is currently supported");
-//        }
-//        if (theRequestDetails.getHeader("Prefer") == null) {
-//            return helper.createErrorOutcome("Please provide the Prefer header, which must be set to respond-async");
-//        } else if (!theRequestDetails.getHeader("Prefer").equals("respond-async")) {
-//            return helper.createErrorOutcome("Only the respond-async value for the Prefer header is currently supported");
-//        }
-//
-//        if (outputFormat != null) {
-//            if (!(outputFormat.equals("application/fhir+ndjson")
-//                    || outputFormat.equals("application/ndjson")
-//                    || outputFormat.equals("ndjson"))) {
-//                return helper.createErrorOutcome("Only ndjson for the _outputFormat parameter is currently supported");
-//            }
-//        }
-//
-//        Group group = this.getDao().read(theId);
-//
-//        if (group == null) {
-//            return helper.createErrorOutcome("Group with id " + theId + " could not be found");
-//        }
-//
-//        SearchParameterMap searchMap = new SearchParameterMap();
-//
-//        ReferenceOrListParam patientParams = new ReferenceOrListParam();
-//        Reference reference;
-//        for (Group.GroupMemberComponent member : group.getMember()) {
-//            reference = member.getEntity();
-//            if (reference.getReferenceElement().getResourceType().equals("Patient")) {
-//                patientParams.addOr(new ReferenceParam().setValue(reference.getReference()));
-//            }
-//        }
-//
-//        if (patientParams.getValuesAsQueryTokens().isEmpty()) {
-//            return helper.createErrorOutcome("No patients found in the Group with id: " + theId.getIdPart());
-//        }
-//
-//        searchMap.setLastUpdated(new DateRangeParam());
-//        if (since != null) {
-//            DateRangeParam rangeParam = new DateRangeParam(since.getValue(), new Date());
-//            searchMap.setLastUpdated(rangeParam);
-//        }
-//
-//        List<List<Resource> > resources = new ArrayList<>();
-//        List<Resource> resolvedResources;
-//        if (type != null) {
-//            for (StringOrListParam stringOrListParam : type.getValuesAsQueryTokens()) {
-//                for (StringParam theType : stringOrListParam.getValuesAsQueryTokens()) {
-//                    SearchParameterMap newMap = (SearchParameterMap)((SearchParameterMap) searchMap).clone();
-//                    for (String param : helper.getPatientInclusionPath(theType.getValue())) {
-//                        newMap.add(param, patientParams);
-//                    }
-//                    resolvedResources = helper.resolveType(theType.getValue(), newMap);
-//                    if (!resolvedResources.isEmpty()) {
-//                        resources.add(resolvedResources);
-//                    }
-//                }
-//            }
-//        }
-//        else {
-//            for (String theType : helper.compartmentPatient) {
-//                SearchParameterMap newMap = (SearchParameterMap)((SearchParameterMap) searchMap).clone();
-//                for (String param : helper.getPatientInclusionPath(theType)) {
-//                    newMap.add(param, patientParams);
-//                }
-//                resolvedResources = helper.resolveType(theType, newMap);
-//                if (!resolvedResources.isEmpty()) {
-//                    resources.add(resolvedResources);
-//                }
-//            }
-//        }
-//
-//        return helper.createOutcome(resources, theServletRequest, theRequestDetails);
-//    }
+    @Operation(name = "$export", idempotent = true)
+    public OperationOutcome exportGroupData(
+            javax.servlet.http.HttpServletRequest theServletRequest,
+            RequestDetails theRequestDetails,
+            @IdParam IdType theId,
+            @OperationParam(name="_outputFormat") String outputFormat,
+            @OperationParam(name="_since") DateParam since,
+            @OperationParam(name="_type") StringAndListParam type) throws ServletException, IOException
+    {
+        BulkDataHelper helper = new BulkDataHelper(provider);
+
+        if (theRequestDetails.getHeader("Accept") == null) {
+            return helper.createErrorOutcome("Please provide the Accept header, which must be set to application/fhir+json");
+        } else if (!theRequestDetails.getHeader("Accept").equals("application/fhir+json")) {
+            return helper.createErrorOutcome("Only the application/fhir+json value for the Accept header is currently supported");
+        }
+        if (theRequestDetails.getHeader("Prefer") == null) {
+            return helper.createErrorOutcome("Please provide the Prefer header, which must be set to respond-async");
+        } else if (!theRequestDetails.getHeader("Prefer").equals("respond-async")) {
+            return helper.createErrorOutcome("Only the respond-async value for the Prefer header is currently supported");
+        }
+
+        if (outputFormat != null) {
+            if (!(outputFormat.equals("application/fhir+ndjson")
+                    || outputFormat.equals("application/ndjson")
+                    || outputFormat.equals("ndjson"))) {
+                return helper.createErrorOutcome("Only ndjson for the _outputFormat parameter is currently supported");
+            }
+        }
+
+        Group group = this.getDao().read(theId);
+
+        if (group == null) {
+            return helper.createErrorOutcome("Group with id " + theId + " could not be found");
+        }
+
+        SearchParameterMap searchMap = new SearchParameterMap();
+
+        ReferenceOrListParam patientParams = new ReferenceOrListParam();
+        Reference reference;
+        for (Group.GroupMemberComponent member : group.getMember()) {
+            reference = member.getEntity();
+            if (reference.getReferenceElement().getResourceType().equals("Patient")) {
+                patientParams.addOr(new ReferenceParam().setValue(reference.getReference()));
+            }
+        }
+
+        if (patientParams.getValuesAsQueryTokens().isEmpty()) {
+            return helper.createErrorOutcome("No patients found in the Group with id: " + theId.getIdPart());
+        }
+
+        searchMap.setLastUpdated(new DateRangeParam());
+        if (since != null) {
+            DateRangeParam rangeParam = new DateRangeParam(since.getValue(), new Date());
+            searchMap.setLastUpdated(rangeParam);
+        }
+
+        List<List<Resource> > resources = new ArrayList<>();
+        List<Resource> resolvedResources;
+        if (type != null) {
+            for (StringOrListParam stringOrListParam : type.getValuesAsQueryTokens()) {
+                for (StringParam theType : stringOrListParam.getValuesAsQueryTokens()) {
+                    SearchParameterMap newMap = (SearchParameterMap)((SearchParameterMap) searchMap).clone();
+                    for (String param : helper.getPatientInclusionPath(theType.getValue())) {
+                        newMap.add(param, patientParams);
+                    }
+                    resolvedResources = helper.resolveType(theType.getValue(), newMap);
+                    if (!resolvedResources.isEmpty()) {
+                        resources.add(resolvedResources);
+                    }
+                }
+            }
+        }
+        else {
+            for (String theType : helper.compartmentPatient) {
+                SearchParameterMap newMap = (SearchParameterMap)((SearchParameterMap) searchMap).clone();
+                for (String param : helper.getPatientInclusionPath(theType)) {
+                    newMap.add(param, patientParams);
+                }
+                resolvedResources = helper.resolveType(theType, newMap);
+                if (!resolvedResources.isEmpty()) {
+                    resources.add(resolvedResources);
+                }
+            }
+        }
+
+        return helper.createOutcome(resources, theServletRequest, theRequestDetails);
+    }
 
     @Search(allowUnknownParams=true)
     public ca.uhn.fhir.rest.api.server.IBundleProvider search(
