@@ -12,8 +12,7 @@ import org.hl7.fhir.exceptions.TerminologyServiceException;
 import org.opencds.cqf.exceptions.NotImplementedException;
 import org.opencds.cqf.providers.JpaDataProvider;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MockWorker implements IWorkerContext {
 
@@ -44,6 +43,11 @@ public class MockWorker implements IWorkerContext {
     @Override
     public IParser newXmlParser() {
         throw new NotImplementedException();
+    }
+
+    @Override
+    public StructureDefinition fetchTypeDefinition(String theCode) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
