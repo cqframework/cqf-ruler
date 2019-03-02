@@ -207,7 +207,12 @@
             <td><b>Content: </b></td>
         </tr>
         <tr>
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${con}"></td>
+            <td style="padding-left: 25px; padding-right: 25px;">
+                <pre>
+                    <code th:class="${con.contentType == 'text/cql' ? 'language-cql' : 'language-xml'}" th:text="${new java.lang.String(@java.util.Base64@getDecoder().decode(con.getDataElement().getValueAsString()))}"> </code>
+                </pre>
+            
+            </td>
         </tr>
     </table>
 

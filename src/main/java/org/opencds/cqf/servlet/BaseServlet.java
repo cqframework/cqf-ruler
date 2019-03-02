@@ -367,6 +367,21 @@ public class BaseServlet extends RestfulServer {
         }
 
         register(endpointProvider, provider.getCollectionProviders());
+
+        //Library processing
+        NarrativeProvider narrativeProvider = new NarrativeProvider();
+        NarrativeLibraryResourceProvider libraryProvider = new NarrativeLibraryResourceProvider(narrativeProvider);
+        LibraryResourceProvider jpaLibraryProvider = (LibraryResourceProvider) provider.resolveResourceProvider("Library");
+        libraryProvider.setDao(jpaLibraryProvider.getDao());
+        libraryProvider.setContext(jpaLibraryProvider.getContext());
+
+        try {
+            unregister(jpaLibraryProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(libraryProvider, provider.getCollectionProviders());
     }
 
     private void register(IResourceProvider provider, Collection<IResourceProvider> providers) {
