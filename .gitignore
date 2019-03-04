@@ -140,3 +140,7 @@ local.properties
 *.script
 /*.tmp
 *.txt
+
+.settings
+.vscode
+.classpath
