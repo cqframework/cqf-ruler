@@ -117,11 +117,11 @@
         <!-- Filter down to human readable content-->
         <th:block th:each="con, iter : ${resource.content}">
             <tr th:if="${con.contentType == 'text/cql'}" style="vertical-align: top;">
-                <th scope="row" rowspan="2"><b>Content: </b></th>
+                <th scope="row" ><b>Content: </b></th>
                 <td style="padding-left: 25px; padding-right: 25px;"><b>type: </b><span th:text="${con.contentType}"></span></td>
             </tr>
             <tr th:if="${con.contentType == 'text/cql'}">
-                <td style="padding-left: 25px; padding-right: 25px;">
+                <td colspan="2" style="padding-left: 25px; padding-right: 25px;">
                     <pre>
                         <code th:class="${con.contentType == 'text/cql' ? 'language-cql' : 'language-xml'}" th:text="${new java.lang.String(@java.util.Base64@getDecoder().decode(con.getDataElement().getValueAsString()))}"> </code>
                     </pre>
