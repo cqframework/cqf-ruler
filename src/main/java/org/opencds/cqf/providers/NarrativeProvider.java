@@ -44,34 +44,11 @@ public class NarrativeProvider {
         // Remove the old generated narrative.
         resource.setText(null);
 
-        if (resource instanceof org.hl7.fhir.dstu3.model.Library) {
-            formatCql((org.hl7.fhir.dstu3.model.Library)resource);
-        }
         Narrative narrative = new Narrative();
 
         this.generator.generateNarrative(context, resource, narrative);
 
         resource.setText(narrative);
-    }
-
-    private void formatCql(org.hl7.fhir.dstu3.model.Library library) {
-        for (Attachment att : library.getContent()) {
-            if (att.getContentType().equals("text/cql")) {
-                try {
-                    FormatResult fr = CqlFormatterVisitor.getFormattedOutput(
-                            new ByteArrayInputStream(Base64.getDecoder().decode(att.getDataElement().getValueAsString())));
-
-                    // Only update the content if it's valid CQL.
-                    if (fr.getErrors().size() == 0) {
-                        Base64BinaryType bt = new Base64BinaryType(new String(Base64.getEncoder().encode(fr.getOutput().getBytes())));
-                        att.setDataElement(bt);
-                    }
-                }
-                catch(IOException e) {
-                    // Intentionally empty for now
-                }
-            }
-        }   
     }
 
     // args[0] == relative path to json resource -> i.e. library/library-demo.json
