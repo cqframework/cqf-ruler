@@ -9,14 +9,13 @@
             <th scope="row"><b>Type: </b></th>
             <td style="padding-right: 25px;" th:narrative="${resource.type}"></td>
         </tr>
-        <th:block th:each="ident : ${resource.identifier}">
+        <th:block th:each="ident, iter : ${resource.identifier}">
             <tr style="vertical-align: top;">
                 <th th:if="${iter.index == 0}" th:rowspan="${iter.size}"  scope="row"><b>Identifier: </b></th>
                 <td style="padding-left: 25px; padding-right: 25px;">
-                        <b>system: </b> <span th:narrative="${ident.system}"></span>
-                </td>
-                <td style="padding-left: 25px; padding-right: 25px;">
-                        <b>value: </b> <span th:narrative="${ident.value}"></span>
+                    <b>system: </b> <span th:narrative="${ident.system}"></span>
+                    <br/>
+                    <b>value: </b> <span th:narrative="${ident.value}"></span>
                 </td>
             </tr>
         </th:block>
@@ -44,7 +43,7 @@
             <th scope="row"><b>Usage: </b></th>
             <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.usage}"></td>
         </tr>
-        <th:block th:each="context : ${resource.useContext}">
+        <th:block th:each="context, iter : ${resource.useContext}">
             <tr>
                 <th th:if="${iter.index == 0}" th:rowspan="${iter.size}" scope="row"><b>Use Context: </b></th>
                 <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${context}"></td>
@@ -59,8 +58,9 @@
         <th:block th:each="cont, iter : ${resource.contributor}">
             <tr style="vertical-align: top;">
                 <th th:if="${iter.index == 0}" th:rowspan="${iter.size}"  scope="row"><b>Contributor: </b></th>
-                <td style="padding-left: 25px; padding-right: 25px;"><b><span th:narrative="${cont.type.toCode()}"></span>: </b></td>
-                <td style="padding-left: 50px; padding-right: 25px;" th:narrative="${cont.name}"></td>
+                <td style="padding-left: 25px; padding-right: 25px;">
+                    <b><span th:narrative="${cont.type.toCode()}"></span>: </b><span th:narrative="${cont.name}"></span>
+                </td>
             </tr>
         </th:block>
         <th:block th:each="related, iter : ${resource.relatedArtifact}">
@@ -122,9 +122,7 @@
             </tr>
             <tr th:if="${con.contentType == 'text/cql'}">
                 <td colspan="2" style="padding-left: 25px; padding-right: 25px;">
-                    <pre>
-                        <code th:class="${con.contentType == 'text/cql' ? 'language-cql' : 'language-xml'}" th:text="${new java.lang.String(@java.util.Base64@getDecoder().decode(con.getDataElement().getValueAsString()))}"> </code>
-                    </pre>
+                    <pre><code th:class="${con.contentType == 'text/cql' ? 'language-cql' : 'language-xml'}" th:text="${new java.lang.String(@java.util.Base64@getDecoder().decode(con.getDataElement().getValueAsString()))}"></code></pre>
                 </td>
             </tr>
         </th:block >
