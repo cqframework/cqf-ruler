@@ -27,15 +27,15 @@ public class STU3LibrarySourceProvider implements LibrarySourceProvider {
 
     @Override
     public InputStream getLibrarySource(VersionedIdentifier versionedIdentifier) {
-        Library lib = provider.getDao().read(new IdType(versionedIdentifier.getId()));
-
-        if (lib != null) {
+        try {
+            Library lib = provider.getDao().read(new IdType(versionedIdentifier.getId()));
             for (Attachment content : lib.getContent()) {
                 if (content.getContentType().equals("text/cql")) {
                     return new ByteArrayInputStream(content.getData());
                 }
             }
         }
+        catch(Exception e){}
 
         return this.innerProvider.getLibrarySource(versionedIdentifier);
     }
