@@ -9,11 +9,15 @@ import org.cqframework.cql.tools.formatter.CqlFormatterVisitor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.antlr.v4.parse.ANTLRParser.exceptionGroup_return;
 import org.apache.lucene.facet.FacetResult;
+import org.apache.poi.ss.formula.functions.Code;
 import org.hl7.elm.r1.Library;
 import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.Base64BinaryType;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.DomainResource;
+import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.Narrative.NarrativeStatus;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
@@ -23,6 +27,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * Created by Christopher on 2/4/2017.
@@ -60,8 +65,7 @@ public class NarrativeProvider {
     public static void main(String[] args) {
 
         try {
-            Path pathToResource = Paths.get(NarrativeProvider.class.getClassLoader()
-            .getResource("narratives/examples/library/SuicideRisk.json").toURI());
+            Path pathToResource = Paths.get(NarrativeProvider.class.getClassLoader().getResource("narratives/examples/library/library-demo.json").toURI());
             Path pathToNarrativeOutput = Paths.get("src/main/resources/narratives/output.html").toAbsolutePath();
             Path pathToResourceOutput = Paths.get("src/main/resources/narratives/output.json").toAbsolutePath();
             Path pathToProp = Paths.get(
