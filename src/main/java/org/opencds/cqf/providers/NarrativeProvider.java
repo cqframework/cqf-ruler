@@ -37,7 +37,7 @@ public class NarrativeProvider {
 
     public NarrativeProvider(String pathToPropertiesFile)
     {
-        this.generator = new CustomThymeleafNarrativeGenerator(pathToPropertiesFile);
+        this.generator = new CustomThymeleafNarrativeGenerator("classpath:ca/uhn/fhir/narrative/narratives.properties", pathToPropertiesFile);
     }
 
     public void generateNarrative(FhirContext context, DomainResource resource) {
@@ -61,9 +61,9 @@ public class NarrativeProvider {
 
         try {
             Path pathToResource = Paths.get(NarrativeProvider.class.getClassLoader()
-            .getResource("narratives/examples/library/library-demo.json").toURI());
-            Path pathToNarrativeOutput = Paths.get("src/main/resources/narratives/library-demo-narrative.html").toAbsolutePath();
-            Path pathToResourceOutput = Paths.get("src/main/resources/narratives/library-demo.json").toAbsolutePath();
+            .getResource("narratives/examples/library/SuicideRisk.json").toURI());
+            Path pathToNarrativeOutput = Paths.get("src/main/resources/narratives/output.html").toAbsolutePath();
+            Path pathToResourceOutput = Paths.get("src/main/resources/narratives/output.json").toAbsolutePath();
             Path pathToProp = Paths.get(
                     NarrativeProvider.class.getClassLoader().getResource("narratives/narrative.properties").toURI());
 
@@ -88,7 +88,7 @@ public class NarrativeProvider {
             // examples are here: src/main/resources/narratives/example//
             IParser parser = pathToResource.toString().endsWith("json") ? context.newJsonParser() : context.newXmlParser();
             DomainResource resource = (DomainResource) parser.parseResource(new FileReader(pathToResource.toFile()));
-
+            
             NarrativeProvider provider = new NarrativeProvider(pathToProp.toUri().toString());
 
             provider.generateNarrative(context, resource);
