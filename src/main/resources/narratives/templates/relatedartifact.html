@@ -20,4 +20,9 @@
         <br/>
         <span th:narrative="${resource.getResource()}"></span>
     </p>
+    <p style="margin-bottom: 5px;" th:if="${resource.hasCitation()}">
+        <b>citation: </b>
+        <br/>
+        <span th:narrative="${resource.getCitation()}"></span>
+     </p>
 </th:block>

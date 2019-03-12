@@ -240,6 +240,8 @@ public class BaseServlet extends RestfulServer {
     }
 
     private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao systemDao) throws ServletException {
+        NarrativeProvider narrativeProvider = new NarrativeProvider();
+
         // Bundle processing
         FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
         BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
@@ -271,7 +273,7 @@ public class BaseServlet extends RestfulServer {
         registerInterceptor(transactionInterceptor);
 
         // Measure processing
-        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao);
+        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao, narrativeProvider);
         MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) provider.resolveResourceProvider("Measure");
         measureProvider.setDao(jpaMeasureProvider.getDao());
         measureProvider.setContext(jpaMeasureProvider.getContext());
@@ -369,7 +371,6 @@ public class BaseServlet extends RestfulServer {
         register(endpointProvider, provider.getCollectionProviders());
 
         //Library processing
-        NarrativeProvider narrativeProvider = new NarrativeProvider();
         NarrativeLibraryResourceProvider libraryProvider = new NarrativeLibraryResourceProvider(narrativeProvider);
         LibraryResourceProvider jpaLibraryProvider = (LibraryResourceProvider) provider.resolveResourceProvider("Library");
         libraryProvider.setDao(jpaLibraryProvider.getDao());

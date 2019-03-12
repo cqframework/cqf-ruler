@@ -26,6 +26,7 @@ import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.helpers.LibraryHelper;
+import org.opencds.cqf.helpers.LibraryResourceHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -150,7 +151,7 @@ public class NarrativeLibraryResourceProvider extends LibraryResourceProvider {
                 library.addRelatedArtifact(
                         new RelatedArtifact()
                                 .setType(RelatedArtifact.RelatedArtifactType.DEPENDSON)
-                                .setResource(new Reference().setReference("Library/" + def.getPath()))
+                                .setResource(new Reference().setReference(LibraryResourceHelper.resolveLibrary(this, def.getPath(), def.getVersion()).getId()))
                 );
             }
         }

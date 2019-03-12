@@ -5,9 +5,7 @@ import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import org.cqframework.cql.cql2elm.FhirLibrarySourceProvider;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.hl7.elm.r1.VersionedIdentifier;
-import org.hl7.fhir.dstu3.model.Attachment;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Library;
+import org.opencds.cqf.helpers.LibraryResourceHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -28,8 +26,8 @@ public class STU3LibrarySourceProvider implements LibrarySourceProvider {
     @Override
     public InputStream getLibrarySource(VersionedIdentifier versionedIdentifier) {
         try {
-            Library lib = provider.getDao().read(new IdType(versionedIdentifier.getId()));
-            for (Attachment content : lib.getContent()) {
+            org.hl7.fhir.dstu3.model.Library lib = LibraryResourceHelper.resolveLibrary(provider, versionedIdentifier.getId(), versionedIdentifier.getVersion());
+            for (org.hl7.fhir.dstu3.model.Attachment content : lib.getContent()) {
                 if (content.getContentType().equals("text/cql")) {
                     return new ByteArrayInputStream(content.getData());
                 }
