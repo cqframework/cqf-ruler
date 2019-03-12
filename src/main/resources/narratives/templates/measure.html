@@ -155,7 +155,7 @@
                     <p style="margin-bottom: 5px;" th:narrative="${supples.identifier}"></p>
                     <p style="margin-bottom: 5px;" th:each="uses : ${supples.usage}">
                         <b>usage: </b>
-                        <span th:narrative="${uses.getValue().toCode()}"></span>
+                        <span th:narrative="${uses}"></span>
                     </p>
                     <p style="margin-bottom: 5px;" th:if="${supples.hasCriteria()}">
                         <b>criteria: </b>
