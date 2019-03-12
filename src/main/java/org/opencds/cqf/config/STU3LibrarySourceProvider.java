@@ -34,16 +34,12 @@ public class STU3LibrarySourceProvider implements LibrarySourceProvider {
     @Override
     public InputStream getLibrarySource(VersionedIdentifier versionedIdentifier) {
         try {
-            Library lib = provider.getDao().read(new IdType(versionedIdentifier.getId()));
-            for (Attachment content : lib.getContent()) {
-        //IdType id = new IdType(versionedIdentifier.getId());
-        //org.hl7.fhir.dstu3.model.Library lib = provider.getDao().read(id);
-        org.hl7.fhir.dstu3.model.Library lib = LibraryResourceHelper.resolveLibrary(provider, versionedIdentifier.getId(), versionedIdentifier.getVersion());
-        for (org.hl7.fhir.dstu3.model.Attachment content : lib.getContent()) {
-            if (content.getContentType().equals("text/cql")) {
-                return new ByteArrayInputStream(content.getData());
+            org.hl7.fhir.dstu3.model.Library lib = LibraryResourceHelper.resolveLibrary(provider, versionedIdentifier.getId(), versionedIdentifier.getVersion());
+            for (org.hl7.fhir.dstu3.model.Attachment content : lib.getContent()) {
+                if (content.getContentType().equals("text/cql")) {
+                    return new ByteArrayInputStream(content.getData());
+                }
             }
-        }
         }
         catch(Exception e){}
 
