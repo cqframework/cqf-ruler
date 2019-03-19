@@ -71,24 +71,44 @@ public class STU3LibraryLoader implements LibraryLoader {
 
     public Library toElmLibrary(org.hl7.fhir.dstu3.model.Library library) {
         InputStream is = null;
+        org.hl7.fhir.dstu3.model.Attachment cqlContent = null;
+        org.hl7.fhir.dstu3.model.Attachment elmContent = null;
         for (org.hl7.fhir.dstu3.model.Attachment content : library.getContent()) {
             if (content.hasData()) {
-                is = new ByteArrayInputStream(content.getData());
                 if (content.getContentType().equals("application/elm+xml")) {
-                    return readLibrary(is);
+                    elmContent = content;
                 } else if (content.getContentType().equals("text/cql")) {
-                    return translateLibrary(is, libraryManager, modelManager);
+                    cqlContent = content;
                 }
             }
         }
-        return null;
+        return cqlContent != null ? translateLibrary(new ByteArrayInputStream(cqlContent.getData()), libraryManager, modelManager) :
+            elmContent != null ? readLibrary(new ByteArrayInputStream(elmContent.getData())) : null;
     }
 
     private Library loadLibrary(VersionedIdentifier libraryIdentifier) {
         //IdType id = new IdType(libraryIdentifier.getId());
         //org.hl7.fhir.dstu3.model.Library library = provider.getDao().read(id);
 
-        org.hl7.fhir.dstu3.model.Library library = LibraryResourceHelper.resolveLibrary(provider, libraryIdentifier.getId(), libraryIdentifier.getVersion());
+        org.hl7.fhir.dstu3.model.Library library = null;
+        try
+        {
+            library = LibraryResourceHelper.resolveLibrary(provider, libraryIdentifier.getId(), libraryIdentifier.getVersion());
+        }
+        catch (Exception e)
+        {
+            try {
+                IdType id = new IdType(libraryIdentifier.getId());
+                library = provider.getDao().read(id);
+            }
+            catch (Exception ex){ 
+            }
+        }
+
+        if (library == null) {
+            throw new IllegalArgumentException(String.format("Could not resolve library by name or Id %s", libraryIdentifier.getId()));
+        }
+
 
         Library elmLibrary = toElmLibrary(library);
         if (elmLibrary != null) {
