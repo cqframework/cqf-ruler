@@ -8,7 +8,7 @@
         <span th:text="${resource.text}"></span>
     </span>
     <span th:each="codings : ${resource.coding}">
-        <br th:if="${resource.hasText()}" />
+        <br/>
         <span th:narrative="${codings}"></span>
     </span>
 </th:block>
