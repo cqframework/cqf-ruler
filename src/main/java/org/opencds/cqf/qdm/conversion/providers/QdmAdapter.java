@@ -34,7 +34,7 @@ public class QdmAdapter {
                 return "Encounter";
             case "NegativeDiagnosticStudyPerformed":
                 return "DiagnosticReport";
-            case "PositiveDiagnosticStudyPerformed":
+            case "PositiveDiagnosticStudyPerformed.json":
                 return "DiagnosticReport";
             case "NegativeInterventionOrder":
                 return "ProcedureRequest";
@@ -69,7 +69,7 @@ public class QdmAdapter {
                 return createEncounterPerformed(fhirResource, true);
             case "NegativeEncounterPerformed":
                 return createEncounterPerformed(fhirResource, false);
-            case "PositiveDiagnosticStudyPerformed":
+            case "PositiveDiagnosticStudyPerformed.json":
                 return createDiagnosticStudyPerformed(fhirResource, true);
             case "NegativeDiagnosticStudyPerformed":
                 return createDiagnosticStudyPerformed(fhirResource, false);

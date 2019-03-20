@@ -5,11 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @MappedSuperclass
@@ -17,10 +18,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class EncounterPerformed extends BaseType implements Serializable
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public abstract class EncounterPerformed extends BaseType implements Serializable
 {
-    private String authorDateTime;
+    private String authorDatetime;
 
     @AttributeOverrides({
             @AttributeOverride(name = "code", column = @Column(name = "admission_source_code")),
@@ -46,17 +47,12 @@ public class EncounterPerformed extends BaseType implements Serializable
     })
     private Code dischargeDisposition;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-//    @CollectionTable(name = "diagnosis_list", joinColumns = @JoinColumn(name = "system_id"))
-//    @AttributeOverrides({
-//            @AttributeOverride(name = "code", column = @Column(name = "diagnosis_code")),
-//            @AttributeOverride(name = "display", column = @Column(name = "diagnosis_display")),
-//            @AttributeOverride(name = "system", column = @Column(name = "diagnosis_system")),
-//            @AttributeOverride(name = "version", column = @Column(name = "diagnosis_version"))
-//    })
-    private List<Code> diagnosis = new ArrayList<>();
+    @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Code> diagnosis;
 
     @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<FacilityLocation> facilityLocation;
 
     @AttributeOverrides({
@@ -80,4 +76,29 @@ public class EncounterPerformed extends BaseType implements Serializable
             @AttributeOverride(name = "unit", column = @Column(name = "length_of_stay_unit"))
     })
     private Quantity lengthOfStay;
+
+    @Override
+    public void copy(BaseType other)
+    {
+        if (other instanceof EncounterPerformed)
+        {
+            EncounterPerformed encounterPerformed = (EncounterPerformed) other;
+            super.copy(encounterPerformed);
+            setAuthorDatetime(encounterPerformed.getAuthorDatetime());
+            setAdmissionSource(encounterPerformed.getAdmissionSource());
+            setRelevantPeriod(encounterPerformed.getRelevantPeriod());
+            setDischargeDisposition(encounterPerformed.getDischargeDisposition());
+            setDiagnosis(encounterPerformed.getDiagnosis());
+            setFacilityLocation(encounterPerformed.getFacilityLocation());
+            setPrincipalDiagnosis(encounterPerformed.getPrincipalDiagnosis());
+            setNegationRationale(encounterPerformed.getNegationRationale());
+            setLengthOfStay(encounterPerformed.getLengthOfStay());
+        }
+        else
+        {
+            throw new IllegalArgumentException(
+                    String.format("Cannot copy QDM types %s and %s", this.getClass().getName(), other.getClass().getName())
+            );
+        }
+    }
 }

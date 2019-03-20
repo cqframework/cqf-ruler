@@ -21,30 +21,32 @@ import java.util.Properties;
 @EnableTransactionManagement
 @ComponentScan("org.opencds.cqf.qdm.fivepoint4")
 @EnableJpaRepositories("org.opencds.cqf.qdm.fivepoint4")
-public class QdmServerConfig {
-
-    @Bean()
-    public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+public class QdmServerConfig
+{
+    @Bean
+    public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory)
+    {
         JpaTransactionManager retVal = new JpaTransactionManager();
         retVal.setEntityManagerFactory(entityManagerFactory);
         return retVal;
     }
 
     @Bean(name = "entityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory()
+    {
         LocalContainerEntityManagerFactoryBean retVal = new LocalContainerEntityManagerFactoryBean();
         retVal.setPersistenceUnitName("PU_Qdm");
         retVal.setDataSource(dataSource());
         retVal.setPackagesToScan("org.opencds.cqf.qdm.fivepoint4");
         retVal.setPersistenceProvider(new HibernatePersistenceProvider());
         retVal.setJpaProperties(jpaProperties());
-//        retVal.setJpaVendorAdapter(hibernateJpaVendorAdapter());
         return retVal;
     }
 
     // Derby config
     @Bean
-    public DataSource dataSource() {
+    public DataSource dataSource()
+    {
         BasicDataSource retVal = new BasicDataSource();
         retVal.setDriver(new org.apache.derby.jdbc.EmbeddedDriver());
         retVal.setUrl("jdbc:derby:directory:target/qdm;create=true");
@@ -54,7 +56,8 @@ public class QdmServerConfig {
     }
 
     // Derby config
-    private Properties jpaProperties() {
+    private Properties jpaProperties()
+    {
         Properties extraProperties = new Properties();
         extraProperties.put("hibernate.dialect", org.hibernate.dialect.DerbyTenSevenDialect.class.getName());
         extraProperties.put("hibernate.format_sql", "true");

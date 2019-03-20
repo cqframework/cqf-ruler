@@ -3,7 +3,7 @@ package org.opencds.cqf.qdm.conversion.model;
 import ca.uhn.fhir.model.api.annotation.ResourceDef;
 import org.hl7.fhir.dstu3.model.ResourceType;
 
-@ResourceDef(name="PositiveDiagnosticStudyPerformed", profile="TODO")
+@ResourceDef(name="PositiveDiagnosticStudyPerformed.json", profile="TODO")
 public class PositiveDiagnosticStudyPerformed extends DiagnosticStudyPerformed {
     @Override
     public PositiveDiagnosticStudyPerformed copy() {
@@ -31,6 +31,6 @@ public class PositiveDiagnosticStudyPerformed extends DiagnosticStudyPerformed {
 
     @Override
     public String getResourceName() {
-        return "PositiveDiagnosticStudyPerformed";
+        return "PositiveDiagnosticStudyPerformed.json";
     }
 }

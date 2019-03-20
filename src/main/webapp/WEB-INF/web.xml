@@ -169,7 +169,7 @@
 
     <servlet-mapping>
         <servlet-name>qdm54</servlet-name>
-        <url-pattern>/qdm/5_4/*</url-pattern>
+        <url-pattern>/baseDstu3/qdm/*</url-pattern>
     </servlet-mapping>
 
      <!--This filters provide support for Cross Origin Resource Sharing (CORS)-->

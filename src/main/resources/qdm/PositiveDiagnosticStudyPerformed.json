@@ -1,0 +1,30 @@
+{
+  "resourceType": "PositiveDiagnosticStudyPerformed",
+  "id": {
+    "value": "example"
+  },
+  "code": {
+    "code": "example-code"
+  },
+  "patientId": {
+    "value": "example"
+  },
+  "authorDatetime": "2019-01-04",
+  "resultCode": {
+    "code": "example-result-code",
+    "display": "example-result-display"
+  },
+  "resultDatetime": "2019-01-03",
+  "component": [
+    {
+      "code": {
+        "code": "example-component-code",
+        "display": "example-component-display"
+      },
+      "resultQuantity": {
+        "value": 1.35,
+        "unit": "mg"
+      }
+    }
+  ]
+}

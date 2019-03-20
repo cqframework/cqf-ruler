@@ -1,16 +1,16 @@
 package org.opencds.cqf.qdm.fivepoint4.controller;
 
-import org.opencds.cqf.qdm.fivepoint4.exception.InconsistentId;
-import org.opencds.cqf.qdm.fivepoint4.exception.MissingId;
 import org.opencds.cqf.qdm.fivepoint4.exception.ResourceNotFound;
 import org.opencds.cqf.qdm.fivepoint4.model.PositiveEncounterPerformed;
 import org.opencds.cqf.qdm.fivepoint4.repository.PositiveEncounterPerformedRepository;
+import org.opencds.cqf.qdm.fivepoint4.validation.QdmValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +21,8 @@ public class PositiveEncounterPerformedController implements Serializable
     private final PositiveEncounterPerformedRepository repository;
 
     @Autowired
-    public PositiveEncounterPerformedController(PositiveEncounterPerformedRepository repository) {
+    public PositiveEncounterPerformedController(PositiveEncounterPerformedRepository repository)
+    {
         this.repository = repository;
     }
 
@@ -32,9 +33,9 @@ public class PositiveEncounterPerformedController implements Serializable
     }
 
     @GetMapping("/PositiveEncounterPerformed/{id}")
-    public PositiveEncounterPerformed getById(@PathVariable(value = "id") String id)
+    public @ResponseBody PositiveEncounterPerformed getById(@PathVariable(value = "id") String id)
     {
-        return repository.findById(id)
+        return repository.findBySystemId(id)
                 .orElseThrow(
                         () -> new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
@@ -45,52 +46,27 @@ public class PositiveEncounterPerformedController implements Serializable
     }
 
     @PostMapping("/PositiveEncounterPerformed")
-    public PositiveEncounterPerformed create(@RequestBody PositiveEncounterPerformed positiveEncounterPerformed)
+    public PositiveEncounterPerformed create(@RequestBody @Valid PositiveEncounterPerformed positiveEncounterPerformed)
     {
+        QdmValidator.validateResourceTypeAndName(positiveEncounterPerformed, positiveEncounterPerformed);
         return repository.save(positiveEncounterPerformed);
     }
 
     @PutMapping("/PositiveEncounterPerformed/{id}")
     public PositiveEncounterPerformed update(@PathVariable(value = "id") String id,
-                                             @RequestBody PositiveEncounterPerformed positiveEncounterPerformed)
+                                             @RequestBody @Valid PositiveEncounterPerformed positiveEncounterPerformed)
     {
-        if (positiveEncounterPerformed.getId() == null
-                || positiveEncounterPerformed.getId().getValue() == null)
-        {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Update failed: payload resource is missing id value",
-                    new MissingId()
-            );
-        }
-        if (!positiveEncounterPerformed.getId().getValue().equals(id))
-        {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    String.format("Update failed: resource id (%s) doesn't match request id (%s)", positiveEncounterPerformed.getId().getValue(), id),
-                    new InconsistentId()
-            );
-        }
-
+        QdmValidator.validateResourceId(positiveEncounterPerformed.getId(), id);
         Optional<PositiveEncounterPerformed> update = repository.findById(id);
-        if (update.isPresent()) {
+        if (update.isPresent())
+        {
             PositiveEncounterPerformed updateResource = update.get();
-            updateResource.setCode(positiveEncounterPerformed.getCode());
-            updateResource.setPatientId(positiveEncounterPerformed.getPatientId());
-            updateResource.setReporter(positiveEncounterPerformed.getReporter());
-            updateResource.setRecorder(positiveEncounterPerformed.getRecorder());
-            updateResource.setAuthorDateTime(positiveEncounterPerformed.getAuthorDateTime());
-            updateResource.setAdmissionSource(positiveEncounterPerformed.getAdmissionSource());
-            updateResource.setRelevantPeriod(positiveEncounterPerformed.getRelevantPeriod());
-            updateResource.setDischargeDisposition(positiveEncounterPerformed.getDischargeDisposition());
-            updateResource.setDiagnosis(positiveEncounterPerformed.getDiagnosis());
-            updateResource.setFacilityLocation(positiveEncounterPerformed.getFacilityLocation());
-            updateResource.setPrincipalDiagnosis(positiveEncounterPerformed.getPrincipalDiagnosis());
-            updateResource.setNegationRationale(positiveEncounterPerformed.getNegationRationale());
-            updateResource.setLengthOfStay(positiveEncounterPerformed.getLengthOfStay());
+            QdmValidator.validateResourceTypeAndName(positiveEncounterPerformed, updateResource);
+            updateResource.copy(positiveEncounterPerformed);
             return repository.save(updateResource);
         }
 
+        QdmValidator.validateResourceTypeAndName(positiveEncounterPerformed, positiveEncounterPerformed);
         return repository.save(positiveEncounterPerformed);
     }
 

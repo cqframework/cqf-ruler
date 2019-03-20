@@ -21,7 +21,9 @@ import java.math.BigDecimal;
 public class Quantity implements Serializable
 {
     @NotNull
-    @Column(nullable = false, scale = 2, precision = 8)
+    @Column(nullable = false, scale = 2, precision = 8, name = "qty_value")
     private BigDecimal value;
+
+    @Column(name = "qty_unit")
     private String unit;
 }

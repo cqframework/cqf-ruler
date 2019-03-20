@@ -18,16 +18,18 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BaseType implements Serializable
+public abstract class BaseType implements Serializable
 {
     @javax.persistence.Id
     @JsonIgnore
     @Column(name = "system_id")
     private String systemId;
 
-    @Embedded
     @NotNull
     @Column(nullable = false)
+    private String resourceType;
+
+    @Embedded
     private Id id;
 
     @Embedded
@@ -58,6 +60,7 @@ public class BaseType implements Serializable
     @PrePersist
     public void ensureId()
     {
+        // Making sure the Id.value and internal systemId elements are set properly
         if (systemId == null && id == null)
         {
             systemId = UUID.randomUUID().toString();
@@ -67,7 +70,8 @@ public class BaseType implements Serializable
         {
             id = new Id(systemId, null);
         }
-        else {
+        else
+        {
             if (id.getValue() != null)
             {
                 systemId = id.getValue();
@@ -79,4 +83,14 @@ public class BaseType implements Serializable
             }
         }
     }
+
+    public void copy(BaseType other)
+    {
+        setCode(other.getCode());
+        setPatientId(other.getPatientId());
+        setRecorder(other.getRecorder());
+        setReporter(other.getReporter());
+    }
+
+    public abstract String getName();
 }
