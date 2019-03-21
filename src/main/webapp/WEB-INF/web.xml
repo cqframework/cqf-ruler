@@ -219,7 +219,7 @@
     </filter>
     <filter-mapping>
         <filter-name>CORS Filter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/baseDstu3/qdm/*</url-pattern>
     </filter-mapping>
 
 </web-app>
