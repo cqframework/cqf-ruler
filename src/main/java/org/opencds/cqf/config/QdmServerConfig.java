@@ -10,7 +10,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -21,7 +23,7 @@ import java.util.Properties;
 @EnableTransactionManagement
 @ComponentScan("org.opencds.cqf.qdm.fivepoint4")
 @EnableJpaRepositories("org.opencds.cqf.qdm.fivepoint4")
-public class QdmServerConfig
+public class QdmServerConfig extends WebMvcConfigurationSupport
 {
     @Bean
     public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory)
@@ -74,5 +76,11 @@ public class QdmServerConfig
         extraProperties.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
 //		extraProperties.put("hibernate.search.default.worker.execution", "async");
         return extraProperties;
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*");
     }
 }
