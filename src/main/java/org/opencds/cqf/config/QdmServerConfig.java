@@ -78,9 +78,9 @@ public class QdmServerConfig extends WebMvcConfigurationSupport
         return extraProperties;
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("*");
-    }
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//                .allowedOrigins("*");
+//    }
 }
