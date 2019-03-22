@@ -8,8 +8,8 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 
 @Repository
-public interface CareGoalRepository extends JpaRepository<CareGoal, String>
+public interface CareGoalRepository extends BaseRepository<CareGoal>
 {
-    @Nonnull
-    Optional<CareGoal> findBySystemId(@Nonnull String id);
+//    @Nonnull
+//    Optional<CareGoal> findBySystemId(@Nonnull String id);
 }

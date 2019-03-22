@@ -80,7 +80,7 @@ public class STU3LibraryLoader implements LibraryLoader {
     }
 
     private Library loadLibrary(VersionedIdentifier libraryIdentifier) {
-        IdType id = new IdType(libraryIdentifier.getId());
+        IdType id = new IdType(libraryIdentifier.getId().replaceAll("_", "-"));
         org.hl7.fhir.dstu3.model.Library library = provider.getDao().read(id);
 
         Library elmLibrary = toElmLibrary(library);

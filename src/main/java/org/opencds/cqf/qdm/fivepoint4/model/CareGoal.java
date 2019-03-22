@@ -32,30 +32,30 @@ public class CareGoal extends BaseType implements Serializable
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Id> relatedTo;
 
-    // TODO: add constraint that only one of the result[x] types can be present
-    private Integer resultInteger;
+    // TODO: add constraint that only one of the targetOutcome[x] types can be present
+    private Integer targetOutcomeInteger;
 
-    private BigDecimal resultDecimal;
-
-    @AttributeOverrides({
-            @AttributeOverride(name = "code", column = @Column(name = "result_code")),
-            @AttributeOverride(name = "display", column = @Column(name = "result_display")),
-            @AttributeOverride(name = "system", column = @Column(name = "result_system")),
-            @AttributeOverride(name = "version", column = @Column(name = "result_version"))
-    })
-    private Code resultCode;
+    private BigDecimal targetOutcomeDecimal;
 
     @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "result_value")),
-            @AttributeOverride(name = "unit", column = @Column(name = "result_unit"))
+            @AttributeOverride(name = "code", column = @Column(name = "target_outcome_code")),
+            @AttributeOverride(name = "display", column = @Column(name = "target_outcome_display")),
+            @AttributeOverride(name = "system", column = @Column(name = "target_outcome_system")),
+            @AttributeOverride(name = "version", column = @Column(name = "target_outcome_version"))
     })
-    private Quantity resultQuantity;
+    private Code targetOutcomeCode;
 
     @AttributeOverrides({
-            @AttributeOverride(name = "numerator", column = @Column(name = "result_numerator")),
-            @AttributeOverride(name = "denominator", column = @Column(name = "result_denominator"))
+            @AttributeOverride(name = "value", column = @Column(name = "target_outcome_value")),
+            @AttributeOverride(name = "unit", column = @Column(name = "target_outcome_unit"))
     })
-    private Ratio resultRatio;
+    private Quantity targetOutcomeQuantity;
+
+    @AttributeOverrides({
+            @AttributeOverride(name = "numerator", column = @Column(name = "target_outcome_numerator")),
+            @AttributeOverride(name = "denominator", column = @Column(name = "target_outcome_denominator"))
+    })
+    private Ratio targetOutcomeRatio;
 
     @JsonIgnore
     @Override
@@ -72,11 +72,11 @@ public class CareGoal extends BaseType implements Serializable
             super.copy(careGoal);
             setRelevantPeriod(careGoal.getRelevantPeriod());
             setRelatedTo(careGoal.getRelatedTo());
-            setResultInteger(careGoal.getResultInteger());
-            setResultDecimal(careGoal.getResultDecimal());
-            setResultCode(careGoal.getResultCode());
-            setResultQuantity(careGoal.getResultQuantity());
-            setResultRatio(careGoal.getResultRatio());
+            setTargetOutcomeInteger(careGoal.getTargetOutcomeInteger());
+            setTargetOutcomeDecimal(careGoal.getTargetOutcomeDecimal());
+            setTargetOutcomeCode(careGoal.getTargetOutcomeCode());
+            setTargetOutcomeQuantity(careGoal.getTargetOutcomeQuantity());
+            setTargetOutcomeRatio(careGoal.getTargetOutcomeRatio());
         }
         else
         {
