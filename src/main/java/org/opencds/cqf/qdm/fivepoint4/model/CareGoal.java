@@ -6,10 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Data
@@ -25,11 +28,9 @@ public class CareGoal extends BaseType implements Serializable
     })
     private DateTimeInterval relevantPeriod;
 
-    @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "related_to_value")),
-            @AttributeOverride(name = "namingSystem", column = @Column(name = "related_to_system"))
-    })
-    private Id relatedTo;
+    @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Id> relatedTo;
 
     // TODO: add constraint that only one of the result[x] types can be present
     private Integer resultInteger;
