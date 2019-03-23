@@ -1,8 +1,12 @@
 package org.opencds.cqf.qdm.fivepoint4.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import org.opencds.cqf.qdm.fivepoint4.QdmContext;
+import org.opencds.cqf.qdm.fivepoint4.exception.InvalidResourceType;
 import org.opencds.cqf.qdm.fivepoint4.exception.ResourceNotFound;
-import org.opencds.cqf.qdm.fivepoint4.model.Patient;
-import org.opencds.cqf.qdm.fivepoint4.repository.PatientRepository;
+import org.opencds.cqf.qdm.fivepoint4.model.*;
+import org.opencds.cqf.qdm.fivepoint4.repository.*;
 import org.opencds.cqf.qdm.fivepoint4.validation.QdmValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -44,6 +48,164 @@ public class PatientController implements Serializable
                                 new ResourceNotFound()
                         )
                 );
+    }
+
+    // Returns a List with the Patient and all the Characteristics associated with that patient
+    @GetMapping("Patient/{id}/$characteristics")
+    public @ResponseBody List<Object> getPatientCharacteristics(@PathVariable(value = "id") String id)
+    {
+        List<Object> result = new ArrayList<>();
+
+        Patient patient = getById(id);
+        String patientId = patient.getSystemId();
+        result.add(patient);
+
+        QdmContext.getBean(PatientCharacteristicBirthdateRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
+        QdmContext.getBean(PatientCharacteristicClinicalTrialParticipantRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
+        QdmContext.getBean(PatientCharacteristicEthnicityRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
+        QdmContext.getBean(PatientCharacteristicExpiredRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
+        QdmContext.getBean(PatientCharacteristicPayerRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
+        QdmContext.getBean(PatientCharacteristicRaceRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
+        QdmContext.getBean(PatientCharacteristicRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
+        QdmContext.getBean(PatientCharacteristicSexRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
+
+        return result;
+    }
+
+    @PostMapping("Patient/$characteristics")
+    public @ResponseBody List<Object> postPatientCharacteristics(@RequestBody List<Object> patientCharacteristics) throws IOException
+    {
+        List<Object> results = new ArrayList<>();
+        patientCharacteristics = parseResources(patientCharacteristics);
+        String patientId = null;
+
+        // Find patient first - need patient id for validation
+        for (Object characteristic : patientCharacteristics)
+        {
+            if (characteristic instanceof Patient)
+            {
+                results.add(
+                        ((Patient) characteristic).getId() != null
+                                ? update(((Patient) characteristic).getId().getValue(), (Patient) characteristic)
+                                : create((Patient) characteristic)
+                );
+                patientId = ((Patient) results.get(0)).getSystemId();
+                break;
+            }
+        }
+
+        // Now operate on characteristics
+        for (Object characteristic : patientCharacteristics)
+        {
+            if (characteristic instanceof PatientCharacteristic)
+            {
+                PatientCharacteristicController controller = QdmContext.getBean(PatientCharacteristicController.class);
+                PatientCharacteristic patientCharacteristic = (PatientCharacteristic) characteristic;
+
+                validatePatientId(patientCharacteristic, patientId);
+
+                results.add(
+                        patientCharacteristic.getId() != null
+                                ? controller.update(patientCharacteristic.getId().getValue(), patientCharacteristic)
+                                : controller.create(patientCharacteristic)
+                );
+            }
+            else if (characteristic instanceof PatientCharacteristicBirthdate)
+            {
+                PatientCharacteristicBirthdateController controller = QdmContext.getBean(PatientCharacteristicBirthdateController.class);
+                PatientCharacteristicBirthdate patientCharacteristicBirthdate = (PatientCharacteristicBirthdate) characteristic;
+
+                validatePatientId(patientCharacteristicBirthdate, patientId);
+
+                results.add(
+                        patientCharacteristicBirthdate.getId() != null
+                                ? controller.update(patientCharacteristicBirthdate.getId().getValue(), patientCharacteristicBirthdate)
+                                : controller.create(patientCharacteristicBirthdate)
+                );
+            }
+            else if (characteristic instanceof PatientCharacteristicClinicalTrialParticipant)
+            {
+                PatientCharacteristicClinicalTrialParticipantController controller = QdmContext.getBean(PatientCharacteristicClinicalTrialParticipantController.class);
+                PatientCharacteristicClinicalTrialParticipant patientCharacteristicClinicalTrialParticipant = (PatientCharacteristicClinicalTrialParticipant) characteristic;
+
+                validatePatientId(patientCharacteristicClinicalTrialParticipant, patientId);
+
+                results.add(
+                        patientCharacteristicClinicalTrialParticipant.getId() != null
+                                ? controller.update(patientCharacteristicClinicalTrialParticipant.getId().getValue(), patientCharacteristicClinicalTrialParticipant)
+                                : controller.create(patientCharacteristicClinicalTrialParticipant)
+                );
+            }
+            else if (characteristic instanceof PatientCharacteristicEthnicity)
+            {
+                PatientCharacteristicEthnicityController controller = QdmContext.getBean(PatientCharacteristicEthnicityController.class);
+                PatientCharacteristicEthnicity patientCharacteristicEthnicity = (PatientCharacteristicEthnicity) characteristic;
+
+                validatePatientId(patientCharacteristicEthnicity, patientId);
+
+                results.add(
+                        patientCharacteristicEthnicity.getId() != null
+                                ? controller.update(patientCharacteristicEthnicity.getId().getValue(), patientCharacteristicEthnicity)
+                                : controller.create(patientCharacteristicEthnicity)
+                );
+            }
+            else if (characteristic instanceof PatientCharacteristicExpired)
+            {
+                PatientCharacteristicExpiredController controller = QdmContext.getBean(PatientCharacteristicExpiredController.class);
+                PatientCharacteristicExpired patientCharacteristicExpired = (PatientCharacteristicExpired) characteristic;
+
+                validatePatientId(patientCharacteristicExpired, patientId);
+
+                results.add(
+                        ((PatientCharacteristicExpired) characteristic).getId() != null
+                                ? controller.update(patientCharacteristicExpired.getId().getValue(), patientCharacteristicExpired)
+                                : controller.create(patientCharacteristicExpired)
+                );
+            }
+            else if (characteristic instanceof PatientCharacteristicPayer)
+            {
+                PatientCharacteristicPayerController controller = QdmContext.getBean(PatientCharacteristicPayerController.class);
+                PatientCharacteristicPayer patientCharacteristicPayer = (PatientCharacteristicPayer) characteristic;
+
+                validatePatientId(patientCharacteristicPayer, patientId);
+
+                results.add(
+                        patientCharacteristicPayer.getId() != null
+                                ? controller.update(patientCharacteristicPayer.getId().getValue(), patientCharacteristicPayer)
+                                : controller.create(patientCharacteristicPayer)
+                );
+            }
+            else if (characteristic instanceof PatientCharacteristicRace)
+            {
+                PatientCharacteristicRaceController controller = QdmContext.getBean(PatientCharacteristicRaceController.class);
+                PatientCharacteristicRace patientCharacteristicRace = (PatientCharacteristicRace) characteristic;
+
+                validatePatientId(patientCharacteristicRace, patientId);
+
+                results.add(
+                        patientCharacteristicRace.getId() != null
+                                ? controller.update(patientCharacteristicRace.getId().getValue(), patientCharacteristicRace)
+                                : controller.create(patientCharacteristicRace)
+                );
+            }
+            else if (characteristic instanceof PatientCharacteristicSex)
+            {
+                PatientCharacteristicSexController controller = QdmContext.getBean(PatientCharacteristicSexController.class);
+                PatientCharacteristicSex patientCharacteristicSex = (PatientCharacteristicSex) characteristic;
+
+                validatePatientId(patientCharacteristicSex, patientId);
+
+                results.add(
+                        patientCharacteristicSex.getId() != null
+                                ? controller.update(patientCharacteristicSex.getId().getValue(), patientCharacteristicSex)
+                                : controller.create(patientCharacteristicSex)
+                );
+            }
+        }
+
+        // Make sure characteristics reference Patient
+
+        return results;
     }
 
     @PostMapping("/Patient")
@@ -87,5 +249,73 @@ public class PatientController implements Serializable
         repository.delete(pat);
 
         return ResponseEntity.ok().build();
+    }
+
+    private List<Object> parseResources(List<Object> raw) throws IOException
+    {
+        List<Object> parsedResources = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        Gson gson = new Gson();
+
+        for (Object rawObj : raw)
+        {
+            if (rawObj instanceof LinkedHashMap)
+            {
+                LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) rawObj;
+                String type;
+                if (map.containsKey("resourceType"))
+                {
+                    type = (String) map.get("resourceType");
+                }
+                else {
+                    throw new InvalidResourceType();
+                }
+
+                switch(type)
+                {
+                    case "Patient":
+                        parsedResources.add(mapper.readValue(gson.toJson(map, LinkedHashMap.class), Patient.class));
+                        break;
+                    case "PatientCharacteristicBirthdate":
+                        parsedResources.add(mapper.readValue(gson.toJson(map, LinkedHashMap.class), PatientCharacteristicBirthdate.class));
+                        break;
+                    case "PatientCharacteristicClinicalTrialParticipant":
+                        parsedResources.add(mapper.readValue(gson.toJson(map, LinkedHashMap.class), PatientCharacteristicClinicalTrialParticipant.class));
+                        break;
+                    case "PatientCharacteristicEthnicity":
+                        parsedResources.add(mapper.readValue(gson.toJson(map, LinkedHashMap.class), PatientCharacteristicEthnicity.class));
+                        break;
+                    case "PatientCharacteristicExpired":
+                        parsedResources.add(mapper.readValue(gson.toJson(map, LinkedHashMap.class), PatientCharacteristicExpired.class));
+                        break;
+                    case "PatientCharacteristicPayer":
+                        parsedResources.add(mapper.readValue(gson.toJson(map, LinkedHashMap.class), PatientCharacteristicPayer.class));
+                        break;
+                    case "PatientCharacteristicRace":
+                        parsedResources.add(mapper.readValue(gson.toJson(map, LinkedHashMap.class), PatientCharacteristicRace.class));
+                        break;
+                    case "PatientCharacteristic":
+                        parsedResources.add(mapper.readValue(gson.toJson(map, LinkedHashMap.class), PatientCharacteristic.class));
+                        break;
+                    case "PatientCharacteristicSex":
+                        parsedResources.add(mapper.readValue(gson.toJson(map, LinkedHashMap.class), PatientCharacteristicSex.class));
+                        break;
+                }
+            }
+        }
+
+        return parsedResources;
+    }
+
+    private void validatePatientId(BaseType characteristic, String patientId)
+    {
+        // validate patientId
+        if (characteristic.getPatientId() == null)
+        {
+            characteristic.setPatientId(new Id(patientId, null));
+        }
+        else if (!characteristic.getPatientId().getValue().equals(patientId)) {
+            characteristic.getPatientId().setValue(patientId);
+        }
     }
 }
