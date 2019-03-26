@@ -248,51 +248,53 @@ public class CqlExecutionProvider {
         }
 
         List<Resource> results = new ArrayList<>();
-        for (org.cqframework.cql.elm.execution.ExpressionDef def : library.getStatements().getDef()) {
-            context.enterContext(def.getContext());
-            if (patientId != null && !patientId.isEmpty()) {
-                context.setContextValue(context.getCurrentContext(), patientId);
-            }
-            else {
-                context.setContextValue(context.getCurrentContext(), "null");
-            }
-            Parameters result = new Parameters();
-
-            try {
-                result.setId(def.getName());
-                String location = String.format("[%d:%d]", locations.get(def.getName()).get(0), locations.get(def.getName()).get(1));
-                result.addParameter().setName("location").setValue(new StringType(location));
-
-                Object res = def instanceof org.cqframework.cql.elm.execution.FunctionDef ? "Definition successfully validated" : def.getExpression().evaluate(context);
-
-                if (res == null) {
-                    result.addParameter().setName("value").setValue(new StringType("null"));
+        if (library.getStatements() != null) {
+            for (org.cqframework.cql.elm.execution.ExpressionDef def : library.getStatements().getDef()) {
+                context.enterContext(def.getContext());
+                if (patientId != null && !patientId.isEmpty()) {
+                    context.setContextValue(context.getCurrentContext(), patientId);
                 }
-                else if (res instanceof List) {
-                    if (((List) res).size() > 0 && ((List) res).get(0) instanceof Resource) {
+                else {
+                    context.setContextValue(context.getCurrentContext(), "null");
+                }
+                Parameters result = new Parameters();
+
+                try {
+                    result.setId(def.getName());
+                    String location = String.format("[%d:%d]", locations.get(def.getName()).get(0), locations.get(def.getName()).get(1));
+                    result.addParameter().setName("location").setValue(new StringType(location));
+
+                    Object res = def instanceof org.cqframework.cql.elm.execution.FunctionDef ? "Definition successfully validated" : def.getExpression().evaluate(context);
+
+                    if (res == null) {
+                        result.addParameter().setName("value").setValue(new StringType("null"));
+                    }
+                    else if (res instanceof List) {
+                        if (((List) res).size() > 0 && ((List) res).get(0) instanceof Resource) {
+                            result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
+                        }
+                        else {
+                            result.addParameter().setName("value").setValue(new StringType(res.toString()));
+                        }
+                    }                
+                    else if (res instanceof Iterable) {
                         result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
+                    }
+                    else if (res instanceof Resource) {
+                        result.addParameter().setName("value").setResource((Resource)res);
                     }
                     else {
                         result.addParameter().setName("value").setValue(new StringType(res.toString()));
                     }
-                }                
-                else if (res instanceof Iterable) {
-                    result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
-                }
-                else if (res instanceof Resource) {
-                    result.addParameter().setName("value").setResource((Resource)res);
-                }
-                else {
-                    result.addParameter().setName("value").setValue(new StringType(res.toString()));
-                }
 
-                result.addParameter().setName("resultType").setValue(new StringType(resolveType(res)));
+                    result.addParameter().setName("resultType").setValue(new StringType(resolveType(res)));
+                }
+                catch (RuntimeException re) {
+                    result.addParameter().setName("error").setValue(new StringType(re.getMessage()));
+                    re.printStackTrace();
+                }
+                results.add(result);
             }
-            catch (RuntimeException re) {
-                result.addParameter().setName("error").setValue(new StringType(re.getMessage()));
-                re.printStackTrace();
-            }
-            results.add(result);
         }
 
         return bundler.bundle(results);

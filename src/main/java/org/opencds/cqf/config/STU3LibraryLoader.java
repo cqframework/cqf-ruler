@@ -1,6 +1,8 @@
 package org.opencds.cqf.config;
 
+import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.rest.param.StringParam;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
@@ -8,7 +10,9 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.helpers.LibraryResourceHelper;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
@@ -17,6 +21,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.opencds.cqf.helpers.LibraryHelper.*;
@@ -66,22 +71,41 @@ public class STU3LibraryLoader implements LibraryLoader {
 
     public Library toElmLibrary(org.hl7.fhir.dstu3.model.Library library) {
         InputStream is = null;
+        org.hl7.fhir.dstu3.model.Attachment cqlContent = null;
+        org.hl7.fhir.dstu3.model.Attachment elmContent = null;
         for (org.hl7.fhir.dstu3.model.Attachment content : library.getContent()) {
             if (content.hasData()) {
-                is = new ByteArrayInputStream(content.getData());
                 if (content.getContentType().equals("application/elm+xml")) {
-                    return readLibrary(is);
+                    elmContent = content;
                 } else if (content.getContentType().equals("text/cql")) {
-                    return translateLibrary(is, libraryManager, modelManager);
+                    cqlContent = content;
                 }
             }
         }
-        return null;
+        return cqlContent != null ? translateLibrary(new ByteArrayInputStream(cqlContent.getData()), libraryManager, modelManager) :
+            elmContent != null ? readLibrary(new ByteArrayInputStream(elmContent.getData())) : null;
     }
 
     private Library loadLibrary(VersionedIdentifier libraryIdentifier) {
         IdType id = new IdType(libraryIdentifier.getId().replaceAll("_", "-"));
-        org.hl7.fhir.dstu3.model.Library library = provider.getDao().read(id);
+        org.hl7.fhir.dstu3.model.Library library = null;
+        try
+        {
+            library = LibraryResourceHelper.resolveLibrary(provider, id, libraryIdentifier.getVersion());
+        }
+        catch (Exception e)
+        {
+            try {
+                IdType id = new IdType(id);
+                library = provider.getDao().read(id);
+            }
+            catch (Exception ex){ 
+            }
+        }
+
+        if (library == null) {
+            throw new IllegalArgumentException(String.format("Could not resolve library by name or Id %s", libraryIdentifier.getId()));
+        }
 
         Library elmLibrary = toElmLibrary(library);
         if (elmLibrary != null) {

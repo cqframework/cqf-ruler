@@ -5,6 +5,8 @@ import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -14,6 +16,7 @@ import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.IncludeDef;
 import org.cqframework.cql.elm.execution.Library;
+import org.cqframework.cql.elm.execution.ValueSetDef;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -32,17 +35,21 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
     private JpaDataProvider provider;
     private IFhirSystemDao systemDao;
     private STU3LibraryLoader libraryLoader;
 
+    private NarrativeProvider narrativeProvider;
+
     private Interval measurementPeriod;
 
     private static final Logger logger = LoggerFactory.getLogger(FHIRMeasureResourceProvider.class);
 
-    public FHIRMeasureResourceProvider(JpaDataProvider dataProvider, IFhirSystemDao systemDao) {
+    public FHIRMeasureResourceProvider(JpaDataProvider dataProvider, IFhirSystemDao systemDao, NarrativeProvider narrativeProvider) {
         this.provider = dataProvider;
         this.systemDao = systemDao;
         this.libraryLoader =
@@ -50,6 +57,19 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                         (LibraryResourceProvider) provider.resolveResourceProvider("Library"),
                         new LibraryManager(new ModelManager()), new ModelManager()
                 );
+
+        this.narrativeProvider = narrativeProvider;
+    }
+
+    @Operation(name="refresh-generated-content")
+    public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails, @IdParam IdType theId) {
+        Measure theResource = this.getDao().read(theId);
+        this.generateNarrative(theResource);
+        return super.update(theRequest, theResource, theId, theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
+    }
+
+    private void generateNarrative(Measure measure) {
+        this.narrativeProvider.generateNarrative(this.getContext(), measure);
     }
 
     /*
@@ -265,6 +285,9 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     {
         logger.info("Evaluating Measure/" + measure.getIdElement().getIdPart());
 
+        // clear library cache
+        libraryLoader.getLibraries().clear();
+
         // load libraries
         for (Reference ref : measure.getLibrary()) {
             // if library is contained in measure, load it into server
@@ -307,10 +330,14 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         // resolve remote term svc if provided
         if (source != null) {
             logger.info("Remote terminology service provided");
-            FhirTerminologyProvider terminologyProvider = user == null || pass == null
-                    ? new FhirTerminologyProvider().setEndpoint(source, true)
-                    : new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(source, true);
+            FhirTerminologyProvider terminologyProvider = new FhirTerminologyProvider()
+                    .withBasicAuth(user, pass)
+                    .setEndpoint(source, false);
+
             provider.setTerminologyProvider(terminologyProvider);
+            // provider.setSearchUsingPOST(true);
+            provider.setExpandValueSets(true);
+            context.registerTerminologyProvider(provider.getTerminologyProvider());
         }
 
         context.registerDataProvider("http://hl7.org/fhir", provider);
