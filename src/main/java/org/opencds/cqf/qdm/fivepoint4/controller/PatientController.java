@@ -54,11 +54,15 @@ public class PatientController implements Serializable
     @GetMapping("Patient/{id}/$characteristics")
     public @ResponseBody List<Object> getPatientCharacteristics(@PathVariable(value = "id") String id)
     {
-        List<Object> result = new ArrayList<>();
+        return getPatientCharacteristics(getById(id));
+    }
 
-        Patient patient = getById(id);
-        String patientId = patient.getSystemId();
+    private List<Object> getPatientCharacteristics(Patient patient)
+    {
+        List<Object> result = new ArrayList<>();
         result.add(patient);
+
+        String patientId = patient.getSystemId();
 
         QdmContext.getBean(PatientCharacteristicBirthdateRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
         QdmContext.getBean(PatientCharacteristicClinicalTrialParticipantRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
@@ -68,6 +72,18 @@ public class PatientController implements Serializable
         QdmContext.getBean(PatientCharacteristicRaceRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
         QdmContext.getBean(PatientCharacteristicRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
         QdmContext.getBean(PatientCharacteristicSexRepository.class).findByPatientIdValue(patientId).ifPresent(result::addAll);
+
+        return result;
+    }
+
+    @GetMapping("Patient/$characteristics")
+    public @ResponseBody List<List<Object>> getAllPatientCharacteristics()
+    {
+        List<List<Object>> result = new ArrayList<>();
+        for (Patient patient : getAll())
+        {
+            result.add(getPatientCharacteristics(patient));
+        }
 
         return result;
     }
