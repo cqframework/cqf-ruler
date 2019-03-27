@@ -1,0 +1,14 @@
+{
+  "resourceType": "PatientCharacteristicSex",
+  "id": {
+    "value": "example"
+  },
+  "code": {
+    "system": "http://hl7.org/fhir/administrative-gender",
+    "code": "female",
+    "display": "Female"
+  },
+  "patientId": {
+    "value": "example"
+  }
+}

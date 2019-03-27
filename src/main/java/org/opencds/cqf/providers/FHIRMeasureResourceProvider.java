@@ -110,6 +110,41 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         return evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
     }
 
+    @Operation(name = "$evaluate-qdm-measure", idempotent = true)
+    public MeasureReport evaluateQdmMeasure(
+            @IdParam IdType theId,
+            @RequiredParam(name="periodStart") String periodStart,
+            @RequiredParam(name="periodEnd") String periodEnd,
+            @OptionalParam(name="measure") String measureRef,
+            @OptionalParam(name="reportType") String reportType,
+            @OptionalParam(name="patient") String patientRef,
+            @OptionalParam(name="practitioner") String practitionerRef,
+            @OptionalParam(name="lastReceivedOn") String lastReceivedOn,
+            @OptionalParam(name="source") String source,
+            @OptionalParam(name="user") String user,
+            @OptionalParam(name="pass") String pass) throws InternalErrorException, FHIRException
+    {
+        Pair<Measure, Context> measureSetup = setup(measureRef == null ? "" : measureRef, theId, periodStart, periodEnd, source, user, pass);
+        Qdm54DataProvider qdmProvider = new Qdm54DataProvider();
+        measureSetup.getRight().registerDataProvider("urn:healthit-gov:qdm:v5_4", qdmProvider);
+
+        // resolve report type
+        MeasureEvaluation evaluator = new MeasureEvaluation(provider, measurementPeriod);
+        if (reportType != null)
+        {
+            switch (reportType)
+            {
+                case "patient": return evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
+                case "patient-list": return  evaluator.evaluatePatientListMeasure(measureSetup.getLeft(), measureSetup.getRight(), practitionerRef);
+                case "population": return evaluator.evaluatePopulationMeasure(measureSetup.getLeft(), measureSetup.getRight());
+                default: throw new IllegalArgumentException("Invalid report type: " + reportType);
+            }
+        }
+
+        // default report type is patient
+        return evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
+    }
+
     @Operation(name = "$evaluate-measure-with-source", idempotent = true)
     public MeasureReport evaluateMeasure(
             @IdParam IdType theId,

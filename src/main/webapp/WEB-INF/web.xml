@@ -20,6 +20,24 @@
     <!-- Servlets -->
 
     <servlet>
+        <servlet-name>qdm54</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextClass</param-name>
+            <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+        </init-param>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>org.opencds.cqf.config.QdmServerConfig</param-value>
+        </init-param>
+        <init-param>
+            <param-name>FhirVersion</param-name>
+            <param-value>QDM</param-value>
+        </init-param>
+        <load-on-startup>9</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>on-measure-subscription-mrp</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.MeasureSubscriptionServlet</servlet-class>
         <load-on-startup>8</load-on-startup>
@@ -149,20 +167,25 @@
         <url-pattern>/on-measure-subscription-mrp</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>qdm54</servlet-name>
+        <url-pattern>/baseDstu3/qdm/*</url-pattern>
+    </servlet-mapping>
+
      <!--This filters provide support for Cross Origin Resource Sharing (CORS)-->
     <!--<filter>-->
         <!--<filter-name>CORS Filter</filter-name>-->
         <!--<filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>-->
-        <!--<init-param>-->
-            <!--<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>-->
-            <!--<param-name>cors.allowed.origins</param-name>-->
-            <!--<param-value>http://sandbox.cds-hooks.org, http://clinfhir.com, *</param-value>-->
-        <!--</init-param>-->
         <!--&lt;!&ndash;<init-param>&ndash;&gt;-->
-        <!--&lt;!&ndash;<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>&ndash;&gt;-->
-        <!--&lt;!&ndash;<param-name>cors.allowed.origins</param-name>&ndash;&gt;-->
-        <!--&lt;!&ndash;<param-value>*</param-value>&ndash;&gt;-->
+            <!--&lt;!&ndash;<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>&ndash;&gt;-->
+            <!--&lt;!&ndash;<param-name>cors.allowed.origins</param-name>&ndash;&gt;-->
+            <!--&lt;!&ndash;<param-value>http://sandbox.cds-hooks.org, http://clinfhir.com, *</param-value>&ndash;&gt;-->
         <!--&lt;!&ndash;</init-param>&ndash;&gt;-->
+        <!--<init-param>-->
+        <!--<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>-->
+        <!--<param-name>cors.allowed.origins</param-name>-->
+        <!--<param-value>*</param-value>-->
+        <!--</init-param>-->
         <!--<init-param>-->
             <!--<description>A comma separated list of HTTP verbs, using which a CORS request can be made.</description>-->
             <!--<param-name>cors.allowed.methods</param-name>-->
@@ -196,7 +219,7 @@
     <!--</filter>-->
     <!--<filter-mapping>-->
         <!--<filter-name>CORS Filter</filter-name>-->
-        <!--<url-pattern>/*</url-pattern>-->
+        <!--<url-pattern>/baseDstu3/qdm/*</url-pattern>-->
     <!--</filter-mapping>-->
 
 </web-app>
