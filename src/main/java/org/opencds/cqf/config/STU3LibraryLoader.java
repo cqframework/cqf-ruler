@@ -1,27 +1,21 @@
 package org.opencds.cqf.config;
 
-import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.rest.param.StringParam;
-import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.helpers.LibraryResourceHelper;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.opencds.cqf.helpers.LibraryHelper.*;
@@ -87,16 +81,15 @@ public class STU3LibraryLoader implements LibraryLoader {
     }
 
     private Library loadLibrary(VersionedIdentifier libraryIdentifier) {
-        IdType id = new IdType(libraryIdentifier.getId().replaceAll("_", "-"));
         org.hl7.fhir.dstu3.model.Library library = null;
         try
         {
-            library = LibraryResourceHelper.resolveLibrary(provider, id, libraryIdentifier.getVersion());
+            library = LibraryResourceHelper.resolveLibrary(provider, libraryIdentifier.getId().replaceAll("_", "-"), libraryIdentifier.getVersion());
         }
         catch (Exception e)
         {
             try {
-                IdType id = new IdType(id);
+                IdType id = new IdType(libraryIdentifier.getId().replaceAll("_", "-"));
                 library = provider.getDao().read(id);
             }
             catch (Exception ex){ 
