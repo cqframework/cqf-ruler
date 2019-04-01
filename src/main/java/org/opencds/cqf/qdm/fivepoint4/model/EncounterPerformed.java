@@ -29,8 +29,6 @@ public abstract class EncounterPerformed extends BaseType implements Serializabl
             @AttributeOverride(name = "system", column = @Column(name = "admission_source_system")),
             @AttributeOverride(name = "version", column = @Column(name = "admission_source_version"))
     })
-    @NotNull
-    @Column(nullable = false)
     private Code admissionSource;
 
     @AttributeOverrides({
