@@ -117,6 +117,7 @@ public class PrefetchDataProviderStu3 extends FhirDataProviderStu3 {
             case "Observation":
                 // this is a tricky one! todo - need to also check component.code
                 if (codeOrDatePath.equals("combo-code")) return "code";
+                else if (codeOrDatePath.equals("component-code")) return "component.code";
         }
         return codeOrDatePath;
     }
