@@ -8,6 +8,7 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.client.method.OperationParameter;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -64,12 +65,18 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     @Operation(name="refresh-generated-content")
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails, @IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        this.generateNarrative(theResource);
+        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), theResource);
+        theResource.setText(n);
         return super.update(theRequest, theResource, theId, theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
     }
 
-    private void generateNarrative(Measure measure) {
-        this.narrativeProvider.generateNarrative(this.getContext(), measure);
+    @Operation(name="get-narrative", idempotent = true)
+    public Parameters getNarrative(@IdParam IdType theId) {
+        Measure theResource = this.getDao().read(theId);
+        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), theResource);
+        Parameters p = new Parameters();
+        p.addParameter().setValue(new StringType(n.getDivAsString()));
+        return p;
     }
 
     /*
