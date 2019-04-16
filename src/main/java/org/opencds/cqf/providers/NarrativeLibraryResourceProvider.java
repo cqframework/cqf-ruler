@@ -2,6 +2,7 @@ package org.opencds.cqf.providers;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -189,7 +190,7 @@ public class NarrativeLibraryResourceProvider extends LibraryResourceProvider {
     private void ensureDataRequirements(Library library, CqlTranslator translator) {
         library.getDataRequirement().clear();
 
-        List<DataRequirement> reqs = new List<DataRequirement>();
+        List<DataRequirement> reqs = new ArrayList<DataRequirement>();
 
         for (org.hl7.elm.r1.Retrieve retrieve : translator.toRetrieves()) {
             DataRequirement dataReq = new DataRequirement();
