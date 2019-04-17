@@ -1,5 +1,6 @@
 package org.opencds.cqf.providers;
 
+import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
@@ -21,6 +22,7 @@ import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
+import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.config.STU3LibraryLoader;
@@ -403,6 +405,8 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     {
         // TODO: Spec says that the periods are not required, but I am not sure what to do when they aren't supplied so I made them required
         MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, patientRef, practitionerRef, lastReceivedOn, null, null, null);
+        report.setGroup(null);
+
         Parameters parameters = new Parameters();
 
         parameters.addParameter(
@@ -415,18 +419,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             {
                 if (contained instanceof Bundle)
                 {
-                    if (((Bundle) contained).hasEntry())
-                    {
-                        for (Bundle.BundleEntryComponent entry : ((Bundle) contained).getEntry())
-                        {
-                            if  (entry.hasResource() && !(entry.getResource() instanceof ListResource))
-                            {
-                                parameters.addParameter(
-                                        new Parameters.ParametersParameterComponent().setName("resource").setResource(entry.getResource())
-                                );
-                            }
-                        }
-                    }
+                    addEvaluatedResourcesToParameters((Bundle) contained, parameters);
                 }
             }
         }
@@ -435,6 +428,66 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         // Should be able to use _include search with * wildcard, but HAPI doesn't support that
 
         return parameters;
+    }
+
+    private void addEvaluatedResourcesToParameters(Bundle contained, Parameters parameters)
+    {
+        Map<String, Resource> resourceMap = new HashMap<>();
+        if (contained.hasEntry())
+        {
+            for (Bundle.BundleEntryComponent entry : contained.getEntry())
+            {
+                if  (entry.hasResource() && !(entry.getResource() instanceof ListResource))
+                {
+                    if (!resourceMap.containsKey(entry.getResource().getIdElement().getValue()))
+                    {
+                        parameters.addParameter(
+                                new Parameters.ParametersParameterComponent().setName("resource").setResource(entry.getResource())
+                        );
+
+                        resourceMap.put(entry.getResource().getIdElement().getValue(), entry.getResource());
+
+                        resolveReferences(entry.getResource(), parameters, resourceMap);
+                    }
+                }
+            }
+        }
+    }
+
+    private void resolveReferences(Resource resource, Parameters parameters, Map<String, Resource> resourceMap)
+    {
+        List<IBase> values;
+        for (BaseRuntimeChildDefinition child : getContext().getResourceDefinition(resource).getChildren())
+        {
+            values = child.getAccessor().getValues(resource);
+            if (values == null || values.isEmpty())
+            {
+                continue;
+            }
+
+            else if (values.get(0) instanceof Reference
+                    && ((Reference) values.get(0)).getReferenceElement().hasResourceType()
+                    && ((Reference) values.get(0)).getReferenceElement().hasIdPart())
+            {
+                Resource fetchedResource =
+                        (Resource) provider.resolveResourceProvider(
+                                ((Reference) values.get(0)).getReferenceElement().getResourceType()
+                        ).getDao().read(
+                                new IdType(((Reference) values.get(0)).getReferenceElement().getIdPart())
+                        );
+
+                if (!resourceMap.containsKey(fetchedResource.getIdElement().getValue()))
+                {
+                    parameters.addParameter(
+                            new Parameters.ParametersParameterComponent()
+                                    .setName("resource")
+                                    .setResource(fetchedResource)
+                    );
+
+                    resourceMap.put(fetchedResource.getIdElement().getValue(), fetchedResource);
+                }
+            }
+        }
     }
 
     // TODO - this needs a lot of work
