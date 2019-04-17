@@ -105,31 +105,37 @@ public class CdsHooksServlet extends BaseServlet {
         for (Discovery discovery : provider.getDiscoveries(version)) {
             PlanDefinition planDefinition = discovery.getPlanDefinition();
             JsonObject service = new JsonObject();
-            if (planDefinition.hasAction()) {
-                // TODO - this needs some work - too naive
-                if (planDefinition.getActionFirstRep().hasTriggerDefinition()) {
-                    if (planDefinition.getActionFirstRep().getTriggerDefinitionFirstRep().hasEventName()) {
-                        service.addProperty("hook", planDefinition.getActionFirstRep().getTriggerDefinitionFirstRep().getEventName());
+            if (planDefinition != null) {
+                if (planDefinition.hasAction()) {
+                    // TODO - this needs some work - too naive
+                    if (planDefinition.getActionFirstRep().hasTriggerDefinition()) {
+                        if (planDefinition.getActionFirstRep().getTriggerDefinitionFirstRep().hasEventName()) {
+                            service.addProperty("hook", planDefinition.getActionFirstRep().getTriggerDefinitionFirstRep().getEventName());
+                        }
                     }
                 }
-            }
-            if (planDefinition.hasName()) {
-                service.addProperty("name", planDefinition.getName());
-            }
-            if (planDefinition.hasTitle()) {
-                service.addProperty("title", planDefinition.getTitle());
-            }
-            if (planDefinition.hasDescription()) {
-                service.addProperty("description", planDefinition.getDescription());
-            }
-            service.addProperty("id", planDefinition.getIdElement().getIdPart());
-
-            if (!discovery.getItems().isEmpty()) {
-                JsonObject prefetchContent = new JsonObject();
-                for (DiscoveryItem item : discovery.getItems()) {
-                    prefetchContent.addProperty(item.getItemNo(), item.getUrl());
+                if (planDefinition.hasName()) {
+                    service.addProperty("name", planDefinition.getName());
                 }
-                service.add("prefetch", prefetchContent);
+                if (planDefinition.hasTitle()) {
+                    service.addProperty("title", planDefinition.getTitle());
+                }
+                if (planDefinition.hasDescription()) {
+                    service.addProperty("description", planDefinition.getDescription());
+                }
+                service.addProperty("id", planDefinition.getIdElement().getIdPart());
+
+                if (!discovery.getItems().isEmpty()) {
+                    JsonObject prefetchContent = new JsonObject();
+                    for (DiscoveryItem item : discovery.getItems()) {
+                        prefetchContent.addProperty(item.getItemNo(), item.getUrl());
+                    }
+                    service.add("prefetch", prefetchContent);
+                }
+            }
+            else
+            {
+                service.addProperty("Error", discovery.getItems().get(0).getUrl());
             }
             services.add(service);
         }
