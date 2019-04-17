@@ -89,9 +89,12 @@ public class CdsHooksServlet extends BaseServlet {
         JsonArray services = getServices().get("services").getAsJsonArray();
         List<String> ids = new ArrayList<>();
         for (JsonElement element : services) {
-            ids.add(element.getAsJsonObject().get("id").getAsString());
-            if (element.isJsonObject() && element.getAsJsonObject().get("id").getAsString().equals(service)) {
-                return element.getAsJsonObject();
+            if (element.isJsonObject() && element.getAsJsonObject().has("id"))
+            {
+                ids.add(element.getAsJsonObject().get("id").getAsString());
+                if (element.isJsonObject() && element.getAsJsonObject().get("id").getAsString().equals(service)) {
+                    return element.getAsJsonObject();
+                }
             }
         }
         throw new InvalidRequestException("Cannot resolve service: " + service + "\nAvailable services: " + ids.toString());
