@@ -455,11 +455,18 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                 if (typeCode.getCode().equals("eca-rule")) {
                     if (planDefinition.hasLibrary()) {
                         for (Reference reference : planDefinition.getLibrary()) {
-                            org.cqframework.cql.elm.execution.Library library = libraryLoader.load(
-                                    new VersionedIdentifier()
-                                            .withId(reference.getReferenceElement().getIdPart())
-                                            .withVersion(reference.getReferenceElement().getVersionIdPart())
-                            );
+                            org.cqframework.cql.elm.execution.Library library;
+                            try {
+                                library = libraryLoader.load(
+                                        new VersionedIdentifier()
+                                                .withId(reference.getReferenceElement().getIdPart())
+                                                .withVersion(reference.getReferenceElement().getVersionIdPart())
+                                );
+                            }
+                            catch (Exception e)
+                            {
+                                continue;
+                            }
 
                             DiscoveryDataProvider discoveryDataProvider = null;
                             for (UsingDef using : library.getUsings().getDef()) {
