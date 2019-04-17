@@ -15,10 +15,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.builders.*;
-import org.opencds.cqf.cdshooks.providers.Discovery;
-import org.opencds.cqf.cdshooks.providers.DiscoveryDataProvider;
-import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderDstu2;
-import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderStu3;
+import org.opencds.cqf.cdshooks.providers.*;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
@@ -465,7 +462,9 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                             }
                             catch (Exception e)
                             {
-                                continue;
+                                Discovery discovery = new Discovery();
+                                discovery.addItem(new DiscoveryItem().setUrl(e.getMessage()));
+                                return discovery;
                             }
 
                             DiscoveryDataProvider discoveryDataProvider = null;
