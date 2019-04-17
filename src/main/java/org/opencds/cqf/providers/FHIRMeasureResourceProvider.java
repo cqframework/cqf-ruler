@@ -391,6 +391,52 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         return library;
     }
 
+    @Operation(name = "$collect-data", idempotent = true)
+    public Parameters collectData(
+            @IdParam IdType theId,
+            @RequiredParam(name="periodStart") String periodStart,
+            @RequiredParam(name="periodEnd") String periodEnd,
+            @OptionalParam(name="patient") String patientRef,
+            @OptionalParam(name="practitioner") String practitionerRef,
+            @OptionalParam(name="lastReceivedOn") String lastReceivedOn
+    ) throws FHIRException
+    {
+        // TODO: Spec says that the periods are not required, but I am not sure what to do when they aren't supplied so I made them required
+        MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, patientRef, practitionerRef, lastReceivedOn, null, null, null);
+        Parameters parameters = new Parameters();
+
+        parameters.addParameter(
+                new Parameters.ParametersParameterComponent().setName("measurereport").setResource(report)
+        );
+
+        if (report.hasContained())
+        {
+            for (Resource contained : report.getContained())
+            {
+                if (contained instanceof Bundle)
+                {
+                    if (((Bundle) contained).hasEntry())
+                    {
+                        for (Bundle.BundleEntryComponent entry : ((Bundle) contained).getEntry())
+                        {
+                            if  (entry.hasResource() && !(entry.getResource() instanceof ListResource))
+                            {
+                                parameters.addParameter(
+                                        new Parameters.ParametersParameterComponent().setName("resource").setResource(entry.getResource())
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // TODO: need a way to resolve referenced resources within the evaluated resources
+        // Should be able to use _include search with * wildcard, but HAPI doesn't support that
+
+        return parameters;
+    }
+
     // TODO - this needs a lot of work
     @Operation(name = "$data-requirements", idempotent = true)
     public org.hl7.fhir.dstu3.model.Library dataRequirements(
