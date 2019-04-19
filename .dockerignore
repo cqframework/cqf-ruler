@@ -6,5 +6,4 @@
 examples
 target
 derby.log
-Dockerfile
 !target/stu3
