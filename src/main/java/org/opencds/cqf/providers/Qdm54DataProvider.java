@@ -92,6 +92,16 @@ public class Qdm54DataProvider implements DataProvider
 
     }
 
+    @Override
+    public Boolean objectEqual(Object o, Object o1) {
+        return null;
+    }
+
+    @Override
+    public Boolean objectEquivalent(Object o, Object o1) {
+        return null;
+    }
+
     private Iterable<Object> ensureIterable(Object candidate)
     {
         if (candidate instanceof Iterable)

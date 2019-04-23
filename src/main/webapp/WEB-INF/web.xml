@@ -1,5 +1,9 @@
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee ./xsd/web-app_3_0.xsd" metadata-complete="true">
+<web-app
+        xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+        metadata-complete="false"
+        version="3.1">
 
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
@@ -7,13 +11,12 @@
     <context-param>
         <param-name>contextClass</param-name>
         <param-value>
-            org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+            org.opencds.cqf.config.ApplicationContext
         </param-value>
     </context-param>
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            org.opencds.cqf.config.BaseServerConfig
         </param-value>
     </context-param>
 
@@ -34,31 +37,7 @@
             <param-name>FhirVersion</param-name>
             <param-value>QDM</param-value>
         </init-param>
-        <load-on-startup>9</load-on-startup>
-    </servlet>
-
-    <servlet>
-        <servlet-name>on-measure-subscription-mrp</servlet-name>
-        <servlet-class>org.opencds.cqf.servlet.MeasureSubscriptionServlet</servlet-class>
-        <load-on-startup>8</load-on-startup>
-    </servlet>
-
-    <servlet>
-        <servlet-name>bulkDataResults</servlet-name>
-        <servlet-class>org.opencds.cqf.servlet.BulkDataServlet</servlet-class>
-        <load-on-startup>7</load-on-startup>
-    </servlet>
-
-    <servlet>
-        <servlet-name>cdsHooksStu3</servlet-name>
-        <servlet-class>org.opencds.cqf.servlet.CdsHooksStu3Servlet</servlet-class>
-        <load-on-startup>6</load-on-startup>
-    </servlet>
-
-    <servlet>
-        <servlet-name>cdsHooksDstu2</servlet-name>
-        <servlet-class>org.opencds.cqf.servlet.CdsHooksDstu2Servlet</servlet-class>
-        <load-on-startup>5</load-on-startup>
+        <load-on-startup>3</load-on-startup>
     </servlet>
 
     <servlet>
@@ -70,35 +49,7 @@
         </init-param>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>org.opencds.cqf.config.BaseFhirTesterConfig</param-value>
-        </init-param>
-        <load-on-startup>4</load-on-startup>
-    </servlet>
-
-    <servlet>
-        <servlet-name>fhirServletDstu2</servlet-name>
-        <servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>
-        <init-param>
-            <param-name>ImplementationDescription</param-name>
-            <param-value>FHIR CQF Ruler-of-All-Knowledge JPA Server (DSTU2 Resources)</param-value>
-        </init-param>
-        <init-param>
-            <param-name>FhirVersion</param-name>
-            <param-value>DSTU2</param-value>
-        </init-param>
-        <load-on-startup>3</load-on-startup>
-    </servlet>
-
-    <servlet>
-        <servlet-name>fhirServletR4</servlet-name>
-        <servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>
-        <init-param>
-            <param-name>ImplementationDescription</param-name>
-            <param-value>FHIR CQF Ruler-of-All-Knowledge JPA Server (R4 Resources)</param-value>
-        </init-param>
-        <init-param>
-            <param-name>FhirVersion</param-name>
-            <param-value>R4</param-value>
+            <param-value>org.opencds.cqf.config.FhirTesterConfig</param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
     </servlet>
@@ -106,120 +57,21 @@
     <servlet>
         <servlet-name>fhirServletDstu3</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>
-        <init-param>
-            <param-name>ImplementationDescription</param-name>
-            <param-value>FHIR CQF Ruler-of-All-Knowledge JPA Server (STU3 Resources)</param-value>
-        </init-param>
-        <init-param>
-            <param-name>FhirVersion</param-name>
-            <param-value>DSTU3</param-value>
-        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
-    <servlet-mapping>
-        <servlet-name>fhirServletDstu2</servlet-name>
-        <url-pattern>/baseDstu2/*</url-pattern>
-    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>fhirServletDstu3</servlet-name>
         <url-pattern>/baseDstu3/*</url-pattern>
     </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>fhirServletR4</servlet-name>
-        <url-pattern>/baseR4/*</url-pattern>
-    </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>spring</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>cdsHooksDstu2</servlet-name>
-        <url-pattern>/dstu2/cds-services</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>cdsHooksDstu2</servlet-name>
-        <url-pattern>/dstu2/cds-services/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>cdsHooksStu3</servlet-name>
-        <url-pattern>/dstu3/cds-services</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>cdsHooksStu3</servlet-name>
-        <url-pattern>/dstu3/cds-services/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>bulkDataResults</servlet-name>
-        <url-pattern>/baseDstu3/export-results/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>on-measure-subscription-mrp</servlet-name>
-        <url-pattern>/on-measure-subscription-mrp</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>qdm54</servlet-name>
         <url-pattern>/baseDstu3/qdm/*</url-pattern>
     </servlet-mapping>
-
-     <!--This filters provide support for Cross Origin Resource Sharing (CORS)-->
-    <!--<filter>-->
-        <!--<filter-name>CORS Filter</filter-name>-->
-        <!--<filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>-->
-        <!--&lt;!&ndash;<init-param>&ndash;&gt;-->
-            <!--&lt;!&ndash;<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>&ndash;&gt;-->
-            <!--&lt;!&ndash;<param-name>cors.allowed.origins</param-name>&ndash;&gt;-->
-            <!--&lt;!&ndash;<param-value>http://sandbox.cds-hooks.org, http://clinfhir.com, *</param-value>&ndash;&gt;-->
-        <!--&lt;!&ndash;</init-param>&ndash;&gt;-->
-        <!--<init-param>-->
-        <!--<description>A comma separated list of allowed origins. Note: An '*' cannot be used for an allowed origin when using credentials.</description>-->
-        <!--<param-name>cors.allowed.origins</param-name>-->
-        <!--<param-value>*</param-value>-->
-        <!--</init-param>-->
-        <!--<init-param>-->
-            <!--<description>A comma separated list of HTTP verbs, using which a CORS request can be made.</description>-->
-            <!--<param-name>cors.allowed.methods</param-name>-->
-            <!--<param-value>GET,POST,PUT,DELETE,OPTIONS</param-value>-->
-        <!--</init-param>-->
-        <!--<init-param>-->
-            <!--<description>A comma separated list of allowed headers when making a non simple CORS request.</description>-->
-            <!--<param-name>cors.allowed.headers</param-name>-->
-            <!--<param-value>X-FHIR-Starter,Origin,Accept,Authorization,X-Requested-With,Content-Type,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>-->
-        <!--</init-param>-->
-        <!--<init-param>-->
-            <!--<description>A comma separated list non-standard response headers that will be exposed to XHR2 object.</description>-->
-            <!--<param-name>cors.exposed.headers</param-name>-->
-            <!--<param-value>Location,Content-Location</param-value>-->
-        <!--</init-param>-->
-        <!--<init-param>-->
-            <!--<description>A flag that suggests if CORS is supported with cookies</description>-->
-            <!--<param-name>cors.support.credentials</param-name>-->
-            <!--<param-value>true</param-value>-->
-        <!--</init-param>-->
-        <!--<init-param>-->
-            <!--<description>A flag to control logging</description>-->
-            <!--<param-name>cors.logging.enabled</param-name>-->
-            <!--<param-value>true</param-value>-->
-        <!--</init-param>-->
-        <!--<init-param>-->
-            <!--<description>Indicates how long (in seconds) the results of a preflight request can be cached in a preflight result cache.</description>-->
-            <!--<param-name>cors.preflight.maxage</param-name>-->
-            <!--<param-value>300</param-value>-->
-        <!--</init-param>-->
-    <!--</filter>-->
-    <!--<filter-mapping>-->
-        <!--<filter-name>CORS Filter</filter-name>-->
-        <!--<url-pattern>/baseDstu3/qdm/*</url-pattern>-->
-    <!--</filter-mapping>-->
 
 </web-app>
