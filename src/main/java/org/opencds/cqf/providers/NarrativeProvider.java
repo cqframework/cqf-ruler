@@ -6,6 +6,7 @@ import ca.uhn.fhir.narrative.INarrativeGenerator;
 import ca.uhn.fhir.parser.IParser;
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import java.io.File;
 import java.io.FileReader;
@@ -13,6 +14,7 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 
 /**
  * Created by Christopher on 2/4/2017.
@@ -30,23 +32,16 @@ public class NarrativeProvider {
         this.generator = new CustomThymeleafNarrativeGenerator("classpath:ca/uhn/fhir/narrative/narratives.properties", pathToPropertiesFile);
     }
 
-    public void generateNarrative(FhirContext context, DomainResource resource) {
-        // Remove the old generated narrative.
-        resource.setText(null);
-
+    public Narrative getNarrative(FhirContext context, IBaseResource resource) {
         Narrative narrative = new Narrative();
-
         this.generator.generateNarrative(context, resource, narrative);
-
-        resource.setText(narrative);
+        return narrative;
     }
 
     // args[0] == relative path to json resource -> i.e. library/library-demo.json
     // args[1] == path to narrative output -> i.e. library-demo-narrative.html (optional)
     // args[2] == path to resource output -> i.e. library-demo.json(optional)
-    // args[3] == path to narrative.properties file -> i.e narrative.properties
-    // (optional)
-
+    // args[3] == path to narrative.properties file -> i.e narrative.properties (optional)
     public static void main(String[] args) {
 
         try {
@@ -80,10 +75,12 @@ public class NarrativeProvider {
             
             NarrativeProvider provider = new NarrativeProvider(pathToProp.toUri().toString());
 
-            provider.generateNarrative(context, resource);
+            Narrative narrative = provider.getNarrative(context, resource);
+
+            resource.setText(narrative);
 
             PrintWriter writer = new PrintWriter(new File(pathToNarrativeOutput.toString()), "UTF-8");
-            writer.println(resource.getText().getDivAsString());
+            writer.println(narrative);
             writer.println();
             writer.close();
 
