@@ -18,14 +18,33 @@ import javax.xml.validation.Validator;
 
 import org.hl7.fhir.dstu3.model.Measure;
 import org.xml.sax.SAXException;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 
 public class HQMFProvider {
 
+    private TemplateEngine templateEngine;
+
+    public HQMFProvider() {
+        ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+        resolver.setTemplateMode(TemplateMode.XML);
+        resolver.setPrefix("hqmf/templates/");
+        resolver.setSuffix(".xml");
+
+        this.templateEngine = new TemplateEngine();
+        this.templateEngine.setTemplateResolver(resolver);
+    }
+
     public String generateHQMF(Measure m) {
-        return "<xml></xml>";
+
+        Context c = new Context();
+        c.setVariable("m", m);
+        return this.templateEngine.process("measure", c);
     }
 
 
@@ -60,8 +79,8 @@ public class HQMFProvider {
     public static void main(String[] args) {
 
         try {
-            Path pathToResource = Paths.get(HQMFProvider.class.getClassLoader().getResource("narratives/examples/measure/measure-demo.json").toURI());
-            Path pathToResourceOutput = Paths.get("src/main/resources/narratives/hqmf.xml").toAbsolutePath();
+            Path pathToResource = Paths.get(HQMFProvider.class.getClassLoader().getResource("hqmf/examples/input/measure-cms124-QDM.json").toURI());
+            Path pathToResourceOutput = Paths.get("src/main/resources/hqmf/hqmf.xml").toAbsolutePath();
 
             if (args.length >= 2) {
                 pathToResourceOutput = Paths.get(new URI(args[1]));
