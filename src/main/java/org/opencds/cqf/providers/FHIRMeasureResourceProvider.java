@@ -16,8 +16,10 @@ import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.elm.execution.ExpressionDef;
 import org.cqframework.cql.elm.execution.IncludeDef;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
@@ -34,8 +36,13 @@ import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.evaluation.MeasureEvaluation;
 import org.opencds.cqf.helpers.DateHelper;
+import org.opencds.cqf.helpers.LibraryHelper;
+import org.opencds.cqf.helpers.LibraryResourceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Reader;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -56,11 +63,9 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     public FHIRMeasureResourceProvider(JpaDataProvider dataProvider, IFhirSystemDao systemDao, NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider) {
         this.provider = dataProvider;
         this.systemDao = systemDao;
-        this.libraryLoader =
-                new STU3LibraryLoader(
-                        (LibraryResourceProvider) provider.resolveResourceProvider("Library"),
-                        new LibraryManager(new ModelManager()), new ModelManager()
-                );
+        this.libraryLoader = new STU3LibraryLoader(
+                (LibraryResourceProvider) provider.resolveResourceProvider("Library"),
+                new LibraryManager(new ModelManager()), new ModelManager());
 
         this.narrativeProvider = narrativeProvider;
         this.hqmfProvider = hqmfProvider;
@@ -77,15 +82,41 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     @Operation(name="refresh-generated-content")
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails, @IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), theResource);
-        theResource.setText(n);
+        loadLibraries(theResource);
+
+        //Ensure All Related Artifacts for all referenced Libraries
+        org.hl7.fhir.dstu3.model.Library moduleDefinition = getDataRequirements(theResource);
+        if (!moduleDefinition.getRelatedArtifact().isEmpty()) {
+            for (RelatedArtifact relatedArtifact : moduleDefinition.getRelatedArtifact()) {
+                boolean artifactExists = false;
+                //logger.info("Related Artifact: " + relatedArtifact.getUrl());
+                for (RelatedArtifact resourceArtifact : theResource.getRelatedArtifact()) {
+                    if (resourceArtifact.equalsDeep(relatedArtifact)) {
+                        //logger.info("Equals deep true");
+                        artifactExists = true;
+                        break;
+                    }
+                }
+                if (!artifactExists) {
+                    theResource.addRelatedArtifact(relatedArtifact.copy());
+                }
+            }
+        }
+
+        //Ensure All Data Requirements for all referenced libraries
+
+        Narrative n = getMeasureNarrative(theResource.copy(), moduleDefinition);
+        theResource.setText(n.copy());
+        //logger.info("Narrative: " + n.getDivAsString());
         return super.update(theRequest, theResource, theId, theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
     }
 
     @Operation(name="get-narrative", idempotent = true)
     public Parameters getNarrative(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), theResource);
+        loadLibraries(theResource);
+        org.hl7.fhir.dstu3.model.Library moduleDefinition = getDataRequirements(theResource);
+        Narrative n = getMeasureNarrative(theResource, moduleDefinition);
         Parameters p = new Parameters();
         p.addParameter().setValue(new StringType(n.getDivAsString()));
         return p;
@@ -93,6 +124,41 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
     private String generateHQMF(Measure measure) {
         return this.hqmfProvider.generateHQMF(measure);
+    }
+
+    private Narrative getMeasureNarrative(Measure theResource, org.hl7.fhir.dstu3.model.Library moduleDefinition) {
+        //this.getContext().registerCustomType(CqfMeasure.class);
+        CqfMeasure cqfMeasure = new CqfMeasure(theResource);
+        //cqfMeasure = this.getContext().newJsonParser().parseResource(CqfMeasure.class, theResource);
+        //theResource.copyValues(cqfMeasure);
+
+        Library primaryLibrary = this.resolvePrimaryLibrary(theResource);
+        VersionedIdentifier primaryLibraryIdentifier = primaryLibrary.getIdentifier();
+        org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibrary(
+            (LibraryResourceProvider)provider.resolveResourceProvider("Library"),
+            primaryLibraryIdentifier.getId(),
+            primaryLibraryIdentifier.getVersion());
+
+        cqfMeasure.setContent(libraryResource.getContent());
+        cqfMeasure.setDataRequirement(moduleDefinition.getDataRequirement());
+        cqfMeasure.setParameter(moduleDefinition.getParameter());
+
+        for (Library library : libraryLoader.getLibraries().values()) {
+            logger.info("Library Annotation: " + library.getAnnotation().size());
+            for (ExpressionDef statement : library.getStatements().getDef()) {
+                logger.info("Statement: " + statement.getName());
+                //logger.info("Expression: " + statement.getExpression().toString());
+                //logger.info("Context: " + statement.getContext());
+                for (Object annotation : statement.getAnnotation()) {
+                    logger.info("Annotation: " + annotation);
+                }
+                //logger.info("Size: " + statement.getAnnotation());
+            }
+        }
+
+        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
+
+        return n;
     }
 
     /*
@@ -308,39 +374,13 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     {
         logger.info("Evaluating Measure/" + measure.getIdElement().getIdPart());
 
-        // clear library cache
-        libraryLoader.getLibraries().clear();
-
-        // load libraries
-        for (Reference ref : measure.getLibrary()) {
-            // if library is contained in measure, load it into server
-            if (ref.getReferenceElement().getIdPart().startsWith("#")) {
-                for (Resource resource : measure.getContained()) {
-                    if (resource instanceof org.hl7.fhir.dstu3.model.Library
-                            && resource.getIdElement().getIdPart().equals(ref.getReferenceElement().getIdPart().substring(1)))
-                    {
-                        LibraryResourceProvider libraryResourceProvider = (LibraryResourceProvider) provider.resolveResourceProvider("Library");
-                        libraryResourceProvider.getDao().update((org.hl7.fhir.dstu3.model.Library) resource);
-                    }
-                }
-            }
-            libraryLoader.load(
-                    new VersionedIdentifier()
-                            .withVersion(ref.getReferenceElement().getVersionIdPart())
-                            .withId(ref.getReferenceElement().getIdPart())
-            );
-        }
-
-        if (libraryLoader.getLibraries().isEmpty()) {
-            throw new IllegalArgumentException(String.format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
-        }
+        loadLibraries(measure);
 
         // resolve primary library
         Library library;
         if (libraryLoader.getLibraries().size() == 1) {
             library = libraryLoader.getLibraries().values().iterator().next();
-        }
-        else {
+        } else {
             library = resolvePrimaryLibrary(measure);
         }
 
@@ -353,8 +393,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         // resolve remote term svc if provided
         if (source != null) {
             logger.info("Remote terminology service provided");
-            FhirTerminologyProvider terminologyProvider = new FhirTerminologyProvider()
-                    .withBasicAuth(user, pass)
+            FhirTerminologyProvider terminologyProvider = new FhirTerminologyProvider().withBasicAuth(user, pass)
                     .setEndpoint(source, false);
 
             provider.setTerminologyProvider(terminologyProvider);
@@ -366,23 +405,44 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         context.registerDataProvider("http://hl7.org/fhir", provider);
 
         // resolve the measurement period
-        measurementPeriod =
-                new Interval(
-                        DateHelper.resolveRequestDate(periodStart, true), true,
-                        DateHelper.resolveRequestDate(periodEnd, false), true
-                );
+        measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
+                DateHelper.resolveRequestDate(periodEnd, false), true);
 
-        logger.info("Measurement period defined as [" + measurementPeriod.getStart().toString() + ", " + measurementPeriod.getEnd().toString() + "]");
+        logger.info("Measurement period defined as [" + measurementPeriod.getStart().toString() + ", "
+                + measurementPeriod.getEnd().toString() + "]");
 
-        context.setParameter(
-                null, "Measurement Period",
-                new Interval(
-                        DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
-                        DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true
-                )
-        );
+        context.setParameter(null, "Measurement Period",
+                new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
+                        DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
 
         return new ImmutablePair<>(measure, context);
+    }
+
+    private void loadLibraries(Measure measure) {
+        // clear library cache
+        libraryLoader.getLibraries().clear();
+
+        // load libraries
+        for (Reference ref : measure.getLibrary()) {
+            // if library is contained in measure, load it into server
+            if (ref.getReferenceElement().getIdPart().startsWith("#")) {
+                for (Resource resource : measure.getContained()) {
+                    if (resource instanceof org.hl7.fhir.dstu3.model.Library && resource.getIdElement().getIdPart()
+                            .equals(ref.getReferenceElement().getIdPart().substring(1))) {
+                        LibraryResourceProvider libraryResourceProvider = (LibraryResourceProvider) provider
+                                .resolveResourceProvider("Library");
+                        libraryResourceProvider.getDao().update((org.hl7.fhir.dstu3.model.Library) resource);
+                    }
+                }
+            }
+            libraryLoader.load(new VersionedIdentifier().withVersion(ref.getReferenceElement().getVersionIdPart())
+                    .withId(ref.getReferenceElement().getIdPart()));
+        }
+
+        if (libraryLoader.getLibraries().isEmpty()) {
+            throw new IllegalArgumentException(String
+                    .format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
+        }
     }
 
     private Library resolvePrimaryLibrary(Measure measure) {
@@ -521,17 +581,31 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     {
         Measure measure = this.getDao().read(theId);
 
-        // NOTE: This assumes there is only one library and it is the primary library for the measure.
-        org.hl7.fhir.dstu3.model.Library libraryResource =
-                (org.hl7.fhir.dstu3.model.Library) provider.resolveResourceProvider("Library")
-                        .getDao()
-                        .read(new IdType(measure.getLibraryFirstRep().getReference()));
+        return getDataRequirements(measure);
+    }
 
+    protected org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure) {
+        loadLibraries(measure);
+
+        List<DataRequirement> reqs = new ArrayList<>();
         List<RelatedArtifact> dependencies = new ArrayList<>();
-        for (RelatedArtifact dependency : libraryResource.getRelatedArtifact()) {
-            if (dependency.getType().toCode().equals("depends-on")) {
-                dependencies.add(dependency);
+        List<ParameterDefinition> parameters = new ArrayList<>();
+
+        for (Library library : libraryLoader.getLibraries().values()) {
+            VersionedIdentifier primaryLibraryIdentifier = library.getIdentifier();
+            org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibrary(
+                (LibraryResourceProvider)provider.resolveResourceProvider("Library"),
+                primaryLibraryIdentifier.getId(),
+                primaryLibraryIdentifier.getVersion());
+    
+            for (RelatedArtifact dependency : libraryResource.getRelatedArtifact()) {
+                if (dependency.getType().toCode().equals("depends-on")) {
+                    dependencies.add(dependency);
+                }
             }
+
+            reqs.addAll(libraryResource.getDataRequirement());
+            parameters.addAll(libraryResource.getParameter());
         }
 
         List<Coding> typeCoding = new ArrayList<>();
@@ -543,9 +617,15 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             library.setRelatedArtifact(dependencies);
         }
 
-        return library
-                .setDataRequirement(libraryResource.getDataRequirement())
-                .setParameter(libraryResource.getParameter());
+        if (!reqs.isEmpty()) {
+            library.setDataRequirement(reqs);
+        }
+
+        if (!parameters.isEmpty()) {
+            library.setParameter(parameters);
+        }
+
+        return library;
     }
 
 //    @Operation(name = "$submit-data", idempotent = true)
