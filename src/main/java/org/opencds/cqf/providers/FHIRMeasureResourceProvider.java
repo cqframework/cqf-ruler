@@ -45,12 +45,13 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     private STU3LibraryLoader libraryLoader;
 
     private NarrativeProvider narrativeProvider;
+    private HQMFProvider hqmfProvider;
 
     private Interval measurementPeriod;
 
     private static final Logger logger = LoggerFactory.getLogger(FHIRMeasureResourceProvider.class);
 
-    public FHIRMeasureResourceProvider(JpaDataProvider dataProvider, IFhirSystemDao systemDao, NarrativeProvider narrativeProvider) {
+    public FHIRMeasureResourceProvider(JpaDataProvider dataProvider, IFhirSystemDao systemDao, NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider) {
         this.provider = dataProvider;
         this.systemDao = systemDao;
         this.libraryLoader =
@@ -60,7 +61,16 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                 );
 
         this.narrativeProvider = narrativeProvider;
+        this.hqmfProvider = hqmfProvider;
     }
+
+    @Operation(name="hqmf", idempotent = true)
+    public MethodOutcome hqmf(HttpServletRequest theRequest, RequestDetails theRequestDetails, @IdParam IdType theId) {
+        Measure theResource = this.getDao().read(theId);
+        String hqmf = this.generateHQMF(theResource);
+        return new MethodOutcome();
+    }
+
 
     @Operation(name="refresh-generated-content")
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails, @IdParam IdType theId) {
@@ -71,6 +81,10 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
     private void generateNarrative(Measure measure) {
         this.narrativeProvider.generateNarrative(this.getContext(), measure);
+    }
+
+    private String generateHQMF(Measure measure) {
+        return this.hqmfProvider.generateHQMF(measure);
     }
 
     /*
