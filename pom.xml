@@ -216,9 +216,15 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.4</version>
-            <!--<scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlets</artifactId>
+            <version>${jetty_version}</version>
+        </dependency>
+                
     </dependencies>
 
     <distributionManagement>
