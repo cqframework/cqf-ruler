@@ -72,10 +72,12 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     }
 
     @Operation(name="hqmf", idempotent = true)
-    public MethodOutcome hqmf(HttpServletRequest theRequest, RequestDetails theRequestDetails, @IdParam IdType theId) {
+    public Parameters hqmf(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
         String hqmf = this.generateHQMF(theResource);
-        return new MethodOutcome();
+        Parameters p = new Parameters();
+        p.addParameter().setValue(new StringType(hqmf));
+        return p;
     }
 
 
