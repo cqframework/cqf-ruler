@@ -1,0 +1,234 @@
+<div xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <table class="header_table">
+        <tr th:if="${resource.hasId()}" style="vertical-align: top;">
+            <th scope="row"><b>Id: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.id}"></td>
+        </tr>
+        <th:block th:each="types, iter : ${resource.type}" >
+            <tr style="vertical-align: top;">
+                <th th:if="${iter.index == 0}" th:rowspan="${iter.size}" scope="row"><b>Type: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${types}"></td>
+            </tr>
+        </th:block>
+        <th:block th:each="ident, iter : ${resource.identifier}">
+            <tr style="vertical-align: top;">
+                <th th:if="${iter.index == 0}" th:rowspan="${iter.size}"  scope="row"><b>Identifier: </b></th>
+                <td style="padding-left: 25px; padding-right: 25px;">
+                    <b>system: </b> <span th:narrative="${ident.system}"></span>
+                    <br/>
+                    <b>value: </b> <span th:narrative="${ident.value}"></span>
+                </td>
+            </tr>
+        </th:block>
+        <tr th:if="${resource.hasTitle()}" style="vertical-align: top;">
+            <th scope="row"><b>Title: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.title}"></td>
+        </tr>
+        <tr th:if="${resource.hasStatus()}" style="vertical-align: top;">
+            <th scope="row"><b>Status: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.status.toCode()}"></td>
+        </tr>
+        <tr th:if="${resource.hasDescription()}" style="vertical-align: top;">
+            <th scope="row"><b>Description: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.description}"></td>
+        </tr>
+        <tr th:if="${resource.hasPurpose()}" style="vertical-align: top;">
+            <th scope="row"><b>Purpose: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.purpose}"></td>
+        </tr>
+        <tr th:if="${resource.hasUsage()}" style="vertical-align: top;" >
+            <th scope="row"><b>Usage: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.usage}"></td>
+        </tr>
+        <th:block th:each="context, iter : ${resource.useContext}" >
+            <tr style="vertical-align: top;">
+                <th th:if="${iter.index == 0}" th:rowspan="${iter.size}" scope="row"><b>Use Context: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${context}"></td>
+            </tr>
+        </th:block>
+        <th:block th:each="topics, iter : ${resource.topic}" >
+            <tr style="vertical-align: top;">
+                <th th:if="${iter.index == 0}" th:rowspan="${iter.size}"scope="row"><b>Topic: </b></th><td style="padding-right: 25px;" th:narrative="${topics}"></td>
+            </tr>
+        </th:block>
+        <th:block th:each="cont, iter : ${resource.contributor}" >
+            <tr style="vertical-align: top;">
+                <th th:if="${iter.index == 0}" th:rowspan="${iter.size}" scope="row"><b>Contributor: </b></th>
+                <td style="padding-left: 25px; padding-right: 25px;">
+                    <b><span th:narrative="${cont.type.toCode()}"></span>: </b><span th:narrative="${cont.name}"></span>
+                </td>
+            </tr>
+        </th:block>
+        <th:block th:each="related, iter : ${resource.relatedArtifact}" >
+            <tr style="vertical-align: top;">
+                <th th:if="${iter.index == 0}" th:rowspan="${iter.size}" scope="row"><b>Related: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${related}"></td>
+            </tr>
+        </th:block>
+        <th:block th:each="lib, iter : ${resource.library}" >
+            <tr style="vertical-align: top;">
+                <th  th:if="${iter.index == 0}" th:rowspan="${iter.size}" scope="row"><b>Library: </b></th>
+                <td>
+                    <p th:if="${lib.hasIdentifier()}" style="padding-left: 25px; padding-right: 25px;"><b>identifier: </b><span th:narrative="${lib.identifier}"></span></p>
+                    <p th:if="${lib.hasReference()}" style="padding-left: 25px; padding-right: 25px;"><b>reference: </b><span th:narrative="${lib.reference}"></span></p>
+                    <p th:if="${lib.hasDisplay()}" style="padding-left: 25px; padding-right: 25px;"><b>display: </b><span th:narrative="${lib.display}"></span></p>
+                </td>
+            </tr>
+        </th:block>
+        <tr th:if="${resource.hasDisclaimer()}">
+            <th scope="row"><b>Disclaimer: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.disclaimer}"></td>
+        </tr>
+        <tr th:if="${resource.hasScoring()}">
+            <th scope="row"><b>Scoring: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.scoring}"></td>
+        </tr>
+        <tr th:if="${resource.hasCompositeScoring()}">
+            <th scope="row"><b>Composite Scoring: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.compositeScoring}"></td>
+        </tr>
+        <tr th:if="${resource.hasRiskAdjustment()}">
+            <th scope="row"><b>Risk Adjustment: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.riskAdjustment}"></td>
+        </tr>
+        <tr th:if="${resource.hasRateAggregation()}" >
+            <th scope="row"><b>Rate Aggregation: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.rateAggregation}"></td>
+        </tr>
+        <tr th:if="${resource.hasRationale()}">
+            <th scope="row"><b>Rationale: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.rationale}"></td>
+        </tr>
+        <tr th:if="${resource.hasClinicalRecommendationStatement()}">
+            <th scope="row"><b>Clinical Recommendation: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.clinicalRecommendationStatement}"></td>
+        </tr>
+        <tr th:if="${resource.hasDefinition()}" >
+            <th scope="row"><b>Definition: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.definition}"></td>
+        </tr>
+        <tr th:if="${resource.hasGuidance()}">
+            <th scope="row"><b>Guidance: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.guidance}"></td>
+        </tr>
+        <tr th:if="${resource.hasSet()}" >
+            <th scope="row"><b>Set: </b></th><td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.set}"></td>
+        </tr>
+        <th:block th:each="groups, iter : ${resource.group}" >
+            <tr style="vertical-align: top;">
+                <th scope="row"><b>Group:</b></th>
+                <td>
+                    <p style="padding-left: 25px; padding-right: 25px;" th:narrative="${groups.identifier}"></p>
+                    <p th:if="${groups.hasName()}" style="padding-left: 25px; padding-right: 25px;"><b>name: </b><span th:narrative="${groups.name}"></span></p>
+                    <p th:if="${groups.hasDescription()}" style="padding-left: 25px; padding-right: 25px;"><b>description: </b><span th:narrative="${groups.description}"></span></p>
+                </td>
+            </tr>
+            <tr style="vertical-align: top;">
+                <td colspan="2">
+                    <table style="margin-bottom: 5px; width: 100%">
+                        <th:block th:each="pops, iterp : ${groups.population}">
+                            <tr style="vertical-align: top;">
+                                <th th:if="${iterp.index == 0}" th:rowspan="${iterp.size}" scope="row" style="padding-left: 25px;"><b>Population:</b></th>
+                                <td>
+                                    <p style="margin-bottom: 5px; padding-left: 25px;" th:narrative="${pops.identifier}"></p>
+                                    <p style="margin-bottom: 5px; padding-left: 25px;" th:if="${pops.hasName()}">
+                                        <b>name: </b>
+                                        <span th:narrative="${pops.name}"></span>
+                                    </p>
+                                    <p style="margin-bottom: 5px; padding-left: 25px;" th:if="${pops.hasDescription()}">
+                                        <b>description: </b>
+                                        <span th:narrative="${pops.description}"></span>
+                                    </p>
+                                    <p style="margin-bottom: 5px; padding-left: 25px;">
+                                        <b>criteria: </b>
+                                        <span th:narrative="${pops.criteria}"></span>
+                                    </p>
+                                </td>
+                            </tr>
+                        </th:block>
+                        <th:block th:each="strats, iters : ${groups.stratifier}">
+                            <tr style="vertical-align: top;">
+                                <th th:if="${iters.index == 0}" th:rowspan="${iters.size}" scope="row" style="padding-left: 25px;"><b>Stratifier:</b></th>
+                                <td>
+                                    <p style="padding-left: 25px; margin-bottom: 5px;" th:narrative="${strats.identifier}"></p>
+                                    <p style="margin-bottom: 5px; padding-left: 25px;" th:if="${strats.hasCriteria()}">
+                                        <b>criteria: </b>
+                                        <span th:narrative="${strats.criteria}"></span>
+                                    </p>
+                                    <p style="margin-bottom: 5px; padding-left: 25px;" th:if="${strats.hasPath()}">
+                                        <b>path: </b>
+                                        <span th:narrative="${strats.path}"></span>
+                                    </p>
+                                </td>
+                            </tr>
+                        </th:block>
+                    </table>
+                </td>
+            </tr>
+        </th:block>
+        <th:block th:each="supples, iter : ${resource.supplementalData}">
+            <tr>
+                <th th:if="${iter.index == 0}" th:rowspan="${iter.size}" scope="row"><b>Supplemental Data:</b></th>
+                <td style="padding-left: 25px; padding-right: 25px;">
+                    <p style="margin-bottom: 5px;" th:narrative="${supples.identifier}"></p>
+                    <p style="margin-bottom: 5px;" th:each="uses : ${supples.usage}">
+                        <b>usage: </b>
+                        <span th:narrative="${uses}"></span>
+                    </p>
+                    <p style="margin-bottom: 5px;" th:if="${supples.hasCriteria()}">
+                        <b>criteria: </b>
+                        <span th:narrative="${supples.criteria}"></span>
+                    </p>
+                    <p style="margin-bottom: 5px;" th:if="${supples.hasPath()}">
+                        <b>path: </b>
+                        <span th:narrative="${supples.path}"></span>
+                    </p>
+                </td>
+            </tr>
+        </th:block>
+        <th:block th:each="param, iter : ${resource.parameter}">
+            <tr style="vertical-align: top;">
+                <th th:if="${iter.index == 0}" th:rowspan="${iter.size}" scope="row"><b>Parameter: </b></th>
+                <td style="padding-left: 25px; padding-right: 25px;">
+                    <span th:if="${param.hasName()}">
+                        <b>name: </b>
+                        <span th:narrative="${param.name}"></span>
+                        <br/>
+                    </span>
+                    <b>use: </b>
+                    <span th:narrative="${param.use.toCode()}"></span>
+                    <br/>
+                    <span th:if="${param.hasMin()}">
+                        <b>minimum cardinality: </b>
+                        <span th:narrative="${param.min}"></span>
+                        <br/>
+                    </span>
+                    <span th:if="${param.hasMax()}">
+                        <b>maximum cardinality: </b>
+                        <span th:narrative="${param.max}"></span>
+                        <br/>
+                    </span>
+                    <b>type: </b>
+                    <span th:narrative="${param.type}"></span>
+                    <br/>
+                    <span th:if="${param.hasDocumentation()}">
+                        <b>documentation: </b>
+                        <span th:narrative="${param.documentation}"></span>
+                        <br/>
+                    </span>
+                    <span th:if="${param.hasProfile()}">
+                        <b>profile: </b>
+                        <span th:narrative="${param.profile}"></span>
+                        <br/>
+                    </span>
+                    <p style="margin-bottom: 5px;"></p>
+                </td>
+            </tr>
+        </th:block>
+        <th:block th:each="dataReq, iter : ${resource.dataRequirement}">
+            <tr style="vertical-align: top;">
+                    <th th:if="${iter.index == 0}" th:rowspan="${iter.size}" scope="row" ><b>Data Requirements: </b></th>
+                    <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${dataReq}"></td>
+            </tr>
+        </th:block>
+        <th:block th:each="con, iter : ${resource.content}">
+            <tr th:if="${con.contentType == 'text/cql'}" style="vertical-align: top;">
+                <th scope="row" ><b>Content: </b></th>
+                <td style="padding-left: 25px; padding-right: 25px;"><b>type: </b><span th:text="${con.contentType}"></span></td>
+            </tr>
+            <tr th:if="${con.contentType == 'text/cql'}">
+                <th scope="row"></th>
+                <td colspan="2" style="padding-left: 25px; padding-right: 25px;">
+                    <th:block th:if="${con.getData() != null }" >
+                        <pre><code th:class="${con.contentType == 'text/cql' ? 'language-cql' : 'language-xml'}" th:text="${new java.lang.String(con.getData())}"></code></pre>
+                    </th:block>
+                    <th:block th:if="${con.getData() == null }" >
+                        <span><i>&lt;content is empty&gt;</i></span>
+                    </th:block>
+                </td>
+            </tr>
+        </th:block >
+    </table>
+</div>

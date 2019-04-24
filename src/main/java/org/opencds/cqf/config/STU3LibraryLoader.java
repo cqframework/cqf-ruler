@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.opencds.cqf.helpers.LibraryHelper.*;
 
@@ -26,6 +28,8 @@ public class STU3LibraryLoader implements LibraryLoader {
     private ModelManager modelManager;
     private LibraryResourceProvider provider;
     private Map<String, Library> libraries = new HashMap<>();
+
+    private static final Logger logger = LoggerFactory.getLogger(STU3LibraryLoader.class);
 
     public Map<String, Library> getLibraries() {
         return this.libraries;
@@ -84,7 +88,7 @@ public class STU3LibraryLoader implements LibraryLoader {
         org.hl7.fhir.dstu3.model.Library library = null;
         try
         {
-            library = LibraryResourceHelper.resolveLibrary(provider, libraryIdentifier.getId().replaceAll("_", "-"), libraryIdentifier.getVersion());
+            library = LibraryResourceHelper.resolveLibrary(provider, libraryIdentifier.getId(), libraryIdentifier.getVersion());
         }
         catch (Exception e)
         {
