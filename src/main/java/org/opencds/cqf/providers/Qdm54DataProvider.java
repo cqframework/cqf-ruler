@@ -3,6 +3,8 @@ package org.opencds.cqf.providers;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.Interval;
+import org.opencds.cqf.cql.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.terminology.ValueSetInfo;
 import org.opencds.cqf.qdm.fivepoint4.QdmContext;
 import org.opencds.cqf.qdm.fivepoint4.model.BaseType;
 import org.opencds.cqf.qdm.fivepoint4.repository.BaseRepository;
@@ -14,13 +16,14 @@ import java.util.Optional;
 
 public class Qdm54DataProvider implements DataProvider
 {
+
+    protected TerminologyProvider terminologyProvider;
     @Override
     public Iterable<Object> retrieve(String context, Object contextValue, String dataType, String templateId,
                                      String codePath, Iterable<Code> codes, String valueSet, String datePath,
                                      String dateLowPath, String dateHighPath, Interval dateRange)
     {
-        Object retVal = null;
-
+        List<BaseType> retVal = new ArrayList<>();
         List<BaseType> candidates = new ArrayList<>();
 
         if (valueSet != null && valueSet.startsWith("urn:oid:"))
@@ -53,7 +56,28 @@ public class Qdm54DataProvider implements DataProvider
 
         if (codePath != null && !codePath.equals(""))
         {
+            if (valueSet != null && !valueSet.equals("")) {
+                if (terminologyProvider != null) {
+                    ValueSetInfo valueSetInfo = new ValueSetInfo().withId(valueSet);
+                    codes = terminologyProvider.expand(valueSetInfo);
+                }
+            }
 
+            if (codes != null) {
+                for (Code code : codes) {
+                    for (BaseType candidate : candidates)
+                    {
+                        if (candidate.getCode() != null
+                                && candidate.getCode().getCode() != null
+                                && candidate.getCode().getCode().equals(code.getCode())
+                                && candidate.getCode().getSystem() != null
+                                && candidate.getCode().getSystem().equals(code.getSystem()))
+                        {
+                            retVal.add(candidate);
+                        }
+                    }
+                }
+            }
         }
 
         if (dateRange != null)
@@ -61,19 +85,20 @@ public class Qdm54DataProvider implements DataProvider
 
         }
 
-        return ensureIterable(candidates);
+        return ensureIterable(retVal);
     }
 
+    private String packageName = "org.opencds.cqf.qdm.fivepoint4.model";
     @Override
     public String getPackageName()
     {
-        return "org.opencds.cqf.qdm.fivepoint4.model";
+        return packageName;
     }
 
     @Override
-    public void setPackageName(String s)
+    public void setPackageName(String packageName)
     {
-
+        this.packageName = packageName;
     }
 
     @Override

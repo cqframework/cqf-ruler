@@ -218,14 +218,14 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         measureSetup.getRight().registerDataProvider("urn:healthit-gov:qdm:v5_4", qdmProvider);
 
         // resolve report type
-        MeasureEvaluation evaluator = new MeasureEvaluation(provider, measurementPeriod);
+        MeasureEvaluation evaluator = new MeasureEvaluation(qdmProvider, measurementPeriod);
         if (reportType != null)
         {
             switch (reportType)
             {
-                case "patient": return evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
+                case "patient": return evaluator.evaluateQdmPatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
                 case "patient-list": return  evaluator.evaluatePatientListMeasure(measureSetup.getLeft(), measureSetup.getRight(), practitionerRef);
-                case "population": return evaluator.evaluatePopulationMeasure(measureSetup.getLeft(), measureSetup.getRight());
+                case "population": return evaluator.evaluateQdmPopulationMeasure(measureSetup.getLeft(), measureSetup.getRight());
                 default: throw new IllegalArgumentException("Invalid report type: " + reportType);
             }
         }

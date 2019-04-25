@@ -12,7 +12,10 @@ import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.helpers.FhirMeasureBundler;
 import org.opencds.cqf.providers.JpaDataProvider;
+import org.opencds.cqf.providers.Qdm54DataProvider;
+import org.opencds.cqf.qdm.fivepoint4.QdmContext;
 import org.opencds.cqf.qdm.fivepoint4.model.*;
+import org.opencds.cqf.qdm.fivepoint4.repository.PatientRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,6 +93,15 @@ public class MeasureEvaluation {
         return patients;
     }
 
+    private List<org.opencds.cqf.qdm.fivepoint4.model.Patient> getAllQdmPatients() {
+        List<org.opencds.cqf.qdm.fivepoint4.model.Patient> patients = new ArrayList<>();
+        if (provider instanceof Qdm54DataProvider) {
+            List<org.opencds.cqf.qdm.fivepoint4.model.Patient> patientList = QdmContext.getBean(PatientRepository.class).findAll();
+            patients.addAll(patientList);
+        }
+        return patients;
+    }
+
     private List<Patient> getAllPatients() {
         List<Patient> patients = new ArrayList<>();
         if (provider instanceof JpaDataProvider) {
@@ -98,6 +110,12 @@ public class MeasureEvaluation {
             patientList.forEach(x -> patients.add((Patient) x));
         }
         return patients;
+    }
+
+    public MeasureReport evaluateQdmPopulationMeasure(Measure measure, Context context) {
+        logger.info("Generating summary report");
+
+        return evaluateQdm(measure, context, getAllQdmPatients(), MeasureReport.MeasureReportType.SUMMARY);
     }
 
     public MeasureReport evaluatePopulationMeasure(Measure measure, Context context) {
