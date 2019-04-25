@@ -84,7 +84,7 @@ public class NarrativeLibraryResourceProvider extends LibraryResourceProvider {
         return this;
     }
 
-    @Operation(name = "refresh-generated-content")
+    @Operation(name = "$refresh-generated-content")
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails,
             @IdParam IdType theId) {
         Library theResource = this.getDao().read(theId);
@@ -104,7 +104,7 @@ public class NarrativeLibraryResourceProvider extends LibraryResourceProvider {
                 theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
     }
 
-    @Operation(name = "get-narrative", idempotent = true)
+    @Operation(name = "$get-narrative", idempotent = true)
     public Parameters getNarrative(@IdParam IdType theId) {
         Library theResource = this.getDao().read(theId);
         Narrative n = this.narrativeProvider.getNarrative(this.getContext(), theResource);
