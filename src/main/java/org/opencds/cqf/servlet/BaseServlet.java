@@ -129,6 +129,8 @@ public class BaseServlet extends RestfulServer
             config.addAllowedHeader("Accept");
             config.addAllowedHeader("X-Requested-With");
             config.addAllowedHeader("Content-Type");
+            config.addAllowedHeader("Authorization");
+            config.addAllowedHeader("Cache-Control");
 
             config.addAllowedOrigin(HapiProperties.getCorsAllowedOrigin());
 
