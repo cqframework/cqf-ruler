@@ -224,7 +224,6 @@
             <artifactId>jetty-servlets</artifactId>
             <version>${jetty_version}</version>
         </dependency>
-                
     </dependencies>
 
     <distributionManagement>

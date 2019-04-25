@@ -80,5 +80,4 @@
         <filter-name>cross-origin</filter-name>
         <url-pattern>/baseDstu3/*</url-pattern>
     </filter-mapping>
-
 </web-app>

@@ -69,7 +69,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         this.hqmfProvider = hqmfProvider;
     }
 
-    @Operation(name="hqmf", idempotent = true)
+    @Operation(name="$hqmf", idempotent = true)
     public Parameters hqmf(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
         String hqmf = this.generateHQMF(theResource);
@@ -79,7 +79,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     }
 
 
-    @Operation(name="refresh-generated-content")
+    @Operation(name="$refresh-generated-content")
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails, @IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
         loadLibraries(theResource);
@@ -111,7 +111,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         return super.update(theRequest, theResource, theId, theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
     }
 
-    @Operation(name="get-narrative", idempotent = true)
+    @Operation(name="$get-narrative", idempotent = true)
     public Parameters getNarrative(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
         loadLibraries(theResource);
