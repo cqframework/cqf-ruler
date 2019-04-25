@@ -40,6 +40,10 @@ public class LibraryResourceHelper {
         // TODO: Version comparison here...
         Iterable<org.hl7.fhir.dstu3.model.Library> libraries = getLibrariesByName(provider, libraryName);
         for (org.hl7.fhir.dstu3.model.Library l : libraries) {
+            if (!l.hasVersion()) {
+                library = l;
+                break;
+            }
             if (libraryVersion != null && l.getVersion().equals(libraryVersion)) {
                 library = l;
                 break;

@@ -11,12 +11,9 @@ import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.TokenParamModifier;
-import ca.uhn.fhir.rest.client.method.OperationParameter;
-import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.ExpressionDef;
@@ -30,19 +27,16 @@ import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.config.STU3LibraryLoader;
+import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.evaluation.MeasureEvaluation;
 import org.opencds.cqf.helpers.DateHelper;
-import org.opencds.cqf.helpers.LibraryHelper;
 import org.opencds.cqf.helpers.LibraryResourceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Reader;
-import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -63,10 +57,14 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     public FHIRMeasureResourceProvider(JpaDataProvider dataProvider, IFhirSystemDao systemDao, NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider) {
         this.provider = dataProvider;
         this.systemDao = systemDao;
-        this.libraryLoader = new STU3LibraryLoader(
-                (LibraryResourceProvider) provider.resolveResourceProvider("Library"),
-                new LibraryManager(new ModelManager()), new ModelManager());
 
+        LibraryResourceProvider libraryResourceProvider = (LibraryResourceProvider) provider.resolveResourceProvider("Library");
+        ModelManager modelManager = new ModelManager();
+        LibraryManager libraryManager = new LibraryManager(modelManager);
+        libraryManager.getLibrarySourceLoader().clearProviders();
+        libraryManager.getLibrarySourceLoader().registerProvider(new STU3LibrarySourceProvider(libraryResourceProvider));
+
+        this.libraryLoader = new STU3LibraryLoader(libraryResourceProvider, libraryManager, modelManager);
         this.narrativeProvider = narrativeProvider;
         this.hqmfProvider = hqmfProvider;
     }

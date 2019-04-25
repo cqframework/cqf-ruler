@@ -4,9 +4,13 @@ import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.qdm.fivepoint4.QdmContext;
-import org.opencds.cqf.qdm.fivepoint4.repository.CareGoalRepository;
+import org.opencds.cqf.qdm.fivepoint4.model.BaseType;
+import org.opencds.cqf.qdm.fivepoint4.repository.BaseRepository;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class Qdm54DataProvider implements DataProvider
 {
@@ -16,6 +20,8 @@ public class Qdm54DataProvider implements DataProvider
                                      String dateLowPath, String dateHighPath, Interval dateRange)
     {
         Object retVal = null;
+
+        List<BaseType> candidates = new ArrayList<>();
 
         if (valueSet != null && valueSet.startsWith("urn:oid:"))
         {
@@ -34,7 +40,15 @@ public class Qdm54DataProvider implements DataProvider
 
         if (context != null && context.equals("Patient") && contextValue != null)
         {
-            retVal = QdmContext.getBean(CareGoalRepository.class).findByPatientIdValue(contextValue.toString().replace("Patient/", ""));
+            try {
+                Optional<List<BaseType>> searchResult = ((BaseRepository<BaseType>) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + dataType + "Repository"))).findByPatientIdValue(contextValue.toString().replace("Patient/", ""));
+                if (searchResult.isPresent())
+                {
+                    candidates = searchResult.get();
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         if (codePath != null && !codePath.equals(""))
@@ -47,13 +61,13 @@ public class Qdm54DataProvider implements DataProvider
 
         }
 
-        return ensureIterable(retVal);
+        return ensureIterable(candidates);
     }
 
     @Override
     public String getPackageName()
     {
-        return null;
+        return "org.opencds.cqf.qdm.fivepoint4.model";
     }
 
     @Override

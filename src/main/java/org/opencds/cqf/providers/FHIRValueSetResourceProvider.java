@@ -88,9 +88,7 @@ public class FHIRValueSetResourceProvider extends ValueSetResourceProvider {
                             codeSystem = new CodeSystem()
                                     .setUrl(include.getSystem())
                                     .setStatus(Enumerations.PublicationStatus.ACTIVE);
-                            if (!include.getSystem().equals("http://snomed.info/sct")) {
-                                codeSystem.setContent(CodeSystem.CodeSystemContentMode.EXAMPLE);
-                            }
+                            codeSystem.setContent(CodeSystem.CodeSystemContentMode.COMPLETE);
                             codeSystem.setId(id);
                             codeSystems.put(id, codeSystem);
                         }
