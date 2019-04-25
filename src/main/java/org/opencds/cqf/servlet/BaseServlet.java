@@ -67,8 +67,8 @@ public class BaseServlet extends RestfulServer
         plainProviders.add(cql);
 
         registerProviders(resourceProviders);
+        registerProviders(plainProviders);
         setResourceProviders(resourceProviders);
-        setPlainProviders(plainProviders);
 
         /*
          * ETag Support

@@ -39,6 +39,10 @@
         </init-param>
         <load-on-startup>3</load-on-startup>
     </servlet>
+    <servlet-mapping>
+        <servlet-name>qdm54</servlet-name>
+        <url-pattern>/baseDstu3/qdm/*</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>spring</servlet-name>
@@ -53,34 +57,19 @@
         </init-param>
         <load-on-startup>2</load-on-startup>
     </servlet>
+    <servlet-mapping>
+        <servlet-name>spring</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>fhirServletDstu3</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
     <servlet-mapping>
         <servlet-name>fhirServletDstu3</servlet-name>
         <url-pattern>/baseDstu3/*</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>spring</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>qdm54</servlet-name>
-        <url-pattern>/baseDstu3/qdm/*</url-pattern>
-    </servlet-mapping>
-
-    <filter>
-        <filter-name>cross-origin</filter-name>
-        <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>cross-origin</filter-name>
-        <url-pattern>/baseDstu3/*</url-pattern>
-    </filter-mapping>
 
 </web-app>

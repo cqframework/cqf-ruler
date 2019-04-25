@@ -1,18 +1,19 @@
 package org.opencds.cqf.config;
 
-import ca.uhn.fhir.jpa.dao.DaoConfig;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Driver;
+
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
-import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
-import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
-import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Driver;
+import ca.uhn.fhir.jpa.dao.DaoConfig;
+import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 
 @Configuration
 @EnableTransactionManagement
@@ -25,15 +26,8 @@ public class FhirServerConfigCommon {
     private Boolean allowExternalReferences = HapiProperties.getAllowExternalReferences();
     private Boolean expungeEnabled = HapiProperties.getExpungeEnabled();
     private Boolean allowPlaceholderReferences = HapiProperties.getAllowPlaceholderReferences();
-    private Boolean subscriptionRestHookEnabled = HapiProperties.getSubscriptionRestHookEnabled();
-    private Boolean subscriptionEmailEnabled = HapiProperties.getSubscriptionEmailEnabled();
     private Boolean allowOverrideDefaultSearchParams = HapiProperties.getAllowOverrideDefaultSearchParams();
     private String emailFrom = HapiProperties.getEmailFrom();
-    private Boolean emailEnabled = HapiProperties.getEmailEnabled();
-    private String emailHost = HapiProperties.getEmailHost();
-    private Integer emailPort = HapiProperties.getEmailPort();
-    private String emailUsername = HapiProperties.getEmailUsername();
-    private String emailPassword = HapiProperties.getEmailPassword();
 
     public FhirServerConfigCommon() {
         ourLog.info("Server configured to " + (this.allowContainsSearches ? "allow" : "deny") + " contains searches");
@@ -42,27 +36,6 @@ public class FhirServerConfigCommon {
         ourLog.info("Server configured to " + (this.expungeEnabled ? "enable" : "disable") + " expunges");
         ourLog.info("Server configured to " + (this.allowPlaceholderReferences ? "allow" : "deny") + " placeholder references");
         ourLog.info("Server configured to " + (this.allowOverrideDefaultSearchParams ? "allow" : "deny") + " overriding default search params");
-
-        if (this.emailEnabled) {
-            ourLog.info("Server is configured to enable email with host '" + this.emailHost + "' and port " + this.emailPort.toString());
-            ourLog.info("Server will use '" + this.emailFrom + "' as the from email address");
-
-            if (this.emailUsername != null && this.emailUsername.length() > 0) {
-                ourLog.info("Server is configured to use username '" + this.emailUsername + "' for email");
-            }
-
-            if (this.emailPassword != null && this.emailPassword.length() > 0) {
-                ourLog.info("Server is configured to use a password for email");
-            }
-        }
-
-        if (this.subscriptionRestHookEnabled) {
-            ourLog.info("REST-hook subscriptions enabled");
-        }
-
-        if (this.subscriptionEmailEnabled) {
-            ourLog.info("Email subscriptions enabled");
-        }
     }
 
     /**

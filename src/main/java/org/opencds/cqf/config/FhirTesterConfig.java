@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Import;
 import ca.uhn.fhir.to.FhirTesterMvcConfig;
 import ca.uhn.fhir.to.TesterConfig;
 
+//@formatter:off
 /**
  * This spring config file configures the web testing module. It serves two
  * purposes:
@@ -47,3 +48,4 @@ public class FhirTesterConfig {
     }
 
 }
+//@formatter:on
