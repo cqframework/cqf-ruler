@@ -53,7 +53,7 @@ public class MeasureEvaluation {
         logger.info("Generating individual report");
 
         if (patientId == null) {
-            return evaluatePopulationMeasure(measure, context);
+            return evaluateQdmPopulationMeasure(measure, context);
         }
 
         Iterable<Object> patientRetrieve = provider.retrieve("Patient", patientId, "Patient", null, null, null, null, null, null, null, null);

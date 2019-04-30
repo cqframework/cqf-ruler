@@ -12,12 +12,9 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.TokenParamModifier;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.ExpressionDef;
-import org.cqframework.cql.elm.execution.IncludeDef;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.*;
@@ -28,18 +25,18 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
-import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.runtime.DateTime;
-import org.opencds.cqf.cql.runtime.Interval;
-import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.evaluation.MeasureEvaluation;
-import org.opencds.cqf.helpers.DateHelper;
+import org.opencds.cqf.evaluation.MeasureEvaluationSeed;
+import org.opencds.cqf.helpers.LibraryHelper;
 import org.opencds.cqf.helpers.LibraryResourceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
@@ -50,7 +47,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     private NarrativeProvider narrativeProvider;
     private HQMFProvider hqmfProvider;
 
-    private Interval measurementPeriod;
+    private LibraryResourceProvider libraryResourceProvider;
 
     private static final Logger logger = LoggerFactory.getLogger(FHIRMeasureResourceProvider.class);
 
@@ -58,7 +55,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         this.provider = dataProvider;
         this.systemDao = systemDao;
 
-        LibraryResourceProvider libraryResourceProvider = (LibraryResourceProvider) provider.resolveResourceProvider("Library");
+        this.libraryResourceProvider = (LibraryResourceProvider) dataProvider.resolveResourceProvider("Library");
         ModelManager modelManager = new ModelManager();
         LibraryManager libraryManager = new LibraryManager(modelManager);
         libraryManager.getLibrarySourceLoader().clearProviders();
@@ -82,7 +79,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     @Operation(name="$refresh-generated-content")
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails, @IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        loadLibraries(theResource);
+        LibraryHelper.loadLibraries(theResource, libraryLoader, libraryResourceProvider);
 
         //Ensure All Related Artifacts for all referenced Libraries
         org.hl7.fhir.dstu3.model.Library moduleDefinition = getDataRequirements(theResource);
@@ -114,7 +111,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     @Operation(name="$get-narrative", idempotent = true)
     public Parameters getNarrative(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        loadLibraries(theResource);
+        LibraryHelper.loadLibraries(theResource, libraryLoader, libraryResourceProvider);
         org.hl7.fhir.dstu3.model.Library moduleDefinition = getDataRequirements(theResource);
         Narrative n = getMeasureNarrative(theResource, moduleDefinition);
         Parameters p = new Parameters();
@@ -132,10 +129,10 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         //cqfMeasure = this.getContext().newJsonParser().parseResource(CqfMeasure.class, theResource);
         //theResource.copyValues(cqfMeasure);
 
-        Library primaryLibrary = this.resolvePrimaryLibrary(theResource);
+        Library primaryLibrary = LibraryHelper.resolvePrimaryLibrary(theResource, libraryLoader);
         VersionedIdentifier primaryLibraryIdentifier = primaryLibrary.getIdentifier();
         org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibrary(
-            (LibraryResourceProvider)provider.resolveResourceProvider("Library"),
+            libraryResourceProvider,
             primaryLibraryIdentifier.getId(),
             primaryLibraryIdentifier.getVersion());
 
@@ -180,58 +177,31 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             @OptionalParam(name="user") String user,
             @OptionalParam(name="pass") String pass) throws InternalErrorException, FHIRException
     {
-        Pair<Measure, Context> measureSetup = setup(measureRef == null ? "" : measureRef, theId, periodStart, periodEnd, source, user, pass);
-        measureSetup.getRight().registerDataProvider("http://hl7.org/fhir", provider);
+        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader);
+        Measure measure = this.getDao().read(theId);
+
+        if (measure == null)
+        {
+            throw new RuntimeException("Could not find Measure/" + theId.getIdPart());
+        }
+
+        seed.setup(measure, periodStart, periodEnd, source, user, pass);
 
 
         // resolve report type
-        MeasureEvaluation evaluator = new MeasureEvaluation(provider, measurementPeriod);
+        MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), seed.getMeasurementPeriod());
+        boolean isQdm = seed.getDataProvider() instanceof Qdm54DataProvider;
         if (reportType != null) {
             switch (reportType) {
-                case "patient": return evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
-                case "patient-list": return  evaluator.evaluatePatientListMeasure(measureSetup.getLeft(), measureSetup.getRight(), practitionerRef);
-                case "population": return evaluator.evaluatePopulationMeasure(measureSetup.getLeft(), measureSetup.getRight());
+                case "patient": return isQdm ? evaluator.evaluateQdmPatientMeasure(seed.getMeasure(), seed.getContext(), patientRef) : evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
+                case "patient-list": return  evaluator.evaluatePatientListMeasure(seed.getMeasure(), seed.getContext(), practitionerRef);
+                case "population": return isQdm ? evaluator.evaluateQdmPopulationMeasure(seed.getMeasure(), seed.getContext()) : evaluator.evaluatePopulationMeasure(seed.getMeasure(), seed.getContext());
                 default: throw new IllegalArgumentException("Invalid report type: " + reportType);
             }
         }
 
         // default report type is patient
-        return evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
-    }
-
-    @Operation(name = "$evaluate-qdm-measure", idempotent = true)
-    public MeasureReport evaluateQdmMeasure(
-            @IdParam IdType theId,
-            @RequiredParam(name="periodStart") String periodStart,
-            @RequiredParam(name="periodEnd") String periodEnd,
-            @OptionalParam(name="measure") String measureRef,
-            @OptionalParam(name="reportType") String reportType,
-            @OptionalParam(name="patient") String patientRef,
-            @OptionalParam(name="practitioner") String practitionerRef,
-            @OptionalParam(name="lastReceivedOn") String lastReceivedOn,
-            @OptionalParam(name="source") String source,
-            @OptionalParam(name="user") String user,
-            @OptionalParam(name="pass") String pass) throws InternalErrorException, FHIRException
-    {
-        Pair<Measure, Context> measureSetup = setup(measureRef == null ? "" : measureRef, theId, periodStart, periodEnd, source, user, pass);
-        Qdm54DataProvider qdmProvider = new Qdm54DataProvider();
-        measureSetup.getRight().registerDataProvider("urn:healthit-gov:qdm:v5_4", qdmProvider);
-
-        // resolve report type
-        MeasureEvaluation evaluator = new MeasureEvaluation(qdmProvider, measurementPeriod);
-        if (reportType != null)
-        {
-            switch (reportType)
-            {
-                case "patient": return evaluator.evaluateQdmPatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
-                case "patient-list": return  evaluator.evaluatePatientListMeasure(measureSetup.getLeft(), measureSetup.getRight(), practitionerRef);
-                case "population": return evaluator.evaluateQdmPopulationMeasure(measureSetup.getLeft(), measureSetup.getRight());
-                default: throw new IllegalArgumentException("Invalid report type: " + reportType);
-            }
-        }
-
-        // default report type is patient
-        return evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
+        return isQdm ? evaluator.evaluateQdmPatientMeasure(seed.getMeasure(), seed.getContext(), patientRef) : evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
     }
 
     @Operation(name = "$evaluate-measure-with-source", idempotent = true)
@@ -244,12 +214,20 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         if (periodStart == null || periodEnd == null) {
             throw new IllegalArgumentException("periodStart and periodEnd are required for measure evaluation");
         }
-        Pair<Measure, Context> measureSetup = setup("", theId, periodStart, periodEnd, null, null, null);
+        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader);
+        Measure measure = this.getDao().read(theId);
+
+        if (measure == null)
+        {
+            throw new RuntimeException("Could not find Measure/" + theId.getIdPart());
+        }
+
+        seed.setup(measure, periodStart, periodEnd, null, null, null);
         BundleDataProviderStu3 bundleProvider = new BundleDataProviderStu3(sourceData);
         bundleProvider.setTerminologyProvider(provider.getTerminologyProvider());
-        measureSetup.getRight().registerDataProvider("http://hl7.org/fhir", bundleProvider);
-        MeasureEvaluation evaluator = new MeasureEvaluation(bundleProvider, measurementPeriod);
-        return evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), "");
+        seed.getContext().registerDataProvider("http://hl7.org/fhir", bundleProvider);
+        MeasureEvaluation evaluator = new MeasureEvaluation(bundleProvider, seed.getMeasurementPeriod());
+        return evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), "");
     }
 
     @Operation(name = "$care-gaps", idempotent = true)
@@ -291,10 +269,11 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                 );
             }
 
-            Pair<Measure, Context> measureSetup = setup(measure, periodStart, periodEnd, null, null, null);
-            MeasureEvaluation evaluator = new MeasureEvaluation(provider, measurementPeriod);
+            MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader);
+            seed.setup(measure, periodStart, periodEnd, null, null, null);
+            MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), seed.getMeasurementPeriod());
             // TODO - this is configured for patient-level evaluation only
-            report = evaluator.evaluatePatientMeasure(measureSetup.getLeft(), measureSetup.getRight(), patientRef);
+            report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
 
             if (report.hasGroup() && measure.hasScoring()) {
                 int numerator = 0;
@@ -355,123 +334,6 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         }
 
         return careGapReport;
-    }
-
-    private Pair<Measure, Context> setup(String measureRef, IdType theId, String periodStart,
-                                         String periodEnd, String source, String user, String pass)
-    {
-        // fetch the measure
-        Measure measure = this.getDao().read(measureRef == null || measureRef.isEmpty() ? theId : new IdType(measureRef));
-        if (measure == null) {
-            throw new IllegalArgumentException("Could not find Measure/" + theId);
-        }
-
-        return setup(measure, periodStart, periodEnd, source, user, pass);
-    }
-
-    private Pair<Measure, Context> setup(Measure measure, String periodStart,
-                                         String periodEnd, String source, String user, String pass)
-    {
-        logger.info("Evaluating Measure/" + measure.getIdElement().getIdPart());
-
-        loadLibraries(measure);
-
-        // resolve primary library
-        Library library;
-        if (libraryLoader.getLibraries().size() == 1) {
-            library = libraryLoader.getLibraries().values().iterator().next();
-        } else {
-            library = resolvePrimaryLibrary(measure);
-        }
-
-        logger.info("Resolved primary library as Library/" + library.getLocalId());
-
-        // resolve execution context
-        Context context = new Context(library);
-        context.registerLibraryLoader(libraryLoader);
-
-        // resolve remote term svc if provided
-        if (source != null) {
-            logger.info("Remote terminology service provided");
-            FhirTerminologyProvider terminologyProvider = new FhirTerminologyProvider().withBasicAuth(user, pass)
-                    .setEndpoint(source, false);
-
-            provider.setTerminologyProvider(terminologyProvider);
-            // provider.setSearchUsingPOST(true);
-            provider.setExpandValueSets(true);
-            context.registerTerminologyProvider(provider.getTerminologyProvider());
-        }
-
-        context.registerDataProvider("http://hl7.org/fhir", provider);
-
-        // resolve the measurement period
-        measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
-                DateHelper.resolveRequestDate(periodEnd, false), true);
-
-        logger.info("Measurement period defined as [" + measurementPeriod.getStart().toString() + ", "
-                + measurementPeriod.getEnd().toString() + "]");
-
-        context.setParameter(null, "Measurement Period",
-                new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
-                        DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
-
-        return new ImmutablePair<>(measure, context);
-    }
-
-    private void loadLibraries(Measure measure) {
-        // clear library cache
-        libraryLoader.getLibraries().clear();
-
-        // load libraries
-        for (Reference ref : measure.getLibrary()) {
-            // if library is contained in measure, load it into server
-            if (ref.getReferenceElement().getIdPart().startsWith("#")) {
-                for (Resource resource : measure.getContained()) {
-                    if (resource instanceof org.hl7.fhir.dstu3.model.Library && resource.getIdElement().getIdPart()
-                            .equals(ref.getReferenceElement().getIdPart().substring(1))) {
-                        LibraryResourceProvider libraryResourceProvider = (LibraryResourceProvider) provider
-                                .resolveResourceProvider("Library");
-                        libraryResourceProvider.getDao().update((org.hl7.fhir.dstu3.model.Library) resource);
-                    }
-                }
-            }
-            libraryLoader.load(new VersionedIdentifier().withVersion(ref.getReferenceElement().getVersionIdPart())
-                    .withId(ref.getReferenceElement().getIdPart()));
-        }
-
-        if (libraryLoader.getLibraries().isEmpty()) {
-            throw new IllegalArgumentException(String
-                    .format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
-        }
-    }
-
-    private Library resolvePrimaryLibrary(Measure measure) {
-        // default is the first library reference
-        Library library = libraryLoader.getLibraries().get(measure.getLibraryFirstRep().getReferenceElement().getIdPart());
-
-        // gather all the population criteria expressions
-        List<String> criteriaExpressions = new ArrayList<>();
-        for (Measure.MeasureGroupComponent grouping : measure.getGroup()) {
-            for (Measure.MeasureGroupPopulationComponent population : grouping.getPopulation()) {
-                criteriaExpressions.add(population.getCriteria());
-            }
-        }
-
-        // check each library to see if it includes the expression namespace - return if true
-        for (Library candidate : libraryLoader.getLibraries().values()) {
-            for (String expression : criteriaExpressions) {
-                String namespace = expression.split("\\.")[0];
-                if (!namespace.equals(expression)) {
-                    for (IncludeDef include : candidate.getIncludes().getDef()) {
-                        if (include.getLocalIdentifier().equals(namespace)) {
-                            return candidate;
-                        }
-                    }
-                }
-            }
-        }
-
-        return library;
     }
 
     @Operation(name = "$collect-data", idempotent = true)
@@ -585,7 +447,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     }
 
     protected org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure) {
-        loadLibraries(measure);
+        LibraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
 
         List<DataRequirement> reqs = new ArrayList<>();
         List<RelatedArtifact> dependencies = new ArrayList<>();
@@ -627,36 +489,6 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
         return library;
     }
-
-//    @Operation(name = "$submit-data", idempotent = true)
-//    public Resource submitData(
-//            RequestDetails details,
-//            @IdParam IdType theId,
-//            @OperationParam(name="measure-report", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
-//            @OperationParam(name="resource", type = Bundle.class) Bundle resources)
-//    {
-//        Measure measure = this.getDao().read(new IdType(theId.getIdPart()));
-//
-//        if (measure == null) {
-//            throw new IllegalArgumentException(theId.getValue() + " does not exist");
-//        }
-//
-//        // TODO - resource validation using $data-requirements operation
-//        // TODO - profile validation
-//
-//        try {
-//            provider.setEndpoint(details.getFhirServerBase());
-//            return provider.getFhirClient().transaction().withBundle(createTransactionBundle(report, resources)).execute();
-//        } catch (Exception e) {
-//            return new OperationOutcome().addIssue(
-//                    new OperationOutcome.OperationOutcomeIssueComponent()
-//                            .setSeverity(OperationOutcome.IssueSeverity.ERROR)
-//                            .setCode(OperationOutcome.IssueType.EXCEPTION)
-//                            .setDetails(new CodeableConcept().setText(e.getMessage()))
-//                            .setDiagnostics(ExceptionUtils.getStackTrace(e))
-//            );
-//        }
-//    }
 
     @Operation(name = "$submit-data", idempotent = true)
     public Resource submitData(
