@@ -49,35 +49,36 @@ public class Qdm54DataProvider implements DataProvider
             throw new IllegalArgumentException("A data type (i.e. Procedure, Valueset, etc...) must be specified for clinical data retrieval");
         }
 
-        if (context != null && context.equals("Patient") && contextValue != null)
+        try
         {
-            if (dataType.equals("Patient"))
+            if (context != null && context.equals("Patient") && contextValue != null && !contextValue.equals("null"))
             {
-                try
+                if (dataType.equals("Patient"))
                 {
                     Optional<Patient> searchResult = ((PatientRepository) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + dataType + "Repository"))).findBySystemId(contextValue.toString().replace("Patient/", ""));
                     searchResult.ifPresent(retVal::add);
                 }
-                catch (ClassNotFoundException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            else
-            {
-                try
+                else
                 {
                     Optional<List<BaseType>> searchResult = ((BaseRepository<BaseType>) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + dataType + "Repository"))).findByPatientIdValue(contextValue.toString().replace("Patient/", ""));
-                    if (searchResult.isPresent())
-                    {
+                    if (searchResult.isPresent()) {
                         candidates = searchResult.get();
                     }
                 }
-                catch (ClassNotFoundException e)
+            }
+            else {
+                if (dataType.equals("Patient")) {
+                    retVal.add(((PatientRepository) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + dataType + "Repository"))).findAll());
+                }
+                else
                 {
-                    e.printStackTrace();
+                    candidates = ((BaseRepository<BaseType>) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + dataType + "Repository"))).findAll();
                 }
             }
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new RuntimeException("Error retrieving QDM resource of type " + dataType);
         }
 
         if (codePath != null && !codePath.equals(""))
@@ -112,7 +113,7 @@ public class Qdm54DataProvider implements DataProvider
 
         if (dateRange != null)
         {
-
+            // TODO
         }
 
         if (retVal.isEmpty() && !candidates.isEmpty() && includeCandidate)
