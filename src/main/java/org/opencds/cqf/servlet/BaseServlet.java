@@ -13,12 +13,12 @@ import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
-import ca.uhn.fhir.rest.server.interceptor.*;
+import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.config.HapiProperties;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.interceptors.TransactionInterceptor;
 import org.opencds.cqf.providers.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
@@ -161,22 +161,6 @@ public class BaseServlet extends RestfulServer
         }
 
         register(bundleProvider, provider.getCollectionProviders());
-
-        // ValueSet processing
-        FHIRValueSetResourceProvider valueSetProvider = new FHIRValueSetResourceProvider(provider);
-        ValueSetResourceProvider jpaValueSetProvider = (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet");
-        valueSetProvider.setDao(jpaValueSetProvider.getDao());
-        valueSetProvider.setContext(jpaValueSetProvider.getContext());
-
-        try {
-            unregister(jpaValueSetProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
-
-        register(valueSetProvider, provider.getCollectionProviders());
-        TransactionInterceptor transactionInterceptor = new TransactionInterceptor(valueSetProvider);
-        registerInterceptor(transactionInterceptor);
 
         // Measure processing
         FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao, narrativeProvider, hqmfProvider);
