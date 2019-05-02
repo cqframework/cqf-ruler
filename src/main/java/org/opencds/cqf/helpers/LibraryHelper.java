@@ -1,27 +1,29 @@
 package org.opencds.cqf.helpers;
 
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+
+import javax.xml.bind.JAXBException;
+
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
-import org.cqframework.cql.elm.execution.IncludeDef;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.elm.tracking.TrackBack;
 import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Resource;
+import org.opencds.cqf.config.NonCachingLibraryManager;
 import org.opencds.cqf.config.STU3LibraryLoader;
+import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
 
-import javax.xml.bind.JAXBException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 
 /**
  * Created by Christopher on 1/11/2017.
@@ -34,6 +36,14 @@ public class LibraryHelper {
         } catch (IOException | JAXBException e) {
             throw new IllegalArgumentException("Error encountered while reading ELM xml: " + e.getMessage());
         }
+    }
+
+    public static STU3LibraryLoader createLibraryLoader(LibraryResourceProvider provider) {
+        ModelManager modelManager = new ModelManager();
+        LibraryManager libraryManager = new NonCachingLibraryManager(modelManager);
+        libraryManager.getLibrarySourceLoader().clearProviders();
+        libraryManager.getLibrarySourceLoader().registerProvider(new STU3LibrarySourceProvider(provider));
+        return new STU3LibraryLoader(provider, libraryManager, modelManager);
     }
 
     public static String errorsToString(Iterable<CqlTranslatorException> exceptions) {
@@ -104,8 +114,15 @@ public class LibraryHelper {
                     }
                 }
             }
-            libraryLoader.load(new VersionedIdentifier().withVersion(ref.getReferenceElement().getVersionIdPart())
-                    .withId(ref.getReferenceElement().getIdPart()));
+
+            // We just loaded it into the server so we can access it by Id
+            String id = ref.getReferenceElement().getIdPart();
+            if (id.startsWith("#")) {
+                id = id.substring(1);
+            }
+
+            org.hl7.fhir.dstu3.model.Library library = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), id);
+            libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
         }
 
         if (libraryLoader.getLibraries().isEmpty()) {
@@ -117,28 +134,23 @@ public class LibraryHelper {
     public static Library resolvePrimaryLibrary(Measure measure, STU3LibraryLoader libraryLoader)
     {
         // default is the first library reference
-        Library library = libraryLoader.getLibraries().get(measure.getLibraryFirstRep().getReferenceElement().getIdPart());
+        String id = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
 
-        // gather all the population criteria expressions
-        List<String> criteriaExpressions = new ArrayList<>();
-        for (Measure.MeasureGroupComponent grouping : measure.getGroup()) {
-            for (Measure.MeasureGroupPopulationComponent population : grouping.getPopulation()) {
-                criteriaExpressions.add(population.getCriteria());
+        Library library = null;
+
+        org.hl7.fhir.dstu3.model.Library fhirLibrary = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), id);
+        
+        for (Library l : libraryLoader.getLibraries()) {
+            VersionedIdentifier vid = l.getIdentifier();
+            if (vid.getId().equals(fhirLibrary.getName()) && LibraryResourceHelper.compareVersions(fhirLibrary.getVersion(), vid.getVersion()) == 0) {
+                library = l;
+                break;
             }
         }
 
-        // check each library to see if it includes the expression namespace - return if true
-        for (Library candidate : libraryLoader.getLibraries().values()) {
-            for (String expression : criteriaExpressions) {
-                String namespace = expression.split("\\.")[0];
-                if (!namespace.equals(expression)) {
-                    for (IncludeDef include : candidate.getIncludes().getDef()) {
-                        if (include.getLocalIdentifier().equals(namespace)) {
-                            return candidate;
-                        }
-                    }
-                }
-            }
+        if (library == null) {
+            throw new IllegalArgumentException(String
+            .format("Could not resolve primary library for Measure/%s.", measure.getId()));
         }
 
         return library;

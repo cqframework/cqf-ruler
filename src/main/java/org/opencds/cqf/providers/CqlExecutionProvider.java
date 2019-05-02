@@ -1,17 +1,27 @@
 package org.opencds.cqf.providers;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.cqframework.cql.cql2elm.CqlTranslator;
-import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.UsingDef;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.ActivityDefinition;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.DomainResource;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Library;
+import org.hl7.fhir.dstu3.model.Measure;
+import org.hl7.fhir.dstu3.model.Parameters;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.config.STU3LibraryLoader;
-import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
@@ -19,7 +29,11 @@ import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.helpers.FhirMeasureBundler;
 import org.opencds.cqf.helpers.LibraryHelper;
 
-import java.util.*;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 /**
  * Created by Bryn on 1/16/2017.
@@ -31,39 +45,6 @@ public class CqlExecutionProvider {
         this.provider = provider;
     }
 
-    private ModelManager modelManager;
-    private ModelManager getModelManager() {
-        if (modelManager == null) {
-            modelManager = new ModelManager();
-        }
-        return modelManager;
-    }
-
-    private LibraryManager libraryManager;
-    private LibraryManager getLibraryManager() {
-        if (libraryManager == null) {
-            libraryManager = new LibraryManager(getModelManager());
-            libraryManager.getLibrarySourceLoader().clearProviders();
-            libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
-        }
-        return libraryManager;
-    }
-
-    private STU3LibraryLoader libraryLoader;
-    private STU3LibraryLoader getLibraryLoader() {
-        if (libraryLoader == null) {
-            libraryLoader = new STU3LibraryLoader(getLibraryResourceProvider(), getLibraryManager(), getModelManager());
-        }
-        return libraryLoader;
-    }
-
-    private STU3LibrarySourceProvider librarySourceProvider;
-    private STU3LibrarySourceProvider getLibrarySourceProvider() {
-        if (librarySourceProvider == null) {
-            librarySourceProvider = new STU3LibrarySourceProvider(getLibraryResourceProvider());
-        }
-        return librarySourceProvider;
-    }
 
     private LibraryResourceProvider getLibraryResourceProvider() {
         return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
@@ -178,12 +159,14 @@ public class CqlExecutionProvider {
 //        String source = String.format("library LocalLibrary using FHIR version '1.8' include FHIRHelpers version '1.8' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
 //                buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
 
-        org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source, getLibraryManager(), getModelManager());
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+
+        org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source, libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
         Context context = new Context(library);
         context.setParameter(null, instance.fhirType(), instance);
         context.setParameter(null, "%context", instance);
         context.setExpressionCaching(true);
-        context.registerLibraryLoader(getLibraryLoader());
+        context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
         context.registerDataProvider("http://hl7.org/fhir", provider);
         return context.resolveExpressionRef("Expression").evaluate(context);
@@ -231,8 +214,10 @@ public class CqlExecutionProvider {
         CqlTranslator translator;
         FhirMeasureBundler bundler = new FhirMeasureBundler();
 
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+
         try {
-            translator = LibraryHelper.getTranslator(code, getLibraryManager(), getModelManager());
+            translator = LibraryHelper.getTranslator(code, libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
         }
         catch (IllegalArgumentException iae) {
             Parameters result = new Parameters();
@@ -258,13 +243,13 @@ public class CqlExecutionProvider {
                 ((JpaDataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
                 ((JpaDataProvider) dataProvider).setExpandValueSets(true);
                 context.registerDataProvider("http://hl7.org/fhir", provider);
-                context.registerLibraryLoader(getLibraryLoader());
+                context.registerLibraryLoader(libraryLoader);
             }
             else
             {
                 ((Qdm54DataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
                 context.registerDataProvider("urn:healthit-gov:qdm:v5_4", dataProvider);
-                context.registerLibraryLoader(getLibraryLoader());
+                context.registerLibraryLoader(libraryLoader);
             }
         }
 

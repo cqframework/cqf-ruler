@@ -1,30 +1,36 @@
 package org.opencds.cqf.providers;
 
-import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
-import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
-import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.TokenParam;
-import ca.uhn.fhir.rest.param.TokenParamModifier;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
-import org.cqframework.cql.elm.execution.ExpressionDef;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Composition;
+import org.hl7.fhir.dstu3.model.DataRequirement;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.ListResource;
+import org.hl7.fhir.dstu3.model.Measure;
+import org.hl7.fhir.dstu3.model.MeasureReport;
+import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.dstu3.model.ParameterDefinition;
+import org.hl7.fhir.dstu3.model.Parameters;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.config.STU3LibraryLoader;
-import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.evaluation.MeasureEvaluation;
 import org.opencds.cqf.evaluation.MeasureEvaluationSeed;
 import org.opencds.cqf.helpers.LibraryHelper;
@@ -32,17 +38,27 @@ import org.opencds.cqf.helpers.LibraryResourceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
+import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.TokenParamModifier;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
     private JpaDataProvider provider;
     private IFhirSystemDao systemDao;
-    private STU3LibraryLoader libraryLoader;
 
     private NarrativeProvider narrativeProvider;
     private HQMFProvider hqmfProvider;
@@ -56,12 +72,6 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         this.systemDao = systemDao;
 
         this.libraryResourceProvider = (LibraryResourceProvider) dataProvider.resolveResourceProvider("Library");
-        ModelManager modelManager = new ModelManager();
-        LibraryManager libraryManager = new LibraryManager(modelManager);
-        libraryManager.getLibrarySourceLoader().clearProviders();
-        libraryManager.getLibrarySourceLoader().registerProvider(new STU3LibrarySourceProvider(libraryResourceProvider));
-
-        this.libraryLoader = new STU3LibraryLoader(libraryResourceProvider, libraryManager, modelManager);
         this.narrativeProvider = narrativeProvider;
         this.hqmfProvider = hqmfProvider;
     }
@@ -79,10 +89,12 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     @Operation(name="$refresh-generated-content")
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails, @IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        LibraryHelper.loadLibraries(theResource, libraryLoader, libraryResourceProvider);
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
+
+        LibraryHelper.loadLibraries(theResource, libraryLoader, this.libraryResourceProvider);
 
         //Ensure All Related Artifacts for all referenced Libraries
-        org.hl7.fhir.dstu3.model.Library moduleDefinition = getDataRequirements(theResource);
+        org.hl7.fhir.dstu3.model.Library moduleDefinition = getDataRequirements(theResource, libraryLoader);
         if (!moduleDefinition.getRelatedArtifact().isEmpty()) {
             for (RelatedArtifact relatedArtifact : moduleDefinition.getRelatedArtifact()) {
                 boolean artifactExists = false;
@@ -102,7 +114,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
         //Ensure All Data Requirements for all referenced libraries
 
-        Narrative n = getMeasureNarrative(theResource.copy(), moduleDefinition);
+        Narrative n = getMeasureNarrative(theResource.copy(), moduleDefinition, libraryLoader);
         theResource.setText(n.copy());
         //logger.info("Narrative: " + n.getDivAsString());
         return super.update(theRequest, theResource, theId, theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
@@ -111,9 +123,10 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     @Operation(name="$get-narrative", idempotent = true)
     public Parameters getNarrative(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        LibraryHelper.loadLibraries(theResource, libraryLoader, libraryResourceProvider);
-        org.hl7.fhir.dstu3.model.Library moduleDefinition = getDataRequirements(theResource);
-        Narrative n = getMeasureNarrative(theResource, moduleDefinition);
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
+        LibraryHelper.loadLibraries(theResource, libraryLoader, this.libraryResourceProvider);
+        org.hl7.fhir.dstu3.model.Library moduleDefinition = getDataRequirements(theResource, libraryLoader);
+        Narrative n = getMeasureNarrative(theResource, moduleDefinition, libraryLoader);
         Parameters p = new Parameters();
         p.addParameter().setValue(new StringType(n.getDivAsString()));
         return p;
@@ -123,7 +136,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         return this.hqmfProvider.generateHQMF(measure);
     }
 
-    private Narrative getMeasureNarrative(Measure theResource, org.hl7.fhir.dstu3.model.Library moduleDefinition) {
+    private Narrative getMeasureNarrative(Measure theResource, org.hl7.fhir.dstu3.model.Library moduleDefinition, STU3LibraryLoader libraryLoader) {
         //this.getContext().registerCustomType(CqfMeasure.class);
         CqfMeasure cqfMeasure = new CqfMeasure(theResource);
         //cqfMeasure = this.getContext().newJsonParser().parseResource(CqfMeasure.class, theResource);
@@ -131,7 +144,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
         Library primaryLibrary = LibraryHelper.resolvePrimaryLibrary(theResource, libraryLoader);
         VersionedIdentifier primaryLibraryIdentifier = primaryLibrary.getIdentifier();
-        org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibrary(
+        org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibraryByName(
             libraryResourceProvider,
             primaryLibraryIdentifier.getId(),
             primaryLibraryIdentifier.getVersion());
@@ -140,18 +153,18 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         cqfMeasure.setDataRequirement(moduleDefinition.getDataRequirement());
         cqfMeasure.setParameter(moduleDefinition.getParameter());
 
-        for (Library library : libraryLoader.getLibraries().values()) {
-            logger.info("Library Annotation: " + library.getAnnotation().size());
-            for (ExpressionDef statement : library.getStatements().getDef()) {
-                logger.info("Statement: " + statement.getName());
-                //logger.info("Expression: " + statement.getExpression().toString());
-                //logger.info("Context: " + statement.getContext());
-                for (Object annotation : statement.getAnnotation()) {
-                    logger.info("Annotation: " + annotation);
-                }
-                //logger.info("Size: " + statement.getAnnotation());
-            }
-        }
+        // for (Library library : libraryLoader.getLibraries().values()) {
+        //     logger.info("Library Annotation: " + library.getAnnotation().size());
+        //     for (ExpressionDef statement : library.getStatements().getDef()) {
+        //         logger.info("Statement: " + statement.getName());
+        //         //logger.info("Expression: " + statement.getExpression().toString());
+        //         //logger.info("Context: " + statement.getContext());
+        //         for (Object annotation : statement.getAnnotation()) {
+        //             logger.info("Annotation: " + annotation);
+        //         }
+        //         //logger.info("Size: " + statement.getAnnotation());
+        //     }
+        // }
 
         Narrative n = this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
 
@@ -177,6 +190,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             @OptionalParam(name="user") String user,
             @OptionalParam(name="pass") String pass) throws InternalErrorException, FHIRException
     {
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
         MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader);
         Measure measure = this.getDao().read(theId);
 
@@ -214,6 +228,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         if (periodStart == null || periodEnd == null) {
             throw new IllegalArgumentException("periodStart and periodEnd are required for measure evaluation");
         }
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
         MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader);
         Measure measure = this.getDao().read(theId);
 
@@ -269,6 +284,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                 );
             }
 
+            STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
             MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader);
             seed.setup(measure, periodStart, periodEnd, null, null, null);
             MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), seed.getMeasurementPeriod());
@@ -441,21 +457,22 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             @RequiredParam(name="endPeriod") String endPeriod)
             throws InternalErrorException, FHIRException
     {
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
         Measure measure = this.getDao().read(theId);
 
-        return getDataRequirements(measure);
+        return getDataRequirements(measure, libraryLoader);
     }
 
-    protected org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure) {
-        LibraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
+    protected org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure, STU3LibraryLoader libraryLoader){
+        LibraryHelper.loadLibraries(measure, libraryLoader, this.libraryResourceProvider);
 
         List<DataRequirement> reqs = new ArrayList<>();
         List<RelatedArtifact> dependencies = new ArrayList<>();
         List<ParameterDefinition> parameters = new ArrayList<>();
 
-        for (Library library : libraryLoader.getLibraries().values()) {
+        for (Library library : libraryLoader.getLibraries()) {
             VersionedIdentifier primaryLibraryIdentifier = library.getIdentifier();
-            org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibrary(
+            org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibraryByName(
                 (LibraryResourceProvider)provider.resolveResourceProvider("Library"),
                 primaryLibraryIdentifier.getId(),
                 primaryLibraryIdentifier.getVersion());

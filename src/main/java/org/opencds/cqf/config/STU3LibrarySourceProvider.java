@@ -26,7 +26,7 @@ public class STU3LibrarySourceProvider implements LibrarySourceProvider {
     @Override
     public InputStream getLibrarySource(VersionedIdentifier versionedIdentifier) {
         try {
-            org.hl7.fhir.dstu3.model.Library lib = LibraryResourceHelper.resolveLibrary(provider, versionedIdentifier.getId(), versionedIdentifier.getVersion());
+            org.hl7.fhir.dstu3.model.Library lib = LibraryResourceHelper.resolveLibraryByName(provider, versionedIdentifier.getId(), versionedIdentifier.getVersion());
             for (org.hl7.fhir.dstu3.model.Attachment content : lib.getContent()) {
                 if (content.getContentType().equals("text/cql")) {
                     return new ByteArrayInputStream(content.getData());

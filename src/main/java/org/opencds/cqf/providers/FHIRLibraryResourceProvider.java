@@ -44,10 +44,10 @@ public class FHIRLibraryResourceProvider extends LibraryResourceProvider {
     }
 
     private void updateLibraryCache(Library library) {
-        libraryLoader
-                .putLibrary(
-                        library.getIdElement().getIdPart(),
-                        libraryLoader.toElmLibrary(library)
-                );
+        // libraryLoader
+        //         .putLibrary(
+        //                 library.getIdElement().getIdPart(),
+        //                 libraryLoader.toElmLibrary(library)
+        //         );
     }
 }
