@@ -80,23 +80,6 @@ public class STU3LibraryLoader implements LibraryLoader {
 
         return version == null ? id : id + "-" + version;
     }
- 
-    public Library toElmLibrary(org.hl7.fhir.dstu3.model.Library library) {
-        InputStream is = null;
-        org.hl7.fhir.dstu3.model.Attachment cqlContent = null;
-        org.hl7.fhir.dstu3.model.Attachment elmContent = null;
-        for (org.hl7.fhir.dstu3.model.Attachment content : library.getContent()) {
-            if (content.hasData()) {
-                if (content.getContentType().equals("application/elm+xml")) {
-                    elmContent = content;
-                } else if (content.getContentType().equals("text/cql")) {
-                    cqlContent = content;
-                }
-            }
-        }
-        return cqlContent != null ? translateLibrary(new ByteArrayInputStream(cqlContent.getData()), libraryManager, modelManager) :
-            elmContent != null ? readLibrary(new ByteArrayInputStream(elmContent.getData())) : null;
-    }
 
     private Library loadLibrary(VersionedIdentifier libraryIdentifier) {
         org.hl7.elm.r1.VersionedIdentifier identifier = new org.hl7.elm.r1.VersionedIdentifier()

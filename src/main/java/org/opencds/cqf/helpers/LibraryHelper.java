@@ -114,8 +114,15 @@ public class LibraryHelper {
                     }
                 }
             }
-            libraryLoader.load(new VersionedIdentifier().withVersion(ref.getReferenceElement().getVersionIdPart())
-                    .withId(ref.getReferenceElement().getIdPart()));
+
+            // We just loaded it into the server so we can access it by Id
+            String id = ref.getReferenceElement().getIdPart();
+            if (id.startsWith("#")) {
+                id = id.substring(1);
+            }
+
+            org.hl7.fhir.dstu3.model.Library library = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), id);
+            libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
         }
 
         if (libraryLoader.getLibraries().isEmpty()) {
