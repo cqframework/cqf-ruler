@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -31,11 +32,20 @@ public class STU3LibraryLoader implements LibraryLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(STU3LibraryLoader.class);
 
-    public Map<String, Library> getLibraries() {
-        return this.libraries;
+    public Collection<Library> getLibraries() {
+        return this.libraries.values();
     }
-    public void putLibrary(String id, Library library) {
-        libraries.put(id, library);
+
+    public LibraryManager getLibraryManager() {
+        return this.libraryManager;
+    }
+
+    public ModelManager getModelManager() {
+        return this.modelManager;
+    }
+
+    public LibraryResourceProvider getLibraryResourceProvider() {
+        return this.provider;
     }
 
     public STU3LibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager, ModelManager modelManager) {
@@ -53,20 +63,24 @@ public class STU3LibraryLoader implements LibraryLoader {
             throw new IllegalArgumentException("Library identifier id is null.");
         }
 
-        Library library = libraries.get(libraryIdentifier.getId());
-        if (library != null && libraryIdentifier.getVersion() != null
-                && !libraryIdentifier.getVersion().equals(library.getIdentifier().getVersion())) {
-            throw new IllegalArgumentException(String.format("Could not load library %s, version %s because version %s is already loaded.",
-                    libraryIdentifier.getId(), libraryIdentifier.getVersion(), library.getIdentifier().getVersion()));
-        }
-        else if (library == null) {
+        String mangledId = this.mangleIdentifer(libraryIdentifier);
+
+        Library library = libraries.get(mangledId);
+        if (library == null) {
             library = loadLibrary(libraryIdentifier);
-            libraries.put(libraryIdentifier.getId(), library);
+            libraries.put(mangledId, library);
         }
 
         return library;
     }
 
+    private String mangleIdentifer(VersionedIdentifier libraryIdentifier) {
+        String id = libraryIdentifier.getId();
+        String version = libraryIdentifier.getVersion();
+
+        return id  + "-" + version;
+    }
+ 
     public Library toElmLibrary(org.hl7.fhir.dstu3.model.Library library) {
         InputStream is = null;
         org.hl7.fhir.dstu3.model.Attachment cqlContent = null;
@@ -85,30 +99,6 @@ public class STU3LibraryLoader implements LibraryLoader {
     }
 
     private Library loadLibrary(VersionedIdentifier libraryIdentifier) {
-        org.hl7.fhir.dstu3.model.Library library = null;
-        try
-        {
-            library = LibraryResourceHelper.resolveLibrary(provider, libraryIdentifier.getId(), libraryIdentifier.getVersion());
-        }
-        catch (Exception e)
-        {
-            try {
-                IdType id = new IdType(libraryIdentifier.getId().replaceAll("_", "-"));
-                library = provider.getDao().read(id);
-            }
-            catch (Exception ex){ 
-            }
-        }
-
-        if (library == null) {
-            throw new IllegalArgumentException(String.format("Could not resolve library by name or Id %s", libraryIdentifier.getId()));
-        }
-
-        Library elmLibrary = toElmLibrary(library);
-        if (elmLibrary != null) {
-            return elmLibrary;
-        }
-
         org.hl7.elm.r1.VersionedIdentifier identifier = new org.hl7.elm.r1.VersionedIdentifier()
                 .withId(libraryIdentifier.getId())
                 .withSystem(libraryIdentifier.getSystem())

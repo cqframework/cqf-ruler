@@ -26,17 +26,14 @@ public class MeasureEvaluationSeed
 {
     private Measure measure;
     private Context context;
-    private STU3LibraryLoader libraryLoader;
     private DataProvider dataProvider;
     private Interval measurementPeriod;
-
-    private LibraryResourceProvider libraryResourceProvider;
+    private STU3LibraryLoader libraryLoader;
 
     public MeasureEvaluationSeed(JpaDataProvider provider, STU3LibraryLoader libraryLoader)
     {
         this.dataProvider = provider;
         this.libraryLoader = libraryLoader;
-        this.libraryResourceProvider = (LibraryResourceProvider) provider.resolveResourceProvider("Library");
     }
 
     public void setup(
@@ -45,15 +42,10 @@ public class MeasureEvaluationSeed
     {
         this.measure = measure;
 
-        LibraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
+        LibraryHelper.loadLibraries(measure, this.libraryLoader, this.libraryLoader.getLibraryResourceProvider());
 
         // resolve primary library
-        Library library;
-        if (libraryLoader.getLibraries().size() == 1) {
-            library = libraryLoader.getLibraries().values().iterator().next();
-        } else {
-            library = LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader);
-        }
+        Library library = LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader);
 
         // resolve execution context
         context = new Context(library);
