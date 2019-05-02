@@ -90,7 +90,7 @@ public class STU3LibraryLoader implements LibraryLoader {
         ArrayList<CqlTranslatorException> errors = new ArrayList<>();
         org.hl7.elm.r1.Library translatedLibrary = libraryManager.resolveLibrary(identifier, errors).getLibrary();
 
-        if (errors.size() > 0) {
+        if (CqlTranslatorException.HasErrors(errors)) {
             throw new IllegalArgumentException(errorsToString(errors));
         }
         try {
