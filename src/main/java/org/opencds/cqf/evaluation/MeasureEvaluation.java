@@ -495,12 +495,8 @@ public class MeasureEvaluation {
 
         MeasureReport report = reportBuilder.build();
 
-        List<org.opencds.cqf.qdm.fivepoint4.model.Patient> initialPopulation = getQdmInitalPopulation(measure, patients, context);
-
         HashMap<String,BaseType> resources = new HashMap<>();
         HashMap<String,HashSet<String>> codeToResourceMap = new HashMap<>();
-
-        populateQdmResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
 
         MeasureScoring measureScoring = MeasureScoring.fromCode(measure.getScoring().getCodingFirstRep().getCode());
         if (measureScoring == null) {
@@ -525,6 +521,7 @@ public class MeasureEvaluation {
             // TODO: Isn't quite right, there may be multiple measure observations...
             Measure.MeasureGroupPopulationComponent measureObservationCriteria = null;
 
+            HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient> initialPopulation = null;
             HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient> numerator = null;
             HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient> numeratorExclusion = null;
             HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient> denominator = null;
@@ -534,6 +531,7 @@ public class MeasureEvaluation {
             HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient> measurePopulationExclusion = null;
             HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient> measureObservation = null;
 
+            HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient> initialPopulationPatients = null;
             HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient> numeratorPatients = null;
             HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient> numeratorExclusionPatients = null;
             HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient> denominatorPatients = null;
@@ -548,7 +546,10 @@ public class MeasureEvaluation {
                     switch (populationType) {
                         case INITIALPOPULATION:
                             initialPopulationCriteria = pop;
-                            // Initial population is already computed
+                            initialPopulation = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
+                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
+                                initialPopulationPatients = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
+                            }
                             break;
                         case NUMERATOR:
                             numeratorCriteria = pop;
@@ -610,36 +611,43 @@ public class MeasureEvaluation {
                 case RATIO: {
 
                     // For each patient in the initial population
-                    for (org.opencds.cqf.qdm.fivepoint4.model.Patient patient : initialPopulation) {
+                    for (org.opencds.cqf.qdm.fivepoint4.model.Patient patient : patients) {
 
-                        // Are they in the denominator?
-                        boolean inDenominator = evaluateQdmPopulationCriteria(context, patient,
-                                denominatorCriteria, denominator, denominatorPatients,
-                                denominatorExclusionCriteria, denominatorExclusion, denominatorExclusionPatients);
-                        populateQdmResourceMap(context, MeasurePopulationType.DENOMINATOR, resources, codeToResourceMap);
+                        // Are they in the initial population?
+                        boolean inInitialPopulation = evaluateQdmPopulationCriteria(context, patient, initialPopulationCriteria,
+                                initialPopulation, initialPopulationPatients, null, null, null);
+                        populateQdmResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
 
-                        if (inDenominator) {
-                            // Are they in the numerator?
-                            boolean inNumerator = evaluateQdmPopulationCriteria(context, patient,
-                                    numeratorCriteria, numerator, numeratorPatients,
-                                    numeratorExclusionCriteria, numeratorExclusion, numeratorExclusionPatients);
-                            populateQdmResourceMap(context, MeasurePopulationType.NUMERATOR, resources, codeToResourceMap);
+                        if (inInitialPopulation) {
+                            // Are they in the denominator?
+                            boolean inDenominator = evaluateQdmPopulationCriteria(context, patient,
+                                    denominatorCriteria, denominator, denominatorPatients,
+                                    denominatorExclusionCriteria, denominatorExclusion, denominatorExclusionPatients);
+                            populateQdmResourceMap(context, MeasurePopulationType.DENOMINATOR, resources, codeToResourceMap);
 
-                            if (!inNumerator && inDenominator && (denominatorExceptionCriteria != null)) {
-                                // Are they in the denominator exception?
-                                boolean inException = false;
-                                for (org.opencds.cqf.qdm.fivepoint4.model.Patient resource : evaluateQdmCriteria(context, patient, denominatorExceptionCriteria)) {
-                                    inException = true;
-                                    denominatorException.put(resource.getId().getValue(), resource);
-                                    denominator.remove(resource.getId().getValue());
-                                    populateQdmResourceMap(context, MeasurePopulationType.DENOMINATOREXCEPTION, resources, codeToResourceMap);
-                                }
-                                if (inException) {
-                                    if (denominatorExceptionPatients != null) {
-                                        denominatorExceptionPatients.put(patient.getId().getValue(), patient);
+                            if (inDenominator) {
+                                // Are they in the numerator?
+                                boolean inNumerator = evaluateQdmPopulationCriteria(context, patient,
+                                        numeratorCriteria, numerator, numeratorPatients,
+                                        numeratorExclusionCriteria, numeratorExclusion, numeratorExclusionPatients);
+                                populateQdmResourceMap(context, MeasurePopulationType.NUMERATOR, resources, codeToResourceMap);
+
+                                if (!inNumerator && inDenominator && (denominatorExceptionCriteria != null)) {
+                                    // Are they in the denominator exception?
+                                    boolean inException = false;
+                                    for (org.opencds.cqf.qdm.fivepoint4.model.Patient resource : evaluateQdmCriteria(context, patient, denominatorExceptionCriteria)) {
+                                        inException = true;
+                                        denominatorException.put(resource.getId().getValue(), resource);
+                                        denominator.remove(resource.getId().getValue());
+                                        populateQdmResourceMap(context, MeasurePopulationType.DENOMINATOREXCEPTION, resources, codeToResourceMap);
                                     }
-                                    if (denominatorPatients != null) {
-                                        denominatorPatients.remove(patient.getId().getValue());
+                                    if (inException) {
+                                        if (denominatorExceptionPatients != null) {
+                                            denominatorExceptionPatients.put(patient.getId().getValue(), patient);
+                                        }
+                                        if (denominatorPatients != null) {
+                                            denominatorPatients.remove(patient.getId().getValue());
+                                        }
                                     }
                                 }
                             }
@@ -656,17 +664,24 @@ public class MeasureEvaluation {
                 case CONTINUOUSVARIABLE: {
 
                     // For each patient in the initial population
-                    for (org.opencds.cqf.qdm.fivepoint4.model.Patient patient : initialPopulation) {
+                    for (org.opencds.cqf.qdm.fivepoint4.model.Patient patient : patients) {
 
-                        // Are they in the measure population?
-                        boolean inMeasurePopulation = evaluateQdmPopulationCriteria(context, patient,
-                                measurePopulationCriteria, measurePopulation, measurePopulationPatients,
-                                measurePopulationExclusionCriteria, measurePopulationExclusion, measurePopulationExclusionPatients);
+                        // Are they in the initial population?
+                        boolean inInitialPopulation = evaluateQdmPopulationCriteria(context, patient, initialPopulationCriteria,
+                                initialPopulation, initialPopulationPatients, null, null, null);
+                        populateQdmResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
 
-                        if (inMeasurePopulation) {
-                            // TODO: Evaluate measure observations
-                            for (org.opencds.cqf.qdm.fivepoint4.model.Patient resource : evaluateQdmCriteria(context, patient, measureObservationCriteria)) {
-                                measureObservation.put(resource.getId().getValue(), resource);
+                        if (inInitialPopulation) {
+                            // Are they in the measure population?
+                            boolean inMeasurePopulation = evaluateQdmPopulationCriteria(context, patient,
+                                    measurePopulationCriteria, measurePopulation, measurePopulationPatients,
+                                    measurePopulationExclusionCriteria, measurePopulationExclusion, measurePopulationExclusionPatients);
+
+                            if (inMeasurePopulation) {
+                                // TODO: Evaluate measure observations
+                                for (org.opencds.cqf.qdm.fivepoint4.model.Patient resource : evaluateQdmCriteria(context, patient, measureObservationCriteria)) {
+                                    measureObservation.put(resource.getId().getValue(), resource);
+                                }
                             }
                         }
                     }
@@ -674,13 +689,20 @@ public class MeasureEvaluation {
                     break;
                 }
                 case COHORT: {
-                    // Only initial population matters for a cohort measure
+                    // For each patient in the initial population
+                    for (org.opencds.cqf.qdm.fivepoint4.model.Patient patient : patients) {
+
+                        // Are they in the initial population?
+                        boolean inInitialPopulation = evaluateQdmPopulationCriteria(context, patient, initialPopulationCriteria,
+                                initialPopulation, initialPopulationPatients, null, null, null);
+                        populateQdmResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
+                    }
                     break;
                 }
             }
 
             // Add population reports for each group
-            addQdmPopulationCriteriaReport(report, reportGroup, initialPopulationCriteria, initialPopulation != null ? initialPopulation.size() : 0, initialPopulation);
+            addQdmPopulationCriteriaReport(report, reportGroup, initialPopulationCriteria, initialPopulation != null ? initialPopulation.size() : 0, initialPopulationPatients != null ? initialPopulationPatients.values() : null);
             addQdmPopulationCriteriaReport(report, reportGroup, numeratorCriteria, numerator != null ? numerator.size() : 0, numeratorPatients != null ? numeratorPatients.values() : null);
             addQdmPopulationCriteriaReport(report, reportGroup, numeratorExclusionCriteria, numeratorExclusion != null ? numeratorExclusion.size() : 0, numeratorExclusionPatients != null ? numeratorExclusionPatients.values() : null);
             addQdmPopulationCriteriaReport(report, reportGroup, denominatorCriteria, denominator != null ? denominator.size() : 0, denominatorPatients != null ? denominatorPatients.values() : null);
@@ -730,12 +752,8 @@ public class MeasureEvaluation {
 
         MeasureReport report = reportBuilder.build();
 
-        List<Patient> initialPopulation = getInitalPopulation(measure, patients, context);
-
         HashMap<String,Resource> resources = new HashMap<>();
         HashMap<String,HashSet<String>> codeToResourceMap = new HashMap<>();
-
-        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
 
         MeasureScoring measureScoring = MeasureScoring.fromCode(measure.getScoring().getCodingFirstRep().getCode());
         if (measureScoring == null) {
@@ -760,6 +778,7 @@ public class MeasureEvaluation {
             // TODO: Isn't quite right, there may be multiple measure observations...
             Measure.MeasureGroupPopulationComponent measureObservationCriteria = null;
 
+            HashMap<String, Resource> initialPopulation = null;
             HashMap<String, Resource> numerator = null;
             HashMap<String, Resource> numeratorExclusion = null;
             HashMap<String, Resource> denominator = null;
@@ -769,6 +788,7 @@ public class MeasureEvaluation {
             HashMap<String, Resource> measurePopulationExclusion = null;
             HashMap<String, Resource> measureObservation = null;
 
+            HashMap<String, Patient> initialPopulationPatients = null;
             HashMap<String, Patient> numeratorPatients = null;
             HashMap<String, Patient> numeratorExclusionPatients = null;
             HashMap<String, Patient> denominatorPatients = null;
@@ -783,7 +803,10 @@ public class MeasureEvaluation {
                     switch (populationType) {
                         case INITIALPOPULATION:
                             initialPopulationCriteria = pop;
-                            // Initial population is already computed
+                            initialPopulation = new HashMap<String, Resource>();
+                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
+                                initialPopulationPatients = new HashMap<String, Patient>();
+                            }
                             break;
                         case NUMERATOR:
                             numeratorCriteria = pop;
@@ -845,36 +868,43 @@ public class MeasureEvaluation {
                 case RATIO: {
 
                     // For each patient in the initial population
-                    for (Patient patient : initialPopulation) {
+                    for (Patient patient : patients) {
 
-                        // Are they in the denominator?
-                        boolean inDenominator = evaluatePopulationCriteria(context, patient,
-                                denominatorCriteria, denominator, denominatorPatients,
-                                denominatorExclusionCriteria, denominatorExclusion, denominatorExclusionPatients);
-                        populateResourceMap(context, MeasurePopulationType.DENOMINATOR, resources, codeToResourceMap);
+                        // Are they in the initial population?
+                        boolean inInitialPopulation = evaluatePopulationCriteria(context, patient, initialPopulationCriteria,
+                                initialPopulation, initialPopulationPatients, null, null, null);
+                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
 
-                        if (inDenominator) {
-                            // Are they in the numerator?
-                            boolean inNumerator = evaluatePopulationCriteria(context, patient,
-                                    numeratorCriteria, numerator, numeratorPatients,
-                                    numeratorExclusionCriteria, numeratorExclusion, numeratorExclusionPatients);
-                            populateResourceMap(context, MeasurePopulationType.NUMERATOR, resources, codeToResourceMap);
+                        if (inInitialPopulation) {
+                            // Are they in the denominator?
+                            boolean inDenominator = evaluatePopulationCriteria(context, patient,
+                                    denominatorCriteria, denominator, denominatorPatients,
+                                    denominatorExclusionCriteria, denominatorExclusion, denominatorExclusionPatients);
+                            populateResourceMap(context, MeasurePopulationType.DENOMINATOR, resources, codeToResourceMap);
 
-                            if (!inNumerator && inDenominator && (denominatorExceptionCriteria != null)) {
-                                // Are they in the denominator exception?
-                                boolean inException = false;
-                                for (Resource resource : evaluateCriteria(context, patient, denominatorExceptionCriteria)) {
-                                    inException = true;
-                                    denominatorException.put(resource.getId(), resource);
-                                    denominator.remove(resource.getId());
-                                    populateResourceMap(context, MeasurePopulationType.DENOMINATOREXCEPTION, resources, codeToResourceMap);
-                                }
-                                if (inException) {
-                                    if (denominatorExceptionPatients != null) {
-                                        denominatorExceptionPatients.put(patient.getId(), patient);
+                            if (inDenominator) {
+                                // Are they in the numerator?
+                                boolean inNumerator = evaluatePopulationCriteria(context, patient,
+                                        numeratorCriteria, numerator, numeratorPatients,
+                                        numeratorExclusionCriteria, numeratorExclusion, numeratorExclusionPatients);
+                                populateResourceMap(context, MeasurePopulationType.NUMERATOR, resources, codeToResourceMap);
+
+                                if (!inNumerator && inDenominator && (denominatorExceptionCriteria != null)) {
+                                    // Are they in the denominator exception?
+                                    boolean inException = false;
+                                    for (Resource resource : evaluateCriteria(context, patient, denominatorExceptionCriteria)) {
+                                        inException = true;
+                                        denominatorException.put(resource.getId(), resource);
+                                        denominator.remove(resource.getId());
+                                        populateResourceMap(context, MeasurePopulationType.DENOMINATOREXCEPTION, resources, codeToResourceMap);
                                     }
-                                    if (denominatorPatients != null) {
-                                        denominatorPatients.remove(patient.getId());
+                                    if (inException) {
+                                        if (denominatorExceptionPatients != null) {
+                                            denominatorExceptionPatients.put(patient.getId(), patient);
+                                        }
+                                        if (denominatorPatients != null) {
+                                            denominatorPatients.remove(patient.getId());
+                                        }
                                     }
                                 }
                             }
@@ -890,18 +920,25 @@ public class MeasureEvaluation {
                 }
                 case CONTINUOUSVARIABLE: {
 
-                    // For each patient in the initial population
-                    for (Patient patient : initialPopulation) {
+                    // For each patient in the patient list
+                    for (Patient patient : patients) {
 
-                        // Are they in the measure population?
-                        boolean inMeasurePopulation = evaluatePopulationCriteria(context, patient,
-                                measurePopulationCriteria, measurePopulation, measurePopulationPatients,
-                                measurePopulationExclusionCriteria, measurePopulationExclusion, measurePopulationExclusionPatients);
+                        // Are they in the initial population?
+                        boolean inInitialPopulation = evaluatePopulationCriteria(context, patient, initialPopulationCriteria,
+                                initialPopulation, initialPopulationPatients, null, null, null);
+                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
 
-                        if (inMeasurePopulation) {
-                            // TODO: Evaluate measure observations
-                            for (Resource resource : evaluateCriteria(context, patient, measureObservationCriteria)) {
-                                measureObservation.put(resource.getId(), resource);
+                        if (inInitialPopulation) {
+                            // Are they in the measure population?
+                            boolean inMeasurePopulation = evaluatePopulationCriteria(context, patient,
+                                    measurePopulationCriteria, measurePopulation, measurePopulationPatients,
+                                    measurePopulationExclusionCriteria, measurePopulationExclusion, measurePopulationExclusionPatients);
+
+                            if (inMeasurePopulation) {
+                                // TODO: Evaluate measure observations
+                                for (Resource resource : evaluateCriteria(context, patient, measureObservationCriteria)) {
+                                    measureObservation.put(resource.getId(), resource);
+                                }
                             }
                         }
                     }
@@ -909,13 +946,21 @@ public class MeasureEvaluation {
                     break;
                 }
                 case COHORT: {
-                    // Only initial population matters for a cohort measure
+
+                    // For each patient in the patient list
+                    for (Patient patient : patients) {
+                        // Are they in the initial population?
+                        boolean inInitialPopulation = evaluatePopulationCriteria(context, patient, initialPopulationCriteria,
+                                initialPopulation, initialPopulationPatients, null, null, null);
+                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
+                    }
+
                     break;
                 }
             }
 
             // Add population reports for each group
-            addPopulationCriteriaReport(report, reportGroup, initialPopulationCriteria, initialPopulation != null ? initialPopulation.size() : 0, initialPopulation);
+            addPopulationCriteriaReport(report, reportGroup, initialPopulationCriteria, initialPopulation != null ? initialPopulation.size() : 0, initialPopulationPatients != null ? initialPopulationPatients.values() : null);
             addPopulationCriteriaReport(report, reportGroup, numeratorCriteria, numerator != null ? numerator.size() : 0, numeratorPatients != null ? numeratorPatients.values() : null);
             addPopulationCriteriaReport(report, reportGroup, numeratorExclusionCriteria, numeratorExclusion != null ? numeratorExclusion.size() : 0, numeratorExclusionPatients != null ? numeratorExclusionPatients.values() : null);
             addPopulationCriteriaReport(report, reportGroup, denominatorCriteria, denominator != null ? denominator.size() : 0, denominatorPatients != null ? denominatorPatients.values() : null);
@@ -1012,51 +1057,5 @@ public class MeasureEvaluation {
         }
 
         context.clearEvaluatedResources();
-    }
-
-    private List<org.opencds.cqf.qdm.fivepoint4.model.Patient> getQdmInitalPopulation(Measure measure, List<org.opencds.cqf.qdm.fivepoint4.model.Patient> population, Context context) {
-        // TODO: Needs to account for multiple population groups
-        List<org.opencds.cqf.qdm.fivepoint4.model.Patient> initalPop = new ArrayList<>();
-        for (Measure.MeasureGroupComponent group : measure.getGroup()) {
-            for (Measure.MeasureGroupPopulationComponent pop : group.getPopulation()) {
-                if (pop.getCode().getCodingFirstRep().getCode().equals("initial-population")) {
-                    for (org.opencds.cqf.qdm.fivepoint4.model.Patient patient : population) {
-                        context.setContextValue("Patient", patient.getId().getValue());
-                        Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
-                        if (result == null) {
-                            continue;
-                        }
-                        if ((Boolean) result) {
-                            initalPop.add(patient);
-                        }
-                    }
-                }
-            }
-        }
-
-        return initalPop;
-    }
-
-    private List<Patient> getInitalPopulation(Measure measure, List<Patient> population, Context context) {
-        // TODO: Needs to account for multiple population groups
-        List<Patient> initalPop = new ArrayList<>();
-        for (Measure.MeasureGroupComponent group : measure.getGroup()) {
-            for (Measure.MeasureGroupPopulationComponent pop : group.getPopulation()) {
-                if (pop.getCode().getCodingFirstRep().getCode().equals("initial-population")) {
-                    for (Patient patient : population) {
-                        context.setContextValue("Patient", patient.getIdElement().getIdPart());
-                        Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
-                        if (result == null) {
-                            continue;
-                        }
-                        if ((Boolean) result) {
-                            initalPop.add(patient);
-                        }
-                    }
-                }
-            }
-        }
-
-        return initalPop;
     }
 }
