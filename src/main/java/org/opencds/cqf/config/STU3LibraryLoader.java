@@ -78,7 +78,7 @@ public class STU3LibraryLoader implements LibraryLoader {
         String id = libraryIdentifier.getId();
         String version = libraryIdentifier.getVersion();
 
-        return id  + "-" + version;
+        return version == null ? id : id + "-" + version;
     }
  
     public Library toElmLibrary(org.hl7.fhir.dstu3.model.Library library) {

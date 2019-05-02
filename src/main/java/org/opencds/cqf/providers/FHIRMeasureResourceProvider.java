@@ -144,7 +144,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
         Library primaryLibrary = LibraryHelper.resolvePrimaryLibrary(theResource, libraryLoader);
         VersionedIdentifier primaryLibraryIdentifier = primaryLibrary.getIdentifier();
-        org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibrary(
+        org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibraryByName(
             libraryResourceProvider,
             primaryLibraryIdentifier.getId(),
             primaryLibraryIdentifier.getVersion());
@@ -472,7 +472,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
         for (Library library : libraryLoader.getLibraries()) {
             VersionedIdentifier primaryLibraryIdentifier = library.getIdentifier();
-            org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibrary(
+            org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibraryByName(
                 (LibraryResourceProvider)provider.resolveResourceProvider("Library"),
                 primaryLibraryIdentifier.getId(),
                 primaryLibraryIdentifier.getVersion());

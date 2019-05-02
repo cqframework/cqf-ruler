@@ -170,7 +170,7 @@ public class NarrativeLibraryResourceProvider extends LibraryResourceProvider {
             for (IncludeDef def : elm.getIncludes().getDef()) {
                 library.addRelatedArtifact(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON)
                         .setResource(new Reference().setReference(
-                                LibraryResourceHelper.resolveLibrary(this, def.getPath(), def.getVersion()).getId())));
+                                LibraryResourceHelper.resolveLibraryByName(this, def.getPath(), def.getVersion()).getId())));
             }
         }
 

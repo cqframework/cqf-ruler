@@ -128,12 +128,14 @@ public class LibraryHelper {
     {
         // default is the first library reference
         String id = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
-        String version =  measure.getLibraryFirstRep().getReferenceElement().getVersionIdPart();
 
         Library library = null;
+
+        org.hl7.fhir.dstu3.model.Library fhirLibrary = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), id);
+        
         for (Library l : libraryLoader.getLibraries()) {
             VersionedIdentifier vid = l.getIdentifier();
-            if (vid.getId().equals(id) && vid.getVersion().equals(version)) {
+            if (vid.getId().equals(fhirLibrary.getName()) && LibraryResourceHelper.compareVersions(fhirLibrary.getVersion(), vid.getVersion()) == 0) {
                 library = l;
                 break;
             }
@@ -145,29 +147,5 @@ public class LibraryHelper {
         }
 
         return library;
-
-        // gather all the population criteria expressions
-        // List<String> criteriaExpressions = new ArrayList<>();
-        // for (Measure.MeasureGroupComponent grouping : measure.getGroup()) {
-        //     for (Measure.MeasureGroupPopulationComponent population : grouping.getPopulation()) {
-        //         criteriaExpressions.add(population.getCriteria());
-        //     }
-        // }
-
-        // // check each library to see if it includes the expression namespace - return if true
-        // for (Library candidate : libraryLoader.getLibraries()) {
-        //     for (String expression : criteriaExpressions) {
-        //         String namespace = expression.split("\\.")[0];
-        //         if (!namespace.equals(expression)) {
-        //             for (IncludeDef include : candidate.getIncludes().getDef()) {
-        //                 if (include.getLocalIdentifier().equals(namespace)) {
-        //                     return candidate;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-        // return library;
     }
 }

@@ -3,6 +3,8 @@ package org.opencds.cqf.helpers;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.param.StringParam;
+
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import java.util.ArrayList;
@@ -34,16 +36,36 @@ public class LibraryResourceHelper {
         return ret;
     }
 
-    public static org.hl7.fhir.dstu3.model.Library resolveLibrary(LibraryResourceProvider provider, String libraryName, String libraryVersion) {
+    public static org.hl7.fhir.dstu3.model.Library resolveLibraryById(LibraryResourceProvider provider, String libraryId) {
+        try {
+            return provider.getDao().read(new IdType(libraryId));
+        }
+        catch (Exception e) {
+            throw new IllegalArgumentException(String.format("Could not resolve library id %s", libraryId));
+        }
+    }
+
+    public static org.hl7.fhir.dstu3.model.Library resolveLibraryByName(LibraryResourceProvider provider, String libraryName, String libraryVersion) {
         org.hl7.fhir.dstu3.model.Library library = null;
+        org.hl7.fhir.dstu3.model.Library maxVersion = null;
 
         // TODO: Version comparison here...
         Iterable<org.hl7.fhir.dstu3.model.Library> libraries = getLibrariesByName(provider, libraryName);
         for (org.hl7.fhir.dstu3.model.Library l : libraries) {
-            if (libraryVersion != null && l.getVersion().equals(libraryVersion)) {
+            if ((libraryVersion != null && l.getVersion().equals(libraryVersion)) ||
+               (libraryVersion == null && !l.hasVersion()))
+            {
                 library = l;
-                break;
             }
+
+            if (maxVersion == null || compareVersions(maxVersion.getVersion(), l.getVersion()) < 0){
+                maxVersion = l;
+            }
+        }
+
+        // If we were not given a version, return the highest found
+        if (libraryVersion == null && maxVersion != null) {
+            return maxVersion;
         }
 
         if (library == null) {
@@ -51,5 +73,46 @@ public class LibraryResourceHelper {
         }
 
         return library;
+    }
+
+    public static int compareVersions(String version1, String version2)
+    {
+        // Treat null as MAX VERSION
+        if (version1 == null && version2 == null) {
+            return 0;
+        }
+
+        if (version1 != null && version2 == null) {
+            return -1;
+        }
+
+        if (version1 == null && version2 != null) {
+            return 1;
+        }
+
+        String[] string1Vals = version1.split("\\.");
+        String[] string2Vals = version2.split("\\.");
+    
+        int length = Math.max(string1Vals.length, string2Vals.length);
+    
+        for (int i = 0; i < length; i++)
+        {
+            Integer v1 = (i < string1Vals.length)?Integer.parseInt(string1Vals[i]):0;
+            Integer v2 = (i < string2Vals.length)?Integer.parseInt(string2Vals[i]):0;
+    
+            //Making sure Version1 bigger than version2
+            if (v1 > v2)
+            {
+                return 1;
+            }
+            //Making sure Version1 smaller than version2
+            else if(v1 < v2)
+            {
+                return -1;
+            }
+        }
+    
+        //Both are equal
+        return 0;
     }
 }
