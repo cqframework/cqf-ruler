@@ -79,7 +79,9 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     @Operation(name="$hqmf", idempotent = true)
     public Parameters hqmf(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        String hqmf = this.generateHQMF(theResource);
+
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
+        String hqmf = this.generateHQMF(theResource, libraryLoader);
         Parameters p = new Parameters();
         p.addParameter().setValue(new StringType(hqmf));
         return p;
@@ -90,31 +92,8 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails, @IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
         STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
+        Narrative n = getMeasureNarrative(theResource.copy(), libraryLoader);
 
-        LibraryHelper.loadLibraries(theResource, libraryLoader, this.libraryResourceProvider);
-
-        //Ensure All Related Artifacts for all referenced Libraries
-        org.hl7.fhir.dstu3.model.Library moduleDefinition = getDataRequirements(theResource, libraryLoader);
-        if (!moduleDefinition.getRelatedArtifact().isEmpty()) {
-            for (RelatedArtifact relatedArtifact : moduleDefinition.getRelatedArtifact()) {
-                boolean artifactExists = false;
-                //logger.info("Related Artifact: " + relatedArtifact.getUrl());
-                for (RelatedArtifact resourceArtifact : theResource.getRelatedArtifact()) {
-                    if (resourceArtifact.equalsDeep(relatedArtifact)) {
-                        //logger.info("Equals deep true");
-                        artifactExists = true;
-                        break;
-                    }
-                }
-                if (!artifactExists) {
-                    theResource.addRelatedArtifact(relatedArtifact.copy());
-                }
-            }
-        }
-
-        //Ensure All Data Requirements for all referenced libraries
-
-        Narrative n = getMeasureNarrative(theResource.copy(), moduleDefinition, libraryLoader);
         theResource.setText(n.copy());
         //logger.info("Narrative: " + n.getDivAsString());
         return super.update(theRequest, theResource, theId, theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
@@ -124,51 +103,20 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     public Parameters getNarrative(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
         STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        LibraryHelper.loadLibraries(theResource, libraryLoader, this.libraryResourceProvider);
-        org.hl7.fhir.dstu3.model.Library moduleDefinition = getDataRequirements(theResource, libraryLoader);
-        Narrative n = getMeasureNarrative(theResource, moduleDefinition, libraryLoader);
+        Narrative n = getMeasureNarrative(theResource, libraryLoader);
         Parameters p = new Parameters();
         p.addParameter().setValue(new StringType(n.getDivAsString()));
         return p;
     }
 
-    private String generateHQMF(Measure measure) {
-        return this.hqmfProvider.generateHQMF(measure);
+    private String generateHQMF(Measure theResource, STU3LibraryLoader libraryLoader) {
+        CqfMeasure cqfMeasure = this.createCqfMeasure(theResource, libraryLoader);
+        return this.hqmfProvider.generateHQMF(cqfMeasure);
     }
 
-    private Narrative getMeasureNarrative(Measure theResource, org.hl7.fhir.dstu3.model.Library moduleDefinition, STU3LibraryLoader libraryLoader) {
-        //this.getContext().registerCustomType(CqfMeasure.class);
-        CqfMeasure cqfMeasure = new CqfMeasure(theResource);
-        //cqfMeasure = this.getContext().newJsonParser().parseResource(CqfMeasure.class, theResource);
-        //theResource.copyValues(cqfMeasure);
-
-        Library primaryLibrary = LibraryHelper.resolvePrimaryLibrary(theResource, libraryLoader);
-        VersionedIdentifier primaryLibraryIdentifier = primaryLibrary.getIdentifier();
-        org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibraryByName(
-            libraryResourceProvider,
-            primaryLibraryIdentifier.getId(),
-            primaryLibraryIdentifier.getVersion());
-
-        cqfMeasure.setContent(libraryResource.getContent());
-        cqfMeasure.setDataRequirement(moduleDefinition.getDataRequirement());
-        cqfMeasure.setParameter(moduleDefinition.getParameter());
-
-        // for (Library library : libraryLoader.getLibraries().values()) {
-        //     logger.info("Library Annotation: " + library.getAnnotation().size());
-        //     for (ExpressionDef statement : library.getStatements().getDef()) {
-        //         logger.info("Statement: " + statement.getName());
-        //         //logger.info("Expression: " + statement.getExpression().toString());
-        //         //logger.info("Context: " + statement.getContext());
-        //         for (Object annotation : statement.getAnnotation()) {
-        //             logger.info("Annotation: " + annotation);
-        //         }
-        //         //logger.info("Size: " + statement.getAnnotation());
-        //     }
-        // }
-
-        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
-
-        return n;
+    private Narrative getMeasureNarrative(Measure theResource, STU3LibraryLoader libraryLoader) {
+        CqfMeasure cqfMeasure = this.createCqfMeasure(theResource, libraryLoader);
+        return this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
     }
 
     /*
@@ -540,6 +488,45 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         }
 
         return (Resource) systemDao.transaction(details, transactionBundle);
+    }
+
+    private CqfMeasure createCqfMeasure(Measure measure, STU3LibraryLoader libraryLoader) {
+        org.hl7.fhir.dstu3.model.Library moduleDefinition = this.getDataRequirements(measure, libraryLoader);
+
+        CqfMeasure cqfMeasure = new CqfMeasure(measure);
+
+        //Ensure All Related Artifacts for all referenced Libraries
+        if (!moduleDefinition.getRelatedArtifact().isEmpty()) {
+            for (RelatedArtifact relatedArtifact : moduleDefinition.getRelatedArtifact()) {
+                boolean artifactExists = false;
+                //logger.info("Related Artifact: " + relatedArtifact.getUrl());
+                for (RelatedArtifact resourceArtifact : cqfMeasure.getRelatedArtifact()) {
+                    if (resourceArtifact.equalsDeep(relatedArtifact)) {
+                        //logger.info("Equals deep true");
+                        artifactExists = true;
+                        break;
+                    }
+                }
+                if (!artifactExists) {
+                    cqfMeasure.addRelatedArtifact(relatedArtifact.copy());
+                }
+            }
+        }
+                
+        //Ensure All Data Requirements for all referenced libraries
+
+        Library primaryLibrary = LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader);
+        VersionedIdentifier primaryLibraryIdentifier = primaryLibrary.getIdentifier();
+        org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibraryByName(
+            libraryResourceProvider,
+            primaryLibraryIdentifier.getId(),
+            primaryLibraryIdentifier.getVersion());
+
+        cqfMeasure.setContent(libraryResource.getContent());
+        cqfMeasure.setDataRequirement(moduleDefinition.getDataRequirement());
+        cqfMeasure.setParameter(moduleDefinition.getParameter());
+
+        return cqfMeasure;
     }
 
     private Bundle createTransactionBundle(Bundle bundle) {
