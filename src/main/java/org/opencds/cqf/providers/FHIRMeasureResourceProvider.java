@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.cqframework.cql.elm.execution.ExpressionDef;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.Bundle;
@@ -525,6 +526,20 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         cqfMeasure.setContent(libraryResource.getContent());
         cqfMeasure.setDataRequirement(moduleDefinition.getDataRequirement());
         cqfMeasure.setParameter(moduleDefinition.getParameter());
+
+
+        for (Library library : libraryLoader.getLibraries()) {
+            logger.info("Library Annotation: " + library.getAnnotation().size());
+            for (ExpressionDef statement : library.getStatements().getDef()) {
+                logger.info("Statement: " + statement.getName());
+                logger.info("Expression: " + statement.getExpression().toString());
+                logger.info("Context: " + statement.getContext());
+                for (Object annotation : statement.getAnnotation()) {
+                    logger.info("Annotation: " + annotation);
+                }
+                logger.info("Size: " + statement.getAnnotation());
+            }
+        }
 
         return cqfMeasure;
     }
