@@ -60,7 +60,12 @@ public class NonCachingLibraryManager extends LibraryManager {
         }
 
         try {
-            CqlTranslator translator = CqlTranslator.fromStream(librarySource, modelManager, this);
+            CqlTranslator translator = CqlTranslator.fromStream(librarySource, modelManager, this, 
+                CqlTranslator.Options.EnableAnnotations, 
+                CqlTranslator.Options.EnableLocators,
+                CqlTranslator.Options.EnableDetailedErrors,
+                CqlTranslator.Options.EnableResultTypes);
+                
             if (errors != null) {
                 errors.addAll(translator.getExceptions());
             }
