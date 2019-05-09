@@ -526,7 +526,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         cqfMeasure.setContent(libraryResource.getContent());
         cqfMeasure.setDataRequirement(moduleDefinition.getDataRequirement());
         cqfMeasure.setParameter(moduleDefinition.getParameter());
-
+        cqfMeasure.getRelatedArtifact().addAll(libraryResource.getRelatedArtifact());
 
         for (Library library : libraryLoader.getLibraries()) {
             logger.info("Library Annotation: " + library.getAnnotation().size());
