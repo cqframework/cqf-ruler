@@ -104,6 +104,26 @@ public class NarrativeLibraryResourceProvider extends LibraryResourceProvider {
                 theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
     }
 
+    @Operation(name = "$get-elm", idempotent = true)
+    public Parameters getElm(@IdParam IdType theId, @OptionalParam(name="format") String format) {
+        Library theResource = this.getDao().read(theId);
+        this.formatCql(theResource);
+
+        String elm = "";
+        CqlTranslator translator = this.getTranslator(theResource);
+        if (translator != null) {
+            if (format.equals("json")) {
+                elm = translator.toJson();
+            }
+            else {
+                elm = translator.toXml();
+            }
+        }
+        Parameters p = new Parameters();
+        p.addParameter().setValue(new StringType(elm));
+        return p;
+    }
+
     @Operation(name = "$get-narrative", idempotent = true)
     public Parameters getNarrative(@IdParam IdType theId) {
         Library theResource = this.getDao().read(theId);
