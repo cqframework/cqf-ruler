@@ -134,7 +134,7 @@ public class HQMFProvider {
                 .elem("templateId").elem("item").a("extension", "2017-08-01").a("root", "2.16.840.1.113883.10.20.28.1.2").up().up()
                 .elem("id").a("root","40280382-6258-7581-0162-92660f2414b9").up().up().elem("code")
                 .a("code", "57024-2").a("codeSystem", "2.16.840.1.113883.6.1").elem("displayName")
-                .a("value", "Health Quality Measure Document").up().up().elem("title").text(m.getDescription()).up()
+                .a("value", "Health Quality Measure Document").up().up().elem("title").text(m.hasTitle() ? m.getTitle() : "None").up()
                 .elem("statusCode").a("code", "COMPLETED").up().elem("setId")
                 .a("root", uniqueId).up().elem("versionNumber").text(m.getVersion()).up()
                 .root();
@@ -212,7 +212,9 @@ public class HQMFProvider {
 
         // Measure Period
         // TODO: Same as effective period?
-        this.addMeasurePeriod(xml, m.getEffectivePeriod());
+        if (m.hasEffectivePeriod() && m.getEffectivePeriod().hasStart()) {
+            this.addMeasurePeriod(xml, m.getEffectivePeriod());
+        }
     }
 
     private void addMeasurePeriod(XMLBuilder2 xml, Period p) {
@@ -229,8 +231,7 @@ public class HQMFProvider {
 
     private void addSubjectOfs(XMLBuilder2 xml, CqfMeasure m) {
         String codeSystem = "2.16.840.1.113883.5.4";
-        XMLBuilder2 temp = null;
-
+        
         for (Identifier i : m.getIdentifier())
         {
    

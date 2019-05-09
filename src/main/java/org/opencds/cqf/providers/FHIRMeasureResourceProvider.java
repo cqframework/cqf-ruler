@@ -528,18 +528,18 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         cqfMeasure.setParameter(moduleDefinition.getParameter());
         cqfMeasure.getRelatedArtifact().addAll(libraryResource.getRelatedArtifact());
 
-        for (Library library : libraryLoader.getLibraries()) {
-            logger.info("Library Annotation: " + library.getAnnotation().size());
-            for (ExpressionDef statement : library.getStatements().getDef()) {
-                logger.info("Statement: " + statement.getName());
-                logger.info("Expression: " + statement.getExpression().toString());
-                logger.info("Context: " + statement.getContext());
-                for (Object annotation : statement.getAnnotation()) {
-                    logger.info("Annotation: " + annotation);
-                }
-                logger.info("Size: " + statement.getAnnotation());
-            }
-        }
+        // for (Library library : libraryLoader.getLibraries()) {
+        //     logger.info("Library Annotation: " + library.getAnnotation().size());
+        //     for (ExpressionDef statement : library.getStatements().getDef()) {
+        //         logger.info("Statement: " + statement.getName());
+        //         logger.info("Expression: " + statement.getExpression().toString());
+        //         logger.info("Context: " + statement.getContext());
+        //         for (Object annotation : statement.getAnnotation()) {
+        //             logger.info("Annotation: " + annotation);
+        //         }
+        //         logger.info("Size: " + statement.getAnnotation());
+        //     }
+        // }
 
         return cqfMeasure;
     }
