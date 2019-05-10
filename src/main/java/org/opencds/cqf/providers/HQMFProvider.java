@@ -99,7 +99,7 @@ public class HQMFProvider {
             put("numerator-identifier", new CodeMapping("NUMER", "Numerator", "numeratorCriteria", "numerator"));
             put("numerator-exclusion-identifier", new CodeMapping("NUMEX", "Numerator Exclusion", "numeratorExclusionCriteria", "numeratorExclusions"));
             put("denominator-identifier", new CodeMapping("DENOM", "Denominator", "denominatorCriteria", "denominator"));
-            put("denominator-exclusions-identifier", new CodeMapping("DENEX", "Denominator Exclusion", "denominatorExclusionCritieria", "denominatorExclusions"));
+            put("denominator-exclusion-identifier", new CodeMapping("DENEX", "Denominator Exclusion", "denominatorExclusionCritieria", "denominatorExclusions"));
             put("denominator-exception-identifier", new CodeMapping("DENEXCEP", "Denominator Exception", "denominatorExceptionCriteria", "denominatorExceptions"));
             // TODO: Figure out what the codes for these are (MPOP, MPOPEX, MPOPEXCEP are
             // guesses)
@@ -358,6 +358,8 @@ public class HQMFProvider {
                 mgpcIdentifier += "-identifier";
             }
 
+            mgpcIdentifier = mgpcIdentifier.replace("exclusions", "exclusion");
+
             if (key.equals(mgpcIdentifier)) {
                 return mgpc;
             }
@@ -462,6 +464,9 @@ public class HQMFProvider {
                 if (!key.contains("identifier")) {
                     key += "-identifier";
                 }
+
+                key = key.replace("exclusions", "exclusion");
+
                 CodeMapping mapping = measurePopulationValueSetMap.get(key);
                 this.addPopulationCriteriaComponentCriteria(readyForComponents, mapping.criteriaName, mapping.criteriaExtension, mapping.code, documentName + ".\"" + mgpc.getCriteria() + "\"", documentGuid);
             }
