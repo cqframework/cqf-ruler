@@ -95,17 +95,17 @@ public class HQMFProvider {
 
     private static Map<String, CodeMapping> measurePopulationValueSetMap = new HashMap<String, CodeMapping>() {
         {
-            put("initial-population-identifier", new CodeMapping("IPOP", "Initial Population", "initialPopulationCriteria", "initialPopulation"));
-            put("numerator-identifier", new CodeMapping("NUMER", "Numerator", "numeratorCriteria", "numerator"));
-            put("numerator-exclusion-identifier", new CodeMapping("NUMEX", "Numerator Exclusion", "numeratorExclusionCriteria", "numeratorExclusions"));
-            put("denominator-identifier", new CodeMapping("DENOM", "Denominator", "denominatorCriteria", "denominator"));
-            put("denominator-exclusion-identifier", new CodeMapping("DENEX", "Denominator Exclusion", "denominatorExclusionCritieria", "denominatorExclusions"));
-            put("denominator-exception-identifier", new CodeMapping("DENEXCEP", "Denominator Exception", "denominatorExceptionCriteria", "denominatorExceptions"));
+            put("initial-population", new CodeMapping("IPOP", "Initial Population", "initialPopulationCriteria", "initialPopulation"));
+            put("numerator", new CodeMapping("NUMER", "Numerator", "numeratorCriteria", "numerator"));
+            put("numerator-exclusion", new CodeMapping("NUMEX", "Numerator Exclusion", "numeratorExclusionCriteria", "numeratorExclusions"));
+            put("denominator", new CodeMapping("DENOM", "Denominator", "denominatorCriteria", "denominator"));
+            put("denominator-exclusion", new CodeMapping("DENEX", "Denominator Exclusion", "denominatorExclusionCritieria", "denominatorExclusions"));
+            put("denominator-exception", new CodeMapping("DENEXCEP", "Denominator Exception", "denominatorExceptionCriteria", "denominatorExceptions"));
             // TODO: Figure out what the codes for these are (MPOP, MPOPEX, MPOPEXCEP are
             // guesses)
-            put("measure-population-identifier", new CodeMapping("MPOP", "Measure Population", "measurePopulationCriteria", "measurePopulation"));
-            put("measure-population-exclusion-identifier", new CodeMapping("MPOPEX", "Measure Population Exclusion", "measurePopulationExclusionCriteria", "measurePopulationExclusions"));
-            put("measure-population-observation-identifier", new CodeMapping("MPOPEXCEP", "Measure Population Observation", "measurePopulationObservationCriteria", "measurePopulationObservations"));
+            put("measure-population", new CodeMapping("MPOP", "Measure Population", "measurePopulationCriteria", "measurePopulation"));
+            put("measure-population-exclusion", new CodeMapping("MPOPEX", "Measure Population Exclusion", "measurePopulationExclusionCriteria", "measurePopulationExclusions"));
+            put("measure-observation", new CodeMapping("MOBS", "Measure Observation", "measureObservationCriteria", "measureObservations"));
         }
     };
 
@@ -136,7 +136,7 @@ public class HQMFProvider {
                 .a("code", "57024-2").a("codeSystem", "2.16.840.1.113883.6.1").elem("displayName")
                 .a("value", "Health Quality Measure Document").up().up().elem("title").text(m.hasTitle() ? m.getTitle() : "None").up()
                 .elem("statusCode").a("code", "COMPLETED").up().elem("setId")
-                .a("root", uniqueId).up().elem("versionNumber").text(m.getVersion()).up()
+                .a("root", uniqueId).up().elem("versionNumber").text(m.hasVersion() ? m.getVersion() : "None").up()
                 .root();
 
         return builder;
@@ -147,7 +147,7 @@ public class HQMFProvider {
         for (DataRequirement d : m.getDataRequirement()) {
 
             // ValueSets
-            if (d.hasCodeFilter()) {
+            if (d.hasCodeFilter() && d.getCodeFilterFirstRep().hasValueSetStringType()) {
                 String valueSet = d.getCodeFilterFirstRep().getValueSetStringType().asStringValue();
                 if (!valueSets.contains(valueSet)) {
                     valueSets.add(valueSet);
@@ -352,14 +352,7 @@ public class HQMFProvider {
 
     private MeasureGroupPopulationComponent GetPopulationForKey(String key, MeasureGroupComponent mgc) {
         for (MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
-            String mgpcIdentifier = mgpc.getIdentifier().getValue();
-            // TODO: why is this different on different measures?
-            if (!mgpcIdentifier.contains("identifier")) {
-                mgpcIdentifier += "-identifier";
-            }
-
-            mgpcIdentifier = mgpcIdentifier.replace("exclusions", "exclusion");
-
+            String mgpcIdentifier = mgpc.getCode().getCoding().get(0).getCode();
             if (key.equals(mgpcIdentifier)) {
                 return mgpc;
             }
@@ -459,14 +452,7 @@ public class HQMFProvider {
         if (m.hasGroup()) {
             MeasureGroupComponent mgc = m.getGroupFirstRep();
             for (MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
-                String key = mgpc.getIdentifier().getValue();
-                // TODO: Why is this different on different measures?
-                if (!key.contains("identifier")) {
-                    key += "-identifier";
-                }
-
-                key = key.replace("exclusions", "exclusion");
-
+                String key = mgpc.getCode().getCoding().get(0).getCode();
                 CodeMapping mapping = measurePopulationValueSetMap.get(key);
                 this.addPopulationCriteriaComponentCriteria(readyForComponents, mapping.criteriaName, mapping.criteriaExtension, mapping.code, documentName + ".\"" + mgpc.getCriteria() + "\"", documentGuid);
             }
