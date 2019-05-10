@@ -352,7 +352,13 @@ public class HQMFProvider {
 
     private MeasureGroupPopulationComponent GetPopulationForKey(String key, MeasureGroupComponent mgc) {
         for (MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
-            if (mgpc.getIdentifier().getValue().equals(key)) {
+            String mgpcIdentifier = mgpc.getIdentifier().getValue();
+            // TODO: why is this different on different measures?
+            if (!mgpcIdentifier.contains("identifier")) {
+                mgpcIdentifier += "-identifier";
+            }
+
+            if (key.equals(mgpcIdentifier)) {
                 return mgpc;
             }
         }
@@ -452,6 +458,10 @@ public class HQMFProvider {
             MeasureGroupComponent mgc = m.getGroupFirstRep();
             for (MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
                 String key = mgpc.getIdentifier().getValue();
+                // TODO: Why is this different on different measures?
+                if (!key.contains("identifier")) {
+                    key += "-identifier";
+                }
                 CodeMapping mapping = measurePopulationValueSetMap.get(key);
                 this.addPopulationCriteriaComponentCriteria(readyForComponents, mapping.criteriaName, mapping.criteriaExtension, mapping.code, documentName + ".\"" + mgpc.getCriteria() + "\"", documentGuid);
             }
