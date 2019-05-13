@@ -17,7 +17,9 @@ import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.elm.tracking.TrackBack;
 import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
 import org.opencds.cqf.config.NonCachingLibraryManager;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
@@ -123,6 +125,13 @@ public class LibraryHelper {
 
             org.hl7.fhir.dstu3.model.Library library = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), id);
             libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
+        }
+
+        for (RelatedArtifact artifact : measure.getRelatedArtifact()) {
+            if (artifact.getType().equals(RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.getResource().hasReference()) {
+                org.hl7.fhir.dstu3.model.Library library = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), artifact.getResource().getReferenceElement().getIdPart());
+                libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
+            }
         }
 
         if (libraryLoader.getLibraries().isEmpty()) {

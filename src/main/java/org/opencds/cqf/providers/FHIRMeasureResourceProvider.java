@@ -1,5 +1,9 @@
 package org.opencds.cqf.providers;
 
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,14 +11,23 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.cqframework.cql.elm.execution.CodeDef;
+import org.cqframework.cql.elm.execution.CodeSystemDef;
 import org.cqframework.cql.elm.execution.ExpressionDef;
+import org.cqframework.cql.elm.execution.FunctionDef;
+import org.cqframework.cql.elm.execution.IncludeDef;
 import org.cqframework.cql.elm.execution.Library;
+import org.cqframework.cql.elm.execution.ValueSetDef;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
+import org.hl7.elm.r1.Library.Statements;
+import org.hl7.fhir.dstu3.model.Annotation;
+import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Composition;
 import org.hl7.fhir.dstu3.model.DataRequirement;
+import org.hl7.fhir.dstu3.model.DataRequirement.DataRequirementCodeFilterComponent;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ListResource;
 import org.hl7.fhir.dstu3.model.Measure;
@@ -26,6 +39,8 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.dstu3.model.Measure.MeasureGroupComponent;
+import org.hl7.fhir.dstu3.model.Measure.MeasureGroupPopulationComponent;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
@@ -93,8 +108,28 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails, @IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
         STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        Narrative n = getMeasureNarrative(theResource.copy(), libraryLoader);
 
+        CqfMeasure cqfMeasure = this.createCqfMeasure(theResource, libraryLoader);
+
+        //Ensure All Related Artifacts for all referenced Libraries
+        if (!cqfMeasure.getRelatedArtifact().isEmpty()) {
+            for (RelatedArtifact relatedArtifact : cqfMeasure.getRelatedArtifact()) {
+                boolean artifactExists = false;
+                //logger.info("Related Artifact: " + relatedArtifact.getUrl());
+                for (RelatedArtifact resourceArtifact : theResource.getRelatedArtifact()) {
+                    if (resourceArtifact.equalsDeep(relatedArtifact)) {
+                        //logger.info("Equals deep true");
+                        artifactExists = true;
+                        break;
+                    }
+                }
+                if (!artifactExists) {
+                    theResource.addRelatedArtifact(relatedArtifact.copy());
+                }
+            }
+        }
+
+        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
         theResource.setText(n.copy());
         //logger.info("Narrative: " + n.getDivAsString());
         return super.update(theRequest, theResource, theId, theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
@@ -104,7 +139,8 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     public Parameters getNarrative(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
         STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        Narrative n = getMeasureNarrative(theResource, libraryLoader);
+        CqfMeasure cqfMeasure = this.createCqfMeasure(theResource, libraryLoader);
+        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
         Parameters p = new Parameters();
         p.addParameter().setValue(new StringType(n.getDivAsString()));
         return p;
@@ -113,11 +149,6 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     private String generateHQMF(Measure theResource, STU3LibraryLoader libraryLoader) {
         CqfMeasure cqfMeasure = this.createCqfMeasure(theResource, libraryLoader);
         return this.hqmfProvider.generateHQMF(cqfMeasure);
-    }
-
-    private Narrative getMeasureNarrative(Measure theResource, STU3LibraryLoader libraryLoader) {
-        CqfMeasure cqfMeasure = this.createCqfMeasure(theResource, libraryLoader);
-        return this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
     }
 
     /*
@@ -492,54 +523,205 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     }
 
     private CqfMeasure createCqfMeasure(Measure measure, STU3LibraryLoader libraryLoader) {
-        org.hl7.fhir.dstu3.model.Library moduleDefinition = this.getDataRequirements(measure, libraryLoader);
-
         CqfMeasure cqfMeasure = new CqfMeasure(measure);
 
-        //Ensure All Related Artifacts for all referenced Libraries
-        if (!moduleDefinition.getRelatedArtifact().isEmpty()) {
-            for (RelatedArtifact relatedArtifact : moduleDefinition.getRelatedArtifact()) {
-                boolean artifactExists = false;
-                //logger.info("Related Artifact: " + relatedArtifact.getUrl());
-                for (RelatedArtifact resourceArtifact : cqfMeasure.getRelatedArtifact()) {
-                    if (resourceArtifact.equalsDeep(relatedArtifact)) {
-                        //logger.info("Equals deep true");
-                        artifactExists = true;
-                        break;
-                    }
-                }
-                if (!artifactExists) {
-                    cqfMeasure.addRelatedArtifact(relatedArtifact.copy());
-                }
-            }
-        }
-                
         //Ensure All Data Requirements for all referenced libraries
+        org.hl7.fhir.dstu3.model.Library moduleDefinition = this.getDataRequirements(measure, libraryLoader);
 
-        Library primaryLibrary = LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader);
-        VersionedIdentifier primaryLibraryIdentifier = primaryLibrary.getIdentifier();
-        org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibraryByName(
-            libraryResourceProvider,
-            primaryLibraryIdentifier.getId(),
-            primaryLibraryIdentifier.getVersion());
-
-        cqfMeasure.setContent(libraryResource.getContent());
+        cqfMeasure.setRelatedArtifact(moduleDefinition.getRelatedArtifact());
         cqfMeasure.setDataRequirement(moduleDefinition.getDataRequirement());
         cqfMeasure.setParameter(moduleDefinition.getParameter());
 
+        ArrayList<MeasureGroupComponent> populationStatements = new ArrayList<>();
+        for (MeasureGroupComponent group : measure.getGroup()) {
+            populationStatements.add(group.copy());
+        }
+        ArrayList<MeasureGroupPopulationComponent> definitionStatements = new ArrayList<>();
+        ArrayList<MeasureGroupPopulationComponent> functionStatements = new ArrayList<>();
+        ArrayList<StringType> terminology = new ArrayList<>();
+        ArrayList<StringType> codes = new ArrayList<>();
+        ArrayList<StringType> codeSystems = new ArrayList<>();
+        ArrayList<StringType> valueSets = new ArrayList<>();
+        ArrayList<StringType> dataCriteria = new ArrayList<>();
+
+        Library primaryLibrary = LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader);
+        String primaryLibraryCql = "";
 
         for (Library library : libraryLoader.getLibraries()) {
-            logger.info("Library Annotation: " + library.getAnnotation().size());
-            for (ExpressionDef statement : library.getStatements().getDef()) {
-                logger.info("Statement: " + statement.getName());
-                logger.info("Expression: " + statement.getExpression().toString());
-                logger.info("Context: " + statement.getContext());
-                for (Object annotation : statement.getAnnotation()) {
-                    logger.info("Annotation: " + annotation);
+            Boolean isPrimaryLibrary = library.getIdentifier().getId().equalsIgnoreCase(primaryLibrary.getIdentifier().getId());
+            String libraryNamespace = "";
+            for (IncludeDef include : primaryLibrary.getIncludes().getDef()) {
+                if (library.getIdentifier().getId().equalsIgnoreCase(include.getPath())) {
+                    libraryNamespace = include.getLocalIdentifier() + ".";
                 }
-                logger.info("Size: " + statement.getAnnotation());
+            }
+            VersionedIdentifier libraryIdentifier = library.getIdentifier();
+            org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibraryByName(
+                libraryResourceProvider,
+                libraryIdentifier.getId(),
+                libraryIdentifier.getVersion());
+
+            String cql = "";
+            for (Attachment attachment : libraryResource.getContent()) {
+                cqfMeasure.addContent(attachment);
+                if (attachment.getContentType().equalsIgnoreCase("text/cql")) {
+                    cql = new String(attachment.getData());
+                }
+            }
+            if (isPrimaryLibrary) {
+                primaryLibraryCql = cql;
+            }
+            String[] cqlLines = cql.replaceAll("[\r]", "").split("[\n]");
+    
+            for (ExpressionDef statement : library.getStatements().getDef()) {
+                String[] location = statement.getLocator().split("-");
+                String statementText = "";
+                String signature = "";
+                int start = Integer.parseInt(location[0].split(":")[0]);
+                int end = Integer.parseInt(location[1].split(":")[0]);
+                for (int i = start - 1; i < end; i++) {
+                    if (cqlLines[i].contains("define function \"" + statement.getName() + "\"(")) {
+                        signature = cqlLines[i].substring(cqlLines[i].indexOf("("), cqlLines[i].indexOf(")") + 1);
+                    }
+                    if (!cqlLines[i].contains("define \"" + statement.getName() + "\":") && !cqlLines[i].contains("define function \"" + statement.getName() + "\"(")) {
+                        statementText = statementText.concat((statementText.length() > 0 ? "\r\n" : "") + cqlLines[i]);
+                    }
+                }
+                if (statementText.startsWith("context")) {
+                    continue;
+                }
+                MeasureGroupPopulationComponent def = new MeasureGroupPopulationComponent();
+                def.setName(libraryNamespace + statement.getName() + signature);
+                def.setCriteria(statementText);
+                //TODO: Only statements that are directly referenced in the primary library cql will be included.
+                if (statement.getClass() == FunctionDef.class) {
+                    if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
+                        functionStatements.add(def);
+                    }
+                }
+                else {
+                    if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
+                        definitionStatements.add(def);
+                    }
+                }
+
+                for (MeasureGroupComponent group : populationStatements) {
+                    for (MeasureGroupPopulationComponent population : group.getPopulation()) {
+                        if (population.getCriteria().equalsIgnoreCase(statement.getName())) {
+                            population.setName(statement.getName());
+                            population.setCriteria(statementText);
+                        }
+                    }
+                }
+            }
+
+            for (CodeSystemDef codeSystem : library.getCodeSystems().getDef()) {
+                StringType term = new StringType();
+                String id = codeSystem.getId().replace("urn:oid:", "");
+                String name = codeSystem.getName().split(":")[0];
+                String version = codeSystem.getName().split(":")[1];
+                term.setValueAsString("codesystem \"" + name + "\" using \"" + id + " version " + version);
+                Boolean exists = false;
+                for (StringType string : codeSystems) {
+                    if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
+                        exists = true;
+                    }
+                }
+                if (!exists) {
+                    codeSystems.add(term);
+                }
+            }
+
+            for (CodeDef code : library.getCodes().getDef()) {
+                StringType term = new StringType();
+                String id = code.getId();
+                String name = code.getName();
+                String[] codeSystem = code.getCodeSystem().getName().split(":");
+                term.setValueAsString("code \"" + name + "\" using \"" + codeSystem[0] + " version " + codeSystem[1] + " Code (" + id + ")");
+                Boolean exists = false;
+                for (StringType string : codes) {
+                    if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
+                        exists = true;
+                    }
+                }
+                if (!exists) {
+                    codes.add(term);
+                }
+            }
+
+            for (ValueSetDef valueSet : library.getValueSets().getDef()) {
+                StringType term = new StringType();
+                String id = valueSet.getId().replace("urn:oid:", "");
+                String name = valueSet.getName();
+                term.setValueAsString("valueset \"" + name + "\" using \"" + id + "\"");
+                Boolean exists = false;
+                for (StringType string : valueSets) {
+                    if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
+                        exists = true;
+                    }
+                }
+                if (!exists) {
+                    valueSets.add(term);
+                }
+
+                for (DataRequirement data : cqfMeasure.getDataRequirement()) {
+                    String type = data.getType();
+                    // .split("[A-Z]");
+                    // if (type.contains("Negative")) {
+                    //     type = 
+                    // }
+                    for (DataRequirementCodeFilterComponent filter : data.getCodeFilter()) {
+                        if (filter.hasValueSetStringType() && filter.getValueSetStringType().getValueAsString().equalsIgnoreCase(valueSet.getId())) {
+                            StringType dataElement = new StringType();
+                            dataElement.setValueAsString("\"" + type + ": " + name + "\" using \"" + name + " (" + id + ")");
+                            exists = false;
+                            for (StringType string : dataCriteria) {
+                                if (string.getValueAsString().equalsIgnoreCase(dataElement.getValueAsString())) {
+                                    exists = true;
+                                }
+                            }
+                            if (!exists) {
+                                dataCriteria.add(dataElement);
+                            }
+                        }
+                    }
+                }
             }
         }
+
+        Comparator stringTypeComparator = new Comparator<StringType>() {
+            @Override
+            public int compare(StringType item, StringType t1) {
+                String s1 = item.asStringValue();
+                String s2 = t1.asStringValue();
+                return s1.compareToIgnoreCase(s2);
+            }
+        };
+        Comparator populationComparator = new Comparator<MeasureGroupPopulationComponent>() {
+            @Override
+            public int compare(MeasureGroupPopulationComponent item, MeasureGroupPopulationComponent t1) {
+                String s1 = item.getName();
+                String s2 = t1.getName();
+                return s1.compareToIgnoreCase(s2);
+            }
+        };
+
+        Collections.sort(definitionStatements, populationComparator);
+        Collections.sort(functionStatements, populationComparator);
+        Collections.sort(codeSystems, stringTypeComparator);
+        Collections.sort(codes, stringTypeComparator);
+        Collections.sort(valueSets, stringTypeComparator);
+        Collections.sort(dataCriteria, stringTypeComparator);
+
+        terminology.addAll(codeSystems);
+        terminology.addAll(codes);
+        terminology.addAll(valueSets);
+        
+        cqfMeasure.setPopulationStatements(populationStatements);
+        cqfMeasure.setDefinitionStatements(definitionStatements);
+        cqfMeasure.setFunctionStatements(functionStatements);
+        cqfMeasure.setTerminology(terminology);
+        cqfMeasure.setDataCriteria(dataCriteria);
 
         return cqfMeasure;
     }

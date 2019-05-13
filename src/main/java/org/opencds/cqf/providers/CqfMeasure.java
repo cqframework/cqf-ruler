@@ -16,6 +16,7 @@ import org.hl7.fhir.dstu3.model.ParameterDefinition;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.UsageContext;
 
 import ca.uhn.fhir.model.api.annotation.Child;
@@ -24,18 +25,37 @@ import ca.uhn.fhir.model.api.annotation.Description;
 public class CqfMeasure extends Measure {
     private static final long serialVersionUID = -1297192817969868337L;
 
-    @Child(name = "parameter", type = {ParameterDefinition.class}, order=11, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Child(name = "parameter", type = {ParameterDefinition.class}, order=26, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="Parameters defined by the library", formalDefinition="The parameter element defines parameters used by the library." )
     protected List<ParameterDefinition> parameter;
 
-    @Child(name = "dataRequirement", type = {DataRequirement.class}, order=12, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Child(name = "dataRequirement", type = {DataRequirement.class}, order=27, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="What data is referenced by this library", formalDefinition="Describes a set of data that must be provided in order to be able to successfully perform the computations defined by the library." )
     protected List<DataRequirement> dataRequirement;
 
-    @Child(name = "content", type = {Attachment.class}, order=13, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Child(name = "content", type = {Attachment.class}, order=28, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="Contents of the library, either embedded or referenced", formalDefinition="The content of the library as an Attachment. The content may be a reference to a url, or may be directly embedded as a base-64 string. Either way, the contentType of the attachment determines how to interpret the content." )
     protected List<Attachment> content;
+
+    @Child(name = "populationStatements", type = {}, order=29, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Description(shortDefinition="Population Statements of the library", formalDefinition="The populations of the library as a MeasureGroupComponent." )
+    protected List<MeasureGroupComponent> populationStatements;
     
+    @Child(name = "definitionStatements", type = {}, order=30, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Description(shortDefinition="Defintion Statements of the library", formalDefinition="The definitions of the library as a MeasureGroupPopulationComponent." )
+    protected List<MeasureGroupPopulationComponent> definitionStatements;
+
+    @Child(name = "functionStatements", type = {}, order=30, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Description(shortDefinition="Function Statements of the library", formalDefinition="The functions of the library as a MeasureGroupPopulationComponent." )
+    protected List<MeasureGroupPopulationComponent> functionStatements;
+
+    @Child(name = "terminology", type = {StringType.class}, order=2, min=0, max=1, modifier=false, summary=false)
+    @Description(shortDefinition="Terminology of the library", formalDefinition="The terminology referenced in the library" )
+    protected List<StringType> terminology;
+
+    @Child(name = "dataCriteria", type = {StringType.class}, order=2, min=0, max=1, modifier=false, summary=false)
+    @Description(shortDefinition="Data Elements of the library", formalDefinition="The data elements referenced in the library" )
+    protected List<StringType> dataCriteria;
 
     /**
      * @return {@link #parameter} (The parameter element defines parameters used by the library.)
@@ -194,6 +214,271 @@ public class CqfMeasure extends Measure {
             addContent();
         }
         return getContent().get(0);
+    }
+
+    /**
+     * @return {@link #populationStatements} (The Population Statements of the library as an Attachment. The content may be a reference to a url, or may be directly embedded as a base-64 string. Either way, the contentType of the attachment determines how to interpret the content.)
+     */
+    public List<MeasureGroupComponent> getPopulationStatements() { 
+        if (this.populationStatements == null)
+            this.populationStatements = new ArrayList<MeasureGroupComponent>();
+        return this.populationStatements;
+    }
+
+    /**
+     * @return Returns a reference to <code>this</code> for easy method chaining
+     */
+    public CqfMeasure setPopulationStatements(List<MeasureGroupComponent> thePopulationStatements) { 
+        this.populationStatements = thePopulationStatements;
+        return this;
+    }
+
+    public boolean hasPopulationStatements() { 
+        if (this.populationStatements == null)
+            return false;
+        for (MeasureGroupComponent item : this.populationStatements)
+            if (!item.isEmpty())
+            return true;
+        return false;
+    }
+
+    public MeasureGroupComponent addPopulationStatements() { //3
+        MeasureGroupComponent t = new MeasureGroupComponent();
+        if (this.populationStatements == null)
+            this.populationStatements = new ArrayList<MeasureGroupComponent>();
+        this.populationStatements.add(t);
+        return t;
+    }
+
+    public CqfMeasure addPopulationStatements(MeasureGroupComponent t) { //3
+        if (t == null)
+            return this;
+        if (this.populationStatements == null)
+            this.populationStatements = new ArrayList<MeasureGroupComponent>();
+        this.populationStatements.add(t);
+        return this;
+    }
+
+    /**
+     * @return The first repetition of repeating field {@link #populationStatements}, creating it if it does not already exist
+     */
+    public MeasureGroupComponent getPopulationStatementsFirstRep() { 
+        if (getPopulationStatements().isEmpty()) {
+            addPopulationStatements();
+        }
+        return getPopulationStatements().get(0);
+    }
+
+    /**
+     * @return {@link #definitionStatements} (The Definition Statements of the library as a MeasureGroupPopulationComponent.)
+     */
+    public List<MeasureGroupPopulationComponent> getDefinitionStatements() { 
+        if (this.definitionStatements == null)
+            this.definitionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+        return this.definitionStatements;
+    }
+
+    /**
+     * @return Returns a reference to <code>this</code> for easy method chaining
+     */
+    public CqfMeasure setDefinitionStatements(List<MeasureGroupPopulationComponent> theDefinitionStatements) { 
+        this.definitionStatements = theDefinitionStatements;
+        return this;
+    }
+
+    public boolean hasDefinitionStatements() { 
+        if (this.definitionStatements == null)
+            return false;
+        for (MeasureGroupPopulationComponent item : this.definitionStatements)
+            if (!item.isEmpty())
+            return true;
+        return false;
+    }
+
+    public MeasureGroupPopulationComponent addDefinitionStatements() { //3
+        MeasureGroupPopulationComponent t = new MeasureGroupPopulationComponent();
+        if (this.definitionStatements == null)
+            this.definitionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+        this.definitionStatements.add(t);
+        return t;
+    }
+
+    public CqfMeasure addDefinitionStatements(MeasureGroupPopulationComponent t) { //3
+        if (t == null)
+            return this;
+        if (this.definitionStatements == null)
+            this.definitionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+        this.definitionStatements.add(t);
+        return this;
+    }
+
+    /**
+     * @return The first repetition of repeating field {@link #definitionStatements}, creating it if it does not already exist
+     */
+    public MeasureGroupPopulationComponent getDefinitionStatementsFirstRep() { 
+        if (getDefinitionStatements().isEmpty()) {
+            addDefinitionStatements();
+        }
+        return getDefinitionStatements().get(0);
+    }
+
+    /**
+     * @return {@link #functionStatements} (The Function Statements of the library as a MeasureGroupPopulationComponent.)
+     */
+    public List<MeasureGroupPopulationComponent> getFunctionStatements() { 
+        if (this.functionStatements == null)
+            this.functionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+        return this.functionStatements;
+    }
+
+    /**
+     * @return Returns a reference to <code>this</code> for easy method chaining
+     */
+    public CqfMeasure setFunctionStatements(List<MeasureGroupPopulationComponent> theFunctionStatements) { 
+        this.functionStatements = theFunctionStatements;
+        return this;
+    }
+
+    public boolean hasFunctionStatements() { 
+        if (this.functionStatements == null)
+            return false;
+        for (MeasureGroupPopulationComponent item : this.functionStatements)
+            if (!item.isEmpty())
+            return true;
+        return false;
+    }
+
+    public MeasureGroupPopulationComponent addFunctionStatements() { //3
+        MeasureGroupPopulationComponent t = new MeasureGroupPopulationComponent();
+        if (this.functionStatements == null)
+            this.functionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+        this.functionStatements.add(t);
+        return t;
+    }
+
+    public CqfMeasure addFunctionStatements(MeasureGroupPopulationComponent t) { //3
+        if (t == null)
+            return this;
+        if (this.functionStatements == null)
+            this.functionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+        this.functionStatements.add(t);
+        return this;
+    }
+
+    /**
+     * @return The first repetition of repeating field {@link #functionStatements}, creating it if it does not already exist
+     */
+    public MeasureGroupPopulationComponent getFunctionStatementsFirstRep() { 
+        if (getFunctionStatements().isEmpty()) {
+            addFunctionStatements();
+        }
+        return getFunctionStatements().get(0);
+    }
+
+    /**
+     * @return {@link #terminology} (The terminology referenced in the library.)
+     */
+    public List<StringType> getTerminology() { 
+        if (this.terminology == null)
+            this.terminology = new ArrayList<StringType>();
+        return this.terminology;
+    }
+
+    /**
+     * @return Returns a reference to <code>this</code> for easy method chaining
+     */
+    public CqfMeasure setTerminology(List<StringType> theTerminology) { 
+        this.terminology = theTerminology;
+        return this;
+    }
+
+    public boolean hasTerminology() { 
+        if (this.terminology == null)
+            return false;
+        for (StringType item : this.terminology)
+            if (!item.isEmpty())
+            return true;
+        return false;
+    }
+
+    public StringType addTerminology() { //3
+        StringType t = new StringType();
+        if (this.terminology == null)
+            this.terminology = new ArrayList<StringType>();
+        this.terminology.add(t);
+        return t;
+    }
+
+    public CqfMeasure addTerminology(StringType t) { //3
+        if (t == null)
+            return this;
+        if (this.terminology == null)
+            this.terminology = new ArrayList<StringType>();
+        this.terminology.add(t);
+        return this;
+    }
+
+    /**
+     * @return The first repetition of repeating field {@link #terminology}, creating it if it does not already exist
+     */
+    public StringType getTerminologyFirstRep() { 
+        if (getTerminology().isEmpty()) {
+            addTerminology();
+        }
+        return getTerminology().get(0);
+    }
+
+    /**
+     * @return {@link #dataCriteria} (The data elements referenced in the library.)
+     */
+    public List<StringType> getDataCriteria() { 
+        if (this.dataCriteria == null)
+            this.dataCriteria = new ArrayList<StringType>();
+        return this.dataCriteria;
+    }
+
+    /**
+     * @return Returns a reference to <code>this</code> for easy method chaining
+     */
+    public CqfMeasure setDataCriteria(List<StringType> theDataCriteria) { 
+        this.dataCriteria = theDataCriteria;
+        return this;
+    }
+
+    public boolean hasDataCriteria() { 
+        if (this.dataCriteria == null)
+            return false;
+        for (StringType item : this.dataCriteria)
+            if (!item.isEmpty())
+            return true;
+        return false;
+    }
+
+    public StringType addDataCriteria() { //3
+        StringType t = new StringType();
+        if (this.dataCriteria == null)
+            this.dataCriteria = new ArrayList<StringType>();
+        this.dataCriteria.add(t);
+        return t;
+    }
+
+    public CqfMeasure addDataCriteria(StringType t) { //3
+        if (t == null)
+            return this;
+        if (this.dataCriteria == null)
+            this.dataCriteria = new ArrayList<StringType>();
+        this.dataCriteria.add(t);
+        return this;
+    }
+
+    /**
+     * @return The first repetition of repeating field {@link #dataCriteria}, creating it if it does not already exist
+     */
+    public StringType getDataCriteriaFirstRep() { 
+        if (getDataCriteria().isEmpty()) {
+            addDataCriteria();
+        }
+        return getDataCriteria().get(0);
     }
 
     public CqfMeasure(Measure measure) {
