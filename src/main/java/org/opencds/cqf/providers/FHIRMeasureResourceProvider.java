@@ -623,73 +623,102 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                 }
             }
 
-            for (CodeSystemDef codeSystem : library.getCodeSystems().getDef()) {
-                StringType term = new StringType();
-                String id = codeSystem.getId().replace("urn:oid:", "");
-                String name = codeSystem.getName().split(":")[0];
-                String version = codeSystem.getName().split(":")[1];
-                term.setValueAsString("codesystem \"" + name + "\" using \"" + id + " version " + version);
-                Boolean exists = false;
-                for (StringType string : codeSystems) {
-                    if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
-                        exists = true;
+            if (library.getCodeSystems() != null && library.getCodeSystems().getDef() != null) {
+                for (CodeSystemDef codeSystem : library.getCodeSystems().getDef()) {
+                    StringType term = new StringType();
+                    String id = codeSystem.getId().replace("urn:oid:", "");
+                    String[] codeSystemComponents = codeSystem.getName().split(":");
+                    String name = codeSystemComponents[0];
+                    String version = null;
+                        
+                    if (codeSystemComponents.length > 1) {
+                        version = codeSystemComponents[1];
                     }
-                }
-                if (!exists) {
-                    codeSystems.add(term);
+
+                    String codeSystemString = "codesystem \"" + name + "\" using \"" + id;
+                    if (version != null) {
+                        codeSystemString += " version " + version;
+                    }
+                    term.setValueAsString(codeSystemString);
+                    Boolean exists = false;
+                    for (StringType string : codeSystems) {
+                        if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
+                            exists = true;
+                        }
+                    }
+                    if (!exists) {
+                        codeSystems.add(term);
+                    }
                 }
             }
 
-            for (CodeDef code : library.getCodes().getDef()) {
-                StringType term = new StringType();
-                String id = code.getId();
-                String name = code.getName();
-                String[] codeSystem = code.getCodeSystem().getName().split(":");
-                term.setValueAsString("code \"" + name + "\" using \"" + codeSystem[0] + " version " + codeSystem[1] + " Code (" + id + ")");
-                Boolean exists = false;
-                for (StringType string : codes) {
-                    if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
-                        exists = true;
+            if (library.getCodes() != null && library.getCodes().getDef() != null) {
+                for (CodeDef code : library.getCodes().getDef()) {
+                    StringType term = new StringType();
+                    String id = code.getId();
+                    String name = code.getName();
+                    String[] codeSystemComponents = code.getCodeSystem().getName().split(":");
+                    String codeSystemName = codeSystemComponents[0];
+                    String codeSystemVersion = null;
+                        
+                    if (codeSystemComponents.length > 1) {
+                        codeSystemVersion = codeSystemComponents[1];
                     }
-                }
-                if (!exists) {
-                    codes.add(term);
+
+                    String codeString = "code \"" + name + "\" using \"" + codeSystemName;
+                    if (codeSystemVersion != null) {
+                        codeString += " version " + codeSystemVersion;
+                    }
+
+                    codeString += " Code (" + id + ")";
+                    term.setValueAsString(codeString);
+                    Boolean exists = false;
+                    for (StringType string : codes) {
+                        if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
+                            exists = true;
+                        }
+                    }
+                    if (!exists) {
+                        codes.add(term);
+                    }
                 }
             }
 
-            for (ValueSetDef valueSet : library.getValueSets().getDef()) {
-                StringType term = new StringType();
-                String id = valueSet.getId().replace("urn:oid:", "");
-                String name = valueSet.getName();
-                term.setValueAsString("valueset \"" + name + "\" using \"" + id + "\"");
-                Boolean exists = false;
-                for (StringType string : valueSets) {
-                    if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
-                        exists = true;
+            if (library.getValueSets() != null && library.getValueSets().getDef() != null) {
+                for (ValueSetDef valueSet : library.getValueSets().getDef()) {
+                    StringType term = new StringType();
+                    String id = valueSet.getId().replace("urn:oid:", "");
+                    String name = valueSet.getName();
+                    term.setValueAsString("valueset \"" + name + "\" using \"" + id + "\"");
+                    Boolean exists = false;
+                    for (StringType string : valueSets) {
+                        if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
+                            exists = true;
+                        }
                     }
-                }
-                if (!exists) {
-                    valueSets.add(term);
-                }
+                    if (!exists) {
+                        valueSets.add(term);
+                    }
 
-                for (DataRequirement data : cqfMeasure.getDataRequirement()) {
-                    String type = data.getType();
-                    // .split("[A-Z]");
-                    // if (type.contains("Negative")) {
-                    //     type = 
-                    // }
-                    for (DataRequirementCodeFilterComponent filter : data.getCodeFilter()) {
-                        if (filter.hasValueSetStringType() && filter.getValueSetStringType().getValueAsString().equalsIgnoreCase(valueSet.getId())) {
-                            StringType dataElement = new StringType();
-                            dataElement.setValueAsString("\"" + type + ": " + name + "\" using \"" + name + " (" + id + ")");
-                            exists = false;
-                            for (StringType string : dataCriteria) {
-                                if (string.getValueAsString().equalsIgnoreCase(dataElement.getValueAsString())) {
-                                    exists = true;
+                    for (DataRequirement data : cqfMeasure.getDataRequirement()) {
+                        String type = data.getType();
+                        // .split("[A-Z]");
+                        // if (type.contains("Negative")) {
+                        //     type = 
+                        // }
+                        for (DataRequirementCodeFilterComponent filter : data.getCodeFilter()) {
+                            if (filter.hasValueSetStringType() && filter.getValueSetStringType().getValueAsString().equalsIgnoreCase(valueSet.getId())) {
+                                StringType dataElement = new StringType();
+                                dataElement.setValueAsString("\"" + type + ": " + name + "\" using \"" + name + " (" + id + ")");
+                                exists = false;
+                                for (StringType string : dataCriteria) {
+                                    if (string.getValueAsString().equalsIgnoreCase(dataElement.getValueAsString())) {
+                                        exists = true;
+                                    }
                                 }
-                            }
-                            if (!exists) {
-                                dataCriteria.add(dataElement);
+                                if (!exists) {
+                                    dataCriteria.add(dataElement);
+                                }
                             }
                         }
                     }
