@@ -41,6 +41,7 @@ import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupPopulationComponent;
+import org.hl7.fhir.dstu3.model.Measure.MeasureSupplementalDataComponent;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
@@ -538,6 +539,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         }
         ArrayList<MeasureGroupPopulationComponent> definitionStatements = new ArrayList<>();
         ArrayList<MeasureGroupPopulationComponent> functionStatements = new ArrayList<>();
+        ArrayList<MeasureGroupPopulationComponent> supplementalDataElements = new ArrayList<>();
         ArrayList<StringType> terminology = new ArrayList<>();
         ArrayList<StringType> codes = new ArrayList<>();
         ArrayList<StringType> codeSystems = new ArrayList<>();
@@ -611,6 +613,12 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                             population.setName(statement.getName());
                             population.setCriteria(statementText);
                         }
+                    }
+                }
+
+                for (MeasureSupplementalDataComponent dataComponent : cqfMeasure.getSupplementalData()) {
+                    if (dataComponent.getCriteria().equalsIgnoreCase(def.getName())) {
+                        supplementalDataElements.add(def);
                     }
                 }
             }
@@ -708,6 +716,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
         Collections.sort(definitionStatements, populationComparator);
         Collections.sort(functionStatements, populationComparator);
+        Collections.sort(supplementalDataElements, populationComparator);
         Collections.sort(codeSystems, stringTypeComparator);
         Collections.sort(codes, stringTypeComparator);
         Collections.sort(valueSets, stringTypeComparator);
@@ -720,6 +729,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         cqfMeasure.setPopulationStatements(populationStatements);
         cqfMeasure.setDefinitionStatements(definitionStatements);
         cqfMeasure.setFunctionStatements(functionStatements);
+        cqfMeasure.setSupplementalDataElements(supplementalDataElements);
         cqfMeasure.setTerminology(terminology);
         cqfMeasure.setDataCriteria(dataCriteria);
 

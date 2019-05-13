@@ -49,6 +49,10 @@ public class CqfMeasure extends Measure {
     @Description(shortDefinition="Function Statements of the library", formalDefinition="The functions of the library as a MeasureGroupPopulationComponent." )
     protected List<MeasureGroupPopulationComponent> functionStatements;
 
+    @Child(name = "supplementalDataElements", type = {}, order=30, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Description(shortDefinition="Supplemental Data Elements of the library", formalDefinition="The supplemental data elements of the library as a MeasureGroupPopulationComponent." )
+    protected List<MeasureGroupPopulationComponent> supplementalDataElements;
+
     @Child(name = "terminology", type = {StringType.class}, order=2, min=0, max=1, modifier=false, summary=false)
     @Description(shortDefinition="Terminology of the library", formalDefinition="The terminology referenced in the library" )
     protected List<StringType> terminology;
@@ -373,6 +377,59 @@ public class CqfMeasure extends Measure {
             addFunctionStatements();
         }
         return getFunctionStatements().get(0);
+    }
+
+    /**
+     * @return {@link #supplementalSupplementalDataElements} (The supplemenetal data elements referenced in the library.)
+     */
+    public List<MeasureGroupPopulationComponent> getSupplementalDataElements() { 
+        if (this.supplementalDataElements == null)
+            this.supplementalDataElements = new ArrayList<MeasureGroupPopulationComponent>();
+        return this.supplementalDataElements;
+    }
+
+    /**
+     * @return Returns a reference to <code>this</code> for easy method chaining
+     */
+    public CqfMeasure setSupplementalDataElements(List<MeasureGroupPopulationComponent> theSupplementalDataElements) { 
+        this.supplementalDataElements = theSupplementalDataElements;
+        return this;
+    }
+
+    public boolean hasSupplementalDataElements() { 
+        if (this.supplementalDataElements == null)
+            return false;
+        for (MeasureGroupPopulationComponent item : this.supplementalDataElements)
+            if (!item.isEmpty())
+            return true;
+        return false;
+    }
+
+    public MeasureGroupPopulationComponent addSupplementalDataElements() { //3
+        MeasureGroupPopulationComponent t = new MeasureGroupPopulationComponent();
+        if (this.supplementalDataElements == null)
+            this.supplementalDataElements = new ArrayList<MeasureGroupPopulationComponent>();
+        this.supplementalDataElements.add(t);
+        return t;
+    }
+
+    public CqfMeasure addSupplementalDataElements(MeasureGroupPopulationComponent t) { //3
+        if (t == null)
+            return this;
+        if (this.supplementalDataElements == null)
+            this.supplementalDataElements = new ArrayList<MeasureGroupPopulationComponent>();
+        this.supplementalDataElements.add(t);
+        return this;
+    }
+
+    /**
+     * @return The first repetition of repeating field {@link #supplementalSupplementalDataElements}, creating it if it does not already exist
+     */
+    public MeasureGroupPopulationComponent getSupplementalDataElementsFirstRep() { 
+        if (getSupplementalDataElements().isEmpty()) {
+            addSupplementalDataElements();
+        }
+        return getSupplementalDataElements().get(0);
     }
 
     /**

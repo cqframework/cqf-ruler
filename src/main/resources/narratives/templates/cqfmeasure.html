@@ -392,12 +392,12 @@
     </ul>
   </div>
   <h3><a name="d1e767" href="#toc">Supplemental Data Elements</a></h3>
-  <div th:each="data, iter : ${resource.supplementalData}">
+  <div th:each="data, iter : ${resource.supplementalDataElements}">
    <ul style="list-style:none;padding-left: 25px;">
     <li class="list-unstyled">
      <div class="treeview hover p-l-10">
-      <input type="checkbox" th:id="${data.identifier.value}" />
-      <label th:for="${data.identifier.value}" class="list-header"><strong th:text="${data.identifier.value}"></strong></label>
+      <input type="checkbox" th:id="${data.name}" />
+      <label th:for="${data.name}" class="list-header"><strong th:text="${data.name}"></strong></label>
       <ul class="code" style="margin-right: 20%; opacity: 1;">
        <li class="list-unstyled">
         <div>
