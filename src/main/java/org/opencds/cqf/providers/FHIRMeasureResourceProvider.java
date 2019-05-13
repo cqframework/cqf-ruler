@@ -529,7 +529,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         //Ensure All Data Requirements for all referenced libraries
         org.hl7.fhir.dstu3.model.Library moduleDefinition = this.getDataRequirements(measure, libraryLoader);
 
-        cqfMeasure.setRelatedArtifact(moduleDefinition.getRelatedArtifact());
+        moduleDefinition.getRelatedArtifact().forEach(x -> cqfMeasure.addRelatedArtifact(x));
         cqfMeasure.setDataRequirement(moduleDefinition.getDataRequirement());
         cqfMeasure.setParameter(moduleDefinition.getParameter());
 

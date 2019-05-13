@@ -152,14 +152,18 @@
             <td style="width:80%" colspan="3" th:narrative="${resource.improvementNotation}"></td>
         </tr>
         <th:block th:each="related, iter : ${resource.relatedArtifact}" >
-            <tr th:if="${related.type.toCode() == 'citation'}" style="vertical-align: top;">
+            <tr th:if="${related.type.toCode() == 'citation' && related.hasCitation()}" style="vertical-align: top;">
                 <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Reference</span></td>
-                <td style="width:80%" colspan="3" th:narrative="${related}"></td>
+                <td style="width:80%" colspan="3">
+                    <div style="width:660px;overflow-x:hidden;overflow-y:auto">
+                        <pre th:text="${related.citation}"></pre>
+                    </div>
+                </td>
             </tr>
         </th:block>
         <tr th:if="${resource.hasDefinition()}" >
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Definition</span></td>
-            <td style="width:80%" colspan="3"  th:narrative="${resource.definition}"></td>
+            <td style="width:80%" colspan="3" th:narrative="${resource.definition}"></td>
         </tr>
         <tr th:if="${resource.hasGuidance()}">
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Guidance</span></td>
