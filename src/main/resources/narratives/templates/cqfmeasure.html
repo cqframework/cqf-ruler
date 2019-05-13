@@ -386,7 +386,7 @@
   <h3><a name="d1e555" href="#toc">Terminology</a></h3>
   <div>
    <ul style="padding-left: 50px;">
-    <li th:each="terms, iter : ${resource.terminology}" style="width:80%" th:text="${terms}"></li>
+    <li th:each="terms, iter : ${resource.terminology}" style="width:80%" th:text="${terms.getDefinition()}"></li>
    </ul>
   </div>
   <h3><a name="d1e647" href="#toc">Data Criteria (QDM Data Elements)</a></h3>

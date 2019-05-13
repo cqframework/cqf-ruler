@@ -3,6 +3,7 @@ package org.opencds.cqf.providers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.boot.model.IdGeneratorStrategyInterpreter.GeneratorNameDeterminationContext;
 import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.ContactDetail;
@@ -19,6 +20,7 @@ import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.UsageContext;
 
+import ca.uhn.fhir.model.api.IElement;
 import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.Description;
 
@@ -45,19 +47,19 @@ public class CqfMeasure extends Measure {
     @Description(shortDefinition="Defintion Statements of the library", formalDefinition="The definitions of the library as a MeasureGroupPopulationComponent." )
     protected List<MeasureGroupPopulationComponent> definitionStatements;
 
-    @Child(name = "functionStatements", type = {}, order=30, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Child(name = "functionStatements", type = {}, order=31, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="Function Statements of the library", formalDefinition="The functions of the library as a MeasureGroupPopulationComponent." )
     protected List<MeasureGroupPopulationComponent> functionStatements;
 
-    @Child(name = "supplementalDataElements", type = {}, order=30, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Child(name = "supplementalDataElements", type = {}, order=32, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="Supplemental Data Elements of the library", formalDefinition="The supplemental data elements of the library as a MeasureGroupPopulationComponent." )
     protected List<MeasureGroupPopulationComponent> supplementalDataElements;
 
-    @Child(name = "terminology", type = {StringType.class}, order=2, min=0, max=1, modifier=false, summary=false)
+    @Child(name = "terminology", type = {CqfMeasure.TerminologyRef.class}, order=33, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="Terminology of the library", formalDefinition="The terminology referenced in the library" )
-    protected List<StringType> terminology;
+    protected List<CqfMeasure.TerminologyRef> terminology;
 
-    @Child(name = "dataCriteria", type = {StringType.class}, order=2, min=0, max=1, modifier=false, summary=false)
+    @Child(name = "dataCriteria", type = {StringType.class}, order=34, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="Data Elements of the library", formalDefinition="The data elements referenced in the library" )
     protected List<StringType> dataCriteria;
 
@@ -435,42 +437,37 @@ public class CqfMeasure extends Measure {
     /**
      * @return {@link #terminology} (The terminology referenced in the library.)
      */
-    public List<StringType> getTerminology() { 
+    public List<CqfMeasure.TerminologyRef> getTerminology() { 
         if (this.terminology == null)
-            this.terminology = new ArrayList<StringType>();
+            this.terminology = new ArrayList<CqfMeasure.TerminologyRef>();
         return this.terminology;
     }
 
     /**
      * @return Returns a reference to <code>this</code> for easy method chaining
      */
-    public CqfMeasure setTerminology(List<StringType> theTerminology) { 
+    public CqfMeasure setTerminology(List<CqfMeasure.TerminologyRef> theTerminology) { 
         this.terminology = theTerminology;
         return this;
     }
 
     public boolean hasTerminology() { 
-        if (this.terminology == null)
-            return false;
-        for (StringType item : this.terminology)
-            if (!item.isEmpty())
-            return true;
-        return false;
+        return (this.terminology != null && this.terminology.size() > 0);
     }
 
-    public StringType addTerminology() { //3
-        StringType t = new StringType();
+    public CqfMeasure.TerminologyRef addTerminology() { //3
+        CqfMeasure.TerminologyRef t = new CqfMeasure.TerminologyRef();
         if (this.terminology == null)
-            this.terminology = new ArrayList<StringType>();
+            this.terminology = new ArrayList<CqfMeasure.TerminologyRef>();
         this.terminology.add(t);
         return t;
     }
 
-    public CqfMeasure addTerminology(StringType t) { //3
+    public CqfMeasure addTerminology(CqfMeasure.TerminologyRef  t) { //3
         if (t == null)
             return this;
         if (this.terminology == null)
-            this.terminology = new ArrayList<StringType>();
+            this.terminology = new ArrayList<CqfMeasure.TerminologyRef >();
         this.terminology.add(t);
         return this;
     }
@@ -478,7 +475,7 @@ public class CqfMeasure extends Measure {
     /**
      * @return The first repetition of repeating field {@link #terminology}, creating it if it does not already exist
      */
-    public StringType getTerminologyFirstRep() { 
+    public CqfMeasure.TerminologyRef getTerminologyFirstRep() { 
         if (getTerminology().isEmpty()) {
             addTerminology();
         }
@@ -645,5 +642,114 @@ public class CqfMeasure extends Measure {
             for (MeasureSupplementalDataComponent i : measure.getSupplementalData())
                 supplementalData.add(i.copy());
         };
+    }
+
+    public static class TerminologyRef implements IElement {
+
+        public TerminologyRef () {
+        }
+
+        public TerminologyRef(TerminologyRefType type, String name, String id) {
+            this.type = type;
+            this.name = name;
+            this.id = id;
+        }
+
+        public TerminologyRef(TerminologyRefType type, String name, String id, String version) {
+            this.type = type;
+            this.name = name;
+            this.id = id;
+            this.version = version;
+        }
+
+        public static enum TerminologyRefType {
+            VALUESET,
+            CODE,
+            CODESYSTEM
+        }
+
+        private String name;
+        private String id;
+        private String version;
+        private TerminologyRefType type;
+
+
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public TerminologyRefType getType() {
+            return type;
+        }
+
+        public void setType(TerminologyRefType type) {
+            this.type = type;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public boolean hasFormatComment() {
+            return false;
+        }
+
+        @Override
+        public List<String> getFormatCommentsPre() {
+            return null;
+        }
+
+        @Override
+        public List<String> getFormatCommentsPost() {
+            return null;
+        }
+
+        public String getDefinition() {
+            String definition = "";
+            switch(type) {
+                case CODE:
+                    definition += "code";
+                    break;
+                case CODESYSTEM:
+                    definition += "codesystem";
+                    break;
+                case VALUESET:
+                    definition += "valueset";
+                    break;
+            }
+
+            if (name != null && id != null) {
+                definition += (" " + name + " using " + id);
+            }
+
+            if (version != null) {
+                definition += (" version " + version);
+            }
+
+            return definition;
+        }
+        
     }
 }

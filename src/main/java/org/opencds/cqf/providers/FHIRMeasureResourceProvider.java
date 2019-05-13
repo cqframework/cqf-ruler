@@ -52,6 +52,8 @@ import org.opencds.cqf.evaluation.MeasureEvaluation;
 import org.opencds.cqf.evaluation.MeasureEvaluationSeed;
 import org.opencds.cqf.helpers.LibraryHelper;
 import org.opencds.cqf.helpers.LibraryResourceHelper;
+import org.opencds.cqf.providers.CqfMeasure.TerminologyRef;
+import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -540,10 +542,10 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         ArrayList<MeasureGroupPopulationComponent> definitionStatements = new ArrayList<>();
         ArrayList<MeasureGroupPopulationComponent> functionStatements = new ArrayList<>();
         ArrayList<MeasureGroupPopulationComponent> supplementalDataElements = new ArrayList<>();
-        ArrayList<StringType> terminology = new ArrayList<>();
-        ArrayList<StringType> codes = new ArrayList<>();
-        ArrayList<StringType> codeSystems = new ArrayList<>();
-        ArrayList<StringType> valueSets = new ArrayList<>();
+        ArrayList<CqfMeasure.TerminologyRef> terminology = new ArrayList<>();
+        ArrayList<CqfMeasure.TerminologyRef > codes = new ArrayList<>();
+        ArrayList<CqfMeasure.TerminologyRef > codeSystems = new ArrayList<>();
+        ArrayList<CqfMeasure.TerminologyRef > valueSets = new ArrayList<>();
         ArrayList<StringType> dataCriteria = new ArrayList<>();
 
         Library primaryLibrary = LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader);
@@ -625,7 +627,6 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
             if (library.getCodeSystems() != null && library.getCodeSystems().getDef() != null) {
                 for (CodeSystemDef codeSystem : library.getCodeSystems().getDef()) {
-                    StringType term = new StringType();
                     String id = codeSystem.getId().replace("urn:oid:", "");
                     String[] codeSystemComponents = codeSystem.getName().split(":");
                     String name = codeSystemComponents[0];
@@ -635,14 +636,10 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                         version = codeSystemComponents[1];
                     }
 
-                    String codeSystemString = "codesystem \"" + name + "\" using \"" + id;
-                    if (version != null) {
-                        codeSystemString += " version " + version;
-                    }
-                    term.setValueAsString(codeSystemString);
+                    CqfMeasure.TerminologyRef term = new CqfMeasure.TerminologyRef(TerminologyRefType.CODESYSTEM, name, id, version);
                     Boolean exists = false;
-                    for (StringType string : codeSystems) {
-                        if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
+                    for (CqfMeasure.TerminologyRef  t : codeSystems) {
+                        if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }
                     }
@@ -654,7 +651,6 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
             if (library.getCodes() != null && library.getCodes().getDef() != null) {
                 for (CodeDef code : library.getCodes().getDef()) {
-                    StringType term = new StringType();
                     String id = code.getId();
                     String name = code.getName();
                     String[] codeSystemComponents = code.getCodeSystem().getName().split(":");
@@ -665,16 +661,10 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                         codeSystemVersion = codeSystemComponents[1];
                     }
 
-                    String codeString = "code \"" + name + "\" using \"" + codeSystemName;
-                    if (codeSystemVersion != null) {
-                        codeString += " version " + codeSystemVersion;
-                    }
-
-                    codeString += " Code (" + id + ")";
-                    term.setValueAsString(codeString);
+                    CqfMeasure.TerminologyRef term = new CqfMeasure.TerminologyRef(TerminologyRefType.CODE, name, codeSystemName, codeSystemVersion);
                     Boolean exists = false;
-                    for (StringType string : codes) {
-                        if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
+                    for (CqfMeasure.TerminologyRef  t : codes) {
+                        if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }
                     }
@@ -686,20 +676,20 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
             if (library.getValueSets() != null && library.getValueSets().getDef() != null) {
                 for (ValueSetDef valueSet : library.getValueSets().getDef()) {
-                    StringType term = new StringType();
                     String id = valueSet.getId().replace("urn:oid:", "");
                     String name = valueSet.getName();
-                    term.setValueAsString("valueset \"" + name + "\" using \"" + id + "\"");
+
+                    CqfMeasure.TerminologyRef term = new CqfMeasure.TerminologyRef(TerminologyRefType.VALUESET, name, id, null);
                     Boolean exists = false;
-                    for (StringType string : valueSets) {
-                        if (string.getValueAsString().equalsIgnoreCase(term.getValueAsString())) {
+                    for (CqfMeasure.TerminologyRef  t : valueSets) {
+                        if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }
                     }
                     if (!exists) {
                         valueSets.add(term);
                     }
-
+                  
                     for (DataRequirement data : cqfMeasure.getDataRequirement()) {
                         String type = data.getType();
                         // .split("[A-Z]");
@@ -734,6 +724,15 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                 return s1.compareToIgnoreCase(s2);
             }
         };
+
+        Comparator terminologyRefComparator = new Comparator<TerminologyRef>() {
+            @Override
+            public int compare(TerminologyRef item, TerminologyRef t1) {
+                String s1 = item.getDefinition();
+                String s2 = t1.getDefinition();
+                return s1.compareToIgnoreCase(s2);
+            }
+        };
         Comparator populationComparator = new Comparator<MeasureGroupPopulationComponent>() {
             @Override
             public int compare(MeasureGroupPopulationComponent item, MeasureGroupPopulationComponent t1) {
@@ -746,9 +745,9 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         Collections.sort(definitionStatements, populationComparator);
         Collections.sort(functionStatements, populationComparator);
         Collections.sort(supplementalDataElements, populationComparator);
-        Collections.sort(codeSystems, stringTypeComparator);
-        Collections.sort(codes, stringTypeComparator);
-        Collections.sort(valueSets, stringTypeComparator);
+        Collections.sort(codeSystems, terminologyRefComparator);
+        Collections.sort(codes, terminologyRefComparator);
+        Collections.sort(valueSets, terminologyRefComparator);
         Collections.sort(dataCriteria, stringTypeComparator);
 
         terminology.addAll(codeSystems);

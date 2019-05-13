@@ -48,6 +48,8 @@ import org.hl7.fhir.dstu3.model.Measure.MeasureGroupComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupPopulationComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureSupplementalDataComponent;
 import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
+import org.opencds.cqf.providers.CqfMeasure.TerminologyRef;
+import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.springframework.http.MediaTypeEditor;
 import org.stringtemplate.v4.compiler.STParser.compoundElement_return;
@@ -124,57 +126,63 @@ public class HQMFProvider {
     }
 
     private XMLBuilder2 createQualityMeasureDocumentElement(CqfMeasure m) {
-        // TODO: Get unique Id from NCQA identifier...
-        String uniqueId = UUID.randomUUID().toString();
+        // HQMF expects a unique Id and a version independent Id.
+        // TODO: These are guids in Bonnie world
+        String id = m.getId();
+        String setId = m.getName();
 
         XMLBuilder2 builder = XMLBuilder2.create("QualityMeasureDocument").ns("urn:hl7-org:v3")
                 .ns("cql-ext", "urn:hhs-cql:hqmf-n1-extensions:v1")
                 .ns("xsi", "http://www.w3.org/2001/XMLSchema-instance")
                 .elem("typeId").a("extension", "POQM_HD000001UV02").a("root", "2.16.840.1.113883.1.3").up()
-                .elem("templateId").elem("item").a("extension", "2017-08-01").a("root", "2.16.840.1.113883.10.20.28.1.2").up().up()
-                .elem("id").a("root","40280382-6258-7581-0162-92660f2414b9").up().up().elem("code")
+                .elem("templateId").elem("item").a("extension", "2018-05-01").a("root", "2.16.840.1.113883.10.20.28.1.2").up().up()
+                .elem("id").a("root", id).up().up().elem("code")
                 .a("code", "57024-2").a("codeSystem", "2.16.840.1.113883.6.1").elem("displayName")
-                .a("value", "Health Quality Measure Document").up().up().elem("title").text(m.hasTitle() ? m.getTitle() : "None").up()
-                .elem("statusCode").a("code", "COMPLETED").up().elem("setId")
-                .a("root", uniqueId).up().elem("versionNumber").text(m.hasVersion() ? m.getVersion() : "None").up()
+                .a("value", "Health Quality Measure Document").up().up()
+                .elem("title").a("value", m.hasTitle() ? m.getTitle() : "None").up()
+                .elem("text").a("value", m.hasDescription() ? m.getDescription() : "None").up()
+                .elem("statusCode").a("code", "COMPLETED").up()
+                .elem("setId").a("root", setId).up()
+                .elem("versionNumber").a("value", m.hasVersion() ? m.getVersion() : "None").up()
                 .root();
 
         return builder;
     }
 
     private void addDefinitions(XMLBuilder2 xml, CqfMeasure m) {
-        HashSet<String> valueSets = new HashSet<String>();
-        for (DataRequirement d : m.getDataRequirement()) {
 
-            // ValueSets
-            if (d.hasCodeFilter() && d.getCodeFilterFirstRep().hasValueSetStringType()) {
-                String valueSet = d.getCodeFilterFirstRep().getValueSetStringType().asStringValue();
-                if (!valueSets.contains(valueSet)) {
-                    valueSets.add(valueSet);
+        if (m.hasTerminology())
+        {
+            for (TerminologyRef t : m.getTerminology()) {
+                if (t.getType() == TerminologyRefType.VALUESET) {
+                    this.addValueSet(xml, t);
                 }
             }
 
-            // TODO: Direct reference codes - I think we have to parse these from the CQL
-        }
+            for (TerminologyRef t : m.getTerminology()) {
+                if (t.getType() == TerminologyRefType.CODE) {
+                    this.addDirectReferenceCode(xml, t);
+                }
+            }
 
-        for (String v : valueSets) {
-            this.addValueSet(xml, v);
         }
     }
 
-    private void addValueSet(XMLBuilder2 xml, String oid) {
-        xml.root().elem("definition").elem("valueSet").a("classCode", "OBS").a("modeCode", "DEF").elem("id")
-                .a("root", oid).up();
-        // TODO: We don't have value set names
-        // .elem("title").a("value", "getName");
+    private void addValueSet(XMLBuilder2 xml, TerminologyRef t) {
+        xml.root().elem("definition").elem("valueSet").a("classCode", "OBS").a("moodeCode", "DEF").elem("id")
+                .a("root", t.getId()).up()
+                .elem("title").a("value", t.getName());
     }
 
-    private void addDirectReferenceCode(XMLBuilder2 xml, DataRequirement d) {
-        String code = d.getCodeFilterFirstRep().getPath();
-        String codeSystem = d.getCodeFilterFirstRep().getValueSetStringType().asStringValue();
-        xml.root().elem("definition").elem("cql-ext:code").a("code", code).a("codeSystem", codeSystem)
-                .a("codeSystemName", "getName").a("codeSystemVersion", "getCodeSystemVersion").up().elem("displayName")
-                .a("value", "getDisplayName");
+    private void addDirectReferenceCode(XMLBuilder2 xml, TerminologyRef t) {
+        XMLBuilder2 temp = xml.root().elem("definition").elem("cql-ext:code").a("code", t.getName()).a("codeSystem", t.getId());
+        if (t.getVersion() != null) {
+            temp.a("codeSystemVersion", t.getVersion()).up();
+        }
+
+        // TODO: name and displayName
+        /*.a("codeSystemName", "getName") */
+        // .elem("displayName").a("value", "getDisplayName");
     }
 
     // Returns the 
@@ -229,29 +237,37 @@ public class HQMFProvider {
                 .a("value", "1");
     }
 
-    private void addSubjectOfs(XMLBuilder2 xml, CqfMeasure m) {
-        String codeSystem = "2.16.840.1.113883.5.4";
-        
+    private Identifier getIdentifierFor(CqfMeasure m, String identifierCode) {
         for (Identifier i : m.getIdentifier())
         {
    
             if (i.hasType())
             {
-                switch (i.getType().getCodingFirstRep().getCode()) {
-                    // eCQMIdentifier (MAT / CMS)
-                    case "CMS":
-                    this.addMeasureAttributeWithNullAndText(xml, "OTH","eCQM Identifier", "text/plain", i.getValue());
-                        break;
-
-                    //NQF Number
-                    case "NQF":
-                        this.addMeasureAttributeWithNullAndText(xml, "OTH","NQF Number", "text/plain", i.getValue());
-                        break;
-
-                    default:
-                        break;
+                if(i.getType().getCodingFirstRep().getCode().equals(identifierCode)) 
+                {
+                    return i;
                 }
             }
+        }
+
+        return null;
+    }
+
+    private void addSubjectOfs(XMLBuilder2 xml, CqfMeasure m) {
+        String codeSystem = "2.16.840.1.113883.5.4";
+
+        // TODO: What to do with the NCQA Identifier?
+
+        // CMS Identifier
+        Identifier cms = this.getIdentifierFor(m, "CMS");
+        if (cms!= null) {
+            this.addMeasureAttributeWithNullAndText(xml, "OTH","eCQM Identifier", "text/plain", cms.getValue());
+        }
+
+        // NQF Identifer
+        Identifier nqf = this.getIdentifierFor(m, "NQF");
+        if (nqf != null) {
+            this.addMeasureAttributeWithNullAndText(xml, "OTH","NQF Number", "text/plain", nqf.getValue());
         }
 
         // Copyright
@@ -520,7 +536,7 @@ public class HQMFProvider {
 
 
         // Add verifier 
-        // TODO: Not present on the FHIR resource - need and extension?
+        // TODO: Not present on the FHIR resource - need an extension?
         // TODO: Hard-coded to National Quality Forum
         this.addResponsibleParty(xml, "verifier", "2.16.840.1.113883.3.560", "National Quality Forum");
 
