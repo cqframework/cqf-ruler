@@ -648,6 +648,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                     codes.add(term);
                 }
             }
+        cqfMeasure.getRelatedArtifact().addAll(libraryResource.getRelatedArtifact());
 
             for (ValueSetDef valueSet : library.getValueSets().getDef()) {
                 StringType term = new StringType();

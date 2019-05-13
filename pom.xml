@@ -225,6 +225,12 @@
             <artifactId>jetty-servlets</artifactId>
             <version>${jetty_version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.jamesmurty.utils</groupId>
+            <artifactId>java-xmlbuilder</artifactId>
+            <version>1.2</version>
+        </dependency>
     </dependencies>
 
     <distributionManagement>
