@@ -128,7 +128,7 @@ public class LibraryHelper {
         }
 
         for (RelatedArtifact artifact : measure.getRelatedArtifact()) {
-            if (artifact.getType().equals(RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.getResource().hasReference()) {
+            if (artifact.hasType() && artifact.getType().equals(RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.getResource().hasReference()) {
                 org.hl7.fhir.dstu3.model.Library library = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), artifact.getResource().getReferenceElement().getIdPart());
                 libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
             }

@@ -11,6 +11,7 @@ import org.hl7.fhir.dstu3.model.Contributor;
 import org.hl7.fhir.dstu3.model.DataRequirement;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.MarkdownType;
 import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.ParameterDefinition;
@@ -19,6 +20,7 @@ import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.UsageContext;
+import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 
 import ca.uhn.fhir.model.api.IElement;
 import ca.uhn.fhir.model.api.annotation.Child;
@@ -62,6 +64,60 @@ public class CqfMeasure extends Measure {
     @Child(name = "dataCriteria", type = {StringType.class}, order=34, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="Data Elements of the library", formalDefinition="The data elements referenced in the library" )
     protected List<StringType> dataCriteria;
+
+
+    @Child(name = "libraries", type = {Library.class}, order=35, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Description(shortDefinition="Measure libraries", formalDefinition="All the libraries the measure depends on" )
+    protected List<Library> libraries;
+
+    /**
+     * @return {@link #library} (The library element defines libraries used by the library.)
+    */
+    public List<Library> getLibraries() { 
+        if (this.libraries == null)
+            this.libraries = new ArrayList<Library>();
+        return this.libraries;
+    }
+
+    /**
+     * @return Returns a reference to <code>this</code> for easy method chaining
+     */
+    public CqfMeasure setLibraries(List<Library> theLibraries) { 
+        this.libraries = theLibraries;
+        return this;
+    }
+
+    public boolean hasLibraries() { 
+        return this.libraries != null && this.libraries.size() > 0;
+    }
+
+    public Library addLibraries() { //3
+        Library t = new Library();
+        if (this.libraries == null)
+            this.libraries = new ArrayList<Library>();
+        this.libraries.add(t);
+        return t;
+    }
+
+    public CqfMeasure addLibraries(Library t) { //3
+        if (t == null)
+            return this;
+        if (this.libraries == null)
+            this.libraries = new ArrayList<Library>();
+        this.libraries.add(t);
+        return this;
+    }
+
+    /**
+     * @return The first repetition of repeating field {@link #library}, creating it if it does not already exist
+     */
+    public Library getLibrariesFirstRep() { 
+        if (getLibraries().isEmpty()) {
+            addLibraries();
+        }
+        return getLibraries().get(0);
+    }
+
 
     /**
      * @return {@link #parameter} (The parameter element defines parameters used by the library.)
@@ -455,8 +511,10 @@ public class CqfMeasure extends Measure {
         return (this.terminology != null && this.terminology.size() > 0);
     }
 
+    // TODO: Need to rethink this. Do we want all the termionologies to be the same type?
+    // This was originally a string so I think the refactor is probably not right or incomplete.
     public CqfMeasure.TerminologyRef addTerminology() { //3
-        CqfMeasure.TerminologyRef t = new CqfMeasure.TerminologyRef();
+        CqfMeasure.TerminologyRef t = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.VALUESET, null, null);
         if (this.terminology == null)
             this.terminology = new ArrayList<CqfMeasure.TerminologyRef>();
         this.terminology.add(t);
@@ -644,36 +702,71 @@ public class CqfMeasure extends Measure {
         };
     }
 
-    public static class TerminologyRef implements IElement {
+    public static class CodeTerminologyRef extends TerminologyRef   {
 
-        public TerminologyRef () {
+        public CodeTerminologyRef(String name, String id, String codeSystemName, String codeSystemId, String displayName) {
+            this.type = TerminologyRefType.CODE;
+            this.name = name;
+            this.id = id;
+            this.codeSystemName = codeSystemName;
+            this.codeSystemId = codeSystemId;
+            this.displayName = displayName;
+
         }
 
-        public TerminologyRef(TerminologyRefType type, String name, String id) {
+        protected String codeSystemName;
+        public String getcodeSystemName() {
+            return codeSystemName;
+        }
+
+        public void setcodeSystemName(String codeSystemName) {
+            this.codeSystemName = codeSystemName;
+        }
+
+        protected String codeSystemId;
+        public String getcodeSystemId() {
+            return codeSystemId;
+        }
+
+        public void setcodeSystemId(String codeSystemId) {
+            this.codeSystemId = codeSystemId;
+        }
+
+        protected String displayName;
+        public String getdisplayName() {
+            return displayName;
+        }
+
+        public void setdisplayName(String displayName) {
+            this.displayName = displayName;
+        }
+
+        @Override
+        public String getDefinition() {
+            String definition = "code " + name + " : " + id + " from " + codeSystemName;
+            if (this.displayName != null) {
+                definition += ( " display " + this.displayName);
+            }
+
+            return definition;
+        }
+
+    }
+
+    public static class VersionedTerminologyRef extends TerminologyRef {
+
+        public VersionedTerminologyRef(TerminologyRefType type, String name, String id) {
             this.type = type;
             this.name = name;
             this.id = id;
         }
 
-        public TerminologyRef(TerminologyRefType type, String name, String id, String version) {
-            this.type = type;
-            this.name = name;
-            this.id = id;
+        public VersionedTerminologyRef(TerminologyRefType type, String name, String id, String version) {
+            this(type, name, id);
             this.version = version;
         }
 
-        public static enum TerminologyRefType {
-            VALUESET,
-            CODE,
-            CODESYSTEM
-        }
-
-        private String name;
-        private String id;
-        private String version;
-        private TerminologyRefType type;
-
-
+        protected String version;
         public String getVersion() {
             return version;
         }
@@ -681,6 +774,44 @@ public class CqfMeasure extends Measure {
         public void setVersion(String version) {
             this.version = version;
         }
+
+        @Override
+        public String getDefinition() {
+            String definition = "";
+            switch(type) {
+                case CODESYSTEM:
+                    definition += "codesystem";
+                    break;
+                case VALUESET:
+                    definition += "valueset";
+                    break;
+                default:
+                    break;
+            }
+
+            if (name != null && id != null) {
+                definition += (" " + name + " using " + id);
+            }
+
+            if (version != null) {
+                definition += (" version " + version);
+            }
+
+            return definition;
+        }
+    }
+
+    public abstract static class TerminologyRef implements ca.uhn.fhir.model.api.IElement {
+
+        public static enum TerminologyRefType {
+            VALUESET,
+            CODE,
+            CODESYSTEM
+        }
+
+        protected String name;
+        protected String id;
+        protected TerminologyRefType type;
 
         public String getId() {
             return id;
@@ -726,30 +857,6 @@ public class CqfMeasure extends Measure {
             return null;
         }
 
-        public String getDefinition() {
-            String definition = "";
-            switch(type) {
-                case CODE:
-                    definition += "code";
-                    break;
-                case CODESYSTEM:
-                    definition += "codesystem";
-                    break;
-                case VALUESET:
-                    definition += "valueset";
-                    break;
-            }
-
-            if (name != null && id != null) {
-                definition += (" " + name + " using " + id);
-            }
-
-            if (version != null) {
-                definition += (" version " + version);
-            }
-
-            return definition;
-        }
-        
+        public abstract String getDefinition();
     }
 }

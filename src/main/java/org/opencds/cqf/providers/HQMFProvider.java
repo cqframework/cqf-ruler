@@ -48,6 +48,7 @@ import org.hl7.fhir.dstu3.model.Measure.MeasureGroupComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupPopulationComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureSupplementalDataComponent;
 import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
+import org.opencds.cqf.providers.CqfMeasure.CodeTerminologyRef;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
@@ -73,7 +74,7 @@ public class HQMFProvider {
 
     private static Map<String, String> measureScoringValueSetMap = new HashMap<String, String>() {
         {
-            put("PROPORTION", "Proportion");
+            put("PROPOR", "Proportion");
             put("RATIO", "Ratio");
             put("CONTINUOUS-VARIABLE", "Continuous Variable");
             put("COHORT", "Cohort");
@@ -161,49 +162,45 @@ public class HQMFProvider {
 
             for (TerminologyRef t : m.getTerminology()) {
                 if (t.getType() == TerminologyRefType.CODE) {
-                    this.addDirectReferenceCode(xml, t);
+                    this.addDirectReferenceCode(xml, (CodeTerminologyRef)t);
                 }
             }
-
         }
     }
 
     private void addValueSet(XMLBuilder2 xml, TerminologyRef t) {
-        xml.root().elem("definition").elem("valueSet").a("classCode", "OBS").a("moodeCode", "DEF").elem("id")
+        xml.root().elem("definition").elem("valueSet").a("classCode", "OBS").a("moodCode", "DEF").elem("id")
                 .a("root", t.getId()).up()
                 .elem("title").a("value", t.getName());
     }
 
-    private void addDirectReferenceCode(XMLBuilder2 xml, TerminologyRef t) {
-        XMLBuilder2 temp = xml.root().elem("definition").elem("cql-ext:code").a("code", t.getName()).a("codeSystem", t.getId());
-        if (t.getVersion() != null) {
-            temp.a("codeSystemVersion", t.getVersion()).up();
+    private void addDirectReferenceCode(XMLBuilder2 xml, CodeTerminologyRef t) {
+        XMLBuilder2 temp = xml.root().elem("definition").elem("cql-ext:code").a("code", t.getId()).a("codeSystem", t.getcodeSystemId()).a("codeSystemName", t.getcodeSystemName());
+        if (t.getdisplayName() != null) {
+            temp.elem("displayName").a("value", t.getdisplayName()).up();
         }
-
-        // TODO: name and displayName
-        /*.a("codeSystemName", "getName") */
-        // .elem("displayName").a("value", "getDisplayName");
     }
 
     // Returns the 
     private String addRelatedDocuments(XMLBuilder2 xml, CqfMeasure m, String primaryLibraryGuid) {
+        String primaryLibraryId = m.getLibraryFirstRep().getReference();
+        String primaryLibraryName = null;
+
+
         // This is all the libraries a measure depends on EXCEPT the primary library
-        for (RelatedArtifact r : m.getRelatedArtifact()) {
-            if (r.getType() == RelatedArtifactType.DEPENDSON) {
-                if (r.hasResource() && r.getResource().hasReference()
-                        && r.getResource().getReference().startsWith("Library")) {
-                    this.addRelatedDocument(xml, r.getResource().getReference().replace("Library/", ""), UUID.randomUUID().toString());
-                }
+        for (Library l : m.getLibraries()) {
+            String guid = UUID.randomUUID().toString();
+            String name = l.getName();
+            String version = l.getVersion();
+            if (l.getId().equals(primaryLibraryId)) {
+                primaryLibraryName = name;
+                guid = primaryLibraryGuid;
             }
+                
+            this.addRelatedDocument(xml, name + "-" + version, guid);
         }
 
-        if (m.hasLibrary()) {
-            String libraryName = m.getLibraryFirstRep().getReference().replace("Library/", "");
-            this.addRelatedDocument(xml, libraryName, primaryLibraryGuid);
-            return libraryName;
-        }
-
-        return null;
+        return primaryLibraryName;
     }
 
     // Returns the random guid assigned to a document
@@ -240,7 +237,6 @@ public class HQMFProvider {
     private Identifier getIdentifierFor(CqfMeasure m, String identifierCode) {
         for (Identifier i : m.getIdentifier())
         {
-   
             if (i.hasType())
             {
                 if(i.getType().getCodingFirstRep().getCode().equals(identifierCode)) 
@@ -282,6 +278,12 @@ public class HQMFProvider {
         if (m.hasScoring()) {
             Coding scoring = m.getScoring().getCodingFirstRep();
             String measureScoringCode = scoring.getCode().toUpperCase();
+
+            // TODO: How do we fix this mapping?
+            if (measureScoringCode.startsWith("PROPOR")) {
+                measureScoringCode = "PROPOR";
+            }
+
             this.addMeasureAttributeWithCodeAndCodeValue(xml, "MSRSCORE", codeSystem, "Measure Scoring",
                     measureScoringCode, "2.16.840.1.113883.1.11.20367",
                     measureScoringValueSetMap.get(measureScoringCode));
@@ -439,7 +441,7 @@ public class HQMFProvider {
         return xml.root().elem("component")
             .elem("dataCriteriaSection")
                 .elem("templateId")
-                    .elem("item").a("extension","2017-08-01").a("root", "2.16.840.1.113883.10.20.28.2.6").up().up()
+                    .elem("item").a("extension","2018-05-01").a("root", "2.16.840.1.113883.10.20.28.2.6").up().up()
                 .elem("code").a("code","57025-9").a("codeSystem","2.16.840.1.113883.6.1").up()
                 .elem("title").a("value", "Data Criteria Section").up()
                 .elem("text").up();
@@ -462,22 +464,27 @@ public class HQMFProvider {
     }
 
     private void addPopulationCriteriaSection(XMLBuilder2 xml, CqfMeasure m, String documentGuid, String documentName) {
-        XMLBuilder2 readyForComponents = this.addPopulationCriteriaHeader(xml);
+
 
         // TODO: How do you do multiple population groups in HQMF
         if (m.hasGroup()) {
-            MeasureGroupComponent mgc = m.getGroupFirstRep();
-            for (MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
-                String key = mgpc.getCode().getCoding().get(0).getCode();
-                CodeMapping mapping = measurePopulationValueSetMap.get(key);
-                this.addPopulationCriteriaComponentCriteria(readyForComponents, mapping.criteriaName, mapping.criteriaExtension, mapping.code, documentName + ".\"" + mgpc.getCriteria() + "\"", documentGuid);
-            }
-        }
+            for (int i = 0; i < m.getGroup().size(); i++) {
+                String criteriaName = "PopulationCriteria_" + (i + 1);
+                String criteriaRoot = UUID.randomUUID().toString();
+                XMLBuilder2 readyForComponents = this.addPopulationCriteriaHeader(xml, criteriaName, criteriaRoot);
+                MeasureGroupComponent mgc = m.getGroupFirstRep();
+                for (MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
+                    String key = mgpc.getCode().getCoding().get(0).getCode();
+                    CodeMapping mapping = measurePopulationValueSetMap.get(key);
+                    this.addPopulationCriteriaComponentCriteria(readyForComponents, mapping.criteriaName, mapping.criteriaExtension, mapping.code, documentName + ".\"" + mgpc.getCriteria() + "\"", documentGuid);
+                }
 
-        if (m.hasSupplementalData()) {
-            for (MeasureSupplementalDataComponent sde : m.getSupplementalData()) {
-                this.addPopulationCriteriaComponentSDE(readyForComponents, UUID.randomUUID().toString(), documentName + ".\"" + sde.getCriteria() + "\"", documentGuid);
-            }
+                if (m.hasSupplementalData()) {
+                    for (MeasureSupplementalDataComponent sde : m.getSupplementalData()) {
+                        this.addPopulationCriteriaComponentSDE(readyForComponents, UUID.randomUUID().toString(), documentName + ".\"" + sde.getCriteria() + "\"", documentGuid);
+                    }
+                }
+            }   
         }
     }
 
@@ -506,11 +513,12 @@ public class HQMFProvider {
                     .elem("id").a("extension", criteriaReferenceIdExtension).a("root", criteriaReferenceIdRoot).up().up().up().up().up();
     }
 
-    private XMLBuilder2 addPopulationCriteriaHeader(XMLBuilder2 xml) {
+    private XMLBuilder2 addPopulationCriteriaHeader(XMLBuilder2 xml, String crtieriaName, String criteriaRoot) {
         return xml.root().elem("component")
             .elem("populationCriteriaSection")
                 .elem("templateId")
                     .elem("item").a("extension","2017-08-01").a("root", "2.16.840.1.113883.10.20.28.2.7").up().up()
+                .elem("id").a("extension", crtieriaName).a("root", criteriaRoot).up()
                 .elem("code").a("code","57026-7").a("codeSystem","2.16.840.1.113883.6.1").up()
                 .elem("title").a("value", "Population Criteria Section").up()
                 .elem("text").up();
