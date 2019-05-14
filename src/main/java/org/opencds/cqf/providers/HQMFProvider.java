@@ -186,13 +186,15 @@ public class HQMFProvider {
         String primaryLibraryId = m.getLibraryFirstRep().getReference();
         String primaryLibraryName = null;
 
-
-        // This is all the libraries a measure depends on EXCEPT the primary library
         for (Library l : m.getLibraries()) {
             String guid = UUID.randomUUID().toString();
             String name = l.getName();
             String version = l.getVersion();
-            if (l.getId().equals(primaryLibraryId)) {
+            String id = l.getId();
+            if (id.contains("/_history")) {
+                id = id.substring(0, id.indexOf("/_history"));
+            }
+            if (id.equals(primaryLibraryId)) {
                 primaryLibraryName = name;
                 guid = primaryLibraryGuid;
             }
@@ -225,7 +227,7 @@ public class HQMFProvider {
     private void addMeasurePeriod(XMLBuilder2 xml, Period p) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
-        xml.root().elem("controlVariable").elem("measurePeriod").elem("id").a("extension", "measurePeriod")
+        xml.root().elem("controlVariable").elem("measurePeriod").elem("id").a("extension", "measureperiod")
                 .a("root", "cfe828b5-ce93-4354-b137-77b0aeb41dd6").up().elem("code").a("code", "MSRTP")
                 .a("codeSystem", "2.16.840.1.113883.5.4").elem("originalText").a("value", "Measurement Period").up()
                 .up().elem("value").a("xsi:type", "PIVL_TS").elem("phase").a("highClosed", "true")
@@ -321,7 +323,7 @@ public class HQMFProvider {
         // TODO: Should we add a "None" entry if there are no references?
         if (m.hasRelatedArtifact()) {
             for (RelatedArtifact r : m.getRelatedArtifact()) {
-                if (r.getType() == RelatedArtifactType.CITATION) {
+                if (r.hasType() && r.getType() == RelatedArtifactType.CITATION) {
                     this.addMeasureAttributeWithCodeAndTextValue(xml, "REF", codeSystem, "Reference", "text/plain",
                             r.getCitation());
                 }
