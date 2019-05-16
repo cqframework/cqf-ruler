@@ -743,9 +743,9 @@ public class CqfMeasure extends Measure {
 
         @Override
         public String getDefinition() {
-            String definition = "code " + name + " : " + id + " from " + codeSystemName;
+            String definition = "code \"" + name + "\" : '" + id + "' from \"" + codeSystemName + "\"";
             if (this.displayName != null) {
-                definition += ( " display " + this.displayName);
+                definition += ( " display '" + this.displayName + "'");
             }
 
             return definition;
@@ -790,11 +790,11 @@ public class CqfMeasure extends Measure {
             }
 
             if (name != null && id != null) {
-                definition += (" " + name + " using " + id);
+                definition += (" \"" + name + "\" : '" + id + "'");
             }
 
             if (version != null) {
-                definition += (" version " + version);
+                definition += (" version \"" + version + "\"");
             }
 
             return definition;
