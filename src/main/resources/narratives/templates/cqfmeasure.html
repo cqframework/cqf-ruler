@@ -161,12 +161,14 @@
                 </td>
             </tr>
         </th:block>
-        <th:block th:each="def, iter : ${resource.definition}" >
-            <tr>
+        <tr th:each="definition, iter : ${resource.definition}">
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Definition</span></td>
-            <td style="width:80%" colspan="3" th:narrative="${def.asStringValue()}"></td>
-            </tr>
-        </th:block>
+            <td style="width:80%" colspan="3">
+                <div style="width:660px;overflow-x:hidden;overflow-y:auto">
+                    <pre th:text="${definition}"></pre>
+                </div>
+            </td>
+        </tr>
         <tr th:if="${resource.hasGuidance()}">
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Guidance</span></td>
             <td style="width:80%" colspan="3">
