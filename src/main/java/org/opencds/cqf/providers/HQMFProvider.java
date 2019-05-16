@@ -52,6 +52,7 @@ import org.opencds.cqf.providers.CqfMeasure.CodeTerminologyRef;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.springframework.http.MediaTypeEditor;
 import org.stringtemplate.v4.compiler.STParser.compoundElement_return;
 import org.w3c.dom.Document;
@@ -128,8 +129,7 @@ public class HQMFProvider {
 
     private XMLBuilder2 createQualityMeasureDocumentElement(CqfMeasure m) {
         // HQMF expects a unique Id and a version independent Id.
-        // TODO: These are guids in Bonnie world
-        String id = m.getId();
+        String id = this.stripHistory(m.getId());
         String setId = m.getName();
 
         XMLBuilder2 builder = XMLBuilder2.create("QualityMeasureDocument").ns("urn:hl7-org:v3")
@@ -181,7 +181,15 @@ public class HQMFProvider {
         }
     }
 
-    // Returns the 
+    private String stripHistory(String id) {
+        if (id.contains("/_history")) {
+            id = id.substring(0, id.indexOf("/_history"));
+        }
+
+        return id;
+    }
+
+    // Returns the name of the primary library once the documents are added.
     private String addRelatedDocuments(XMLBuilder2 xml, CqfMeasure m, String primaryLibraryGuid) {
         String primaryLibraryId = m.getLibraryFirstRep().getReference();
         String primaryLibraryName = null;
@@ -190,10 +198,7 @@ public class HQMFProvider {
             String guid = UUID.randomUUID().toString();
             String name = l.getName();
             String version = l.getVersion();
-            String id = l.getId();
-            if (id.contains("/_history")) {
-                id = id.substring(0, id.indexOf("/_history"));
-            }
+            String id = this.stripHistory(l.getId());
             if (id.equals(primaryLibraryId)) {
                 primaryLibraryName = name;
                 guid = primaryLibraryGuid;
@@ -215,7 +220,7 @@ public class HQMFProvider {
     }
 
     private void addControlVariables(XMLBuilder2 xml, CqfMeasure m) {
-        // These are parameters?
+        // TODO: These are parameters?
 
         // Measure Period
         // TODO: Same as effective period?
@@ -320,7 +325,6 @@ public class HQMFProvider {
                 m.hasImprovementNotation() ? m.getImprovementNotation() : "None");
 
         // Reference (citations)
-        // TODO: Should we add a "None" entry if there are no references?
         if (m.hasRelatedArtifact()) {
             for (RelatedArtifact r : m.getRelatedArtifact()) {
                 if (r.hasType() && r.getType() == RelatedArtifactType.CITATION) {
@@ -348,14 +352,15 @@ public class HQMFProvider {
         this.addMeasureAttributeWithCodeAndTextValue(xml, "TRANF", codeSystem, "Transmission Format", "text/plain",
                 "TBD");
 
-        // TODO: Groups - Seems like HQMF only supports descriptions for one?
-        // TODO: Stratification
+        // TODO: Groups - It seems the HQMF measure supports descriptions for only  one group, the FHIR measure has descriptions per group
         if (m.hasGroup()) {
             MeasureGroupComponent mgc = m.getGroupFirstRep();
             this.addGroupMeasureAttributes(xml, codeSystem, mgc);
         }
 
-        // TODO: Supplemental Data Elements - This HQMF measure has a description of the elements
+        // TODO: Stratification - The HQMF measure has a description of the stratification, the FHIR measure does not.
+
+        // TODO: Supplemental Data Elements - The HQMF measure has a description of the elements, the FHIR measure does not.
     }
 
     private void addGroupMeasureAttributes(XMLBuilder2 xml, String codeSystem, MeasureGroupComponent mgc) {
@@ -437,6 +442,13 @@ public class HQMFProvider {
 
     private void addDataCriteriaSection(XMLBuilder2 xml, CqfMeasure m) {
         XMLBuilder2 readyForEntries = this.addDataCriteriaHeader(xml);
+
+        if (m.hasDataCriteria()) {
+            for (StringType s : m.getDataCriteria())
+            {
+
+            }
+        }
     }
 
     private XMLBuilder2 addDataCriteriaHeader(XMLBuilder2 xml) {
@@ -466,9 +478,6 @@ public class HQMFProvider {
     }
 
     private void addPopulationCriteriaSection(XMLBuilder2 xml, CqfMeasure m, String documentGuid, String documentName) {
-
-
-        // TODO: How do you do multiple population groups in HQMF
         if (m.hasGroup()) {
             for (int i = 0; i < m.getGroup().size(); i++) {
                 String criteriaName = "PopulationCriteria_" + (i + 1);
