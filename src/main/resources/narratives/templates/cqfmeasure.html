@@ -432,7 +432,7 @@
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Measure Set</span></td>
             <td style="width:80%" th:narrative="${resource.set}"></td>
         </tr>
-        <th:block th:each="con, iter : ${resource.content}">
+        <!-- <th:block th:each="con, iter : ${resource.content}">
             <tr th:if="${con.contentType == 'text/cql'}" style="vertical-align: top;">
                 <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Content</span></td>
                 <td style="width:80%" ><b>type: </b><span th:text="${con.contentType}"></span></td>
@@ -447,6 +447,6 @@
                     </th:block>
                 </td>
             </tr>
-        </th:block >
+        </th:block > -->
     </table>
 </div>
