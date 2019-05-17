@@ -50,6 +50,7 @@ import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.evaluation.MeasureEvaluation;
 import org.opencds.cqf.evaluation.MeasureEvaluationSeed;
+import org.opencds.cqf.helpers.DataElementType;
 import org.opencds.cqf.helpers.LibraryHelper;
 import org.opencds.cqf.helpers.LibraryResourceHelper;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef;
@@ -694,10 +695,13 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                   
                     for (DataRequirement data : cqfMeasure.getDataRequirement()) {
                         String type = data.getType();
-                        // .split("[A-Z]");
-                        // if (type.contains("Negative")) {
-                        //     type = 
-                        // }
+                        try {
+                            DataElementType dataType = DataElementType.valueOf(type.toUpperCase());
+                            type = dataType.toString();
+                        } catch (Exception e) {
+                            //Do Nothing.  Leave type as is.
+                        }
+
                         for (DataRequirementCodeFilterComponent filter : data.getCodeFilter()) {
                             if (filter.hasValueSetStringType() && filter.getValueSetStringType().getValueAsString().equalsIgnoreCase(valueSet.getId())) {
                                 StringType dataElement = new StringType();
