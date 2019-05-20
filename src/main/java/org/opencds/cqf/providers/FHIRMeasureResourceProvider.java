@@ -618,7 +618,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
                     for (MeasureGroupComponent group : populationStatements) {
                         for (MeasureGroupPopulationComponent population : group.getPopulation()) {
-                            if (population.getCriteria().equalsIgnoreCase(statement.getName())) {
+                            if (population.getCriteria() != null && population.getCriteria().equalsIgnoreCase(statement.getName())) {
                                 population.setName(statement.getName());
                                 population.setCriteria(statementText);
                             }
@@ -626,7 +626,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                     }
 
                     for (MeasureSupplementalDataComponent dataComponent : cqfMeasure.getSupplementalData()) {
-                        if (dataComponent.getCriteria().equalsIgnoreCase(def.getName())) {
+                        if (dataComponent.getCriteria()!= null && dataComponent.getCriteria().equalsIgnoreCase(def.getName())) {
                             supplementalDataElements.add(def);
                         }
                     }
