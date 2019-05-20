@@ -23,6 +23,20 @@
     <!-- Servlets -->
 
     <servlet>
+        <servlet-name>cds-services</servlet-name>
+        <servlet-class>org.opencds.cqf.servlet.CdsHooksServlet</servlet-class>
+        <load-on-startup>4</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>cds-services</servlet-name>
+        <url-pattern>cds-services</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>cds-services</servlet-name>
+        <url-pattern>cds-services/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>qdm54</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
