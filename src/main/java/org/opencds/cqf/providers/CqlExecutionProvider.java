@@ -244,12 +244,14 @@ public class CqlExecutionProvider {
                 ((JpaDataProvider) dataProvider).setExpandValueSets(true);
                 context.registerDataProvider("http://hl7.org/fhir", provider);
                 context.registerLibraryLoader(libraryLoader);
+                context.registerTerminologyProvider(terminologyProvider);
             }
             else
             {
                 ((Qdm54DataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
                 context.registerDataProvider("urn:healthit-gov:qdm:v5_4", dataProvider);
                 context.registerLibraryLoader(libraryLoader);
+                context.registerTerminologyProvider(terminologyProvider);
             }
         }
 
