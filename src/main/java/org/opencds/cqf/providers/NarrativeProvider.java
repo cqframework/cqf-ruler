@@ -29,7 +29,10 @@ public class NarrativeProvider {
 
     public NarrativeProvider(String pathToPropertiesFile)
     {
-        this.generator = new CustomThymeleafNarrativeGenerator("classpath:ca/uhn/fhir/narrative/narratives.properties", pathToPropertiesFile);
+        CustomThymeleafNarrativeGenerator myGenerator = new CustomThymeleafNarrativeGenerator("classpath:ca/uhn/fhir/narrative/narratives.properties", pathToPropertiesFile);
+        myGenerator.setIgnoreFailures(false);
+        myGenerator.setIgnoreMissingTemplates(false);
+        this.generator = myGenerator;
     }
 
     public Narrative getNarrative(FhirContext context, IBaseResource resource) {

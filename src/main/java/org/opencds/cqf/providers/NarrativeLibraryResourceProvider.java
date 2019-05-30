@@ -91,11 +91,13 @@ public class NarrativeLibraryResourceProvider extends LibraryResourceProvider {
         //this.formatCql(theResource);
 
         CqlTranslator translator = this.getTranslator(theResource);
-        if (translator != null) {
-            this.ensureElm(theResource, translator);
-            this.ensureRelatedArtifacts(theResource, translator);
-            this.ensureDataRequirements(theResource, translator);
+        if (translator.getErrors().size() > 0) {
+            throw new RuntimeException("Errors during library compilation.");
         }
+        
+        this.ensureElm(theResource, translator);
+        this.ensureRelatedArtifacts(theResource, translator);
+        this.ensureDataRequirements(theResource, translator);
 
         Narrative n = this.narrativeProvider.getNarrative(this.getContext(), theResource);
         theResource.setText(n);
