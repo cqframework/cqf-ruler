@@ -1,5 +1,6 @@
 package org.opencds.cqf.providers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.elm.execution.UsingDef;
+import org.cqframework.cql.elm.tracking.TrackBack;
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.DomainResource;
@@ -45,9 +48,8 @@ public class CqlExecutionProvider {
         this.provider = provider;
     }
 
-
     private LibraryResourceProvider getLibraryResourceProvider() {
-        return (LibraryResourceProvider)provider.resolveResourceProvider("Library");
+        return (LibraryResourceProvider) provider.resolveResourceProvider("Library");
     }
 
     private List<Reference> cleanReferences(List<Reference> references) {
@@ -57,8 +59,7 @@ public class CqlExecutionProvider {
         for (Reference reference : references) {
             boolean dup = false;
             for (Reference ref : noDupes) {
-                if (ref.equalsDeep(reference))
-                {
+                if (ref.equalsDeep(reference)) {
                     dup = true;
                 }
             }
@@ -67,15 +68,9 @@ public class CqlExecutionProvider {
             }
         }
         for (Reference reference : noDupes) {
-            cleanRefs.add(
-                    new Reference(
-                            new IdType(
-                                    reference.getReferenceElement().getResourceType(),
-                                    reference.getReferenceElement().getIdPart().replace("#", ""),
-                                    reference.getReferenceElement().getVersionIdPart()
-                            )
-                    )
-            );
+            cleanRefs.add(new Reference(new IdType(reference.getReferenceElement().getResourceType(),
+                    reference.getReferenceElement().getIdPart().replace("#", ""),
+                    reference.getReferenceElement().getVersionIdPart())));
         }
         return cleanRefs;
     }
@@ -88,29 +83,30 @@ public class CqlExecutionProvider {
                 if (resource instanceof Library) {
                     resource.setId(resource.getIdElement().getIdPart().replace("#", ""));
                     getLibraryResourceProvider().getDao().update((Library) resource);
-//                    getLibraryLoader().putLibrary(resource.getIdElement().getIdPart(), getLibraryLoader().toElmLibrary((Library) resource));
+                    // getLibraryLoader().putLibrary(resource.getIdElement().getIdPart(),
+                    // getLibraryLoader().toElmLibrary((Library) resource));
                 }
             }
         }
 
         if (instance instanceof ActivityDefinition) {
-            references.addAll(((ActivityDefinition)instance).getLibrary());
+            references.addAll(((ActivityDefinition) instance).getLibrary());
         }
 
         else if (instance instanceof PlanDefinition) {
-            references.addAll(((PlanDefinition)instance).getLibrary());
+            references.addAll(((PlanDefinition) instance).getLibrary());
         }
 
         else if (instance instanceof Measure) {
-            references.addAll(((Measure)instance).getLibrary());
+            references.addAll(((Measure) instance).getLibrary());
         }
 
-        for (Extension extension : instance.getExtensionsByUrl("http://hl7.org/fhir/StructureDefinition/cqif-library"))
-        {
+        for (Extension extension : instance
+                .getExtensionsByUrl("http://hl7.org/fhir/StructureDefinition/cqif-library")) {
             Type value = extension.getValue();
 
             if (value instanceof Reference) {
-                references.add((Reference)value);
+                references.add((Reference) value);
             }
 
             else {
@@ -131,7 +127,8 @@ public class CqlExecutionProvider {
 
             builder.append("include ");
 
-            // TODO: This assumes the libraries resource id is the same as the library name, need to work this out better
+            // TODO: This assumes the libraries resource id is the same as the library name,
+            // need to work this out better
             builder.append(reference.getReferenceElement().getIdPart());
 
             if (reference.getReferenceElement().getVersionIdPart() != null) {
@@ -148,20 +145,30 @@ public class CqlExecutionProvider {
     }
 
     /* Evaluates the given CQL expression in the context of the given resource */
-    /* If the resource has a library extension, or a library element, that library is loaded into the context for the expression */
+    /*
+     * If the resource has a library extension, or a library element, that library
+     * is loaded into the context for the expression
+     */
     public Object evaluateInContext(DomainResource instance, String cql, String patientId) {
         Iterable<Reference> libraries = getLibraryReferences(instance);
 
-        // Provide the instance as the value of the '%context' parameter, as well as the value of a parameter named the same as the resource
-        // This enables expressions to access the resource by root, as well as through the %context attribute
-        String source = String.format("library LocalLibrary using FHIR version '3.0.0' include FHIRHelpers version '3.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
+        // Provide the instance as the value of the '%context' parameter, as well as the
+        // value of a parameter named the same as the resource
+        // This enables expressions to access the resource by root, as well as through
+        // the %context attribute
+        String source = String.format(
+                "library LocalLibrary using FHIR version '3.0.0' include FHIRHelpers version '3.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
                 buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
-//        String source = String.format("library LocalLibrary using FHIR version '1.8' include FHIRHelpers version '1.8' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-//                buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
+        // String source = String.format("library LocalLibrary using FHIR version '1.8'
+        // include FHIRHelpers version '1.8' called FHIRHelpers %s parameter %s %s
+        // parameter \"%%context\" %s define Expression: %s",
+        // buildIncludes(libraries), instance.fhirType(), instance.fhirType(),
+        // instance.fhirType(), cql);
 
         STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
 
-        org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source, libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
+        org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source,
+                libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
         Context context = new Context(library);
         context.setParameter(null, instance.fhirType(), instance);
         context.setParameter(null, "%context", instance);
@@ -172,58 +179,70 @@ public class CqlExecutionProvider {
         return context.resolveExpressionRef("Expression").evaluate(context);
     }
 
-    private TerminologyProvider getTerminologyProvider(String url, String user, String pass)
-    {
+    private TerminologyProvider getTerminologyProvider(String url, String user, String pass) {
         if (url != null) {
             // TODO: Change to cache-value-sets
-            return new FhirTerminologyProvider()
-                    .withBasicAuth(user, pass)
-                    .setEndpoint(url, false);
-        }
-        else return provider.getTerminologyProvider();
+            return new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
+        } else
+            return provider.getTerminologyProvider();
     }
 
-    private DataProvider getDataProvider(String model, String version)
-    {
-        if (model.equals("FHIR") && version.equals("3.0.0"))
-        {
+    private DataProvider getDataProvider(String model, String version) {
+        if (model.equals("FHIR") && version.equals("3.0.0")) {
             FhirContext fhirContext = provider.getFhirContext();
             fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
             provider.setFhirContext(fhirContext);
             return provider;
         }
 
-        else if (model.equals("QDM") && version.equals("5.4"))
-        {
+        else if (model.equals("QDM") && version.equals("5.4")) {
             return new Qdm54DataProvider();
         }
 
-        throw new IllegalArgumentException("Could not resolve data provider for data model: " + model + " using version: " + version);
+        throw new IllegalArgumentException(
+                "Could not resolve data provider for data model: " + model + " using version: " + version);
     }
 
     @Operation(name = "$cql")
-    public Bundle evaluate(
-            @OperationParam(name= "code") String code,
-            @OperationParam(name= "patientId") String patientId,
-            @OperationParam(name= "terminologyServiceUri") String terminologyServiceUri,
-            @OperationParam(name= "terminologyUser") String terminologyUser,
-            @OperationParam(name= "terminologyPass") String terminologyPass,
-            @OperationParam(name= "parameters") Parameters parameters
-    )
-    {   
+    public Bundle evaluate(@OperationParam(name = "code") String code,
+            @OperationParam(name = "patientId") String patientId,
+            @OperationParam(name = "terminologyServiceUri") String terminologyServiceUri,
+            @OperationParam(name = "terminologyUser") String terminologyUser,
+            @OperationParam(name = "terminologyPass") String terminologyPass,
+            @OperationParam(name = "parameters") Parameters parameters) {
         CqlTranslator translator;
         FhirMeasureBundler bundler = new FhirMeasureBundler();
 
         STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
 
+        List<Resource> results = new ArrayList<>();
+
         try {
-            translator = LibraryHelper.getTranslator(code, libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
-        }
-        catch (IllegalArgumentException iae) {
+            translator = LibraryHelper.getTranslator(code, libraryLoader.getLibraryManager(),
+                    libraryLoader.getModelManager());
+
+            if (translator.getErrors().size() > 0) {
+                for (CqlTranslatorException cte : translator.getErrors()) {
+                    Parameters result = new Parameters();
+                    TrackBack tb = cte.getLocator();
+                    if (tb != null) {
+                       String location = String.format("[%d:%d]",tb.getStartLine(), tb.getStartChar());
+                       result.addParameter().setName("location").setValue(new StringType(location));
+                    }
+
+                    result.setId("Error");
+                    result.addParameter().setName("error").setValue(new StringType(cte.getMessage()));
+                    results.add(result);
+                }
+
+                return bundler.bundle(results);
+            }
+        } catch (IllegalArgumentException e) {
             Parameters result = new Parameters();
-            result.setId("translation-error");
-            result.addParameter().setName("value").setValue(new StringType(iae.getMessage()));
-            return bundler.bundle(Arrays.asList(result));
+            result.setId("Error");
+            result.addParameter().setName("error").setValue(new StringType(e.getMessage()));
+            results.add(result);
+            return bundler.bundle(results);
         }
 
         Map<String, List<Integer>> locations = getLocations(translator.getTranslatedLibrary().getLibrary());
@@ -263,7 +282,6 @@ public class CqlExecutionProvider {
             }    
         }
 
-        List<Resource> results = new ArrayList<>();
         if (library.getStatements() != null) {
             for (org.cqframework.cql.elm.execution.ExpressionDef def : library.getStatements().getDef()) {
                 context.enterContext(def.getContext());
