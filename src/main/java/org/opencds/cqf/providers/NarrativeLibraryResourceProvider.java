@@ -88,7 +88,7 @@ public class NarrativeLibraryResourceProvider extends LibraryResourceProvider {
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails,
             @IdParam IdType theId) {
         Library theResource = this.getDao().read(theId);
-        this.formatCql(theResource);
+        //this.formatCql(theResource);
 
         CqlTranslator translator = this.getTranslator(theResource);
         if (translator != null) {
@@ -107,7 +107,7 @@ public class NarrativeLibraryResourceProvider extends LibraryResourceProvider {
     @Operation(name = "$get-elm", idempotent = true)
     public Parameters getElm(@IdParam IdType theId, @OptionalParam(name="format") String format) {
         Library theResource = this.getDao().read(theId);
-        this.formatCql(theResource);
+        // this.formatCql(theResource);
 
         String elm = "";
         CqlTranslator translator = this.getTranslator(theResource);

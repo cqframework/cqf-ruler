@@ -306,8 +306,10 @@ public class CqlExecutionProvider {
                     result.addParameter().setName("resultType").setValue(new StringType(resolveType(res)));
                 }
                 catch (RuntimeException re) {
-                    result.addParameter().setName("error").setValue(new StringType(re.getMessage()));
                     re.printStackTrace();
+
+                    String message = re.getMessage() != null ? re.getMessage() : re.getClass().getName();
+                    result.addParameter().setName("error").setValue(new StringType(message));
                 }
                 results.add(result);
             }
