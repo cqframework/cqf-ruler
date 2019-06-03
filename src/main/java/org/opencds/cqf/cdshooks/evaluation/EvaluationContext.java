@@ -117,7 +117,7 @@ public class EvaluationContext {
     public Library getLibrary() {
         if (library == null) {
             if (getPlanDefinition().hasLibrary()) {
-                library = LibraryHelper.resolvePrimaryLibrary(getPlanDefinition(), (STU3LibraryLoader)libraryLoader);
+                library = LibraryHelper.resolvePrimaryLibrary(getPlanDefinition(), (STU3LibraryLoader)getLibraryLoader());
             }
             else {
                 throw new RuntimeException("Missing library reference for PlanDefinition/" + hook.getRequest().getServiceName());
