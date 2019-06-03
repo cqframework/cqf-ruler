@@ -117,14 +117,7 @@ public class EvaluationContext {
     public Library getLibrary() {
         if (library == null) {
             if (getPlanDefinition().hasLibrary()) {
-                // TODO - account for multiple libraries
-                IIdType libraryId = getPlanDefinition().getLibraryFirstRep().getReferenceElement();
-                if (libraryId.hasVersionIdPart()) {
-                    library = getLibraryLoader().load(new VersionedIdentifier().withId(libraryId.getIdPart()).withVersion(libraryId.getVersionIdPart()));
-                }
-                else {
-                    library = getLibraryLoader().load(new VersionedIdentifier().withId(libraryId.getIdPart()));
-                }
+                library = LibraryHelper.resolvePrimaryLibrary(getPlanDefinition(), (STU3LibraryLoader)libraryLoader);
             }
             else {
                 throw new RuntimeException("Missing library reference for PlanDefinition/" + hook.getRequest().getServiceName());
