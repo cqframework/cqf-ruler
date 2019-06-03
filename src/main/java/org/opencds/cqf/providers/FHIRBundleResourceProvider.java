@@ -125,7 +125,20 @@ public class FHIRBundleResourceProvider extends BundleResourceProvider {
                 return new DateType().setValue(Date.from(((DateTime) source).getDateTime().toInstant()));
             }
         }
+        else if (source instanceof org.opencds.cqf.cql.runtime.Date)
+        {
+            if (type.equals("dateTime")) {
+                return new DateTimeType().setValue(java.sql.Date.valueOf(((org.opencds.cqf.cql.runtime.Date) source).getDate()));
+            }
+            if (type.equals("date")) {
+                return new DateType().setValue(java.sql.Date.valueOf(((org.opencds.cqf.cql.runtime.Date) source).getDate()));
+            }
+        }
 
-        return (Base) source;
+        if (source instanceof Base) {
+            return (Base) source;
+        }
+
+        throw new RuntimeException("Unable to resolve type: " + source.getClass().getSimpleName());
     }
 }
