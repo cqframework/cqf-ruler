@@ -19,11 +19,14 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.builders.*;
 import org.opencds.cqf.cdshooks.providers.*;
+import org.opencds.cqf.config.NonCachingLibraryManager;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.exceptions.NotImplementedException;
+import org.opencds.cqf.helpers.LibraryHelper;
+import org.opencds.cqf.helpers.LibraryResourceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -446,10 +449,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
     }
 
     public Discovery getDiscovery(PlanDefinition planDefinition, FhirVersionEnum version) {
-        LibraryLoader libraryLoader = new STU3LibraryLoader(
-                (LibraryResourceProvider) provider.resolveResourceProvider("Library"),
-                new LibraryManager(new ModelManager()), new ModelManager()
-        );
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader((LibraryResourceProvider)provider.resolveResourceProvider("Library"));
         if (planDefinition.hasType()) {
             for (Coding typeCode : planDefinition.getType().getCoding()) {
                 if (typeCode.getCode().equals("eca-rule")) {
@@ -457,11 +457,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                         for (Reference reference : planDefinition.getLibrary()) {
                             org.cqframework.cql.elm.execution.Library library;
                             try {
-                                library = libraryLoader.load(
-                                        new VersionedIdentifier()
-                                                .withId(reference.getReferenceElement().getIdPart())
-                                                .withVersion(reference.getReferenceElement().getVersionIdPart())
-                                );
+                                library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader);
                             }
                             catch (Exception e)
                             {

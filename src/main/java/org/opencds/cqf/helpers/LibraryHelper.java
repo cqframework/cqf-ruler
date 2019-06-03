@@ -15,10 +15,7 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.elm.tracking.TrackBack;
-import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.RelatedArtifact;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
 import org.opencds.cqf.config.NonCachingLibraryManager;
 import org.opencds.cqf.config.STU3LibraryLoader;
@@ -136,15 +133,11 @@ public class LibraryHelper {
         }
     }
 
-    public static Library resolvePrimaryLibrary(Measure measure, STU3LibraryLoader libraryLoader)
-    {
-        // default is the first library reference
-        String id = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
-
+    public static Library resolveLibraryById(String libraryId, STU3LibraryLoader libraryLoader) {
         Library library = null;
 
-        org.hl7.fhir.dstu3.model.Library fhirLibrary = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), id);
-        
+        org.hl7.fhir.dstu3.model.Library fhirLibrary = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), libraryId);
+
         for (Library l : libraryLoader.getLibraries()) {
             VersionedIdentifier vid = l.getIdentifier();
             if (vid.getId().equals(fhirLibrary.getName()) && LibraryResourceHelper.compareVersions(fhirLibrary.getVersion(), vid.getVersion()) == 0) {
@@ -154,8 +147,34 @@ public class LibraryHelper {
         }
 
         if (library == null) {
+            library = libraryLoader.load(new VersionedIdentifier().withId(fhirLibrary.getName()).withVersion(fhirLibrary.getVersion()));
+        }
+
+        return library;
+    }
+
+    public static Library resolvePrimaryLibrary(Measure measure, STU3LibraryLoader libraryLoader)
+    {
+        // default is the first library reference
+        String id = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
+
+        Library library = resolveLibraryById(id, libraryLoader);
+
+        if (library == null) {
             throw new IllegalArgumentException(String
-            .format("Could not resolve primary library for Measure/%s.", measure.getId()));
+                    .format("Could not resolve primary library for Measure/%s.", measure.getIdElement().getIdPart()));
+        }
+
+        return library;
+    }
+
+    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition, STU3LibraryLoader libraryLoader) {
+        String id = planDefinition.getLibraryFirstRep().getReferenceElement().getIdPart();
+
+        Library library = resolveLibraryById(id, libraryLoader);
+
+        if (library == null) {
+            throw new IllegalArgumentException(String.format("Could not resolve primary library for PlanDefinition/%s", planDefinition.getIdElement().getIdPart()));
         }
 
         return library;

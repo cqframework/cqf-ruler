@@ -14,6 +14,7 @@ import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.cdshooks.hooks.Hook;
+import org.opencds.cqf.config.NonCachingLibraryManager;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderDstu2;
@@ -21,6 +22,7 @@ import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.exceptions.NotImplementedException;
+import org.opencds.cqf.helpers.LibraryHelper;
 import org.opencds.cqf.providers.FHIRBundleResourceProvider;
 import org.opencds.cqf.providers.JpaDataProvider;
 
@@ -107,12 +109,7 @@ public class EvaluationContext {
 
     public LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
-            libraryLoader =
-                    new STU3LibraryLoader(
-                            (LibraryResourceProvider) systemProvider.resolveResourceProvider("Library"),
-                            new LibraryManager(new ModelManager()),
-                            new ModelManager()
-                    );
+            libraryLoader = LibraryHelper.createLibraryLoader((LibraryResourceProvider) systemProvider.resolveResourceProvider("Library"));
         }
         return libraryLoader;
     }
