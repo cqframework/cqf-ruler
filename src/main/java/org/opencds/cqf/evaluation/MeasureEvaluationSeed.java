@@ -38,7 +38,7 @@ public class MeasureEvaluationSeed
 
     public void setup(
             Measure measure, String periodStart, String periodEnd,
-            String source, String user, String pass)
+            String productLine, String source, String user, String pass)
     {
         this.measure = measure;
 
@@ -64,12 +64,14 @@ public class MeasureEvaluationSeed
                 ((JpaDataProvider) dataProvider).setExpandValueSets(true);
                 context.registerDataProvider("http://hl7.org/fhir", dataProvider);
                 context.registerLibraryLoader(getLibraryLoader());
+                context.registerTerminologyProvider(terminologyProvider);
             }
             else
             {
                 ((Qdm54DataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
                 context.registerDataProvider("urn:healthit-gov:qdm:v5_4", dataProvider);
                 context.registerLibraryLoader(getLibraryLoader());
+                context.registerTerminologyProvider(terminologyProvider);
             }
         }
 
@@ -80,6 +82,10 @@ public class MeasureEvaluationSeed
         context.setParameter(null, "Measurement Period",
                 new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
                         DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
+
+        if (productLine != null) {
+            context.setParameter(null, "Product Line", productLine);
+        }
     }
 
     private TerminologyProvider getTerminologyProvider(String url, String user, String pass)
