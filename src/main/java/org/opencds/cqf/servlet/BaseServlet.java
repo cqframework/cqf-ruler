@@ -66,10 +66,11 @@ public class BaseServlet extends RestfulServer
         CqlExecutionProvider cql = new CqlExecutionProvider(provider);
         plainProviders.add(cql);
 
+        registerProviders(resourceProviders);
+
         CodeSystemUpdateProvider csUpdate = new CodeSystemUpdateProvider(provider);
         plainProviders.add(csUpdate);
 
-        registerProviders(resourceProviders);
         registerProviders(plainProviders);
         setResourceProviders(resourceProviders);
 
