@@ -95,7 +95,7 @@ public class FHIRValueSetResourceProvider extends ValueSetResourceProvider
                                 new SearchParameterMap().add(CodeSystem.SP_URL, new UriParam(url))
                 );
 
-        if (bundleProvider.size() == 1)
+        if (bundleProvider.size() >= 1)
         {
             return (CodeSystem) bundleProvider.getResources(0, 1).get(0);
         }
