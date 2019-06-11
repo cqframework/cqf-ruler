@@ -1,6 +1,5 @@
 package org.opencds.cqf.providers;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -181,8 +180,11 @@ public class CqlExecutionProvider {
 
     private TerminologyProvider getTerminologyProvider(String url, String user, String pass) {
         if (url != null) {
-            // TODO: Change to cache-value-sets
-            return new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
+            if (url.contains("apelon.com")) {
+                return new ApelonFhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
+            } else {
+                return new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
+            }
         } else
             return provider.getTerminologyProvider();
     }

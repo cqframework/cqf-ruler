@@ -1,0 +1,69 @@
+package org.opencds.cqf.providers;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.dstu3.model.Parameters;
+import org.hl7.fhir.dstu3.model.ValueSet;
+import org.opencds.cqf.cql.runtime.Code;
+import org.opencds.cqf.cql.terminology.ValueSetInfo;
+import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
+
+import ca.uhn.fhir.rest.gclient.IQuery;
+import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+
+public class ApelonFhirTerminologyProvider extends FhirTerminologyProvider
+    {
+        @Override
+        public Iterable<Code> expand(ValueSetInfo valueSet) throws ResourceNotFoundException {
+            String url = this.resolveByIdentifier(valueSet);
+
+            Parameters respParam = this.getFhirClient()
+                    .operation()
+                    .onType(ValueSet.class)
+                    .named("expand")
+                    .withSearchParameter(Parameters.class, "url", new StringParam(url))
+                    .andSearchParameter("includeDefinition", new StringParam("true"))
+                    .useHttpGet()
+                    .execute();
+    
+            ValueSet expanded = (ValueSet) respParam.getParameter().get(0).getResource();
+            List<Code> codes = new ArrayList<>();
+            for (ValueSet.ValueSetExpansionContainsComponent codeInfo : expanded.getExpansion().getContains()) {
+                Code nextCode = new Code()
+                        .withCode(codeInfo.getCode())
+                        .withSystem(codeInfo.getSystem())
+                        .withVersion(codeInfo.getVersion())
+                        .withDisplay(codeInfo.getDisplay());
+                codes.add(nextCode);
+            }
+            return codes;
+        }
+
+        public String resolveByIdentifier(ValueSetInfo valueSet) {
+            IQuery<Bundle> bundleQuery = this.getFhirClient()
+                .search()
+                .byUrl("ValueSet?identifier=" + valueSet.getId())
+                .returnBundle(Bundle.class)
+                .accept("application/fhir+xml");
+                
+            Bundle searchResults = bundleQuery.execute();
+
+            if (searchResults.hasEntry()) {
+                for (BundleEntryComponent bec : searchResults.getEntry()) {
+                    if (bec.hasResource()) {
+                        String id = bec.getResource().getIdElement().getIdPart();
+                        if (id.equals(valueSet.getId())) {
+                            return ((ValueSet)bec.getResource()).getUrl();
+                        }
+                    }
+
+                }
+            }
+
+            return null;
+        }
+    }
