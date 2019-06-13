@@ -17,8 +17,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Data
 public class Qdm54DataProvider implements DataProvider
@@ -66,6 +68,10 @@ public class Qdm54DataProvider implements DataProvider
                     }
                 }
             }
+            // else if (context != null && context.equals("Patient") && (contextValue == null || contextValue.equals("null"))) {
+            //     // No data if Context is Patient and  Patient Id is null.
+            // }
+            // // If context is not Patient, then it must be Population. Return all data.
             else {
                 if (dataType.equals("Patient")) {
                     retVal.add(((PatientRepository) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + dataType + "Repository"))).findAll());
@@ -94,18 +100,18 @@ public class Qdm54DataProvider implements DataProvider
 
             if (codes != null)
             {
+                Set<String> hash = new HashSet<String>();
                 for (Code code : codes)
                 {
-                    for (BaseType candidate : candidates)
+                    hash.add(code.getSystem() + code.getCode());
+                }
+
+                for (BaseType candidate : candidates)
+                {
+                    org.opencds.cqf.qdm.fivepoint4.model.Code c = candidate.getCode();
+                    if (c != null && c.getSystem() != null && c.getCode() != null && hash.contains(c.getSystem() + c.getCode()))
                     {
-                        if (candidate.getCode() != null
-                                && candidate.getCode().getCode() != null
-                                && candidate.getCode().getCode().equals(code.getCode())
-                                && candidate.getCode().getSystem() != null
-                                && candidate.getCode().getSystem().equals(code.getSystem()))
-                        {
-                            retVal.add(candidate);
-                        }
+                        retVal.add(candidate);
                     }
                 }
             }
@@ -163,9 +169,11 @@ public class Qdm54DataProvider implements DataProvider
 
         if (result instanceof DateTimeInterval)
         {
+            String start = ((DateTimeInterval) result).getStart();
+            String end = ((DateTimeInterval) result).getEnd();
             return new Interval(
-                    new DateTime(((DateTimeInterval) result).getStart(), TemporalHelper.getDefaultZoneOffset()), true,
-                    new DateTime(((DateTimeInterval) result).getEnd(), TemporalHelper.getDefaultZoneOffset()), true
+                    start != null ? new DateTime(start, TemporalHelper.getDefaultZoneOffset()) : null, true,
+                    end != null ? new DateTime(end, TemporalHelper.getDefaultZoneOffset()) : null, true
             );
         }
 

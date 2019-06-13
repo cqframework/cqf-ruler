@@ -87,6 +87,8 @@ public class MeasureEvaluationSeed
         if (productLine != null) {
             context.setParameter(null, "Product Line", productLine);
         }
+
+        context.setExpressionCaching(true);
     }
 
     private TerminologyProvider getTerminologyProvider(String url, String user, String pass)

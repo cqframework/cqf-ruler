@@ -15,9 +15,12 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.elm.tracking.TrackBack;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.Measure;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
-import org.opencds.cqf.config.NonCachingLibraryManager;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
@@ -39,7 +42,7 @@ public class LibraryHelper {
 
     public static STU3LibraryLoader createLibraryLoader(LibraryResourceProvider provider) {
         ModelManager modelManager = new ModelManager();
-        LibraryManager libraryManager = new NonCachingLibraryManager(modelManager);
+        LibraryManager libraryManager = new LibraryManager(modelManager);
         libraryManager.getLibrarySourceLoader().clearProviders();
         libraryManager.getLibrarySourceLoader().registerProvider(new STU3LibrarySourceProvider(provider));
         return new STU3LibraryLoader(provider, libraryManager, modelManager);

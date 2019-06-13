@@ -1,5 +1,57 @@
 package org.opencds.cqf.providers;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.xml.bind.JAXBException;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.cqframework.cql.elm.execution.ExpressionDef;
+import org.cqframework.cql.elm.execution.ListTypeSpecifier;
+import org.cqframework.cql.elm.execution.ParameterDef;
+import org.cqframework.cql.elm.execution.UsingDef;
+import org.hl7.fhir.dstu3.model.ActivityDefinition;
+import org.hl7.fhir.dstu3.model.CarePlan;
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.DomainResource;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import org.hl7.fhir.dstu3.model.RequestGroup;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.builders.AttachmentBuilder;
+import org.opencds.cqf.builders.CarePlanActivityBuilder;
+import org.opencds.cqf.builders.CarePlanBuilder;
+import org.opencds.cqf.builders.ExtensionBuilder;
+import org.opencds.cqf.builders.JavaDateBuilder;
+import org.opencds.cqf.builders.ReferenceBuilder;
+import org.opencds.cqf.builders.RelatedArtifactBuilder;
+import org.opencds.cqf.builders.RequestGroupActionBuilder;
+import org.opencds.cqf.builders.RequestGroupBuilder;
+import org.opencds.cqf.cdshooks.providers.Discovery;
+import org.opencds.cqf.cdshooks.providers.DiscoveryDataProvider;
+import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderDstu2;
+import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderStu3;
+import org.opencds.cqf.cdshooks.providers.DiscoveryItem;
+import org.opencds.cqf.config.STU3LibraryLoader;
+import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.runtime.DateTime;
+import org.opencds.cqf.exceptions.NotImplementedException;
+import org.opencds.cqf.helpers.LibraryHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider;
@@ -9,31 +61,6 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
-import org.cqframework.cql.elm.execution.*;
-import org.hl7.fhir.dstu3.model.*;
-import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.builders.*;
-import org.opencds.cqf.cdshooks.providers.*;
-import org.opencds.cqf.config.NonCachingLibraryManager;
-import org.opencds.cqf.config.STU3LibraryLoader;
-import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.cql.runtime.DateTime;
-import org.opencds.cqf.exceptions.NotImplementedException;
-import org.opencds.cqf.helpers.LibraryHelper;
-import org.opencds.cqf.helpers.LibraryResourceHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
 
 public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourceProvider {
 
