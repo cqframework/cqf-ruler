@@ -21,6 +21,7 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
 import org.hl7.fhir.dstu3.model.Resource;
+import org.opencds.cqf.config.NonCachingLibraryManager;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
@@ -42,7 +43,7 @@ public class LibraryHelper {
 
     public static STU3LibraryLoader createLibraryLoader(LibraryResourceProvider provider) {
         ModelManager modelManager = new ModelManager();
-        LibraryManager libraryManager = new LibraryManager(modelManager);
+        LibraryManager libraryManager = new NonCachingLibraryManager(modelManager);
         libraryManager.getLibrarySourceLoader().clearProviders();
         libraryManager.getLibrarySourceLoader().registerProvider(new STU3LibrarySourceProvider(provider));
         return new STU3LibraryLoader(provider, libraryManager, modelManager);
