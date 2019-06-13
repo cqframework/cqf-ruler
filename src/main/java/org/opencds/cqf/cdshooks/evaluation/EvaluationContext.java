@@ -1,20 +1,14 @@
 package org.opencds.cqf.cdshooks.evaluation;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
-import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
+import java.io.IOException;
+import java.util.List;
+
 import org.cqframework.cql.elm.execution.Library;
-import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.cdshooks.hooks.Hook;
-import org.opencds.cqf.config.NonCachingLibraryManager;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderDstu2;
@@ -26,8 +20,10 @@ import org.opencds.cqf.helpers.LibraryHelper;
 import org.opencds.cqf.providers.FHIRBundleResourceProvider;
 import org.opencds.cqf.providers.JpaDataProvider;
 
-import java.io.IOException;
-import java.util.List;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 
 public class EvaluationContext {
 

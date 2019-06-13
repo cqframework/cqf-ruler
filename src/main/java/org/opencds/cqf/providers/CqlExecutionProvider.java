@@ -211,7 +211,13 @@ public class CqlExecutionProvider {
             @OperationParam(name = "terminologyServiceUri") String terminologyServiceUri,
             @OperationParam(name = "terminologyUser") String terminologyUser,
             @OperationParam(name = "terminologyPass") String terminologyPass,
+            @OperationParam(name = "context") String contextParam,
             @OperationParam(name = "parameters") Parameters parameters) {
+
+        if (patientId == null && contextParam != null && contextParam.equals("Patient") ) {
+            throw new IllegalArgumentException("Must specify a patientId when executing in Patient context.");
+        }
+
         CqlTranslator translator;
         FhirMeasureBundler bundler = new FhirMeasureBundler();
 
@@ -284,6 +290,7 @@ public class CqlExecutionProvider {
             }    
         }
 
+        context.setExpressionCaching(true);
         if (library.getStatements() != null) {
             for (org.cqframework.cql.elm.execution.ExpressionDef def : library.getStatements().getDef()) {
                 context.enterContext(def.getContext());

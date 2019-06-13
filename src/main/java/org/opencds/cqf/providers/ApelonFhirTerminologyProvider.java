@@ -2,6 +2,8 @@ package org.opencds.cqf.providers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
@@ -17,8 +19,15 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 public class ApelonFhirTerminologyProvider extends FhirTerminologyProvider
     {
+        private Map<String, List<Code>> cache = new HashMap<>();
+
         @Override
         public Iterable<Code> expand(ValueSetInfo valueSet) throws ResourceNotFoundException {
+            String id = valueSet.getId();
+            if (this.cache.containsKey(id)) {
+                return this.cache.get(id);
+            }
+
             String url = this.resolveByIdentifier(valueSet);
 
             Parameters respParam = this.getFhirClient()
@@ -40,6 +49,8 @@ public class ApelonFhirTerminologyProvider extends FhirTerminologyProvider
                         .withDisplay(codeInfo.getDisplay());
                 codes.add(nextCode);
             }
+
+            this.cache.put(id, codes);
             return codes;
         }
 

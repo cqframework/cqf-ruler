@@ -75,6 +75,34 @@ public abstract class AssessmentPerformed extends BaseType implements Serializab
     private String resultDatetime;
     private String resultTime;
 
+
+    public Object getResult() {
+        if (resultInteger != null) {
+                return resultInteger;
+        }
+        else if (resultDecimal != null) {
+                return resultDecimal;
+        }
+        else if (resultCode != null) {
+                return resultCode;
+        }
+        else if (resultQuantity != null) {
+                return resultQuantity;
+        }
+        else if (resultRatio != null) {
+                return resultRatio;
+        }
+        else if (resultDatetime != null) {
+                return resultDatetime;
+        }
+        else if (resultTime != null) {
+                return resultTime;
+        }
+        else {
+                return null;
+        }
+    }
+
 //    @ElementCollection
 //    @LazyCollection(LazyCollectionOption.FALSE)
 //    private List<Component> component;
