@@ -211,12 +211,11 @@ public class CqlExecutionProvider {
             @OperationParam(name = "terminologyServiceUri") String terminologyServiceUri,
             @OperationParam(name = "terminologyUser") String terminologyUser,
             @OperationParam(name = "terminologyPass") String terminologyPass,
-            @OperationParam(name = "startingContext") String startingContext,
+            @OperationParam(name = "context") String contextParam,
             @OperationParam(name = "parameters") Parameters parameters) {
 
-        if (patientId == null && startingContext != null && startingContext.equals("Patient") ) {
-            throw new IllegalArgumentException("Must specify a patientId when starting in Patient context.");
-
+        if (patientId == null && contextParam != null && contextParam.equals("Patient") ) {
+            throw new IllegalArgumentException("Must specify a patientId when executing in Patient context.");
         }
 
         CqlTranslator translator;
