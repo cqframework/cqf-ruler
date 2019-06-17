@@ -29,11 +29,11 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>cds-services</servlet-name>
-        <url-pattern>cds-services</url-pattern>
+        <url-pattern>/cds-services</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>cds-services</servlet-name>
-        <url-pattern>cds-services/*</url-pattern>
+        <url-pattern>/cds-services/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
