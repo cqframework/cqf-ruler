@@ -108,7 +108,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
 
         JpaResourceProviderDstu3<? extends IAnyResource> jpaResProvider = resolveResourceProvider(dataType);
         IBundleProvider bundleProvider = jpaResProvider.getDao().search(map);
-        if (bundleProvider.size() == 0) {
+        if (bundleProvider == null || bundleProvider.size() == 0) {
             return new ArrayList<>();
         }
         List<IBaseResource> resourceList = bundleProvider.getResources(0, bundleProvider.size());
