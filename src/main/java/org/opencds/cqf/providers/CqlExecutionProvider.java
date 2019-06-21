@@ -2,6 +2,7 @@ package org.opencds.cqf.providers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,11 @@ import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.runtime.DateTime;
+import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
+import org.opencds.cqf.helpers.DateHelper;
 import org.opencds.cqf.helpers.FhirMeasureBundler;
 import org.opencds.cqf.helpers.LibraryHelper;
 
@@ -35,6 +39,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 /**
@@ -208,6 +213,9 @@ public class CqlExecutionProvider {
     @Operation(name = "$cql")
     public Bundle evaluate(@OperationParam(name = "code") String code,
             @OperationParam(name = "patientId") String patientId,
+            @OptionalParam(name="periodStart") String periodStart,
+            @OptionalParam(name="periodEnd") String periodEnd,
+            @OptionalParam(name="productLine") String productLine,
             @OperationParam(name = "terminologyServiceUri") String terminologyServiceUri,
             @OperationParam(name = "terminologyUser") String terminologyUser,
             @OperationParam(name = "terminologyPass") String terminologyPass,
@@ -289,6 +297,21 @@ public class CqlExecutionProvider {
                 context.setParameter(library.getLocalId(), pc.getName(), pc.getValue());
             }    
         }
+
+        if (periodStart != null && periodEnd != null) {
+            // resolve the measurement period
+            Interval measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
+            DateHelper.resolveRequestDate(periodEnd, false), true);
+
+            context.setParameter(null, "Measurement Period",
+                    new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
+                            DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
+        }
+
+        if (productLine != null) {
+            context.setParameter(null, "Product Line", productLine);
+        }
+
 
         context.setExpressionCaching(true);
         if (library.getStatements() != null) {
