@@ -69,9 +69,11 @@ public class LibraryHelper {
 
     public static CqlTranslator getTranslator(InputStream cqlStream, LibraryManager libraryManager, ModelManager modelManager) {
         ArrayList<CqlTranslator.Options> options = new ArrayList<>();
-//        options.add(CqlTranslator.Options.EnableDateRangeOptimization);
         options.add(CqlTranslator.Options.EnableAnnotations);
-        options.add(CqlTranslator.Options.EnableDetailedErrors);
+        options.add(CqlTranslator.Options.EnableLocators);
+        options.add(CqlTranslator.Options.DisableListDemotion);
+        options.add(CqlTranslator.Options.DisableListPromotion);
+        options.add(CqlTranslator.Options.DisableMethodInvocation);
         CqlTranslator translator;
         try {
             translator = CqlTranslator.fromStream(cqlStream, modelManager, libraryManager,
