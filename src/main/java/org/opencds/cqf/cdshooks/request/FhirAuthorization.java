@@ -1,6 +1,7 @@
 package org.opencds.cqf.cdshooks.request;
 
 import com.google.gson.JsonObject;
+import org.opencds.cqf.exceptions.InvalidFieldTypeException;
 
 public class FhirAuthorization {
 
@@ -13,8 +14,10 @@ public class FhirAuthorization {
     public FhirAuthorization(JsonObject object) {
         accessToken = JsonHelper.getStringRequired(object, "access_token");
         tokenType = JsonHelper.getStringRequired(object, "token_type");
-        expiresIn = JsonHelper.getStringOptional(object, "expires_in");
-        if (expiresIn == null) {
+        try {
+            expiresIn = JsonHelper.getStringOptional(object, "expires_in");
+        }
+        catch (InvalidFieldTypeException ife) {
             expiresIn = JsonHelper.getIntRequired(object, "expires_in");
         }
         scope = JsonHelper.getStringRequired(object, "scope");
