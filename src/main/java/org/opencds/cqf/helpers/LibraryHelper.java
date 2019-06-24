@@ -15,8 +15,12 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.elm.tracking.TrackBack;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.dstu3.model.Measure;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.opencds.cqf.config.NonCachingLibraryManager;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
@@ -65,9 +69,11 @@ public class LibraryHelper {
 
     public static CqlTranslator getTranslator(InputStream cqlStream, LibraryManager libraryManager, ModelManager modelManager) {
         ArrayList<CqlTranslator.Options> options = new ArrayList<>();
-//        options.add(CqlTranslator.Options.EnableDateRangeOptimization);
         options.add(CqlTranslator.Options.EnableAnnotations);
-        options.add(CqlTranslator.Options.EnableDetailedErrors);
+        options.add(CqlTranslator.Options.EnableLocators);
+        options.add(CqlTranslator.Options.DisableListDemotion);
+        options.add(CqlTranslator.Options.DisableListPromotion);
+        options.add(CqlTranslator.Options.DisableMethodInvocation);
         CqlTranslator translator;
         try {
             translator = CqlTranslator.fromStream(cqlStream, modelManager, libraryManager,

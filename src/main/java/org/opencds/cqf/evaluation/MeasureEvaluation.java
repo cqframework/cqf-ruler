@@ -330,6 +330,10 @@ public class MeasureEvaluation {
     }
 
     private Iterable<org.opencds.cqf.qdm.fivepoint4.model.Patient> evaluateQdmCriteria(Context context, org.opencds.cqf.qdm.fivepoint4.model.Patient patient, Measure.MeasureGroupPopulationComponent pop) {
+        if (!pop.hasCriteria()) {
+            return Collections.emptyList();
+        }
+        
         context.setContextValue("Patient", patient.getId().getValue());
         Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
         if (result instanceof Boolean) {
@@ -345,6 +349,10 @@ public class MeasureEvaluation {
     }
 
     private Iterable<Resource> evaluateCriteria(Context context, Patient patient, Measure.MeasureGroupPopulationComponent pop) {
+        if (!pop.hasCriteria()) {
+            return Collections.emptyList();
+        }
+
         context.setContextValue("Patient", patient.getIdElement().getIdPart());
         Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
         if (result instanceof Boolean) {

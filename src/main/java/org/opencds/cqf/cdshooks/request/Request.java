@@ -72,6 +72,9 @@ public class Request {
             // account for case when user is in the context
             if (user == null) {
                 user = JsonHelper.getStringRequired(getContext().getContextJson(), "user");
+                if (user == null) {
+                    user = JsonHelper.getStringRequired(getContext().getContextJson(), "userId");
+                }
             }
         }
         return user;

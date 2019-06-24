@@ -1,8 +1,8 @@
 package org.opencds.cqf.providers;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +27,11 @@ import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.runtime.DateTime;
+import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
+import org.opencds.cqf.helpers.DateHelper;
 import org.opencds.cqf.helpers.FhirMeasureBundler;
 import org.opencds.cqf.helpers.LibraryHelper;
 
@@ -36,6 +39,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 /**
@@ -181,8 +185,11 @@ public class CqlExecutionProvider {
 
     private TerminologyProvider getTerminologyProvider(String url, String user, String pass) {
         if (url != null) {
-            // TODO: Change to cache-value-sets
-            return new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
+            if (url.contains("apelon.com")) {
+                return new ApelonFhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
+            } else {
+                return new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
+            }
         } else
             return provider.getTerminologyProvider();
     }
@@ -206,10 +213,19 @@ public class CqlExecutionProvider {
     @Operation(name = "$cql")
     public Bundle evaluate(@OperationParam(name = "code") String code,
             @OperationParam(name = "patientId") String patientId,
+            @OptionalParam(name="periodStart") String periodStart,
+            @OptionalParam(name="periodEnd") String periodEnd,
+            @OptionalParam(name="productLine") String productLine,
             @OperationParam(name = "terminologyServiceUri") String terminologyServiceUri,
             @OperationParam(name = "terminologyUser") String terminologyUser,
             @OperationParam(name = "terminologyPass") String terminologyPass,
+            @OperationParam(name = "context") String contextParam,
             @OperationParam(name = "parameters") Parameters parameters) {
+
+        if (patientId == null && contextParam != null && contextParam.equals("Patient") ) {
+            throw new IllegalArgumentException("Must specify a patientId when executing in Patient context.");
+        }
+
         CqlTranslator translator;
         FhirMeasureBundler bundler = new FhirMeasureBundler();
 
@@ -282,6 +298,22 @@ public class CqlExecutionProvider {
             }    
         }
 
+        if (periodStart != null && periodEnd != null) {
+            // resolve the measurement period
+            Interval measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
+            DateHelper.resolveRequestDate(periodEnd, false), true);
+
+            context.setParameter(null, "Measurement Period",
+                    new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
+                            DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
+        }
+
+        if (productLine != null) {
+            context.setParameter(null, "Product Line", productLine);
+        }
+
+
+        context.setExpressionCaching(true);
         if (library.getStatements() != null) {
             for (org.cqframework.cql.elm.execution.ExpressionDef def : library.getStatements().getDef()) {
                 context.enterContext(def.getContext());

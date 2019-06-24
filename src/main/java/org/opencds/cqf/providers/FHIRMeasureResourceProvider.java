@@ -168,6 +168,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             @OptionalParam(name="measure") String measureRef,
             @OptionalParam(name="reportType") String reportType,
             @OptionalParam(name="patient") String patientRef,
+            @OptionalParam(name="productLine") String productLine,
             @OptionalParam(name="practitioner") String practitionerRef,
             @OptionalParam(name="lastReceivedOn") String lastReceivedOn,
             @OptionalParam(name="source") String source,
@@ -183,7 +184,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             throw new RuntimeException("Could not find Measure/" + theId.getIdPart());
         }
 
-        seed.setup(measure, periodStart, periodEnd, source, user, pass);
+        seed.setup(measure, periodStart, periodEnd, productLine, source, user, pass);
 
 
         // resolve report type
@@ -221,7 +222,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             throw new RuntimeException("Could not find Measure/" + theId.getIdPart());
         }
 
-        seed.setup(measure, periodStart, periodEnd, null, null, null);
+        seed.setup(measure, periodStart, periodEnd, null, null, null, null);
         BundleDataProviderStu3 bundleProvider = new BundleDataProviderStu3(sourceData);
         bundleProvider.setTerminologyProvider(provider.getTerminologyProvider());
         seed.getContext().registerDataProvider("http://hl7.org/fhir", bundleProvider);
@@ -270,7 +271,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
             STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
             MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader);
-            seed.setup(measure, periodStart, periodEnd, null, null, null);
+            seed.setup(measure, periodStart, periodEnd, null, null, null, null);
             MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), seed.getMeasurementPeriod());
             // TODO - this is configured for patient-level evaluation only
             report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
@@ -347,7 +348,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     ) throws FHIRException
     {
         // TODO: Spec says that the periods are not required, but I am not sure what to do when they aren't supplied so I made them required
-        MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, patientRef, practitionerRef, lastReceivedOn, null, null, null);
+        MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, null, patientRef, practitionerRef, lastReceivedOn, null, null, null);
         report.setGroup(null);
 
         Parameters parameters = new Parameters();
