@@ -1,11 +1,12 @@
 package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import org.apache.lucene.search.BooleanQuery;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
@@ -14,7 +15,10 @@ import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public class JpaDataProvider extends FhirDataProviderStu3 {
 
@@ -78,6 +82,10 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
                     codeParams.addOr(new TokenParam(code.getSystem(), code.getCode()));
                 }
                 map.add(convertPathToSearchParam(dataType, codePath), codeParams);
+                if (codeParams.getListAsCodings().size() > 1023)
+                {
+                    BooleanQuery.setMaxClauseCount(codeParams.getListAsCodings().size());
+                }
             }
         }
 
