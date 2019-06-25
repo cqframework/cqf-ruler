@@ -9,7 +9,6 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -29,8 +28,6 @@ public abstract class InterventionOrder extends BaseType implements Serializable
             @AttributeOverride(name = "system", column = @Column(name = "reason_system")),
             @AttributeOverride(name = "version", column = @Column(name = "reason_version"))
     })
-    @NotNull
-    @Column(nullable = false)
     private Code reason;
 
    @ElementCollection
