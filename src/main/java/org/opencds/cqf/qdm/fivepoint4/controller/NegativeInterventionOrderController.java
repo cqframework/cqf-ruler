@@ -1,10 +1,12 @@
 package org.opencds.cqf.qdm.fivepoint4.controller;
 
 import org.opencds.cqf.qdm.fivepoint4.exception.ResourceNotFound;
-import org.opencds.cqf.qdm.fivepoint4.model.NegativeInterventionOrder;
+import org.opencds.cqf.qdm.fivepoint4.model.*;
 import org.opencds.cqf.qdm.fivepoint4.repository.NegativeInterventionOrderRepository;
 import org.opencds.cqf.qdm.fivepoint4.validation.QdmValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +30,22 @@ public class NegativeInterventionOrderController implements Serializable
     }
 
     @GetMapping("/NegativeInterventionOrder")
-    public List<NegativeInterventionOrder> getAll()
+    public List<NegativeInterventionOrder> getAll(@RequestParam(name = "patientId", required = false) String patientId)
     {
-        return repository.findAll();
+        if (patientId == null)
+        {
+            return repository.findAll();
+        }
+        else {
+            NegativeInterventionOrder exampleType = new NegativeInterventionOrder();
+            Id pId = new Id();
+            pId.setValue(patientId);
+            exampleType.setPatientId(pId);
+            ExampleMatcher matcher = ExampleMatcher.matchingAny().withMatcher("patientId.value", ExampleMatcher.GenericPropertyMatchers.exact());
+            Example<NegativeInterventionOrder> example = Example.of(exampleType, matcher);
+
+            return repository.findAll(example);
+        }
     }
 
     @GetMapping("/NegativeInterventionOrder/{id}")

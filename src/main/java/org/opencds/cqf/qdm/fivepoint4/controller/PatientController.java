@@ -2,6 +2,7 @@ package org.opencds.cqf.qdm.fivepoint4.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+
 import org.opencds.cqf.qdm.fivepoint4.QdmContext;
 import org.opencds.cqf.qdm.fivepoint4.exception.InvalidResourceType;
 import org.opencds.cqf.qdm.fivepoint4.exception.ResourceNotFound;
@@ -9,6 +10,8 @@ import org.opencds.cqf.qdm.fivepoint4.model.*;
 import org.opencds.cqf.qdm.fivepoint4.repository.*;
 import org.opencds.cqf.qdm.fivepoint4.validation.QdmValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -252,6 +255,40 @@ public class PatientController implements Serializable
     @DeleteMapping("/Patient/{id}")
     public ResponseEntity<?> delete(@PathVariable(value = "id") String id)
     {
+        //Delete patient resources
+        List<String> patientResourceTypes = getPatientResourceTypeList(id);
+        for (String resourceType : patientResourceTypes) {
+			try {
+                BaseRepository<BaseType> resourceRepository = (BaseRepository<BaseType>) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + resourceType + "Repository"));
+                resourceRepository.findByPatientIdValue(id).ifPresent(resourceRepository::deleteAll);
+                // Optional<List<BaseType>> patientResources = resourceRepository.findByPatientIdValue(id);
+                // if (patientResources.isPresent()) {
+                //     resourceRepository.deleteAll(patientResources.get());
+                // }
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+
+        //Delete patient characteristics
+        PatientCharacteristicBirthdateRepository patientCharacteristicBirthdateRepository = QdmContext.getBean(PatientCharacteristicBirthdateRepository.class);
+        patientCharacteristicBirthdateRepository.findByPatientIdValue(id).ifPresent(patientCharacteristicBirthdateRepository::deleteAll);
+        PatientCharacteristicClinicalTrialParticipantRepository patientCharacteristicClinicalTrialParticipantRepository = QdmContext.getBean(PatientCharacteristicClinicalTrialParticipantRepository.class);
+        patientCharacteristicClinicalTrialParticipantRepository.findByPatientIdValue(id).ifPresent(patientCharacteristicClinicalTrialParticipantRepository::deleteAll);
+        PatientCharacteristicEthnicityRepository patientCharacteristicEthnicityRepository = QdmContext.getBean(PatientCharacteristicEthnicityRepository.class);
+        patientCharacteristicEthnicityRepository.findByPatientIdValue(id).ifPresent(patientCharacteristicEthnicityRepository::deleteAll);
+        PatientCharacteristicExpiredRepository patientCharacteristicExpiredRepository = QdmContext.getBean(PatientCharacteristicExpiredRepository.class);
+        patientCharacteristicExpiredRepository.findByPatientIdValue(id).ifPresent(patientCharacteristicExpiredRepository::deleteAll);
+        PatientCharacteristicPayerRepository patientCharacteristicPayerRepository = QdmContext.getBean(PatientCharacteristicPayerRepository.class);
+        patientCharacteristicPayerRepository.findByPatientIdValue(id).ifPresent(patientCharacteristicPayerRepository::deleteAll);
+        PatientCharacteristicRaceRepository patientCharacteristicRaceRepository = QdmContext.getBean(PatientCharacteristicRaceRepository.class);
+        patientCharacteristicRaceRepository.findByPatientIdValue(id).ifPresent(patientCharacteristicRaceRepository::deleteAll);
+        PatientCharacteristicRepository patientCharacteristicRepository = QdmContext.getBean(PatientCharacteristicRepository.class);
+        patientCharacteristicRepository.findByPatientIdValue(id).ifPresent(patientCharacteristicRepository::deleteAll);
+        PatientCharacteristicSexRepository patientCharacteristicSexRepository = QdmContext.getBean(PatientCharacteristicSexRepository.class);
+        patientCharacteristicSexRepository.findByPatientIdValue(id).ifPresent(patientCharacteristicSexRepository::deleteAll);
+
         Patient pat =
                 repository.findById(id)
                         .orElseThrow(
@@ -265,6 +302,53 @@ public class PatientController implements Serializable
         repository.delete(pat);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("Patient/{id}/$get-resource-type-list")
+    public @ResponseBody List<String> getPatientResourceTypeList(@PathVariable(value = "id") String id)
+    {
+        return getPatientResourceTypeList(getById(id));
+    }
+
+    private List<String> getPatientResourceTypeList(Patient patient)
+    {
+        List<String> result = new ArrayList<String>();
+
+        String patientId = patient.getSystemId();
+
+        for (Types type : Types.values()) {
+			try {
+                if (((BaseRepository<BaseType>) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + type.name() + "Repository"))).findByPatientIdValue(patientId).isPresent()) {
+                    result.add(type.name());
+                }
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+
+        return result;
+    }
+
+    @GetMapping("Patient/{id}/$get-patients-for-measure")
+    public @ResponseBody List<Patient> getPatientsForMeasure(@PathVariable(value = "id") String id)
+    {
+        Patient examplePatient = new Patient();
+        examplePatient.setSystemId(id + "-");
+        ExampleMatcher patientMatcher = ExampleMatcher.matchingAny().withMatcher("systemId", ExampleMatcher.GenericPropertyMatchers.startsWith());
+        Example<Patient> example = Example.of(examplePatient, patientMatcher);
+        
+        return repository.findAll(example);
+
+        // List<Patient> result = new ArrayList<>();
+        // for (Patient patient : getAll())
+        // {
+        //     if (patient.getSystemId().startsWith(id)) {
+        //         result.add(patient);
+        //     }
+        // }
+
+        // return result;
     }
 
     private List<Object> parseResources(List<Object> raw) throws IOException

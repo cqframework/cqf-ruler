@@ -1,10 +1,12 @@
 package org.opencds.cqf.qdm.fivepoint4.controller;
 
 import org.opencds.cqf.qdm.fivepoint4.exception.ResourceNotFound;
-import org.opencds.cqf.qdm.fivepoint4.model.NegativeLaboratoryTestPerformed;
+import org.opencds.cqf.qdm.fivepoint4.model.*;
 import org.opencds.cqf.qdm.fivepoint4.repository.NegativeLaboratoryTestPerformedRepository;
 import org.opencds.cqf.qdm.fivepoint4.validation.QdmValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +30,22 @@ public class NegativeLaboratoryTestPerformedController implements Serializable
     }
 
     @GetMapping("/NegativeLaboratoryTestPerformed")
-    public List<NegativeLaboratoryTestPerformed> getAll()
+    public List<NegativeLaboratoryTestPerformed> getAll(@RequestParam(name = "patientId", required = false) String patientId)
     {
-        return repository.findAll();
+        if (patientId == null)
+        {
+            return repository.findAll();
+        }
+        else {
+            NegativeLaboratoryTestPerformed exampleType = new NegativeLaboratoryTestPerformed();
+            Id pId = new Id();
+            pId.setValue(patientId);
+            exampleType.setPatientId(pId);
+            ExampleMatcher matcher = ExampleMatcher.matchingAny().withMatcher("patientId.value", ExampleMatcher.GenericPropertyMatchers.exact());
+            Example<NegativeLaboratoryTestPerformed> example = Example.of(exampleType, matcher);
+
+            return repository.findAll(example);
+        }
     }
 
     @GetMapping("/NegativeLaboratoryTestPerformed/{id}")
