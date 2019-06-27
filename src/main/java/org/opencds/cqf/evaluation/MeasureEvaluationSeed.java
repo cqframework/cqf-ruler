@@ -16,6 +16,7 @@ import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.helpers.DateHelper;
 import org.opencds.cqf.helpers.LibraryHelper;
+import org.opencds.cqf.providers.ApelonFhirTerminologyProvider;
 import org.opencds.cqf.providers.JpaDataProvider;
 import org.opencds.cqf.providers.Qdm54DataProvider;
 
@@ -38,7 +39,7 @@ public class MeasureEvaluationSeed
 
     public void setup(
             Measure measure, String periodStart, String periodEnd,
-            String source, String user, String pass)
+            String productLine, String source, String user, String pass)
     {
         this.measure = measure;
 
@@ -64,12 +65,14 @@ public class MeasureEvaluationSeed
                 ((JpaDataProvider) dataProvider).setExpandValueSets(true);
                 context.registerDataProvider("http://hl7.org/fhir", dataProvider);
                 context.registerLibraryLoader(getLibraryLoader());
+                context.registerTerminologyProvider(terminologyProvider);
             }
             else
             {
                 ((Qdm54DataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
                 context.registerDataProvider("urn:healthit-gov:qdm:v5_4", dataProvider);
                 context.registerLibraryLoader(getLibraryLoader());
+                context.registerTerminologyProvider(terminologyProvider);
             }
         }
 
@@ -80,15 +83,22 @@ public class MeasureEvaluationSeed
         context.setParameter(null, "Measurement Period",
                 new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
                         DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
+
+        if (productLine != null) {
+            context.setParameter(null, "Product Line", productLine);
+        }
+
+        context.setExpressionCaching(true);
     }
 
     private TerminologyProvider getTerminologyProvider(String url, String user, String pass)
     {
         if (url != null) {
-            // TODO: Change to cache-value-sets
-            return new FhirTerminologyProvider()
-                    .withBasicAuth(user, pass)
-                    .setEndpoint(url, false);
+            if (url.contains("apelon.com")) {
+                return new ApelonFhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
+            } else {
+                return new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
+            }
         }
         else return ((JpaDataProvider) dataProvider).getTerminologyProvider();
     }

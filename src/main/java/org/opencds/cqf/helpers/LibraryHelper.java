@@ -16,10 +16,11 @@ import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.elm.tracking.TrackBack;
 import org.hl7.fhir.dstu3.model.Measure;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
-import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.opencds.cqf.config.NonCachingLibraryManager;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
@@ -68,9 +69,11 @@ public class LibraryHelper {
 
     public static CqlTranslator getTranslator(InputStream cqlStream, LibraryManager libraryManager, ModelManager modelManager) {
         ArrayList<CqlTranslator.Options> options = new ArrayList<>();
-//        options.add(CqlTranslator.Options.EnableDateRangeOptimization);
         options.add(CqlTranslator.Options.EnableAnnotations);
-        options.add(CqlTranslator.Options.EnableDetailedErrors);
+        options.add(CqlTranslator.Options.EnableLocators);
+        options.add(CqlTranslator.Options.DisableListDemotion);
+        options.add(CqlTranslator.Options.DisableListPromotion);
+        options.add(CqlTranslator.Options.DisableMethodInvocation);
         CqlTranslator translator;
         try {
             translator = CqlTranslator.fromStream(cqlStream, modelManager, libraryManager,
@@ -78,11 +81,7 @@ public class LibraryHelper {
         } catch (IOException e) {
             throw new IllegalArgumentException(String.format("Errors occurred translating library: %s", e.getMessage()));
         }
-
-        if (translator.getErrors().size() > 0) {
-            throw new IllegalArgumentException(errorsToString(translator.getErrors()));
-        }
-
+        
         return translator;
     }
 
@@ -140,15 +139,11 @@ public class LibraryHelper {
         }
     }
 
-    public static Library resolvePrimaryLibrary(Measure measure, STU3LibraryLoader libraryLoader)
-    {
-        // default is the first library reference
-        String id = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
-
+    public static Library resolveLibraryById(String libraryId, STU3LibraryLoader libraryLoader) {
         Library library = null;
 
-        org.hl7.fhir.dstu3.model.Library fhirLibrary = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), id);
-        
+        org.hl7.fhir.dstu3.model.Library fhirLibrary = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), libraryId);
+
         for (Library l : libraryLoader.getLibraries()) {
             VersionedIdentifier vid = l.getIdentifier();
             if (vid.getId().equals(fhirLibrary.getName()) && LibraryResourceHelper.compareVersions(fhirLibrary.getVersion(), vid.getVersion()) == 0) {
@@ -158,8 +153,34 @@ public class LibraryHelper {
         }
 
         if (library == null) {
+            library = libraryLoader.load(new VersionedIdentifier().withId(fhirLibrary.getName()).withVersion(fhirLibrary.getVersion()));
+        }
+
+        return library;
+    }
+
+    public static Library resolvePrimaryLibrary(Measure measure, STU3LibraryLoader libraryLoader)
+    {
+        // default is the first library reference
+        String id = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
+
+        Library library = resolveLibraryById(id, libraryLoader);
+
+        if (library == null) {
             throw new IllegalArgumentException(String
-            .format("Could not resolve primary library for Measure/%s.", measure.getId()));
+                    .format("Could not resolve primary library for Measure/%s.", measure.getIdElement().getIdPart()));
+        }
+
+        return library;
+    }
+
+    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition, STU3LibraryLoader libraryLoader) {
+        String id = planDefinition.getLibraryFirstRep().getReferenceElement().getIdPart();
+
+        Library library = resolveLibraryById(id, libraryLoader);
+
+        if (library == null) {
+            throw new IllegalArgumentException(String.format("Could not resolve primary library for PlanDefinition/%s", planDefinition.getIdElement().getIdPart()));
         }
 
         return library;

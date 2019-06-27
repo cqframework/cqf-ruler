@@ -1,25 +1,66 @@
 package org.opencds.cqf.providers;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.xml.bind.JAXBException;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.cqframework.cql.elm.execution.ExpressionDef;
+import org.cqframework.cql.elm.execution.ListTypeSpecifier;
+import org.cqframework.cql.elm.execution.ParameterDef;
+import org.cqframework.cql.elm.execution.UsingDef;
+import org.hl7.fhir.dstu3.model.ActivityDefinition;
+import org.hl7.fhir.dstu3.model.CarePlan;
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.DomainResource;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import org.hl7.fhir.dstu3.model.RequestGroup;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.builders.AttachmentBuilder;
+import org.opencds.cqf.builders.CarePlanActivityBuilder;
+import org.opencds.cqf.builders.CarePlanBuilder;
+import org.opencds.cqf.builders.ExtensionBuilder;
+import org.opencds.cqf.builders.JavaDateBuilder;
+import org.opencds.cqf.builders.ReferenceBuilder;
+import org.opencds.cqf.builders.RelatedArtifactBuilder;
+import org.opencds.cqf.builders.RequestGroupActionBuilder;
+import org.opencds.cqf.builders.RequestGroupBuilder;
+import org.opencds.cqf.cdshooks.providers.Discovery;
+import org.opencds.cqf.cdshooks.providers.DiscoveryDataProvider;
+import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderDstu2;
+import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderStu3;
+import org.opencds.cqf.cdshooks.providers.DiscoveryItem;
+import org.opencds.cqf.config.STU3LibraryLoader;
+import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.runtime.DateTime;
+import org.opencds.cqf.exceptions.NotImplementedException;
+import org.opencds.cqf.helpers.LibraryHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
-import org.hl7.fhir.dstu3.model.*;
-import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.builders.*;
-import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.runtime.DateTime;
-import org.opencds.cqf.exceptions.NotImplementedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
 public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourceProvider {
 
@@ -397,6 +438,113 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
         }
 
         throw new RuntimeException(String.format("Resource %s does not contain resource with id %s", resource.fhirType(), id));
+    }
+
+    private Map<String, Pair<PlanDefinition, Discovery> > discoveryCache = new HashMap<>();
+
+    public List<Discovery> getDiscoveries(FhirVersionEnum version) {
+        List<Discovery> discoveries = new ArrayList<>();
+        IBundleProvider bundleProvider = getDao().search(new SearchParameterMap());
+        for (IBaseResource resource : bundleProvider.getResources(0, bundleProvider.size())) {
+            if (resource instanceof PlanDefinition) {
+                PlanDefinition planDefinition = (PlanDefinition) resource;
+                if (discoveryCache.containsKey(planDefinition.getIdElement().getIdPart())) {
+                    Pair<PlanDefinition, Discovery> pair = discoveryCache.get(planDefinition.getIdElement().getIdPart());
+                    if (pair.getLeft().hasMeta() && pair.getLeft().getMeta().hasLastUpdated()
+                            && planDefinition.hasMeta() && planDefinition.getMeta().hasLastUpdated())
+                    {
+                        if (pair.getLeft().getMeta().getLastUpdated().equals(planDefinition.getMeta().getLastUpdated())) {
+                            discoveries.add(pair.getRight());
+                        }
+                        else {
+                            Discovery discovery = getDiscovery(planDefinition, version);
+                            if (discovery == null) continue;
+                            discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
+                            discoveries.add(discovery);
+                        }
+                    }
+                }
+                else {
+                    Discovery discovery = getDiscovery(planDefinition, version);
+                    if (discovery == null) continue;
+                    discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
+                    discoveries.add(discovery);
+                }
+            }
+        }
+        return discoveries;
+    }
+
+    public Discovery getDiscovery(PlanDefinition planDefinition, FhirVersionEnum version) {
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader((LibraryResourceProvider)provider.resolveResourceProvider("Library"));
+        if (planDefinition.hasType()) {
+            for (Coding typeCode : planDefinition.getType().getCoding()) {
+                if (typeCode.getCode().equals("eca-rule")) {
+                    if (planDefinition.hasLibrary()) {
+                        for (Reference reference : planDefinition.getLibrary()) {
+                            org.cqframework.cql.elm.execution.Library library;
+                            try {
+                                library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader);
+                            }
+                            catch (Exception e)
+                            {
+                                Discovery discovery = new Discovery();
+                                discovery.addItem(new DiscoveryItem().setUrl(e.getMessage()));
+                                return discovery;
+                            }
+
+                            DiscoveryDataProvider discoveryDataProvider = null;
+                            for (UsingDef using : library.getUsings().getDef()) {
+                                if (version == FhirVersionEnum.DSTU3 && using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("3.0.0")) {
+                                    discoveryDataProvider = new DiscoveryDataProviderStu3();
+                                }
+                                else if (version == FhirVersionEnum.DSTU2 && using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("1.0.2")) {
+                                    discoveryDataProvider = new DiscoveryDataProviderDstu2();
+                                }
+                            }
+                            if (discoveryDataProvider == null) {
+                                continue;
+                            }
+                            discoveryDataProvider.setExpandValueSets(true);
+                            discoveryDataProvider.setTerminologyProvider(provider.getTerminologyProvider());
+                            Context context = new Context(library);
+                            context.registerDataProvider("http://hl7.org/fhir", discoveryDataProvider);
+                            context.registerTerminologyProvider(provider.getTerminologyProvider());
+                            context.registerLibraryLoader(libraryLoader
+                            );
+                            context.enterContext("Patient");
+                            context.setContextValue(context.getCurrentContext(), "{{context.patientId}}");
+                            // TODO - remove once engine issue is resolved
+                            if (library.getParameters() != null) {
+                                for (ParameterDef params : library.getParameters().getDef()) {
+                                    if (params.getParameterTypeSpecifier() instanceof ListTypeSpecifier) {
+                                        context.setParameter(null, params.getName(), new ArrayList<>());
+                                    }
+//                                    else if (params.getParameterTypeSpecifier() instanceof IntervalTypeSpecifier) {
+//                                        context.setParameter(null, params.getName(), new Interval(null, true, null, true));
+//                                    }
+//                                    else if (params.getParameterTypeSpecifier() instanceof TupleTypeSpecifier) {
+//                                        context.setParameter(null, params.getName(), new Tuple());
+//                                    }
+//                                    else {
+//                                        context.setParameter(null, params.getName(), new Object());
+//                                    }
+                                }
+                            }
+                            for (ExpressionDef def : library.getStatements().getDef()) {
+                                try {
+                                    def.getExpression().evaluate(context);
+                                } catch (Exception e) {
+                                    // ignore
+                                }
+                            }
+                            return discoveryDataProvider.getDiscovery().setPlanDefinition(planDefinition);
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
 

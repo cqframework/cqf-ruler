@@ -168,6 +168,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             @OptionalParam(name="measure") String measureRef,
             @OptionalParam(name="reportType") String reportType,
             @OptionalParam(name="patient") String patientRef,
+            @OptionalParam(name="productLine") String productLine,
             @OptionalParam(name="practitioner") String practitionerRef,
             @OptionalParam(name="lastReceivedOn") String lastReceivedOn,
             @OptionalParam(name="source") String source,
@@ -183,7 +184,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             throw new RuntimeException("Could not find Measure/" + theId.getIdPart());
         }
 
-        seed.setup(measure, periodStart, periodEnd, source, user, pass);
+        seed.setup(measure, periodStart, periodEnd, productLine, source, user, pass);
 
 
         // resolve report type
@@ -221,7 +222,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             throw new RuntimeException("Could not find Measure/" + theId.getIdPart());
         }
 
-        seed.setup(measure, periodStart, periodEnd, null, null, null);
+        seed.setup(measure, periodStart, periodEnd, null, null, null, null);
         BundleDataProviderStu3 bundleProvider = new BundleDataProviderStu3(sourceData);
         bundleProvider.setTerminologyProvider(provider.getTerminologyProvider());
         seed.getContext().registerDataProvider("http://hl7.org/fhir", bundleProvider);
@@ -270,7 +271,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
             STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
             MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader);
-            seed.setup(measure, periodStart, periodEnd, null, null, null);
+            seed.setup(measure, periodStart, periodEnd, null, null, null, null);
             MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), seed.getMeasurementPeriod());
             // TODO - this is configured for patient-level evaluation only
             report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
@@ -347,7 +348,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     ) throws FHIRException
     {
         // TODO: Spec says that the periods are not required, but I am not sure what to do when they aren't supplied so I made them required
-        MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, patientRef, practitionerRef, lastReceivedOn, null, null, null);
+        MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, null, patientRef, practitionerRef, lastReceivedOn, null, null, null);
         report.setGroup(null);
 
         Parameters parameters = new Parameters();
@@ -556,9 +557,11 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         for (Library library : libraryLoader.getLibraries()) {
             Boolean isPrimaryLibrary = library.getIdentifier().getId().equalsIgnoreCase(primaryLibrary.getIdentifier().getId());
             String libraryNamespace = "";
-            for (IncludeDef include : primaryLibrary.getIncludes().getDef()) {
-                if (library.getIdentifier().getId().equalsIgnoreCase(include.getPath())) {
-                    libraryNamespace = include.getLocalIdentifier() + ".";
+            if (primaryLibrary.getIncludes() != null) {
+                for (IncludeDef include : primaryLibrary.getIncludes().getDef()) {
+                    if (library.getIdentifier().getId().equalsIgnoreCase(include.getPath())) {
+                        libraryNamespace = include.getLocalIdentifier() + ".";
+                    }
                 }
             }
             VersionedIdentifier libraryIdentifier = library.getIdentifier();
@@ -581,50 +584,52 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             }
             String[] cqlLines = cql.replaceAll("[\r]", "").split("[\n]");
     
-            for (ExpressionDef statement : library.getStatements().getDef()) {
-                String[] location = statement.getLocator().split("-");
-                String statementText = "";
-                String signature = "";
-                int start = Integer.parseInt(location[0].split(":")[0]);
-                int end = Integer.parseInt(location[1].split(":")[0]);
-                for (int i = start - 1; i < end; i++) {
-                    if (cqlLines[i].contains("define function \"" + statement.getName() + "\"(")) {
-                        signature = cqlLines[i].substring(cqlLines[i].indexOf("("), cqlLines[i].indexOf(")") + 1);
-                    }
-                    if (!cqlLines[i].contains("define \"" + statement.getName() + "\":") && !cqlLines[i].contains("define function \"" + statement.getName() + "\"(")) {
-                        statementText = statementText.concat((statementText.length() > 0 ? "\r\n" : "") + cqlLines[i]);
-                    }
-                }
-                if (statementText.startsWith("context")) {
-                    continue;
-                }
-                MeasureGroupPopulationComponent def = new MeasureGroupPopulationComponent();
-                def.setName(libraryNamespace + statement.getName() + signature);
-                def.setCriteria(statementText);
-                //TODO: Only statements that are directly referenced in the primary library cql will be included.
-                if (statement.getClass() == FunctionDef.class) {
-                    if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
-                        functionStatements.add(def);
-                    }
-                }
-                else {
-                    if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
-                        definitionStatements.add(def);
-                    }
-                }
-
-                for (MeasureGroupComponent group : populationStatements) {
-                    for (MeasureGroupPopulationComponent population : group.getPopulation()) {
-                        if (population.getCriteria().equalsIgnoreCase(statement.getName())) {
-                            population.setName(statement.getName());
-                            population.setCriteria(statementText);
+            if (library.getStatements() != null) {
+                for (ExpressionDef statement : library.getStatements().getDef()) {
+                    String[] location = statement.getLocator().split("-");
+                    String statementText = "";
+                    String signature = "";
+                    int start = Integer.parseInt(location[0].split(":")[0]);
+                    int end = Integer.parseInt(location[1].split(":")[0]);
+                    for (int i = start - 1; i < end; i++) {
+                        if (cqlLines[i].contains("define function \"" + statement.getName() + "\"(")) {
+                            signature = cqlLines[i].substring(cqlLines[i].indexOf("("), cqlLines[i].indexOf(")") + 1);
+                        }
+                        if (!cqlLines[i].contains("define \"" + statement.getName() + "\":") && !cqlLines[i].contains("define function \"" + statement.getName() + "\"(")) {
+                            statementText = statementText.concat((statementText.length() > 0 ? "\r\n" : "") + cqlLines[i]);
                         }
                     }
-                }
+                    if (statementText.startsWith("context")) {
+                        continue;
+                    }
+                    MeasureGroupPopulationComponent def = new MeasureGroupPopulationComponent();
+                    def.setName(libraryNamespace + statement.getName() + signature);
+                    def.setCriteria(statementText);
+                    //TODO: Only statements that are directly referenced in the primary library cql will be included.
+                    if (statement.getClass() == FunctionDef.class) {
+                        if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
+                            functionStatements.add(def);
+                        }
+                    }
+                    else {
+                        if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
+                            definitionStatements.add(def);
+                        }
+                    }
 
-                for (MeasureSupplementalDataComponent dataComponent : cqfMeasure.getSupplementalData()) {
-                    if (dataComponent.getCriteria().equalsIgnoreCase(def.getName())) {
-                        supplementalDataElements.add(def);
+                    for (MeasureGroupComponent group : populationStatements) {
+                        for (MeasureGroupPopulationComponent population : group.getPopulation()) {
+                            if (population.getCriteria() != null && population.getCriteria().equalsIgnoreCase(statement.getName())) {
+                                population.setName(statement.getName());
+                                population.setCriteria(statementText);
+                            }
+                        }
+                    }
+
+                    for (MeasureSupplementalDataComponent dataComponent : cqfMeasure.getSupplementalData()) {
+                        if (dataComponent.getCriteria()!= null && dataComponent.getCriteria().equalsIgnoreCase(def.getName())) {
+                            supplementalDataElements.add(def);
+                        }
                     }
                 }
             }

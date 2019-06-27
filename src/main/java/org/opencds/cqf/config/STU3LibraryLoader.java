@@ -1,6 +1,8 @@
 package org.opencds.cqf.config;
 
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+
+import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -94,10 +96,15 @@ public class STU3LibraryLoader implements LibraryLoader {
             throw new IllegalArgumentException(errorsToString(errors));
         }
         try {
+            CqlTranslator translator = getTranslator("", libraryManager, modelManager);
+
+            if (translator.getErrors().size() > 0) {
+                throw new IllegalArgumentException(errorsToString(translator.getErrors()));
+            }
+    
             return readLibrary(
                             new ByteArrayInputStream(
-                                    getTranslator("", libraryManager, modelManager)
-                                            .convertToXml(translatedLibrary).getBytes(StandardCharsets.UTF_8)
+                                translator.convertToXml(translatedLibrary).getBytes(StandardCharsets.UTF_8)      
                             )
                     );
         } catch (JAXBException e) {

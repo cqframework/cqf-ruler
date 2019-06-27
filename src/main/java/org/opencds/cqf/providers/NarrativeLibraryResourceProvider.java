@@ -88,14 +88,16 @@ public class NarrativeLibraryResourceProvider extends LibraryResourceProvider {
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails,
             @IdParam IdType theId) {
         Library theResource = this.getDao().read(theId);
-        this.formatCql(theResource);
+        //this.formatCql(theResource);
 
         CqlTranslator translator = this.getTranslator(theResource);
-        if (translator != null) {
-            this.ensureElm(theResource, translator);
-            this.ensureRelatedArtifacts(theResource, translator);
-            this.ensureDataRequirements(theResource, translator);
+        if (translator.getErrors().size() > 0) {
+            throw new RuntimeException("Errors during library compilation.");
         }
+        
+        this.ensureElm(theResource, translator);
+        this.ensureRelatedArtifacts(theResource, translator);
+        this.ensureDataRequirements(theResource, translator);
 
         Narrative n = this.narrativeProvider.getNarrative(this.getContext(), theResource);
         theResource.setText(n);
@@ -107,7 +109,7 @@ public class NarrativeLibraryResourceProvider extends LibraryResourceProvider {
     @Operation(name = "$get-elm", idempotent = true)
     public Parameters getElm(@IdParam IdType theId, @OptionalParam(name="format") String format) {
         Library theResource = this.getDao().read(theId);
-        this.formatCql(theResource);
+        // this.formatCql(theResource);
 
         String elm = "";
         CqlTranslator translator = this.getTranslator(theResource);
