@@ -1,10 +1,12 @@
 package org.opencds.cqf.qdm.fivepoint4.controller;
 
 import org.opencds.cqf.qdm.fivepoint4.exception.ResourceNotFound;
-import org.opencds.cqf.qdm.fivepoint4.model.Symptom;
+import org.opencds.cqf.qdm.fivepoint4.model.*;
 import org.opencds.cqf.qdm.fivepoint4.repository.SymptomRepository;
 import org.opencds.cqf.qdm.fivepoint4.validation.QdmValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +30,22 @@ public class SymptomController implements Serializable
     }
 
     @GetMapping("/Symptom")
-    public List<Symptom> getAll()
+    public List<Symptom> getAll(@RequestParam(name = "patientId", required = false) String patientId)
     {
-        return repository.findAll();
+        if (patientId == null)
+        {
+            return repository.findAll();
+        }
+        else {
+            Symptom exampleType = new Symptom();
+            Id pId = new Id();
+            pId.setValue(patientId);
+            exampleType.setPatientId(pId);
+            ExampleMatcher matcher = ExampleMatcher.matchingAny().withMatcher("patientId.value", ExampleMatcher.GenericPropertyMatchers.exact());
+            Example<Symptom> example = Example.of(exampleType, matcher);
+
+            return repository.findAll(example);
+        }
     }
 
     @GetMapping("/Symptom/{id}")
