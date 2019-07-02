@@ -261,12 +261,7 @@ public class PatientController implements Serializable
 			try {
                 BaseRepository<BaseType> resourceRepository = (BaseRepository<BaseType>) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + resourceType + "Repository"));
                 resourceRepository.findByPatientIdValue(id).ifPresent(resourceRepository::deleteAll);
-                // Optional<List<BaseType>> patientResources = resourceRepository.findByPatientIdValue(id);
-                // if (patientResources.isPresent()) {
-                //     resourceRepository.deleteAll(patientResources.get());
-                // }
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }
@@ -322,7 +317,6 @@ public class PatientController implements Serializable
                     result.add(type.name());
                 }
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }
@@ -339,16 +333,6 @@ public class PatientController implements Serializable
         Example<Patient> example = Example.of(examplePatient, patientMatcher);
         
         return repository.findAll(example);
-
-        // List<Patient> result = new ArrayList<>();
-        // for (Patient patient : getAll())
-        // {
-        //     if (patient.getSystemId().startsWith(id)) {
-        //         result.add(patient);
-        //     }
-        // }
-
-        // return result;
     }
 
     private List<Object> parseResources(List<Object> raw) throws IOException

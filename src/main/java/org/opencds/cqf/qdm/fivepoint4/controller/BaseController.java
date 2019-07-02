@@ -8,7 +8,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,8 +48,7 @@ public class BaseController implements Serializable
                 BaseRepository<BaseType> resourceRepository = (BaseRepository<BaseType>) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + resourceType.name() + "Repository"));
                 List<BaseType> resources = resourceRepository.findAll(resourceExample);
                 resourceRepository.deleteAll(resources);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
         }
@@ -63,8 +61,7 @@ public class BaseController implements Serializable
                 BaseRepository<BaseType> resourceRepository = (BaseRepository<BaseType>) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + resourceType.name() + "Repository"));
                 List<BaseType> resources = resourceRepository.findAll(resourceExample);
                 resourceRepository.deleteAll(resources);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
         }
@@ -81,8 +78,7 @@ public class BaseController implements Serializable
 			try {
                 BaseRepository<BaseType> resourceRepository = (BaseRepository<BaseType>) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + resourceType.name() + "Repository"));
                 resourceRepository.deleteAll();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
         }
@@ -91,8 +87,7 @@ public class BaseController implements Serializable
 			try {
                 BaseRepository<BaseType> resourceRepository = (BaseRepository<BaseType>) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + resourceType.name() + "Repository"));
                 resourceRepository.deleteAll();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
         }
@@ -104,12 +99,11 @@ public class BaseController implements Serializable
     }
 
     @PostMapping("")
-    public @ResponseBody List<Object> postBundle(@RequestBody List<Object> resources) throws IOException
+    public @ResponseBody List<String> postBundle(@RequestBody List<Object> resources) throws IOException
     {
-        List<Object> results = new ArrayList<>();
-        //PatientController patientController = QdmContext.getBean(PatientController.class);
         ParseResponse response = parseResources(resources);
-        if (response.getErrorList().size() > 0)
+        List<String> errorList = response.getErrorList();
+        if (errorList.size() > 0)
         {
             
         }
@@ -130,14 +124,14 @@ public class BaseController implements Serializable
                 try {
                     BaseRepository<BaseType> resourceRepository = (BaseRepository<BaseType>) QdmContext.getBean(Class.forName("org.opencds.cqf.qdm.fivepoint4.repository." + resourceType + "Repository"));
                     resourceRepository.save((BaseType) resource);
-                } catch (ClassNotFoundException e) {
-                    // TODO Auto-generated catch block
+                } catch (Exception e) {
+                    errorList.add("Failed to save resource (" + ((BaseType) resource).getSystemId() + "):" + e.getMessage());
                     e.printStackTrace();
                 }
             }
         }
 
-        return results;
+        return errorList;
     }
 
     private final class ParseResponse
