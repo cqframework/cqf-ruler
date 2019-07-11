@@ -130,7 +130,7 @@ public class HQMFProvider {
     private XMLBuilder2 createQualityMeasureDocumentElement(CqfMeasure m) {
         // HQMF expects a unique Id and a version independent Id.
         String id = this.stripHistory(m.getId());
-        String setId = m.getName();
+        String setId = this.resolveSetId(m);
 
         XMLBuilder2 builder = XMLBuilder2.create("QualityMeasureDocument").ns("urn:hl7-org:v3")
                 .ns("cql-ext", "urn:hhs-cql:hqmf-n1-extensions:v1")
@@ -148,6 +148,16 @@ public class HQMFProvider {
                 .root();
 
         return builder;
+    }
+
+    // Looks for the MAT set id. If not found, returns the measure name.
+    private String resolveSetId(CqfMeasure m) {
+        Identifier id = this.getIdentifierFor(m, "hqmf-set-id");
+        if (id != null) {
+            return id.getValue();
+        }
+        
+        return m.getName();
     }
 
     private void addDefinitions(XMLBuilder2 xml, CqfMeasure m) {
