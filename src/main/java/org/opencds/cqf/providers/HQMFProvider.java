@@ -256,7 +256,7 @@ public class HQMFProvider {
         {
             if (i.hasType())
             {
-                if(i.getType().getCodingFirstRep().getCode().equals(identifierCode)) 
+                if(i.getType().getCodingFirstRep().getCode().equalsIgnoreCase(identifierCode)) 
                 {
                     return i;
                 }
