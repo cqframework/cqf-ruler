@@ -335,6 +335,23 @@ public class PatientController implements Serializable
         return repository.findAll(example);
     }
 
+    @GetMapping("Patient/{id}/$get-patients-for-measure-include-characteristics")
+    public @ResponseBody List<List<Object>> getPatientsForMeasureIncludeCharacterstics(@PathVariable(value = "id") String id)
+    {
+        Patient examplePatient = new Patient();
+        examplePatient.setSystemId(id + "-");
+        ExampleMatcher patientMatcher = ExampleMatcher.matchingAny().withMatcher("systemId", ExampleMatcher.GenericPropertyMatchers.startsWith());
+        Example<Patient> example = Example.of(examplePatient, patientMatcher);
+        
+        List<List<Object>> result = new ArrayList<>();
+        for (Patient patient : repository.findAll(example))
+        {
+            result.add(getPatientCharacteristics(patient));
+        }
+        
+        return result;
+    }
+
     private List<Object> parseResources(List<Object> raw) throws IOException
     {
         List<Object> parsedResources = new ArrayList<>();

@@ -103,21 +103,21 @@ public class BaseController implements Serializable
     {
         ParseResponse response = parseResources(resources);
         List<String> errorList = response.getErrorList();
-        if (errorList.size() > 0)
-        {
-            
-        }
-        resources = response.getParsedResources();
-        List<Patient> patients = new ArrayList<>();
-        for (Object resource : resources)
-        {
-            if (resource instanceof Patient) {
-                patients.add((Patient) resource);
+        try {
+            resources = response.getParsedResources();
+            List<Patient> patients = new ArrayList<>();
+            for (Object resource : resources)
+            {
+                if (resource instanceof Patient) {
+                    patients.add((Patient) resource);
+                }
             }
+            PatientRepository patientRepository = QdmContext.getBean(PatientRepository.class);
+            patientRepository.saveAll(patients);
+        } catch (Exception e) {
+            errorList.add(e.getMessage());
         }
-        PatientRepository patientRepository = QdmContext.getBean(PatientRepository.class);
-        patientRepository.saveAll(patients);
-
+    
         for (Object resource : resources) {
             if (!(resource instanceof Patient)) {
                 String resourceType = ((BaseType) resource).getResourceType();
