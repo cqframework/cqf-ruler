@@ -536,6 +536,13 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         moduleDefinition.getRelatedArtifact().forEach(x -> cqfMeasure.addRelatedArtifact(x));
         cqfMeasure.setDataRequirement(moduleDefinition.getDataRequirement());
         cqfMeasure.setParameter(moduleDefinition.getParameter());
+        
+        ArrayList<RelatedArtifact> citations = new ArrayList<>();
+        for (RelatedArtifact citation : cqfMeasure.getRelatedArtifact()) {
+            if (citation.hasType() && citation.getType().toCode() == "citation" && citation.hasCitation()) {
+                citations.add(citation);
+            }
+        }
 
         ArrayList<MeasureGroupComponent> populationStatements = new ArrayList<>();
         for (MeasureGroupComponent group : measure.getGroup()) {
@@ -772,6 +779,45 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         cqfMeasure.setTerminology(terminology);
         cqfMeasure.setDataCriteria(dataCriteria);
         cqfMeasure.setLibraries(libraries);
+        cqfMeasure.setCitations(citations);
+
+        String initialPopulation = "";
+        String exclusion = "";
+        MeasureGroupComponent firstGroup = cqfMeasure.getGroupFirstRep();
+        for (MeasureGroupPopulationComponent population : firstGroup.getPopulation()) {
+            if (population.getCode().getCodingFirstRep().getCode().equalsIgnoreCase("initial-population")) {
+                initialPopulation = population.getCriteria();
+            }
+            if (population.getCode().getCodingFirstRep().getCode().equalsIgnoreCase("denominator-exclusion")) {
+                exclusion = population.getCriteria();
+            }
+        }
+        MeasureGroupComponent combinedGroup = new MeasureGroupComponent();
+        for (MeasureGroupComponent group : cqfMeasure.getGroup()) {
+            for (MeasureGroupPopulationComponent population : group.getPopulation()) {
+                if (population.hasCode() && population.getCode().hasCoding() && population.getCode().getCodingFirstRep().hasCode() && population.hasCriteria()) {
+                    if (population.getCode().getCodingFirstRep().getCode().equalsIgnoreCase("initial-population") && population.getCriteria().equalsIgnoreCase(initialPopulation) ||
+                        population.getCode().getCodingFirstRep().getCode().equalsIgnoreCase("denominator-exclusion") && population.getCriteria().equalsIgnoreCase(exclusion))
+                    {
+                        Boolean populationExists = false;
+                        for (MeasureGroupPopulationComponent existingPopulation : combinedGroup.getPopulation()) {
+                            if (existingPopulation.getCode().getCodingFirstRep().getCode().equalsIgnoreCase(population.getCode().getCodingFirstRep().getCode())) {
+                                populationExists = true;
+                            }
+                        }
+                        if (!populationExists) {
+                            combinedGroup.addPopulation(population);
+                        }
+                    }
+                }
+            }
+        }
+        ArrayList<MeasureGroupComponent> combinedPopulationGroup = new ArrayList<>();
+        if (combinedGroup.hasPopulation()) {
+            combinedPopulationGroup.add(combinedGroup);
+            cqfMeasure.setCombinedPopulationGroup(combinedPopulationGroup);
+        }
+
 
         return cqfMeasure;
     }

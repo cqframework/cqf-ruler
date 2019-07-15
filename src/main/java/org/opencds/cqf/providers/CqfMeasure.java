@@ -65,10 +65,74 @@ public class CqfMeasure extends Measure {
     @Description(shortDefinition="Data Elements of the library", formalDefinition="The data elements referenced in the library" )
     protected List<StringType> dataCriteria;
 
-
     @Child(name = "libraries", type = {Library.class}, order=35, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="Measure libraries", formalDefinition="All the libraries the measure depends on" )
     protected List<Library> libraries;
+
+    @Child(name = "citations", type = {RelatedArtifact.class}, order=36, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Description(shortDefinition="Additional documentation, citations, etc", formalDefinition="Related artifacts such as additional documentation, justification, or bibliographic references." )
+    protected List<RelatedArtifact> citations;
+
+    @Child(name = "combinedPopulationGroup", type = {}, order=37, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Description(shortDefinition="Population Statements of the library", formalDefinition="The populations of the library as a MeasureGroupComponent." )
+    protected List<MeasureGroupComponent> combinedPopulationGroup;
+    
+    @Child(name = "uniquePopulationGroup", type = {}, order=38, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Description(shortDefinition="Population Statements of the library", formalDefinition="The populations of the library as a MeasureGroupComponent." )
+    protected List<MeasureGroupComponent> uniquePopulationGroup;
+    
+    /**
+     * @return {@link #relatedArtifact} (Related artifacts such as additional documentation, justification, or bibliographic references.)
+     */
+    public List<RelatedArtifact> getCitations() { 
+      if (this.citations == null)
+        this.citations = new ArrayList<RelatedArtifact>();
+      return this.citations;
+    }
+
+    /**
+     * @return Returns a reference to <code>this</code> for easy method chaining
+     */
+    public Measure setCitations(List<RelatedArtifact> theRelatedArtifact) { 
+      this.citations = theRelatedArtifact;
+      return this;
+    }
+
+    public boolean hasCitations() { 
+      if (this.citations == null)
+        return false;
+      for (RelatedArtifact item : this.citations)
+        if (!item.isEmpty())
+          return true;
+      return false;
+    }
+
+    public RelatedArtifact addCitations() { //3
+      RelatedArtifact t = new RelatedArtifact();
+      if (this.citations == null)
+        this.citations = new ArrayList<RelatedArtifact>();
+      this.citations.add(t);
+      return t;
+    }
+
+    public CqfMeasure addCitations(RelatedArtifact t) { //3
+      if (t == null)
+        return this;
+      if (this.citations == null)
+        this.citations = new ArrayList<RelatedArtifact>();
+      this.citations.add(t);
+      return this;
+    }
+
+    /**
+     * @return The first repetition of repeating field {@link #relatedArtifact}, creating it if it does not already exist
+     */
+    public RelatedArtifact getCitationsFirstRep() { 
+      if (getCitations().isEmpty()) {
+        addCitations();
+      }
+      return getCitations().get(0);
+    }
 
     /**
      * @return {@link #library} (The library element defines libraries used by the library.)
@@ -276,6 +340,112 @@ public class CqfMeasure extends Measure {
             addContent();
         }
         return getContent().get(0);
+    }
+
+    /**
+     * @return {@link #populationStatements} (The Population Statements of the library as an Attachment. The content may be a reference to a url, or may be directly embedded as a base-64 string. Either way, the contentType of the attachment determines how to interpret the content.)
+     */
+    public List<MeasureGroupComponent> getCombinedPopulationGroup() { 
+        if (this.combinedPopulationGroup == null)
+            this.combinedPopulationGroup = new ArrayList<MeasureGroupComponent>();
+        return this.combinedPopulationGroup;
+    }
+
+    /**
+     * @return Returns a reference to <code>this</code> for easy method chaining
+     */
+    public CqfMeasure setCombinedPopulationGroup(List<MeasureGroupComponent> thePopulationGroup) { 
+        this.combinedPopulationGroup = thePopulationGroup;
+        return this;
+    }
+
+    public boolean hasCombinedPopulationGroup() { 
+        if (this.combinedPopulationGroup == null)
+            return false;
+        for (MeasureGroupComponent item : this.combinedPopulationGroup)
+            if (!item.isEmpty())
+            return true;
+        return false;
+    }
+
+    public MeasureGroupComponent addCombinedPopulationGroup() { //3
+        MeasureGroupComponent t = new MeasureGroupComponent();
+        if (this.combinedPopulationGroup == null)
+            this.combinedPopulationGroup = new ArrayList<MeasureGroupComponent>();
+        this.combinedPopulationGroup.add(t);
+        return t;
+    }
+
+    public CqfMeasure addCombinedPopulationGroup(MeasureGroupComponent t) { //3
+        if (t == null)
+            return this;
+        if (this.combinedPopulationGroup == null)
+            this.combinedPopulationGroup = new ArrayList<MeasureGroupComponent>();
+        this.combinedPopulationGroup.add(t);
+        return this;
+    }
+
+    /**
+     * @return The first repetition of repeating field {@link #populationStatements}, creating it if it does not already exist
+     */
+    public MeasureGroupComponent getCombinedPopulationGroupFirstRep() { 
+        if (getCombinedPopulationGroup().isEmpty()) {
+            addCombinedPopulationGroup();
+        }
+        return getCombinedPopulationGroup().get(0);
+    }
+
+    /**
+     * @return {@link #populationStatements} (The Population Statements of the library as an Attachment. The content may be a reference to a url, or may be directly embedded as a base-64 string. Either way, the contentType of the attachment determines how to interpret the content.)
+     */
+    public List<MeasureGroupComponent> getUniquePopulationGroup() { 
+        if (this.uniquePopulationGroup == null)
+            this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
+        return this.uniquePopulationGroup;
+    }
+
+    /**
+     * @return Returns a reference to <code>this</code> for easy method chaining
+     */
+    public CqfMeasure setUniquePopulationGroup(List<MeasureGroupComponent> thePopulationGroup) { 
+        this.uniquePopulationGroup = thePopulationGroup;
+        return this;
+    }
+
+    public boolean hasUniquePopulationGroup() { 
+        if (this.uniquePopulationGroup == null)
+            return false;
+        for (MeasureGroupComponent item : this.uniquePopulationGroup)
+            if (!item.isEmpty())
+            return true;
+        return false;
+    }
+
+    public MeasureGroupComponent addUniquePopulationGroup() { //3
+        MeasureGroupComponent t = new MeasureGroupComponent();
+        if (this.uniquePopulationGroup == null)
+            this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
+        this.uniquePopulationGroup.add(t);
+        return t;
+    }
+
+    public CqfMeasure addUniquePopulationGroup(MeasureGroupComponent t) { //3
+        if (t == null)
+            return this;
+        if (this.uniquePopulationGroup == null)
+            this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
+        this.uniquePopulationGroup.add(t);
+        return this;
+    }
+
+    /**
+     * @return The first repetition of repeating field {@link #populationStatements}, creating it if it does not already exist
+     */
+    public MeasureGroupComponent getUniquePopulationGroupFirstRep() { 
+        if (getUniquePopulationGroup().isEmpty()) {
+            addUniquePopulationGroup();
+        }
+        return getUniquePopulationGroup().get(0);
     }
 
     /**
