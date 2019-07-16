@@ -1,9 +1,11 @@
 package org.opencds.cqf.providers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.hibernate.boot.model.IdGeneratorStrategyInterpreter.GeneratorNameDeterminationContext;
+import org.apache.commons.lang3.tuple.Pair;
 import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.ContactDetail;
@@ -22,7 +24,6 @@ import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.UsageContext;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 
-import ca.uhn.fhir.model.api.IElement;
 import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.Description;
 
@@ -73,13 +74,13 @@ public class CqfMeasure extends Measure {
     @Description(shortDefinition="Additional documentation, citations, etc", formalDefinition="Related artifacts such as additional documentation, justification, or bibliographic references." )
     protected List<RelatedArtifact> citations;
 
-    @Child(name = "combinedPopulationGroup", type = {}, order=37, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
-    @Description(shortDefinition="Population Statements of the library", formalDefinition="The populations of the library as a MeasureGroupComponent." )
-    protected List<MeasureGroupComponent> combinedPopulationGroup;
+    @Child(name = "sharedPopulationCriteria", type = {}, order=37, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Description(shortDefinition="Shared critiera of the library", formalDefinition="The shared criteria of the measure." )
+    protected Map<String, String> sharedPopulationCritieria;
     
-    @Child(name = "uniquePopulationGroup", type = {}, order=38, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
-    @Description(shortDefinition="Population Statements of the library", formalDefinition="The populations of the library as a MeasureGroupComponent." )
-    protected List<MeasureGroupComponent> uniquePopulationGroup;
+    // @Child(name = "uniquePopulationGroup", type = {}, order=38, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    // @Description(shortDefinition="Population Statements of the library", formalDefinition="The populations of the library as a MeasureGroupComponent." )
+    // protected List<MeasureGroupComponent> uniquePopulationGroup;
     
     /**
      * @return {@link #relatedArtifact} (Related artifacts such as additional documentation, justification, or bibliographic references.)
@@ -342,111 +343,106 @@ public class CqfMeasure extends Measure {
         return getContent().get(0);
     }
 
-    /**
-     * @return {@link #populationStatements} (The Population Statements of the library as an Attachment. The content may be a reference to a url, or may be directly embedded as a base-64 string. Either way, the contentType of the attachment determines how to interpret the content.)
-     */
-    public List<MeasureGroupComponent> getCombinedPopulationGroup() { 
-        if (this.combinedPopulationGroup == null)
-            this.combinedPopulationGroup = new ArrayList<MeasureGroupComponent>();
-        return this.combinedPopulationGroup;
+
+    public Map<String, String> getSharedPopulationCritieria() { 
+        if (this.sharedPopulationCritieria == null)
+            this.sharedPopulationCritieria = new HashMap<String, String>();
+        return this.sharedPopulationCritieria;
     }
 
     /**
      * @return Returns a reference to <code>this</code> for easy method chaining
      */
-    public CqfMeasure setCombinedPopulationGroup(List<MeasureGroupComponent> thePopulationGroup) { 
-        this.combinedPopulationGroup = thePopulationGroup;
+    public CqfMeasure setSharedPopulationCritiera(Map<String, String> theSharedPopulationCriteria) { 
+        this.sharedPopulationCritieria = theSharedPopulationCriteria;
         return this;
     }
 
-    public boolean hasCombinedPopulationGroup() { 
-        if (this.combinedPopulationGroup == null)
+    public boolean hasSharedPopulationCritiera() { 
+        if (this.sharedPopulationCritieria == null)
             return false;
-        for (MeasureGroupComponent item : this.combinedPopulationGroup)
-            if (!item.isEmpty())
-            return true;
-        return false;
+        return this.sharedPopulationCritieria.size() > 0;
     }
 
-    public MeasureGroupComponent addCombinedPopulationGroup() { //3
-        MeasureGroupComponent t = new MeasureGroupComponent();
-        if (this.combinedPopulationGroup == null)
-            this.combinedPopulationGroup = new ArrayList<MeasureGroupComponent>();
-        this.combinedPopulationGroup.add(t);
-        return t;
-    }
+    // public MeasureGroupComponent addSharedPopulationCritiera() { //3
+    //     MeasureGroupComponent t = new MeasureGroupComponent();
+    //     if (this.combinedPopulationGroup == null)
+    //         this.combinedPopulationGroup = new ArrayList<MeasureGroupComponent>();
+    //     this.combinedPopulationGroup.add(t);
+    //     return t;
+    // }
 
-    public CqfMeasure addCombinedPopulationGroup(MeasureGroupComponent t) { //3
-        if (t == null)
+    public CqfMeasure addSharedPopulationCritiera(String key, String value) { //3
+        if (key == null || value == null)
             return this;
-        if (this.combinedPopulationGroup == null)
-            this.combinedPopulationGroup = new ArrayList<MeasureGroupComponent>();
-        this.combinedPopulationGroup.add(t);
+        if (this.sharedPopulationCritieria == null)
+            this.sharedPopulationCritieria = new HashMap<String, String>();
+        this.sharedPopulationCritieria.put(key, value);
         return this;
     }
 
     /**
      * @return The first repetition of repeating field {@link #populationStatements}, creating it if it does not already exist
      */
-    public MeasureGroupComponent getCombinedPopulationGroupFirstRep() { 
-        if (getCombinedPopulationGroup().isEmpty()) {
-            addCombinedPopulationGroup();
-        }
-        return getCombinedPopulationGroup().get(0);
-    }
+    // public MeasureGroupComponent getCombinedPopulationGroupFirstRep() { 
+    //     if (getCombinedPopulationGroup().isEmpty()) {
+    //         addCombinedPopulationGroup();
+    //     }
+    //     return getCombinedPopulationGroup().get(0);
+    // }
 
     /**
      * @return {@link #populationStatements} (The Population Statements of the library as an Attachment. The content may be a reference to a url, or may be directly embedded as a base-64 string. Either way, the contentType of the attachment determines how to interpret the content.)
      */
-    public List<MeasureGroupComponent> getUniquePopulationGroup() { 
-        if (this.uniquePopulationGroup == null)
-            this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
-        return this.uniquePopulationGroup;
-    }
+    // public List<MeasureGroupComponent> getUniquePopulationGroup() { 
+    //     if (this.uniquePopulationGroup == null)
+    //         this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
+    //     return this.uniquePopulationGroup;
+    // }
 
     /**
      * @return Returns a reference to <code>this</code> for easy method chaining
      */
-    public CqfMeasure setUniquePopulationGroup(List<MeasureGroupComponent> thePopulationGroup) { 
-        this.uniquePopulationGroup = thePopulationGroup;
-        return this;
-    }
+    // public CqfMeasure setUniquePopulationGroup(List<MeasureGroupComponent> thePopulationGroup) { 
+    //     this.uniquePopulationGroup = thePopulationGroup;
+    //     return this;
+    // }
 
-    public boolean hasUniquePopulationGroup() { 
-        if (this.uniquePopulationGroup == null)
-            return false;
-        for (MeasureGroupComponent item : this.uniquePopulationGroup)
-            if (!item.isEmpty())
-            return true;
-        return false;
-    }
+    // public boolean hasUniquePopulationGroup() { 
+    //     if (this.uniquePopulationGroup == null)
+    //         return false;
+    //     for (MeasureGroupComponent item : this.uniquePopulationGroup)
+    //         if (!item.isEmpty())
+    //         return true;
+    //     return false;
+    // }
 
-    public MeasureGroupComponent addUniquePopulationGroup() { //3
-        MeasureGroupComponent t = new MeasureGroupComponent();
-        if (this.uniquePopulationGroup == null)
-            this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
-        this.uniquePopulationGroup.add(t);
-        return t;
-    }
+    // public MeasureGroupComponent addUniquePopulationGroup() { //3
+    //     MeasureGroupComponent t = new MeasureGroupComponent();
+    //     if (this.uniquePopulationGroup == null)
+    //         this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
+    //     this.uniquePopulationGroup.add(t);
+    //     return t;
+    // }
 
-    public CqfMeasure addUniquePopulationGroup(MeasureGroupComponent t) { //3
-        if (t == null)
-            return this;
-        if (this.uniquePopulationGroup == null)
-            this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
-        this.uniquePopulationGroup.add(t);
-        return this;
-    }
+    // public CqfMeasure addUniquePopulationGroup(MeasureGroupComponent t) { //3
+    //     if (t == null)
+    //         return this;
+    //     if (this.uniquePopulationGroup == null)
+    //         this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
+    //     this.uniquePopulationGroup.add(t);
+    //     return this;
+    // }
 
     /**
      * @return The first repetition of repeating field {@link #populationStatements}, creating it if it does not already exist
      */
-    public MeasureGroupComponent getUniquePopulationGroupFirstRep() { 
-        if (getUniquePopulationGroup().isEmpty()) {
-            addUniquePopulationGroup();
-        }
-        return getUniquePopulationGroup().get(0);
-    }
+    // public MeasureGroupComponent getUniquePopulationGroupFirstRep() { 
+    //     if (getUniquePopulationGroup().isEmpty()) {
+    //         addUniquePopulationGroup();
+    //     }
+    //     return getUniquePopulationGroup().get(0);
+    // }
 
     /**
      * @return {@link #populationStatements} (The Population Statements of the library as an Attachment. The content may be a reference to a url, or may be directly embedded as a base-64 string. Either way, the contentType of the attachment determines how to interpret the content.)
