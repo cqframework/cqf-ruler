@@ -41,6 +41,10 @@ public class CdsHooksServlet extends HttpServlet
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         setAccessControlHeaders(resp);
+
+        resp.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
+        resp.setHeader("X-Content-Type-Options", "nosniff");
+        
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
