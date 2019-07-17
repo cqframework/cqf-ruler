@@ -57,6 +57,7 @@ public class CdsHooksServlet extends HttpServlet
             throw new ServletException("This servlet is not configured to handle GET requests.");
         }
 
+        this.setAccessControlHeaders(response);
         response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
         response.getWriter().println(new GsonBuilder().setPrettyPrinting().create().toJson(getServices()));
     }
@@ -92,12 +93,16 @@ public class CdsHooksServlet extends HttpServlet
             Hook hook = HookFactory.createHook(cdsHooksRequest);
             EvaluationContext evaluationContext = new EvaluationContext(hook, version, (JpaDataProvider) provider.setEndpoint(baseUrl));
 
+            this.setAccessControlHeaders(response);
+
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
             response.getWriter().println(toJsonResponse(HookEvaluator.evaluate(evaluationContext)));
         }
         catch (Exception e)
         {
             e.printStackTrace();
+            this.setAccessControlHeaders(response);
+
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
             response.getWriter().println(toJsonResponse(Collections.singletonList(CdsCard.errorCard(e))));
         }
@@ -200,7 +205,7 @@ public class CdsHooksServlet extends HttpServlet
         if (HapiProperties.getCorsEnabled())
         {
             resp.setHeader("Access-Control-Allow-Origin", HapiProperties.getCorsAllowedOrigin());
-            resp.setHeader("Access-Control-Allow-Methods", String.join(", ", Arrays.asList("GET", "POST", "OPTIONS")));
+            resp.setHeader("Access-Control-Allow-Methods", String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
             resp.setHeader("Access-Control-Allow-Headers", 
                 String.join(", ", Arrays.asList(
                     "x-fhir-starter",
