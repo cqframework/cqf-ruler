@@ -28,6 +28,7 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Composition;
 import org.hl7.fhir.dstu3.model.DataRequirement;
 import org.hl7.fhir.dstu3.model.DataRequirement.DataRequirementCodeFilterComponent;
+import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.ListResource;
 import org.hl7.fhir.dstu3.model.Measure;
@@ -200,7 +201,16 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         }
 
         // default report type is patient
-        return isQdm ? evaluator.evaluateQdmPatientMeasure(seed.getMeasure(), seed.getContext(), patientRef) : evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
+        MeasureReport report = isQdm ? evaluator.evaluateQdmPatientMeasure(seed.getMeasure(), seed.getContext(), patientRef) : evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
+        if (productLine != null)
+        {
+            Extension ext = new Extension();
+            ext.setUrl("http://hl7.org/fhir/us/cqframework/cqfmeasures/StructureDefinition/cqfm-productLine");
+            ext.setValue(new StringType(productLine));
+            report.addExtension(ext);
+        }
+
+        return report;
     }
 
     @Operation(name = "$evaluate-measure-with-source", idempotent = true)
