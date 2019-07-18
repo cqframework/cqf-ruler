@@ -48,7 +48,7 @@ public class NarrativeProvider {
     public static void main(String[] args) {
 
         try {
-            Path pathToResource = Paths.get(NarrativeProvider.class.getClassLoader().getResource("narratives/examples/library/library-demo.json").toURI());
+            Path pathToResource = Paths.get(NarrativeProvider.class.getClassLoader().getResource("narratives/examples/measure/drr.json").toURI());
             Path pathToNarrativeOutput = Paths.get("src/main/resources/narratives/output.html").toAbsolutePath();
             Path pathToResourceOutput = Paths.get("src/main/resources/narratives/output.json").toAbsolutePath();
             Path pathToProp = Paths.get(
@@ -83,7 +83,7 @@ public class NarrativeProvider {
             resource.setText(narrative);
 
             PrintWriter writer = new PrintWriter(new File(pathToNarrativeOutput.toString()), "UTF-8");
-            writer.println(narrative);
+            writer.println(narrative.getDivAsString());
             writer.println();
             writer.close();
 
