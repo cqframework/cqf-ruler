@@ -47,9 +47,11 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
  */
 public class CqlExecutionProvider {
     private JpaDataProvider provider;
+    private TerminologyProvider defaultTerminologyProvider;
 
     public CqlExecutionProvider(JpaDataProvider provider) {
         this.provider = provider;
+        this.defaultTerminologyProvider = provider.getTerminologyProvider();
     }
 
     private LibraryResourceProvider getLibraryResourceProvider() {
@@ -184,14 +186,14 @@ public class CqlExecutionProvider {
     }
 
     private TerminologyProvider getTerminologyProvider(String url, String user, String pass) {
-        if (url != null) {
+        if (url != null && !url.isEmpty()) {
             if (url.contains("apelon.com")) {
                 return new ApelonFhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
             } else {
                 return new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
             }
         } else
-            return provider.getTerminologyProvider();
+            return this.defaultTerminologyProvider;
     }
 
     private DataProvider getDataProvider(String model, String version) {
