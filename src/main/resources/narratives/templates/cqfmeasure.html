@@ -214,10 +214,10 @@
                     <td th:if="${iterp.index == 0}" th:rowspan="${groups.population.size}" style="background-color:#656565; width:20%" scope="row"><span class="td_label"
                         th:with="result=${iter.index * 1 + 1}"
                         th:text="${groups.hasName ?  (groups.name +'\n(Population Criteria ' + result + ')') : ('Population Criteria ' + result)}"></span></td>
-                    <td>
-                        <h1 style="font-size:10px" th:text="${pops.criteria}"></h1>
+                    <td scope="row" colspan="1" style="width:10%;">
+                        <span style="font-size:10px; font-weight: bold;" th:text="${pops.criteria}"></span>
                     </td>
-                    <td>
+                    <td scope="row" colspan="2" style="width:70%;">
                         <div style="overflow-x:hidden;overflow-y:auto">
                             <pre th:text="${pops.description}"></pre>
                         </div>
@@ -302,29 +302,31 @@
    <li><a href="#d1e879">Risk Adjustment Variables</a></li>
   </ul>
   <div style="float:left; background:teal; height:3px; width:80%"></div>
-  <pre><br /></pre>
-  <h3><a name="d1e405" href="#toc">Population Criteria</a></h3>
-  <div th:each="groups, iter : ${resource.populationStatements}">
-   <ul style="list-style:none;padding-left:10px;">
-    <li class="list-unstyled" style="list-style:none;padding-left:0px;">
-     <div th:each="pops, iterp : ${groups.population}" class="treeview hover p-l-10">
-      <ul th:if="${pops.name}" class="list-unstyled">
-       <li class="list-unstyled"><input type="checkbox" th:id="${pops.name}" /><label th:for="${pops.name}" class="list-header"><strong th:text="${pops.name}"></strong></label>
-        <ul class="code">
-         <li class="list-unstyled">
-          <div class="treeview hover p-l-10">
-           <ul>
-            <li style="padding-left: 0px;">
-             <div>
-              <pre class="cql-definition-body" th:text="${pops.criteria}"></pre>
-             </div></li>
-           </ul>&nbsp;
-          </div></li>
-        </ul></li>
-      </ul>
-     </div></li>
-   </ul>
-  </div>
+  <th:block th:each="groups, iter : ${resource.populationStatements}">
+    <pre><br /></pre>
+    <h3><a name="d1e405" href="#toc" th:with="result=${iter.index * 1 + 1}" th:text="${resource.populationStatements.size  == 1 ? ('Population Criteria') :  ('Population Criteria ' + result)}"></a></h3>
+    <div >
+    <ul style="list-style:none;padding-left:10px;">
+        <li class="list-unstyled" style="list-style:none;padding-left:0px;">
+        <div th:each="pops, iterp : ${groups.population}" class="treeview hover p-l-10">
+        <ul th:if="${pops.name}" class="list-unstyled">
+        <li class="list-unstyled"><input type="checkbox" th:id="${pops.name}" /><label th:for="${pops.name}" class="list-header"><strong th:text="${pops.name}"></strong></label>
+            <ul class="code">
+            <li class="list-unstyled">
+            <div class="treeview hover p-l-10">
+            <ul>
+                <li style="padding-left: 0px;">
+                <div>
+                <pre class="cql-definition-body" th:text="${pops.criteria}"></pre>
+                </div></li>
+            </ul>&nbsp;
+            </div></li>
+            </ul></li>
+        </ul>
+        </div></li>
+    </ul>
+    </div>
+</th:block>
   <h3><a name="d1e649" href="#toc">Definitions</a></h3>
   <div th:each="defs, iter : ${resource.definitionStatements}">
    <ul style="list-style:none;padding-left: 10px;">
