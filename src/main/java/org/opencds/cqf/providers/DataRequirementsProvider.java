@@ -10,10 +10,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.List;
-import java.util.ArrayList;
 
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -43,33 +44,47 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
+import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.helpers.DataElementType;
 import org.opencds.cqf.helpers.LibraryHelper;
-import org.opencds.cqf.helpers.LibraryResourceHelper;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-
 public class DataRequirementsProvider {
 
-    public CqfMeasure createCqfMeasure(Measure measure, Collection<Library> libraries, LibraryResourceProvider libraryResourceProvider)
-    {
+    // For creating the CQF measure we need to:
+    // 1. Find the Primary Library Resource
+    // 2. Load the Primary Library as ELM. This will recursively load the dependent libraries as ELM by Name
+    // 3. Load the Library Depedencies as Resources
+    // 4. Update the Data Requirements on the Resources accordingly
+    // Since the Library Loader only exposes the loaded libraries as ELM, we actually have to load them twice.
+    // Once via the loader, Once manually
+    public CqfMeasure createCqfMeasure(Measure measure, LibraryResourceProvider libraryResourceProvider) {
+        Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = this.createLibraryMap(measure, libraryResourceProvider);
+        return this.createCqfMeasure(measure, libraryMap);
+    }
 
-        String primaryLibraryId = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
-        String primaryLibraryName = LibraryResourceHelper.resolveLibraryById(libraryResourceProvider, primaryLibraryId).getName();
-        Library primaryLibrary = null;
+    private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>>  createLibraryMap(Measure measure, LibraryResourceProvider libraryResourceProvider) {
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResourceProvider);
+        List<Library> libraries = LibraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
+        Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = new HashMap<>();
+
         for (Library library : libraries) {
-            if (library.getIdentifier().getId().equalsIgnoreCase(primaryLibraryName)) {
-                primaryLibrary = library;
-            }
+            VersionedIdentifier vi = library.getIdentifier();
+            org.hl7.fhir.dstu3.model.Library libraryResource = libraryResourceProvider.resolveLibraryByName(vi.getId(), vi.getVersion());
+            libraryMap.put(vi, Pair.of(library, libraryResource));
         }
 
-        CqfMeasure cqfMeasure = new CqfMeasure(measure);
+        return libraryMap;
+    }
 
+    private CqfMeasure createCqfMeasure(Measure measure, Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap)
+    {
         //Ensure All Data Requirements for all referenced libraries
-        org.hl7.fhir.dstu3.model.Library moduleDefinition = this.getDataRequirements(measure, libraries, libraryResourceProvider);
-
+        org.hl7.fhir.dstu3.model.Library moduleDefinition = this.getDataRequirements(measure, 
+            libraryMap.values().stream().map(x -> x.getRight()).filter(x -> x != null).collect(Collectors.toList()));
+        
+        CqfMeasure cqfMeasure = new CqfMeasure(measure);
         moduleDefinition.getRelatedArtifact().forEach(x -> cqfMeasure.addRelatedArtifact(x));
         cqfMeasure.setDataRequirement(moduleDefinition.getDataRequirement());
         cqfMeasure.setParameter(moduleDefinition.getParameter());
@@ -85,21 +100,26 @@ public class DataRequirementsProvider {
         for (MeasureGroupComponent group : measure.getGroup()) {
             populationStatements.add(group.copy());
         }
-        ArrayList<MeasureGroupPopulationComponent> definitionStatements = new ArrayList<>();
-        ArrayList<MeasureGroupPopulationComponent> functionStatements = new ArrayList<>();
-        ArrayList<MeasureGroupPopulationComponent> supplementalDataElements = new ArrayList<>();
-        ArrayList<CqfMeasure.TerminologyRef> terminology = new ArrayList<>();
-        ArrayList<CqfMeasure.TerminologyRef > codes = new ArrayList<>();
-        ArrayList<CqfMeasure.TerminologyRef > codeSystems = new ArrayList<>();
-        ArrayList<CqfMeasure.TerminologyRef > valueSets = new ArrayList<>();
-        ArrayList<StringType> dataCriteria = new ArrayList<>();
-        ArrayList<org.hl7.fhir.dstu3.model.Library> libraryResources = new ArrayList<>();
-
+        List<MeasureGroupPopulationComponent> definitionStatements = new ArrayList<>();
+        List<MeasureGroupPopulationComponent> functionStatements = new ArrayList<>();
+        List<MeasureGroupPopulationComponent> supplementalDataElements = new ArrayList<>();
+        List<CqfMeasure.TerminologyRef> terminology = new ArrayList<>();
+        List<CqfMeasure.TerminologyRef > codes = new ArrayList<>();
+        List<CqfMeasure.TerminologyRef > codeSystems = new ArrayList<>();
+        List<CqfMeasure.TerminologyRef > valueSets = new ArrayList<>();
+        List<StringType> dataCriteria = new ArrayList<>();
 
         String primaryLibraryCql = "";
+        String primaryLibraryId = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
+        Library primaryLibrary = libraryMap.values().stream()
+            .filter(x -> x.getRight() != null)
+            .filter(x -> x.getRight().getIdElement() != null && x.getRight().getIdElement().getIdPart().equals(primaryLibraryId))
+            .findFirst().get().getLeft();
 
-        for (Library library : libraries) {
-            Boolean isPrimaryLibrary = library == primaryLibrary;
+        for (Map.Entry<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryEntry : libraryMap.entrySet()) {
+            Library library = libraryEntry.getValue().getLeft();
+            org.hl7.fhir.dstu3.model.Library libraryResource = libraryEntry.getValue().getRight();
+            Boolean isPrimaryLibrary = libraryResource != null && libraryResource.getId().equals(primaryLibraryId);
             String libraryNamespace = "";
             if (primaryLibrary.getIncludes() != null) {
                 for (IncludeDef include : primaryLibrary.getIncludes().getDef()) {
@@ -108,13 +128,104 @@ public class DataRequirementsProvider {
                     }
                 }
             }
-            VersionedIdentifier libraryIdentifier = library.getIdentifier();
-            org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibraryByName(
-                libraryResourceProvider,
-                libraryIdentifier.getId(),
-                libraryIdentifier.getVersion());
 
-            libraryResources.add(libraryResource);
+
+            if (library.getCodeSystems() != null && library.getCodeSystems().getDef() != null) {
+                for (CodeSystemDef codeSystem : library.getCodeSystems().getDef()) {
+                    String codeId = codeSystem.getId().replace("urn:oid:", "");
+                    String name = codeSystem.getName();
+                    String version = codeSystem.getVersion();
+
+                    CqfMeasure.TerminologyRef term = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.CODESYSTEM, name, codeId, version);
+                    Boolean exists = false;
+                    for (CqfMeasure.TerminologyRef  t : codeSystems) {
+                        if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
+                            exists = true;
+                        }
+                    }
+                    if (!exists) {
+                        codeSystems.add(term);
+                    }
+                }
+            }
+
+            if (library.getCodes() != null && library.getCodes().getDef() != null) {
+                for (CodeDef code : library.getCodes().getDef()) {
+                    String codeId = code.getId();
+                    String name = code.getName();
+                    String codeSystemName = code.getCodeSystem().getName();
+                    String displayName = code.getDisplay();
+                    String codeSystemId = null;
+
+                    for (TerminologyRef rf : codeSystems)
+                    {
+                        if (rf.getName().equals(codeSystemName)) {
+                            codeSystemId = rf.getId();
+                            break;
+                        }
+                    }
+
+                    CqfMeasure.TerminologyRef term = new CqfMeasure.CodeTerminologyRef(name, codeId, codeSystemName, codeSystemId, displayName);
+                    Boolean exists = false;
+                    for (CqfMeasure.TerminologyRef  t : codes) {
+                        if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
+                            exists = true;
+                        }
+                    }
+                    if (!exists) {
+                        codes.add(term);
+                    }
+                }
+            }
+
+            if (library.getValueSets() != null && library.getValueSets().getDef() != null) {
+                for (ValueSetDef valueSet : library.getValueSets().getDef()) {
+                    String valueSetId = valueSet.getId().replace("urn:oid:", "");
+                    String name = valueSet.getName();
+
+                    CqfMeasure.TerminologyRef term = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.VALUESET, name, valueSetId);
+                    Boolean exists = false;
+                    for (CqfMeasure.TerminologyRef  t : valueSets) {
+                        if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
+                            exists = true;
+                        }
+                    }
+                    if (!exists) {
+                        valueSets.add(term);
+                    }
+                  
+                    for (DataRequirement data : cqfMeasure.getDataRequirement()) {
+                        String type = data.getType();
+                        try {
+                            DataElementType dataType = DataElementType.valueOf(type.toUpperCase());
+                            type = dataType.toString();
+                        } catch (Exception e) {
+                            //Do Nothing.  Leave type as is.
+                        }
+
+                        for (DataRequirementCodeFilterComponent filter : data.getCodeFilter()) {
+                            if (filter.hasValueSetStringType() && filter.getValueSetStringType().getValueAsString().equalsIgnoreCase(valueSet.getId())) {
+                                StringType dataElement = new StringType();
+                                dataElement.setValueAsString("\"" + type + ": " + name + "\" using \"" + name + " (" + valueSetId  + ")");
+                                exists = false;
+                                for (StringType string : dataCriteria) {
+                                    if (string.getValueAsString().equalsIgnoreCase(dataElement.getValueAsString())) {
+                                        exists = true;
+                                    }
+                                }
+                                if (!exists) {
+                                    dataCriteria.add(dataElement);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Don't try to parse statements for libraries that don't have resources (such as an embedded FHIRHelpers)
+            if (libraryResource == null) {
+                continue;
+            }
 
             String cql = "";
             for (Attachment attachment : libraryResource.getContent()) {
@@ -177,101 +288,9 @@ public class DataRequirementsProvider {
                     }
                 }
             }
-
-            if (library.getCodeSystems() != null && library.getCodeSystems().getDef() != null) {
-                for (CodeSystemDef codeSystem : library.getCodeSystems().getDef()) {
-                    String id = codeSystem.getId().replace("urn:oid:", "");
-                    String name = codeSystem.getName();
-                    String version = codeSystem.getVersion();
-
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.CODESYSTEM, name, id, version);
-                    Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : codeSystems) {
-                        if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
-                            exists = true;
-                        }
-                    }
-                    if (!exists) {
-                        codeSystems.add(term);
-                    }
-                }
-            }
-
-            if (library.getCodes() != null && library.getCodes().getDef() != null) {
-                for (CodeDef code : library.getCodes().getDef()) {
-                    String id = code.getId();
-                    String name = code.getName();
-                    String codeSystemName = code.getCodeSystem().getName();
-                    String displayName = code.getDisplay();
-                    String codeSystemId = null;
-
-                    for (TerminologyRef rf : codeSystems)
-                    {
-                        if (rf.getName().equals(codeSystemName)) {
-                            codeSystemId = rf.getId();
-                            break;
-                        }
-                    }
-
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.CodeTerminologyRef(name, id, codeSystemName, codeSystemId, displayName);
-                    Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : codes) {
-                        if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
-                            exists = true;
-                        }
-                    }
-                    if (!exists) {
-                        codes.add(term);
-                    }
-                }
-            }
-
-            if (library.getValueSets() != null && library.getValueSets().getDef() != null) {
-                for (ValueSetDef valueSet : library.getValueSets().getDef()) {
-                    String id = valueSet.getId().replace("urn:oid:", "");
-                    String name = valueSet.getName();
-
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.VALUESET, name, id);
-                    Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : valueSets) {
-                        if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
-                            exists = true;
-                        }
-                    }
-                    if (!exists) {
-                        valueSets.add(term);
-                    }
-                  
-                    for (DataRequirement data : cqfMeasure.getDataRequirement()) {
-                        String type = data.getType();
-                        try {
-                            DataElementType dataType = DataElementType.valueOf(type.toUpperCase());
-                            type = dataType.toString();
-                        } catch (Exception e) {
-                            //Do Nothing.  Leave type as is.
-                        }
-
-                        for (DataRequirementCodeFilterComponent filter : data.getCodeFilter()) {
-                            if (filter.hasValueSetStringType() && filter.getValueSetStringType().getValueAsString().equalsIgnoreCase(valueSet.getId())) {
-                                StringType dataElement = new StringType();
-                                dataElement.setValueAsString("\"" + type + ": " + name + "\" using \"" + name + " (" + id + ")");
-                                exists = false;
-                                for (StringType string : dataCriteria) {
-                                    if (string.getValueAsString().equalsIgnoreCase(dataElement.getValueAsString())) {
-                                        exists = true;
-                                    }
-                                }
-                                if (!exists) {
-                                    dataCriteria.add(dataElement);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
 
-        Comparator stringTypeComparator = new Comparator<StringType>() {
+        Comparator<StringType> stringTypeComparator = new Comparator<StringType>() {
             @Override
             public int compare(StringType item, StringType t1) {
                 String s1 = item.asStringValue();
@@ -280,7 +299,7 @@ public class DataRequirementsProvider {
             }
         };
 
-        Comparator terminologyRefComparator = new Comparator<TerminologyRef>() {
+        Comparator<TerminologyRef> terminologyRefComparator = new Comparator<TerminologyRef>() {
             @Override
             public int compare(TerminologyRef item, TerminologyRef t1) {
                 String s1 = item.getDefinition();
@@ -288,7 +307,7 @@ public class DataRequirementsProvider {
                 return s1.compareToIgnoreCase(s2);
             }
         };
-        Comparator populationComparator = new Comparator<MeasureGroupPopulationComponent>() {
+        Comparator<MeasureGroupPopulationComponent> populationComparator = new Comparator<MeasureGroupPopulationComponent>() {
             @Override
             public int compare(MeasureGroupPopulationComponent item, MeasureGroupPopulationComponent t1) {
                 String s1 = item.getName();
@@ -315,7 +334,7 @@ public class DataRequirementsProvider {
         cqfMeasure.setSupplementalDataElements(supplementalDataElements);
         cqfMeasure.setTerminology(terminology);
         cqfMeasure.setDataCriteria(dataCriteria);
-        cqfMeasure.setLibraries(libraryResources);
+        cqfMeasure.setLibraries(libraryMap.values().stream().map(x -> x.getRight()).filter(x -> x != null).collect(Collectors.toList()));
         cqfMeasure.setCitations(citations);
 
 
@@ -368,26 +387,25 @@ public class DataRequirementsProvider {
         return cqfMeasure;
     }
 
-    public org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure, Collection<org.cqframework.cql.elm.execution.Library> libraries, LibraryResourceProvider libraryResourceProvider){
+    public org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure, LibraryResourceProvider libraryResourceProvider){
+        Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = this.createLibraryMap(measure, libraryResourceProvider);
+        return this.getDataRequirements(measure, libraryMap.values().stream().map(x -> x.getRight()).filter(x -> x != null).collect(Collectors.toList()));
+    }
+
+    private org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure, Collection<org.hl7.fhir.dstu3.model.Library> libraries){
         List<DataRequirement> reqs = new ArrayList<>();
         List<RelatedArtifact> dependencies = new ArrayList<>();
         List<ParameterDefinition> parameters = new ArrayList<>();
 
-        for (Library library : libraries) {
-            VersionedIdentifier primaryLibraryIdentifier = library.getIdentifier();
-            org.hl7.fhir.dstu3.model.Library libraryResource = LibraryResourceHelper.resolveLibraryByName(
-                libraryResourceProvider,
-                primaryLibraryIdentifier.getId(),
-                primaryLibraryIdentifier.getVersion());
-    
-            for (RelatedArtifact dependency : libraryResource.getRelatedArtifact()) {
+        for (org.hl7.fhir.dstu3.model.Library library : libraries) {
+            for (RelatedArtifact dependency : library.getRelatedArtifact()) {
                 if (dependency.getType().toCode().equals("depends-on")) {
                     dependencies.add(dependency);
                 }
             }
 
-            reqs.addAll(libraryResource.getDataRequirement());
-            parameters.addAll(libraryResource.getParameter());
+            reqs.addAll(library.getDataRequirement());
+            parameters.addAll(library.getParameter());
         }
 
         List<Coding> typeCoding = new ArrayList<>();
@@ -469,7 +487,7 @@ public class DataRequirementsProvider {
             for (org.hl7.elm.r1.IncludeDef def : elm.getIncludes().getDef()) {
                 library.addRelatedArtifact(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON)
                         .setResource(new Reference().setReference(
-                                LibraryResourceHelper.resolveLibraryByName(libraryResourceProvider, def.getPath(), def.getVersion()).getId())));
+                            libraryResourceProvider.resolveLibraryByName(def.getPath(), def.getVersion()).getId())));
             }
         }
 

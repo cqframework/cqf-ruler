@@ -1,15 +1,14 @@
 package org.opencds.cqf.evaluation;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import lombok.Data;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.UsingDef;
 import org.hl7.fhir.dstu3.model.Measure;
-import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
@@ -18,6 +17,7 @@ import org.opencds.cqf.helpers.DateHelper;
 import org.opencds.cqf.helpers.LibraryHelper;
 import org.opencds.cqf.providers.ApelonFhirTerminologyProvider;
 import org.opencds.cqf.providers.JpaDataProvider;
+import org.opencds.cqf.providers.LibraryResourceProvider;
 import org.opencds.cqf.providers.Qdm54DataProvider;
 
 import java.util.Date;
@@ -29,12 +29,14 @@ public class MeasureEvaluationSeed
     private Context context;
     private DataProvider dataProvider;
     private Interval measurementPeriod;
-    private STU3LibraryLoader libraryLoader;
+    private LibraryLoader libraryLoader;
+    private LibraryResourceProvider libraryResourceProvider;
 
-    public MeasureEvaluationSeed(JpaDataProvider provider, STU3LibraryLoader libraryLoader)
+    public MeasureEvaluationSeed(JpaDataProvider provider, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
     {
         this.dataProvider = provider;
         this.libraryLoader = libraryLoader;
+        this.libraryResourceProvider = libraryResourceProvider;
     }
 
     public void setup(
@@ -43,10 +45,10 @@ public class MeasureEvaluationSeed
     {
         this.measure = measure;
 
-        LibraryHelper.loadLibraries(measure, this.libraryLoader, this.libraryLoader.getLibraryResourceProvider());
+        LibraryHelper.loadLibraries(measure, this.libraryLoader, this.libraryResourceProvider);
 
         // resolve primary library
-        Library library = LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader);
+        Library library = LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader, this.libraryResourceProvider);
 
         // resolve execution context
         context = new Context(library);

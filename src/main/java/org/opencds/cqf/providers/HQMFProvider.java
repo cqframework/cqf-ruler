@@ -6,16 +6,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
@@ -28,20 +30,17 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import com.helger.collection.pair.Pair;
+import com.google.common.collect.Lists;
 import com.jamesmurty.utils.XMLBuilder2;
 
-import org.apache.derby.iapi.types.XML;
-import org.hibernate.query.criteria.internal.compile.CriteriaInterpretation;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Contributor;
-import org.hl7.fhir.dstu3.model.DataElement;
-import org.hl7.fhir.dstu3.model.DataRequirement;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.MarkdownType;
 import org.hl7.fhir.dstu3.model.Measure;
+import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Contributor.ContributorType;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupComponent;
@@ -52,13 +51,11 @@ import org.opencds.cqf.providers.CqfMeasure.CodeTerminologyRef;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
-import org.hl7.fhir.dstu3.model.StringType;
-import org.springframework.http.MediaTypeEditor;
-import org.stringtemplate.v4.compiler.STParser.compoundElement_return;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.narrative.CustomThymeleafNarrativeGenerator;
 import ca.uhn.fhir.parser.IParser;
 
 public class HQMFProvider {
@@ -105,8 +102,7 @@ public class HQMFProvider {
             put("denominator", new CodeMapping("DENOM", "Denominator", "denominatorCriteria", "denominator"));
             put("denominator-exclusion", new CodeMapping("DENEX", "Denominator Exclusion", "denominatorExclusionCritieria", "denominatorExclusions"));
             put("denominator-exception", new CodeMapping("DENEXCEP", "Denominator Exception", "denominatorExceptionCriteria", "denominatorExceptions"));
-            // TODO: Figure out what the codes for these are (MPOP, MPOPEX, MPOPEXCEP are
-            // guesses)
+            // TODO: Figure out what the codes for these are (MPOP, MPOPEX, MPOPEXCEP are guesses)
             put("measure-population", new CodeMapping("MPOP", "Measure Population", "measurePopulationCriteria", "measurePopulation"));
             put("measure-population-exclusion", new CodeMapping("MPOPEX", "Measure Population Exclusion", "measurePopulationExclusionCriteria", "measurePopulationExclusions"));
             put("measure-observation", new CodeMapping("MOBS", "Measure Observation", "measureObservationCriteria", "measureObservations"));
@@ -451,14 +447,14 @@ public class HQMFProvider {
 
 
     private void addDataCriteriaSection(XMLBuilder2 xml, CqfMeasure m) {
-        XMLBuilder2 readyForEntries = this.addDataCriteriaHeader(xml);
+        this.addDataCriteriaHeader(xml);
 
-        if (m.hasDataCriteria()) {
-            for (StringType s : m.getDataCriteria())
-            {
+        // if (m.hasDataCriteria()) {
+        //     for (StringType s : m.getDataCriteria())
+        //     {
 
-            }
-        }
+        //     }
+        // }
     }
 
     private XMLBuilder2 addDataCriteriaHeader(XMLBuilder2 xml) {
@@ -473,19 +469,19 @@ public class HQMFProvider {
 
     // Unlike other functions, this function expects the xml builder to be located
     // at the correct spot. It's also expected to reset the xmlBuilder to the correct spot.
-    private void addDataCriteriaEntry(XMLBuilder2 xml, String localVariableName, String criteriaName, String classCode, String itemExtension, String itemRoot,
-        String idExtension, String idRoot, String code, String codeSystem, String codeSystemName, String codeDisplayName, String title, String statusCode, String valueSet) {
-        xml.elem("entry").a("typeCode", "DRIV")
-            .elem("localVariableName").a("value", localVariableName).up()
-            .elem(criteriaName).a("classCode", classCode).a("moodCode", "EVN").up()
-            .elem("templateId").elem("item").a("extension", itemExtension).a("root", itemRoot).up().up()
-            .elem("id").a("extension", idExtension).a("root", idRoot).up()
-            .elem("code").a("code", code).a("codeSystem", codeSystem).a("codeSystemName", codeSystemName)
-                .elem("displayName").a("value", codeDisplayName).up().up()
-            .elem("title").a("value", title).up()
-            .elem("statusCode").a("code", statusCode).up()
-            .elem("value").a("valueSet", valueSet).a("xsi:type", "CD").up().up();
-    }
+    // private void addDataCriteriaEntry(XMLBuilder2 xml, String localVariableName, String criteriaName, String classCode, String itemExtension, String itemRoot,
+    //     String idExtension, String idRoot, String code, String codeSystem, String codeSystemName, String codeDisplayName, String title, String statusCode, String valueSet) {
+    //     xml.elem("entry").a("typeCode", "DRIV")
+    //         .elem("localVariableName").a("value", localVariableName).up()
+    //         .elem(criteriaName).a("classCode", classCode).a("moodCode", "EVN").up()
+    //         .elem("templateId").elem("item").a("extension", itemExtension).a("root", itemRoot).up().up()
+    //         .elem("id").a("extension", idExtension).a("root", idRoot).up()
+    //         .elem("code").a("code", code).a("codeSystem", codeSystem).a("codeSystemName", codeSystemName)
+    //             .elem("displayName").a("value", codeDisplayName).up().up()
+    //         .elem("title").a("value", title).up()
+    //         .elem("statusCode").a("code", statusCode).up()
+    //         .elem("value").a("valueSet", valueSet).a("xsi:type", "CD").up().up();
+    // }
 
     private void addPopulationCriteriaSection(XMLBuilder2 xml, CqfMeasure m, String documentGuid, String documentName) {
         if (m.hasGroup()) {
@@ -636,40 +632,65 @@ public class HQMFProvider {
 
     // args[0] == relative path to json measure -> i.e. measure/mesure-demo.json (optional)
     // args[1] == path to resource output -> i.e. library/library-demo.json(optional)
-    // args[2] == path to resource output -> i.e. hqmf.xml(optional)
+    // args[2] == path to hqmf output -> i.e. hqmf.xml(optional)
+    // args[3] == path to narrative output -> i.e. output.html(optional)
     public static void main(String[] args) {
 
         try {
-            Path pathToMeasure = Paths.get(HQMFProvider.class.getClassLoader().getResource("hqmf/examples/input/measure-cms124-QDM.json").toURI());
-            Path pathToLibrary = Paths.get(HQMFProvider.class.getClassLoader().getResource("hqmf/examples/input/library-ccs-logic.json").toURI());
+            List<String> strings = Arrays.asList(
+                "hqmf/examples/input/measure-ann.json",
+                "hqmf/examples/input/library-common.json",
+                "hqmf/examples/input/library-ann.json"
+            );
+
+            List<Path> paths = strings.stream().map(x -> Paths.get(toUri(x))).collect(Collectors.toList());
+
+            // Path pathToMeasure = Paths.get(HQMFProvider.class.getClassLoader().getResource("hqmf/examples/input/measure-cms130-QDM.json").toURI());
+            // Path pathToLibrary = Paths.get(HQMFProvider.class.getClassLoader().getResource("narratives/examples/library/CMS146.json").toURI());
             Path pathToOutput = Paths.get("src/main/resources/hqmf/hqmf.xml").toAbsolutePath();
+            Path pathToNarrativeOutput = Paths.get("src/main/resources/narratives/output.html").toAbsolutePath();
 
+            Path pathToProp = Paths.get(
+                    NarrativeProvider.class.getClassLoader().getResource("narratives/narrative.properties").toURI());
+
+            if (args.length >= 4) {
+                pathToNarrativeOutput = Paths.get(new URI(args[3]));
+            }
+            
             if (args.length >= 3) {
-                pathToOutput = Paths.get(new URI(args[1]));
+                pathToOutput = Paths.get(new URI(args[2]));
             }
 
-            if (args.length >= 2) {
-                pathToLibrary = Paths.get(new URI(args[1]));
-            }
+            // if (args.length >= 2) {
+            //     pathToLibrary = Paths.get(new URI(args[1]));
+            // }
 
-            if (args.length >= 1) {
-                pathToMeasure = Paths.get(new URI(args[0]));
-            }
+            // if (args.length >= 1) {
+            //     pathToMeasure = Paths.get(new URI(args[0]));
+            // }
 
             HQMFProvider provider = new HQMFProvider();
-
+            DataRequirementsProvider dataRequirementsProvider = new DataRequirementsProvider();
+            NarrativeProvider narrativeProvider = new NarrativeProvider(pathToProp.toUri().toString());;
+        
             FhirContext context = FhirContext.forDstu3();
 
-            IParser parser = pathToMeasure.toString().endsWith("json") ? context.newJsonParser() : context.newXmlParser();
-            Measure measure = (Measure) parser.parseResource(new FileReader(pathToMeasure.toFile()));
+            //IParser parser = pathToMeasure.toString().endsWith("json") ? context.newJsonParser() : context.newXmlParser();
 
-            Library library = (Library) parser.parseResource(new FileReader(pathToLibrary.toFile()));
+            IParser parser = context.newJsonParser();
 
-            CqfMeasure cqfMeasure = new CqfMeasure(measure);
-            cqfMeasure.setContent(library.getContent());
-            cqfMeasure.setParameter(library.getParameter());
-            cqfMeasure.setDataRequirement(library.getDataRequirement());
-            cqfMeasure.getRelatedArtifact().addAll(library.getRelatedArtifact());
+            List<IBaseResource> resources = paths.stream()
+            .map(x -> toReader(x))
+            .filter(x -> x != null)
+            .map(x -> parser.parseResource(x))
+            .collect(Collectors.toList());
+
+            Measure measure = (Measure)resources.stream().filter(x -> (x instanceof Measure)).findFirst().get();
+            List<Library> libraries = resources.stream().filter(x -> (x instanceof Library)).map(x -> (Library)x).collect(Collectors.toList());
+
+            LibraryResourceProvider lrp = new InMemoryLibraryResourceProvider(libraries);
+
+            CqfMeasure cqfMeasure = dataRequirementsProvider.createCqfMeasure(measure, lrp);
             
             String result = provider.generateHQMF(cqfMeasure);
 
@@ -677,11 +698,38 @@ public class HQMFProvider {
             writer.println(result);
             writer.println();
             writer.close();
+
+            Narrative narrative = narrativeProvider.getNarrative(context, cqfMeasure);
+            writer = new PrintWriter(new File(pathToNarrativeOutput.toString()), "UTF-8");
+            writer.println(narrative.getDivAsString());
+            writer.println();
+            writer.close();
         }
         catch (Exception e)
         {
             e.printStackTrace();
             return;
+        }
+    }
+
+    public static Reader toReader(Path p) {
+        try {
+            return new FileReader(p.toFile());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    public static URI toUri(String s) {
+        try {
+            return HQMFProvider.class.getClassLoader().getResource(s).toURI();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

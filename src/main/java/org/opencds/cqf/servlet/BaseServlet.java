@@ -245,7 +245,8 @@ public class BaseServlet extends RestfulServer
 
         //Library processing
         NarrativeLibraryResourceProvider libraryProvider = new NarrativeLibraryResourceProvider(narrativeProvider);
-        LibraryResourceProvider jpaLibraryProvider = (LibraryResourceProvider) provider.resolveResourceProvider("Library");
+        ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider jpaLibraryProvider = 
+            (ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider) provider.resolveResourceProvider("Library");
         libraryProvider.setDao(jpaLibraryProvider.getDao());
         libraryProvider.setContext(jpaLibraryProvider.getContext());
 

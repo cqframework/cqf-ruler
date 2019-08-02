@@ -105,7 +105,7 @@ public class EvaluationContext {
 
     public LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
-            libraryLoader = LibraryHelper.createLibraryLoader((LibraryResourceProvider) systemProvider.resolveResourceProvider("Library"));
+            libraryLoader = LibraryHelper.createLibraryLoader((org.opencds.cqf.providers.LibraryResourceProvider) systemProvider.resolveResourceProvider("Library"));
         }
         return libraryLoader;
     }
@@ -113,7 +113,7 @@ public class EvaluationContext {
     public Library getLibrary() {
         if (library == null) {
             if (getPlanDefinition().hasLibrary()) {
-                library = LibraryHelper.resolvePrimaryLibrary(getPlanDefinition(), (STU3LibraryLoader)getLibraryLoader());
+                library = LibraryHelper.resolvePrimaryLibrary(getPlanDefinition(), getLibraryLoader(), (org.opencds.cqf.providers.LibraryResourceProvider) systemProvider.resolveResourceProvider("Library"));
             }
             else {
                 throw new RuntimeException("Missing library reference for PlanDefinition/" + hook.getRequest().getServiceName());
