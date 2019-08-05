@@ -79,9 +79,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     @Operation(name = "$hqmf", idempotent = true)
     public Parameters hqmf(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        String hqmf = this.generateHQMF(theResource, libraryLoader);
+        String hqmf = this.generateHQMF(theResource);
         Parameters p = new Parameters();
         p.addParameter().setValue(new StringType(hqmf));
         return p;
@@ -91,9 +89,6 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails,
             @IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        LibraryHelper.resolvePrimaryLibrary(theResource, libraryLoader, this.libraryResourceProvider);
-
         CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResourceProvider);
 
         // Ensure All Related Artifacts for all referenced Libraries
@@ -124,8 +119,6 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     @Operation(name = "$get-narrative", idempotent = true)
     public Parameters getNarrative(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        LibraryHelper.resolvePrimaryLibrary(theResource, libraryLoader, this.libraryResourceProvider);
         CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResourceProvider);
         Narrative n = this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
         Parameters p = new Parameters();
@@ -133,8 +126,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         return p;
     }
 
-    private String generateHQMF(Measure theResource, LibraryLoader libraryLoader) {
-        LibraryHelper.resolvePrimaryLibrary(theResource, libraryLoader, this.libraryResourceProvider);
+    private String generateHQMF(Measure theResource) {
         CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResourceProvider);
         return this.hqmfProvider.generateHQMF(cqfMeasure);
     }
