@@ -59,7 +59,7 @@
                 <div style="width:660px;overflow-x:hidden;overflow-y:auto">
                     <pre th:if="${resource.hasDisclaimer()}" th:text="${resource.disclaimer}"></pre>
                     <br th:if="${resource.hasDisclaimer()}" />
-                    <div th:utext="${resource.copyright}"></div>
+                    <div th:text="${resource.copyright}"></div>
                 </div>
             </td>
         </tr>

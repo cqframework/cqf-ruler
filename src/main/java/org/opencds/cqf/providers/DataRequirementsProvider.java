@@ -451,7 +451,7 @@ public class DataRequirementsProvider {
 
         measure.setDescription(markdownToHtml(parser, renderer, measure.getDescription()));
         measure.setPurpose(markdownToHtml(parser, renderer, measure.getPurpose()));
-        measure.setCopyright(markdownToHtml(parser, renderer, measure.getCopyright()));
+        // measure.setCopyright(markdownToHtml(parser, renderer, measure.getCopyright()));
         measure.setRationale(markdownToHtml(parser, renderer, measure.getRationale()));
         measure.setClinicalRecommendationStatement(markdownToHtml(parser, renderer, measure.getClinicalRecommendationStatement()));
         measure.setGuidance(markdownToHtml(parser, renderer, measure.getGuidance()));
