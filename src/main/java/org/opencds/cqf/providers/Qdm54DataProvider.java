@@ -162,7 +162,8 @@ public class Qdm54DataProvider implements DataProvider
 
         if (s.toLowerCase().endsWith("datetime")
                 && result != null
-                && result instanceof String)
+                && result instanceof String
+                && !((String)result).isEmpty())
         {
             return new DateTime((String) result, TemporalHelper.getDefaultZoneOffset());
         }
@@ -172,8 +173,8 @@ public class Qdm54DataProvider implements DataProvider
             String start = ((DateTimeInterval) result).getStart();
             String end = ((DateTimeInterval) result).getEnd();
             return new Interval(
-                    start != null ? new DateTime(start, TemporalHelper.getDefaultZoneOffset()) : null, true,
-                    end != null ? new DateTime(end, TemporalHelper.getDefaultZoneOffset()) : null, true
+                    start != null && !start.isEmpty() ? new DateTime(start, TemporalHelper.getDefaultZoneOffset()) : null, true,
+                    end != null && !end.isEmpty() ? new DateTime(end, TemporalHelper.getDefaultZoneOffset()) : null, true
             );
         }
 

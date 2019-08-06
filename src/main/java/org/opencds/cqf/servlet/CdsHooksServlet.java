@@ -14,6 +14,7 @@ import org.opencds.cqf.cdshooks.providers.DiscoveryItem;
 import org.opencds.cqf.cdshooks.request.JsonHelper;
 import org.opencds.cqf.cdshooks.request.Request;
 import org.opencds.cqf.cdshooks.response.CdsCard;
+import org.opencds.cqf.config.HapiProperties;
 import org.opencds.cqf.exceptions.InvalidRequestException;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 import org.opencds.cqf.providers.JpaDataProvider;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,6 +38,18 @@ public class CdsHooksServlet extends HttpServlet
     static JpaDataProvider provider;
     private FhirVersionEnum version = FhirVersionEnum.DSTU3;
     private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
+
+    // CORS Pre-flight
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        setAccessControlHeaders(resp);
+
+        resp.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
+        resp.setHeader("X-Content-Type-Options", "nosniff");
+        
+        resp.setStatus(HttpServletResponse.SC_OK);
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -48,6 +62,7 @@ public class CdsHooksServlet extends HttpServlet
             throw new ServletException("This servlet is not configured to handle GET requests.");
         }
 
+        this.setAccessControlHeaders(response);
         response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
         response.getWriter().println(new GsonBuilder().setPrettyPrinting().create().toJson(getServices()));
     }
@@ -84,12 +99,16 @@ public class CdsHooksServlet extends HttpServlet
             Hook hook = HookFactory.createHook(cdsHooksRequest);
             EvaluationContext evaluationContext = new EvaluationContext(hook, version, (JpaDataProvider) provider.setEndpoint(baseUrl));
 
+            this.setAccessControlHeaders(response);
+
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
             response.getWriter().println(toJsonResponse(HookEvaluator.evaluate(evaluationContext)));
         }
         catch (Exception e)
         {
             e.printStackTrace();
+            this.setAccessControlHeaders(response);
+
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
             response.getWriter().println(toJsonResponse(Collections.singletonList(CdsCard.errorCard(e))));
         }
@@ -185,6 +204,26 @@ public class CdsHooksServlet extends HttpServlet
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return  gson.toJson(ret);
+    }
+
+
+    private void setAccessControlHeaders(HttpServletResponse resp) {
+        if (HapiProperties.getCorsEnabled())
+        {
+            resp.setHeader("Access-Control-Allow-Origin", HapiProperties.getCorsAllowedOrigin());
+            resp.setHeader("Access-Control-Allow-Methods", String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
+            resp.setHeader("Access-Control-Allow-Headers", 
+                String.join(", ", Arrays.asList(
+                    "x-fhir-starter",
+                    "Origin",
+                    "Accept",
+                    "X-Requested-With",
+                    "Content-Type",
+                    "Authorization",
+                    "Cache-Control")));
+            resp.setHeader("Access-Control-Expose-Headers", String.join(", ", Arrays.asList("Location", "Content-Location")));
+            resp.setHeader("Access-Control-Max-Age", "86400");
+        }
     }
 
     private IResourceProvider getProvider(String name)

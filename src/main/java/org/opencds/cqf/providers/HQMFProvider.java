@@ -153,7 +153,7 @@ public class HQMFProvider {
     // Looks for the MAT set id. If not found, returns the measure name.
     private String resolveSetId(CqfMeasure m) {
         Identifier id = this.getIdentifierFor(m, "hqmf-set-id");
-        if (id != null) {
+        if (id != null && id.hasValue() && !id.getValue().isEmpty()) {
             return id.getValue();
         }
         

@@ -55,9 +55,13 @@ public class ApelonFhirTerminologyProvider extends FhirTerminologyProvider
         }
 
         public String resolveByIdentifier(ValueSetInfo valueSet) {
+            String valueSetId = valueSet.getId();
+            
+            valueSetId = valueSetId.replace("urn:oid:", "");
+
             IQuery<Bundle> bundleQuery = this.getFhirClient()
                 .search()
-                .byUrl("ValueSet?identifier=" + valueSet.getId())
+                .byUrl("ValueSet?identifier=" + valueSetId)
                 .returnBundle(Bundle.class)
                 .accept("application/fhir+xml");
                 
@@ -67,7 +71,7 @@ public class ApelonFhirTerminologyProvider extends FhirTerminologyProvider
                 for (BundleEntryComponent bec : searchResults.getEntry()) {
                     if (bec.hasResource()) {
                         String id = bec.getResource().getIdElement().getIdPart();
-                        if (id.equals(valueSet.getId())) {
+                        if (id.equals(valueSetId)) {
                             return ((ValueSet)bec.getResource()).getUrl();
                         }
                     }
