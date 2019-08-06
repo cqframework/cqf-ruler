@@ -19,6 +19,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTML;
+import javax.swing.text.Element;
+import javax.swing.text.StyleConstants;
 import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -34,6 +39,7 @@ import com.google.common.collect.Lists;
 import com.jamesmurty.utils.XMLBuilder2;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.jsoup.Jsoup;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Contributor;
 import org.hl7.fhir.dstu3.model.Identifier;
@@ -55,7 +61,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.narrative.CustomThymeleafNarrativeGenerator;
 import ca.uhn.fhir.parser.IParser;
 
 public class HQMFProvider {
@@ -699,10 +704,19 @@ public class HQMFProvider {
             writer.println();
             writer.close();
 
+
+
             Narrative narrative = narrativeProvider.getNarrative(context, cqfMeasure);
+            String narrativeContent = narrative.getDivAsString();
+            
+            Path pathToHTML = Paths.get(toUri("narratives/templates/hqmf.html"));
+            org.jsoup.nodes.Document htmlDoc = Jsoup.parse(pathToHTML.toFile(), "UTF-8");
+            
+            htmlDoc.title(measure.getName());
+            htmlDoc.body().html(narrativeContent);
+            
             writer = new PrintWriter(new File(pathToNarrativeOutput.toString()), "UTF-8");
-            writer.println(narrative.getDivAsString());
-            writer.println();
+            writer.write(htmlDoc.outerHtml());
             writer.close();
         }
         catch (Exception e)

@@ -2,6 +2,7 @@ package org.opencds.cqf.providers;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -11,6 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import com.google.common.base.Strings;
+
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Triple;
@@ -35,6 +39,7 @@ import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DataRequirement;
 import org.hl7.fhir.dstu3.model.DataRequirement.DataRequirementCodeFilterComponent;
+import org.hl7.fhir.dstu3.model.MarkdownType;
 import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupPopulationComponent;
@@ -49,6 +54,17 @@ import org.opencds.cqf.helpers.DataElementType;
 import org.opencds.cqf.helpers.LibraryHelper;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
+
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.html.*;
+import com.vladsch.flexmark.parser.*;
+import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.vladsch.flexmark.util.ast.KeepType;
+import com.vladsch.flexmark.ext.autolink.*;
+import com.vladsch.flexmark.ext.tables.*;
+import com.vladsch.flexmark.ext.gfm.strikethrough.*;
+import com.vladsch.flexmark.ext.gfm.tasklist.*;
+
 
 public class DataRequirementsProvider {
 
@@ -262,14 +278,14 @@ public class DataRequirementsProvider {
                     def.setCriteria(statementText);
                     //TODO: Only statements that are directly referenced in the primary library cql will be included.
                     if (statement.getClass() == FunctionDef.class) {
-                        if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
+                        // if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
                             functionStatements.add(def);
-                        }
+                        // }
                     }
                     else {
-                        if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
+                        // if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
                             definitionStatements.add(def);
-                        }
+                        // }
                     }
 
                     for (MeasureGroupComponent group : populationStatements) {
@@ -384,7 +400,77 @@ public class DataRequirementsProvider {
             }
         }
 
-        return cqfMeasure;
+        CqfMeasure processedMeasure = processMarkDown(cqfMeasure);
+
+        return processedMeasure;
+    }
+
+    private CqfMeasure processMarkDown(CqfMeasure measure) {
+
+        MutableDataSet options = new MutableDataSet();
+
+        options.setFrom(ParserEmulationProfile.GITHUB_DOC);
+        options.set(Parser.EXTENSIONS, Arrays.asList(
+                AutolinkExtension.create(),
+                //AnchorLinkExtension.create(),
+                //EmojiExtension.create(),
+                StrikethroughExtension.create(),
+                TablesExtension.create(),
+                TaskListExtension.create()
+        ));
+
+        // uncomment and define location of emoji images from https://github.com/arvida/emoji-cheat-sheet.com
+        // options.set(EmojiExtension.ROOT_IMAGE_PATH, "");
+
+        // Uncomment if GFM anchor links are desired in headings
+        // options.set(AnchorLinkExtension.ANCHORLINKS_SET_ID, false);
+        // options.set(AnchorLinkExtension.ANCHORLINKS_ANCHOR_CLASS, "anchor");
+        // options.set(AnchorLinkExtension.ANCHORLINKS_SET_NAME, true);
+        // options.set(AnchorLinkExtension.ANCHORLINKS_TEXT_PREFIX, "<span class=\"octicon octicon-link\"></span>");
+
+        // References compatibility
+        options.set(Parser.REFERENCES_KEEP, KeepType.LAST);
+
+        // Set GFM table parsing options
+        options.set(TablesExtension.COLUMN_SPANS, false)
+                .set(TablesExtension.MIN_HEADER_ROWS, 1)
+                .set(TablesExtension.MAX_HEADER_ROWS, 1)
+                .set(TablesExtension.APPEND_MISSING_COLUMNS, true)
+                .set(TablesExtension.DISCARD_EXTRA_COLUMNS, true)
+                .set(TablesExtension.WITH_CAPTION, false)
+                .set(TablesExtension.HEADER_SEPARATOR_COLUMN_MATCH, true);
+
+        // Setup List Options for GitHub profile which is kramdown for documents
+        options.setFrom(ParserEmulationProfile.GITHUB_DOC);
+
+        options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
+
+
+        Parser parser = Parser.builder(options).build();
+        HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+
+        measure.setDescription(markdownToHtml(parser, renderer, measure.getDescription()));
+        measure.setPurpose(markdownToHtml(parser, renderer, measure.getPurpose()));
+        measure.setCopyright(markdownToHtml(parser, renderer, measure.getCopyright()));
+        measure.setRationale(markdownToHtml(parser, renderer, measure.getRationale()));
+        measure.setClinicalRecommendationStatement(markdownToHtml(parser, renderer, measure.getClinicalRecommendationStatement()));
+        measure.setGuidance(markdownToHtml(parser, renderer, measure.getGuidance()));
+
+        measure.setDefinition(measure.getDefinition().stream()
+            .map(x -> markdownToHtml(parser, renderer, x.getValueAsString()))
+            .map(x -> new MarkdownType(x))
+            .collect(Collectors.toList()));
+
+        return measure;
+    }
+
+    private String markdownToHtml(Parser parser, HtmlRenderer renderer, String markdown) {
+        if (Strings.isNullOrEmpty(markdown)) {
+            return null;
+        }
+
+        Node document = parser.parse(markdown);
+        return renderer.render(document);
     }
 
     public org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure, LibraryResourceProvider libraryResourceProvider){

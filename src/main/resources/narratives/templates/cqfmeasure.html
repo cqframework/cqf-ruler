@@ -1,5 +1,5 @@
 <div xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <table class="header_table">
+    <table class="header_table" style="width: 60%; border-bottom: none;">
         <!-- <tr th:if="${resource.hasId()}" style="vertical-align: top;">
             <th style="background-color:#656565; width:20%" scope="row"><span class="td_label">Id: </span></th><td style="width:80%" colspan="3"  th:narrative="${resource.id}"></td>
         </tr> -->
@@ -29,7 +29,7 @@
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Description</span></td>
             <td style="width:80%" colspan="3">
                 <div style="width:660px;overflow-x:hidden;overflow-y:auto">
-                    <pre th:text="${resource.description}"></pre>
+                    <pre th:utext="${resource.description}"></pre>
                 </div>
             </td>
         </tr>
@@ -59,15 +59,14 @@
                 <div style="width:660px;overflow-x:hidden;overflow-y:auto">
                     <pre th:if="${resource.hasDisclaimer()}" th:text="${resource.disclaimer}"></pre>
                     <br th:if="${resource.hasDisclaimer()}" />
-                    <pre th:text="${resource.copyright}"></pre>
+                    <div th:utext="${resource.copyright}"></div>
                 </div>
             </td>
         </tr>
         <tr th:if="${resource.hasClinicalRecommendationStatement()}">
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Clinical Recommendation Statement</span></td>
             <td style="width:80%" colspan="3">
-                <div style="width:660px;overflow-x:hidden;overflow-y:auto">
-                    <pre th:text="${resource.clinicalRecommendationStatement}"></pre>
+                <div th:utext="${resource.clinicalRecommendationStatement}" style="width:660px;overflow-x:hidden;overflow-y:auto">
                 </div>
             </td>
         </tr>
@@ -172,8 +171,7 @@
         <tr th:if="${resource.hasGuidance()}">
             <td style="width:20%" scope="row"><span>Guidance</span></td>
             <td style="width:80%" colspan="3">
-                <div style="width:660px;overflow-x:hidden;overflow-y:auto">
-                    <pre th:text="${resource.guidance}"></pre>
+                <div th:utext="${resource.guidance}" style="width:660px;overflow-x:hidden;overflow-y:auto">
                 </div>
             </td>
         </tr>
@@ -183,8 +181,7 @@
         <tr th:each="definition, iter : ${resource.definition}">
             <!-- <td style="width:20%" scope="row"><span th:text="${definition.name}"></span></td> -->
             <td style="width:100%" colspan="4">
-                <div style="width:880px;overflow-x:hidden;overflow-y:auto">
-                    <pre th:text="${definition}"></pre>
+                <div th:utext="${definition}" style="width:880px;overflow-x:hidden;overflow-y:auto">
                 </div>
             </td>
         </tr>
@@ -208,16 +205,18 @@
                 </td>
             </tr>
         </th:block> -->
+    </table>
+    <table class="header_table" style="width: 60%; border-top: none; border-bottom: none">
         <th:block th:each="groups, iter : ${resource.group}" >
             <th:block th:each="pops, iterp : ${groups.population}">
                 <tr th:if="${groups.population.size > 0}"  style="vertical-align: top;">
                     <td th:if="${iterp.index == 0}" th:rowspan="${groups.population.size}" style="background-color:#656565; width:20%" scope="row"><span class="td_label"
                         th:with="result=${iter.index * 1 + 1}"
                         th:text="${groups.hasName ?  (groups.name +'\n(Population Criteria ' + result + ')') : ('Population Criteria ' + result)}"></span></td>
-                    <td scope="row" colspan="1" style="width:10%;">
-                        <span style="font-size:10px; font-weight: bold;" th:text="${pops.criteria}"></span>
+                    <td style="width:20%;">
+                       <span style="font-size:10px; font-weight: bold;" th:text="${pops.criteria}"></span>
                     </td>
-                    <td scope="row" colspan="2" style="width:70%;">
+                    <td colspan="2" style="width:60%;">
                         <div style="overflow-x:hidden;overflow-y:auto">
                             <pre th:text="${pops.description}"></pre>
                         </div>
@@ -225,6 +224,8 @@
                 </tr>
             </th:block>
         </th:block>
+    </table>
+    <table class="header_table" style="width: 60%; border-top: none;">
         <!-- <th:block th:each="supples, iter : ${resource.supplementalData}">
             <tr>
                 <th th:if="${iter.index == 0}" th:rowspan="${iter.size}" scope="row"><b>Supplemental Data:</b></th>
@@ -392,7 +393,7 @@
     </ul>
   </div>
   <h3><a name="d1e767" href="#toc">Supplemental Data Elements</a></h3>
-  <div th:each="data, iter : ${resource.supplementalDataElements}">
+  <div th:if="${resource.hasSupplementalDataElements}" th:each="data, iter : ${resource.supplementalDataElements}">
    <ul style="list-style:none;padding-left: 25px;">
     <li class="list-unstyled">
      <div class="treeview hover p-l-10">
@@ -412,6 +413,11 @@
      </div></li>
    </ul>
   </div>
+  <div th:if="${!resource.hasSupplementalDataElements}" >
+    <ul style="list-style:none;padding-left: 25px;">
+        <li>None</li>
+    </ul>
+ </div>
   <h3><a name="d1e879" href="#toc">Risk Adjustment Variables</a></h3>
   <div>
    <ul style="list-style:none;padding-left: 25px;">
