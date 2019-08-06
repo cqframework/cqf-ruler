@@ -17,6 +17,8 @@ import org.opencds.cqf.cdshooks.response.CdsCard;
 import org.opencds.cqf.exceptions.InvalidRequestException;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 import org.opencds.cqf.providers.JpaDataProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,13 +35,16 @@ public class CdsHooksServlet extends HttpServlet
 {
     static JpaDataProvider provider;
     private FhirVersionEnum version = FhirVersionEnum.DSTU3;
+    private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
+        logger.info(request.getRequestURI());
         if (!request.getRequestURL().toString().endsWith("cds-services"))
         {
+            logger.error(request.getRequestURI());
             throw new ServletException("This servlet is not configured to handle GET requests.");
         }
 
@@ -51,6 +56,7 @@ public class CdsHooksServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
+        logger.info(request.getRequestURI());
         try {
             // validate that we are dealing with JSON
             if (!request.getContentType().startsWith("application/json"))

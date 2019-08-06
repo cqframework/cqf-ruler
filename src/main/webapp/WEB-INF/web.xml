@@ -23,6 +23,26 @@
     <!-- Servlets -->
 
     <servlet>
+        <servlet-name>ViewStatusMessages</servlet-name>
+        <servlet-class>ch.qos.logback.classic.ViewStatusMessagesServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ViewStatusMessages</servlet-name>
+        <url-pattern>/StatusMessages</url-pattern>
+    </servlet-mapping>
+
+    <!-- <servlet>
+        <servlet-name>LogMessages</servlet-name>
+        <jsp-file>/LogMessages.html</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>LogMessages</servlet-name>
+        <url-pattern>/LogMessages</url-pattern>
+    </servlet-mapping> -->
+
+    <servlet>
         <servlet-name>cds-services</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.CdsHooksServlet</servlet-class>
         <load-on-startup>4</load-on-startup>
