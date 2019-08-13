@@ -48,17 +48,17 @@ public class NarrativeProvider {
     public static void main(String[] args) {
 
         try {
-            Path pathToResource = Paths.get(NarrativeProvider.class.getClassLoader().getResource("narratives/examples/measure/drr.json").toURI());
+            Path pathToResource = Paths.get(NarrativeProvider.class.getClassLoader().getResource("narratives/examples/measure/cms146.json").toURI());
             Path pathToNarrativeOutput = Paths.get("src/main/resources/narratives/output.html").toAbsolutePath();
             Path pathToResourceOutput = Paths.get("src/main/resources/narratives/output.json").toAbsolutePath();
             Path pathToProp = Paths.get(
                     NarrativeProvider.class.getClassLoader().getResource("narratives/narrative.properties").toURI());
 
             if (args.length >= 4) {
-                pathToNarrativeOutput = Paths.get(new URI(args[2]));
+                pathToNarrativeOutput = Paths.get(new URI(args[3]));
             }
 
-            if (args.length >= 4) {
+            if (args.length >= 3) {
                 pathToResourceOutput = Paths.get(new URI(args[2]));
             }
 

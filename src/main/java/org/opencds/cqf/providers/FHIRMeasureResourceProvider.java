@@ -29,7 +29,7 @@ import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
-import org.opencds.cqf.config.STU3LibraryLoader;
+import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.evaluation.MeasureEvaluation;
 import org.opencds.cqf.evaluation.MeasureEvaluationSeed;
 import org.opencds.cqf.helpers.LibraryHelper;
@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -80,9 +79,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     @Operation(name = "$hqmf", idempotent = true)
     public Parameters hqmf(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        String hqmf = this.generateHQMF(theResource, libraryLoader);
+        String hqmf = this.generateHQMF(theResource);
         Parameters p = new Parameters();
         p.addParameter().setValue(new StringType(hqmf));
         return p;
@@ -92,11 +89,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails,
             @IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        LibraryHelper.resolvePrimaryLibrary(theResource, libraryLoader);
-
-        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource,
-                libraryLoader.getLibraries(), (LibraryResourceProvider)provider.resolveResourceProvider("Library"));
+        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResourceProvider);
 
         // Ensure All Related Artifacts for all referenced Libraries
         if (!cqfMeasure.getRelatedArtifact().isEmpty()) {
@@ -126,20 +119,15 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     @Operation(name = "$get-narrative", idempotent = true)
     public Parameters getNarrative(@IdParam IdType theId) {
         Measure theResource = this.getDao().read(theId);
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        LibraryHelper.resolvePrimaryLibrary(theResource, libraryLoader);
-        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource,
-                libraryLoader.getLibraries(),
-                (LibraryResourceProvider)provider.resolveResourceProvider("Library"));
+        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResourceProvider);
         Narrative n = this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
         Parameters p = new Parameters();
         p.addParameter().setValue(new StringType(n.getDivAsString()));
         return p;
     }
 
-    private String generateHQMF(Measure theResource, STU3LibraryLoader libraryLoader) {
-        LibraryHelper.resolvePrimaryLibrary(theResource, libraryLoader);
-        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, libraryLoader.getLibraries(), (LibraryResourceProvider)provider.resolveResourceProvider("Library"));
+    private String generateHQMF(Measure theResource) {
+        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResourceProvider);
         return this.hqmfProvider.generateHQMF(cqfMeasure);
     }
 
@@ -158,8 +146,8 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             @OptionalParam(name = "lastReceivedOn") String lastReceivedOn,
             @OptionalParam(name = "source") String source, @OptionalParam(name = "user") String user,
             @OptionalParam(name = "pass") String pass) throws InternalErrorException, FHIRException {
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader);
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
+        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader, this.libraryResourceProvider);
         Measure measure = this.getDao().read(theId);
 
         if (measure == null) {
@@ -207,8 +195,8 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         if (periodStart == null || periodEnd == null) {
             throw new IllegalArgumentException("periodStart and periodEnd are required for measure evaluation");
         }
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader);
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
+        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader, this.libraryResourceProvider);
         Measure measure = this.getDao().read(theId);
 
         if (measure == null) {
@@ -259,8 +247,8 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                         .setDiv(new XhtmlNode().setValue(improvementNotation)));
             }
 
-            STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-            MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader);
+            LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
+            MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader, this.libraryResourceProvider);
             seed.setup(measure, periodStart, periodEnd, null, null, null, null);
             MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), seed.getMeasurementPeriod());
             // TODO - this is configured for patient-level evaluation only
@@ -408,12 +396,9 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     public org.hl7.fhir.dstu3.model.Library dataRequirements(@IdParam IdType theId,
             @RequiredParam(name = "startPeriod") String startPeriod,
             @RequiredParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
+        
         Measure measure = this.getDao().read(theId);
-
-        LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader);
-
-        return this.dataRequirementsProvider.getDataRequirements(measure, libraryLoader.getLibraries(), (LibraryResourceProvider)provider.resolveResourceProvider("Library"));
+        return this.dataRequirementsProvider.getDataRequirements(measure, this.libraryResourceProvider);
     }
 
     @Operation(name = "$submit-data", idempotent = true)

@@ -27,6 +27,7 @@ import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
@@ -36,7 +37,6 @@ import org.opencds.cqf.helpers.FhirMeasureBundler;
 import org.opencds.cqf.helpers.LibraryHelper;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -88,7 +88,7 @@ public class CqlExecutionProvider {
             for (Resource resource : instance.getContained()) {
                 if (resource instanceof Library) {
                     resource.setId(resource.getIdElement().getIdPart().replace("#", ""));
-                    getLibraryResourceProvider().getDao().update((Library) resource);
+                    getLibraryResourceProvider().update((Library) resource);
                     // getLibraryLoader().putLibrary(resource.getIdElement().getIdPart(),
                     // getLibraryLoader().toElmLibrary((Library) resource));
                 }

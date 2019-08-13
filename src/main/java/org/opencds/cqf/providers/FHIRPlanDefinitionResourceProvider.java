@@ -53,7 +53,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -476,7 +475,8 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
     }
 
     public Discovery getDiscovery(PlanDefinition planDefinition, FhirVersionEnum version) {
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader((LibraryResourceProvider)provider.resolveResourceProvider("Library"));
+        LibraryResourceProvider libraryResourceProvider = (LibraryResourceProvider)provider.resolveResourceProvider("Library");
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResourceProvider);
         if (planDefinition.hasType()) {
             for (Coding typeCode : planDefinition.getType().getCoding()) {
                 if (typeCode.getCode().equals("eca-rule")) {
@@ -484,7 +484,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                         for (Reference reference : planDefinition.getLibrary()) {
                             org.cqframework.cql.elm.execution.Library library;
                             try {
-                                library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader);
+                                library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResourceProvider);
                             }
                             catch (Exception e)
                             {

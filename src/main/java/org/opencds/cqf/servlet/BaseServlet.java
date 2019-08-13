@@ -187,6 +187,21 @@ public class BaseServlet extends RestfulServer
 
         register(bundleProvider, provider.getCollectionProviders());
 
+        //Library processing
+        NarrativeLibraryResourceProvider libraryProvider = new NarrativeLibraryResourceProvider(narrativeProvider);
+        ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider jpaLibraryProvider = 
+            (ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider) provider.resolveResourceProvider("Library");
+        libraryProvider.setDao(jpaLibraryProvider.getDao());
+        libraryProvider.setContext(jpaLibraryProvider.getContext());
+
+        try {
+            unregister(jpaLibraryProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(libraryProvider, provider.getCollectionProviders());
+
         // Measure processing
         FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao, narrativeProvider, hqmfProvider);
         MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) provider.resolveResourceProvider("Measure");
@@ -242,20 +257,6 @@ public class BaseServlet extends RestfulServer
         }
 
         register(endpointProvider, provider.getCollectionProviders());
-
-        //Library processing
-        NarrativeLibraryResourceProvider libraryProvider = new NarrativeLibraryResourceProvider(narrativeProvider);
-        LibraryResourceProvider jpaLibraryProvider = (LibraryResourceProvider) provider.resolveResourceProvider("Library");
-        libraryProvider.setDao(jpaLibraryProvider.getDao());
-        libraryProvider.setContext(jpaLibraryProvider.getContext());
-
-        try {
-            unregister(jpaLibraryProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
-
-        register(libraryProvider, provider.getCollectionProviders());
     }
 
     private void register(IResourceProvider provider, Collection<IResourceProvider> providers) {

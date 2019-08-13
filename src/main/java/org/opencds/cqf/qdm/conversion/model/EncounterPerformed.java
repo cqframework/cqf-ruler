@@ -62,7 +62,7 @@ public abstract class EncounterPerformed extends QdmBaseType {
 
     @Child(name="facilityLocations", max=Child.MAX_UNLIMITED, order=5)
     List<FacilityLocation> facilityLocation;
-    public List<FacilityLocation> getFacilityLocation() {
+    public List<FacilityLocation> getFacilityLocations() {
         return facilityLocation;
     }
     public EncounterPerformed setFacilityLocations(List<FacilityLocation> facilityLocation) {

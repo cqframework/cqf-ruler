@@ -76,7 +76,7 @@ public class CqfMeasure extends Measure {
 
     @Child(name = "sharedPopulationCriteria", type = {}, order=37, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="Shared critiera of the library", formalDefinition="The shared criteria of the measure." )
-    protected Map<String, String> sharedPopulationCritieria;
+    protected Map<String, Pair<String, String>> sharedPopulationCritieria;
     
     // @Child(name = "uniquePopulationGroup", type = {}, order=38, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     // @Description(shortDefinition="Population Statements of the library", formalDefinition="The populations of the library as a MeasureGroupComponent." )
@@ -344,16 +344,16 @@ public class CqfMeasure extends Measure {
     }
 
 
-    public Map<String, String> getSharedPopulationCritieria() { 
+    public Map<String, Pair<String,String>> getSharedPopulationCritieria() { 
         if (this.sharedPopulationCritieria == null)
-            this.sharedPopulationCritieria = new HashMap<String, String>();
+            this.sharedPopulationCritieria = new HashMap<String, Pair<String, String>>();
         return this.sharedPopulationCritieria;
     }
 
     /**
      * @return Returns a reference to <code>this</code> for easy method chaining
      */
-    public CqfMeasure setSharedPopulationCritiera(Map<String, String> theSharedPopulationCriteria) { 
+    public CqfMeasure setSharedPopulationCritiera(Map<String, Pair<String, String>> theSharedPopulationCriteria) { 
         this.sharedPopulationCritieria = theSharedPopulationCriteria;
         return this;
     }
@@ -372,12 +372,12 @@ public class CqfMeasure extends Measure {
     //     return t;
     // }
 
-    public CqfMeasure addSharedPopulationCritiera(String key, String value) { //3
-        if (key == null || value == null)
+    public CqfMeasure addSharedPopulationCritiera(String key, String display, String description) { //3
+        if (key == null || display == null || description == null)
             return this;
         if (this.sharedPopulationCritieria == null)
-            this.sharedPopulationCritieria = new HashMap<String, String>();
-        this.sharedPopulationCritieria.put(key, value);
+            this.sharedPopulationCritieria = new HashMap<String, Pair<String,String>>();
+        this.sharedPopulationCritieria.put(key, Pair.of(display, description));
         return this;
     }
 

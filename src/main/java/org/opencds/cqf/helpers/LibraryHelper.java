@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -25,8 +26,8 @@ import org.opencds.cqf.config.NonCachingLibraryManager;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
-
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.providers.LibraryResourceProvider;
 
 /**
  * Created by Christopher on 1/11/2017.
@@ -98,10 +99,9 @@ public class LibraryHelper {
         return readLibrary(new ByteArrayInputStream(translator.toXml().getBytes(StandardCharsets.UTF_8)));
     }
 
-    public static void loadLibraries(Measure measure, STU3LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
+    public static List<org.cqframework.cql.elm.execution.Library> loadLibraries(Measure measure, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
     {
-        // clear library cache
-        libraryLoader.getLibraries().clear();
+        List<org.cqframework.cql.elm.execution.Library> libraries = new ArrayList<org.cqframework.cql.elm.execution.Library>();
 
         // load libraries
         for (Reference ref : measure.getLibrary()) {
@@ -111,7 +111,7 @@ public class LibraryHelper {
                     if (resource instanceof org.hl7.fhir.dstu3.model.Library
                             && resource.getIdElement().getIdPart().equals(ref.getReferenceElement().getIdPart().substring(1)))
                     {
-                        libraryResourceProvider.getDao().update((org.hl7.fhir.dstu3.model.Library) resource);
+                        libraryResourceProvider.update((org.hl7.fhir.dstu3.model.Library) resource);
                     }
                 }
             }
@@ -122,49 +122,57 @@ public class LibraryHelper {
                 id = id.substring(1);
             }
 
-            org.hl7.fhir.dstu3.model.Library library = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), id);
-            libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
+            org.hl7.fhir.dstu3.model.Library library = libraryResourceProvider.resolveLibraryById(id);
+            libraries.add(
+                libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
+            );
         }
 
         for (RelatedArtifact artifact : measure.getRelatedArtifact()) {
             if (artifact.hasType() && artifact.getType().equals(RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.getResource().hasReference()) {
-                org.hl7.fhir.dstu3.model.Library library = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), artifact.getResource().getReferenceElement().getIdPart());
-                libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
+                org.hl7.fhir.dstu3.model.Library library = libraryResourceProvider.resolveLibraryById(artifact.getResource().getReferenceElement().getIdPart());
+                libraries.add(
+                    libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
+                );
             }
         }
 
-        if (libraryLoader.getLibraries().isEmpty()) {
+        if (libraries.isEmpty()) {
             throw new IllegalArgumentException(String
                     .format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
         }
+
+        return libraries;
     }
 
-    public static Library resolveLibraryById(String libraryId, STU3LibraryLoader libraryLoader) {
-        Library library = null;
+    public static Library resolveLibraryById(String libraryId, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
+    {
+        // Library library = null;
 
-        org.hl7.fhir.dstu3.model.Library fhirLibrary = LibraryResourceHelper.resolveLibraryById(libraryLoader.getLibraryResourceProvider(), libraryId);
+        org.hl7.fhir.dstu3.model.Library fhirLibrary = libraryResourceProvider.resolveLibraryById(libraryId);
+        return libraryLoader.load(new VersionedIdentifier().withId(fhirLibrary.getName()).withVersion(fhirLibrary.getVersion()));
 
-        for (Library l : libraryLoader.getLibraries()) {
-            VersionedIdentifier vid = l.getIdentifier();
-            if (vid.getId().equals(fhirLibrary.getName()) && LibraryResourceHelper.compareVersions(fhirLibrary.getVersion(), vid.getVersion()) == 0) {
-                library = l;
-                break;
-            }
-        }
+        // for (Library l : libraryLoader.getLibraries()) {
+        //     VersionedIdentifier vid = l.getIdentifier();
+        //     if (vid.getId().equals(fhirLibrary.getName()) && LibraryResourceHelper.compareVersions(fhirLibrary.getVersion(), vid.getVersion()) == 0) {
+        //         library = l;
+        //         break;
+        //     }
+        // }
 
-        if (library == null) {
-            library = libraryLoader.load(new VersionedIdentifier().withId(fhirLibrary.getName()).withVersion(fhirLibrary.getVersion()));
-        }
+        // if (library == null) {
 
-        return library;
+        // }
+
+        // return library;
     }
 
-    public static Library resolvePrimaryLibrary(Measure measure, STU3LibraryLoader libraryLoader)
+    public static Library resolvePrimaryLibrary(Measure measure, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
     {
         // default is the first library reference
         String id = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
 
-        Library library = resolveLibraryById(id, libraryLoader);
+        Library library = resolveLibraryById(id, libraryLoader, libraryResourceProvider);
 
         if (library == null) {
             throw new IllegalArgumentException(String
@@ -174,10 +182,10 @@ public class LibraryHelper {
         return library;
     }
 
-    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition, STU3LibraryLoader libraryLoader) {
+    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider) {
         String id = planDefinition.getLibraryFirstRep().getReferenceElement().getIdPart();
 
-        Library library = resolveLibraryById(id, libraryLoader);
+        Library library = resolveLibraryById(id, libraryLoader, libraryResourceProvider);
 
         if (library == null) {
             throw new IllegalArgumentException(String.format("Could not resolve primary library for PlanDefinition/%s", planDefinition.getIdElement().getIdPart()));
