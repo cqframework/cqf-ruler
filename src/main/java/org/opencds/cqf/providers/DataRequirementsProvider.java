@@ -43,6 +43,7 @@ import org.hl7.fhir.dstu3.model.MarkdownType;
 import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupPopulationComponent;
+import org.hl7.fhir.dstu3.model.Measure.MeasureGroupStratifierComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureSupplementalDataComponent;
 import org.hl7.fhir.dstu3.model.ParameterDefinition;
 import org.hl7.fhir.dstu3.model.Reference;
@@ -125,7 +126,6 @@ public class DataRequirementsProvider {
         List<CqfMeasure.TerminologyRef > valueSets = new ArrayList<>();
         List<StringType> dataCriteria = new ArrayList<>();
 
-        String primaryLibraryCql = "";
         String primaryLibraryId = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
         Library primaryLibrary = libraryMap.values().stream()
             .filter(x -> x.getRight() != null)
@@ -250,9 +250,7 @@ public class DataRequirementsProvider {
                     cql = new String(attachment.getData());
                 }
             }
-            if (isPrimaryLibrary) {
-                primaryLibraryCql = cql;
-            }
+            
             String[] cqlLines = cql.replaceAll("[\r]", "").split("[\n]");
     
             if (library.getStatements() != null) {
@@ -276,23 +274,26 @@ public class DataRequirementsProvider {
                     MeasureGroupPopulationComponent def = new MeasureGroupPopulationComponent();
                     def.setName(libraryNamespace + statement.getName() + signature);
                     def.setCriteria(statementText);
-                    //TODO: Only statements that are directly referenced in the primary library cql will be included.
                     if (statement.getClass() == FunctionDef.class) {
-                        // if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
                             functionStatements.add(def);
-                        // }
                     }
                     else {
-                        // if (isPrimaryLibrary || primaryLibraryCql.contains(libraryNamespace + "\"" + statement.getName() + "\"")) {
                             definitionStatements.add(def);
-                        // }
                     }
 
                     for (MeasureGroupComponent group : populationStatements) {
                         for (MeasureGroupPopulationComponent population : group.getPopulation()) {
                             if (population.getCriteria() != null && population.getCriteria().equalsIgnoreCase(statement.getName())) {
-                                population.setName(statement.getName());
+                                String code = population.getCode().getCodingFirstRep().getCode();
+                                String display = HQMFProvider.measurePopulationValueSetMap.get(code).displayName;
+                                population.setName(display);
                                 population.setCriteria(statementText);
+                            }
+                        }
+
+                        for (MeasureGroupStratifierComponent mgsc : group.getStratifier()) {
+                            if (mgsc.getCriteria() != null && mgsc.getCriteria().equalsIgnoreCase(statement.getName())) {
+                                mgsc.setCriteria(statementText);
                             }
                         }
                     }
@@ -374,9 +375,10 @@ public class DataRequirementsProvider {
         // Find shared usages
         for (Entry<String, List<Triple<Integer, String, String>>> entry : criteriaMap.entrySet()) {
             String criteria = entry.getKey();
-            
-            if (cqfMeasure.getGroup().size() == 1 || entry.getValue().size() > 1) {
-                cqfMeasure.addSharedPopulationCritiera(criteria, entry.getValue().get(0).getRight());
+            if (cqfMeasure.getGroup().size() == 1 || entry.getValue().stream().map(x -> x.getLeft()).distinct().count() > 1) {
+                String code = entry.getValue().get(0).getMiddle();
+                String display = HQMFProvider.measurePopulationValueSetMap.get(code).displayName;
+                cqfMeasure.addSharedPopulationCritiera(criteria, display, entry.getValue().get(0).getRight());
             }
         }
 
@@ -392,6 +394,9 @@ public class DataRequirementsProvider {
                 for (int j = 0; j < mgc.getPopulation().size(); j++) {
                     MeasureGroupPopulationComponent mgpc = mgc.getPopulation().get(j);
                     if (mgpc.hasCriteria() && !mgpc.getCriteria().isEmpty() && !cqfMeasure.getSharedPopulationCritieria().containsKey(mgpc.getCriteria())) {
+                        String code = mgpc.getCode().getCodingFirstRep().getCode();
+                        String display = HQMFProvider.measurePopulationValueSetMap.get(code).displayName;
+                        mgpc.setName(display);
                         newMgpc.add(mgpc);
                     }
                 }

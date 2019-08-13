@@ -59,7 +59,7 @@
                 <div style="width:660px;overflow-x:hidden;overflow-y:auto">
                     <pre th:if="${resource.hasDisclaimer()}" th:text="${resource.disclaimer}"></pre>
                     <br th:if="${resource.hasDisclaimer()}" />
-                    <div th:text="${resource.copyright}"></div>
+                    <pre th:text="${resource.copyright}"></pre>
                 </div>
             </td>
         </tr>
@@ -190,7 +190,7 @@
                 <td style="background-color:#656565; width:20%" scope="row"><span class="td_label" th:text="${criteria.key}"></span></td>
                 <td style="width:80%" colspan="3">
                     <div style="width:660px;overflow-x:hidden;overflow-y:auto">
-                        <pre th:text="${criteria.value}"></pre>
+                        <pre th:text="${criteria.value.right}"></pre>
                     </div>
                 </td>
             </tr>
@@ -214,7 +214,7 @@
                         th:with="result=${iter.index * 1 + 1}"
                         th:text="${groups.hasName ?  (groups.name +'\n(Population Criteria ' + result + ')') : ('Population Criteria ' + result)}"></span></td>
                     <td style="width:20%;">
-                       <span style="font-size:10px; font-weight: bold;" th:text="${pops.criteria}"></span>
+                       <span style="font-size:10px; font-weight: bold;" th:text="${pops.name}"></span>
                     </td>
                     <td colspan="2" style="width:60%;">
                         <div style="overflow-x:hidden;overflow-y:auto">
@@ -309,7 +309,8 @@
     <div >
     <ul style="list-style:none;padding-left:10px;">
         <li class="list-unstyled" style="list-style:none;padding-left:0px;">
-        <div th:each="pops, iterp : ${groups.population}" class="treeview hover p-l-10">
+        <th:block th:each="pops, iterp : ${groups.population}">
+        <div class="treeview hover p-l-10">
         <ul th:if="${pops.name}" class="list-unstyled">
         <li class="list-unstyled"><input type="checkbox" th:id="${pops.name}" /><label th:for="${pops.name}" class="list-header"><strong th:text="${pops.name}"></strong></label>
             <ul class="code">
@@ -324,7 +325,27 @@
             </div></li>
             </ul></li>
         </ul>
-        </div></li>
+        </div>
+        </th:block>
+        <th:block th:each="strat, iterp : ${groups.stratifier}">
+            <div class="treeview hover p-l-10">
+            <ul th:if="${strat.identifier}" class="list-unstyled">
+            <li class="list-unstyled"><input type="checkbox" th:id="${strat.identifier.value}" /><label th:for="${strat.identifier.value}" class="list-header"><strong th:with="result=${iterp.index * 1 + 1}" th:text="${'Stratifier ' + result}"></strong></label>
+                <ul class="code">
+                <li class="list-unstyled">
+                <div class="treeview hover p-l-10">
+                <ul>
+                    <li style="padding-left: 0px;">
+                    <div>
+                    <pre class="cql-definition-body" th:text="${strat.criteria}"></pre>
+                    </div></li>
+                </ul>&nbsp;
+                </div></li>
+                </ul></li>
+            </ul>
+            </div>
+            </th:block>
+    </li>
     </ul>
     </div>
 </th:block>

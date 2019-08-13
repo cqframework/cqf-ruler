@@ -84,7 +84,7 @@ public class HQMFProvider {
         }
     };
 
-    private static class CodeMapping {
+    static class CodeMapping {
         public CodeMapping(String code, String displayName, String criteriaName, String criteriaExtension) {
             this.code = code;
             this.displayName = displayName;
@@ -99,7 +99,7 @@ public class HQMFProvider {
 
     }
 
-    private static Map<String, CodeMapping> measurePopulationValueSetMap = new HashMap<String, CodeMapping>() {
+    public static Map<String, CodeMapping> measurePopulationValueSetMap = new HashMap<String, CodeMapping>() {
         {
             put("initial-population", new CodeMapping("IPOP", "Initial Population", "initialPopulationCriteria", "initialPopulation"));
             put("numerator", new CodeMapping("NUMER", "Numerator", "numeratorCriteria", "numerator"));
