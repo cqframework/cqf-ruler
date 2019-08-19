@@ -1,18 +1,13 @@
 package org.opencds.cqf.cdshooks.evaluation;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
-import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
-import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
+import java.io.IOException;
+import java.util.List;
+
 import org.cqframework.cql.elm.execution.Library;
-import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.cdshooks.hooks.Hook;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.data.fhir.BaseFhirDataProvider;
@@ -21,11 +16,14 @@ import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.exceptions.NotImplementedException;
+import org.opencds.cqf.helpers.LibraryHelper;
 import org.opencds.cqf.providers.FHIRBundleResourceProvider;
 import org.opencds.cqf.providers.JpaDataProvider;
 
-import java.io.IOException;
-import java.util.List;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 
 public class EvaluationContext {
 
@@ -107,12 +105,7 @@ public class EvaluationContext {
 
     public LibraryLoader getLibraryLoader() {
         if (libraryLoader == null) {
-            libraryLoader =
-                    new STU3LibraryLoader(
-                            (LibraryResourceProvider) systemProvider.resolveResourceProvider("Library"),
-                            new LibraryManager(new ModelManager()),
-                            new ModelManager()
-                    );
+            libraryLoader = LibraryHelper.createLibraryLoader((org.opencds.cqf.providers.LibraryResourceProvider) systemProvider.resolveResourceProvider("Library"));
         }
         return libraryLoader;
     }
@@ -120,14 +113,7 @@ public class EvaluationContext {
     public Library getLibrary() {
         if (library == null) {
             if (getPlanDefinition().hasLibrary()) {
-                // TODO - account for multiple libraries
-                IIdType libraryId = getPlanDefinition().getLibraryFirstRep().getReferenceElement();
-                if (libraryId.hasVersionIdPart()) {
-                    library = getLibraryLoader().load(new VersionedIdentifier().withId(libraryId.getIdPart()).withVersion(libraryId.getVersionIdPart()));
-                }
-                else {
-                    library = getLibraryLoader().load(new VersionedIdentifier().withId(libraryId.getIdPart()));
-                }
+                library = LibraryHelper.resolvePrimaryLibrary(getPlanDefinition(), getLibraryLoader(), (org.opencds.cqf.providers.LibraryResourceProvider) systemProvider.resolveResourceProvider("Library"));
             }
             else {
                 throw new RuntimeException("Missing library reference for PlanDefinition/" + hook.getRequest().getServiceName());

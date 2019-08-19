@@ -3,25 +3,23 @@
 
     <groupId>org.opencds.cqf</groupId>
     <artifactId>cqf-ruler</artifactId>
-    <version>0.1.8-SNAPSHOT</version>
+    <version>0.1.12-SNAPSHOT</version>
 
     <properties>
         <p.type>war</p.type>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jetty_version>9.4.12.v20180830</jetty_version>
+        <jetty_version>9.4.14.v20181114</jetty_version>
         <jackson_version>2.9.8</jackson_version>
-        <hapi_version>3.5.0</hapi_version>
-        <cql_engine_version>1.2.54-SNAPSHOT</cql_engine_version>
+        <hapi_version>3.7.0</hapi_version>
+        <cql_engine_version>1.3.10-SNAPSHOT</cql_engine_version>
+        <cqframework_version>1.3.17-SNAPSHOT</cqframework_version>
         <derby_version>10.14.2.0</derby_version>
 
         <!-- jetty plugin properties (used when starting server locally) -->
         <dev>true</dev>
         <protocolAndHost>http://localhost:8080</protocolAndHost>
-        <dstu3Path>cqf-ruler/baseDstu3</dstu3Path>
-        <dstu2Path>cqf-ruler/baseDstu2</dstu2Path>
-        <r4Path>cqf-ruler/baseR4</r4Path>
     </properties>
     <packaging>${p.type}</packaging>
 
@@ -70,13 +68,13 @@
         <dependency>
             <groupId>info.cqframework</groupId>
             <artifactId>cql-to-elm</artifactId>
-            <version>1.2.20</version>
+            <version>${cqframework_version}</version>
         </dependency>
 
         <dependency>
             <groupId>info.cqframework</groupId>
             <artifactId>cql-formatter</artifactId>
-            <version>1.2.20</version>
+            <version>${cqframework_version}</version>
         </dependency>
 
         <dependency>
@@ -153,12 +151,6 @@
             <!--<version>1.7.22</version>-->
         <!--</dependency>-->
 
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>3.15</version>
-        </dependency>
-
         <!-- Needed for JEE/Servlet support -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -171,7 +163,7 @@
         <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf</artifactId>
-            <version>3.0.9.RELEASE</version>
+            <version>3.0.11.RELEASE</version>
         </dependency>
 
         <!-- You may not need this if you are deploying to an application server which provides database connection pools itself. -->
@@ -210,35 +202,48 @@
         </dependency>
 
         <dependency>
-            <groupId>com.phloc</groupId>
-            <artifactId>phloc-schematron</artifactId>
-            <version>2.7.1</version>
+            <groupId>com.helger</groupId>
+            <artifactId>ph-schematron</artifactId>
+            <version>5.0.4</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>Saxon-HE</artifactId>
+                    <groupId>net.sf.saxon</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.4</version>
-            <!--<scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.ebaysf.web</groupId>
-            <artifactId>cors-filter</artifactId>
-            <version>1.0.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>servlet-api</artifactId>
-                    <groupId>javax.servlet</groupId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlets</artifactId>
+            <version>${jetty_version}</version>
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
+            <groupId>com.jamesmurty.utils</groupId>
+            <artifactId>java-xmlbuilder</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <!-- jsoup HTML parser library @ https://jsoup.org/ -->
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.12.1</version>
+          </dependency>
+
+
+          <dependency>
+            <groupId>com.vladsch.flexmark</groupId>
+            <artifactId>flexmark-all</artifactId>
+            <version>0.50.26</version>
         </dependency>
     </dependencies>
 
@@ -282,18 +287,6 @@
                             <value>-1</value>
                         </systemProperty>
                         <systemProperty>
-                            <key>fhir.baseurl.r4</key>
-                            <value>${protocolAndHost}/${r4Path}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>fhir.baseurl.dstu3</key>
-                            <value>${protocolAndHost}/${dstu3Path}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <key>fhir.baseurl.dstu2</key>
-                            <value>${protocolAndHost}/${dstu2Path}</value>
-                        </systemProperty>
-                        <systemProperty>
                             <key>testmode.local</key>
                             <value>${dev}</value>
                         </systemProperty>
@@ -325,6 +318,7 @@
                             <artifactId>hapi-fhir-testpage-overlay</artifactId>
                         </overlay>
                     </overlays>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
                 </configuration>
             </plugin>
 

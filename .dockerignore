@@ -6,4 +6,4 @@
 examples
 target
 derby.log
-!target/stu3
+!target/jpaserver_derby_files

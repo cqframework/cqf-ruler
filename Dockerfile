@@ -9,9 +9,20 @@ USER jetty:jetty
 RUN mkdir -p /var/lib/jetty/target
 COPY --from=builder ./build/target/cqf-ruler.war /var/lib/jetty/webapps/cqf-ruler.war
 EXPOSE 8080
-ENV JAVA_OPTIONS="-Dfhir.baseurl.r4=http://localhost:8080/cqf-ruler/baseR4 -Dfhir.baseurl.dstu3=http://localhost:8080/cqf-ruler/baseDstu3 -Dfhir.baseurl.dstu2=http://localhost:8080/cqf-ruler/baseDstu2"
 
-# Assumes the existence of a stu3 directory
-# TODO: runtime mounting. Need to use gosu or similar to handle permisions correctly.
+ENV SERVER_ADDRESS="http://localhost:8080/cqf-ruler/baseDstu3"
+
+# TODO: Handle these. We probably want some convention to map between the ENV variables and the hapi.properties
+# ENV SERVER_BASE="/cqf-ruler/baseDstu3"
+# ENV HIBERNATE_DIALECT="hibernate.dialect=ca.uhn.fhir.jpa.util.DerbyTenSevenHapiFhirDialect"
+# ENV DATASOURCE_DRIVER="org.apache.derby.jdbc.EmbeddedDriver"
+# ENV DATASOURCE_URL="jdbc:derby:directory:target/jpaserver_derby_files;create=true"
+# ENV DATASOURCE_URL= DATASOURCE_USERNAME=
+ENV JAVA_OPTIONS="-Dhapi.properties=/var/lib/jetty/webapps/hapi.properties"
+
+COPY --chown=jetty:jetty ./scripts/docker-entrypoint-override.sh /docker-entrypoint-override.sh
+ENTRYPOINT [ "/docker-entrypoint-override.sh" ]
+
+
 FROM runner as test-data
-COPY --chown=jetty:jetty ./target/stu3  /var/lib/jetty/target/stu3
+COPY --chown=jetty:jetty ./target/jpaserver_derby_files  /var/lib/jetty/target/jpaserver_derby_files

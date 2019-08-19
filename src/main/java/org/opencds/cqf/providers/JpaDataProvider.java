@@ -1,11 +1,12 @@
 package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.*;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import org.apache.lucene.search.BooleanQuery;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
@@ -14,7 +15,10 @@ import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public class JpaDataProvider extends FhirDataProviderStu3 {
 
@@ -56,8 +60,11 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
         }
 
         if (context != null && context.equals("Patient") && contextValue != null) {
-            ReferenceParam patientParam = new ReferenceParam(contextValue.toString());
-            map.add(getPatientSearchParam(dataType), patientParam);
+            if (isPatientCompartment(dataType))
+            {
+                ReferenceParam patientParam = new ReferenceParam(contextValue.toString());
+                map.add(getPatientSearchParam(dataType), patientParam);
+            }
         }
 
         if (codePath != null && !codePath.equals("")) {
@@ -75,6 +82,10 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
                     codeParams.addOr(new TokenParam(code.getSystem(), code.getCode()));
                 }
                 map.add(convertPathToSearchParam(dataType, codePath), codeParams);
+                if (codeParams.getListAsCodings().size() > 1023)
+                {
+                    BooleanQuery.setMaxClauseCount(codeParams.getListAsCodings().size());
+                }
             }
         }
 
@@ -105,6 +116,10 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
 
         JpaResourceProviderDstu3<? extends IAnyResource> jpaResProvider = resolveResourceProvider(dataType);
         IBundleProvider bundleProvider = jpaResProvider.getDao().search(map);
+        if (bundleProvider.size() == null)
+        {
+            return resolveResourceList(bundleProvider.getResources(0, 10000));
+        }
         if (bundleProvider.size() == 0) {
             return new ArrayList<>();
         }
@@ -129,5 +144,76 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             }
         }
         throw new RuntimeException("Could not find resource provider for type: " + datatype);
+    }
+
+    private boolean isPatientCompartment(String dataType)
+    {
+        switch (dataType)
+        {
+            case "Account":
+            case "AdverseEvent":
+            case "AllergyIntolerance":
+            case "Appointment":
+            case "AppointmentResponse":
+            case "AuditEvent":
+            case "Basic":
+            case "BodySite":
+            case "CarePlan":
+            case "CareTeam":
+            case "ChargeItem":
+            case "Claim":
+            case "ClaimResponse":
+            case "ClinicalImpression":
+            case "Communication":
+            case "CommunicationRequest":
+            case "Composition":
+            case "Condition":
+            case "Consent":
+            case "Coverage":
+            case "DetectedIssue":
+            case "DeviceRequest":
+            case "DeviceUseStatement":
+            case "DiagnosticReport":
+            case "DocumentManifest":
+            case "EligibilityRequest":
+            case "Encounter":
+            case "EnrollmentRequest":
+            case "EpisodeOfCare":
+            case "ExplanationOfBenefit":
+            case "FamilyMemberHistory":
+            case "Flag":
+            case "Goal":
+            case "Group":
+            case "ImagingManifest":
+            case "ImagingStudy":
+            case "Immunization":
+            case "ImmunizationRecommendation":
+            case "List":
+            case "MeasureReport":
+            case "Media":
+            case "MedicationAdministration":
+            case "MedicationDispense":
+            case "MedicationRequest":
+            case "MedicationStatement":
+            case "NutritionOrder":
+            case "Observation":
+            case "Patient":
+            case "Person":
+            case "Procedure":
+            case "ProcedureRequest":
+            case "Provenance":
+            case "QuestionnaireResponse":
+            case "ReferralRequest":
+            case "RelatedPerson":
+            case "RequestGroup":
+            case "ResearchSubject":
+            case "RiskAssessment":
+            case "Schedule":
+            case "Specimen":
+            case "SupplyDelivery":
+            case "SupplyRequest":
+            case "VisionPrescription": return true;
+            default: return false;
+        }
     }
 }

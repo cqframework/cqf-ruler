@@ -144,3 +144,5 @@ local.properties
 .settings
 .vscode
 .classpath
+.factorypath
+!/src/main/resources/hapi.properties

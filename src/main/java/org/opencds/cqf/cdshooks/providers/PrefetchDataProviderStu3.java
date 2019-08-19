@@ -23,8 +23,8 @@ public class PrefetchDataProviderStu3 extends FhirDataProviderStu3 {
 
     @Override
     public Iterable<Object> retrieve(String context, Object contextValue, String dataType, String templateId,
-                              String codePath, Iterable<Code> codes, String valueSet, String datePath,
-                              String dateLowPath, String dateHighPath, Interval dateRange)
+                                     String codePath, Iterable<Code> codes, String valueSet, String datePath,
+                                     String dateLowPath, String dateHighPath, Interval dateRange)
     {
         if (codePath == null && (codes != null || valueSet != null)) {
             throw new IllegalArgumentException("A code path must be provided when filtering on codes or a valueset.");

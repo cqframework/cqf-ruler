@@ -51,7 +51,7 @@ public abstract class EncounterPerformed extends BaseType implements Serializabl
 
     @ElementCollection
     @LazyCollection(LazyCollectionOption.FALSE)
-    private List<FacilityLocation> facilityLocation;
+    private List<FacilityLocation> facilityLocations;
 
     @AttributeOverrides({
             @AttributeOverride(name = "code", column = @Column(name = "principal_diagnosis_code")),
@@ -87,7 +87,7 @@ public abstract class EncounterPerformed extends BaseType implements Serializabl
             setRelevantPeriod(encounterPerformed.getRelevantPeriod());
             setDischargeDisposition(encounterPerformed.getDischargeDisposition());
             setDiagnosis(encounterPerformed.getDiagnosis());
-            setFacilityLocation(encounterPerformed.getFacilityLocation());
+            setFacilityLocations(encounterPerformed.getFacilityLocations());
             setPrincipalDiagnosis(encounterPerformed.getPrincipalDiagnosis());
             setNegationRationale(encounterPerformed.getNegationRationale());
             setLengthOfStay(encounterPerformed.getLengthOfStay());

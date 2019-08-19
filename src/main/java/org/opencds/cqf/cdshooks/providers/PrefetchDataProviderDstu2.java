@@ -80,7 +80,7 @@ public class PrefetchDataProviderDstu2 extends FhirDataProviderDstu2 {
                     Interval interval = new Interval(lowDate, true, highDate, true);
 
                     // TODO - add precision to includes evaluator
-                    if (!(Boolean)IncludesEvaluator.includes(dateRange, interval, precision)) {
+                    if (!(Boolean) IncludesEvaluator.includes(dateRange, interval, precision)) {
                         includeResource = false;
                     }
                 }
