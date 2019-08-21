@@ -215,9 +215,9 @@ public class CqlExecutionProvider {
     @Operation(name = "$cql")
     public Bundle evaluate(@OperationParam(name = "code") String code,
             @OperationParam(name = "patientId") String patientId,
-            @OptionalParam(name="periodStart") String periodStart,
-            @OptionalParam(name="periodEnd") String periodEnd,
-            @OptionalParam(name="productLine") String productLine,
+            @OperationParam(name="periodStart") String periodStart,
+            @OperationParam(name="periodEnd") String periodEnd,
+            @OperationParam(name="productLine") String productLine,
             @OperationParam(name = "terminologyServiceUri") String terminologyServiceUri,
             @OperationParam(name = "terminologyUser") String terminologyUser,
             @OperationParam(name = "terminologyPass") String terminologyPass,
