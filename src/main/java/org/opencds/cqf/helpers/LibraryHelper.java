@@ -92,6 +92,9 @@ public class LibraryHelper {
 
     public static Library translateLibrary(InputStream cqlStream, LibraryManager libraryManager, ModelManager modelManager) {
         CqlTranslator translator = getTranslator(cqlStream, libraryManager, modelManager);
+        if (translator.getErrors().size() > 0) {
+            throw new IllegalArgumentException(errorsToString(translator.getErrors()));
+        }
         return readLibrary(new ByteArrayInputStream(translator.toXml().getBytes(StandardCharsets.UTF_8)));
     }
 
