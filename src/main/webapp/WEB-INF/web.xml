@@ -11,12 +11,14 @@
     <context-param>
         <param-name>contextClass</param-name>
         <param-value>
-            org.opencds.cqf.config.ApplicationContext
+            org.springframework.web.context.support.AnnotationConfigWebApplicationContext
         </param-value>
     </context-param>
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
+            org.opencds.cqf.config.FhirServerConfigCommon,
+            org.opencds.cqf.config.FhirServerConfigDstu3
         </param-value>
     </context-param>
 
