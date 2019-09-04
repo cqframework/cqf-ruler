@@ -72,6 +72,7 @@ public class CdsHooksServlet extends HttpServlet
             throws ServletException, IOException
     {
         logger.info(request.getRequestURI());
+
         try {
             // validate that we are dealing with JSON
             if (!request.getContentType().startsWith("application/json"))
@@ -96,13 +97,21 @@ public class CdsHooksServlet extends HttpServlet
                             parser.parse(request.getReader()).getAsJsonObject(),
                             JsonHelper.getObjectRequired(getService(service), "prefetch")
                     );
+
+            logger.info(cdsHooksRequest.getRequestJson().toString());
+
             Hook hook = HookFactory.createHook(cdsHooksRequest);
             EvaluationContext evaluationContext = new EvaluationContext(hook, version, (JpaDataProvider) provider.setEndpoint(baseUrl));
 
             this.setAccessControlHeaders(response);
 
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
-            response.getWriter().println(toJsonResponse(HookEvaluator.evaluate(evaluationContext)));
+
+            String jsonResponse = toJsonResponse(HookEvaluator.evaluate(evaluationContext));
+
+            logger.info(jsonResponse);
+
+            response.getWriter().println(jsonResponse);
         }
         catch (Exception e)
         {
