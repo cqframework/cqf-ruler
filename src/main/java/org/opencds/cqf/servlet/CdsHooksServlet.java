@@ -2,20 +2,26 @@ package org.opencds.cqf.servlet;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import com.alphora.evaluation.EvaluationContext;
+import com.alphora.evaluation.Stu3EvaluationContext;
+import com.alphora.hooks.Hook;
+import com.alphora.hooks.HookFactory;
+import com.alphora.hooks.Stu3HookEvaluator;
+import com.alphora.providers.Discovery;
+import com.alphora.providers.DiscoveryItem;
+import com.alphora.request.JsonHelper;
+import com.alphora.request.Request;
+import com.alphora.response.CdsCard;
 import com.google.gson.*;
 import org.apache.http.entity.ContentType;
+import org.cqframework.cql.elm.execution.Library;
+import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
-import org.opencds.cqf.cdshooks.evaluation.EvaluationContext;
-import org.opencds.cqf.cdshooks.hooks.Hook;
-import org.opencds.cqf.cdshooks.hooks.HookEvaluator;
-import org.opencds.cqf.cdshooks.hooks.HookFactory;
-import org.opencds.cqf.cdshooks.providers.Discovery;
-import org.opencds.cqf.cdshooks.providers.DiscoveryItem;
-import org.opencds.cqf.cdshooks.request.JsonHelper;
-import org.opencds.cqf.cdshooks.request.Request;
-import org.opencds.cqf.cdshooks.response.CdsCard;
 import org.opencds.cqf.config.HapiProperties;
+import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.exceptions.InvalidRequestException;
+import org.opencds.cqf.helpers.LibraryHelper;
 import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
 import org.opencds.cqf.providers.JpaDataProvider;
 import org.slf4j.Logger;
@@ -101,13 +107,26 @@ public class CdsHooksServlet extends HttpServlet
             logger.info(cdsHooksRequest.getRequestJson().toString());
 
             Hook hook = HookFactory.createHook(cdsHooksRequest);
-            EvaluationContext evaluationContext = new EvaluationContext(hook, version, (JpaDataProvider) provider.setEndpoint(baseUrl));
+
+            PlanDefinition planDefinition = (PlanDefinition) provider.resolveResourceProvider("PlanDefinition").getDao().read(new IdType(hook.getRequest().getServiceName()));
+            LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader((org.opencds.cqf.providers.LibraryResourceProvider) provider.resolveResourceProvider("Library"));
+            Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, (org.opencds.cqf.providers.LibraryResourceProvider) provider.resolveResourceProvider("Library"));
+
+            Context context = new Context(library);
+            context.registerDataProvider("http://hl7.org/fhir", provider.setEndpoint(baseUrl)); // TODO make sure tooling handles remote provider case
+            context.registerLibraryLoader(libraryLoader);
+            context.setContextValue("Patient", hook.getRequest().getContext().getPatientId());
+            context.setExpressionCaching(true);
+
+            EvaluationContext evaluationContext = new Stu3EvaluationContext(hook, version, provider.setEndpoint(baseUrl), context, planDefinition);
 
             this.setAccessControlHeaders(response);
 
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
 
-            String jsonResponse = toJsonResponse(HookEvaluator.evaluate(evaluationContext));
+            Stu3HookEvaluator evaluator = new Stu3HookEvaluator();
+
+            String jsonResponse = toJsonResponse(evaluator.evaluate(evaluationContext));
 
             logger.info(jsonResponse);
 

@@ -1,15 +1,11 @@
 package org.opencds.cqf.providers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import javax.xml.bind.JAXBException;
 
+import com.alphora.providers.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.elm.execution.ExpressionDef;
@@ -39,11 +35,6 @@ import org.opencds.cqf.builders.ReferenceBuilder;
 import org.opencds.cqf.builders.RelatedArtifactBuilder;
 import org.opencds.cqf.builders.RequestGroupActionBuilder;
 import org.opencds.cqf.builders.RequestGroupBuilder;
-import org.opencds.cqf.cdshooks.providers.Discovery;
-import org.opencds.cqf.cdshooks.providers.DiscoveryDataProvider;
-import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderDstu2;
-import org.opencds.cqf.cdshooks.providers.DiscoveryDataProviderStu3;
-import org.opencds.cqf.cdshooks.providers.DiscoveryItem;
 import org.opencds.cqf.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
@@ -439,7 +430,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
         throw new RuntimeException(String.format("Resource %s does not contain resource with id %s", resource.fhirType(), id));
     }
 
-    private Map<String, Pair<PlanDefinition, Discovery> > discoveryCache = new HashMap<>();
+    private Map<String, Pair<PlanDefinition, Discovery>> discoveryCache = new HashMap<>();
 
     public List<Discovery> getDiscoveries(FhirVersionEnum version) {
         List<Discovery> discoveries = new ArrayList<>();

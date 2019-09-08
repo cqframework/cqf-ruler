@@ -78,6 +78,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.alphora</groupId>
+            <artifactId>alphora-cds-hooks</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson_version}</version>
