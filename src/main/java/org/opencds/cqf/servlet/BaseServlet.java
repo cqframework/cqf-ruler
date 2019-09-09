@@ -3,20 +3,21 @@ package org.opencds.cqf.servlet;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
-import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
-import ca.uhn.fhir.jpa.provider.dstu3.TerminologyUploaderProviderDstu3;
-import ca.uhn.fhir.jpa.rp.dstu3.*;
+import ca.uhn.fhir.jpa.provider.r4.JpaConformanceProviderR4;
+import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
+import ca.uhn.fhir.jpa.provider.r4.TerminologyUploaderProviderR4;
+import ca.uhn.fhir.jpa.rp.r4.*;
+import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
-import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
+import ca.uhn.fhir.jpa.term.IHapiTerminologySvcR4;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Meta;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Meta;
 import org.opencds.cqf.config.HapiProperties;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.providers.*;
@@ -44,22 +45,22 @@ public class BaseServlet extends RestfulServer
 
         ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
 
-        List<IResourceProvider> resourceProviders = appCtx.getBean("myResourceProvidersDstu3", List.class);
-        Object systemProvider = appCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
+        List<IResourceProvider> resourceProviders = appCtx.getBean("myResourceProvidersR4", List.class);
+        Object systemProvider = appCtx.getBean("mySystemProviderR4", JpaSystemProviderR4.class);
         List<Object> plainProviders = new ArrayList<>();
 
         setFhirContext(appCtx.getBean(FhirContext.class));
 
         registerProvider(systemProvider);
 
-        IFhirSystemDao<Bundle, Meta> systemDao = appCtx.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
-        JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao, appCtx.getBean(DaoConfig.class));
-        confProvider.setImplementationDescription("CQF Ruler FHIR DSTU3 Server");
+        IFhirSystemDao<Bundle, Meta> systemDao = appCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
+        JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao, appCtx.getBean(DaoConfig.class));
+        confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
         setServerConformanceProvider(confProvider);
 
-        plainProviders.add(appCtx.getBean(TerminologyUploaderProviderDstu3.class));
+        plainProviders.add(appCtx.getBean(TerminologyUploaderProviderR4.class));
         provider = new JpaDataProvider(resourceProviders);
-        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
+        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService", IHapiTerminologySvcR4.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
         provider.setTerminologyProvider(terminologyProvider);
         resolveResourceProviders(provider, systemDao);
 
@@ -125,7 +126,7 @@ public class BaseServlet extends RestfulServer
             setServerAddressStrategy(new HardcodedServerAddressStrategy(serverAddress));
         }
 
-        registerProvider(appCtx.getBean(TerminologyUploaderProviderDstu3.class));
+        registerProvider(appCtx.getBean(TerminologyUploaderProviderR4.class));
 
         if (HapiProperties.getCorsEnabled())
         {
@@ -189,8 +190,8 @@ public class BaseServlet extends RestfulServer
 
         //Library processing
         NarrativeLibraryResourceProvider libraryProvider = new NarrativeLibraryResourceProvider(narrativeProvider);
-        ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider jpaLibraryProvider = 
-            (ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider) provider.resolveResourceProvider("Library");
+        LibraryResourceProvider jpaLibraryProvider =
+            (LibraryResourceProvider) provider.resolveResourceProvider("Library");
         libraryProvider.setDao(jpaLibraryProvider.getDao());
         libraryProvider.setContext(jpaLibraryProvider.getContext());
 

@@ -1,7 +1,7 @@
 package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.provider.dstu3.JpaResourceProviderDstu3;
+import ca.uhn.fhir.jpa.provider.r4.JpaResourceProviderR4;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.*;
@@ -9,7 +9,7 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.apache.lucene.search.BooleanQuery;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
+import org.opencds.cqf.cql.data.fhir.FhirDataProviderR4;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-public class JpaDataProvider extends FhirDataProviderStu3 {
+public class JpaDataProvider extends FhirDataProviderR4 {
 
     // need these to access the dao
     private Collection<IResourceProvider> collectionProviders;
@@ -31,8 +31,8 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
 
     public JpaDataProvider(Collection<IResourceProvider> providers) {
         this.collectionProviders = providers;
-        setPackageName("org.hl7.fhir.dstu3.model");
-        setFhirContext(FhirContext.forDstu3());
+        setPackageName("org.hl7.fhir.r4.model");
+        setFhirContext(FhirContext.forR4());
     }
 
     public synchronized Iterable<Object> retrieve(String context, Object contextValue, String dataType, String templateId,
@@ -114,7 +114,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             map.add(convertPathToSearchParam(dataType, datePath), rangeParam);
         }
 
-        JpaResourceProviderDstu3<? extends IAnyResource> jpaResProvider = resolveResourceProvider(dataType);
+        JpaResourceProviderR4<? extends IAnyResource> jpaResProvider = resolveResourceProvider(dataType);
         IBundleProvider bundleProvider = jpaResProvider.getDao().search(map);
         if (bundleProvider.size() == null)
         {
@@ -137,10 +137,10 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
         return ret;
     }
 
-    public synchronized JpaResourceProviderDstu3<? extends IAnyResource> resolveResourceProvider(String datatype) {
+    public synchronized JpaResourceProviderR4<? extends IAnyResource> resolveResourceProvider(String datatype) {
         for (IResourceProvider resource : collectionProviders) {
             if (resource.getResourceType().getSimpleName().toLowerCase().equals(datatype.toLowerCase())) {
-                return (JpaResourceProviderDstu3<? extends IAnyResource>) resource;
+                return (JpaResourceProviderR4<? extends IAnyResource>) resource;
             }
         }
         throw new RuntimeException("Could not find resource provider for type: " + datatype);
@@ -157,7 +157,7 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             case "AppointmentResponse":
             case "AuditEvent":
             case "Basic":
-            case "BodySite":
+            case "BodyStructure":
             case "CarePlan":
             case "CareTeam":
             case "ChargeItem":
@@ -170,12 +170,14 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             case "Condition":
             case "Consent":
             case "Coverage":
+            case "CoverageEligibilityRequest":
+            case "CoverageEligibilityResponse":
             case "DetectedIssue":
             case "DeviceRequest":
             case "DeviceUseStatement":
             case "DiagnosticReport":
             case "DocumentManifest":
-            case "EligibilityRequest":
+            case "DocumentReference":
             case "Encounter":
             case "EnrollmentRequest":
             case "EpisodeOfCare":
@@ -184,10 +186,11 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             case "Flag":
             case "Goal":
             case "Group":
-            case "ImagingManifest":
             case "ImagingStudy":
             case "Immunization":
+            case "ImmunizationEvaluation":
             case "ImmunizationRecommendation":
+            case "Invoice":
             case "List":
             case "MeasureReport":
             case "Media":
@@ -195,15 +198,14 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             case "MedicationDispense":
             case "MedicationRequest":
             case "MedicationStatement":
+            case "MolecularSequence":
             case "NutritionOrder":
             case "Observation":
             case "Patient":
             case "Person":
             case "Procedure":
-            case "ProcedureRequest":
             case "Provenance":
             case "QuestionnaireResponse":
-            case "ReferralRequest":
             case "RelatedPerson":
             case "RequestGroup":
             case "ResearchSubject":

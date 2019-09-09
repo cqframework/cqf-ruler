@@ -3,9 +3,10 @@ package org.opencds.cqf.evaluation;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.ReferenceParam;
-import org.hl7.fhir.dstu3.model.*;
-import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Quantity;
 import org.opencds.cqf.builders.MeasureReportBuilder;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
@@ -65,12 +66,12 @@ public class MeasureEvaluation {
         return evaluateQdm(measure, context, patient == null ? Collections.emptyList() : Collections.singletonList(patient), MeasureReport.MeasureReportType.INDIVIDUAL);
     }
 
-    public MeasureReport evaluatePatientListMeasure(Measure measure, Context context, String practitionerRef)
+    public MeasureReport evaluateSubjectListMeasure(Measure measure, Context context, String practitionerRef)
     {
         logger.info("Generating patient-list report");
 
         List<Patient> patients = practitionerRef == null ? getAllPatients() : getPractitionerPatients(practitionerRef);
-        return evaluate(measure, context, patients, MeasureReport.MeasureReportType.PATIENTLIST);
+        return evaluate(measure, context, patients, MeasureReport.MeasureReportType.SUBJECTLIST);
     }
 
     private List<Patient> getPractitionerPatients(String practitionerRef) {
@@ -87,8 +88,8 @@ public class MeasureEvaluation {
         List<Patient> patients = new ArrayList<>();
         if (provider instanceof JpaDataProvider) {
             IBundleProvider patientProvider = ((JpaDataProvider) provider).resolveResourceProvider("Patient").getDao().search(map);
-            List<IBaseResource> patientList = patientProvider.getResources(0, patientProvider.size());
-            patientList.forEach(x -> patients.add((Patient) x));
+            List<IBaseResource> SUBJECTLIST = patientProvider.getResources(0, patientProvider.size());
+            SUBJECTLIST.forEach(x -> patients.add((Patient) x));
         }
         return patients;
     }
@@ -96,8 +97,8 @@ public class MeasureEvaluation {
     private List<org.opencds.cqf.qdm.fivepoint4.model.Patient> getAllQdmPatients() {
         List<org.opencds.cqf.qdm.fivepoint4.model.Patient> patients = new ArrayList<>();
         if (provider instanceof Qdm54DataProvider) {
-            List<org.opencds.cqf.qdm.fivepoint4.model.Patient> patientList = QdmContext.getBean(PatientRepository.class).findAll();
-            patients.addAll(patientList);
+            List<org.opencds.cqf.qdm.fivepoint4.model.Patient> SUBJECTLIST = QdmContext.getBean(PatientRepository.class).findAll();
+            patients.addAll(SUBJECTLIST);
         }
         return patients;
     }
@@ -106,8 +107,8 @@ public class MeasureEvaluation {
         List<Patient> patients = new ArrayList<>();
         if (provider instanceof JpaDataProvider) {
             IBundleProvider patientProvider = ((JpaDataProvider) provider).resolveResourceProvider("Patient").getDao().search(new SearchParameterMap());
-            List<IBaseResource> patientList = patientProvider.getResources(0, patientProvider.size());
-            patientList.forEach(x -> patients.add((Patient) x));
+            List<IBaseResource> SUBJECTLIST = patientProvider.getResources(0, patientProvider.size());
+            SUBJECTLIST.forEach(x -> patients.add((Patient) x));
         }
         return patients;
     }
@@ -130,7 +131,7 @@ public class MeasureEvaluation {
         }
         
         context.setContextValue("Patient", patient.getId().getValue());
-        Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
+        Object result = context.resolveExpressionRef(pop.getCriteria().getExpression()).evaluate(context);
         if (result instanceof Boolean) {
             if (((Boolean)result)) {
                 return Collections.singletonList(patient);
@@ -149,7 +150,7 @@ public class MeasureEvaluation {
         }
 
         context.setContextValue("Patient", patient.getIdElement().getIdPart());
-        Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
+        Object result = context.resolveExpressionRef(pop.getCriteria().getExpression()).evaluate(context);
         if (result instanceof Boolean) {
             if (((Boolean)result)) {
                 return Collections.singletonList(patient);
@@ -239,11 +240,10 @@ public class MeasureEvaluation {
         if (populationCriteria != null) {
             MeasureReport.MeasureReportGroupPopulationComponent populationReport = new MeasureReport.MeasureReportGroupPopulationComponent();
             populationReport.setCode(populationCriteria.getCode());
-            populationReport.setIdentifier(populationCriteria.getIdentifier());
-            if (report.getType() == MeasureReport.MeasureReportType.PATIENTLIST && patientPopulation != null) {
-                ListResource patientList = new ListResource();
-                patientList.setId(UUID.randomUUID().toString());
-                populationReport.setPatients(new Reference().setReference("#" + patientList.getId()));
+            if (report.getType() == MeasureReport.MeasureReportType.SUBJECTLIST && patientPopulation != null) {
+                ListResource SUBJECTLIST = new ListResource();
+                SUBJECTLIST.setId(UUID.randomUUID().toString());
+                populationReport.setSubjectResults(new Reference().setReference("#" + SUBJECTLIST.getId()));
                 for (org.opencds.cqf.qdm.fivepoint4.model.Patient patient : patientPopulation) {
                     ListResource.ListEntryComponent entry = new ListResource.ListEntryComponent()
                             .setItem(new Reference().setReference(
@@ -251,9 +251,9 @@ public class MeasureEvaluation {
                                             patient.getId().getValue() :
                                             String.format("Patient/%s", patient.getId()))
                                     .setDisplay(patient.getId().getValue()));
-                    patientList.addEntry(entry);
+                    SUBJECTLIST.addEntry(entry);
                 }
-                report.addContained(patientList);
+                report.addContained(SUBJECTLIST);
             }
             populationReport.setCount(populationCount);
             reportGroup.addPopulation(populationReport);
@@ -264,11 +264,10 @@ public class MeasureEvaluation {
         if (populationCriteria != null) {
             MeasureReport.MeasureReportGroupPopulationComponent populationReport = new MeasureReport.MeasureReportGroupPopulationComponent();
             populationReport.setCode(populationCriteria.getCode());
-            populationReport.setIdentifier(populationCriteria.getIdentifier());
-            if (report.getType() == MeasureReport.MeasureReportType.PATIENTLIST && patientPopulation != null) {
-                ListResource patientList = new ListResource();
-                patientList.setId(UUID.randomUUID().toString());
-                populationReport.setPatients(new Reference().setReference("#" + patientList.getId()));
+            if (report.getType() == MeasureReport.MeasureReportType.SUBJECTLIST && patientPopulation != null) {
+                ListResource SUBJECTLIST = new ListResource();
+                SUBJECTLIST.setId(UUID.randomUUID().toString());
+                populationReport.setSubjectResults(new Reference().setReference("#" + SUBJECTLIST.getId()));
                 for (Patient patient : patientPopulation) {
                     ListResource.ListEntryComponent entry = new ListResource.ListEntryComponent()
                             .setItem(new Reference().setReference(
@@ -276,9 +275,9 @@ public class MeasureEvaluation {
                                             patient.getId() :
                                             String.format("Patient/%s", patient.getId()))
                                     .setDisplay(patient.getNameFirstRep().getNameAsSingleString()));
-                    patientList.addEntry(entry);
+                    SUBJECTLIST.addEntry(entry);
                 }
-                report.addContained(patientList);
+                report.addContained(SUBJECTLIST);
             }
             populationReport.setCount(populationCount);
             reportGroup.addPopulation(populationReport);
@@ -308,7 +307,6 @@ public class MeasureEvaluation {
 
         for (Measure.MeasureGroupComponent group : measure.getGroup()) {
             MeasureReport.MeasureReportGroupComponent reportGroup = new MeasureReport.MeasureReportGroupComponent();
-            reportGroup.setIdentifier(group.getIdentifier());
             report.getGroup().add(reportGroup);
 
             // Declare variables to avoid a hash lookup on every patient
@@ -349,58 +347,58 @@ public class MeasureEvaluation {
                     switch (populationType) {
                         case INITIALPOPULATION:
                             initialPopulationCriteria = pop;
-                            initialPopulation = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                initialPopulationPatients = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
+                            initialPopulation = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                initialPopulationPatients = new HashMap<>();
                             }
                             break;
                         case NUMERATOR:
                             numeratorCriteria = pop;
-                            numerator = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                numeratorPatients = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
+                            numerator = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                numeratorPatients = new HashMap<>();
                             }
                             break;
                         case NUMERATOREXCLUSION:
                             numeratorExclusionCriteria = pop;
-                            numeratorExclusion = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                numeratorExclusionPatients = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
+                            numeratorExclusion = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                numeratorExclusionPatients = new HashMap<>();
                             }
                             break;
                         case DENOMINATOR:
                             denominatorCriteria = pop;
-                            denominator = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                denominatorPatients = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
+                            denominator = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                denominatorPatients = new HashMap<>();
                             }
                             break;
                         case DENOMINATOREXCLUSION:
                             denominatorExclusionCriteria = pop;
-                            denominatorExclusion = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                denominatorExclusionPatients = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
+                            denominatorExclusion = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                denominatorExclusionPatients = new HashMap<>();
                             }
                             break;
                         case DENOMINATOREXCEPTION:
                             denominatorExceptionCriteria = pop;
-                            denominatorException = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                denominatorExceptionPatients = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
+                            denominatorException = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                denominatorExceptionPatients = new HashMap<>();
                             }
                             break;
                         case MEASUREPOPULATION:
                             measurePopulationCriteria = pop;
-                            measurePopulation = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                measurePopulationPatients = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
+                            measurePopulation = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                measurePopulationPatients = new HashMap<>();
                             }
                             break;
                         case MEASUREPOPULATIONEXCLUSION:
                             measurePopulationExclusionCriteria = pop;
-                            measurePopulationExclusion = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                measurePopulationExclusionPatients = new HashMap<String, org.opencds.cqf.qdm.fivepoint4.model.Patient>();
+                            measurePopulationExclusion = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                measurePopulationExclusionPatients = new HashMap<>();
                             }
                             break;
                         case MEASUREOBSERVATION:
@@ -459,7 +457,7 @@ public class MeasureEvaluation {
 
                     // Calculate actual measure score, Count(numerator) / Count(denominator)
                     if (denominator != null && numerator != null && denominator.size() > 0) {
-                        reportGroup.setMeasureScore(numerator.size() / (double)denominator.size());
+                        reportGroup.setMeasureScore(new Quantity(numerator.size() / (double)denominator.size()));
                     }
 
                     break;
@@ -565,7 +563,6 @@ public class MeasureEvaluation {
 
         for (Measure.MeasureGroupComponent group : measure.getGroup()) {
             MeasureReport.MeasureReportGroupComponent reportGroup = new MeasureReport.MeasureReportGroupComponent();
-            reportGroup.setIdentifier(group.getIdentifier());
             report.getGroup().add(reportGroup);
 
             // Declare variables to avoid a hash lookup on every patient
@@ -606,58 +603,58 @@ public class MeasureEvaluation {
                     switch (populationType) {
                         case INITIALPOPULATION:
                             initialPopulationCriteria = pop;
-                            initialPopulation = new HashMap<String, Resource>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                initialPopulationPatients = new HashMap<String, Patient>();
+                            initialPopulation = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                initialPopulationPatients = new HashMap<>();
                             }
                             break;
                         case NUMERATOR:
                             numeratorCriteria = pop;
-                            numerator = new HashMap<String, Resource>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                numeratorPatients = new HashMap<String, Patient>();
+                            numerator = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                numeratorPatients = new HashMap<>();
                             }
                             break;
                         case NUMERATOREXCLUSION:
                             numeratorExclusionCriteria = pop;
-                            numeratorExclusion = new HashMap<String, Resource>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                numeratorExclusionPatients = new HashMap<String, Patient>();
+                            numeratorExclusion = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                numeratorExclusionPatients = new HashMap<>();
                             }
                             break;
                         case DENOMINATOR:
                             denominatorCriteria = pop;
-                            denominator = new HashMap<String, Resource>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                denominatorPatients = new HashMap<String, Patient>();
+                            denominator = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                denominatorPatients = new HashMap<>();
                             }
                             break;
                         case DENOMINATOREXCLUSION:
                             denominatorExclusionCriteria = pop;
-                            denominatorExclusion = new HashMap<String, Resource>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                denominatorExclusionPatients = new HashMap<String, Patient>();
+                            denominatorExclusion = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                denominatorExclusionPatients = new HashMap<>();
                             }
                             break;
                         case DENOMINATOREXCEPTION:
                             denominatorExceptionCriteria = pop;
-                            denominatorException = new HashMap<String, Resource>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                denominatorExceptionPatients = new HashMap<String, Patient>();
+                            denominatorException = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                denominatorExceptionPatients = new HashMap<>();
                             }
                             break;
                         case MEASUREPOPULATION:
                             measurePopulationCriteria = pop;
-                            measurePopulation = new HashMap<String, Resource>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                measurePopulationPatients = new HashMap<String, Patient>();
+                            measurePopulation = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                measurePopulationPatients = new HashMap<>();
                             }
                             break;
                         case MEASUREPOPULATIONEXCLUSION:
                             measurePopulationExclusionCriteria = pop;
-                            measurePopulationExclusion = new HashMap<String, Resource>();
-                            if (type == MeasureReport.MeasureReportType.PATIENTLIST) {
-                                measurePopulationExclusionPatients = new HashMap<String, Patient>();
+                            measurePopulationExclusion = new HashMap<>();
+                            if (type == MeasureReport.MeasureReportType.SUBJECTLIST) {
+                                measurePopulationExclusionPatients = new HashMap<>();
                             }
                             break;
                         case MEASUREOBSERVATION:
@@ -716,7 +713,7 @@ public class MeasureEvaluation {
 
                     // Calculate actual measure score, Count(numerator) / Count(denominator)
                     if (denominator != null && numerator != null && denominator.size() > 0) {
-                        reportGroup.setMeasureScore(numerator.size() / (double)denominator.size());
+                        reportGroup.setMeasureScore(new Quantity(numerator.size() / (double)denominator.size()));
                     }
 
                     break;
@@ -775,9 +772,9 @@ public class MeasureEvaluation {
         }
 
         for (String key : codeToResourceMap.keySet()) {
-            org.hl7.fhir.dstu3.model.ListResource list = new org.hl7.fhir.dstu3.model.ListResource();
+            org.hl7.fhir.r4.model.ListResource list = new org.hl7.fhir.r4.model.ListResource();
             for (String element : codeToResourceMap.get(key)) {
-                org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent();
+                org.hl7.fhir.r4.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.r4.model.ListResource.ListEntryComponent();
                 comp.setItem(new Reference('#' + element));
                 list.addEntry(comp);
             }
@@ -791,9 +788,9 @@ public class MeasureEvaluation {
 
         if (!resources.isEmpty()) {
             FhirMeasureBundler bundler = new FhirMeasureBundler();
-            org.hl7.fhir.dstu3.model.Bundle evaluatedResources = bundler.bundle(resources.values());
+            org.hl7.fhir.r4.model.Bundle evaluatedResources = bundler.bundle(resources.values());
             evaluatedResources.setId(UUID.randomUUID().toString());
-            report.setEvaluatedResources(new Reference('#' + evaluatedResources.getId()));
+            report.setEvaluatedResource(Collections.singletonList(new Reference('#' + evaluatedResources.getId())));
             report.addContained(evaluatedResources);
         }
 

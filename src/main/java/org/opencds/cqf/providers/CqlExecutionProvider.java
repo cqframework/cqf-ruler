@@ -11,23 +11,10 @@ import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.elm.execution.UsingDef;
 import org.cqframework.cql.elm.tracking.TrackBack;
-import org.hl7.fhir.dstu3.model.ActivityDefinition;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.DomainResource;
-import org.hl7.fhir.dstu3.model.Extension;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Library;
-import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.Parameters;
-import org.hl7.fhir.dstu3.model.PlanDefinition;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.Resource;
-import org.hl7.fhir.dstu3.model.StringType;
-import org.hl7.fhir.dstu3.model.Type;
-import org.opencds.cqf.config.STU3LibraryLoader;
+import org.hl7.fhir.r4.model.*;
+import org.opencds.cqf.config.R4LibraryLoader;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
@@ -39,12 +26,8 @@ import org.opencds.cqf.helpers.LibraryHelper;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
-/**
- * Created by Bryn on 1/16/2017.
- */
 public class CqlExecutionProvider {
     private JpaDataProvider provider;
     private TerminologyProvider defaultTerminologyProvider;
@@ -58,13 +41,13 @@ public class CqlExecutionProvider {
         return (LibraryResourceProvider) provider.resolveResourceProvider("Library");
     }
 
-    private List<Reference> cleanReferences(List<Reference> references) {
-        List<Reference> cleanRefs = new ArrayList<>();
-        List<Reference> noDupes = new ArrayList<>();
+    private List<CanonicalType> cleanReferences(List<CanonicalType> references) {
+        List<CanonicalType> cleanRefs = new ArrayList<>();
+        List<CanonicalType> noDupes = new ArrayList<>();
 
-        for (Reference reference : references) {
+        for (CanonicalType reference : references) {
             boolean dup = false;
-            for (Reference ref : noDupes) {
+            for (CanonicalType ref : noDupes) {
                 if (ref.equalsDeep(reference)) {
                     dup = true;
                 }
@@ -73,16 +56,14 @@ public class CqlExecutionProvider {
                 noDupes.add(reference);
             }
         }
-        for (Reference reference : noDupes) {
-            cleanRefs.add(new Reference(new IdType(reference.getReferenceElement().getResourceType(),
-                    reference.getReferenceElement().getIdPart().replace("#", ""),
-                    reference.getReferenceElement().getVersionIdPart())));
+        for (CanonicalType reference : noDupes) {
+            cleanRefs.add(new CanonicalType(reference.getValue().replace("#", "")));
         }
         return cleanRefs;
     }
 
-    private Iterable<Reference> getLibraryReferences(DomainResource instance) {
-        List<Reference> references = new ArrayList<>();
+    private Iterable<CanonicalType> getLibraryReferences(DomainResource instance) {
+        List<CanonicalType> references = new ArrayList<>();
 
         if (instance.hasContained()) {
             for (Resource resource : instance.getContained()) {
@@ -111,8 +92,8 @@ public class CqlExecutionProvider {
                 .getExtensionsByUrl("http://hl7.org/fhir/StructureDefinition/cqif-library")) {
             Type value = extension.getValue();
 
-            if (value instanceof Reference) {
-                references.add((Reference) value);
+            if (value instanceof CanonicalType) {
+                references.add((CanonicalType) value);
             }
 
             else {
@@ -123,9 +104,9 @@ public class CqlExecutionProvider {
         return cleanReferences(references);
     }
 
-    private String buildIncludes(Iterable<Reference> references) {
+    private String buildIncludes(Iterable<CanonicalType> references) {
         StringBuilder builder = new StringBuilder();
-        for (Reference reference : references) {
+        for (CanonicalType reference : references) {
 
             if (builder.length() > 0) {
                 builder.append(" ");
@@ -135,16 +116,16 @@ public class CqlExecutionProvider {
 
             // TODO: This assumes the libraries resource id is the same as the library name,
             // need to work this out better
-            builder.append(reference.getReferenceElement().getIdPart());
+            builder.append(reference.getId());
 
-            if (reference.getReferenceElement().getVersionIdPart() != null) {
+            if (reference.hasValue() && reference.getValue().split("\\|").length > 1) {
                 builder.append(" version '");
-                builder.append(reference.getReferenceElement().getVersionIdPart());
+                builder.append(reference.getValue().split("\\|")[1]);
                 builder.append("'");
             }
 
             builder.append(" called ");
-            builder.append(reference.getReferenceElement().getIdPart());
+            builder.append(reference.getValue().split("\\|")[0]);
         }
 
         return builder.toString();
@@ -156,22 +137,17 @@ public class CqlExecutionProvider {
      * is loaded into the context for the expression
      */
     public Object evaluateInContext(DomainResource instance, String cql, String patientId) {
-        Iterable<Reference> libraries = getLibraryReferences(instance);
+        Iterable<CanonicalType> libraries = getLibraryReferences(instance);
 
         // Provide the instance as the value of the '%context' parameter, as well as the
         // value of a parameter named the same as the resource
         // This enables expressions to access the resource by root, as well as through
         // the %context attribute
         String source = String.format(
-                "library LocalLibrary using FHIR version '3.0.0' include FHIRHelpers version '3.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
+                "library LocalLibrary using FHIR version '4.0.0' include FHIRHelpers version '4.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
                 buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
-        // String source = String.format("library LocalLibrary using FHIR version '1.8'
-        // include FHIRHelpers version '1.8' called FHIRHelpers %s parameter %s %s
-        // parameter \"%%context\" %s define Expression: %s",
-        // buildIncludes(libraries), instance.fhirType(), instance.fhirType(),
-        // instance.fhirType(), cql);
 
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        R4LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
 
         org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source,
                 libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
@@ -231,7 +207,7 @@ public class CqlExecutionProvider {
         CqlTranslator translator;
         FhirMeasureBundler bundler = new FhirMeasureBundler();
 
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        R4LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
 
         List<Resource> results = new ArrayList<>();
 
@@ -394,6 +370,4 @@ public class CqlExecutionProvider {
         }
         return type;
     }
-
-    String s = "library BreastCancerScreening version '7.2.000' using QDM version '5.3' include MATGlobalCommonFunctions_QDM version '2.0.000' called Global include AdultOutpatientEncounters_QDM version '1.1.000' called AdultOutpatientEncounters include Hospice_QDM version '1.0.000' called Hospice valueset \"ONC Administrative Sex\": 'urn:oid:2.16.840.1.113762.1.4.1' valueset \"Race\": 'urn:oid:2.16.840.1.114222.4.11.836' valueset \"Ethnicity\": 'urn:oid:2.16.840.1.114222.4.11.837' valueset \"Payer\": 'urn:oid:2.16.840.1.114222.4.11.3591' valueset \"Bilateral Mastectomy\": 'urn:oid:2.16.840.1.113883.3.464.1003.198.12.1005' valueset \"Female\": 'urn:oid:2.16.840.1.113883.3.560.100.2' valueset \"Mammography\": 'urn:oid:2.16.840.1.113883.3.464.1003.108.12.1018' valueset \"Unilateral Mastectomy\": 'urn:oid:2.16.840.1.113883.3.464.1003.198.12.1020' valueset \"History of bilateral mastectomy\": 'urn:oid:2.16.840.1.113883.3.464.1003.198.12.1068' valueset \"Status Post Left Mastectomy\": 'urn:oid:2.16.840.1.113883.3.464.1003.198.12.1069' valueset \"Status Post Right Mastectomy\": 'urn:oid:2.16.840.1.113883.3.464.1003.198.12.1070' valueset \"Left\": 'urn:oid:2.16.840.1.113883.3.464.1003.122.12.1036' valueset \"Right\": 'urn:oid:2.16.840.1.113883.3.464.1003.122.12.1035' valueset \"Unilateral Mastectomy, Unspecified Laterality\": 'urn:oid:2.16.840.1.113883.3.464.1003.198.12.1071' parameter \"Measurement Period\" Interval<DateTime> context Patient /* define \"SDE Ethnicity\": \t[\"Patient Characteristic Ethnicity\": \"Ethnicity\"] define \"SDE Payer\": \t[\"Patient Characteristic Payer\": \"Payer\"] define \"SDE Race\": \t[\"Patient Characteristic Race\": \"Race\"] define \"SDE Sex\": \t[\"Patient Characteristic Sex\": \"ONC Administrative Sex\"] */ define \"Denominator\": \ttrue /* define \"Unilateral Mastectomy Procedure\": \t[\"Procedure, Performed\": \"Unilateral Mastectomy\"] UnilateralMastectomyProcedure \t\twhere UnilateralMastectomyProcedure.relevantPeriod ends before end of \"Measurement Period\" */ define \"Unilateral Mastectomy Procedure\": \t[\"Procedure, Performed\": \"Unilateral Mastectomy\"] UnilateralMastectomyProcedure \t\twhere UnilateralMastectomyProcedure.relevantPeriod ends before day of end of \"Measurement Period\" /* define \"Right Mastectomy\": \t( [\"Diagnosis\": \"Status Post Right Mastectomy\"] \t\tunion ( [\"Diagnosis\": \"Unilateral Mastectomy, Unspecified Laterality\"] UnilateralMastectomyDiagnosis \t\t\t\twhere UnilateralMastectomyDiagnosis.anatomicalLocationSite in \"Right\" \t\t) ) RightMastectomy \t\twhere RightMastectomy.prevalencePeriod starts before end of \"Measurement Period\" */ define \"Right Mastectomy\": \t( [\"Diagnosis\": \"Status Post Right Mastectomy\"] \t\tunion ( [\"Diagnosis\": \"Unilateral Mastectomy, Unspecified Laterality\"] UnilateralMastectomyDiagnosis \t\t\t\twhere UnilateralMastectomyDiagnosis.anatomicalLocationSite in \"Right\" \t\t) ) RightMastectomy \t\twhere RightMastectomy.prevalencePeriod starts before day of end of \"Measurement Period\" /* define \"Left Mastectomy\": \t( [\"Diagnosis\": \"Status Post Left Mastectomy\"] \t\tunion ( [\"Diagnosis\": \"Unilateral Mastectomy, Unspecified Laterality\"] UnilateralMastectomyDiagnosis \t\t\t\twhere UnilateralMastectomyDiagnosis.anatomicalLocationSite in \"Left\" \t\t) ) LeftMastectomy \t\twhere LeftMastectomy.prevalencePeriod starts before end of \"Measurement Period\" */ define \"Left Mastectomy\": \t( [\"Diagnosis\": \"Status Post Left Mastectomy\"] \t\tunion ( [\"Diagnosis\": \"Unilateral Mastectomy, Unspecified Laterality\"] UnilateralMastectomyDiagnosis \t\t\t\twhere UnilateralMastectomyDiagnosis.anatomicalLocationSite in \"Left\" \t\t) ) LeftMastectomy \t\twhere LeftMastectomy.prevalencePeriod starts before day of end of \"Measurement Period\" /* define \"History Bilateral Mastectomy\": \t[\"Diagnosis\": \"History of bilateral mastectomy\"] BilateralMastectomyHistory \t\twhere BilateralMastectomyHistory.prevalencePeriod starts before end of \"Measurement Period\" */ define \"History Bilateral Mastectomy\": \t[\"Diagnosis\": \"History of bilateral mastectomy\"] BilateralMastectomyHistory \t\twhere BilateralMastectomyHistory.prevalencePeriod starts before day of end of \"Measurement Period\" /* define \"Bilateral Mastectomy Procedure\": \t[\"Procedure, Performed\": \"Bilateral Mastectomy\"] BilateralMastectomyPerformed \t\twhere BilateralMastectomyPerformed.relevantPeriod ends before end of \"Measurement Period\" */ define \"Bilateral Mastectomy Procedure\": \t[\"Procedure, Performed\": \"Bilateral Mastectomy\"] BilateralMastectomyPerformed \t\twhere BilateralMastectomyPerformed.relevantPeriod ends before day of end of \"Measurement Period\" define \"Numerator\": \texists ( [\"Diagnostic Study, Performed\": \"Mammography\"] Mammogram \t\t\twhere ( Mammogram.relevantPeriod ends 27 months or less before day of end \"Measurement Period\" ) \t) define \"Denominator Exclusions\": \tHospice.\"Has Hospice\" \t\tor ( Count(\"Unilateral Mastectomy Procedure\") = 2 ) \t\tor ( exists \"Right Mastectomy\" \t\t\t\tand exists \"Left Mastectomy\" \t\t) \t\tor exists \"History Bilateral Mastectomy\" \t\tor exists \"Bilateral Mastectomy Procedure\" define \"Initial Population\": \texists ( [\"Patient Characteristic Sex\": \"Female\"] ) \t\tand exists [\"Patient Characteristic Birthdate\"] BirthDate \t\t\twhere Global.\"CalendarAgeInYearsAt\"(BirthDate.birthDatetime, start of \"Measurement Period\") in Interval[51, 74] \t\t\t\tand exists AdultOutpatientEncounters.\"Qualifying Encounters\"";
 }

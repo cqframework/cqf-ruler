@@ -6,22 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hl7.fhir.dstu3.model.Attachment;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.ContactDetail;
-import org.hl7.fhir.dstu3.model.Contributor;
-import org.hl7.fhir.dstu3.model.DataRequirement;
-import org.hl7.fhir.dstu3.model.Extension;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Library;
-import org.hl7.fhir.dstu3.model.MarkdownType;
-import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.ParameterDefinition;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.RelatedArtifact;
-import org.hl7.fhir.dstu3.model.Resource;
-import org.hl7.fhir.dstu3.model.StringType;
-import org.hl7.fhir.dstu3.model.UsageContext;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 
 import ca.uhn.fhir.model.api.annotation.Child;
@@ -604,7 +589,7 @@ public class CqfMeasure extends Measure {
     }
 
     /**
-     * @return {@link #supplementalSupplementalDataElements} (The supplemenetal data elements referenced in the library.)
+     * @return {@link #supplementalDataElements} (The supplemenetal data elements referenced in the library.)
      */
     public List<MeasureGroupPopulationComponent> getSupplementalDataElements() { 
         if (this.supplementalDataElements == null)
@@ -647,7 +632,7 @@ public class CqfMeasure extends Measure {
     }
 
     /**
-     * @return The first repetition of repeating field {@link #supplementalSupplementalDataElements}, creating it if it does not already exist
+     * @return The first repetition of repeating field {@link #supplementalDataElements}, creating it if it does not already exist
      */
     public MeasureGroupPopulationComponent getSupplementalDataElementsFirstRep() { 
         if (getSupplementalDataElements().isEmpty()) {
@@ -815,10 +800,10 @@ public class CqfMeasure extends Measure {
             for (CodeableConcept i : measure.getTopic())
                 topic.add(i.copy());
         };
-        if (measure.getContributor() != null) {
-            contributor = new ArrayList<Contributor>();
-            for (Contributor i : measure.getContributor())
-                contributor.add(i.copy());
+        if (measure.getAuthor() != null) {
+            author = new ArrayList<>();
+            for (ContactDetail i : measure.getAuthor())
+                author.add(i.copy());
         };
         if (measure.getContact() != null) {
             contact = new ArrayList<ContactDetail>();
@@ -832,8 +817,8 @@ public class CqfMeasure extends Measure {
                 relatedArtifact.add(i.copy());
         };
         if (measure.getLibrary() != null) {
-            library = new ArrayList<Reference>();
-            for (Reference i : measure.getLibrary())
+            library = new ArrayList<>();
+            for (CanonicalType i : measure.getLibrary())
                 library.add(i.copy());
         };
         disclaimer = measure.getDisclaimerElement() == null ? null : measure.getDisclaimerElement().copy();
@@ -848,14 +833,13 @@ public class CqfMeasure extends Measure {
         rateAggregation = measure.getRateAggregationElement() == null ? null : measure.getRateAggregationElement().copy();
         rationale = measure.getRationaleElement() == null ? null : measure.getRationaleElement().copy();
         clinicalRecommendationStatement = measure.getClinicalRecommendationStatementElement() == null ? null : measure.getClinicalRecommendationStatementElement().copy();
-        improvementNotation = measure.getImprovementNotationElement() == null ? null : measure.getImprovementNotationElement().copy();
+        improvementNotation = measure.getImprovementNotation() == null ? null : measure.getImprovementNotation().copy();
         if (measure.getDefinition() != null) {
             definition = new ArrayList<MarkdownType>();
             for (MarkdownType i : measure.getDefinition())
                 definition.add(i.copy());
         };
         guidance = measure.getGuidanceElement() == null ? null : measure.getGuidanceElement().copy();
-        set = measure.getSetElement() == null ? null : measure.getSetElement().copy();
         if (measure.getGroup() != null) {
             group = new ArrayList<MeasureGroupComponent>();
             for (MeasureGroupComponent i : measure.getGroup())

@@ -8,12 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Library;
-import org.hl7.fhir.dstu3.model.Narrative;
-import org.hl7.fhir.dstu3.model.Parameters;
-import org.hl7.fhir.dstu3.model.StringType;
-import org.opencds.cqf.config.STU3LibrarySourceProvider;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Narrative;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.StringType;
+import org.opencds.cqf.config.R4LibrarySourceProvider;
 
 
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -28,7 +28,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
-public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider implements org.opencds.cqf.providers.LibraryResourceProvider {
+public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider implements org.opencds.cqf.providers.LibraryResourceProvider {
 
     private NarrativeProvider narrativeProvider;
     private DataRequirementsProvider dataRequirementsProvider;
@@ -51,11 +51,11 @@ public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.L
         return libraryManager;
     }
 
-    private STU3LibrarySourceProvider librarySourceProvider;
+    private R4LibrarySourceProvider librarySourceProvider;
 
-    private STU3LibrarySourceProvider getLibrarySourceProvider() {
+    private R4LibrarySourceProvider getLibrarySourceProvider() {
         if (librarySourceProvider == null) {
-            librarySourceProvider = new STU3LibrarySourceProvider(getLibraryResourceProvider());
+            librarySourceProvider = new R4LibrarySourceProvider(getLibraryResourceProvider());
         }
         return librarySourceProvider;
     }
@@ -140,8 +140,8 @@ public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.L
 
     @Override
     public Library resolveLibraryByName(String libraryName, String libraryVersion) {
-        Iterable<org.hl7.fhir.dstu3.model.Library> libraries = getLibrariesByName(libraryName);
-        org.hl7.fhir.dstu3.model.Library library = LibraryResourceProvider.selectFromList(libraries, libraryVersion);
+        Iterable<org.hl7.fhir.r4.model.Library> libraries = getLibrariesByName(libraryName);
+        org.hl7.fhir.r4.model.Library library = LibraryResourceProvider.selectFromList(libraries, libraryVersion);
 
         if (library == null) {
             throw new IllegalArgumentException(String.format("Could not resolve library name %s", libraryName));
@@ -150,7 +150,7 @@ public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.L
         return library;
     }
 
-    private Iterable<org.hl7.fhir.dstu3.model.Library> getLibrariesByName(String name) {
+    private Iterable<org.hl7.fhir.r4.model.Library> getLibrariesByName(String name) {
         // Search for libraries by name
         SearchParameterMap map = new SearchParameterMap();
         map.add("name", new StringParam(name, true));
@@ -163,11 +163,11 @@ public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.L
         return resolveLibraries(resourceList);
     }
     
-    private Iterable<org.hl7.fhir.dstu3.model.Library> resolveLibraries(List< IBaseResource > resourceList) {
-        List<org.hl7.fhir.dstu3.model.Library> ret = new ArrayList<>();
+    private Iterable<org.hl7.fhir.r4.model.Library> resolveLibraries(List< IBaseResource > resourceList) {
+        List<org.hl7.fhir.r4.model.Library> ret = new ArrayList<>();
         for (IBaseResource res : resourceList) {
             Class clazz = res.getClass();
-            ret.add((org.hl7.fhir.dstu3.model.Library)clazz.cast(res));
+            ret.add((org.hl7.fhir.r4.model.Library)clazz.cast(res));
         }
         return ret;
     }

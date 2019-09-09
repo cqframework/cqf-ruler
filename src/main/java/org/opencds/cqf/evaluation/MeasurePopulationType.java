@@ -2,7 +2,7 @@ package org.opencds.cqf.evaluation;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.hl7.fhir.dstu3.model.Configuration;
+import org.hl7.fhir.r4.model.Configuration;
 
 public enum MeasurePopulationType {
     INITIALPOPULATION("initial-population", "Initial Population",

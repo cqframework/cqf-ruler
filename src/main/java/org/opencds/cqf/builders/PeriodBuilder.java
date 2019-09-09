@@ -1,6 +1,6 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.Period;
+import org.hl7.fhir.r4.model.Period;
 
 import java.util.Date;
 

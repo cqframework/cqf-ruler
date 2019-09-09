@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.dstu3.model.Parameters;
-import org.hl7.fhir.dstu3.model.ValueSet;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;

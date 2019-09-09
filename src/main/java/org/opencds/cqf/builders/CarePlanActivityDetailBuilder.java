@@ -1,7 +1,8 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.*;
+import com.alphora.builders.BaseBuilder;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.r4.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +13,13 @@ public class CarePlanActivityDetailBuilder extends BaseBuilder<CarePlan.CarePlan
         super(new CarePlan.CarePlanActivityDetailComponent());
     }
 
-    public CarePlanActivityDetailBuilder buildCategory(CodeableConcept category) {
-        complexProperty.setCategory(category);
+    public CarePlanActivityDetailBuilder buildKind(String category) {
+        complexProperty.setKind(CarePlan.CarePlanActivityKind.fromCode(category));
         return this;
     }
 
-    public CarePlanActivityDetailBuilder buildDefinition(Reference reference) {
-        complexProperty.setDefinition(reference);
+    public CarePlanActivityDetailBuilder buildInstantiatesCanonical(List<CanonicalType> canonicals) {
+        complexProperty.setInstantiatesCanonical(canonicals);
         return this;
     }
 
@@ -81,13 +82,13 @@ public class CarePlanActivityDetailBuilder extends BaseBuilder<CarePlan.CarePlan
         return this;
     }
 
-    public CarePlanActivityDetailBuilder buildStatusReason(String reason) {
+    public CarePlanActivityDetailBuilder buildStatusReason(CodeableConcept reason) {
         complexProperty.setStatusReason(reason);
         return this;
     }
 
-    public CarePlanActivityDetailBuilder buildProhibited(boolean prohibited) {
-        complexProperty.setProhibited(prohibited);
+    public CarePlanActivityDetailBuilder buildDoNotPerform(boolean doNotPerform) {
+        complexProperty.setDoNotPerform(doNotPerform);
         return this;
     }
 

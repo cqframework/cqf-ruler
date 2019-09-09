@@ -1,6 +1,7 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.*;
+import com.alphora.builders.BaseBuilder;
+import org.hl7.fhir.r4.model.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,8 +14,8 @@ public class RequestGroupActionBuilder extends BaseBuilder<RequestGroup.RequestG
 
     // TODO - incomplete
 
-    public RequestGroupActionBuilder buildLabel(String label) {
-        complexProperty.setLabel(label);
+    public RequestGroupActionBuilder buildPrefix(String prefix) {
+        complexProperty.setPrefix(prefix);
         return this;
     }
 
@@ -33,7 +34,7 @@ public class RequestGroupActionBuilder extends BaseBuilder<RequestGroup.RequestG
         return this;
     }
 
-    public RequestGroupActionBuilder buildType(Coding type) {
+    public RequestGroupActionBuilder buildType(CodeableConcept type) {
         complexProperty.setType(type);
         return this;
     }

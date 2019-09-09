@@ -1,8 +1,8 @@
 package org.opencds.cqf.exceptions;
 
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.OperationOutcome;
 
 public class Helper {
 

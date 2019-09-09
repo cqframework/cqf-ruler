@@ -1,8 +1,9 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.ActivityDefinition;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.Enumerations;
+import org.hl7.fhir.r4.model.ActivityDefinition;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Expression;
 
 public class ActivityDefinitionBuilder extends BaseBuilder<ActivityDefinition> {
 
@@ -72,10 +73,13 @@ public class ActivityDefinitionBuilder extends BaseBuilder<ActivityDefinition> {
 
     public ActivityDefinitionBuilder buildDynamicValue(String description, String path, String language, String expression) {
         ActivityDefinition.ActivityDefinitionDynamicValueComponent dynamicValueComponent = new ActivityDefinition.ActivityDefinitionDynamicValueComponent();
-        dynamicValueComponent.setDescription(description);
-        dynamicValueComponent.setLanguage(language);
         dynamicValueComponent.setPath(path);
-        dynamicValueComponent.setExpression(expression);
+        dynamicValueComponent.setExpression(
+                new Expression()
+                        .setDescription(description)
+                        .setLanguage(Expression.ExpressionLanguage.fromCode(language))
+                        .setExpression(expression)
+        );
         complexProperty.addDynamicValue(dynamicValueComponent);
         return this;
     }

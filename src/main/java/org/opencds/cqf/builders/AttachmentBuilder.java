@@ -1,7 +1,8 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.Attachment;
-import org.hl7.fhir.dstu3.model.Extension;
+import com.alphora.builders.BaseBuilder;
+import org.hl7.fhir.r4.model.Attachment;
+import org.hl7.fhir.r4.model.Extension;
 
 import java.util.List;
 

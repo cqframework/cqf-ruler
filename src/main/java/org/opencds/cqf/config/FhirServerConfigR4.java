@@ -1,7 +1,7 @@
 package org.opencds.cqf.config;
 
 import ca.uhn.fhir.context.ConfigurationException;
-import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
+import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,12 +13,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Configuration
-public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3
+public class FhirServerConfigR4 extends BaseJavaConfigR4
 {
     private final DataSource myDataSource;
 
     @Autowired
-    public FhirServerConfigDstu3(DataSource myDataSource) {
+    public FhirServerConfigR4(DataSource myDataSource) {
         this.myDataSource = myDataSource;
     }
 

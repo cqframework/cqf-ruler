@@ -5,7 +5,7 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import lombok.Data;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.UsingDef;
-import org.hl7.fhir.dstu3.model.Measure;
+import org.hl7.fhir.r4.model.Measure;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;

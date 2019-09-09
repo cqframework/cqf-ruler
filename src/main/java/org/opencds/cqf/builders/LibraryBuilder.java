@@ -1,10 +1,10 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.Attachment;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Enumerations;
-import org.hl7.fhir.dstu3.model.Library;
-import org.hl7.fhir.dstu3.model.codesystems.LibraryType;
+import org.hl7.fhir.r4.model.Attachment;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.codesystems.LibraryType;
 
 import java.io.UnsupportedEncodingException;
 

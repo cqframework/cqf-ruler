@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Collection;
 
-import org.hl7.fhir.dstu3.model.Library;
+import org.hl7.fhir.r4.model.Library;
 
 public class InMemoryLibraryResourceProvider implements LibraryResourceProvider {
 

@@ -1,16 +1,16 @@
 package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
+import ca.uhn.fhir.jpa.rp.r4.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
-import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
+import ca.uhn.fhir.jpa.term.IHapiTerminologySvcR4;
 import ca.uhn.fhir.jpa.term.VersionIndependentConcept;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import org.hl7.fhir.dstu3.model.CodeSystem;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.ValueSet;
+import org.hl7.fhir.r4.model.CodeSystem;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.terminology.CodeSystemInfo;
@@ -20,17 +20,14 @@ import org.opencds.cqf.cql.terminology.ValueSetInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Christopher Schuler on 7/17/2017.
- */
 public class JpaTerminologyProvider implements TerminologyProvider {
 
-    private IHapiTerminologySvcDstu3 terminologySvcDstu3;
+    private IHapiTerminologySvcR4 terminologySvcR4;
     private FhirContext context;
     private ValueSetResourceProvider valueSetResourceProvider;
 
-    public JpaTerminologyProvider(IHapiTerminologySvcDstu3 terminologySvcDstu3, FhirContext context, ValueSetResourceProvider valueSetResourceProvider) {
-        this.terminologySvcDstu3 = terminologySvcDstu3;
+    public JpaTerminologyProvider(IHapiTerminologySvcR4 terminologySvcR4, FhirContext context, ValueSetResourceProvider valueSetResourceProvider) {
+        this.terminologySvcR4 = terminologySvcR4;
         this.context = context;
         this.valueSetResourceProvider = valueSetResourceProvider;
     }
@@ -88,7 +85,7 @@ public class JpaTerminologyProvider implements TerminologyProvider {
             }
         }
 
-        List<VersionIndependentConcept> expansion = terminologySvcDstu3.expandValueSet(valueSet.getId());
+        List<VersionIndependentConcept> expansion = terminologySvcR4.expandValueSet(valueSet.getId());
         for (VersionIndependentConcept concept : expansion) {
             codes.add(new Code().withCode(concept.getCode()).withSystem(concept.getSystem()));
         }
@@ -98,7 +95,7 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 
     @Override
     public synchronized Code lookup(Code code, CodeSystemInfo codeSystem) throws ResourceNotFoundException {
-        CodeSystem cs = terminologySvcDstu3.fetchCodeSystem(context, codeSystem.getId());
+        CodeSystem cs = terminologySvcR4.fetchCodeSystem(context, codeSystem.getId());
         for (CodeSystem.ConceptDefinitionComponent concept : cs.getConcept()) {
             if (concept.getCode().equals(code.getCode()))
                 return code.withSystem(codeSystem.getId()).withDisplay(concept.getDisplay());

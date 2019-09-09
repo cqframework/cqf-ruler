@@ -7,23 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.Composition;
-import org.hl7.fhir.dstu3.model.DataRequirement;
-import org.hl7.fhir.dstu3.model.DataRequirement.DataRequirementCodeFilterComponent;
-import org.hl7.fhir.dstu3.model.Extension;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.ListResource;
-import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.MeasureReport;
-import org.hl7.fhir.dstu3.model.Narrative;
-import org.hl7.fhir.dstu3.model.Parameters;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.RelatedArtifact;
-import org.hl7.fhir.dstu3.model.Resource;
-import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
@@ -38,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
+import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -165,7 +149,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                 return isQdm ? evaluator.evaluateQdmPatientMeasure(seed.getMeasure(), seed.getContext(), patientRef)
                         : evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
             case "patient-list":
-                return evaluator.evaluatePatientListMeasure(seed.getMeasure(), seed.getContext(), practitionerRef);
+                return evaluator.evaluateSubjectListMeasure(seed.getMeasure(), seed.getContext(), practitionerRef);
             case "population":
                 return isQdm ? evaluator.evaluateQdmPopulationMeasure(seed.getMeasure(), seed.getContext())
                         : evaluator.evaluatePopulationMeasure(seed.getMeasure(), seed.getContext());
@@ -204,7 +188,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         }
 
         seed.setup(measure, periodStart, periodEnd, null, null, null, null);
-        BundleDataProviderStu3 bundleProvider = new BundleDataProviderStu3(sourceData);
+        BundleDataProviderR4 bundleProvider = new BundleDataProviderR4(sourceData);
         bundleProvider.setTerminologyProvider(provider.getTerminologyProvider());
         seed.getContext().registerDataProvider("http://hl7.org/fhir", bundleProvider);
         MeasureEvaluation evaluator = new MeasureEvaluation(bundleProvider, seed.getMeasurementPeriod());
@@ -230,7 +214,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                 .setTitle(topic + " Care Gap Report");
 
         List<MeasureReport> reports = new ArrayList<>();
-        MeasureReport report = new MeasureReport();
+        MeasureReport report;
         for (IBaseResource resource : measures) {
             Composition.SectionComponent section = new Composition.SectionComponent();
 
@@ -240,11 +224,11 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             if (measure.hasTitle()) {
                 section.setTitle(measure.getTitle());
             }
-            String improvementNotation = "increase"; // defaulting to "increase"
+            CodeableConcept improvementNotation = new CodeableConcept().addCoding(new Coding().setCode("increase").setSystem("http://terminology.hl7.org/CodeSystem/measure-improvement-notation")); // defaulting to "increase"
             if (measure.hasImprovementNotation()) {
                 improvementNotation = measure.getImprovementNotation();
                 section.setText(new Narrative().setStatus(Narrative.NarrativeStatus.GENERATED)
-                        .setDiv(new XhtmlNode().setValue(improvementNotation)));
+                        .setDiv(new XhtmlNode().setValue(improvementNotation.getCodingFirstRep().getCode())));
             }
 
             LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
@@ -291,12 +275,12 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
                 // TODO - this is super hacky ... change once improvementNotation is specified
                 // as a code
-                if (improvementNotation.toLowerCase().contains("increase")) {
+                if (improvementNotation.getCodingFirstRep().getCode().toLowerCase().equals("increase")) {
                     if (proportion < 1.0) {
                         composition.addSection(section);
                         reports.add(report);
                     }
-                } else if (improvementNotation.toLowerCase().contains("decrease")) {
+                } else if (improvementNotation.getCodingFirstRep().getCode().toLowerCase().equals("decrease")) {
                     if (proportion > 0.0) {
                         composition.addSection(section);
                         reports.add(report);
@@ -393,7 +377,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
     // TODO - this needs a lot of work
     @Operation(name = "$data-requirements", idempotent = true)
-    public org.hl7.fhir.dstu3.model.Library dataRequirements(@IdParam IdType theId,
+    public org.hl7.fhir.r4.model.Library dataRequirements(@IdParam IdType theId,
             @RequiredParam(name = "startPeriod") String startPeriod,
             @RequiredParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
         

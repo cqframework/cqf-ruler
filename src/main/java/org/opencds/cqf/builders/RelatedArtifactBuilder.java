@@ -1,8 +1,9 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.Attachment;
-import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import com.alphora.builders.BaseBuilder;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.r4.model.Attachment;
+import org.hl7.fhir.r4.model.RelatedArtifact;
 
 public class RelatedArtifactBuilder extends BaseBuilder<RelatedArtifact> {
 

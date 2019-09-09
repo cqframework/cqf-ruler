@@ -19,11 +19,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.HTML;
-import javax.swing.text.Element;
-import javax.swing.text.StyleConstants;
 import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -35,28 +30,14 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import com.google.common.collect.Lists;
 import com.jamesmurty.utils.XMLBuilder2;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.jsoup.Jsoup;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.Contributor;
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Library;
-import org.hl7.fhir.dstu3.model.MarkdownType;
-import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.Narrative;
-import org.hl7.fhir.dstu3.model.Period;
-import org.hl7.fhir.dstu3.model.Contributor.ContributorType;
-import org.hl7.fhir.dstu3.model.Measure.MeasureGroupComponent;
-import org.hl7.fhir.dstu3.model.Measure.MeasureGroupPopulationComponent;
-import org.hl7.fhir.dstu3.model.Measure.MeasureSupplementalDataComponent;
-import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.providers.CqfMeasure.CodeTerminologyRef;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef;
 import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
-import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -202,7 +183,7 @@ public class HQMFProvider {
 
     // Returns the name of the primary library once the documents are added.
     private String addRelatedDocuments(XMLBuilder2 xml, CqfMeasure m, String primaryLibraryGuid) {
-        String primaryLibraryId = m.getLibraryFirstRep().getReference();
+        String primaryLibraryId = m.getLibrary().get(0).getValue();
         String primaryLibraryName = null;
 
         for (Library l : m.getLibraries()) {
@@ -333,12 +314,12 @@ public class HQMFProvider {
 
         // Improvement Notation
         this.addMeasureAttributeWithCodeAndTextValue(xml, "IDUR", codeSystem, "Improvement Notation", "text/plain",
-                m.hasImprovementNotation() ? m.getImprovementNotation() : "None");
+                m.hasImprovementNotation() ? m.getImprovementNotation().getCodingFirstRep().getCode() : "None");
 
         // Reference (citations)
         if (m.hasRelatedArtifact()) {
             for (RelatedArtifact r : m.getRelatedArtifact()) {
-                if (r.hasType() && r.getType() == RelatedArtifactType.CITATION) {
+                if (r.hasType() && r.getType() == RelatedArtifact.RelatedArtifactType.CITATION) {
                     this.addMeasureAttributeWithCodeAndTextValue(xml, "REF", codeSystem, "Reference", "text/plain",
                             r.getCitation());
                 }
@@ -365,7 +346,7 @@ public class HQMFProvider {
 
         // TODO: Groups - It seems the HQMF measure supports descriptions for only  one group, the FHIR measure has descriptions per group
         if (m.hasGroup()) {
-            MeasureGroupComponent mgc = m.getGroupFirstRep();
+            Measure.MeasureGroupComponent mgc = m.getGroupFirstRep();
             this.addGroupMeasureAttributes(xml, codeSystem, mgc);
         }
 
@@ -374,10 +355,10 @@ public class HQMFProvider {
         // TODO: Supplemental Data Elements - The HQMF measure has a description of the elements, the FHIR measure does not.
     }
 
-    private void addGroupMeasureAttributes(XMLBuilder2 xml, String codeSystem, MeasureGroupComponent mgc) {
+    private void addGroupMeasureAttributes(XMLBuilder2 xml, String codeSystem, Measure.MeasureGroupComponent mgc) {
         for  (Map.Entry<String, CodeMapping> entry : measurePopulationValueSetMap.entrySet()) {
             String key = entry.getKey();
-            MeasureGroupPopulationComponent mgpc = GetPopulationForKey(key, mgc);
+            Measure.MeasureGroupPopulationComponent mgpc = GetPopulationForKey(key, mgc);
             if (mgpc != null) {
                 this.addMeasureAttributeWithCodeAndTextValue(xml, 
                     entry.getValue().code, codeSystem, entry.getValue().displayName, 
@@ -386,8 +367,8 @@ public class HQMFProvider {
         }
     }
 
-    private MeasureGroupPopulationComponent GetPopulationForKey(String key, MeasureGroupComponent mgc) {
-        for (MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
+    private Measure.MeasureGroupPopulationComponent GetPopulationForKey(String key, Measure.MeasureGroupComponent mgc) {
+        for (Measure.MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
             String mgpcIdentifier = mgpc.getCode().getCoding().get(0).getCode();
             if (key.equals(mgpcIdentifier)) {
                 return mgpc;
@@ -494,15 +475,15 @@ public class HQMFProvider {
                 String criteriaName = "PopulationCriteria_" + (i + 1);
                 String criteriaRoot = UUID.randomUUID().toString();
                 XMLBuilder2 readyForComponents = this.addPopulationCriteriaHeader(xml, criteriaName, criteriaRoot);
-                MeasureGroupComponent mgc = m.getGroupFirstRep();
-                for (MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
+                Measure.MeasureGroupComponent mgc = m.getGroupFirstRep();
+                for (Measure.MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
                     String key = mgpc.getCode().getCoding().get(0).getCode();
                     CodeMapping mapping = measurePopulationValueSetMap.get(key);
                     this.addPopulationCriteriaComponentCriteria(readyForComponents, mapping.criteriaName, mapping.criteriaExtension, mapping.code, documentName + ".\"" + mgpc.getCriteria() + "\"", documentGuid);
                 }
 
                 if (m.hasSupplementalData()) {
-                    for (MeasureSupplementalDataComponent sde : m.getSupplementalData()) {
+                    for (Measure.MeasureSupplementalDataComponent sde : m.getSupplementalData()) {
                         this.addPopulationCriteriaComponentSDE(readyForComponents, UUID.randomUUID().toString(), documentName + ".\"" + sde.getCriteria() + "\"", documentGuid);
                     }
                 }
@@ -548,14 +529,12 @@ public class HQMFProvider {
 
     private void addResponsibleParties(XMLBuilder2 xml, CqfMeasure m) {
 
-        List<Contributor> contributors = m.getContributor();
+        List<ContactDetail> contributors = m.getAuthor();
         if (contributors != null) {
-            for (Contributor c : contributors)
+            for (ContactDetail c : contributors)
             {
                 // TODO: Hard-coded NCQA's OID
-                if (c.getType() == ContributorType.AUTHOR) {
-                    this.addResponsibleParty(xml, "author", "2.16.840.1.113883.3.464", c.getName());
-                }
+                this.addResponsibleParty(xml, "author", "2.16.840.1.113883.3.464", c.getName());
             }
         }
 

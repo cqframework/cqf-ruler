@@ -3,8 +3,8 @@ package org.opencds.cqf.providers;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.ValueSet;
+import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
 public class CodeSystemUpdateProvider

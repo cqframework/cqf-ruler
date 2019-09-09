@@ -1,6 +1,7 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.*;
+import com.alphora.builders.BaseBuilder;
+import org.hl7.fhir.r4.model.*;
 
 import java.util.ArrayList;
 import java.util.List;

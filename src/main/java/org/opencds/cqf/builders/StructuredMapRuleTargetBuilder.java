@@ -1,7 +1,7 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.StringType;
-import org.hl7.fhir.dstu3.model.StructureMap;
+import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.StructureMap;
 
 public class StructuredMapRuleTargetBuilder extends BaseBuilder<StructureMap.StructureMapGroupRuleTargetComponent> {
 

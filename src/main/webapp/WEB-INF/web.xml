@@ -75,7 +75,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>qdm54</servlet-name>
-        <url-pattern>/baseDstu3/qdm/*</url-pattern>
+        <url-pattern>/baseR4/qdm/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -97,13 +97,13 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>fhirServletDstu3</servlet-name>
+        <servlet-name>fhirServletR4</servlet-name>
         <servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>fhirServletDstu3</servlet-name>
-        <url-pattern>/baseDstu3/*</url-pattern>
+        <servlet-name>fhirServletR4</servlet-name>
+        <url-pattern>/baseR4/*</url-pattern>
     </servlet-mapping>
 
     <filter>
@@ -112,7 +112,7 @@
     </filter>
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
-        <url-pattern>/baseDstu3/*</url-pattern>
+        <url-pattern>/baseR4/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>cross-origin</filter-name>

@@ -16,22 +16,14 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.elm.tracking.TrackBack;
-import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.PlanDefinition;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.RelatedArtifact;
-import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.config.NonCachingLibraryManager;
-import org.opencds.cqf.config.STU3LibraryLoader;
-import org.opencds.cqf.config.STU3LibrarySourceProvider;
+import org.opencds.cqf.config.R4LibraryLoader;
+import org.opencds.cqf.config.R4LibrarySourceProvider;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.providers.LibraryResourceProvider;
 
-/**
- * Created by Christopher on 1/11/2017.
- */
 public class LibraryHelper {
 
     public static Library readLibrary(InputStream xmlStream) {
@@ -42,12 +34,12 @@ public class LibraryHelper {
         }
     }
 
-    public static STU3LibraryLoader createLibraryLoader(LibraryResourceProvider provider) {
+    public static R4LibraryLoader createLibraryLoader(LibraryResourceProvider provider) {
         ModelManager modelManager = new ModelManager();
         LibraryManager libraryManager = new NonCachingLibraryManager(modelManager);
         libraryManager.getLibrarySourceLoader().clearProviders();
-        libraryManager.getLibrarySourceLoader().registerProvider(new STU3LibrarySourceProvider(provider));
-        return new STU3LibraryLoader(provider, libraryManager, modelManager);
+        libraryManager.getLibrarySourceLoader().registerProvider(new R4LibrarySourceProvider(provider));
+        return new R4LibraryLoader(provider, libraryManager, modelManager);
     }
 
     public static String errorsToString(Iterable<CqlTranslatorException> exceptions) {
@@ -104,33 +96,33 @@ public class LibraryHelper {
         List<org.cqframework.cql.elm.execution.Library> libraries = new ArrayList<org.cqframework.cql.elm.execution.Library>();
 
         // load libraries
-        for (Reference ref : measure.getLibrary()) {
+        for (CanonicalType ref : measure.getLibrary()) {
             // if library is contained in measure, load it into server
-            if (ref.getReferenceElement().getIdPart().startsWith("#")) {
+            if (ref.getId().startsWith("#")) {
                 for (Resource resource : measure.getContained()) {
-                    if (resource instanceof org.hl7.fhir.dstu3.model.Library
-                            && resource.getIdElement().getIdPart().equals(ref.getReferenceElement().getIdPart().substring(1)))
+                    if (resource instanceof org.hl7.fhir.r4.model.Library
+                            && resource.getIdElement().getIdPart().equals(ref.getId().substring(1)))
                     {
-                        libraryResourceProvider.update((org.hl7.fhir.dstu3.model.Library) resource);
+                        libraryResourceProvider.update((org.hl7.fhir.r4.model.Library) resource);
                     }
                 }
             }
 
             // We just loaded it into the server so we can access it by Id
-            String id = ref.getReferenceElement().getIdPart();
+            String id = ref.getId();
             if (id.startsWith("#")) {
                 id = id.substring(1);
             }
 
-            org.hl7.fhir.dstu3.model.Library library = libraryResourceProvider.resolveLibraryById(id);
+            org.hl7.fhir.r4.model.Library library = libraryResourceProvider.resolveLibraryById(id);
             libraries.add(
                 libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
             );
         }
 
         for (RelatedArtifact artifact : measure.getRelatedArtifact()) {
-            if (artifact.hasType() && artifact.getType().equals(RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.getResource().hasReference()) {
-                org.hl7.fhir.dstu3.model.Library library = libraryResourceProvider.resolveLibraryById(artifact.getResource().getReferenceElement().getIdPart());
+            if (artifact.hasType() && artifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.hasResource()) {
+                org.hl7.fhir.r4.model.Library library = libraryResourceProvider.resolveLibraryById(artifact.getResource());
                 libraries.add(
                     libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
                 );
@@ -149,7 +141,7 @@ public class LibraryHelper {
     {
         // Library library = null;
 
-        org.hl7.fhir.dstu3.model.Library fhirLibrary = libraryResourceProvider.resolveLibraryById(libraryId);
+        org.hl7.fhir.r4.model.Library fhirLibrary = libraryResourceProvider.resolveLibraryById(libraryId);
         return libraryLoader.load(new VersionedIdentifier().withId(fhirLibrary.getName()).withVersion(fhirLibrary.getVersion()));
 
         // for (Library l : libraryLoader.getLibraries()) {
@@ -170,7 +162,7 @@ public class LibraryHelper {
     public static Library resolvePrimaryLibrary(Measure measure, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
     {
         // default is the first library reference
-        String id = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
+        String id = measure.getLibrary().get(0).getId();
 
         Library library = resolveLibraryById(id, libraryLoader, libraryResourceProvider);
 
@@ -183,7 +175,7 @@ public class LibraryHelper {
     }
 
     public static Library resolvePrimaryLibrary(PlanDefinition planDefinition, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider) {
-        String id = planDefinition.getLibraryFirstRep().getReferenceElement().getIdPart();
+        String id = CanonicalHelper.getId(planDefinition.getLibrary().get(0));
 
         Library library = resolveLibraryById(id, libraryLoader, libraryResourceProvider);
 

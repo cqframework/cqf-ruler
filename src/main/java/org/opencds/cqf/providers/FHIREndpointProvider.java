@@ -1,7 +1,7 @@
 package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.rp.dstu3.EndpointResourceProvider;
+import ca.uhn.fhir.jpa.rp.r4.EndpointResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -13,7 +13,7 @@ import ca.uhn.fhir.rest.client.interceptor.BasicAuthInterceptor;
 import ca.uhn.fhir.rest.param.StringAndListParam;
 import ca.uhn.fhir.rest.param.StringOrListParam;
 import ca.uhn.fhir.rest.param.StringParam;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.exceptions.Helper;
 
 import java.util.ArrayList;

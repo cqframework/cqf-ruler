@@ -1,17 +1,17 @@
 package org.opencds.cqf.providers;
 
-import org.hl7.fhir.dstu3.model.Library;
+import org.hl7.fhir.r4.model.Library;
 
 public interface LibraryResourceProvider {
     
-    public Library resolveLibraryById(String libraryId);
+    Library resolveLibraryById(String libraryId);
 
-    public Library resolveLibraryByName(String libraryName, String libraryVersion);
+    Library resolveLibraryByName(String libraryName, String libraryVersion);
 
 
     // Hmmm... Probably need to think through this use case a bit more.
     // Should we throw an exception? Should this be a different interface?
-    public void update(org.hl7.fhir.dstu3.model.Library library);
+    void update(Library library);
 
 
     // This function assums that you're selecting from a set of libraries with the same name.
@@ -19,7 +19,7 @@ public interface LibraryResourceProvider {
     static Library selectFromList(Iterable<Library> libraries, String libraryVersion) {
         Library library = null;
         Library maxVersion = null;
-        for (org.hl7.fhir.dstu3.model.Library l : libraries) {
+        for (Library l : libraries) {
             if ((libraryVersion != null && l.getVersion().equals(libraryVersion)) ||
                (libraryVersion == null && !l.hasVersion()))
             {
@@ -39,7 +39,7 @@ public interface LibraryResourceProvider {
         return library;
     }
 
-    public static int compareVersions(String version1, String version2)
+    static int compareVersions(String version1, String version2)
     {
         // Treat null as MAX VERSION
         if (version1 == null && version2 == null) {
@@ -50,7 +50,7 @@ public interface LibraryResourceProvider {
             return -1;
         }
 
-        if (version1 == null && version2 != null) {
+        if (version1 == null) {
             return 1;
         }
 

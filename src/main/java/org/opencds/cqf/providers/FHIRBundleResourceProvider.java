@@ -1,13 +1,13 @@
 package org.opencds.cqf.providers;
 
-import ca.uhn.fhir.jpa.rp.dstu3.BundleResourceProvider;
+import ca.uhn.fhir.jpa.rp.r4.BundleResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
@@ -62,7 +62,7 @@ public class FHIRBundleResourceProvider extends BundleResourceProvider {
                 if (base != null) {
                     List<String> extension = getExtension(base);
                     if (!extension.isEmpty()) {
-                        String cql = String.format("using FHIR version '3.0.0' define x: %s", extension.get(1));
+                        String cql = String.format("using FHIR version '4.0.0' define x: %s", extension.get(1));
                         library = LibraryHelper.translateLibrary(cql, new LibraryManager(new ModelManager()), new ModelManager());
                         context = new Context(library);
                         context.registerDataProvider("http://hl7.org/fhir", provider);

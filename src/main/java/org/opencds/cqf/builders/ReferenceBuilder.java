@@ -1,7 +1,8 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.Identifier;
-import org.hl7.fhir.dstu3.model.Reference;
+import com.alphora.builders.BaseBuilder;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Reference;
 
 public class ReferenceBuilder extends BaseBuilder<Reference> {
 

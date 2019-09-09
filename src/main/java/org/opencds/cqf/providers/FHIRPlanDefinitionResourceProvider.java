@@ -12,18 +12,7 @@ import org.cqframework.cql.elm.execution.ExpressionDef;
 import org.cqframework.cql.elm.execution.ListTypeSpecifier;
 import org.cqframework.cql.elm.execution.ParameterDef;
 import org.cqframework.cql.elm.execution.UsingDef;
-import org.hl7.fhir.dstu3.model.ActivityDefinition;
-import org.hl7.fhir.dstu3.model.CarePlan;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.DomainResource;
-import org.hl7.fhir.dstu3.model.Extension;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.PlanDefinition;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.RelatedArtifact;
-import org.hl7.fhir.dstu3.model.RequestGroup;
-import org.hl7.fhir.dstu3.model.Resource;
-import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.builders.AttachmentBuilder;
@@ -35,7 +24,7 @@ import org.opencds.cqf.builders.ReferenceBuilder;
 import org.opencds.cqf.builders.RelatedArtifactBuilder;
 import org.opencds.cqf.builders.RequestGroupActionBuilder;
 import org.opencds.cqf.builders.RequestGroupBuilder;
-import org.opencds.cqf.config.STU3LibraryLoader;
+import org.opencds.cqf.config.R4LibraryLoader;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.exceptions.NotImplementedException;
@@ -44,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.rp.dstu3.PlanDefinitionResourceProvider;
+import ca.uhn.fhir.jpa.rp.r4.PlanDefinitionResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -89,11 +78,11 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
         CarePlanBuilder builder = new CarePlanBuilder();
 
         builder
-                .buildDefinition(new Reference(planDefinition.getIdElement().getIdPart()))
+                .buildInstantiatesCanonical(planDefinition.getIdElement().getIdPart())
                 .buildSubject(new Reference(patientId))
                 .buildStatus(CarePlan.CarePlanStatus.DRAFT);
 
-        if (encounterId != null) builder.buildContext(new Reference(encounterId));
+        if (encounterId != null) builder.buildEncounter(new Reference(encounterId));
         if (practitionerId != null) builder.buildAuthor(new Reference(practitionerId));
         if (organizationId != null) builder.buildAuthor(new Reference(organizationId));
         if (userLanguage != null) builder.buildLanguage(userLanguage);
@@ -119,9 +108,9 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
 
     private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
         if (action.hasDefinition()) {
-            logger.debug("Resolving definition "+ action.getDefinition().getReference());
-            Reference definition = action.getDefinition();
-            if (definition.getReference().startsWith(session.getPlanDefinition().fhirType())) {
+            logger.debug("Resolving definition "+ action.getDefinitionCanonicalType().getValue());
+            String definition = action.getDefinitionCanonicalType().getValue();
+            if (definition.startsWith(session.getPlanDefinition().fhirType())) {
                 logger.error("Currently cannot resolve nested PlanDefinitions");
                 throw new NotImplementedException("Plan Definition refers to sub Plan Definition, this is not yet supported");
             }
@@ -130,16 +119,16 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                 FHIRActivityDefinitionResourceProvider activitydefinitionProvider = new FHIRActivityDefinitionResourceProvider(provider);
                 Resource result;
                 try {
-                    if (action.getDefinition().getReferenceElement().getIdPart().startsWith("#")) {
+                    if (action.getDefinitionCanonicalType().getValue().startsWith("#")) {
                         result = activitydefinitionProvider.resolveActivityDefinition(
                                 (ActivityDefinition) resolveContained(session.getPlanDefinition(),
-                                        action.getDefinition().getReferenceElement().getIdPart()),
+                                        action.getDefinitionCanonicalType().getValue()),
                                 session.getPatientId(), session.getPractionerId(), session.getOrganizationId()
                         );
                     }
                     else {
                         result = activitydefinitionProvider.apply(
-                                new IdType(action.getDefinition().getReferenceElement().getIdPart()),
+                                new IdType(action.getDefinitionCanonicalType().getId()),
                                 session.getPatientId(),
                                 session.getEncounterId(),
                                 session.getPractionerId(),
@@ -153,7 +142,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                     }
 
                     if (result.getId() == null) {
-                        logger.warn("ActivityDefintion %s returned resource with no id, setting one", action.getDefinition().getReferenceElement().getIdPart());
+                        logger.warn("ActivityDefintion %s returned resource with no id, setting one", action.getDefinitionCanonicalType().getId());
                         result.setId( UUID.randomUUID().toString() );
                     }
                     session.getCarePlanBuilder()
@@ -177,7 +166,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
             if (dynamicValue.hasExpression()) {
                 Object result =
                         executionProvider
-                                .evaluateInContext(session.getPlanDefinition(), dynamicValue.getExpression(), session.getPatientId());
+                                .evaluateInContext(session.getPlanDefinition(), dynamicValue.getExpression().getExpression(), session.getPatientId());
 
                 if (dynamicValue.hasPath() && dynamicValue.getPath().equals("$this"))
                 {
@@ -208,12 +197,12 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
         for (PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {
             // TODO start
             // TODO stop
-            if (condition.hasDescription()) {
-                logger.info("Resolving condition with description: " + condition.getDescription());
+            if (condition.hasExpression() && condition.getExpression().hasDescription()) {
+                logger.info("Resolving condition with description: " + condition.getExpression().getDescription());
             }
             if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
-                if (!condition.getLanguage().equals("text/cql")) {
-                    logger.warn("An action language other than CQL was found: " + condition.getLanguage());
+                if (condition.hasExpression() && condition.getExpression().hasLanguage() && !condition.getExpression().getLanguage().toCode().equals("text/cql")) {
+                    logger.warn("An action language other than CQL was found: " + condition.getExpression().getLanguage());
                     continue;
                 }
 
@@ -223,7 +212,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                 }
 
                 logger.info("Evaluating action condition expression " + condition.getExpression());
-                String cql = condition.getExpression();
+                String cql = condition.getExpression().getExpression();
                 Object result = executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
 
                 if (!(result instanceof Boolean)) {
@@ -290,7 +279,11 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                         continue;
                     }
 
-                    Object result = context.resolveExpressionRef(condition.getExpression()).getExpression().evaluate(context);
+                    if (condition.hasExpression() && !condition.getExpression().hasExpression()) {
+                        continue;
+                    }
+
+                    Object result = context.resolveExpressionRef(condition.getExpression().getExpression()).getExpression().evaluate(context);
 
                     if (!(result instanceof Boolean)) {
                         continue;
@@ -330,36 +323,24 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
 
                     // suggestions
                     // TODO - uuid
-                    if (action.hasLabel()) {
-                        actionBuilder.buildLabel(action.getLabel());
+                    if (action.hasPrefix()) {
+                        actionBuilder.buildPrefix(action.getPrefix());
                     }
                     if (action.hasType()) {
                         actionBuilder.buildType(action.getType());
                     }
                     if (action.hasDefinition()) {
-                        if (action.getDefinition().getReferenceElement().getResourceType().equals("ActivityDefinition")) {
-                            if (action.getDefinition().getResource() != null) {
-                                ActivityDefinition activityDefinition = (ActivityDefinition) action.getDefinition().getResource();
-                                ReferenceBuilder referenceBuilder = new ReferenceBuilder();
-                                referenceBuilder.buildDisplay(activityDefinition.getDescription());
-                                actionBuilder.buildResource(referenceBuilder.build());
-
-                                if (activityDefinition.hasDescription()) {
-                                    actionBuilder.buildDescripition(activityDefinition.getDescription());
-                                }
-                            }
-
-                            // TODO - fix this
+                        if (action.getDefinitionCanonicalType().getValue().contains("ActivityDefinition")) {
                             FHIRActivityDefinitionResourceProvider activitydefinitionProvider = (FHIRActivityDefinitionResourceProvider) provider.resolveResourceProvider("ActivityDefinition");
                             ActivityDefinition activityDefinition =
-                                    activitydefinitionProvider.getDao().read(action.getDefinition().getReferenceElement());
+                                    activitydefinitionProvider.getDao().read(new IdType("ActivityDefinition", action.getDefinitionCanonicalType().getId()));
                             if (activityDefinition.hasDescription()) {
                                 actionBuilder.buildDescripition(activityDefinition.getDescription());
                             }
-                            Resource resource = null;
+                            Resource resource;
                             try {
                                 resource = activitydefinitionProvider.apply(
-                                        new IdType(action.getDefinition().getReferenceElement().getIdPart()), patientId,
+                                        new IdType(action.getDefinitionCanonicalType().getId()), patientId,
                                         null, null, null, null,
                                         null, null, null, null
                                 ).setId(UUID.randomUUID().toString());
@@ -390,15 +371,15 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                         for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue : action.getDynamicValue()) {
                             if (dynamicValue.hasPath() && dynamicValue.hasExpression()) {
                                 if (dynamicValue.getPath().endsWith("title")) { // summary
-                                    String title = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
+                                    String title = (String) context.resolveExpressionRef(dynamicValue.getExpression().getExpression()).evaluate(context);
                                     actionBuilder.buildTitle(title);
                                 }
                                 else if (dynamicValue.getPath().endsWith("description")) { // detail
-                                    String description = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
+                                    String description = (String) context.resolveExpressionRef(dynamicValue.getExpression().getExpression()).evaluate(context);
                                     actionBuilder.buildDescripition(description);
                                 }
                                 else if (dynamicValue.getPath().endsWith("extension")) { // indicator
-                                    String extension = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
+                                    String extension = (String) context.resolveExpressionRef(dynamicValue.getExpression().getExpression()).evaluate(context);
                                     actionBuilder.buildExtension(extension);
                                 }
                             }
@@ -455,8 +436,9 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                     }
                 }
                 else {
-                    Discovery discovery = getDiscovery(planDefinition, version);
+                    Discovery<PlanDefinition> discovery = getDiscovery(planDefinition, version);
                     if (discovery == null) continue;
+                    discovery.setPlanDefinition(planDefinition);
                     discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
                     discoveries.add(discovery);
                 }
@@ -465,21 +447,21 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
         return discoveries;
     }
 
-    public Discovery getDiscovery(PlanDefinition planDefinition, FhirVersionEnum version) {
+    public Discovery<PlanDefinition> getDiscovery(PlanDefinition planDefinition, FhirVersionEnum version) {
         LibraryResourceProvider libraryResourceProvider = (LibraryResourceProvider)provider.resolveResourceProvider("Library");
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResourceProvider);
+        R4LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResourceProvider);
         if (planDefinition.hasType()) {
             for (Coding typeCode : planDefinition.getType().getCoding()) {
                 if (typeCode.getCode().equals("eca-rule")) {
                     if (planDefinition.hasLibrary()) {
-                        for (Reference reference : planDefinition.getLibrary()) {
+                        for (CanonicalType reference : planDefinition.getLibrary()) {
                             org.cqframework.cql.elm.execution.Library library;
                             try {
                                 library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResourceProvider);
                             }
                             catch (Exception e)
                             {
-                                Discovery discovery = new Discovery();
+                                Discovery<PlanDefinition> discovery = new Discovery<>();
                                 discovery.addItem(new DiscoveryItem().setUrl(e.getMessage()));
                                 return discovery;
                             }
@@ -488,6 +470,9 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                             for (UsingDef using : library.getUsings().getDef()) {
                                 if (version == FhirVersionEnum.DSTU3 && using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("3.0.0")) {
                                     discoveryDataProvider = new DiscoveryDataProviderStu3();
+                                }
+                                else if (version == FhirVersionEnum.R4 && using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("4.0.0")) {
+                                    discoveryDataProvider = new DiscoveryDataProviderR4();
                                 }
                                 else if (version == FhirVersionEnum.DSTU2 && using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("1.0.2")) {
                                     discoveryDataProvider = new DiscoveryDataProviderDstu2();

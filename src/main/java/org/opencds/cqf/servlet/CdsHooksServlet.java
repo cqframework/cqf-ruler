@@ -3,10 +3,10 @@ package org.opencds.cqf.servlet;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import com.alphora.evaluation.EvaluationContext;
-import com.alphora.evaluation.Stu3EvaluationContext;
+import com.alphora.evaluation.R4EvaluationContext;
 import com.alphora.hooks.Hook;
 import com.alphora.hooks.HookFactory;
-import com.alphora.hooks.Stu3HookEvaluator;
+import com.alphora.hooks.R4HookEvaluator;
 import com.alphora.providers.Discovery;
 import com.alphora.providers.DiscoveryItem;
 import com.alphora.request.JsonHelper;
@@ -15,8 +15,8 @@ import com.alphora.response.CdsCard;
 import com.google.gson.*;
 import org.apache.http.entity.ContentType;
 import org.cqframework.cql.elm.execution.Library;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.PlanDefinition;
 import org.opencds.cqf.config.HapiProperties;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
@@ -42,7 +42,7 @@ import java.util.List;
 public class CdsHooksServlet extends HttpServlet
 {
     static JpaDataProvider provider;
-    private FhirVersionEnum version = FhirVersionEnum.DSTU3;
+    private FhirVersionEnum version = FhirVersionEnum.R4;
     private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 
     // CORS Pre-flight
@@ -93,7 +93,7 @@ public class CdsHooksServlet extends HttpServlet
 
             String baseUrl =
                     request.getRequestURL().toString()
-                            .replace(request.getPathInfo(), "").replace(request.getServletPath(), "") + "/baseDstu3";
+                            .replace(request.getPathInfo(), "").replace(request.getServletPath(), "") + "/baseR4";
             String service = request.getPathInfo().replace("/", "");
 
             JsonParser parser = new JsonParser();
@@ -118,13 +118,13 @@ public class CdsHooksServlet extends HttpServlet
             context.setContextValue("Patient", hook.getRequest().getContext().getPatientId());
             context.setExpressionCaching(true);
 
-            EvaluationContext evaluationContext = new Stu3EvaluationContext(hook, version, provider.setEndpoint(baseUrl), context, planDefinition);
+            EvaluationContext evaluationContext = new R4EvaluationContext(hook, version, provider.setEndpoint(baseUrl), context, planDefinition);
 
             this.setAccessControlHeaders(response);
 
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
 
-            Stu3HookEvaluator evaluator = new Stu3HookEvaluator();
+            R4HookEvaluator evaluator = new R4HookEvaluator();
 
             String jsonResponse = toJsonResponse(evaluator.evaluate(evaluationContext));
 
@@ -166,7 +166,7 @@ public class CdsHooksServlet extends HttpServlet
         JsonArray services = new JsonArray();
 
         FHIRPlanDefinitionResourceProvider provider = (FHIRPlanDefinitionResourceProvider) getProvider("PlanDefinition");
-        for (Discovery discovery : provider.getDiscoveries(version))
+        for (Discovery<PlanDefinition> discovery : provider.getDiscoveries(version))
         {
             PlanDefinition planDefinition = discovery.getPlanDefinition();
             JsonObject service = new JsonObject();
@@ -175,11 +175,11 @@ public class CdsHooksServlet extends HttpServlet
                 if (planDefinition.hasAction())
                 {
                     // TODO - this needs some work - too naive
-                    if (planDefinition.getActionFirstRep().hasTriggerDefinition())
+                    if (planDefinition.getActionFirstRep().hasTrigger())
                     {
-                        if (planDefinition.getActionFirstRep().getTriggerDefinitionFirstRep().hasEventName())
+                        if (planDefinition.getActionFirstRep().getTriggerFirstRep().hasName())
                         {
-                            service.addProperty("hook", planDefinition.getActionFirstRep().getTriggerDefinitionFirstRep().getEventName());
+                            service.addProperty("hook", planDefinition.getActionFirstRep().getTriggerFirstRep().getName());
                         }
                     }
                 }
@@ -202,7 +202,12 @@ public class CdsHooksServlet extends HttpServlet
                     JsonObject prefetchContent = new JsonObject();
                     for (DiscoveryItem item : discovery.getItems())
                     {
-                        prefetchContent.addProperty(item.getItemNo(), item.getUrl());
+                        if (item.getItemNo() == null) {
+                            prefetchContent.addProperty("error", item.getUrl());
+                        }
+                        else {
+                            prefetchContent.addProperty(item.getItemNo(), item.getUrl());
+                        }
                     }
                     service.add("prefetch", prefetchContent);
                 }

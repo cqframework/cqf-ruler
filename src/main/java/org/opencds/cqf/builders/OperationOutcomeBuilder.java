@@ -1,7 +1,7 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.OperationOutcome;
 
 public class OperationOutcomeBuilder extends BaseBuilder<OperationOutcome>
 {

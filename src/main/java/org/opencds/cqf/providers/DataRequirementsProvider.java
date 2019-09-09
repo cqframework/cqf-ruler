@@ -2,20 +2,11 @@ package org.opencds.cqf.providers;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
-
-import java.util.List;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.commons.lang3.tuple.Pair;
@@ -33,23 +24,7 @@ import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.hl7.elm.r1.ValueSetRef;
-import org.hl7.fhir.dstu3.model.Attachment;
-import org.hl7.fhir.dstu3.model.Base64BinaryType;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.DataRequirement;
-import org.hl7.fhir.dstu3.model.DataRequirement.DataRequirementCodeFilterComponent;
-import org.hl7.fhir.dstu3.model.MarkdownType;
-import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.Measure.MeasureGroupComponent;
-import org.hl7.fhir.dstu3.model.Measure.MeasureGroupPopulationComponent;
-import org.hl7.fhir.dstu3.model.Measure.MeasureGroupStratifierComponent;
-import org.hl7.fhir.dstu3.model.Measure.MeasureSupplementalDataComponent;
-import org.hl7.fhir.dstu3.model.ParameterDefinition;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.RelatedArtifact;
-import org.hl7.fhir.dstu3.model.StringType;
-import org.hl7.fhir.dstu3.model.Type;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.helpers.DataElementType;
 import org.opencds.cqf.helpers.LibraryHelper;
@@ -77,64 +52,64 @@ public class DataRequirementsProvider {
     // Since the Library Loader only exposes the loaded libraries as ELM, we actually have to load them twice.
     // Once via the loader, Once manually
     public CqfMeasure createCqfMeasure(Measure measure, LibraryResourceProvider libraryResourceProvider) {
-        Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = this.createLibraryMap(measure, libraryResourceProvider);
+        Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> libraryMap = this.createLibraryMap(measure, libraryResourceProvider);
         return this.createCqfMeasure(measure, libraryMap);
     }
 
-    private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>>  createLibraryMap(Measure measure, LibraryResourceProvider libraryResourceProvider) {
+    private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>>  createLibraryMap(Measure measure, LibraryResourceProvider libraryResourceProvider) {
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResourceProvider);
         List<Library> libraries = LibraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
-        Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = new HashMap<>();
+        Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> libraryMap = new HashMap<>();
 
         for (Library library : libraries) {
             VersionedIdentifier vi = library.getIdentifier();
-            org.hl7.fhir.dstu3.model.Library libraryResource = libraryResourceProvider.resolveLibraryByName(vi.getId(), vi.getVersion());
+            org.hl7.fhir.r4.model.Library libraryResource = libraryResourceProvider.resolveLibraryByName(vi.getId(), vi.getVersion());
             libraryMap.put(vi, Pair.of(library, libraryResource));
         }
 
         return libraryMap;
     }
 
-    private CqfMeasure createCqfMeasure(Measure measure, Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap)
+    private CqfMeasure createCqfMeasure(Measure measure, Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> libraryMap)
     {
         //Ensure All Data Requirements for all referenced libraries
-        org.hl7.fhir.dstu3.model.Library moduleDefinition = this.getDataRequirements(measure, 
-            libraryMap.values().stream().map(x -> x.getRight()).filter(x -> x != null).collect(Collectors.toList()));
+        org.hl7.fhir.r4.model.Library moduleDefinition = this.getDataRequirements(measure,
+            libraryMap.values().stream().map(Pair::getRight).filter(Objects::nonNull).collect(Collectors.toList()));
         
         CqfMeasure cqfMeasure = new CqfMeasure(measure);
-        moduleDefinition.getRelatedArtifact().forEach(x -> cqfMeasure.addRelatedArtifact(x));
+        moduleDefinition.getRelatedArtifact().forEach(cqfMeasure::addRelatedArtifact);
         cqfMeasure.setDataRequirement(moduleDefinition.getDataRequirement());
         cqfMeasure.setParameter(moduleDefinition.getParameter());
         
         ArrayList<RelatedArtifact> citations = new ArrayList<>();
         for (RelatedArtifact citation : cqfMeasure.getRelatedArtifact()) {
-            if (citation.hasType() && citation.getType().toCode() == "citation" && citation.hasCitation()) {
+            if (citation.hasType() && Objects.equals(citation.getType().toCode(), "citation") && citation.hasCitation()) {
                 citations.add(citation);
             }
         }
 
-        ArrayList<MeasureGroupComponent> populationStatements = new ArrayList<>();
-        for (MeasureGroupComponent group : measure.getGroup()) {
+        ArrayList<Measure.MeasureGroupComponent> populationStatements = new ArrayList<>();
+        for (Measure.MeasureGroupComponent group : measure.getGroup()) {
             populationStatements.add(group.copy());
         }
-        List<MeasureGroupPopulationComponent> definitionStatements = new ArrayList<>();
-        List<MeasureGroupPopulationComponent> functionStatements = new ArrayList<>();
-        List<MeasureGroupPopulationComponent> supplementalDataElements = new ArrayList<>();
+        List<Measure.MeasureGroupPopulationComponent> definitionStatements = new ArrayList<>();
+        List<Measure.MeasureGroupPopulationComponent> functionStatements = new ArrayList<>();
+        List<Measure.MeasureGroupPopulationComponent> supplementalDataElements = new ArrayList<>();
         List<CqfMeasure.TerminologyRef> terminology = new ArrayList<>();
         List<CqfMeasure.TerminologyRef > codes = new ArrayList<>();
         List<CqfMeasure.TerminologyRef > codeSystems = new ArrayList<>();
         List<CqfMeasure.TerminologyRef > valueSets = new ArrayList<>();
         List<StringType> dataCriteria = new ArrayList<>();
 
-        String primaryLibraryId = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
+        String primaryLibraryId = measure.getLibrary().get(0).getId();
         Library primaryLibrary = libraryMap.values().stream()
             .filter(x -> x.getRight() != null)
             .filter(x -> x.getRight().getIdElement() != null && x.getRight().getIdElement().getIdPart().equals(primaryLibraryId))
             .findFirst().get().getLeft();
 
-        for (Map.Entry<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryEntry : libraryMap.entrySet()) {
+        for (Map.Entry<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> libraryEntry : libraryMap.entrySet()) {
             Library library = libraryEntry.getValue().getLeft();
-            org.hl7.fhir.dstu3.model.Library libraryResource = libraryEntry.getValue().getRight();
+            org.hl7.fhir.r4.model.Library libraryResource = libraryEntry.getValue().getRight();
             Boolean isPrimaryLibrary = libraryResource != null && libraryResource.getId().equals(primaryLibraryId);
             String libraryNamespace = "";
             if (primaryLibrary.getIncludes() != null) {
@@ -219,8 +194,8 @@ public class DataRequirementsProvider {
                             //Do Nothing.  Leave type as is.
                         }
 
-                        for (DataRequirementCodeFilterComponent filter : data.getCodeFilter()) {
-                            if (filter.hasValueSetStringType() && filter.getValueSetStringType().getValueAsString().equalsIgnoreCase(valueSet.getId())) {
+                        for (DataRequirement.DataRequirementCodeFilterComponent filter : data.getCodeFilter()) {
+                            if (filter.hasValueSet() && filter.getValueSet().equalsIgnoreCase(valueSet.getId())) {
                                 StringType dataElement = new StringType();
                                 dataElement.setValueAsString("\"" + type + ": " + name + "\" using \"" + name + " (" + valueSetId  + ")");
                                 exists = false;
@@ -271,9 +246,8 @@ public class DataRequirementsProvider {
                     if (statementText.startsWith("context")) {
                         continue;
                     }
-                    MeasureGroupPopulationComponent def = new MeasureGroupPopulationComponent();
-                    def.setName(libraryNamespace + statement.getName() + signature);
-                    def.setCriteria(statementText);
+                    Measure.MeasureGroupPopulationComponent def = new Measure.MeasureGroupPopulationComponent();
+                    def.setCriteria(new Expression().setName(libraryNamespace + statement.getName() + signature).setExpression(statementText));
                     if (statement.getClass() == FunctionDef.class) {
                             functionStatements.add(def);
                     }
@@ -281,25 +255,27 @@ public class DataRequirementsProvider {
                             definitionStatements.add(def);
                     }
 
-                    for (MeasureGroupComponent group : populationStatements) {
-                        for (MeasureGroupPopulationComponent population : group.getPopulation()) {
-                            if (population.getCriteria() != null && population.getCriteria().equalsIgnoreCase(statement.getName())) {
+                    for (Measure.MeasureGroupComponent group : populationStatements) {
+                        for (Measure.MeasureGroupPopulationComponent population : group.getPopulation()) {
+                            if (population.hasCriteria() && population.getCriteria().hasExpression() && population.getCriteria().getExpression().equalsIgnoreCase(statement.getName()))
+                            {
                                 String code = population.getCode().getCodingFirstRep().getCode();
                                 String display = HQMFProvider.measurePopulationValueSetMap.get(code).displayName;
-                                population.setName(display);
-                                population.setCriteria(statementText);
+                                population.setCriteria(new Expression().setName(display).setExpression(statementText));
                             }
                         }
 
-                        for (MeasureGroupStratifierComponent mgsc : group.getStratifier()) {
-                            if (mgsc.getCriteria() != null && mgsc.getCriteria().equalsIgnoreCase(statement.getName())) {
-                                mgsc.setCriteria(statementText);
+                        for (Measure.MeasureGroupStratifierComponent mgsc : group.getStratifier()) {
+                            if (mgsc.hasCriteria() && mgsc.getCriteria().hasExpression() && mgsc.getCriteria().getExpression().equalsIgnoreCase(statement.getName()))
+                            {
+                                mgsc.setCriteria(new Expression().setExpression(statementText));
                             }
                         }
                     }
 
-                    for (MeasureSupplementalDataComponent dataComponent : cqfMeasure.getSupplementalData()) {
-                        if (dataComponent.getCriteria()!= null && dataComponent.getCriteria().equalsIgnoreCase(def.getName())) {
+                    for (Measure.MeasureSupplementalDataComponent dataComponent : cqfMeasure.getSupplementalData()) {
+                        if (dataComponent.hasCriteria() && dataComponent.getCriteria().hasExpression() && dataComponent.getCriteria().getExpression().equalsIgnoreCase(def.getCriteria().getName()))
+                        {
                             supplementalDataElements.add(def);
                         }
                     }
@@ -307,39 +283,30 @@ public class DataRequirementsProvider {
             }
         }
 
-        Comparator<StringType> stringTypeComparator = new Comparator<StringType>() {
-            @Override
-            public int compare(StringType item, StringType t1) {
-                String s1 = item.asStringValue();
-                String s2 = t1.asStringValue();
-                return s1.compareToIgnoreCase(s2);
-            }
+        Comparator<StringType> stringTypeComparator = (item, t1) -> {
+            String s1 = item.asStringValue();
+            String s2 = t1.asStringValue();
+            return s1.compareToIgnoreCase(s2);
         };
 
-        Comparator<TerminologyRef> terminologyRefComparator = new Comparator<TerminologyRef>() {
-            @Override
-            public int compare(TerminologyRef item, TerminologyRef t1) {
-                String s1 = item.getDefinition();
-                String s2 = t1.getDefinition();
-                return s1.compareToIgnoreCase(s2);
-            }
+        Comparator<TerminologyRef> terminologyRefComparator = (item, t1) -> {
+            String s1 = item.getDefinition();
+            String s2 = t1.getDefinition();
+            return s1.compareToIgnoreCase(s2);
         };
-        Comparator<MeasureGroupPopulationComponent> populationComparator = new Comparator<MeasureGroupPopulationComponent>() {
-            @Override
-            public int compare(MeasureGroupPopulationComponent item, MeasureGroupPopulationComponent t1) {
-                String s1 = item.getName();
-                String s2 = t1.getName();
-                return s1.compareToIgnoreCase(s2);
-            }
+        Comparator<Measure.MeasureGroupPopulationComponent> populationComparator = (item, t1) -> {
+            String s1 = item.getCriteria().getName();
+            String s2 = t1.getCriteria().getName();
+            return s1.compareToIgnoreCase(s2);
         };
 
-        Collections.sort(definitionStatements, populationComparator);
-        Collections.sort(functionStatements, populationComparator);
-        Collections.sort(supplementalDataElements, populationComparator);
-        Collections.sort(codeSystems, terminologyRefComparator);
-        Collections.sort(codes, terminologyRefComparator);
-        Collections.sort(valueSets, terminologyRefComparator);
-        Collections.sort(dataCriteria, stringTypeComparator);
+        definitionStatements.sort(populationComparator);
+        functionStatements.sort(populationComparator);
+        supplementalDataElements.sort(populationComparator);
+        codeSystems.sort(terminologyRefComparator);
+        codes.sort(terminologyRefComparator);
+        valueSets.sort(terminologyRefComparator);
+        dataCriteria.sort(stringTypeComparator);
 
         terminology.addAll(codeSystems);
         terminology.addAll(codes);
@@ -351,20 +318,20 @@ public class DataRequirementsProvider {
         cqfMeasure.setSupplementalDataElements(supplementalDataElements);
         cqfMeasure.setTerminology(terminology);
         cqfMeasure.setDataCriteria(dataCriteria);
-        cqfMeasure.setLibraries(libraryMap.values().stream().map(x -> x.getRight()).filter(x -> x != null).collect(Collectors.toList()));
+        cqfMeasure.setLibraries(libraryMap.values().stream().map(Pair::getRight).filter(Objects::nonNull).collect(Collectors.toList()));
         cqfMeasure.setCitations(citations);
 
 
         Map<String, List<Triple<Integer, String, String>>> criteriaMap = new HashMap<>();
         // Index all usages of criteria
         for (int i = 0; i < cqfMeasure.getGroup().size(); i++) {
-            MeasureGroupComponent mgc = cqfMeasure.getGroup().get(i);
+            Measure.MeasureGroupComponent mgc = cqfMeasure.getGroup().get(i);
             for (int j = 0; j < mgc.getPopulation().size(); j++) {
-                MeasureGroupPopulationComponent mgpc = mgc.getPopulation().get(j);
-                String criteria = mgpc.getCriteria();
+                Measure.MeasureGroupPopulationComponent mgpc = mgc.getPopulation().get(j);
+                String criteria = mgpc.getCriteria().getExpression();
                 if (criteria != null && !criteria.isEmpty()) {
                     if (!criteriaMap.containsKey(criteria)) {
-                        criteriaMap.put(criteria, new ArrayList<Triple<Integer, String, String>>());
+                        criteriaMap.put(criteria, new ArrayList<>());
                     }
 
                     criteriaMap.get(criteria).add(Triple.of(i, mgpc.getCode().getCodingFirstRep().getCode(), mgpc.getDescription()));
@@ -375,7 +342,7 @@ public class DataRequirementsProvider {
         // Find shared usages
         for (Entry<String, List<Triple<Integer, String, String>>> entry : criteriaMap.entrySet()) {
             String criteria = entry.getKey();
-            if (cqfMeasure.getGroup().size() == 1 || entry.getValue().stream().map(x -> x.getLeft()).distinct().count() > 1) {
+            if (cqfMeasure.getGroup().size() == 1 || entry.getValue().stream().map(Triple::getLeft).distinct().count() > 1) {
                 String code = entry.getValue().get(0).getMiddle();
                 String display = HQMFProvider.measurePopulationValueSetMap.get(code).displayName;
                 cqfMeasure.addSharedPopulationCritiera(criteria, display, entry.getValue().get(0).getRight());
@@ -389,14 +356,14 @@ public class DataRequirementsProvider {
         // Otherwise, remove the shared components.
         else {
             for (int i = 0; i < cqfMeasure.getGroup().size(); i++) {
-                MeasureGroupComponent mgc = cqfMeasure.getGroup().get(i);
-                List<MeasureGroupPopulationComponent> newMgpc = new ArrayList<MeasureGroupPopulationComponent>();
+                Measure.MeasureGroupComponent mgc = cqfMeasure.getGroup().get(i);
+                List<Measure.MeasureGroupPopulationComponent> newMgpc = new ArrayList<>();
                 for (int j = 0; j < mgc.getPopulation().size(); j++) {
-                    MeasureGroupPopulationComponent mgpc = mgc.getPopulation().get(j);
-                    if (mgpc.hasCriteria() && !mgpc.getCriteria().isEmpty() && !cqfMeasure.getSharedPopulationCritieria().containsKey(mgpc.getCriteria())) {
+                    Measure.MeasureGroupPopulationComponent mgpc = mgc.getPopulation().get(j);
+                    if (mgpc.hasCriteria() && mgpc.getCriteria().hasExpression() && !cqfMeasure.getSharedPopulationCritieria().containsKey(mgpc.getCriteria().getExpression())) {
                         String code = mgpc.getCode().getCodingFirstRep().getCode();
                         String display = HQMFProvider.measurePopulationValueSetMap.get(code).displayName;
-                        mgpc.setName(display);
+                        mgpc.getCriteria().setName(display);
                         newMgpc.add(mgpc);
                     }
                 }
@@ -405,9 +372,7 @@ public class DataRequirementsProvider {
             }
         }
 
-        CqfMeasure processedMeasure = processMarkDown(cqfMeasure);
-
-        return processedMeasure;
+        return processMarkDown(cqfMeasure);
     }
 
     private CqfMeasure processMarkDown(CqfMeasure measure) {
@@ -463,7 +428,7 @@ public class DataRequirementsProvider {
 
         measure.setDefinition(measure.getDefinition().stream()
             .map(x -> markdownToHtml(parser, renderer, x.getValueAsString()))
-            .map(x -> new MarkdownType(x))
+            .map(MarkdownType::new)
             .collect(Collectors.toList()));
 
         return measure;
@@ -478,17 +443,17 @@ public class DataRequirementsProvider {
         return renderer.render(document);
     }
 
-    public org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure, LibraryResourceProvider libraryResourceProvider){
-        Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = this.createLibraryMap(measure, libraryResourceProvider);
-        return this.getDataRequirements(measure, libraryMap.values().stream().map(x -> x.getRight()).filter(x -> x != null).collect(Collectors.toList()));
+    public org.hl7.fhir.r4.model.Library getDataRequirements(Measure measure, LibraryResourceProvider libraryResourceProvider){
+        Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> libraryMap = this.createLibraryMap(measure, libraryResourceProvider);
+        return this.getDataRequirements(measure, libraryMap.values().stream().map(Pair::getRight).filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
-    private org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure, Collection<org.hl7.fhir.dstu3.model.Library> libraries){
+    private org.hl7.fhir.r4.model.Library getDataRequirements(Measure measure, Collection<org.hl7.fhir.r4.model.Library> libraries){
         List<DataRequirement> reqs = new ArrayList<>();
         List<RelatedArtifact> dependencies = new ArrayList<>();
         List<ParameterDefinition> parameters = new ArrayList<>();
 
-        for (org.hl7.fhir.dstu3.model.Library library : libraries) {
+        for (org.hl7.fhir.r4.model.Library library : libraries) {
             for (RelatedArtifact dependency : library.getRelatedArtifact()) {
                 if (dependency.getType().toCode().equals("depends-on")) {
                     dependencies.add(dependency);
@@ -501,8 +466,8 @@ public class DataRequirementsProvider {
 
         List<Coding> typeCoding = new ArrayList<>();
         typeCoding.add(new Coding().setCode("module-definition"));
-        org.hl7.fhir.dstu3.model.Library library =
-                new org.hl7.fhir.dstu3.model.Library().setType(new CodeableConcept().setCoding(typeCoding));
+        org.hl7.fhir.r4.model.Library library =
+                new org.hl7.fhir.r4.model.Library().setType(new CodeableConcept().setCoding(typeCoding));
 
         if (!dependencies.isEmpty()) {
             library.setRelatedArtifact(dependencies);
@@ -520,7 +485,7 @@ public class DataRequirementsProvider {
     }
 
 
-    public CqlTranslator getTranslator(org.hl7.fhir.dstu3.model.Library library, LibraryManager libraryManager, ModelManager modelManager) {
+    public CqlTranslator getTranslator(org.hl7.fhir.r4.model.Library library, LibraryManager libraryManager, ModelManager modelManager) {
         Attachment cql = null;
         for (Attachment a : library.getContent()) {
             if (a.getContentType().equals("text/cql")) {
@@ -533,14 +498,12 @@ public class DataRequirementsProvider {
             return null;
         }
 
-        CqlTranslator translator = LibraryHelper.getTranslator(
+        return LibraryHelper.getTranslator(
                 new ByteArrayInputStream(Base64.getDecoder().decode(cql.getDataElement().getValueAsString())),
                 libraryManager, modelManager);
-
-        return translator;
     }
 
-    public void formatCql(org.hl7.fhir.dstu3.model.Library library) {
+    public void formatCql(org.hl7.fhir.r4.model.Library library) {
         for (Attachment att : library.getContent()) {
             if (att.getContentType().equals("text/cql")) {
                 try {
@@ -560,7 +523,7 @@ public class DataRequirementsProvider {
         }
     }
 
-    public void ensureElm(org.hl7.fhir.dstu3.model.Library library, CqlTranslator translator) {
+    public void ensureElm(org.hl7.fhir.r4.model.Library library, CqlTranslator translator) {
 
         library.getContent().removeIf(a -> a.getContentType().equals("application/elm+xml"));
         String xml = translator.toXml();
@@ -570,15 +533,16 @@ public class DataRequirementsProvider {
         library.getContent().add(elm);
     }
 
-    public void ensureRelatedArtifacts(org.hl7.fhir.dstu3.model.Library library, CqlTranslator translator, LibraryResourceProvider libraryResourceProvider)
+    public void ensureRelatedArtifacts(org.hl7.fhir.r4.model.Library library, CqlTranslator translator, LibraryResourceProvider libraryResourceProvider)
     {
         library.getRelatedArtifact().clear();
         org.hl7.elm.r1.Library elm = translator.toELM();
         if (elm.getIncludes() != null && !elm.getIncludes().getDef().isEmpty()) {
             for (org.hl7.elm.r1.IncludeDef def : elm.getIncludes().getDef()) {
                 library.addRelatedArtifact(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON)
-                        .setResource(new Reference().setReference(
-                            libraryResourceProvider.resolveLibraryByName(def.getPath(), def.getVersion()).getId())));
+                        .setResource(
+                            libraryResourceProvider.resolveLibraryByName(def.getPath(), def.getVersion()).getId())
+                );
             }
         }
 
@@ -595,10 +559,10 @@ public class DataRequirementsProvider {
         }
     }
 
-    public void ensureDataRequirements(org.hl7.fhir.dstu3.model.Library library, CqlTranslator translator) {
+    public void ensureDataRequirements(org.hl7.fhir.r4.model.Library library, CqlTranslator translator) {
         library.getDataRequirement().clear();
 
-        List<DataRequirement> reqs = new ArrayList<DataRequirement>();
+        List<DataRequirement> reqs = new ArrayList<>();
 
         for (org.hl7.elm.r1.Retrieve retrieve : translator.toRetrieves()) {
             DataRequirement dataReq = new DataRequirement();
@@ -607,9 +571,7 @@ public class DataRequirementsProvider {
                 DataRequirement.DataRequirementCodeFilterComponent codeFilter = new DataRequirement.DataRequirementCodeFilterComponent();
                 codeFilter.setPath(retrieve.getCodeProperty());
                 if (retrieve.getCodes() instanceof ValueSetRef) {
-                    Type valueSetName = new StringType(
-                            getValueSetId(((ValueSetRef) retrieve.getCodes()).getName(), translator));
-                    codeFilter.setValueSet(valueSetName);
+                    codeFilter.setValueSet(getValueSetId(((ValueSetRef) retrieve.getCodes()).getName(), translator));
                 }
                 dataReq.setCodeFilter(Collections.singletonList(codeFilter));
             }

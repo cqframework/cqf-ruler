@@ -1,6 +1,6 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.ValueSet;
+import org.hl7.fhir.r4.model.ValueSet;
 
 import java.util.List;
 

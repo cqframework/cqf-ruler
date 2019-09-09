@@ -158,7 +158,7 @@ public class HapiProperties {
             return FhirVersionEnum.valueOf(fhirVersionString);
         }
 
-        return FhirVersionEnum.DSTU3;
+        return FhirVersionEnum.R4;
     }
 
     public static ETagSupportEnum getEtagSupport() {
@@ -274,7 +274,7 @@ public class HapiProperties {
     }
 
     public static String getServerBase() {
-        return HapiProperties.getProperty(SERVER_BASE, "/cqf-ruler/baseDstu3");
+        return HapiProperties.getProperty(SERVER_BASE, "/cqf-ruler/baseR4");
     }
 
     public static String getServerName() {

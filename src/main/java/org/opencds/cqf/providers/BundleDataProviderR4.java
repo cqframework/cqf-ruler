@@ -1,8 +1,8 @@
 package org.opencds.cqf.providers;
 
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Resource;
-import org.opencds.cqf.cql.data.fhir.FhirDataProviderStu3;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Resource;
+import org.opencds.cqf.cql.data.fhir.FhirDataProviderR4;
 import org.opencds.cqf.cql.elm.execution.InEvaluator;
 import org.opencds.cqf.cql.elm.execution.IncludesEvaluator;
 import org.opencds.cqf.cql.runtime.Code;
@@ -13,11 +13,11 @@ import org.opencds.cqf.helpers.DataProviderHelper;
 
 import java.util.*;
 
-public class BundleDataProviderStu3 extends FhirDataProviderStu3 {
+public class BundleDataProviderR4 extends FhirDataProviderR4 {
     
     private Map<String, List<Object>> resourceMap;
     
-    public BundleDataProviderStu3(Bundle sourceData) {
+    public BundleDataProviderR4(Bundle sourceData) {
         resourceMap = new HashMap<>();
 
         // populate map

@@ -6,7 +6,7 @@ public class ApplicationContext extends AnnotationConfigWebApplicationContext
 {
     public ApplicationContext()
     {
-        register(FhirServerConfigDstu3.class, FhirServerConfigCommon.class);
+        register(FhirServerConfigR4.class, FhirServerConfigCommon.class);
     }
 
 }

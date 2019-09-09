@@ -1,8 +1,9 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.Extension;
-import org.hl7.fhir.dstu3.model.RequestGroup;
+import com.alphora.builders.BaseBuilder;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.RequestGroup;
 
 import java.util.List;
 

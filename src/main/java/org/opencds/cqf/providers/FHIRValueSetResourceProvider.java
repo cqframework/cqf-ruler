@@ -1,13 +1,13 @@
 package org.opencds.cqf.providers;
 
-import ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider;
-import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
+import ca.uhn.fhir.jpa.rp.r4.CodeSystemResourceProvider;
+import ca.uhn.fhir.jpa.rp.r4.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.UriParam;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.builders.OperationOutcomeBuilder;
 import org.opencds.cqf.builders.RandomIdBuilder;
 

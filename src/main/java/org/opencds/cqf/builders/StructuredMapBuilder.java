@@ -1,7 +1,7 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.Enumerations;
-import org.hl7.fhir.dstu3.model.StructureMap;
+import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.StructureMap;
 
 import java.util.UUID;
 

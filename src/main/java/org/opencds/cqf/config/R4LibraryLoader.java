@@ -21,14 +21,14 @@ import org.slf4j.LoggerFactory;
 
 import static org.opencds.cqf.helpers.LibraryHelper.*;
 
-public class STU3LibraryLoader implements LibraryLoader {
+public class R4LibraryLoader implements LibraryLoader {
 
     private LibraryManager libraryManager;
     private ModelManager modelManager;
     private LibraryResourceProvider provider;
     private Map<String, Library> libraries = new HashMap<>();
 
-    private static final Logger logger = LoggerFactory.getLogger(STU3LibraryLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(R4LibraryLoader.class);
 
     public Collection<Library> getLibraries() {
         return this.libraries.values();
@@ -46,7 +46,7 @@ public class STU3LibraryLoader implements LibraryLoader {
         return this.provider;
     }
 
-    public STU3LibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager, ModelManager modelManager) {
+    public R4LibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager, ModelManager modelManager) {
         this.libraryManager = libraryManager;
         this.modelManager = modelManager;
         this.provider = provider;
@@ -89,7 +89,11 @@ public class STU3LibraryLoader implements LibraryLoader {
         org.hl7.elm.r1.Library translatedLibrary = libraryManager.resolveLibrary(identifier, errors).getLibrary();
 
         if (CqlTranslatorException.HasErrors(errors)) {
-            throw new IllegalArgumentException(errorsToString(errors));
+            for (CqlTranslatorException error : errors) {
+                if (error.getSeverity() == CqlTranslatorException.ErrorSeverity.Error) {
+                    throw new IllegalArgumentException(errorsToString(errors));
+                }
+            }
         }
         try {
             CqlTranslator translator = getTranslator("", libraryManager, modelManager);

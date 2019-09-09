@@ -1,17 +1,14 @@
 package org.opencds.cqf.providers;
 
-import ca.uhn.fhir.jpa.rp.dstu3.ActivityDefinitionResourceProvider;
+import ca.uhn.fhir.jpa.rp.r4.ActivityDefinitionResourceProvider;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.exceptions.ActivityDefinitionApplyException;
 
 import java.util.*;
 
-/**
- * Created by Bryn on 1/16/2017.
- */
 public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionResourceProvider {
 
     private JpaDataProvider provider;
@@ -95,7 +92,7 @@ public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionRe
                           but perhaps the "context" here should be the result resource?
                 */
                 Object value =
-                        executionProvider.evaluateInContext(activityDefinition, dynamicValue.getExpression(), patientId);
+                        executionProvider.evaluateInContext(activityDefinition, dynamicValue.getExpression().getExpression(), patientId);
 
                 // TODO need to verify type... yay
                 if (value instanceof Boolean) {
@@ -108,36 +105,30 @@ public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionRe
         return result;
     }
 
-    private ProcedureRequest resolveProcedureRequest(ActivityDefinition activityDefinition, String patientId,
+    private ServiceRequest resolveProcedureRequest(ActivityDefinition activityDefinition, String patientId,
                                                      String practitionerId, String organizationId)
             throws ActivityDefinitionApplyException
     {
         // status, intent, code, and subject are required
-        ProcedureRequest procedureRequest = new ProcedureRequest();
-        procedureRequest.setStatus(ProcedureRequest.ProcedureRequestStatus.DRAFT);
-        procedureRequest.setIntent(ProcedureRequest.ProcedureRequestIntent.ORDER);
-        procedureRequest.setSubject(new Reference(patientId));
+        ServiceRequest serviceRequest = new ServiceRequest();
+        serviceRequest.setStatus(ServiceRequest.ServiceRequestStatus.DRAFT);
+        serviceRequest.setIntent(ServiceRequest.ServiceRequestIntent.ORDER);
+        serviceRequest.setSubject(new Reference(patientId));
 
         if (practitionerId != null) {
-            procedureRequest.setRequester(
-                    new ProcedureRequest.ProcedureRequestRequesterComponent()
-                            .setAgent(new Reference(practitionerId))
-            );
+            serviceRequest.setRequester(new Reference(practitionerId));
         }
 
         else if (organizationId != null) {
-            procedureRequest.setRequester(
-                    new ProcedureRequest.ProcedureRequestRequesterComponent()
-                            .setAgent(new Reference(organizationId))
-            );
+            serviceRequest.setRequester(new Reference(organizationId));
         }
 
         if (activityDefinition.hasExtension()) {
-            procedureRequest.setExtension(activityDefinition.getExtension());
+            serviceRequest.setExtension(activityDefinition.getExtension());
         }
 
         if (activityDefinition.hasCode()) {
-            procedureRequest.setCode(activityDefinition.getCode());
+            serviceRequest.setCode(activityDefinition.getCode());
         }
 
         // code can be set as a dynamicValue
@@ -146,18 +137,18 @@ public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionRe
         }
 
         if (activityDefinition.hasBodySite()) {
-            procedureRequest.setBodySite( activityDefinition.getBodySite());
+            serviceRequest.setBodySite( activityDefinition.getBodySite());
         }
 
         if (activityDefinition.hasProduct()) {
-            throw new ActivityDefinitionApplyException("Product does not map to "+activityDefinition.getKind());
+            throw new ActivityDefinitionApplyException("Product does not map to " + activityDefinition.getKind());
         }
 
         if (activityDefinition.hasDosage()) {
-            throw new ActivityDefinitionApplyException("Dosage does not map to "+activityDefinition.getKind());
+            throw new ActivityDefinitionApplyException("Dosage does not map to " + activityDefinition.getKind());
         }
 
-        return procedureRequest;
+        return serviceRequest;
     }
 
     private MedicationRequest resolveMedicationRequest(ActivityDefinition activityDefinition, String patientId)
@@ -201,24 +192,15 @@ public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionRe
         SupplyRequest supplyRequest = new SupplyRequest();
 
         if (practionerId != null) {
-            supplyRequest.setRequester(
-                    new SupplyRequest.SupplyRequestRequesterComponent()
-                            .setAgent(new Reference(practionerId))
-            );
+            supplyRequest.setRequester(new Reference(practionerId));
         }
 
         if (organizationId != null) {
-            supplyRequest.setRequester(
-                    new SupplyRequest.SupplyRequestRequesterComponent()
-                            .setAgent(new Reference(organizationId))
-            );
+            supplyRequest.setRequester(new Reference(organizationId));
         }
 
-        if (activityDefinition.hasQuantity()){
-            supplyRequest.setOrderedItem(
-                    new SupplyRequest.SupplyRequestOrderedItemComponent()
-                            .setQuantity( activityDefinition.getQuantity())
-            );
+        if (activityDefinition.hasQuantity()) {
+            supplyRequest.setQuantity( activityDefinition.getQuantity());
         }
 
         else {
@@ -226,7 +208,7 @@ public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionRe
         }
 
         if (activityDefinition.hasCode()) {
-            supplyRequest.getOrderedItem().setItem(activityDefinition.getCode());
+            supplyRequest.setItem(activityDefinition.getCode());
         }
 
         if (activityDefinition.hasProduct()) {

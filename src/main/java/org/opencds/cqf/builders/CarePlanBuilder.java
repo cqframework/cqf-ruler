@@ -1,7 +1,8 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.*;
+import com.alphora.builders.BaseBuilder;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.r4.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,17 +31,17 @@ public class CarePlanBuilder extends BaseBuilder<CarePlan> {
         return this;
     }
 
-    public CarePlanBuilder buildDefinition(List<Reference> references) {
-        complexProperty.setDefinition(references);
+    public CarePlanBuilder buildInstantiatesCanonical(List<CanonicalType> references) {
+        complexProperty.setInstantiatesCanonical(references);
         return this;
     }
 
-    public CarePlanBuilder buildDefinition(Reference reference) {
-        if (!complexProperty.hasDefinition()) {
-            complexProperty.setDefinition(new ArrayList<>());
+    public CarePlanBuilder buildInstantiatesCanonical(String reference) {
+        if (!complexProperty.hasInstantiatesCanonical()) {
+            complexProperty.setInstantiatesCanonical(new ArrayList<>());
         }
 
-        complexProperty.addDefinition(reference);
+        complexProperty.addInstantiatesCanonical(reference);
         return this;
     }
 
@@ -140,8 +141,8 @@ public class CarePlanBuilder extends BaseBuilder<CarePlan> {
         return this;
     }
 
-    public CarePlanBuilder buildContext(Reference reference) {
-        complexProperty.setContext(reference);
+    public CarePlanBuilder buildEncounter(Reference reference) {
+        complexProperty.setEncounter(reference);
         return this;
     }
 
@@ -150,17 +151,8 @@ public class CarePlanBuilder extends BaseBuilder<CarePlan> {
         return this;
     }
 
-    public CarePlanBuilder buildAuthor(List<Reference> references) {
-        complexProperty.setAuthor(references);
-        return this;
-    }
-
     public CarePlanBuilder buildAuthor(Reference reference) {
-        if (!complexProperty.hasAuthor()) {
-            complexProperty.setAuthor(new ArrayList<>());
-        }
-
-        complexProperty.addAuthor(reference);
+        complexProperty.setAuthor(reference);
         return this;
     }
 

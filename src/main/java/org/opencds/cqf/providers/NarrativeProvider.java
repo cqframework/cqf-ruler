@@ -4,8 +4,8 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.narrative.CustomThymeleafNarrativeGenerator;
 import ca.uhn.fhir.narrative.INarrativeGenerator;
 import ca.uhn.fhir.parser.IParser;
-import org.hl7.fhir.dstu3.model.DomainResource;
-import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.r4.model.DomainResource;
+import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import java.io.File;
@@ -15,10 +15,6 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-
-/**
- * Created by Christopher on 2/4/2017.
- */
 public class NarrativeProvider {
 
     private INarrativeGenerator generator;

@@ -1,6 +1,6 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.StructureMap;
+import org.hl7.fhir.r4.model.StructureMap;
 
 public class StructureMapGroupBuilder extends BaseBuilder<StructureMap.StructureMapGroupComponent> {
 

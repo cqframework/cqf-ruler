@@ -1,7 +1,7 @@
 package org.opencds.cqf.builders;
 
-import org.hl7.fhir.dstu3.model.Annotation;
-import org.hl7.fhir.dstu3.model.Type;
+import org.hl7.fhir.r4.model.Annotation;
+import org.hl7.fhir.r4.model.Type;
 
 import java.util.Date;
 
