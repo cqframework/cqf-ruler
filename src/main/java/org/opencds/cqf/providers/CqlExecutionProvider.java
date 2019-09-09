@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
+import org.cqframework.cql.elm.execution.ExpressionDef;
 import org.cqframework.cql.elm.execution.UsingDef;
 import org.cqframework.cql.elm.tracking.TrackBack;
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
@@ -150,13 +151,39 @@ public class CqlExecutionProvider {
         return builder.toString();
     }
 
+    private boolean hasExpressionDef(org.cqframework.cql.elm.execution.Library library, String expressionName) {
+        for (ExpressionDef def : library.getStatements().getDef()) {
+            if (def.getName().equals(expressionName)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /* Evaluates the given CQL expression in the context of the given resource */
     /*
      * If the resource has a library extension, or a library element, that library
      * is loaded into the context for the expression
      */
     public Object evaluateInContext(DomainResource instance, String cql, String patientId) {
-        Iterable<Reference> libraries = getLibraryReferences(instance);
+        List<Reference> libraries = (List<Reference>)getLibraryReferences(instance);
+
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+
+        // If there is a primary library and the expression is the name of one of the expressions in that library, return that expression.
+        // This isn't good, but it's backwards compatible
+        if (libraries.size() == 1 && instance instanceof PlanDefinition) {
+            org.cqframework.cql.elm.execution.Library library = LibraryHelper.resolvePrimaryLibrary((PlanDefinition)instance, libraryLoader, this.getLibraryResourceProvider());
+            if (hasExpressionDef(library, cql)) {
+                Context context = new Context(library);
+                context.setExpressionCaching(true);
+                context.registerLibraryLoader(libraryLoader);
+                context.setContextValue("Patient", patientId);
+                context.registerDataProvider("http://hl7.org/fhir", provider);
+                return context.resolveExpressionRef(cql).evaluate(context);
+            }
+        }
 
         // Provide the instance as the value of the '%context' parameter, as well as the
         // value of a parameter named the same as the resource
@@ -170,8 +197,6 @@ public class CqlExecutionProvider {
         // parameter \"%%context\" %s define Expression: %s",
         // buildIncludes(libraries), instance.fhirType(), instance.fhirType(),
         // instance.fhirType(), cql);
-
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
 
         org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source,
                 libraryLoader.getLibraryManager(), libraryLoader.getModelManager());

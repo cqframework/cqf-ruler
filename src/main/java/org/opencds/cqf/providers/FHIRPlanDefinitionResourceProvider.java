@@ -236,7 +236,7 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                 Object result = executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
 
                 if (!(result instanceof Boolean)) {
-                    logger.warn("The condition returned a non-boolean value: " + result.getClass().getSimpleName());
+                    logger.warn("The condition returned a non-boolean value: " + result == null ? "<null>" : result.getClass().getSimpleName());
                     continue;
                 }
 
