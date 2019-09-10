@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mif="urn:hl7-org:v3/mif2"
+           elementFormDefault="qualified">
+   <xs:annotation>
+      <xs:documentation>Source Information
+     Rendered by: HL7 RIM Maintenance Processes
+     Rendered on: 2014-07-21T12:00:00
+<mif:p>The primary RIM source is maintained as an Enterprise Architect model used in conjunction with a RIM archive stored in HL7 Model Interchange Format (MIF).</mif:p>
+         <mif:p>This model was rendered into MIF using transforms provided to HL7 by Beeler Consulting LLC.</mif:p>
+ Generated using schema builder version: 3.4.12
+ RIM MIF Infrastructure Root to Schema Transform: $Id: RimInfrastructureRootToXsd.xsl 8419 2010-11-15 00:10:54Z woody_beeler $
+  Static MIF to Schema Transform: $Id: StaticMifToXsd.xsl 8890 2012-11-27 02:38:05Z woody_beeler $
+  Package Id Conversion: $Id: TransformPackageIds.xsl 8398 2010-10-12 01:52:15Z lloyd_mckenzie $</xs:documentation>
+   </xs:annotation>
+   <xs:include schemaLocation="../coreschemas/voc-r2.xsd"/>
+   <xs:include schemaLocation="../coreschemas/hl7-r2_datatypes.xsd"/>
+   <xs:group name="InfrastructureRootElements">
+      <xs:sequence>
+         <xs:element name="realmCode" type="DSET_CS" minOccurs="0" maxOccurs="1"/>
+         <xs:element name="typeId" type="II" minOccurs="0" maxOccurs="1"/>
+         <xs:element name="templateId" type="LIST_II" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+   </xs:group>
+   <xs:attributeGroup name="InfrastructureRootAttributes"/>
+</xs:schema>

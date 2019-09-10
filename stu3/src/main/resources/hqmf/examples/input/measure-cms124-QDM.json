@@ -1,0 +1,215 @@
+{
+    "resourceType": "Measure",
+    "id": "measure-cms124-QDM",
+    "url": "http://hl7.org/fhir/us/cqfmeasures/Measure/measure-cms124-QDM",
+    "identifier": [
+      {
+        "use": "official",
+        "system": "http://hl7.org/fhir/cqi/ecqm/Measure/Identifier/cms",
+        "value": "130"
+      },
+      {
+        "use": "official",
+        "system": "http://hl7.org/fhir/cqi/ecqm/Measure/Identifier/nqf",
+        "value": "0034"
+      }
+    ],
+    "version": "7.2.000",
+    "name": "CMS124",
+    "title": "Cervical Cancer Screening",
+    "status": "active",
+    "experimental": true,
+    "date": "2018-09-17",
+    "publisher": "National Committee for Quality Assurance",
+    "description": "Percentage of women 21-64 years of age who were screened for cervical cancer using either of the following criteria: <br> *  Women age 21-64 who had cervical cytology performed every 3 years <br.*  Women age 30-64 who had cervical cytology/human papillomavirus (HPV) co-testing performed every 5 years ",
+    "purpose": "Women 23-64 years of age with a visit during the measurement period",
+    "approvalDate": "2016-01-01",
+    "lastReviewDate": "2016-09-01",
+    "effectivePeriod": {
+      "start": "2018-01-01",
+      "end": "2018-12-31"
+    },
+    "useContext": [
+      {
+        "code": {
+          "code": "program"
+        },
+        "valueCodeableConcept": {
+          "text": "eligibile-provider"
+        }
+      }
+    ],
+    "jurisdiction": [
+      {
+        "coding": [
+          {
+            "system": "urn:iso:std:iso:3166",
+            "code": "US"
+          }
+        ]
+      }
+    ],
+    "topic": [
+      {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "57024-2",
+            "display": "Health Quality Measure Document"
+          }
+        ]
+      }
+    ],
+    "contributor": [
+      {
+        "type": "author",
+        "name": "National Committee for Quality Assurance"
+      }
+    ],
+    "contact": [
+      {
+        "telecom": [
+          {
+            "system": "url",
+            "value": "http://www.ncqa.org/"
+          }
+        ]
+      }
+    ],
+    "copyright": "This Physician Performance Measure (Measure) and related data specifications were developed by the National Committee for Quality Assurance (NCQA). NCQA is not responsible for any use of the Measure. NCQA makes no representations, warranties, or endorsement about the quality of any organization or physician that uses or reports performance measures and NCQA has no liability to anyone who relies on such measures or specifications. NCQA holds a copyright in the Measure. The Measure can be reproduced and distributed, without modification, for noncommercial purposes (eg, use by healthcare providers in connection with their practices) without obtaining approval from NCQA. Commercial use is defined as the sale, licensing, or distribution of the Measure for commercial gain, or incorporation of the Measure into a product or service that is sold, licensed or distributed for commercial gain. All commercial uses or requests for modification must be approved by NCQA and are subject to a license at the discretion of NCQA. (C) 2012-2017 National Committee for Quality Assurance. All Rights Reserved. <br> Limited proprietary coding is contained in the Measure specifications for user convenience. Users of proprietary code sets should obtain all necessary licenses from the owners of the code sets. NCQA disclaims all liability for use or accuracy of any third party codes contained in the specifications. <br> CPT(R) contained in the Measure specifications is copyright 2004-2017 American Medical Association. LOINC(R) copyright 2004-2017 Regenstrief Institute, Inc. This material contains SNOMED Clinical Terms(R) (SNOMED CT[R] ) copyright 2004-2017 International Health Terminology Standards Development Organisation. ICD-10 copyright 2017 World Health Organization. All Rights Reserved.",
+    "relatedArtifact": [
+      {
+        "type": "citation",
+        "citation": "Howlader, N., Noone, A.M., Krapcho, M., Miller, D., Bishop, K., Altekruse, S.F., Kosary, C.L., Yu, M., Ruhl, J., Tatalovich, Z., Mariotto, A., Lewis, D.R., Chen, H.S., Feuer, E.J., and Cronin, K.A. 2016. \"SEER Cancer Statistics Review, 1975-2013.\" National Cancer Institute. (December 5, 2016) http://seer.cancer.gov/csr/1975_2013/"
+      },
+      {
+        "type": "citation",
+        "citation": "National Business Group on Health. 2011. \"Pathways to Managing Cancer in the Workplace.\" (May 8, 2012). http://www.tcyh.org/employers/downloads/Pathways_Managing_Cancer_2011.pdf"
+  
+      },
+      {
+        "type": "citation",
+        "citation": "Feig S. 2011. Comparison of Costs and Benefits of Breast Cancer Screening with Mammography, Ultrasonagraphy, and MRI. Obstetrics and Gynecology Clinics of North America. 38(1):179-96."
+  
+      },
+      {
+        "type": "citation",
+        "citation": "U.S. Preventive Services Task Force (USPSTF). 2016. \"Screening for Breast Cancer: U.S. Preventive Services Task Force Recommendation Statement.\" Ann Intern Med. 164(4):279-296. doi:10.7326/M15-2886."
+  
+      }
+    ],
+    "library": [
+      {
+        "reference": "Library/library-cms124-QDM"
+      }
+    ],
+    "disclaimer": "The performance Measure is not a clinical guideline and does not establish a standard of medical care, and has not been tested for all potential applications. THE MEASURE AND SPECIFICATIONS ARE PROVIDED \"AS IS\" WITHOUT WARRANTY OF ANY KIND. <br> Due to technical limitations, registered trademarks are indicated by (R) or [R] and unregistered trademarks are indicated by (TM) or [TM].",
+    "scoring": {
+      "coding": [
+        {
+          "code": "proportion"
+        }
+      ]
+    },
+    "type": [
+      {
+        "coding": [
+          {
+            "code": "process"
+          }
+        ]
+      }
+    ],
+    "rationale": "Breast cancer is one of the most common types of cancers, accounting for 15 percent of all new cancer diagnoses in the U.S. (Howlader et al, 2016). In 2013, over 3 million women were estimated to be living with breast cancer in the U.S. and it is estimated that 12 percent of women will be diagnosed with breast cancer at some point during their lifetime (Howlader et al, 2016). <br> While there are other factors that affect a woman's risk of developing breast cancer, advancing age is a primary risk factor. Breast cancer is most frequently diagnosed among women ages 55-64; the median age at diagnosis is 62 years (Howlader et al, 2016). The chance of a woman being diagnosed with breast cancer in a given year increases with age. By age 40, the chances are 1 in 235; by age 50 it becomes 1 in 54; by age 60, it is 1 in 25 (National Business Group on Health, 2011). <br> In the U.S., costs associated with a diagnosis of breast cancer range from $451 to $2,520, factoring in continued testing, multiple office visits and procedures. The total costs related to breast cancer add up to nearly $7 billion per year in the U.S., including $2 billion spent on late-stage treatment (National Business Group on Health, 2011). If breast cancer is detected through mammography screening and diagnosed in its earliest stages, treatment may be less expensive (Feig, 2011).",
+    "clinicalRecommendationStatement": "The U.S. Preventive Services Task Force (USPSTF) recommends biennial screening mammography for women aged 50-74 years (B recommendation).  <br> The decision to start screening mammography in women prior to age 50 years should be an individual one. Women who place a higher value on the potential benefit than the potential harms may choose to begin biennial screening between the ages of 40 and 49 years (C recommendation). (USPSTF, 2016) <br> The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits and harms of screening mammography in women aged 75 years or older (I statement). (USPSTF, 2016) <br> The USPSTF concludes that the current evidence is insufficient to assess the benefits and harms of digital breast tomosynthesis (DBT) as a primary screening method for breast cancer (I Statement). (USPSTF, 2016)  <br> The USPSTF concludes that the current evidence is insufficient to assess the balance of benefits and harms of adjunctive screening for breast cancer using breast ultrasonography, magnetic resonance imaging, DBT, or other methods in women identified to have dense breasts on an otherwise negative screening mammogram (I statement). (USPSTF, 2016)",
+    "improvementNotation": "Higher score equals better quality",
+    "guidance": "To ensure the measure is only looking for a cervical cytology test only after a woman turns 21 years of age, the youngest age in the initial population is 23. <br> Patient self-report for procedures as well as diagnostic studies should be recorded in 'Procedure, Performed' template or 'Diagnostic Study, Performed' template in QRDA-1. <br> Include only cytology and HPV \"co-testing\"; in co-testing, both cytology and HPV tests are performed (i.e., the samples are collected and both tests are ordered, regardless of the cytology result) on the same date of service. Do not include reflex testing. In addition, if the medical record indicates the HPV test was performed only after determining the cytology result, this is considered reflex testing and does not meet criteria for the measure.",
+    "group": [
+      {
+        "identifier": {
+          "value": "CMS124-group-1"
+        },
+        "population": [
+          {
+            "identifier": {
+              "value": "initial-population-identifier"
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "initial-population"
+                }
+              ]
+            },
+            "criteria": "Initial Population"
+          },
+          {
+            "identifier": {
+              "value": "numerator-identifier"
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "numerator"
+                }
+              ]
+            },
+            "criteria": "Numerator"
+          },
+          {
+            "identifier": {
+              "value": "denominator-identifier"
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "denominator"
+                }
+              ]
+            },
+            "criteria": "Denominator"
+          },
+          {
+            "identifier": {
+              "value": "denominator-exclusions-identifier"
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "denominator-exclusion"
+                }
+              ]
+            },
+            "criteria": "Denominator Exclusion"
+          }
+        ]
+      }
+    ],
+    "supplementalData": [
+      {
+        "identifier": {
+          "value": "supplemental-data-race"
+        },
+        "criteria": "SDE Race"
+      },
+      {
+        "identifier": {
+          "value": "supplemental-data-payer"
+        },
+        "criteria": "SDE Payer"
+      },
+      {
+        "identifier": {
+          "value": "supplemental-data-ethnicity"
+        },
+        "criteria": "SDE Ethnicity"
+      },
+      {
+        "identifier": {
+          "value": "supplemental-data-birthSex"
+        },
+        "criteria": "SDE Sex"
+      }
+    ]
+  }
+  
