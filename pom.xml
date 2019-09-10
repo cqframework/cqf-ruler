@@ -9,7 +9,7 @@
     <modules>        
         <module>common</module>
         <module>qdm</module>
-        <module>stu3</module>
+        <module>dstu3</module>
         <module>r4</module>
         <module>cqf-ruler</module>
     </modules>

@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>org.opencds.cqf</groupId>
-            <artifactId>stu3</artifactId>
+            <artifactId>dstu3</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -44,20 +44,6 @@
     </servlet-mapping> -->
 
     <servlet>
-        <servlet-name>cds-services</servlet-name>
-        <servlet-class>org.opencds.cqf.servlet.CdsHooksServlet</servlet-class>
-        <load-on-startup>4</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>cds-services</servlet-name>
-        <url-pattern>/cds-services</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>cds-services</servlet-name>
-        <url-pattern>/cds-services/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
         <servlet-name>qdm54</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
@@ -66,7 +52,7 @@
         </init-param>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>org.opencds.cqf.config.QdmServerConfig</param-value>
+            <param-value>org.opencds.cqf.qdm.config.QdmServerConfig</param-value>
         </init-param>
         <init-param>
             <param-name>FhirVersion</param-name>
@@ -76,7 +62,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>qdm54</servlet-name>
-        <url-pattern>/baseR4/qdm/*</url-pattern>
+        <url-pattern>/qdm/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -99,12 +85,50 @@
 
     <servlet>
         <servlet-name>fhirServletR4</servlet-name>
-        <servlet-class>org.opencds.cqf.servlet.BaseServlet</servlet-class>
+        <servlet-class>org.opencds.cqf.r4.servlet.BaseServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>fhirServletR4</servlet-name>
         <url-pattern>/baseR4/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>cds-servicesR4</servlet-name>
+        <servlet-class>org.opencds.cqf.r4.servlet.CdsHooksServlet</servlet-class>
+        <load-on-startup>4</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>cds-services</servlet-name>
+        <url-pattern>/baseR4/cds-services</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>cds-services</servlet-name>
+        <url-pattern>/baseR4/cds-services/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>fhirServletDstu3</servlet-name>
+        <servlet-class>org.opencds.cqf.dstu3.servlet.BaseServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>fhirServletSTU3</servlet-name>
+        <url-pattern>/baseDstu3/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>cds-servicesDstu3</servlet-name>
+        <servlet-class>org.opencds.cqf.dstu3.servlet.CdsHooksServlet</servlet-class>
+        <load-on-startup>4</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>cds-services</servlet-name>
+        <url-pattern>/baseDstu3/cds-services</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>cds-services</servlet-name>
+        <url-pattern>/baseDstu3/cds-services/*</url-pattern>
     </servlet-mapping>
 
     <filter>
@@ -117,6 +141,10 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
-        <url-pattern>/cds-services/*</url-pattern>
+        <url-pattern>/baseDstu3/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>cross-origin</filter-name>
+        <url-pattern>/qdm/*</url-pattern>
     </filter-mapping>
 </web-app>
