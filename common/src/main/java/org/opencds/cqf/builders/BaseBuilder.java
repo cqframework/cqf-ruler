@@ -1,4 +1,4 @@
-package org.opencds.cqf.r4.builders;
+package org.opencds.cqf.builders;
 
 /*
     These builders are based off of work performed by Philips Healthcare.

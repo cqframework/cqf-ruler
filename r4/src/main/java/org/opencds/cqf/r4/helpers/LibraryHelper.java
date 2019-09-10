@@ -17,12 +17,12 @@ import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.elm.tracking.TrackBack;
 import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.r4.config.NonCachingLibraryManager;
+import org.opencds.cqf.config.MeasureTranslationOptionsLibraryManager;
 import org.opencds.cqf.r4.config.R4LibraryLoader;
 import org.opencds.cqf.r4.config.R4LibrarySourceProvider;
+import org.opencds.cqf.r4.providers.LibraryResourceProvider;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
 import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.r4.providers.LibraryResourceProvider;
 
 public class LibraryHelper {
 
@@ -36,7 +36,7 @@ public class LibraryHelper {
 
     public static R4LibraryLoader createLibraryLoader(LibraryResourceProvider provider) {
         ModelManager modelManager = new ModelManager();
-        LibraryManager libraryManager = new NonCachingLibraryManager(modelManager);
+        LibraryManager libraryManager = new MeasureTranslationOptionsLibraryManager(modelManager);
         libraryManager.getLibrarySourceLoader().clearProviders();
         libraryManager.getLibrarySourceLoader().registerProvider(new R4LibrarySourceProvider(provider));
         return new R4LibraryLoader(provider, libraryManager, modelManager);

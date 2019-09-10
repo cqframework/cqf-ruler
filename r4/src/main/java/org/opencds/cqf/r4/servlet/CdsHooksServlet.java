@@ -21,9 +21,9 @@ import org.opencds.cqf.config.HapiProperties;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.exceptions.InvalidRequestException;
-import org.opencds.cqf.helpers.LibraryHelper;
-import org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider;
-import org.opencds.cqf.providers.JpaDataProvider;
+import org.opencds.cqf.r4.helpers.LibraryHelper;
+import org.opencds.cqf.r4.providers.FHIRPlanDefinitionResourceProvider;
+import org.opencds.cqf.r4.providers.JpaDataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,8 +109,8 @@ public class CdsHooksServlet extends HttpServlet
             Hook hook = HookFactory.createHook(cdsHooksRequest);
 
             PlanDefinition planDefinition = (PlanDefinition) provider.resolveResourceProvider("PlanDefinition").getDao().read(new IdType(hook.getRequest().getServiceName()));
-            LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader((org.opencds.cqf.providers.LibraryResourceProvider) provider.resolveResourceProvider("Library"));
-            Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, (org.opencds.cqf.providers.LibraryResourceProvider) provider.resolveResourceProvider("Library"));
+            LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader((org.opencds.cqf.r4.providers.LibraryResourceProvider) provider.resolveResourceProvider("Library"));
+            Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, (org.opencds.cqf.r4.providers.LibraryResourceProvider) provider.resolveResourceProvider("Library"));
 
             Context context = new Context(library);
             context.registerDataProvider("http://hl7.org/fhir", provider.setEndpoint(baseUrl)); // TODO make sure tooling handles remote provider case

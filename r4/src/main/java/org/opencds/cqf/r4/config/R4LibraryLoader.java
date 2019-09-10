@@ -19,7 +19,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.opencds.cqf.helpers.LibraryHelper.*;
+import static org.opencds.cqf.r4.helpers.LibraryHelper.*;
 
 public class R4LibraryLoader implements LibraryLoader {
 

@@ -13,12 +13,12 @@ import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
-import org.opencds.cqf.helpers.DateHelper;
-import org.opencds.cqf.helpers.LibraryHelper;
-import org.opencds.cqf.providers.ApelonFhirTerminologyProvider;
-import org.opencds.cqf.providers.JpaDataProvider;
-import org.opencds.cqf.providers.LibraryResourceProvider;
-import org.opencds.cqf.providers.Qdm54DataProvider;
+import org.opencds.cqf.r4.helpers.DateHelper;
+import org.opencds.cqf.r4.helpers.LibraryHelper;
+import org.opencds.cqf.r4.providers.ApelonFhirTerminologyProvider;
+import org.opencds.cqf.r4.providers.JpaDataProvider;
+import org.opencds.cqf.r4.providers.LibraryResourceProvider;
+import org.opencds.cqf.qdm.providers.Qdm54DataProvider;
 
 import java.util.Date;
 

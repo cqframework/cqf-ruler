@@ -21,6 +21,16 @@
             <artifactId>r4</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opencds.cqf</groupId>
+            <artifactId>stu3</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opencds.cqf</groupId>
+            <artifactId>qdm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

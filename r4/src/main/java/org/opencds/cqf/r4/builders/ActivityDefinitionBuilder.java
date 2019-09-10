@@ -1,5 +1,6 @@
 package org.opencds.cqf.r4.builders;
 
+import org.opencds.cqf.builders.BaseBuilder;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Enumerations;

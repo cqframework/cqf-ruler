@@ -8,18 +8,5 @@
     </parent>
 
     <groupId>org.opencds.cqf</groupId>
-    <artifactId>r4</artifactId>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.opencds.cqf</groupId>
-            <artifactId>common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opencds.cqf</groupId>
-            <artifactId>qdm</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <artifactId>common</artifactId>
 </project>

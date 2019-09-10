@@ -26,10 +26,10 @@ import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.hl7.elm.r1.ValueSetRef;
 import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.helpers.DataElementType;
-import org.opencds.cqf.helpers.LibraryHelper;
-import org.opencds.cqf.providers.CqfMeasure.TerminologyRef;
-import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.r4.helpers.DataElementType;
+import org.opencds.cqf.r4.helpers.LibraryHelper;
+import org.opencds.cqf.r4.providers.CqfMeasure.TerminologyRef;
+import org.opencds.cqf.r4.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.html.*;

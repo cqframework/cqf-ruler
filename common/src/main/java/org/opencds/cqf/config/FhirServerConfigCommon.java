@@ -1,4 +1,4 @@
-package org.opencds.cqf.r4.config;
+package org.opencds.cqf.config;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Driver;

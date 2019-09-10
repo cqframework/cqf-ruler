@@ -1,4 +1,4 @@
-package org.opencds.cqf.r4.exceptions;
+package org.opencds.cqf.exceptions;
 
 public class InvalidHookException extends RuntimeException {
 

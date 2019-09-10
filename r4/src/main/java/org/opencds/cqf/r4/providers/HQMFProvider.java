@@ -35,9 +35,9 @@ import com.jamesmurty.utils.XMLBuilder2;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.jsoup.Jsoup;
 import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.providers.CqfMeasure.CodeTerminologyRef;
-import org.opencds.cqf.providers.CqfMeasure.TerminologyRef;
-import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.r4.providers.CqfMeasure.CodeTerminologyRef;
+import org.opencds.cqf.r4.providers.CqfMeasure.TerminologyRef;
+import org.opencds.cqf.r4.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 

@@ -13,7 +13,7 @@ import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
-import org.opencds.cqf.config.R4LibrarySourceProvider;
+import org.opencds.cqf.r4.config.R4LibrarySourceProvider;
 
 
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -28,7 +28,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
-public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider implements org.opencds.cqf.providers.LibraryResourceProvider {
+public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider implements org.opencds.cqf.r4.providers.LibraryResourceProvider {
 
     private NarrativeProvider narrativeProvider;
     private DataRequirementsProvider dataRequirementsProvider;

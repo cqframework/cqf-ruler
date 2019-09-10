@@ -14,7 +14,7 @@ import ca.uhn.fhir.rest.param.StringAndListParam;
 import ca.uhn.fhir.rest.param.StringOrListParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.exceptions.Helper;
+import org.opencds.cqf.r4.helpers.Helper;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -14,9 +14,10 @@ import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.evaluation.MeasureEvaluation;
-import org.opencds.cqf.evaluation.MeasureEvaluationSeed;
-import org.opencds.cqf.helpers.LibraryHelper;
+import org.opencds.cqf.qdm.providers.Qdm54DataProvider;
+import org.opencds.cqf.r4.evaluation.MeasureEvaluation;
+import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
+import org.opencds.cqf.r4.helpers.LibraryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

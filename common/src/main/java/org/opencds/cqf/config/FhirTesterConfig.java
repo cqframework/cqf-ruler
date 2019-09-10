@@ -1,4 +1,4 @@
-package org.opencds.cqf.r4.config;
+package org.opencds.cqf.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

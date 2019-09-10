@@ -6,10 +6,12 @@
     <version>${revision}</version>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>cqf-ruler</module>
-        <module>r4</module>
+    <modules>        
+        <module>common</module>
         <module>qdm</module>
+        <module>stu3</module>
+        <module>r4</module>
+        <module>cqf-ruler</module>
     </modules>
 
     <properties>

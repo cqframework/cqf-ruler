@@ -1,5 +1,6 @@
 package org.opencds.cqf.r4.builders;
 
+import org.opencds.cqf.builders.BaseBuilder;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Period;

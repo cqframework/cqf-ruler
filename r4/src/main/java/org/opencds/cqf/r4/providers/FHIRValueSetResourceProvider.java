@@ -8,8 +8,8 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.UriParam;
 import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.builders.OperationOutcomeBuilder;
-import org.opencds.cqf.builders.RandomIdBuilder;
+import org.opencds.cqf.r4.builders.OperationOutcomeBuilder;
+import org.opencds.cqf.r4.builders.RandomIdBuilder;
 
 import java.util.ArrayList;
 import java.util.List;

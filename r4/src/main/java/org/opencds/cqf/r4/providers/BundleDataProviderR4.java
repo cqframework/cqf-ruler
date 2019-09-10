@@ -9,7 +9,7 @@ import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
-import org.opencds.cqf.helpers.DataProviderHelper;
+import org.opencds.cqf.r4.helpers.DataProviderHelper;
 
 import java.util.*;
 

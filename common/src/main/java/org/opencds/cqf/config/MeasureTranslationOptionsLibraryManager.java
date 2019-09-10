@@ -1,9 +1,11 @@
-package org.opencds.cqf.r4.config;
+package org.opencds.cqf.config;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
@@ -15,14 +17,17 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
 import org.hl7.elm.r1.VersionedIdentifier;
 
-public class NonCachingLibraryManager extends LibraryManager {
+import static org.cqframework.cql.cql2elm.CqlTranslatorException.HasErrors;
+
+public class MeasureTranslationOptionsLibraryManager extends LibraryManager {
 
     private ModelManager modelManager;
     private final CopiedLibrarySourceLoader librarySourceLoader;
+    private final Map<String, TranslatedLibrary> libraries;
     
-    public NonCachingLibraryManager(ModelManager modelManager) {
+    public MeasureTranslationOptionsLibraryManager(ModelManager modelManager) {
         super(modelManager);
-
+        this.libraries = new HashMap<>();
         this.modelManager = modelManager;
         this.librarySourceLoader = new CopiedLibrarySourceLoader();
     }
@@ -42,7 +47,27 @@ public class NonCachingLibraryManager extends LibraryManager {
             throw new IllegalArgumentException("libraryIdentifier Id is null");
         }
 
-        return translateLibrary(libraryIdentifier, errors);
+        TranslatedLibrary library = libraries.get(libraryIdentifier.getId());
+
+        if (library != null
+                && libraryIdentifier.getVersion() != null
+                && !libraryIdentifier.getVersion().equals(library.getIdentifier().getVersion())) {
+            throw new CqlTranslatorIncludeException(String.format("Could not resolve reference to library %s, version %s because version %s is already loaded.",
+                    libraryIdentifier.getId(), libraryIdentifier.getVersion(), library.getIdentifier().getVersion()), libraryIdentifier.getId(), libraryIdentifier.getVersion());
+        }
+
+        else if (library != null) {
+            return library;
+        }
+
+        else {
+            library = translateLibrary(libraryIdentifier, errors);
+            if (!HasErrors(errors)) {
+                libraries.put(libraryIdentifier.getId(), library);
+            }
+        }
+
+        return library;
     }
 
     private TranslatedLibrary translateLibrary(VersionedIdentifier libraryIdentifier, List<CqlTranslatorException> errors) {
@@ -61,9 +86,12 @@ public class NonCachingLibraryManager extends LibraryManager {
 
         try {
             CqlTranslator translator = CqlTranslator.fromStream(librarySource, modelManager, this, 
-                CqlTranslator.Options.EnableAnnotations,
-                CqlTranslator.Options.EnableLocators);
-                
+            CqlTranslator.Options.EnableAnnotations,
+            CqlTranslator.Options.EnableLocators,
+            CqlTranslator.Options.DisableListDemotion,
+            CqlTranslator.Options.DisableListPromotion,
+            CqlTranslator.Options.DisableMethodInvocation);
+
             if (errors != null) {
                 errors.addAll(translator.getExceptions());
             }

@@ -1,4 +1,4 @@
-package org.opencds.cqf.r4.providers;
+package org.opencds.cqf.qdm.providers;
 
 import lombok.Data;
 import org.opencds.cqf.cql.data.DataProvider;

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
 
 import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.Description;
@@ -665,7 +664,7 @@ public class CqfMeasure extends Measure {
     // TODO: Need to rethink this. Do we want all the termionologies to be the same type?
     // This was originally a string so I think the refactor is probably not right or incomplete.
     public CqfMeasure.TerminologyRef addTerminology() { //3
-        CqfMeasure.TerminologyRef t = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.VALUESET, null, null);
+        CqfMeasure.TerminologyRef t = new CqfMeasure.VersionedTerminologyRef(CqfMeasure.TerminologyRef.TerminologyRefType.VALUESET, null, null);
         if (this.terminology == null)
             this.terminology = new ArrayList<CqfMeasure.TerminologyRef>();
         this.terminology.add(t);

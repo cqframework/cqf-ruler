@@ -1,4 +1,4 @@
-package org.opencds.cqf.r4.config;
+package org.opencds.cqf.config;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirVersionEnum;

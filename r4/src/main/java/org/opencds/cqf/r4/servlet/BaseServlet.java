@@ -20,7 +20,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Meta;
 import org.opencds.cqf.config.HapiProperties;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.providers.*;
+import org.opencds.cqf.r4.providers.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 

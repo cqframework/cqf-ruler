@@ -26,7 +26,7 @@ public interface LibraryResourceProvider {
                 library = l;
             }
 
-            if (maxVersion == null || org.opencds.cqf.providers.LibraryResourceProvider.compareVersions(maxVersion.getVersion(), l.getVersion()) < 0){
+            if (maxVersion == null || org.opencds.cqf.r4.providers.LibraryResourceProvider.compareVersions(maxVersion.getVersion(), l.getVersion()) < 0){
                 maxVersion = l;
             }
         }
