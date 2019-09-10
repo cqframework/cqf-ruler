@@ -67,26 +67,42 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
             }
         }
 
+        boolean noResults = false;
         if (codePath != null && !codePath.equals("")) {
 
-            if (valueSet != null && terminologyProvider != null && expandValueSets) {
-                ValueSetInfo valueSetInfo = new ValueSetInfo().withId(valueSet);
-                codes = terminologyProvider.expand(valueSetInfo);
+            if (valueSet != null) {
+                if (expandValueSets) {
+                    if (terminologyProvider == null) {
+                        throw new IllegalArgumentException("Expand value sets cannot be used without a terminology provider and no terminology provider is set.");
+                    }
+                    ValueSetInfo valueSetInfo = new ValueSetInfo().withId(valueSet);
+                    codes = terminologyProvider.expand(valueSetInfo);
+                }
+                else {
+                    map.add(convertPathToSearchParam(dataType, codePath), new TokenParam(null, valueSet).setModifier(TokenParamModifier.IN));
+                }
             }
-            else if (valueSet != null) {
-                map.add(convertPathToSearchParam(dataType, codePath), new TokenParam(null, valueSet).setModifier(TokenParamModifier.IN));
-            }
+
             if (codes != null) {
                 TokenOrListParam codeParams = new TokenOrListParam();
+                int codeCount = 0;
                 for (Code code : codes) {
+                    codeCount++;
                     codeParams.addOr(new TokenParam(code.getSystem(), code.getCode()));
                 }
                 map.add(convertPathToSearchParam(dataType, codePath), codeParams);
-                if (codeParams.getListAsCodings().size() > 1023)
-                {
-                    BooleanQuery.setMaxClauseCount(codeParams.getListAsCodings().size());
+                if (codeCount == 0) {
+                    noResults = true;
+                }
+                if (codeCount > 1023) {
+                    BooleanQuery.setMaxClauseCount(codeCount);
                 }
             }
+        }
+
+        // If the retrieve is filtered to a value set that has no codes, there are no possible satisfying results, don't even search, just return empty
+        if (noResults) {
+            return new ArrayList();
         }
 
         if (dateRange != null) {
