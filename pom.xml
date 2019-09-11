@@ -11,7 +11,8 @@
         <module>qdm</module>
         <module>dstu3</module>
         <module>r4</module>
-        <module>cqf-ruler</module>
+        <module>cqf-ruler-dstu3</module>
+        <module>cqf-ruler-r4</module>
     </modules>
 
     <properties>

@@ -1,6 +1,8 @@
 package org.opencds.cqf.dstu3.config;
 
 import ca.uhn.fhir.context.ConfigurationException;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.ParserOptions;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 
@@ -23,6 +25,17 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3
     public FhirServerConfigDstu3(DataSource myDataSource) {
         this.myDataSource = myDataSource;
     }
+
+    @Override
+	public FhirContext fhirContextDstu3() {
+		FhirContext retVal = FhirContext.forDstu3();
+
+		// Don't strip versions in some places
+		ParserOptions parserOptions = retVal.getParserOptions();
+		parserOptions.setDontStripVersionsFromReferencesAtPaths("AuditEvent.entity.reference");
+
+		return retVal;
+	}
 
     /**
      * We override the paging provider definition so that we can customize

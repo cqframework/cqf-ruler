@@ -1,6 +1,8 @@
 package org.opencds.cqf.r4.config;
 
 import ca.uhn.fhir.context.ConfigurationException;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.ParserOptions;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 
@@ -23,6 +25,17 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4
     public FhirServerConfigR4(DataSource myDataSource) {
         this.myDataSource = myDataSource;
     }
+
+    @Override
+	public FhirContext fhirContextR4() {
+		FhirContext retVal = FhirContext.forR4();
+
+		// Don't strip versions in some places
+		ParserOptions parserOptions = retVal.getParserOptions();
+		parserOptions.setDontStripVersionsFromReferencesAtPaths("AuditEvent.entity.what");
+
+		return retVal;
+	}
 
     /**
      * We override the paging provider definition so that we can customize

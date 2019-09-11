@@ -20,7 +20,10 @@ import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.config.HapiProperties;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.dstu3.providers.*;
+import org.opencds.cqf.dstu3.config.FhirServerConfigDstu3;
+import org.opencds.cqf.config.FhirServerConfigCommon;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
 import javax.servlet.ServletException;
@@ -40,6 +43,11 @@ public class BaseServlet extends RestfulServer
     @Override
     protected void initialize() throws ServletException
     {
+        // AnnotationConfigWebApplicationContext servletCtx = (AnnotationConfigWebApplicationContext)this.getServletContext();
+        // servletCtx.register(
+        //     FhirServerConfigDstu3.class, 
+        //     FhirServerConfigCommon.class);
+
         super.initialize();
 
         ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");

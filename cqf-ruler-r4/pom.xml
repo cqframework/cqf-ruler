@@ -8,7 +8,7 @@
     </parent>
 
     <groupId>org.opencds.cqf</groupId>
-    <artifactId>cqf-ruler</artifactId>
+    <artifactId>cqf-ruler-r4</artifactId>
 
     <properties>
         <p.type>war</p.type>
@@ -23,23 +23,13 @@
         </dependency>
         <dependency>
             <groupId>org.opencds.cqf</groupId>
-            <artifactId>dstu3</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opencds.cqf</groupId>
             <artifactId>qdm</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
 
     <build>
-
-        <!-- Tells Maven to name the generated WAR file as cqf-ruler.war -->
-        <finalName>cqf-ruler</finalName>
-
         <plugins>
-            <!-- The configuration here tells the WAR plugin to include the FHIR Tester overlay. You can omit it if you are not using that feature. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
