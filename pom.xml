@@ -270,6 +270,15 @@
         </dependency>
     </dependencies>
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-maven-plugin</artifactId>
+                        <version>${jetty_version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <!-- Tell Maven which Java source version you want to use -->
             <plugin>
@@ -311,7 +320,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -323,32 +331,6 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
-
-
-            <plugin>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-maven-plugin</artifactId>
-                    <version>${jetty_version}</version>
-                    <configuration>
-                        <systemProperties>
-                            <systemProperty>
-                                <name>org.eclipse.jetty.server.Request.maxFormContentSize</name>
-                                <value>-1</value>
-                            </systemProperty>
-                            <systemProperty>
-                                <key>testmode.local</key>
-                                <value>${dev}</value>
-                            </systemProperty>
-                        </systemProperties>
-                        <webApp>
-                            <contextPath>/cqf-ruler</contextPath>
-                            <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
-                            <!-- Prevent unnecessary scanning to reduce start time -->
-                            <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
-                            <containerIncludeJarPattern>^$</containerIncludeJarPattern>
-                        </webApp>
-                    </configuration>
-                </plugin>
         </plugins>
     </build>
 
