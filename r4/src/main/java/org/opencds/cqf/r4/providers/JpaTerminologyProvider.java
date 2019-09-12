@@ -47,18 +47,21 @@ public class JpaTerminologyProvider implements TerminologyProvider {
     public synchronized Iterable<Code> expand(ValueSetInfo valueSet) throws ResourceNotFoundException {
         List<Code> codes = new ArrayList<>();
         boolean needsExpand = false;
-        ValueSet vs;
+        ValueSet vs = null;
         if (valueSet.getId().startsWith("http://") || valueSet.getId().startsWith("https://")) {
+            if (valueSet.getVersion() != null || (valueSet.getCodeSystems() != null && valueSet.getCodeSystems().size() > 0)) {
+                throw new UnsupportedOperationException(String.format("Could not expand value set %s; version and code system bindings are not supported at this time.", valueSet.getId()));
+            }
             IBundleProvider bundleProvider = valueSetResourceProvider.getDao().search(new SearchParameterMap().add(ValueSet.SP_URL, new UriParam(valueSet.getId())));
             List<IBaseResource> valueSets = bundleProvider.getResources(0, bundleProvider.size());
-            if (!valueSets.isEmpty() && valueSets.size() == 1) {
+            if (valueSets.isEmpty()) {
+                throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));
+            }
+            else if (valueSets.size() == 1) {
                 vs = (ValueSet) valueSets.get(0);
             }
             else if (valueSets.size() > 1) {
                 throw new IllegalArgumentException("Found more than 1 ValueSet with url: " + valueSet.getId());
-            }
-            else {
-                vs = null;
             }
         }
         else {
