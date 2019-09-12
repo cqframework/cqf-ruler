@@ -3,7 +3,7 @@ package org.opencds.cqf.dstu3.providers;
 import ca.uhn.fhir.jpa.rp.dstu3.BundleResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.ResourceParam;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
@@ -25,7 +25,7 @@ public class FHIRBundleResourceProvider extends BundleResourceProvider {
         this.provider = provider;
     }
 
-    @Operation(name = "$apply-cql", idempotent = true)
+    @Operation(name = "$apply-cql")
     public Bundle apply(@IdParam IdType id) throws FHIRException {
         Bundle bundle = this.getDao().read(id);
         if (bundle == null) {
@@ -34,27 +34,24 @@ public class FHIRBundleResourceProvider extends BundleResourceProvider {
         return applyCql(bundle);
     }
 
-    @Operation(name = "$apply-cql", idempotent = true)
-    public Bundle apply(@ResourceParam Bundle bundle) throws FHIRException {
+    @Operation(name = "$apply-cql")
+    public Bundle apply(@OperationParam(name = "resourceBundle", min = 1, max = 1, type = Bundle.class) Bundle bundle)
+            throws FHIRException
+    {
         return applyCql(bundle);
-    }
-
-    @Operation(name = "$apply-cql", idempotent = true)
-    public Resource apply(@ResourceParam Resource resource) throws FHIRException {
-        return applyCql(resource);
     }
 
     public Bundle applyCql(Bundle bundle) throws FHIRException {
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.hasResource()) {
-                applyCql(entry.getResource());
+                applyCqlToResource(entry.getResource());
             }
         }
 
         return bundle;
     }
 
-    public Resource applyCql(Resource resource) throws FHIRException {
+    public Resource applyCqlToResource(Resource resource) throws FHIRException {
         Library library;
         Context context;
         for (Property child : resource.children()) {

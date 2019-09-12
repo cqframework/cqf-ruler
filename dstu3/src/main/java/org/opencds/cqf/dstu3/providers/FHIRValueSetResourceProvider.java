@@ -141,7 +141,7 @@ public class FHIRValueSetResourceProvider extends ValueSetResourceProvider
                         x -> new CodeSystem.ConceptDefinitionComponent().setCode(x)
                 )
                 .collect(Collectors.toList())
-        ).setContent(CodeSystem.CodeSystemContentMode.COMPLETE);
+        ).setContent(CodeSystem.CodeSystemContentMode.COMPLETE).setStatus(Enumerations.PublicationStatus.ACTIVE);
 
         codeSystemProvider.getDao().update(codeSystem);
     }
