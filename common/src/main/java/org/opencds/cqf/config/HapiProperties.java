@@ -92,7 +92,10 @@ public class HapiProperties {
      * @return properties loaded from the explicitly specified configuraiton file if there is one, or null otherwise.
      */
     private static Properties loadOverrideProperties() {
-        String confFile = System.getProperty(HAPI_PROPERTIES);
+        String confFile = System.getProperty(HAPI_PROPERTIES + "." + HapiProperties.getProperty(FHIR_VERSION));
+        if (confFile == null) {
+            confFile = System.getProperty(HAPI_PROPERTIES);
+        }
         if(confFile != null) {
             try {
                 Properties props = new Properties();

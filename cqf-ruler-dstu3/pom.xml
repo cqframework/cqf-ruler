@@ -29,7 +29,7 @@
     </dependencies>
 
     <build>
-        <finalName>cql-ruler-dstu3</finalName>
+        <finalName>cqf-ruler-dstu3</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -66,7 +66,7 @@
                             </systemProperty>
                         </systemProperties>
                         <webApp>
-                            <contextPath>cqf-ruler-dstu3</contextPath>
+                            <contextPath>/cqf-ruler-dstu3</contextPath>
                             <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
                             <!-- Prevent unnecessary scanning to reduce start time -->
                             <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>

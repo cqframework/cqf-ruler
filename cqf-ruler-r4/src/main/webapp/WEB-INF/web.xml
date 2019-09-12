@@ -18,20 +18,20 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>
             org.opencds.cqf.config.FhirServerConfigCommon,
-            org.opencds.cqf.dstu3.config.FhirServerConfigDstu3
+            org.opencds.cqf.r4.config.FhirServerConfigR4
         </param-value>
     </context-param>
 
     <!-- Servlets -->
-    <!-- <servlet>
+    <servlet>
         <servlet-name>ViewStatusMessages</servlet-name>
-        <servlet-class>ch.qos.logback.classic.ViewStatusMessagesServlet</seFhirTesterConfigFhirTesterConfigrvlet-class>
+        <servlet-class>ch.qos.logback.classic.ViewStatusMessagesServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
         <servlet-name>ViewStatusMessages</servlet-name>
         <url-pattern>/StatusMessages</url-pattern>
-    </servlet-mapping> -->
+    </servlet-mapping>
 
     <!-- <servlet>
         <servlet-name>LogMessages</servlet-name>
@@ -84,26 +84,26 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>fhirServletDstu3</servlet-name>
-        <servlet-class>org.opencds.cqf.dstu3.servlet.BaseServlet</servlet-class>
+        <servlet-name>fhirServlet</servlet-name>
+        <servlet-class>org.opencds.cqf.r4.servlet.BaseServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>fhirServletDstu3</servlet-name>
+        <servlet-name>fhirServlet</servlet-name>
         <url-pattern>/fhir/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>cds-servicesDstu3</servlet-name>
-        <servlet-class>org.opencds.cqf.dstu3.servlet.CdsHooksServlet</servlet-class>
+        <servlet-name>cds-services</servlet-name>
+        <servlet-class>org.opencds.cqf.r4.servlet.CdsHooksServlet</servlet-class>
         <load-on-startup>4</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>cds-servicesDstu3</servlet-name>
+        <servlet-name>cds-services</servlet-name>
         <url-pattern>/cds-services</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>cds-servicesDstu3</servlet-name>
+        <servlet-name>cds-services</servlet-name>
         <url-pattern>/cds-services/*</url-pattern>
     </servlet-mapping>
 
@@ -118,5 +118,9 @@
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
         <url-pattern>/qdm/*</url-pattern>
+    </filter-mapping> 
+    <filter-mapping>
+        <filter-name>cross-origin</filter-name>
+        <url-pattern>/cds-services/*</url-pattern>
     </filter-mapping> 
 </web-app>

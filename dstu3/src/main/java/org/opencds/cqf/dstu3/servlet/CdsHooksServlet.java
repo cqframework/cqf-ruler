@@ -118,7 +118,7 @@ public class CdsHooksServlet extends HttpServlet
             context.setContextValue("Patient", hook.getRequest().getContext().getPatientId());
             context.setExpressionCaching(true);
 
-            EvaluationContext evaluationContext = new Stu3EvaluationContext(hook, version, provider.setEndpoint(baseUrl), context, planDefinition);
+            EvaluationContext evaluationContext = new Stu3EvaluationContext(hook, version, provider.setEndpoint(baseUrl), context, library, planDefinition);
 
             this.setAccessControlHeaders(response);
 

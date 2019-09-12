@@ -6,7 +6,7 @@
 cat<<EOF
 server_address=$SERVER_ADDRESS_DSTU3
 EOF
-) >> /var/lib/jetty/webapps/stu3.properties
+) >> /var/lib/jetty/webapps/dstu3.properties
 
 (
 cat<<EOF
