@@ -131,6 +131,10 @@ public class MeasureEvaluation {
         
         context.setContextValue("Patient", patient.getId().getValue());
         Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
+        if (result == null) {
+            return Collections.emptyList();
+        }
+        
         if (result instanceof Boolean) {
             if (((Boolean)result)) {
                 return Collections.singletonList(patient);
@@ -150,6 +154,10 @@ public class MeasureEvaluation {
 
         context.setContextValue("Patient", patient.getIdElement().getIdPart());
         Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
+        if (result == null) {
+            return Collections.emptyList();
+        }
+
         if (result instanceof Boolean) {
             if (((Boolean)result)) {
                 return Collections.singletonList(patient);
