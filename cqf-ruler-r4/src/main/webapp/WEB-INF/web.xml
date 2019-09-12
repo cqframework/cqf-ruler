@@ -43,7 +43,7 @@
         <url-pattern>/LogMessages</url-pattern>
     </servlet-mapping> -->
 
-    <servlet>
+    <!-- <servlet>
         <servlet-name>qdm54</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
@@ -63,7 +63,7 @@
     <servlet-mapping>
         <servlet-name>qdm54</servlet-name>
         <url-pattern>/qdm/*</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping> -->
 
     <servlet>
         <servlet-name>spring</servlet-name>
@@ -115,10 +115,10 @@
         <filter-name>cross-origin</filter-name>
         <url-pattern>/fhir/*</url-pattern>
     </filter-mapping>
-    <filter-mapping>
+    <!-- <filter-mapping>
         <filter-name>cross-origin</filter-name>
         <url-pattern>/qdm/*</url-pattern>
-    </filter-mapping> 
+    </filter-mapping>  -->
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
         <url-pattern>/cds-services/*</url-pattern>
