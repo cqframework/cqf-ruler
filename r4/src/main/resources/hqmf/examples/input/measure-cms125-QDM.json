@@ -1,0 +1,214 @@
+{
+    "resourceType": "Measure",
+    "id": "measure-cms125-QDM",
+    "url": "http://hl7.org/fhir/us/cqfmeasures/Measure/measure-cms125-QDM",
+    "identifier": [
+      {
+        "use": "official",
+        "system": "http://hl7.org/fhir/cqi/ecqm/Measure/Identifier/cms",
+        "value": "146"
+      },
+      {
+        "use": "official",
+        "system": "http://hl7.org/fhir/cqi/ecqm/Measure/Identifier/nqf",
+        "value": "0002"
+      }
+    ],
+    "version": "7.2.000",
+    "name": "CMS125",
+    "title": "Breast Cancer Screening",
+    "status": "active",
+    "experimental": true,
+    "date": "2018-08-31",
+    "publisher": "National Committee for Quality Assurance",
+    "description": "Percentage of women 50-74 years of age who had a mammogram to screen for breast cancer",
+    "purpose": "Women 51-74 years of age with a visit during the measurement period",
+    "effectivePeriod": {
+      "start": "2018-01-01",
+      "end": "2018-12-31"
+    },
+    "useContext": [
+      {
+        "code": {
+          "code": "program"
+        },
+        "valueCodeableConcept": {
+          "text": "eligibile-provider"
+        }
+      }
+    ],
+    "jurisdiction": [
+      {
+        "coding": [
+          {
+            "system": "urn:iso:std:iso:3166",
+            "code": "US"
+          }
+        ]
+      }
+    ],
+    "topic": [
+      {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "57024-2",
+            "display": "Health Quality Measure Document"
+          }
+        ]
+      }
+    ],
+    "contributor": [
+      {
+        "type": "author",
+        "name": "National Committee for Quality Assurance"
+      }
+    ],
+    "contact": [
+      {
+        "telecom": [
+          {
+            "system": "url",
+            "value": "http://www.ncqa.org/"
+          }
+        ]
+      }
+    ],
+    "copyright": "This Physician Performance Measure (Measure) and related data specifications were developed by the National Committee for Quality Assurance (NCQA). The Measure is copyrighted but can be reproduced and distributed, without modification, for noncommercial purposes (eg, use by healthcare providers in connection with their practices) without obtaining approval from NCQA. Commercial use is defined as the sale, licensing, or distribution of the Measure for commercial gain, or incorporation of the Measure into a product or service that is sold, licensed or distributed for commercial gain. All commercial uses must be approved by NCQA and are subject to a license at the discretion of NCQA. NCQA is not responsible for any use of the Measure. NCQA makes no representations, warranties, or endorsement about the quality of any organization or physician that uses or reports performance measures and NCQA has no liability to anyone who relies on such measures or specifications. (C) 2012-2017 National Committee for Quality Assurance. All Rights Reserved. <br>  Limited proprietary coding is contained in the Measure specifications for user convenience. Users of proprietary code sets should obtain all necessary licenses from the owners of the code sets. NCQA disclaims all liability for use or accuracy of any CPT or other codes contained in the specifications. <br> CPT(R) contained in the Measure specifications is copyright 2004-2016 American Medical Association. LOINC(R) copyright 2004-2016 Regenstrief Institute, Inc. This material contains SNOMED Clinical Terms(R) (SNOMED CT[R]) copyright 2004-2016 International Health Terminology Standards Development Organisation. ICD-10 copyright 2016 World Health Organization. All Rights Reserved. <br> The American Hospital Association holds a copyright to the National Uniform Billing Committee (NUBC) codes contained in the measure specifications. The NUBC codes in the specifications are included with the permission of the AHA. The NUBC codes contained in the specifications may be used by health plans and other health care delivery organizations for the purpose of calculating and reporting Measure results or using Measure results for their internal quality improvement purposes. All other uses of the NUBC codes require a license from the AHA. Anyone desiring to use the NUBC codes in a commercial product to generate Measure results, or for any other commercial use, must obtain a commercial use license directly from the AHA. To inquire about licensing, contact ub04@healthforum.com.",
+    "relatedArtifact": [
+      {
+        "type": "citation",
+        "citation": "American Cancer Society. 2010. Cancer Facts & Figures 2010. Atlanta: American Cancer Society."
+      },
+      {
+        "type": "citation",
+        "citation": "National Cancer Institute. 2010. \"Breast Cancer Screening.\" http://www.cancer.gov/cancertopics/pdq/screening/breast/healthprofessional"
+      },
+      {
+        "type": "citation",
+        "citation": "National Business Group on Health. 2011. Pathways to Managing Cancer in the Workplace. Washington: National Business Group on Health. "
+      },
+      {
+        "type": "citation",
+        "citation": "U.S. Preventive Services Task Force (USPSTF). 2009. 1) \"Screening for breast cancer: U.S. Preventive Services Task Force recommendation statement.\" 2) \"December 2009 addendum.\" Ann Intern Med 151(10):716-726."
+      },
+      {
+        "type": "citation",
+        "citation": "BreastCancer.org. 2012. U.S. Breast Cancer Statistics. www.breastcancer.org/symptoms/understand_bc/statistics.jsp"
+      }
+    ],
+    "library": [
+      {
+        "reference": "Library/library-cms125-QDM"
+      }
+    ],
+    "disclaimer": "The performance Measure is not a clinical guideline and does not establish a standard of medical care, and has not been tested for all potential applications. THE MEASURE AND SPECIFICATIONS ARE PROVIDED \"AS IS\" WITHOUT WARRANTY OF ANY KIND.",
+    "scoring": {
+      "coding": [
+        {
+          "code": "proportion"
+        }
+      ]
+    },
+    "type": [
+      {
+        "coding": [
+          {
+            "code": "process"
+          }
+        ]
+      }
+    ],
+    "rationale": "Breast cancer is one of the most common types of cancers, accounting for a quarter of all new cancer diagnoses for women in the U.S. (BreastCancer.Org, 2011). It ranks as the second leading cause of cancer-related mortality in women, accounting for nearly 40,000 estimated deaths in 2013 (American Cancer Society, 2011). <br> According to the National Cancer Institute's Surveillance Epidemiology and End Results program, the chance of a woman being diagnosed with breast cancer in a given year increases with age. By age 30, it is one in 2,212. By age 40, the chances increase to one in 235, by age 50, it becomes one in 54, and, by age 60, it is one in 25. From 2004 to 2008, the median age at the time of breast cancer diagnosis was 61 years among adult women (Tangka et al, 2010). <br> In the U.S., costs associated with a diagnosis of breast cancer range from $451 to $2,520, factoring in continued testing, multiple office visits, and varying procedures. The total costs related to breast cancer add up to nearly $7 billion per year in the U.S., including $2 billion spent on late-stage treatment (Lavigne et al, 2008; Boykoff et al, 2009).",
+    "clinicalRecommendationStatement": "The U.S. Preventive Services Task Force (USPSTF) recommends biennial screening mammography for women aged 50-74 years (B recommendation). The decision to start regular, biennial screening mammography before the age of 50 years should be an individual one and take patient context into account, including the patient's values regarding specific benefits and harms (C recommendation). The Task Force concludes the evidence is insufficient to assess the additional benefits and harms of screening mammography in women 75 years and older (I statement). <br> U.S. Preventive Services Task Force (2009) <br> Grade: B recommendation. The USPSTF recommends biennial screening mammography for women aged 50 to 74 years. <br> Grade: C recommendation. The decision to start regular, biennial screening mammography before the age of 50 years should be an individual one and take patient context into account, including the patient's values regarding specific benefits and harms. <br> Grade: I Statement. The USPSTF concludes that the current evidence is insufficient to assess the additional benefits and harms of screening mammography in women 75 years or older. <br> Grade: D recommendation. The USPSTF recommends against teaching breast self-examination (BSE). <br> Grade: I Statement. The USPSTF concludes that the current evidence is insufficient to assess the additional benefits and harms of clinical breast examination (CBE) beyond screening mammography in women 40 years or older. <br> Grade: I Statement. The USPSTF concludes that the current evidence is insufficient to assess the additional benefits and harms of either digital mammography or magnetic resonance imaging (MRI) instead of film mammography as screening modalities for breast cancer.",
+    "improvementNotation": "Higher score equals better quality",
+    "guidance": "Patient self-report for procedures as well as diagnostic studies should be recorded in 'Procedure, Performed' template or 'Diagnostic Study, Performed' template in QRDA-1. Patient self-report is not allowed for laboratory tests. <br> This measure evaluates primary screening. Do not count biopsies, breast ultrasounds, MRIs or tomosynthesis (3D mammography), because they are not appropriate methods for primary breast cancer screening.",
+    "group": [
+      {
+        "identifier": {
+          "value": "CMS125-group-1"
+        },
+        "population": [
+          {
+            "identifier": {
+              "value": "initial-population-identifier"
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "initial-population"
+                }
+              ]
+            },
+            "criteria": "Initial Population"
+          },
+          {
+            "identifier": {
+              "value": "numerator-identifier"
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "numerator"
+                }
+              ]
+            },
+            "criteria": "Numerator"
+          },
+          {
+            "identifier": {
+              "value": "denominator-identifier"
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "denominator"
+                }
+              ]
+            },
+            "criteria": "Denominator"
+          },
+          {
+            "identifier": {
+              "value": "denominator-exclusions-identifier"
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "denominator-exclusion"
+                }
+              ]
+            },
+            "criteria": "Denominator Exclusion"
+          }
+        ]
+      }
+    ],
+    "supplementalData": [
+      {
+        "identifier": {
+          "value": "supplemental-data-race"
+        },
+        "criteria": "SDE Race"
+      },
+      {
+        "identifier": {
+          "value": "supplemental-data-payer"
+        },
+        "criteria": "SDE Payer"
+      },
+      {
+        "identifier": {
+          "value": "supplemental-data-ethnicity"
+        },
+        "criteria": "SDE Ethnicity"
+      },
+      {
+        "identifier": {
+          "value": "supplemental-data-birthSex"
+        },
+        "criteria": "SDE Sex"
+      }
+    ]
+  }
+  

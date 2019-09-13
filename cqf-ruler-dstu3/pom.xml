@@ -1,0 +1,80 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.opencds.cqf</groupId>
+        <artifactId>parent</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <groupId>org.opencds.cqf</groupId>
+    <artifactId>cqf-ruler-dstu3</artifactId>
+
+    <properties>
+        <p.type>war</p.type>
+    </properties>
+    <packaging>${p.type}</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opencds.cqf</groupId>
+            <artifactId>dstu3</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opencds.cqf</groupId>
+            <artifactId>qdm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>cqf-ruler-dstu3</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Build-Time>${maven.build.timestamp}</Build-Time>
+                        </manifestEntries>
+                    </archive>
+                    <overlays>
+                        <overlay>
+                            <groupId>ca.uhn.hapi.fhir</groupId>
+                            <artifactId>hapi-fhir-testpage-overlay</artifactId>
+                        </overlay>
+                    </overlays>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>${jetty_version}</version>
+                    <configuration>
+                        <systemProperties>
+                            <systemProperty>
+                                <name>org.eclipse.jetty.server.Request.maxFormContentSize</name>
+                                <value>-1</value>
+                            </systemProperty>
+                            <systemProperty>
+                                <key>testmode.local</key>
+                                <value>${dev}</value>
+                            </systemProperty>
+                        </systemProperties>
+                        <webApp>
+                            <contextPath>/cqf-ruler-dstu3</contextPath>
+                            <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
+                            <!-- Prevent unnecessary scanning to reduce start time -->
+                            <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+                            <containerIncludeJarPattern>^$</containerIncludeJarPattern>
+                        </webApp>
+                    </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

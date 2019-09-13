@@ -146,3 +146,7 @@ local.properties
 .classpath
 .factorypath
 !/src/main/resources/hapi.properties
+
+LogMessages.html
+
+*.zip

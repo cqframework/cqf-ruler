@@ -4,8 +4,14 @@
 # datasource.url= $DATASOURCE_URL
 (
 cat<<EOF
-server_address=$SERVER_ADDRESS
+server_address=$SERVER_ADDRESS_DSTU3
 EOF
-) >> /var/lib/jetty/webapps/hapi.properties
+) >> /var/lib/jetty/webapps/dstu3.properties
+
+(
+cat<<EOF
+server_address=$SERVER_ADDRESS_R4
+EOF
+) >> /var/lib/jetty/webapps/r4.properties
 
 /docker-entrypoint.sh "$@"
