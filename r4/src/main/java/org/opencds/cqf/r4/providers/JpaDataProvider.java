@@ -883,7 +883,7 @@ public class JpaDataProvider extends FhirDataProviderR4 {
                     case "ConceptMap":
                         break;
                     case "Condition":
-                        break;
+                        return "subject";
                     case "Consent":
                         return "patient";
                     case "Contract":
@@ -1117,6 +1117,8 @@ public class JpaDataProvider extends FhirDataProviderR4 {
                     case "VerificationResult":
                         break;
                     case "VisionPrescription":
+                        return "patient";
+                    default:
                         return "patient";
                 }
                 break;
