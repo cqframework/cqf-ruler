@@ -107,7 +107,7 @@ public class MeasureEvaluationSeed
 
     private DataProvider getDataProvider(String model, String version)
     {
-        if (model.equals("FHIR") && version.equals("3.0.0"))
+        if (model.equals("FHIR") && version.equals("4.0.0"))
         {
             FhirContext fhirContext = ((JpaDataProvider) dataProvider).getFhirContext();
             fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);

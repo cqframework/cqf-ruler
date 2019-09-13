@@ -174,7 +174,7 @@ public class CqlExecutionProvider {
     }
 
     private DataProvider getDataProvider(String model, String version) {
-        if (model.equals("FHIR") && version.equals("3.0.0")) {
+        if (model.equals("FHIR") && version.equals("4.0.0")) {
             FhirContext fhirContext = provider.getFhirContext();
             fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
             provider.setFhirContext(fhirContext);
