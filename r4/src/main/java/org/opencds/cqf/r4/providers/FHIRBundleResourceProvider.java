@@ -4,7 +4,7 @@ import ca.uhn.fhir.jpa.rp.r4.BundleResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-//import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
@@ -16,15 +16,6 @@ import org.opencds.cqf.r4.helpers.LibraryHelper;
 
 import java.math.BigDecimal;
 import java.util.*;
-
-class Pair
-{
-	// Return a map entry (key-value pair) from the specified values
-	public static <T, U> Map.Entry<T, U> of(T first, U second)
-	{
-		return new AbstractMap.SimpleEntry<>(first, second);
-	}
-}
 
 public class FHIRBundleResourceProvider extends BundleResourceProvider {
 
