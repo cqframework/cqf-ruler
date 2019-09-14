@@ -93,7 +93,7 @@ public class CdsHooksServlet extends HttpServlet
 
             String baseUrl =
                     request.getRequestURL().toString()
-                            .replace(request.getPathInfo(), "").replace(request.getServletPath(), "") + "/fhir";
+                            .replace(request.getPathInfo(), "").replace(request.getServletPath(), "") + "/baseR4";
             String service = request.getPathInfo().replace("/", "");
 
             JsonParser parser = new JsonParser();

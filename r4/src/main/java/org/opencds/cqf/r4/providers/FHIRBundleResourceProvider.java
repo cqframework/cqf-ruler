@@ -1,4 +1,4 @@
-package org.opencds.cqf.r4.providers;
+package org.opencds.cqf.providers;
 
 import ca.uhn.fhir.jpa.rp.r4.BundleResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -12,7 +12,7 @@ import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
-import org.opencds.cqf.r4.helpers.LibraryHelper;
+import org.opencds.cqf.helpers.LibraryHelper;
 
 import java.math.BigDecimal;
 import java.util.*;
