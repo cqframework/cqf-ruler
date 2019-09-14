@@ -139,7 +139,8 @@ public class BaseServlet extends RestfulServer
             config.addAllowedHeader("Authorization");
             config.addAllowedHeader("Cache-Control");
 
-            config.addAllowedOrigin(HapiProperties.getCorsAllowedOrigin());
+//            config.addAllowedOrigin(HapiProperties.getCorsAllowedOrigin());
+            config.addAllowedOrigin("https://sandbox.cds-hooks.org");
 
             config.addExposedHeader("Location");
             config.addExposedHeader("Content-Location");
