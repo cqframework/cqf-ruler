@@ -14,9 +14,7 @@ import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class FHIRBundleResourceProvider extends BundleResourceProvider {
 
@@ -57,19 +55,19 @@ public class FHIRBundleResourceProvider extends BundleResourceProvider {
         for (Property child : resource.children()) {
             for (Base base : child.getValues()) {
                 if (base != null) {
-                    List<String> extension = getExtension(base);
-                    if (!extension.isEmpty()) {
-                        String cql = String.format("using FHIR version '4.0.0' define x: %s", extension.get(1));
+                    AbstractMap.SimpleEntry<String, String> extensions = getExtension(base);
+                    if (extensions != null) {
+                        String cql = String.format("using FHIR version '4.0.0' define x: %s", extensions.getValue());
                         library = LibraryHelper.translateLibrary(cql, new LibraryManager(new ModelManager()), new ModelManager());
                         context = new Context(library);
                         context.registerDataProvider("http://hl7.org/fhir", provider);
                         Object result = context.resolveExpressionRef("x").getExpression().evaluate(context);
-                        if (extension.get(0).equals("extension")) {
+                        if (extensions.getKey().equals("extension")) {
                             resource.setProperty(child.getName(), resolveType(result, base.fhirType()));
                         }
                         else {
-                            String type = base.getChildByName(extension.get(0)).getTypeCode();
-                            base.setProperty(extension.get(0), resolveType(result, type));
+                            String type = base.getChildByName(extensions.getKey()).getTypeCode();
+                            base.setProperty(extensions.getKey(), resolveType(result, type));
                         }
                     }
                 }
@@ -78,27 +76,24 @@ public class FHIRBundleResourceProvider extends BundleResourceProvider {
         return resource;
     }
 
-    private List<String> getExtension(Base base) {
-        List<String> retVal = new ArrayList<>();
+    private AbstractMap.SimpleEntry<String, String> getExtension(Base base) {
         for (Property child : base.children()) {
             for (Base childBase : child.getValues()) {
                 if (childBase != null) {
                     if (((Element) childBase).hasExtension()) {
                         for (Extension extension : ((Element) childBase).getExtension()) {
-                            if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression")) {
-                                retVal.add(child.getName());
-                                retVal.add(extension.getValue().primitiveValue());
+                            if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/cqf-expression")) {
+                                return new AbstractMap.SimpleEntry<>(child.getName(), ((Expression) extension.getValue()).getExpression());
                             }
                         }
                     }
                     else if (childBase instanceof Extension) {
-                        retVal.add(child.getName());
-                        retVal.add(((Extension) childBase).getValue().primitiveValue());
+                        return new AbstractMap.SimpleEntry<>(child.getName(), ((Expression) ((Extension) childBase).getValue()).getExpression());
                     }
                 }
             }
         }
-        return retVal;
+        return null;
     }
 
     private Base resolveType(Object source, String type) {
