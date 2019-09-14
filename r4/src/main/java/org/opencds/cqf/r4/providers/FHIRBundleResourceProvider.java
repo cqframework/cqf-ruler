@@ -4,7 +4,6 @@ import ca.uhn.fhir.jpa.rp.r4.BundleResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-//import javafx.util.Pair;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
@@ -15,73 +14,9 @@ import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 
 import java.math.BigDecimal;
-import java.util.*;
-
-class Pair<K,V> { //implements Serializable{
-
-    /**
-     * Key of this <code>Pair</code>.
-     */
-    private K key;
-
-    /**
-     * Gets the key for this pair.
-     * @return key for this pair
-     */
-    public K getKey() { return key; }
-
-    /**
-     * Value of this this <code>Pair</code>.
-     */
-    private V value;
-
-    /**
-     * Gets the value for this pair.
-     * @return value for this pair
-     */
-    public V getValue() { return value; }
-
-    /**
-     * Creates a new pair
-     * @param key The key for this pair
-     * @param value The value to use for this pair
-     */
-    public Pair(K key, V value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    /**
-     * <p><code>String</code> representation of this
-     * <code>Pair</code>.</p>
-     *
-     * <p>The default name/value delimiter '=' is always used.</p>
-     *
-     *  @return <code>String</code> representation of this <code>Pair</code>
-     */
-    @Override
-    public String toString() {
-        return key + "=" + value;
-    }
-
-    /**
-     * <p>Generate a hash code for this <code>Pair</code>.</p>
-     *
-     * <p>The hash code is calculated using both the name and
-     * the value of the <code>Pair</code>.</p>
-     *
-     * @return hash code for this <code>Pair</code>
-     */
-    @Override
-    public int hashCode() {
-        // name's hashCode is multiplied by an arbitrary prime number (13)
-        // in order to make sure there is a difference in the hashCode between
-        // these two parameters:
-        //  name: a  value: aa
-        //  name: aa value: a
-        return key.hashCode() * 13 + (value == null ? 0 : value.hashCode());
-    }
- }
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class FHIRBundleResourceProvider extends BundleResourceProvider {
 
@@ -122,19 +57,19 @@ public class FHIRBundleResourceProvider extends BundleResourceProvider {
         for (Property child : resource.children()) {
             for (Base base : child.getValues()) {
                 if (base != null) {
-                    Pair<String, String> extensions = getExtension(base);
-                    if (extensions != null) {
-                        String cql = String.format("using FHIR version '4.0.0' define x: %s", extensions.getValue());
+                    List<String> extension = getExtension(base);
+                    if (!extension.isEmpty()) {
+                        String cql = String.format("using FHIR version '4.0.0' define x: %s", extension.get(1));
                         library = LibraryHelper.translateLibrary(cql, new LibraryManager(new ModelManager()), new ModelManager());
                         context = new Context(library);
                         context.registerDataProvider("http://hl7.org/fhir", provider);
                         Object result = context.resolveExpressionRef("x").getExpression().evaluate(context);
-                        if (extensions.getKey().equals("extension")) {
+                        if (extension.get(0).equals("extension")) {
                             resource.setProperty(child.getName(), resolveType(result, base.fhirType()));
                         }
                         else {
-                            String type = base.getChildByName(extensions.getKey()).getTypeCode();
-                            base.setProperty(extensions.getKey(), resolveType(result, type));
+                            String type = base.getChildByName(extension.get(0)).getTypeCode();
+                            base.setProperty(extension.get(0), resolveType(result, type));
                         }
                     }
                 }
@@ -143,24 +78,27 @@ public class FHIRBundleResourceProvider extends BundleResourceProvider {
         return resource;
     }
 
-    private Pair<String, String> getExtension(Base base) {
+    private List<String> getExtension(Base base) {
+        List<String> retVal = new ArrayList<>();
         for (Property child : base.children()) {
             for (Base childBase : child.getValues()) {
                 if (childBase != null) {
                     if (((Element) childBase).hasExtension()) {
                         for (Extension extension : ((Element) childBase).getExtension()) {
-                            if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/cqf-expression")) {
-                                return new Pair<String, String>(child.getName(), ((Expression) extension.getValue()).getExpression());
+                            if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression")) {
+                                retVal.add(child.getName());
+                                retVal.add(extension.getValue().primitiveValue());
                             }
                         }
                     }
                     else if (childBase instanceof Extension) {
-                        return new Pair<String, String>(child.getName(), ((Expression) ((Extension) childBase).getValue()).getExpression());
+                        retVal.add(child.getName());
+                        retVal.add(((Extension) childBase).getValue().primitiveValue());
                     }
                 }
             }
         }
-        return null;
+        return retVal;
     }
 
     private Base resolveType(Object source, String type) {
