@@ -141,6 +141,7 @@ public class BaseServlet extends RestfulServer
 
 //            config.addAllowedOrigin(HapiProperties.getCorsAllowedOrigin());
             config.addAllowedOrigin("https://sandbox.cds-hooks.org");
+            config.addAllowedOrigin("*");
 
             config.addExposedHeader("Location");
             config.addExposedHeader("Content-Location");
