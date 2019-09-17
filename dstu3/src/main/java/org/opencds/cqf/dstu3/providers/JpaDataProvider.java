@@ -179,6 +179,11 @@ public class JpaDataProvider extends FhirDataProviderStu3 {
         Pair<String, DateRangeParam> dateRangeParam = this.getDateRangeParam(dataType, datePath, dateLowPath, dateHighPath, dateRange);
         Pair<String, List<TokenOrListParam>> codeParams = this.getCodeParams(dataType, codePath, codes, valueSet);
 
+        // In the case we filtered to a valueSet without codes, there are no possible results.
+        if (valueSet != null && (codeParams == null || codeParams.getValue().isEmpty())) {
+            return Collections.emptyList();
+        }
+
         return this.innerSetupQueries(templateParam, contextParam, dateRangeParam, codeParams);
     }
 
