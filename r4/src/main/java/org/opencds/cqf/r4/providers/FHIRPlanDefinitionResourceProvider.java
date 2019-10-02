@@ -215,6 +215,11 @@ public class FHIRPlanDefinitionResourceProvider extends PlanDefinitionResourcePr
                 String cql = condition.getExpression().getExpression();
                 Object result = executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
 
+                if (result == null) {
+                    logger.warn("Expression Returned null");
+                    return false;
+                }
+
                 if (!(result instanceof Boolean)) {
                     logger.warn("The condition returned a non-boolean value: " + result.getClass().getSimpleName());
                     continue;
