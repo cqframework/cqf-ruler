@@ -20,6 +20,7 @@ import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.qdm.providers.Qdm54DataProvider;
+import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.DateHelper;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
@@ -117,7 +118,13 @@ public class CqlExecutionProvider {
 
             // TODO: This assumes the libraries resource id is the same as the library name,
             // need to work this out better
-            builder.append(reference.getId());
+            Library lib = (Library) provider.resolveResourceProvider("Library").getDao().read(new IdType().setValue(CanonicalHelper.getId(reference)));
+            if (lib.hasName()) {
+                builder.append(lib.getName());
+            }
+            else {
+                throw new RuntimeException("Library name unknown");
+            }
 
             if (reference.hasValue() && reference.getValue().split("\\|").length > 1) {
                 builder.append(" version '");
@@ -126,7 +133,7 @@ public class CqlExecutionProvider {
             }
 
             builder.append(" called ");
-            builder.append(reference.getValue().split("\\|")[0]);
+            builder.append(lib.getName());
         }
 
         return builder.toString();
