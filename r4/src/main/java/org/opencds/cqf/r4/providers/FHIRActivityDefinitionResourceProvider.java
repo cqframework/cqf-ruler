@@ -1,5 +1,6 @@
 package org.opencds.cqf.r4.providers;
 
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.rp.r4.ActivityDefinitionResourceProvider;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -33,7 +34,6 @@ public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionRe
             InstantiationException, ActivityDefinitionApplyException
     {
         ActivityDefinition activityDefinition = this.getDao().read(theId);
-
         return resolveActivityDefinition(activityDefinition, patientId, practitionerId, organizationId);
     }
 
@@ -45,11 +45,11 @@ public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionRe
         Resource result = null;
         try {
             // This is a little hacky...
-            result = (Resource) Class.forName("org.hl7.fhir.dstu3.model." + activityDefinition.getKind().toCode()).newInstance();
+            result = (Resource) Class.forName("org.hl7.fhir.r4.model." + activityDefinition.getKind().toCode()).newInstance();
         }
         catch (Exception e) {
             e.printStackTrace();
-            throw new FHIRException("Could not find org.hl7.fhir.dstu3.model." + activityDefinition.getKind().toCode());
+            throw new FHIRException("Could not find org.hl7.fhir.r4.model." + activityDefinition.getKind().toCode());
         }
 
         switch (result.fhirType()) {
