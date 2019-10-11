@@ -36,9 +36,11 @@ public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionRe
             throws InternalErrorException, FHIRException, ClassNotFoundException, IllegalAccessException,
             InstantiationException, ActivityDefinitionApplyException
     {
-        ActivityDefinition activityDefinition = this.getDao().read(theId);
+        ActivityDefinition activityDefinition;
 
-        if (activityDefinition == null) {
+        try {
+            activityDefinition = this.getDao().read(theId);
+        } catch (Exception e) {
             return Helper.createErrorOutcome("Unable to resolve ActivityDefinition/" + theId.getId());
         }
 
