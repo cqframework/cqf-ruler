@@ -39,7 +39,7 @@ public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionRe
         try {
             activityDefinition = this.getDao().read(theId);
         } catch (Exception e) {
-            return Helper.createErrorOutcome("Unable to resolve ActivityDefinition/" + theId.getId());
+            return Helper.createErrorOutcome("Unable to resolve ActivityDefinition/" + theId.getValueAsString());
         }
 
         return resolveActivityDefinition(activityDefinition, patientId, practitionerId, organizationId);
