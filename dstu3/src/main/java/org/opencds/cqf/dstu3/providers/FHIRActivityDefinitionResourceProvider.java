@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.opencds.cqf.dstu3.helpers.Helper;
 import org.opencds.cqf.exceptions.ActivityDefinitionApplyException;
 
 import java.util.*;
@@ -36,6 +37,10 @@ public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionRe
             InstantiationException, ActivityDefinitionApplyException
     {
         ActivityDefinition activityDefinition = this.getDao().read(theId);
+
+        if (activityDefinition == null) {
+            return Helper.createErrorOutcome("Unable to resolve ActivityDefinition/" + theId.getId());
+        }
 
         return resolveActivityDefinition(activityDefinition, patientId, practitionerId, organizationId);
     }
