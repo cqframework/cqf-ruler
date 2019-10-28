@@ -34,7 +34,7 @@ public class MeasureEvaluationSeed
 
     public MeasureEvaluationSeed(JpaDataProvider provider, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
     {
-        this.dataProvider = provider;
+        this.dataProvider = provider.dataProvider;
         this.libraryLoader = libraryLoader;
         this.libraryResourceProvider = libraryResourceProvider;
     }
@@ -63,8 +63,8 @@ public class MeasureEvaluationSeed
             dataProvider = getDataProvider(using.getLocalIdentifier(), using.getVersion());
             if (dataProvider instanceof JpaDataProvider)
             {
-                ((JpaDataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
-                ((JpaDataProvider) dataProvider).setExpandValueSets(true);
+                ((JpaDataProvider) dataProvider).retrieveProvider.setTerminologyProvider(terminologyProvider);
+                ((JpaDataProvider) dataProvider).retrieveProvider.setExpandValueSets(true);
                 context.registerDataProvider("http://hl7.org/fhir", dataProvider);
                 context.registerLibraryLoader(getLibraryLoader());
                 context.registerTerminologyProvider(terminologyProvider);
@@ -102,16 +102,16 @@ public class MeasureEvaluationSeed
                 return new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
             }
         }
-        else return ((JpaDataProvider) dataProvider).getTerminologyProvider();
+        else return ((JpaDataProvider) dataProvider).retrieveProvider.getTerminologyProvider();
     }
 
     private DataProvider getDataProvider(String model, String version)
     {
         if (model.equals("FHIR") && version.equals("3.0.0"))
         {
-            FhirContext fhirContext = ((JpaDataProvider) dataProvider).getFhirContext();
+            FhirContext fhirContext = ((JpaDataProvider) dataProvider).modelResolver.getFhirContext();
             fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-            ((JpaDataProvider) dataProvider).setFhirContext(fhirContext);
+            ((JpaDataProvider) dataProvider).modelResolver.setFhirContext(fhirContext);
             return dataProvider;
         }
 

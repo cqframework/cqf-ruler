@@ -62,7 +62,7 @@ public class FHIRBundleResourceProvider extends BundleResourceProvider {
                         String cql = String.format("using FHIR version '3.0.0' define x: %s", extension.get(1));
                         library = LibraryHelper.translateLibrary(cql, new LibraryManager(new ModelManager()), new ModelManager());
                         context = new Context(library);
-                        context.registerDataProvider("http://hl7.org/fhir", provider);
+                        context.registerDataProvider("http://hl7.org/fhir", provider.dataProvider);
                         Object result = context.resolveExpressionRef("x").getExpression().evaluate(context);
                         if (extension.get(0).equals("extension")) {
                             resource.setProperty(child.getName(), resolveType(result, base.fhirType()));

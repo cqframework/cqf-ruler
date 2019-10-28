@@ -1,69 +1,50 @@
 package org.opencds.cqf.qdm.providers;
 
-import lombok.Data;
-import org.opencds.cqf.cql.data.CompositeDataProvider;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.opencds.cqf.cql.data.ModelResolver;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.runtime.TemporalHelper;
-import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.terminology.ValueSetInfo;
-import org.opencds.cqf.qdm.fivepoint4.QdmContext;
 import org.opencds.cqf.qdm.fivepoint4.model.*;
-import org.opencds.cqf.qdm.fivepoint4.repository.BaseRepository;
-import org.opencds.cqf.qdm.fivepoint4.repository.PatientRepository;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+public class Qdm54ModelResolver implements ModelResolver {
 
-@Data
-public class Qdm54DataProvider extends CompositeDataProvider
-{
+	protected String packageName;
 
-	public Qdm54DataProvider() {
-		super(new Qdm54ModelResolver(), new Qdm54RetrieveProvider());
+    public Qdm54ModelResolver() {
+		this.packageName = "org.opencds.cqf.qdm.fivepoint4.model";
+	}
+	
+	@Override
+	public String getPackageName() {
+		return this.packageName;
 	}
 
-    private TerminologyProvider terminologyProvider;
+	@Override
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
+	}
 
-
-    private String packageName = "org.opencds.cqf.qdm.fivepoint4.model";
-    @Override
-    public String getPackageName()
-    {
-        return packageName;
-    }
-
-    @Override
-    public void setPackageName(String packageName)
-    {
-        this.packageName = packageName;
-    }
-
-    @Override
-    public Object resolvePath(Object o, String s)
-    {
+	@Override
+	public Object resolvePath(Object target, String path) {
         Method method;
         Object result;
-        String methodName = String.format("get%s", s.substring(0, 1).toUpperCase() + s.substring(1));
+        String methodName = String.format("get%s", path.substring(0, 1).toUpperCase() + path.substring(1));
         try
         {
-            method = o.getClass().getMethod(methodName);
-            result = method.invoke(o);
+            method = target.getClass().getMethod(methodName);
+            result = method.invoke(target);
         }
         catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e)
         {
             e.printStackTrace();
-            throw new RuntimeException(String.format("Unable to resolve method: %s on type: %s", methodName, o.getClass().getName()));
+            throw new RuntimeException(String.format("Unable to resolve method: %s on type: %s", methodName, target.getClass().getName()));
         }
 
-        if (s.toLowerCase().endsWith("datetime")
+        if (path.toLowerCase().endsWith("datetime")
                 && result != null
                 && result instanceof String
                 && !((String)result).isEmpty())
@@ -112,39 +93,45 @@ public class Qdm54DataProvider extends CompositeDataProvider
         }
 
         return result;
-    }
+	}
 
-    @Override
-    public Class resolveType(String s)
-    {
-        return null;
-    }
+	@Override
+	public Object resolveContextPath(String contextType, String targetType) {
+		return null;
+	}
 
-    @Override
-    public Class resolveType(Object o)
-    {
-        return null;
-    }
+	@Override
+	public Class resolveType(String typeName) {
+		return null;
+	}
 
-    @Override
-    public Object createInstance(String s)
-    {
-        return null;
-    }
+	@Override
+	public Class resolveType(Object value) {
+		return null;
+	}
 
-    @Override
-    public void setValue(Object o, String s, Object o1)
-    {
+	@Override
+	public String resolveClassName(String typeName) {
+		return null;
+	}
 
-    }
+	@Override
+	public Object createInstance(String typeName) {
+		return null;
+	}
 
-    @Override
-    public Boolean objectEqual(Object o, Object o1) {
-        return o.equals(o1);
-    }
+	@Override
+	public void setValue(Object target, String path, Object value) {
+	}
 
-    @Override
-    public Boolean objectEquivalent(Object o, Object o1) {
-        return o.equals(o1);
-    }
+	@Override
+	public Boolean objectEqual(Object left, Object right) {
+        return left.equals(right);
+	}
+
+	@Override
+	public Boolean objectEquivalent(Object left, Object right) {
+        return left.equals(right);
+	}
+	
 }
