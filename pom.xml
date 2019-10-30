@@ -10,9 +10,9 @@
         <module>common</module>
         <module>qdm</module>
         <module>dstu3</module>
-        <module>r4</module>
+        <!-- <module>r4</module> -->
         <module>cqf-ruler-dstu3</module>
-        <module>cqf-ruler-r4</module>
+        <!-- <module>cqf-ruler-r4</module> -->
     </modules>
 
     <properties>
@@ -277,6 +277,31 @@
                         <artifactId>jetty-maven-plugin</artifactId>
                         <version>${jetty_version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>1.1.0</version>
+                    <configuration>
+                        <updatePomFile>true</updatePomFile>
+                        <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    </configuration>
+                    <executions>
+                        <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        </execution>
+                        <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -315,6 +340,11 @@
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.1.0</version>
             </plugin>
         </plugins>
     </build>

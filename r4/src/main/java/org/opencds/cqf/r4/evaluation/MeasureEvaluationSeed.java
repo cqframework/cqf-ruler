@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import lombok.Data;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.UsingDef;
+import org.hibernate.search.annotations.ProvidedId;
 import org.hl7.fhir.r4.model.Measure;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
@@ -16,9 +17,8 @@ import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 import org.opencds.cqf.r4.helpers.DateHelper;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 import org.opencds.cqf.r4.providers.ApelonFhirTerminologyProvider;
-import org.opencds.cqf.r4.providers.JpaDataProvider;
+import org.opencds.cqf.r4.providers.ResourceProviderRegistry;
 import org.opencds.cqf.r4.providers.LibraryResourceProvider;
-import org.opencds.cqf.qdm.providers.Qdm54DataProvider;
 
 import java.util.Date;
 
@@ -27,14 +27,14 @@ public class MeasureEvaluationSeed
 {
     private Measure measure;
     private Context context;
-    private DataProvider dataProvider;
     private Interval measurementPeriod;
     private LibraryLoader libraryLoader;
     private LibraryResourceProvider libraryResourceProvider;
+    private ProviderFactory providerFactory;
 
-    public MeasureEvaluationSeed(JpaDataProvider provider, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
+    public MeasureEvaluationSeed(ProviderFactory providerFactory, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
     {
-        this.dataProvider = provider;
+        this.providerFactory = providerFactory;
         this.libraryLoader = libraryLoader;
         this.libraryResourceProvider = libraryResourceProvider;
     }
@@ -52,22 +52,23 @@ public class MeasureEvaluationSeed
 
         // resolve execution context
         context = new Context(library);
-        context.registerLibraryLoader(libraryLoader);
 
-        TerminologyProvider terminologyProvider = getTerminologyProvider(source, user, pass);
+        TerminologyProvider terminologyProvider = this.providerFactory.createTerminologyProvider(source, user, pass);
+        context.registerLibraryLoader(libraryLoader);
+        context.registerTerminologyProvider(terminologyProvider);
 
         for (UsingDef using : library.getUsings().getDef())
         {
             if (using.getLocalIdentifier().equals("System")) continue;
 
-            dataProvider = getDataProvider(using.getLocalIdentifier(), using.getVersion());
-            if (dataProvider instanceof JpaDataProvider)
+            DataProvider dataProvider = this.providerFactory.createDataProvider(using.getLocalIdentifier(), using.getVersion(), terminologyProvider);
+            if (dataProvider instanceof ResourceProviderRegistry)
             {
-                ((JpaDataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
-                ((JpaDataProvider) dataProvider).setExpandValueSets(true);
+                ((ResourceProviderRegistry) dataProvider).setTerminologyProvider(terminologyProvider);
+                ((ResourceProviderRegistry) dataProvider).setExpandValueSets(true);
                 context.registerDataProvider("http://hl7.org/fhir", dataProvider);
-                context.registerLibraryLoader(getLibraryLoader());
-                context.registerTerminologyProvider(terminologyProvider);
+ 
+
             }
             else
             {
@@ -102,16 +103,16 @@ public class MeasureEvaluationSeed
                 return new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
             }
         }
-        else return ((JpaDataProvider) dataProvider).getTerminologyProvider();
+        else return ((ResourceProviderRegistry) dataProvider).getTerminologyProvider();
     }
 
     private DataProvider getDataProvider(String model, String version)
     {
         if (model.equals("FHIR") && version.equals("4.0.0"))
         {
-            FhirContext fhirContext = ((JpaDataProvider) dataProvider).getFhirContext();
+            FhirContext fhirContext = ((ResourceProviderRegistry) dataProvider).getFhirContext();
             fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-            ((JpaDataProvider) dataProvider).setFhirContext(fhirContext);
+            ((ResourceProviderRegistry) dataProvider).setFhirContext(fhirContext);
             return dataProvider;
         }
 

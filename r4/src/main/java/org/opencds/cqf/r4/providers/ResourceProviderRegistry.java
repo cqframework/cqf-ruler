@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-public class JpaDataProvider extends FhirDataProviderR4 {
+public class ResourceProviderRegistry extends FhirDataProviderR4 {
 
     // need these to access the dao
     private Collection<IResourceProvider> collectionProviders;
@@ -29,7 +29,7 @@ public class JpaDataProvider extends FhirDataProviderR4 {
         return this.collectionProviders;
     }
 
-    public JpaDataProvider(Collection<IResourceProvider> providers) {
+    public ResourceProviderRegistry(Collection<IResourceProvider> providers) {
         this.collectionProviders = providers;
         setPackageName("org.hl7.fhir.r4.model");
         setFhirContext(FhirContext.forR4());

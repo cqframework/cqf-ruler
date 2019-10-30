@@ -24,39 +24,35 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
-import org.opencds.cqf.dstu3.config.STU3LibraryLoader;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
-import org.opencds.cqf.qdm.providers.Qdm54DataProvider;
+import org.opencds.cqf.dstu3.config.STU3LibraryLoader;
+import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
 import org.opencds.cqf.dstu3.helpers.DateHelper;
 import org.opencds.cqf.dstu3.helpers.FhirMeasureBundler;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 /**
  * Created by Bryn on 1/16/2017.
  */
 public class CqlExecutionProvider {
-    private JpaDataProvider provider;
-    private TerminologyProvider defaultTerminologyProvider;
+    private ProviderFactory providerFactory;
+    private LibraryResourceProvider libraryResourceProvider;
 
-    public CqlExecutionProvider(JpaDataProvider provider) {
-        this.provider = provider;
-        this.defaultTerminologyProvider = provider.getTerminologyProvider();
+    public CqlExecutionProvider(LibraryResourceProvider libraryResourceProvider, ProviderFactory providerFactory) {
+        this.providerFactory = providerFactory;
+        this.libraryResourceProvider = libraryResourceProvider;
     }
 
+
     private LibraryResourceProvider getLibraryResourceProvider() {
-        return (LibraryResourceProvider) provider.resolveResourceProvider("Library");
+        return this.libraryResourceProvider;
     }
 
     private List<Reference> cleanReferences(List<Reference> references) {
@@ -172,7 +168,7 @@ public class CqlExecutionProvider {
         // buildIncludes(libraries), instance.fhirType(), instance.fhirType(),
         // instance.fhirType(), cql);
 
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
 
         org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source,
                 libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
@@ -182,35 +178,9 @@ public class CqlExecutionProvider {
         context.setExpressionCaching(true);
         context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
-        context.registerDataProvider("http://hl7.org/fhir", provider);
+
+        context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", "3.0.0"));
         return context.resolveExpressionRef("Expression").evaluate(context);
-    }
-
-    private TerminologyProvider getTerminologyProvider(String url, String user, String pass) {
-        if (url != null && !url.isEmpty()) {
-            if (url.contains("apelon.com")) {
-                return new ApelonFhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
-            } else {
-                return new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
-            }
-        } else
-            return this.defaultTerminologyProvider;
-    }
-
-    private DataProvider getDataProvider(String model, String version) {
-        if (model.equals("FHIR") && version.equals("3.0.0")) {
-            FhirContext fhirContext = provider.getFhirContext();
-            fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-            provider.setFhirContext(fhirContext);
-            return provider;
-        }
-
-        else if (model.equals("QDM") && version.equals("5.4")) {
-            return new Qdm54DataProvider();
-        }
-
-        throw new IllegalArgumentException(
-                "Could not resolve data provider for data model: " + model + " using version: " + version);
     }
 
     @Operation(name = "$cql")
@@ -269,28 +239,19 @@ public class CqlExecutionProvider {
         org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(translator);
         Context context = new Context(library);
 
-        TerminologyProvider terminologyProvider = getTerminologyProvider(terminologyServiceUri, terminologyUser, terminologyPass);
-        DataProvider dataProvider;
+        TerminologyProvider terminologyProvider = this.providerFactory.createTerminologyProvider(terminologyServiceUri, terminologyUser, terminologyPass);
+        context.registerLibraryLoader(libraryLoader);
+        context.registerTerminologyProvider(terminologyProvider);
         for (UsingDef using : library.getUsings().getDef())
         {
             if (using.getLocalIdentifier().equals("System")) continue;
 
-            dataProvider = getDataProvider(using.getLocalIdentifier(), using.getVersion());
-            if (dataProvider instanceof JpaDataProvider)
-            {
-                ((JpaDataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
-                ((JpaDataProvider) dataProvider).setExpandValueSets(true);
-                context.registerDataProvider("http://hl7.org/fhir", provider);
-                context.registerLibraryLoader(libraryLoader);
-                context.registerTerminologyProvider(terminologyProvider);
-            }
-            else
-            {
-                ((Qdm54DataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
-                context.registerDataProvider("urn:healthit-gov:qdm:v5_4", dataProvider);
-                context.registerLibraryLoader(libraryLoader);
-                context.registerTerminologyProvider(terminologyProvider);
-            }
+            DataProvider dataProvider = this.providerFactory.createDataProvider(using.getLocalIdentifier(), using.getVersion(), terminologyProvider);
+            context.registerDataProvider(
+                using.getLocalIdentifier().equals("FHIR") ? 
+                "http://hl7.org/fhir" :
+                "urn:healthit-gov:qdm:v5_4", 
+                dataProvider);
         }
 
         if (parameters != null)
@@ -338,8 +299,8 @@ public class CqlExecutionProvider {
                     if (res == null) {
                         result.addParameter().setName("value").setValue(new StringType("null"));
                     }
-                    else if (res instanceof List) {
-                        if (((List) res).size() > 0 && ((List) res).get(0) instanceof Resource) {
+                    else if (res instanceof List<?>) {
+                        if (((List<?>) res).size() > 0 && ((List<?>) res).get(0) instanceof Resource) {
                             result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
                         }
                         else {

@@ -23,7 +23,7 @@ import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.exceptions.InvalidRequestException;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 import org.opencds.cqf.r4.providers.FHIRPlanDefinitionResourceProvider;
-import org.opencds.cqf.r4.providers.JpaDataProvider;
+import org.opencds.cqf.r4.providers.ResourceProviderRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ import java.util.List;
 @WebServlet(name = "cds-services")
 public class CdsHooksServlet extends HttpServlet
 {
-    static JpaDataProvider provider;
+    static ResourceProviderRegistry provider;
     private FhirVersionEnum version = FhirVersionEnum.R4;
     private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 

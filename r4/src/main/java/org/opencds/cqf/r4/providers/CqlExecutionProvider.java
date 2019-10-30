@@ -19,7 +19,6 @@ import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
-import org.opencds.cqf.qdm.providers.Qdm54DataProvider;
 import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.DateHelper;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
@@ -31,10 +30,10 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 public class CqlExecutionProvider {
-    private JpaDataProvider provider;
+    private ResourceProviderRegistry provider;
     private TerminologyProvider defaultTerminologyProvider;
 
-    public CqlExecutionProvider(JpaDataProvider provider) {
+    public CqlExecutionProvider(ResourceProviderRegistry provider) {
         this.provider = provider;
         this.defaultTerminologyProvider = provider.getTerminologyProvider();
     }
@@ -259,10 +258,10 @@ public class CqlExecutionProvider {
             if (using.getLocalIdentifier().equals("System")) continue;
 
             dataProvider = getDataProvider(using.getLocalIdentifier(), using.getVersion());
-            if (dataProvider instanceof JpaDataProvider)
+            if (dataProvider instanceof ResourceProviderRegistry)
             {
-                ((JpaDataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
-                ((JpaDataProvider) dataProvider).setExpandValueSets(true);
+                ((ResourceProviderRegistry) dataProvider).setTerminologyProvider(terminologyProvider);
+                ((ResourceProviderRegistry) dataProvider).setExpandValueSets(true);
                 context.registerDataProvider("http://hl7.org/fhir", provider);
                 context.registerLibraryLoader(libraryLoader);
                 context.registerTerminologyProvider(terminologyProvider);

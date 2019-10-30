@@ -22,10 +22,10 @@ import java.util.Map;
 
 public class FHIREndpointProvider extends EndpointResourceProvider {
 
-    private JpaDataProvider provider;
+    private ResourceProviderRegistry provider;
     private IFhirSystemDao systemDao;
 
-    public FHIREndpointProvider(JpaDataProvider provider, IFhirSystemDao systemDao) {
+    public FHIREndpointProvider(ResourceProviderRegistry provider, IFhirSystemDao systemDao) {
         this.provider = provider;
         this.systemDao = systemDao;
     }

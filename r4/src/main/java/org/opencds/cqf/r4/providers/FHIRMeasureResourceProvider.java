@@ -39,7 +39,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
-    private JpaDataProvider provider;
+    private ResourceProviderRegistry registry;
     private IFhirSystemDao systemDao;
 
     private NarrativeProvider narrativeProvider;
@@ -50,12 +50,12 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(FHIRMeasureResourceProvider.class);
 
-    public FHIRMeasureResourceProvider(JpaDataProvider dataProvider, IFhirSystemDao systemDao,
+    public FHIRMeasureResourceProvider(ResourceProviderRegistry registry, IFhirSystemDao systemDao,
             NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider) {
-        this.provider = dataProvider;
+        this.registry = registry;
         this.systemDao = systemDao;
 
-        this.libraryResourceProvider = (LibraryResourceProvider) dataProvider.resolveResourceProvider("Library");
+        this.libraryResourceProvider = (LibraryResourceProvider) registry.resolveResourceProvider("Library");
         this.narrativeProvider = narrativeProvider;
         this.hqmfProvider = hqmfProvider;
         this.dataRequirementsProvider = new DataRequirementsProvider();
@@ -132,7 +132,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             @OptionalParam(name = "source") String source, @OptionalParam(name = "user") String user,
             @OptionalParam(name = "pass") String pass) throws InternalErrorException, FHIRException {
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader, this.libraryResourceProvider);
+        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(registry, libraryLoader, this.libraryResourceProvider);
         Measure measure = this.getDao().read(theId);
 
         if (measure == null) {
@@ -181,7 +181,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             throw new IllegalArgumentException("periodStart and periodEnd are required for measure evaluation");
         }
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader, this.libraryResourceProvider);
+        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(registry, libraryLoader, this.libraryResourceProvider);
         Measure measure = this.getDao().read(theId);
 
         if (measure == null) {
@@ -190,7 +190,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
         seed.setup(measure, periodStart, periodEnd, null, null, null, null);
         BundleDataProviderR4 bundleProvider = new BundleDataProviderR4(sourceData);
-        bundleProvider.setTerminologyProvider(provider.getTerminologyProvider());
+        bundleProvider.setTerminologyProvider(registry.getTerminologyProvider());
         seed.getContext().registerDataProvider("http://hl7.org/fhir", bundleProvider);
         MeasureEvaluation evaluator = new MeasureEvaluation(bundleProvider, seed.getMeasurementPeriod());
         return evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), "");
@@ -233,7 +233,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             }
 
             LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-            MeasureEvaluationSeed seed = new MeasureEvaluationSeed(provider, libraryLoader, this.libraryResourceProvider);
+            MeasureEvaluationSeed seed = new MeasureEvaluationSeed(registry, libraryLoader, this.libraryResourceProvider);
             seed.setup(measure, periodStart, periodEnd, null, null, null, null);
             MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), seed.getMeasurementPeriod());
             // TODO - this is configured for patient-level evaluation only
@@ -362,7 +362,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             else if (values.get(0) instanceof Reference
                     && ((Reference) values.get(0)).getReferenceElement().hasResourceType()
                     && ((Reference) values.get(0)).getReferenceElement().hasIdPart()) {
-                Resource fetchedResource = (Resource) provider
+                Resource fetchedResource = (Resource) registry
                         .resolveResourceProvider(((Reference) values.get(0)).getReferenceElement().getResourceType())
                         .getDao().read(new IdType(((Reference) values.get(0)).getReferenceElement().getIdPart()));
 

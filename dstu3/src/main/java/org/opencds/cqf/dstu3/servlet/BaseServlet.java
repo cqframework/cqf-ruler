@@ -18,9 +18,12 @@ import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.opencds.cqf.config.HapiProperties;
+import org.opencds.cqf.config.ResourceProviderRegistry;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.dstu3.providers.*;
+import org.opencds.cqf.dstu3.providers.LibraryResourceProvider;
 import org.opencds.cqf.dstu3.config.FhirServerConfigDstu3;
+import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
 import org.opencds.cqf.config.FhirServerConfigCommon;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -34,11 +37,6 @@ import java.util.List;
 
 public class BaseServlet extends RestfulServer
 {
-    private JpaDataProvider provider;
-    public JpaDataProvider getProvider() {
-        return provider;
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     protected void initialize() throws ServletException
@@ -50,14 +48,11 @@ public class BaseServlet extends RestfulServer
 
         super.initialize();
 
+        // System level providers
         ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
-
-        List<IResourceProvider> resourceProviders = appCtx.getBean("myResourceProvidersDstu3", List.class);
-        Object systemProvider = appCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
-        List<Object> plainProviders = new ArrayList<>();
-
         setFhirContext(appCtx.getBean(FhirContext.class));
 
+        Object systemProvider = appCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
         registerProvider(systemProvider);
 
         IFhirSystemDao<Bundle, Meta> systemDao = appCtx.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
@@ -65,24 +60,39 @@ public class BaseServlet extends RestfulServer
         confProvider.setImplementationDescription("CQF Ruler FHIR DSTU3 Server");
         setServerConformanceProvider(confProvider);
 
-        plainProviders.add(appCtx.getBean(TerminologyUploaderProviderDstu3.class));
-        provider = new JpaDataProvider(resourceProviders);
-        TerminologyProvider terminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
-        provider.setTerminologyProvider(terminologyProvider);
-        resolveResourceProviders(provider, systemDao);
+        // Resource Providers
+        // This registry holds a collection of all the resource providers on this server.
+        // This is essentially a duplicate of the resourceProviders on the underlying RestfulServer
+        // with the intention that both collections will be synchronized at the end of the initialization
+        // and the registry can be used in various classes that needs access the to resource providers.
+        List<IResourceProvider> resourceProviders = appCtx.getBean("myResourceProvidersDstu3", List.class);
+        ResourceProviderRegistry registry = new ResourceProviderRegistry();
+        for (IResourceProvider provider : resourceProviders) {
+            registry.register(provider);
+        }
 
-        CqlExecutionProvider cql = new CqlExecutionProvider(provider);
+
+        List<Object> plainProviders = new ArrayList<>();
+        plainProviders.add(appCtx.getBean(TerminologyUploaderProviderDstu3.class));
+
+        TerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) registry.resolve("ValueSet"));
+        ProviderFactory factory = new ProviderFactory(this.getFhirContext(), registry, localSystemTerminologyProvider);
+
+        resolveResourceProviders(registry, systemDao);
+
+        CqlExecutionProvider cql = new CqlExecutionProvider((LibraryResourceProvider)registry.resolve("Library"), factory);
         plainProviders.add(cql);
 
-        registerProviders(resourceProviders);
 
-        CodeSystemUpdateProvider csUpdate = new CodeSystemUpdateProvider(provider);
-        plainProviders.add(csUpdate);
+        // CodeSystemUpdateProvider csUpdate = new CodeSystemUpdateProvider(provider);
+        // plainProviders.add(csUpdate);
 
+        setResourceProviders(registry.getResourceProviders().toArray(IResourceProvider[]::new));
         registerProviders(plainProviders);
-        setResourceProviders(resourceProviders);
+        
+  
 
-        CdsHooksServlet.provider = provider;
+        // CdsHooksServlet.provider = provider;
 
         /*
          * ETag Support
@@ -158,7 +168,7 @@ public class BaseServlet extends RestfulServer
         }
     }
 
-    private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao systemDao)
+    private void resolveResourceProviders(ResourceProviderRegistry registry, IFhirSystemDao systemDao)
             throws ServletException
     {
         NarrativeProvider narrativeProvider = new NarrativeProvider();
@@ -167,111 +177,94 @@ public class BaseServlet extends RestfulServer
         // ValueSet processing
         FHIRValueSetResourceProvider valueSetProvider =
                 new FHIRValueSetResourceProvider(
-                        (CodeSystemResourceProvider) provider.resolveResourceProvider("CodeSystem")
+                        (CodeSystemResourceProvider) registry.resolve("CodeSystem")
                 );
-        ValueSetResourceProvider jpaValueSetProvider = (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet");
+        ValueSetResourceProvider jpaValueSetProvider = (ValueSetResourceProvider) registry.resolve("ValueSet");
         valueSetProvider.setDao(jpaValueSetProvider.getDao());
         valueSetProvider.setContext(jpaValueSetProvider.getContext());
 
-        try {
-            unregister(jpaValueSetProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
-
-        register(valueSetProvider, provider.getCollectionProviders());
-
-        // Bundle processing
-        FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
-        BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
-        bundleProvider.setDao(jpaBundleProvider.getDao());
-        bundleProvider.setContext(jpaBundleProvider.getContext());
-
-        try {
-            unregister(jpaBundleProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
-
-        register(bundleProvider, provider.getCollectionProviders());
+        registry.register(valueSetProvider);
 
         //Library processing
         NarrativeLibraryResourceProvider libraryProvider = new NarrativeLibraryResourceProvider(narrativeProvider);
         ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider jpaLibraryProvider = 
-            (ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider) provider.resolveResourceProvider("Library");
+            (ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider) registry.resolve("Library");
         libraryProvider.setDao(jpaLibraryProvider.getDao());
         libraryProvider.setContext(jpaLibraryProvider.getContext());
 
-        try {
-            unregister(jpaLibraryProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
+        registry.register(libraryProvider);
 
-        register(libraryProvider, provider.getCollectionProviders());
 
-        // Measure processing
-        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao, narrativeProvider, hqmfProvider);
-        MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) provider.resolveResourceProvider("Measure");
-        measureProvider.setDao(jpaMeasureProvider.getDao());
-        measureProvider.setContext(jpaMeasureProvider.getContext());
+        // Bundle processing
+        // FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(registry);
+        // BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) registry.resolve("Bundle");
+        // bundleProvider.setDao(jpaBundleProvider.getDao());
+        // bundleProvider.setContext(jpaBundleProvider.getContext());
 
-        try {
-            unregister(jpaMeasureProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
+        // try {
+        //     unregister(jpaBundleProvider, registry.getCollectionProviders());
+        // } catch (Exception e) {
+        //     throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        // }
 
-        register(measureProvider, provider.getCollectionProviders());
+        // register(bundleProvider, registry.getCollectionProviders());
 
-        // ActivityDefinition processing
-        FHIRActivityDefinitionResourceProvider actDefProvider = new FHIRActivityDefinitionResourceProvider(provider);
-        ActivityDefinitionResourceProvider jpaActDefProvider = (ActivityDefinitionResourceProvider) provider.resolveResourceProvider("ActivityDefinition");
-        actDefProvider.setDao(jpaActDefProvider.getDao());
-        actDefProvider.setContext(jpaActDefProvider.getContext());
 
-        try {
-            unregister(jpaActDefProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
 
-        register(actDefProvider, provider.getCollectionProviders());
+        // // Measure processing
+        // FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(registry, systemDao, narrativeProvider, hqmfProvider);
+        // MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) registry.resolve("Measure");
+        // measureProvider.setDao(jpaMeasureProvider.getDao());
+        // measureProvider.setContext(jpaMeasureProvider.getContext());
 
-        // PlanDefinition processing
-        FHIRPlanDefinitionResourceProvider planDefProvider = new FHIRPlanDefinitionResourceProvider(provider);
-        PlanDefinitionResourceProvider jpaPlanDefProvider = (PlanDefinitionResourceProvider) provider.resolveResourceProvider("PlanDefinition");
-        planDefProvider.setDao(jpaPlanDefProvider.getDao());
-        planDefProvider.setContext(jpaPlanDefProvider.getContext());
+        // try {
+        //     unregister(jpaMeasureProvider, registry.getCollectionProviders());
+        // } catch (Exception e) {
+        //     throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        // }
 
-        try {
-            unregister(jpaPlanDefProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
+        // register(measureProvider, registry.getCollectionProviders());
 
-        register(planDefProvider, provider.getCollectionProviders());
+        // // ActivityDefinition processing
+        // FHIRActivityDefinitionResourceProvider actDefProvider = new FHIRActivityDefinitionResourceProvider(registry);
+        // ActivityDefinitionResourceProvider jpaActDefProvider = (ActivityDefinitionResourceProvider) registry.resolve("ActivityDefinition");
+        // actDefProvider.setDao(jpaActDefProvider.getDao());
+        // actDefProvider.setContext(jpaActDefProvider.getContext());
 
-        // Endpoint processing
-        FHIREndpointProvider endpointProvider = new FHIREndpointProvider(provider, systemDao);
-        EndpointResourceProvider jpaEndpointProvider = (EndpointResourceProvider) provider.resolveResourceProvider("Endpoint");
-        endpointProvider.setDao(jpaEndpointProvider.getDao());
-        endpointProvider.setContext(jpaEndpointProvider.getContext());
+        // try {
+        //     unregister(jpaActDefProvider, registry.getCollectionProviders());
+        // } catch (Exception e) {
+        //     throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        // }
 
-        try {
-            unregister(jpaEndpointProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
+        // register(actDefProvider, registry.getCollectionProviders());
 
-        register(endpointProvider, provider.getCollectionProviders());
-    }
+        // // PlanDefinition processing
+        // FHIRPlanDefinitionResourceProvider planDefProvider = new FHIRPlanDefinitionResourceProvider(registry);
+        // PlanDefinitionResourceProvider jpaPlanDefProvider = (PlanDefinitionResourceProvider) registry.resolve("PlanDefinition");
+        // planDefProvider.setDao(jpaPlanDefProvider.getDao());
+        // planDefProvider.setContext(jpaPlanDefProvider.getContext());
 
-    private void register(IResourceProvider provider, Collection<IResourceProvider> providers) {
-        providers.add(provider);
-    }
+        // try {
+        //     unregister(jpaPlanDefProvider, registry.getCollectionProviders());
+        // } catch (Exception e) {
+        //     throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        // }
 
-    private void unregister(IResourceProvider provider, Collection<IResourceProvider> providers) {
-        providers.remove(provider);
+        // register(planDefProvider, registry.getCollectionProviders());
+
+        // // Endpoint processing
+        // FHIREndpointProvider endpointProvider = new FHIREndpointProvider(registry, systemDao);
+        // EndpointResourceProvider jpaEndpointProvider = (EndpointResourceProvider) registry.resolve("Endpoint");
+        // endpointProvider.setDao(jpaEndpointProvider.getDao());
+        // endpointProvider.setContext(jpaEndpointProvider.getContext());
+
+        // try {
+        //     unregister(jpaEndpointProvider, registry.getCollectionProviders());
+        // } catch (Exception e) {
+        //     throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        // }
+
+        // register(endpointProvider, registry.getCollectionProviders());
     }
 }

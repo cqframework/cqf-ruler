@@ -32,8 +32,8 @@ import java.util.List;
 
 public class BaseServlet extends RestfulServer
 {
-    private JpaDataProvider provider;
-    public JpaDataProvider getProvider() {
+    private ResourceProviderRegistry provider;
+    public ResourceProviderRegistry getProvider() {
         return provider;
     }
 
@@ -59,7 +59,7 @@ public class BaseServlet extends RestfulServer
         setServerConformanceProvider(confProvider);
 
         plainProviders.add(appCtx.getBean(TerminologyUploaderProviderR4.class));
-        provider = new JpaDataProvider(resourceProviders);
+        provider = new ResourceProviderRegistry(resourceProviders);
         TerminologyProvider terminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService", IHapiTerminologySvcR4.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
         provider.setTerminologyProvider(terminologyProvider);
         resolveResourceProviders(provider, systemDao);
@@ -153,7 +153,7 @@ public class BaseServlet extends RestfulServer
         }
     }
 
-    private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao systemDao)
+    private void resolveResourceProviders(ResourceProviderRegistry provider, IFhirSystemDao systemDao)
             throws ServletException
     {
         NarrativeProvider narrativeProvider = new NarrativeProvider();

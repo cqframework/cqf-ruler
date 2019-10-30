@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.opencds.cqf.cql.data.RetrieveProvider;
+import org.opencds.cqf.cql.retrieve.RetrieveProvider;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
@@ -18,6 +18,10 @@ import org.opencds.cqf.qdm.fivepoint4.repository.BaseRepository;
 import org.opencds.cqf.qdm.fivepoint4.repository.PatientRepository;
 
 public class Qdm54RetrieveProvider implements RetrieveProvider {
+
+    public Qdm54RetrieveProvider(TerminologyProvider terminologyProvider) {
+        this.terminologyProvider = terminologyProvider;
+    }
 
 	private TerminologyProvider terminologyProvider;
 

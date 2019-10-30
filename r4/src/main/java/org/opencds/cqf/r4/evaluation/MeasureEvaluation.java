@@ -9,11 +9,10 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Quantity;
 import org.opencds.cqf.r4.builders.MeasureReportBuilder;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
-import org.opencds.cqf.r4.providers.JpaDataProvider;
+import org.opencds.cqf.r4.providers.ResourceProviderRegistry;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.Interval;
-import org.opencds.cqf.qdm.providers.Qdm54DataProvider;
 import org.opencds.cqf.qdm.fivepoint4.QdmContext;
 import org.opencds.cqf.qdm.fivepoint4.model.*;
 import org.opencds.cqf.qdm.fivepoint4.repository.PatientRepository;
@@ -86,8 +85,8 @@ public class MeasureEvaluation {
         );
 
         List<Patient> patients = new ArrayList<>();
-        if (provider instanceof JpaDataProvider) {
-            IBundleProvider patientProvider = ((JpaDataProvider) provider).resolveResourceProvider("Patient").getDao().search(map);
+        if (provider instanceof ResourceProviderRegistry) {
+            IBundleProvider patientProvider = ((ResourceProviderRegistry) provider).resolveResourceProvider("Patient").getDao().search(map);
             List<IBaseResource> SUBJECTLIST = patientProvider.getResources(0, patientProvider.size());
             SUBJECTLIST.forEach(x -> patients.add((Patient) x));
         }
@@ -105,8 +104,8 @@ public class MeasureEvaluation {
 
     private List<Patient> getAllPatients() {
         List<Patient> patients = new ArrayList<>();
-        if (provider instanceof JpaDataProvider) {
-            IBundleProvider patientProvider = ((JpaDataProvider) provider).resolveResourceProvider("Patient").getDao().search(new SearchParameterMap());
+        if (provider instanceof ResourceProviderRegistry) {
+            IBundleProvider patientProvider = ((ResourceProviderRegistry) provider).resolveResourceProvider("Patient").getDao().search(new SearchParameterMap());
             List<IBaseResource> SUBJECTLIST = patientProvider.getResources(0, patientProvider.size());
             SUBJECTLIST.forEach(x -> patients.add((Patient) x));
         }

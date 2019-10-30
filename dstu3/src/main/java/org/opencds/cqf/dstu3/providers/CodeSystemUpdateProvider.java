@@ -9,9 +9,9 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 
 public class CodeSystemUpdateProvider
 {
-    private JpaDataProvider provider;
+    private FHIRValueSetResourceProvider provider;
 
-    public CodeSystemUpdateProvider(JpaDataProvider provider)
+    public CodeSystemUpdateProvider(FHIRValueSetResourceProvider provider)
     {
         this.provider = provider;
     }
@@ -25,15 +25,13 @@ public class CodeSystemUpdateProvider
     @Operation(name = "$updateCodeSystems", idempotent = true)
     public OperationOutcome updateCodeSystems()
     {
-        IBundleProvider valuesets = provider.resolveResourceProvider("ValueSet").getDao().search(new SearchParameterMap());
+        IBundleProvider valuesets = provider.getDao().search(new SearchParameterMap());
         OperationOutcome response = new OperationOutcome();
-
-        FHIRValueSetResourceProvider valueSetResourceProvider = (FHIRValueSetResourceProvider) provider.resolveResourceProvider("ValueSet");
 
         OperationOutcome outcome;
         for (IBaseResource valueSet : valuesets.getResources(0, valuesets.size()))
         {
-            outcome = valueSetResourceProvider.performCodeSystemUpdate((ValueSet) valueSet);
+            outcome = provider.performCodeSystemUpdate((ValueSet) valueSet);
             if (outcome.hasIssue())
             {
                 for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue())
