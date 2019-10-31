@@ -8,7 +8,6 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.BasicAuthInterceptor;
 import ca.uhn.fhir.rest.param.StringAndListParam;
 import ca.uhn.fhir.rest.param.StringOrListParam;
@@ -22,11 +21,9 @@ import java.util.Map;
 
 public class FHIREndpointProvider extends EndpointResourceProvider {
 
-    private ResourceProviderRegistry provider;
     private IFhirSystemDao systemDao;
 
-    public FHIREndpointProvider(ResourceProviderRegistry provider, IFhirSystemDao systemDao) {
-        this.provider = provider;
+    public FHIREndpointProvider(IFhirSystemDao systemDao) {
         this.systemDao = systemDao;
     }
 
@@ -45,9 +42,7 @@ public class FHIREndpointProvider extends EndpointResourceProvider {
             return Helper.createErrorOutcome("Could not find Endpoint/" + theId);
         }
 
-        provider.setEndpoint(endpoint.getAddress());
-        provider.getFhirContext().getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-        IGenericClient client = provider.getFhirClient();
+        IGenericClient client = this.systemDao.getContext().newRestfulGenericClient(endpoint.getAddress());
 
         if (userName != null || password != null) {
             if (userName == null) {

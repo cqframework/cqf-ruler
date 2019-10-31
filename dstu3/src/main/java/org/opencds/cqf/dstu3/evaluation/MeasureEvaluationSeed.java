@@ -26,6 +26,7 @@ public class MeasureEvaluationSeed
     private LibraryLoader libraryLoader;
     private LibraryResourceProvider libraryResourceProvider;
     private ProviderFactory providerFactory;
+    private DataProvider dataProvider;
 
     public MeasureEvaluationSeed(ProviderFactory providerFactory, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
     {
@@ -57,7 +58,11 @@ public class MeasureEvaluationSeed
         {
             if (using.getLocalIdentifier().equals("System")) continue;
 
-            DataProvider dataProvider = this.providerFactory.createDataProvider(using.getLocalIdentifier(), using.getVersion(), terminologyProvider);
+            if (this.dataProvider != null) {
+                throw new IllegalArgumentException("Evaluation of Measure using multiple Models is not supported at this time.");
+            }
+
+            this.dataProvider = this.providerFactory.createDataProvider(using.getLocalIdentifier(), using.getVersion(), terminologyProvider);
             context.registerDataProvider(
                 using.getLocalIdentifier().equals("FHIR") ? 
                 "http://hl7.org/fhir" :

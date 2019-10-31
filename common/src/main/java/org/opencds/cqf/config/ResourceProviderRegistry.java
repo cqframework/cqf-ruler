@@ -4,23 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hl7.fhir.instance.model.api.IAnyResource;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import ca.uhn.fhir.jpa.provider.BaseJpaResourceProvider;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 
 public class ResourceProviderRegistry {
-    private List<BaseJpaResourceProvider<? extends IAnyResource>>  providers;
+    private List<BaseJpaResourceProvider<? extends IBaseResource>>  providers;
 
     public ResourceProviderRegistry()
     {
         this.providers = new ArrayList<>();
     }
 
-    public ResourceProviderRegistry(List<BaseJpaResourceProvider<? extends IAnyResource>>  providers) {
+    public ResourceProviderRegistry(List<BaseJpaResourceProvider<? extends IBaseResource>>  providers) {
         this.providers = providers;
     }
 
-    public synchronized List<BaseJpaResourceProvider<? extends IAnyResource>> getResourceProviders() {
+    public synchronized List<BaseJpaResourceProvider<? extends IBaseResource>> getResourceProviders() {
         return this.providers;
     }
 
@@ -55,7 +56,7 @@ public class ResourceProviderRegistry {
         }
 
         if (resourceProvider instanceof BaseJpaResourceProvider<?>) {
-            BaseJpaResourceProvider<? extends IAnyResource> jpaResourceProvider = (BaseJpaResourceProvider<? extends IAnyResource>)resourceProvider;
+            BaseJpaResourceProvider<? extends IBaseResource> jpaResourceProvider = (BaseJpaResourceProvider<? extends IBaseResource>)resourceProvider;
             this.register(jpaResourceProvider);
         }
         else {
@@ -63,7 +64,7 @@ public class ResourceProviderRegistry {
         }
     }
 
-    public synchronized void register(BaseJpaResourceProvider<? extends IAnyResource> resourceProvider)
+    public synchronized void register(BaseJpaResourceProvider<? extends IBaseResource> resourceProvider)
     {
         if (resourceProvider == null) {
             return;
@@ -79,12 +80,12 @@ public class ResourceProviderRegistry {
     }
 
 
-    public synchronized BaseJpaResourceProvider<? extends IAnyResource> resolve(String dataType) {
+    public synchronized BaseJpaResourceProvider<? extends IBaseResource> resolve(String dataType) {
         if (dataType == null) {
             throw new IllegalArgumentException("dataType can not be null");
         }
 
-        for (BaseJpaResourceProvider<? extends IAnyResource> resourceProvider : this.providers) {
+        for (BaseJpaResourceProvider<? extends IBaseResource> resourceProvider : this.providers) {
             if (resourceProvider.getResourceType().getSimpleName().toLowerCase().equals(dataType.toLowerCase())) {
                 return resourceProvider;
             }
