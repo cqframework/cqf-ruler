@@ -29,7 +29,6 @@ import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
-import org.opencds.cqf.config.ResourceProviderRegistry;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.dstu3.evaluation.MeasureEvaluation;
 import org.opencds.cqf.dstu3.evaluation.MeasureEvaluationSeed;
@@ -39,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
-import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -56,27 +55,22 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
-    private IFhirSystemDao systemDao;
-
     private NarrativeProvider narrativeProvider;
     private HQMFProvider hqmfProvider;
     private DataRequirementsProvider dataRequirementsProvider;
 
     private LibraryResourceProvider libraryResourceProvider;
-    private ResourceProviderRegistry registry;
+    private DaoRegistry registry;
     private ProviderFactory factory;
 
 
     private static final Logger logger = LoggerFactory.getLogger(FHIRMeasureResourceProvider.class);
 
-    public FHIRMeasureResourceProvider(ResourceProviderRegistry registry, ProviderFactory factory, IFhirSystemDao systemDao,
-            NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider) {
+    public FHIRMeasureResourceProvider(DaoRegistry registry, ProviderFactory factory, NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider, LibraryResourceProvider libraryResourceProvider) {
         this.registry = registry;
         this.factory = factory;
 
-        this.systemDao = systemDao;
-
-        this.libraryResourceProvider = (LibraryResourceProvider)registry.resolve("Library");
+        this.libraryResourceProvider = libraryResourceProvider;
         this.narrativeProvider = narrativeProvider;
         this.hqmfProvider = hqmfProvider;
         this.dataRequirementsProvider = new DataRequirementsProvider();
@@ -384,8 +378,8 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                     && ((Reference) values.get(0)).getReferenceElement().hasResourceType()
                     && ((Reference) values.get(0)).getReferenceElement().hasIdPart()) {
                 Resource fetchedResource = (Resource) registry
-                        .resolve(((Reference) values.get(0)).getReferenceElement().getResourceType())
-                        .getDao().read(new IdType(((Reference) values.get(0)).getReferenceElement().getIdPart()));
+                        .getResourceDao(((Reference) values.get(0)).getReferenceElement().getResourceType())
+                        .read(new IdType(((Reference) values.get(0)).getReferenceElement().getIdPart()));
 
                 if (!resourceMap.containsKey(fetchedResource.getIdElement().getValue())) {
                     parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource")
@@ -435,7 +429,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             }
         }
 
-        return (Resource) systemDao.transaction(details, transactionBundle);
+        return (Resource) this.registry.getSystemDao().transaction(details, transactionBundle);
     }
 
     private Bundle createTransactionBundle(Bundle bundle) {

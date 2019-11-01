@@ -1,15 +1,43 @@
 package org.opencds.cqf.dstu3.servlet;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.servlet.ServletException;
+
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.CodeSystem;
+import org.hl7.fhir.dstu3.model.Endpoint;
+import org.hl7.fhir.dstu3.model.Meta;
+import org.hl7.fhir.dstu3.model.ValueSet;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.config.HapiProperties;
+import org.opencds.cqf.cql.terminology.TerminologyProvider;
+import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
+import org.opencds.cqf.dstu3.providers.CacheValueSetsProvider;
+import org.opencds.cqf.dstu3.providers.CodeSystemUpdateProvider;
+import org.opencds.cqf.dstu3.providers.CqlExecutionProvider;
+import org.opencds.cqf.dstu3.providers.FHIRActivityDefinitionResourceProvider;
+import org.opencds.cqf.dstu3.providers.FHIRBundleResourceProvider;
+import org.opencds.cqf.dstu3.providers.FHIRMeasureResourceProvider;
+import org.opencds.cqf.dstu3.providers.HQMFProvider;
+import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
+import org.opencds.cqf.dstu3.providers.NarrativeLibraryResourceProvider;
+import org.opencds.cqf.dstu3.providers.NarrativeProvider;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.cors.CorsConfiguration;
+
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
+import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.BaseJpaResourceProvider;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.TerminologyUploaderProviderDstu3;
-import ca.uhn.fhir.jpa.rp.dstu3.*;
-import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
@@ -19,40 +47,9 @@ import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Meta;
-import org.hl7.fhir.instance.model.api.IAnyResource;
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.config.HapiProperties;
-import org.opencds.cqf.config.ResourceProviderRegistry;
-import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.dstu3.providers.*;
-import org.opencds.cqf.dstu3.config.FhirServerConfigDstu3;
-import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
-import org.opencds.cqf.config.FhirServerConfigCommon;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.cors.CorsConfiguration;
-
-import javax.servlet.ServletException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 public class BaseServlet extends RestfulServer {
-    // This registry holds a collection of all the resource providers on this
-    // server.
-    // This is essentially a duplicate of the resourceProviders on the underlying
-    // RestfulServer
-    // with the intention that both collections will be synchronized at the end of
-    // the initialization
-    // and the registry can be used in various classes that needs access the to
-    // resource providers.
-    // Additionally, it provides the functionality to resolve a specific resource
-    // type from the collection.
-    ResourceProviderRegistry registry;
-
+    DaoRegistry registry;
     FhirContext fhirContext;
 
     @SuppressWarnings("unchecked")
@@ -68,6 +65,8 @@ public class BaseServlet extends RestfulServer {
         this.fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
         setFhirContext(this.fhirContext);
 
+        this.registry = appCtx.getBean(DaoRegistry.class);
+
         Object systemProvider = appCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
         registerProvider(systemProvider);
 
@@ -76,24 +75,13 @@ public class BaseServlet extends RestfulServer {
         confProvider.setImplementationDescription("CQF Ruler FHIR DSTU3 Server");
         setServerConformanceProvider(confProvider);
 
-        // Resource Providers
-        List<IResourceProvider> resourceProviders = appCtx.getBean("myResourceProvidersDstu3", List.class);
-        this.registry = new ResourceProviderRegistry();
-        for (IResourceProvider provider : resourceProviders) {
-            registry.register(provider);
-        }
-
-
         List<Object> plainProviders = new ArrayList<>();
         plainProviders.add(appCtx.getBean(TerminologyUploaderProviderDstu3.class));
 
-        TerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) registry.resolve("ValueSet"));
-        ProviderFactory providerFactory = new ProviderFactory(this.getFhirContext(), this.registry, localSystemTerminologyProvider);
+        TerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider)this.getResourceProvider(ValueSet.class));
+        ProviderFactory providerFactory = new ProviderFactory(this.fhirContext, this.registry, localSystemTerminologyProvider);
 
-        resolveProviders(systemDao, providerFactory);
-
-        setResourceProviders(registry.getResourceProviders().toArray(IResourceProvider[]::new));
-        
+        resolveProviders(providerFactory);
 
         // CdsHooksServlet.provider = provider;
 
@@ -173,22 +161,21 @@ public class BaseServlet extends RestfulServer {
 
     // Since resource provider resolution not lazy, the providers here must be resolved in the correct
     // order of dependencies.
-    private void resolveProviders(IFhirSystemDao systemDao, ProviderFactory providerFactory)
+    private void resolveProviders(ProviderFactory providerFactory)
             throws ServletException
     {
         NarrativeProvider narrativeProvider = new NarrativeProvider();
         HQMFProvider hqmfProvider = new HQMFProvider();
 
-        // ValueSet processing
-        FHIRValueSetResourceProvider valueSetProvider =
-                new FHIRValueSetResourceProvider(
-                        (CodeSystemResourceProvider) this.registry.resolve("CodeSystem")
-                );
-        this.registerCustomResourceProvider(valueSetProvider);
-
         // Code System Update
-        CodeSystemUpdateProvider csUpdate = new CodeSystemUpdateProvider((FHIRValueSetResourceProvider) this.registry.resolve("ValueSet"));
+        CodeSystemUpdateProvider csUpdate = new CodeSystemUpdateProvider(
+            this.getDao(ValueSet.class),
+            this.getDao(CodeSystem.class));
         this.registerProvider(csUpdate);
+
+        // Cache Value Sets
+        CacheValueSetsProvider cvs = new CacheValueSetsProvider(this.registry.getSystemDao(), this.getDao(Endpoint.class));
+        this.registerProvider(cvs);
 
         //Library processing
         NarrativeLibraryResourceProvider libraryProvider = new NarrativeLibraryResourceProvider(narrativeProvider);
@@ -202,12 +189,8 @@ public class BaseServlet extends RestfulServer {
         FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(providerFactory);
         this.registerCustomResourceProvider(bundleProvider);
 
-        // Endpoint processing
-        FHIREndpointProvider endpointProvider = new FHIREndpointProvider(systemDao);
-        this.registerCustomResourceProvider(endpointProvider);
-
         // Measure processing
-        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(registry, providerFactory, systemDao, narrativeProvider, hqmfProvider);
+        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(this.registry, providerFactory, narrativeProvider, hqmfProvider, libraryProvider);
         this.registerCustomResourceProvider(measureProvider);
 
         // // ActivityDefinition processing
@@ -215,17 +198,29 @@ public class BaseServlet extends RestfulServer {
         this.registerCustomResourceProvider(actDefProvider);
 
         // PlanDefinition processing
-        FHIRPlanDefinitionResourceProvider planDefProvider = new FHIRPlanDefinitionResourceProvider(this.fhirContext, actDefProvider, libraryProvider);
-        this.registerCustomResourceProvider(planDefProvider);
+        // FHIRPlanDefinitionResourceProvider planDefProvider = new FHIRPlanDefinitionResourceProvider(this.fhirContext, actDefProvider, libraryProvider);
+        // this.registerCustomResourceProvider(planDefProvider);
     }
 
     private <T extends IBaseResource> void registerCustomResourceProvider(BaseJpaResourceProvider<T>  provider) {
 
-        BaseJpaResourceProvider<? extends IBaseResource> oldProvider = registry.resolve(provider.getResourceType().getSimpleName());
+        BaseJpaResourceProvider<? extends IBaseResource> oldProvider = this.getResourceProvider(provider.getResourceType());
+
         IFhirResourceDao<T> oldDao = ((BaseJpaResourceProvider<T>)oldProvider).getDao();
         provider.setDao(oldDao);
         provider.setContext(oldProvider.getContext());
 
-        this.registry.register(provider);
+        this.unregisterProvider(oldProvider);
+        this.registerProvider(provider);
+    }
+
+    private <T extends IBaseResource> IFhirResourceDao<T> getDao(Class<T> clazz) {
+        return this.registry.getResourceDao(clazz);
+    }
+
+
+    private <T extends IBaseResource> BaseJpaResourceProvider<T>  getResourceProvider(Class<T> clazz) {
+        return (BaseJpaResourceProvider<T> ) this.getResourceProviders().stream()
+        .filter(x -> x.getResourceType().getSimpleName().equals(clazz.getSimpleName())).findFirst().get();
     }
 }

@@ -1,5 +1,6 @@
 package org.opencds.cqf.dstu3.evaluation;
 
+import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -7,7 +8,6 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.dstu3.builders.MeasureReportBuilder;
-import org.opencds.cqf.config.ResourceProviderRegistry;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.Interval;
@@ -28,9 +28,9 @@ public class MeasureEvaluation {
 
     private DataProvider provider;
     private Interval measurementPeriod;
-    private ResourceProviderRegistry registry;
+    private DaoRegistry registry;
 
-    public MeasureEvaluation(DataProvider provider, ResourceProviderRegistry registry, Interval measurementPeriod) {
+    public MeasureEvaluation(DataProvider provider, DaoRegistry registry, Interval measurementPeriod) {
         this.provider = provider;
         this.registry = registry;
         this.measurementPeriod = measurementPeriod;
@@ -88,7 +88,7 @@ public class MeasureEvaluation {
         );
 
         List<Patient> patients = new ArrayList<>();
-        IBundleProvider patientProvider = registry.resolve("Patient").getDao().search(map);
+        IBundleProvider patientProvider = registry.getResourceDao("Patient").search(map);
         List<IBaseResource> patientList = patientProvider.getResources(0, patientProvider.size());
         patientList.forEach(x -> patients.add((Patient) x));
         return patients;
@@ -100,7 +100,7 @@ public class MeasureEvaluation {
 
     private List<Patient> getAllPatients() {
         List<Patient> patients = new ArrayList<>();
-        IBundleProvider patientProvider = registry.resolve("Patient").getDao().search(new SearchParameterMap());
+        IBundleProvider patientProvider = registry.getResourceDao("Patient").search(new SearchParameterMap());
         List<IBaseResource> patientList = patientProvider.getResources(0, patientProvider.size());
         patientList.forEach(x -> patients.add((Patient) x));
         return patients;

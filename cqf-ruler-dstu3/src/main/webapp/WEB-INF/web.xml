@@ -62,7 +62,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>qdm54</servlet-name>
-        <url-pattern>/qdm/*</url-pattern>
+        <url-pattern>/fhir/qdm/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -117,7 +117,7 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
-        <url-pattern>/qdm/*</url-pattern>
+        <url-pattern>/fhir/qdm/*</url-pattern>
     </filter-mapping>
     <!-- <filter-mapping>
         <filter-name>cross-origin</filter-name>

@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.provider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,7 @@ import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.gclient.IQuery;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -20,6 +21,14 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 public class ApelonFhirTerminologyProvider extends FhirTerminologyProvider
     {
         private Map<String, List<Code>> cache = new HashMap<>();
+
+        public ApelonFhirTerminologyProvider() {
+            super();
+        }
+
+        public ApelonFhirTerminologyProvider(FhirContext fhirContext) {
+            super(fhirContext);
+        }
 
         @Override
         public Iterable<Code> expand(ValueSetInfo valueSet) throws ResourceNotFoundException {

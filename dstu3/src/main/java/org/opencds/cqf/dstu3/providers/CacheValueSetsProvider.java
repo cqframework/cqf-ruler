@@ -1,5 +1,6 @@
 package org.opencds.cqf.dstu3.providers;
 
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.rp.dstu3.EndpointResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -8,7 +9,6 @@ import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.BasicAuthInterceptor;
 import ca.uhn.fhir.rest.param.StringAndListParam;
 import ca.uhn.fhir.rest.param.StringOrListParam;
@@ -21,12 +21,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class FHIREndpointProvider extends EndpointResourceProvider {
+public class CacheValueSetsProvider {
 
     private IFhirSystemDao systemDao;
+    private IFhirResourceDao<Endpoint> endpointDao;
 
-    public FHIREndpointProvider(IFhirSystemDao systemDao) {
+    public CacheValueSetsProvider(IFhirSystemDao systemDao, IFhirResourceDao<Endpoint> endpointDao) {
         this.systemDao = systemDao;
+        this.endpointDao = endpointDao;
     }
 
     @Operation(name="cache-valuesets", idempotent = true)
@@ -38,7 +40,7 @@ public class FHIREndpointProvider extends EndpointResourceProvider {
             @OptionalParam(name="pass") String password
     ) {
 
-        Endpoint endpoint = this.getDao().read(theId);
+        Endpoint endpoint = this.endpointDao.read(theId);
 
         if (endpoint == null) {
             return Helper.createErrorOutcome("Could not find Endpoint/" + theId);

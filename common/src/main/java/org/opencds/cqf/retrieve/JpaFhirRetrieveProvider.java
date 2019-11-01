@@ -6,18 +6,18 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.config.ResourceProviderRegistry;
 import org.opencds.cqf.cql.retrieve.*;
 
-import ca.uhn.fhir.jpa.provider.BaseJpaResourceProvider;
+import ca.uhn.fhir.jpa.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
 public class JpaFhirRetrieveProvider extends FhirRetrieveProvider {
-	
-	private ResourceProviderRegistry registry;
-	
-	public JpaFhirRetrieveProvider(ResourceProviderRegistry registry) {
+    
+    DaoRegistry registry;
+
+	public JpaFhirRetrieveProvider(DaoRegistry registry) {
 		this.registry = registry;
 	}
 
@@ -36,8 +36,8 @@ public class JpaFhirRetrieveProvider extends FhirRetrieveProvider {
     }
 
     protected Collection<Object> executeQuery(String dataType, SearchParameterMap map) {
-        BaseJpaResourceProvider<? extends IBaseResource> provider = this.registry.resolve(dataType);
-        IBundleProvider bundleProvider = provider.getDao().search(map);
+        IFhirResourceDao<?> dao = this.registry.getResourceDao(dataType);
+        IBundleProvider bundleProvider = dao.search(map);
         if (bundleProvider.size() == null)
         {
             return resolveResourceList(bundleProvider.getResources(0, 10000));
