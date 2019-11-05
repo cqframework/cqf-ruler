@@ -1,7 +1,7 @@
 package org.opencds.cqf.dstu3.providers;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.rp.dstu3.ActivityDefinitionResourceProvider;
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.dstu3.model.*;
@@ -15,17 +15,19 @@ import java.util.*;
 /**
  * Created by Bryn on 1/16/2017.
  */
-public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionResourceProvider {
+public class ActivityDefinitionApplyProvider {
 
     private CqlExecutionProvider executionProvider;
     private ModelResolver modelResolver;
+    private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
 
-    public FHIRActivityDefinitionResourceProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider) {
+    public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider, IFhirResourceDao<ActivityDefinition> activityDefinitionDao) {
         this.modelResolver = new Dstu3FhirModelResolver(fhirContext);
         this.executionProvider = executionProvider;
+        this.activityDefinitionDao = activityDefinitionDao;
     }
 
-    @Operation(name = "$apply", idempotent = true)
+    @Operation(name = "$apply", idempotent = true, type = ActivityDefinition.class)
     public Resource apply(@IdParam IdType theId, @RequiredParam(name="patient") String patientId,
                           @OptionalParam(name="encounter") String encounterId,
                           @OptionalParam(name="practitioner") String practitionerId,
@@ -38,7 +40,7 @@ public class FHIRActivityDefinitionResourceProvider extends ActivityDefinitionRe
             throws InternalErrorException, FHIRException, ClassNotFoundException, IllegalAccessException,
             InstantiationException, ActivityDefinitionApplyException
     {
-        ActivityDefinition activityDefinition = this.getDao().read(theId);
+        ActivityDefinition activityDefinition = this.activityDefinitionDao.read(theId);
 
         return resolveActivityDefinition(activityDefinition, patientId, practitionerId, organizationId);
     }

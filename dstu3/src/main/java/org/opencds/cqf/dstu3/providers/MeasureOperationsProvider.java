@@ -53,43 +53,46 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.TokenParamModifier;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
-public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
+public class MeasureOperationsProvider {
 
     private NarrativeProvider narrativeProvider;
     private HQMFProvider hqmfProvider;
     private DataRequirementsProvider dataRequirementsProvider;
 
-    private LibraryResourceProvider libraryResourceProvider;
+    private LibraryResolutionProvider libraryResolutionProvider;
+    private MeasureResourceProvider measureResourceProvider;
     private DaoRegistry registry;
     private ProviderFactory factory;
 
 
-    private static final Logger logger = LoggerFactory.getLogger(FHIRMeasureResourceProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
 
-    public FHIRMeasureResourceProvider(DaoRegistry registry, ProviderFactory factory, NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider, LibraryResourceProvider libraryResourceProvider) {
+    public MeasureOperationsProvider(DaoRegistry registry, ProviderFactory factory, NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider, LibraryResolutionProvider libraryResolutionProvider,
+    MeasureResourceProvider measureResourceProvider) {
         this.registry = registry;
         this.factory = factory;
 
-        this.libraryResourceProvider = libraryResourceProvider;
+        this.libraryResolutionProvider = libraryResolutionProvider;
         this.narrativeProvider = narrativeProvider;
         this.hqmfProvider = hqmfProvider;
         this.dataRequirementsProvider = new DataRequirementsProvider();
+        this.measureResourceProvider = measureResourceProvider;
     }
 
-    @Operation(name = "$hqmf", idempotent = true)
+    @Operation(name = "$hqmf", idempotent = true, type = Measure.class)
     public Parameters hqmf(@IdParam IdType theId) {
-        Measure theResource = this.getDao().read(theId);
+        Measure theResource = this.measureResourceProvider.getDao().read(theId);
         String hqmf = this.generateHQMF(theResource);
         Parameters p = new Parameters();
         p.addParameter().setValue(new StringType(hqmf));
         return p;
     }
 
-    @Operation(name = "$refresh-generated-content")
+    @Operation(name = "$refresh-generated-content", type = Measure.class)
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails,
             @IdParam IdType theId) {
-        Measure theResource = this.getDao().read(theId);
-        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResourceProvider);
+        Measure theResource = this.measureResourceProvider.getDao().read(theId);
+        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResolutionProvider);
 
         // Ensure All Related Artifacts for all referenced Libraries
         if (!cqfMeasure.getRelatedArtifact().isEmpty()) {
@@ -109,25 +112,25 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             }
         }
 
-        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
+        Narrative n = this.narrativeProvider.getNarrative(this.measureResourceProvider.getContext(), cqfMeasure);
         theResource.setText(n.copy());
         // logger.info("Narrative: " + n.getDivAsString());
-        return super.update(theRequest, theResource, theId,
+        return this.measureResourceProvider.update(theRequest, theResource, theId,
                 theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
     }
 
-    @Operation(name = "$get-narrative", idempotent = true)
+    @Operation(name = "$get-narrative", idempotent = true, type = Measure.class)
     public Parameters getNarrative(@IdParam IdType theId) {
-        Measure theResource = this.getDao().read(theId);
-        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResourceProvider);
-        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
+        Measure theResource = this.measureResourceProvider.getDao().read(theId);
+        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResolutionProvider);
+        Narrative n = this.narrativeProvider.getNarrative(this.measureResourceProvider.getContext(), cqfMeasure);
         Parameters p = new Parameters();
         p.addParameter().setValue(new StringType(n.getDivAsString()));
         return p;
     }
 
     private String generateHQMF(Measure theResource) {
-        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResourceProvider);
+        CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResolutionProvider);
         return this.hqmfProvider.generateHQMF(cqfMeasure);
     }
 
@@ -137,7 +140,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
      * for the FHIR $evaluate-measure operation
      *
      */
-    @Operation(name = "$evaluate-measure", idempotent = true)
+    @Operation(name = "$evaluate-measure", idempotent = true, type = Measure.class)
     public MeasureReport evaluateMeasure(@IdParam IdType theId, @RequiredParam(name = "periodStart") String periodStart,
             @RequiredParam(name = "periodEnd") String periodEnd, @OptionalParam(name = "measure") String measureRef,
             @OptionalParam(name = "reportType") String reportType, @OptionalParam(name = "patient") String patientRef,
@@ -146,9 +149,9 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
             @OptionalParam(name = "lastReceivedOn") String lastReceivedOn,
             @OptionalParam(name = "source") String source, @OptionalParam(name = "user") String user,
             @OptionalParam(name = "pass") String pass) throws InternalErrorException, FHIRException {
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader, this.libraryResourceProvider);
-        Measure measure = this.getDao().read(theId);
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResolutionProvider);
+        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader, this.libraryResolutionProvider);
+        Measure measure = this.measureResourceProvider.getDao().read(theId);
 
         if (measure == null) {
             throw new RuntimeException("Could not find Measure/" + theId.getIdPart());
@@ -215,7 +218,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     public Bundle careGapsReport(@RequiredParam(name = "periodStart") String periodStart,
             @RequiredParam(name = "periodEnd") String periodEnd, @RequiredParam(name = "topic") String topic,
             @RequiredParam(name = "patient") String patientRef) {
-        List<IBaseResource> measures = getDao().search(new SearchParameterMap().add("topic",
+        List<IBaseResource> measures = this.measureResourceProvider.getDao().search(new SearchParameterMap().add("topic",
                 new TokenParam().setModifier(TokenParamModifier.TEXT).setValue(topic))).getResources(0, 1000);
         Bundle careGapReport = new Bundle();
         careGapReport.setType(Bundle.BundleType.DOCUMENT);
@@ -247,8 +250,8 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
                         .setDiv(new XhtmlNode().setValue(improvementNotation)));
             }
 
-            LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
-            MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader, this.libraryResourceProvider);
+            LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResolutionProvider);
+            MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader, this.libraryResolutionProvider);
             seed.setup(measure, periodStart, periodEnd, null, null, null, null);
             MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), this.registry, seed.getMeasurementPeriod());
             // TODO - this is configured for patient-level evaluation only
@@ -316,7 +319,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         return careGapReport;
     }
 
-    @Operation(name = "$collect-data", idempotent = true)
+    @Operation(name = "$collect-data", idempotent = true, type = Measure.class)
     public Parameters collectData(@IdParam IdType theId, @RequiredParam(name = "periodStart") String periodStart,
             @RequiredParam(name = "periodEnd") String periodEnd, @OptionalParam(name = "patient") String patientRef,
             @OptionalParam(name = "practitioner") String practitionerRef,
@@ -368,7 +371,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
 
     private void resolveReferences(Resource resource, Parameters parameters, Map<String, Resource> resourceMap) {
         List<IBase> values;
-        for (BaseRuntimeChildDefinition child : getContext().getResourceDefinition(resource).getChildren()) {
+        for (BaseRuntimeChildDefinition child : this.measureResourceProvider.getContext().getResourceDefinition(resource).getChildren()) {
             values = child.getAccessor().getValues(resource);
             if (values == null || values.isEmpty()) {
                 continue;
@@ -392,16 +395,16 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
     }
 
     // TODO - this needs a lot of work
-    @Operation(name = "$data-requirements", idempotent = true)
+    @Operation(name = "$data-requirements", idempotent = true, type = Measure.class)
     public org.hl7.fhir.dstu3.model.Library dataRequirements(@IdParam IdType theId,
             @RequiredParam(name = "startPeriod") String startPeriod,
             @RequiredParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
         
-        Measure measure = this.getDao().read(theId);
-        return this.dataRequirementsProvider.getDataRequirements(measure, this.libraryResourceProvider);
+        Measure measure = this.measureResourceProvider.getDao().read(theId);
+        return this.dataRequirementsProvider.getDataRequirements(measure, this.libraryResolutionProvider);
     }
 
-    @Operation(name = "$submit-data", idempotent = true)
+    @Operation(name = "$submit-data", idempotent = true, type = Measure.class)
     public Resource submitData(RequestDetails details, @IdParam IdType theId,
             @OperationParam(name = "measure-report", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
             @OperationParam(name = "resource") List<IAnyResource> resources) {

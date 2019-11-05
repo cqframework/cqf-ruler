@@ -13,7 +13,7 @@ import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.dstu3.helpers.DateHelper;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
-import org.opencds.cqf.dstu3.providers.LibraryResourceProvider;
+import org.opencds.cqf.dstu3.providers.LibraryResolutionProvider;
 
 import lombok.Data;
 
@@ -24,11 +24,11 @@ public class MeasureEvaluationSeed
     private Context context;
     private Interval measurementPeriod;
     private LibraryLoader libraryLoader;
-    private LibraryResourceProvider libraryResourceProvider;
+    private LibraryResolutionProvider libraryResourceProvider;
     private ProviderFactory providerFactory;
     private DataProvider dataProvider;
 
-    public MeasureEvaluationSeed(ProviderFactory providerFactory, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
+    public MeasureEvaluationSeed(ProviderFactory providerFactory, LibraryLoader libraryLoader, LibraryResolutionProvider libraryResourceProvider)
     {
         this.providerFactory = providerFactory;
         this.libraryLoader = libraryLoader;

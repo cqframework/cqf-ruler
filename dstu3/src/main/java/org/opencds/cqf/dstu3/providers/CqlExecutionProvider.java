@@ -45,15 +45,15 @@ import ca.uhn.fhir.rest.annotation.RequiredParam;
  */
 public class CqlExecutionProvider {
     private ProviderFactory providerFactory;
-    private LibraryResourceProvider libraryResourceProvider;
+    private LibraryResolutionProvider libraryResourceProvider;
 
-    public CqlExecutionProvider(LibraryResourceProvider libraryResourceProvider, ProviderFactory providerFactory) {
+    public CqlExecutionProvider(LibraryResolutionProvider libraryResourceProvider, ProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
         this.libraryResourceProvider = libraryResourceProvider;
     }
 
 
-    private LibraryResourceProvider getLibraryResourceProvider() {
+    private LibraryResolutionProvider getLibraryResourceProvider() {
         return this.libraryResourceProvider;
     }
 

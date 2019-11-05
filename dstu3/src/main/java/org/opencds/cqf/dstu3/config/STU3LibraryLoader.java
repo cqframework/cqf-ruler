@@ -7,7 +7,7 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.dstu3.providers.LibraryResourceProvider;
+import org.opencds.cqf.dstu3.providers.LibraryResolutionProvider;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
@@ -25,7 +25,7 @@ public class STU3LibraryLoader implements LibraryLoader {
 
     private LibraryManager libraryManager;
     private ModelManager modelManager;
-    private LibraryResourceProvider provider;
+    private LibraryResolutionProvider provider;
     private Map<String, Library> libraries = new HashMap<>();
 
     private static final Logger logger = LoggerFactory.getLogger(STU3LibraryLoader.class);
@@ -42,11 +42,11 @@ public class STU3LibraryLoader implements LibraryLoader {
         return this.modelManager;
     }
 
-    public LibraryResourceProvider getLibraryResourceProvider() {
+    public LibraryResolutionProvider getLibraryResourceProvider() {
         return this.provider;
     }
 
-    public STU3LibraryLoader(LibraryResourceProvider provider, LibraryManager libraryManager, ModelManager modelManager) {
+    public STU3LibraryLoader(LibraryResolutionProvider provider, LibraryManager libraryManager, ModelManager modelManager) {
         this.libraryManager = libraryManager;
         this.modelManager = modelManager;
         this.provider = provider;

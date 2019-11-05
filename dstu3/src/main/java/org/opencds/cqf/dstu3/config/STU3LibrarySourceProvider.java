@@ -3,7 +3,7 @@ package org.opencds.cqf.dstu3.config;
 import org.cqframework.cql.cql2elm.FhirLibrarySourceProvider;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.hl7.elm.r1.VersionedIdentifier;
-import org.opencds.cqf.dstu3.providers.LibraryResourceProvider;
+import org.opencds.cqf.dstu3.providers.LibraryResolutionProvider;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -13,10 +13,10 @@ import java.io.InputStream;
  */
 public class STU3LibrarySourceProvider implements LibrarySourceProvider {
 
-    private LibraryResourceProvider provider;
+    private LibraryResolutionProvider provider;
     private FhirLibrarySourceProvider innerProvider;
 
-    public STU3LibrarySourceProvider(LibraryResourceProvider provider) {
+    public STU3LibrarySourceProvider(LibraryResolutionProvider provider) {
         this.provider = provider;
         this.innerProvider = new FhirLibrarySourceProvider();
     }

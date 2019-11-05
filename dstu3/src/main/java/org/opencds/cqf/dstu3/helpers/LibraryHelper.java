@@ -27,7 +27,7 @@ import org.opencds.cqf.dstu3.config.STU3LibraryLoader;
 import org.opencds.cqf.dstu3.config.STU3LibrarySourceProvider;
 import org.opencds.cqf.cql.execution.CqlLibraryReader;
 import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.dstu3.providers.LibraryResourceProvider;
+import org.opencds.cqf.dstu3.providers.LibraryResolutionProvider;
 
 /**
  * Created by Christopher on 1/11/2017.
@@ -42,7 +42,7 @@ public class LibraryHelper {
         }
     }
 
-    public static STU3LibraryLoader createLibraryLoader(LibraryResourceProvider provider) {
+    public static STU3LibraryLoader createLibraryLoader(LibraryResolutionProvider provider) {
         ModelManager modelManager = new ModelManager();
         LibraryManager libraryManager = new MeasureTranslationOptionsLibraryManager(modelManager);
         libraryManager.getLibrarySourceLoader().clearProviders();
@@ -99,7 +99,7 @@ public class LibraryHelper {
         return readLibrary(new ByteArrayInputStream(translator.toXml().getBytes(StandardCharsets.UTF_8)));
     }
 
-    public static List<org.cqframework.cql.elm.execution.Library> loadLibraries(Measure measure, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
+    public static List<org.cqframework.cql.elm.execution.Library> loadLibraries(Measure measure, LibraryLoader libraryLoader, LibraryResolutionProvider libraryResourceProvider)
     {
         List<org.cqframework.cql.elm.execution.Library> libraries = new ArrayList<org.cqframework.cql.elm.execution.Library>();
 
@@ -145,7 +145,7 @@ public class LibraryHelper {
         return libraries;
     }
 
-    public static Library resolveLibraryById(String libraryId, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
+    public static Library resolveLibraryById(String libraryId, LibraryLoader libraryLoader, LibraryResolutionProvider libraryResourceProvider)
     {
         // Library library = null;
 
@@ -167,7 +167,7 @@ public class LibraryHelper {
         // return library;
     }
 
-    public static Library resolvePrimaryLibrary(Measure measure, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider)
+    public static Library resolvePrimaryLibrary(Measure measure, LibraryLoader libraryLoader, LibraryResolutionProvider libraryResourceProvider)
     {
         // default is the first library reference
         String id = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
@@ -182,7 +182,7 @@ public class LibraryHelper {
         return library;
     }
 
-    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition, LibraryLoader libraryLoader, LibraryResourceProvider libraryResourceProvider) {
+    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition, LibraryLoader libraryLoader, LibraryResolutionProvider libraryResourceProvider) {
         String id = planDefinition.getLibraryFirstRep().getReferenceElement().getIdPart();
 
         Library library = resolveLibraryById(id, libraryLoader, libraryResourceProvider);

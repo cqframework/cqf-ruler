@@ -693,7 +693,7 @@ public class HQMFProvider {
             Measure measure = (Measure)resources.stream().filter(x -> (x instanceof Measure)).findFirst().get();
             List<Library> libraries = resources.stream().filter(x -> (x instanceof Library)).map(x -> (Library)x).collect(Collectors.toList());
 
-            LibraryResourceProvider lrp = new InMemoryLibraryResourceProvider(libraries);
+            LibraryResolutionProvider lrp = new InMemoryLibraryResourceProvider(libraries);
 
             CqfMeasure cqfMeasure = dataRequirementsProvider.createCqfMeasure(measure, lrp);
             

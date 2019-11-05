@@ -76,12 +76,12 @@ public class DataRequirementsProvider {
     // 4. Update the Data Requirements on the Resources accordingly
     // Since the Library Loader only exposes the loaded libraries as ELM, we actually have to load them twice.
     // Once via the loader, Once manually
-    public CqfMeasure createCqfMeasure(Measure measure, LibraryResourceProvider libraryResourceProvider) {
+    public CqfMeasure createCqfMeasure(Measure measure, LibraryResolutionProvider libraryResourceProvider) {
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = this.createLibraryMap(measure, libraryResourceProvider);
         return this.createCqfMeasure(measure, libraryMap);
     }
 
-    private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>>  createLibraryMap(Measure measure, LibraryResourceProvider libraryResourceProvider) {
+    private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>>  createLibraryMap(Measure measure, LibraryResolutionProvider libraryResourceProvider) {
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResourceProvider);
         List<Library> libraries = LibraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = new HashMap<>();
@@ -478,7 +478,7 @@ public class DataRequirementsProvider {
         return renderer.render(document);
     }
 
-    public org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure, LibraryResourceProvider libraryResourceProvider){
+    public org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure, LibraryResolutionProvider libraryResourceProvider){
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = this.createLibraryMap(measure, libraryResourceProvider);
         return this.getDataRequirements(measure, libraryMap.values().stream().map(x -> x.getRight()).filter(x -> x != null).collect(Collectors.toList()));
     }
@@ -570,7 +570,7 @@ public class DataRequirementsProvider {
         library.getContent().add(elm);
     }
 
-    public void ensureRelatedArtifacts(org.hl7.fhir.dstu3.model.Library library, CqlTranslator translator, LibraryResourceProvider libraryResourceProvider)
+    public void ensureRelatedArtifacts(org.hl7.fhir.dstu3.model.Library library, CqlTranslator translator, LibraryResolutionProvider libraryResourceProvider)
     {
         library.getRelatedArtifact().clear();
         org.hl7.elm.r1.Library elm = translator.toELM();

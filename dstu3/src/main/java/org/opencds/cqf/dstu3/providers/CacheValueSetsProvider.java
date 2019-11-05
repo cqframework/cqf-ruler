@@ -2,7 +2,6 @@ package org.opencds.cqf.dstu3.providers;
 
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.rp.dstu3.EndpointResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
@@ -31,7 +30,7 @@ public class CacheValueSetsProvider {
         this.endpointDao = endpointDao;
     }
 
-    @Operation(name="cache-valuesets", idempotent = true)
+    @Operation(name="cache-valuesets", idempotent = true, type = Endpoint.class)
     public Resource cacheValuesets(
             RequestDetails details,
             @IdParam IdType theId,

@@ -2,7 +2,7 @@ package org.opencds.cqf.dstu3.providers;
 
 import org.hl7.fhir.dstu3.model.Library;
 
-public interface LibraryResourceProvider {
+public interface LibraryResolutionProvider {
     
     public Library resolveLibraryById(String libraryId);
 
@@ -26,7 +26,7 @@ public interface LibraryResourceProvider {
                 library = l;
             }
 
-            if (maxVersion == null || org.opencds.cqf.dstu3.providers.LibraryResourceProvider.compareVersions(maxVersion.getVersion(), l.getVersion()) < 0){
+            if (maxVersion == null || org.opencds.cqf.dstu3.providers.LibraryResolutionProvider.compareVersions(maxVersion.getVersion(), l.getVersion()) < 0){
                 maxVersion = l;
             }
         }

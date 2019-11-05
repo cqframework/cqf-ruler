@@ -6,25 +6,30 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
+import org.hl7.fhir.dstu3.model.ActivityDefinition;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.Endpoint;
+import org.hl7.fhir.dstu3.model.Library;
+import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.Meta;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.config.HapiProperties;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
+import org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.dstu3.providers.CacheValueSetsProvider;
 import org.opencds.cqf.dstu3.providers.CodeSystemUpdateProvider;
 import org.opencds.cqf.dstu3.providers.CqlExecutionProvider;
-import org.opencds.cqf.dstu3.providers.FHIRActivityDefinitionResourceProvider;
-import org.opencds.cqf.dstu3.providers.FHIRBundleResourceProvider;
-import org.opencds.cqf.dstu3.providers.FHIRMeasureResourceProvider;
+import org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider;
+import org.opencds.cqf.dstu3.providers.MeasureOperationsProvider;
 import org.opencds.cqf.dstu3.providers.HQMFProvider;
 import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
-import org.opencds.cqf.dstu3.providers.NarrativeLibraryResourceProvider;
+import org.opencds.cqf.dstu3.providers.LibraryOperationsProvider;
 import org.opencds.cqf.dstu3.providers.NarrativeProvider;
+import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -37,6 +42,8 @@ import ca.uhn.fhir.jpa.provider.BaseJpaResourceProvider;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.TerminologyUploaderProviderDstu3;
+import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
+import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
@@ -61,16 +68,23 @@ public class BaseServlet extends RestfulServer {
         ApplicationContext appCtx = (ApplicationContext) getServletContext()
                 .getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
 
+        // Fhir Context
         this.fhirContext = appCtx.getBean(FhirContext.class);
         this.fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
         setFhirContext(this.fhirContext);
 
+
+        // System and Resource Daos
+        IFhirSystemDao<Bundle, Meta> systemDao = appCtx.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
         this.registry = appCtx.getBean(DaoRegistry.class);
 
+        // System and Resource Providers
         Object systemProvider = appCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
         registerProvider(systemProvider);
 
-        IFhirSystemDao<Bundle, Meta> systemDao = appCtx.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
+        List<IResourceProvider> resourceProviders = appCtx.getBean("myResourceProvidersDstu3", List.class);
+        registerProviders(resourceProviders);
+
         JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao, appCtx.getBean(DaoConfig.class));
         confProvider.setImplementationDescription("CQF Ruler FHIR DSTU3 Server");
         setServerConformanceProvider(confProvider);
@@ -178,48 +192,37 @@ public class BaseServlet extends RestfulServer {
         this.registerProvider(cvs);
 
         //Library processing
-        NarrativeLibraryResourceProvider libraryProvider = new NarrativeLibraryResourceProvider(narrativeProvider);
-        this.registerCustomResourceProvider(libraryProvider);
+        LibraryOperationsProvider libraryProvider = new LibraryOperationsProvider((LibraryResourceProvider)this.getResourceProvider(Library.class), narrativeProvider);
+        this.registerProvider(libraryProvider);
 
         // CQL Execution
         CqlExecutionProvider cql = new CqlExecutionProvider(libraryProvider, providerFactory);
         this.registerProvider(cql);
 
         // Bundle processing
-        FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(providerFactory);
-        this.registerCustomResourceProvider(bundleProvider);
+        ApplyCqlOperationProvider bundleProvider = new ApplyCqlOperationProvider(providerFactory, this.getDao(Bundle.class));
+        this.registerProvider(bundleProvider);
 
         // Measure processing
-        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(this.registry, providerFactory, narrativeProvider, hqmfProvider, libraryProvider);
-        this.registerCustomResourceProvider(measureProvider);
+        MeasureOperationsProvider measureProvider = new MeasureOperationsProvider(this.registry, providerFactory, narrativeProvider, hqmfProvider, 
+            libraryProvider, (MeasureResourceProvider)this.getResourceProvider(Measure.class));
+        this.registerProvider(measureProvider);
 
         // // ActivityDefinition processing
-        FHIRActivityDefinitionResourceProvider actDefProvider = new FHIRActivityDefinitionResourceProvider(this.fhirContext, cql);
-        this.registerCustomResourceProvider(actDefProvider);
+        ActivityDefinitionApplyProvider actDefProvider = new ActivityDefinitionApplyProvider(this.fhirContext, cql, this.getDao(ActivityDefinition.class));
+        this.registerProvider(actDefProvider);
 
         // PlanDefinition processing
-        // FHIRPlanDefinitionResourceProvider planDefProvider = new FHIRPlanDefinitionResourceProvider(this.fhirContext, actDefProvider, libraryProvider);
-        // this.registerCustomResourceProvider(planDefProvider);
+        PlanDefinitionApplyProvider planDefProvider = new PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, libraryProvider, this.getDao(PlanDefinition.class), this.getDao(ActivityDefinition.class), cql);
+        this.registerProvider(planDefProvider);
     }
 
-    private <T extends IBaseResource> void registerCustomResourceProvider(BaseJpaResourceProvider<T>  provider) {
-
-        BaseJpaResourceProvider<? extends IBaseResource> oldProvider = this.getResourceProvider(provider.getResourceType());
-
-        IFhirResourceDao<T> oldDao = ((BaseJpaResourceProvider<T>)oldProvider).getDao();
-        provider.setDao(oldDao);
-        provider.setContext(oldProvider.getContext());
-
-        this.unregisterProvider(oldProvider);
-        this.registerProvider(provider);
-    }
-
-    private <T extends IBaseResource> IFhirResourceDao<T> getDao(Class<T> clazz) {
+    protected <T extends IBaseResource> IFhirResourceDao<T> getDao(Class<T> clazz) {
         return this.registry.getResourceDao(clazz);
     }
 
 
-    private <T extends IBaseResource> BaseJpaResourceProvider<T>  getResourceProvider(Class<T> clazz) {
+    protected <T extends IBaseResource> BaseJpaResourceProvider<T>  getResourceProvider(Class<T> clazz) {
         return (BaseJpaResourceProvider<T> ) this.getResourceProviders().stream()
         .filter(x -> x.getResourceType().getSimpleName().equals(clazz.getSimpleName())).findFirst().get();
     }

@@ -15,27 +15,28 @@ import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.opencds.cqf.dstu3.config.STU3LibrarySourceProvider;
 
-
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-
+import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.param.StringParam;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
-public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider implements org.opencds.cqf.dstu3.providers.LibraryResourceProvider {
+public class LibraryOperationsProvider implements org.opencds.cqf.dstu3.providers.LibraryResolutionProvider {
 
     private NarrativeProvider narrativeProvider;
     private DataRequirementsProvider dataRequirementsProvider;
+    private LibraryResourceProvider libraryResourceProvider;
 
-    public NarrativeLibraryResourceProvider(NarrativeProvider narrativeProvider) {
+    public LibraryOperationsProvider(LibraryResourceProvider libraryResourceProvider, NarrativeProvider narrativeProvider) {
         this.narrativeProvider = narrativeProvider;
         this.dataRequirementsProvider = new DataRequirementsProvider();
+        this.libraryResourceProvider = libraryResourceProvider;
     }
 
     private ModelManager getModelManager() {
@@ -60,14 +61,14 @@ public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.L
         return librarySourceProvider;
     }
 
-    private LibraryResourceProvider getLibraryResourceProvider() {
+    private LibraryResolutionProvider getLibraryResourceProvider() {
         return this;
     }
 
-    @Operation(name = "$refresh-generated-content")
+    @Operation(name = "$refresh-generated-content", type = Library.class)
     public MethodOutcome refreshGeneratedContent(HttpServletRequest theRequest, RequestDetails theRequestDetails,
             @IdParam IdType theId) {
-        Library theResource = this.getDao().read(theId);
+        Library theResource = this.libraryResourceProvider.getDao().read(theId);
         //this.formatCql(theResource);
 
         ModelManager modelManager = this.getModelManager();
@@ -82,16 +83,16 @@ public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.L
         this.dataRequirementsProvider.ensureRelatedArtifacts(theResource, translator, this);
         this.dataRequirementsProvider.ensureDataRequirements(theResource, translator);
 
-        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), theResource);
+        Narrative n = this.narrativeProvider.getNarrative(this.libraryResourceProvider.getContext(), theResource);
         theResource.setText(n);
 
-        return super.update(theRequest, theResource, theId,
+        return this.libraryResourceProvider.update(theRequest, theResource, theId,
                 theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
     }
 
-    @Operation(name = "$get-elm", idempotent = true)
+    @Operation(name = "$get-elm", idempotent = true, type = Library.class)
     public Parameters getElm(@IdParam IdType theId, @OptionalParam(name="format") String format) {
-        Library theResource = this.getDao().read(theId);
+        Library theResource = this.libraryResourceProvider.getDao().read(theId);
         // this.formatCql(theResource);
 
         ModelManager modelManager = this.getModelManager();
@@ -113,10 +114,10 @@ public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.L
         return p;
     }
 
-    @Operation(name = "$get-narrative", idempotent = true)
+    @Operation(name = "$get-narrative", idempotent = true, type = Library.class)
     public Parameters getNarrative(@IdParam IdType theId) {
-        Library theResource = this.getDao().read(theId);
-        Narrative n = this.narrativeProvider.getNarrative(this.getContext(), theResource);
+        Library theResource = this.libraryResourceProvider.getDao().read(theId);
+        Narrative n = this.narrativeProvider.getNarrative(this.libraryResourceProvider.getContext(), theResource);
         Parameters p = new Parameters();
         p.addParameter().setValue(new StringType(n.getDivAsString()));
         return p;
@@ -125,13 +126,13 @@ public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.L
     // TODO: Figure out if we should throw an exception or something here.
     @Override
     public void update(Library library) {
-        this.getDao().update(library);
+        this.libraryResourceProvider.getDao().update(library);
     }
 
     @Override
     public Library resolveLibraryById(String libraryId) {
         try {
-            return this.getDao().read(new IdType(libraryId));
+            return this.libraryResourceProvider.getDao().read(new IdType(libraryId));
         }
         catch (Exception e) {
             throw new IllegalArgumentException(String.format("Could not resolve library id %s", libraryId));
@@ -141,7 +142,7 @@ public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.L
     @Override
     public Library resolveLibraryByName(String libraryName, String libraryVersion) {
         Iterable<org.hl7.fhir.dstu3.model.Library> libraries = getLibrariesByName(libraryName);
-        org.hl7.fhir.dstu3.model.Library library = LibraryResourceProvider.selectFromList(libraries, libraryVersion);
+        org.hl7.fhir.dstu3.model.Library library = LibraryResolutionProvider.selectFromList(libraries, libraryVersion);
 
         if (library == null) {
             throw new IllegalArgumentException(String.format("Could not resolve library name %s", libraryName));
@@ -154,7 +155,7 @@ public class NarrativeLibraryResourceProvider extends ca.uhn.fhir.jpa.rp.dstu3.L
         // Search for libraries by name
         SearchParameterMap map = new SearchParameterMap();
         map.add("name", new StringParam(name, true));
-        ca.uhn.fhir.rest.api.server.IBundleProvider bundleProvider = this.getDao().search(map);
+        ca.uhn.fhir.rest.api.server.IBundleProvider bundleProvider = this.libraryResourceProvider.getDao().search(map);
 
         if (bundleProvider.size() == 0) {
             return new ArrayList<>();

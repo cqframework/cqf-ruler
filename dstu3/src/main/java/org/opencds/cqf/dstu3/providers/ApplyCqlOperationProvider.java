@@ -1,5 +1,6 @@
 package org.opencds.cqf.dstu3.providers;
 
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.rp.dstu3.BundleResourceProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -19,17 +20,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class FHIRBundleResourceProvider extends BundleResourceProvider {
+public class ApplyCqlOperationProvider {
 
-    ProviderFactory providerFactory;
+    private ProviderFactory providerFactory;
+    private IFhirResourceDao<Bundle> bundleDao;
 
-    public FHIRBundleResourceProvider(ProviderFactory providerFactory) {
+    public ApplyCqlOperationProvider(ProviderFactory providerFactory, IFhirResourceDao<Bundle> bundleDao) {
         this.providerFactory = providerFactory;
+        this.bundleDao = bundleDao;
     }
 
-    @Operation(name = "$apply-cql")
+    @Operation(name = "$apply-cql", type = Bundle.class)
     public Bundle apply(@IdParam IdType id) throws FHIRException {
-        Bundle bundle = this.getDao().read(id);
+        Bundle bundle = this.bundleDao.read(id);
         if (bundle == null) {
             throw new IllegalArgumentException("Could not find Bundle/" + id.getIdPart());
         }

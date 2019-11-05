@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import org.hl7.fhir.dstu3.model.Library;
 
-public class InMemoryLibraryResourceProvider implements LibraryResourceProvider {
+public class InMemoryLibraryResourceProvider implements LibraryResolutionProvider {
 
     private Map<String, Library> libraries = new HashMap<>();
 
@@ -33,7 +33,7 @@ public class InMemoryLibraryResourceProvider implements LibraryResourceProvider 
     @Override
     public Library resolveLibraryByName(String libraryName, String libraryVersion) {
         List<Library> libraries = this.libraries.values().stream().filter(x -> x.getName().equals(libraryName)).collect(Collectors.toList());
-        Library library = LibraryResourceProvider.selectFromList(libraries, libraryVersion);
+        Library library = LibraryResolutionProvider.selectFromList(libraries, libraryVersion);
 
         if (library == null) {
             throw new IllegalArgumentException(String.format("Could not resolve library name %s", libraryName));
