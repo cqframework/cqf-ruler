@@ -111,6 +111,7 @@ public class FHIRMeasureResourceProvider extends MeasureResourceProvider {
         }
 
         Narrative n = this.narrativeProvider.getNarrative(this.getContext(), cqfMeasure);
+        n.getDiv().setValue(URLEncoder.encode(n.getDivAsString(), "UTF-8"));
         theResource.setText(n.copy());
         // logger.info("Narrative: " + n.getDivAsString());
         return super.update(theRequest, theResource, theId,
