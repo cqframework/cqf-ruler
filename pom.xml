@@ -10,9 +10,9 @@
         <module>common</module>
         <module>qdm</module>
         <module>dstu3</module>
-        <!-- <module>r4</module> -->
+        <module>r4</module>
         <module>cqf-ruler-dstu3</module>
-        <!-- <module>cqf-ruler-r4</module> -->
+        <module>cqf-ruler-r4</module>
     </modules>
 
     <properties>

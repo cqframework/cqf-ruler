@@ -11,9 +11,10 @@ import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.dstu3.helpers.DateHelper;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
-import org.opencds.cqf.dstu3.providers.LibraryResolutionProvider;
+import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 
 import lombok.Data;
 
@@ -24,11 +25,11 @@ public class MeasureEvaluationSeed
     private Context context;
     private Interval measurementPeriod;
     private LibraryLoader libraryLoader;
-    private LibraryResolutionProvider libraryResourceProvider;
-    private ProviderFactory providerFactory;
+    private LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider;
+    private EvaluationProviderFactory providerFactory;
     private DataProvider dataProvider;
 
-    public MeasureEvaluationSeed(ProviderFactory providerFactory, LibraryLoader libraryLoader, LibraryResolutionProvider libraryResourceProvider)
+    public MeasureEvaluationSeed(EvaluationProviderFactory providerFactory, LibraryLoader libraryLoader, LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider)
     {
         this.providerFactory = providerFactory;
         this.libraryLoader = libraryLoader;

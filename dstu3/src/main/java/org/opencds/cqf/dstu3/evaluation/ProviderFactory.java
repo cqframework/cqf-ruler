@@ -5,17 +5,18 @@ import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
-import org.opencds.cqf.provider.ApelonFhirTerminologyProvider;
+import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.providers.ApelonFhirTerminologyProvider;
 import org.opencds.cqf.qdm.model.Qdm54ModelResolver;
 import org.opencds.cqf.qdm.providers.Qdm54RetrieveProvider;
-import org.opencds.cqf.retrieve.JpaFhirRetrieveProvider;
+import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
 
 // This class is a relatively dumb factory for data providers. It supports only
 // creating JPA providers for FHIR and QDM, and only basic auth for terminology
-public class ProviderFactory {
+public class ProviderFactory implements EvaluationProviderFactory {
 
     DaoRegistry registry;
     TerminologyProvider defaultTerminologyProvider;

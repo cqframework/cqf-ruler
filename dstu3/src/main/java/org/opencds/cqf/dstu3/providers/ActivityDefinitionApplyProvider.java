@@ -8,7 +8,7 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.model.ModelResolver;
-import org.opencds.cqf.exceptions.ActivityDefinitionApplyException;
+import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
 
 import java.util.*;
 

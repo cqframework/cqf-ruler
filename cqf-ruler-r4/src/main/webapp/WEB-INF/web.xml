@@ -17,7 +17,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            org.opencds.cqf.config.FhirServerConfigCommon,
+            org.opencds.cqf.common.config.FhirServerConfig,
             org.opencds.cqf.r4.config.FhirServerConfigR4
         </param-value>
     </context-param>
@@ -74,7 +74,7 @@
         </init-param>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>org.opencds.cqf.config.FhirTesterConfig</param-value>
+            <param-value>org.opencds.cqf.common.config.FhirTesterConfig</param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
     </servlet>
@@ -93,7 +93,7 @@
         <url-pattern>/fhir/*</url-pattern>
     </servlet-mapping>
 
-    <servlet>
+    <!-- <servlet>
         <servlet-name>cds-services</servlet-name>
         <servlet-class>org.opencds.cqf.r4.servlet.CdsHooksServlet</servlet-class>
         <load-on-startup>4</load-on-startup>
@@ -105,7 +105,7 @@
     <servlet-mapping>
         <servlet-name>cds-services</servlet-name>
         <url-pattern>/cds-services/*</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping> -->
 
     <filter>
         <filter-name>cross-origin</filter-name>

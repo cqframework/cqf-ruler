@@ -15,6 +15,10 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+
+/**
+ * Created by Christopher on 2/4/2017.
+ */
 public class NarrativeProvider {
 
     private INarrativeGenerator generator;

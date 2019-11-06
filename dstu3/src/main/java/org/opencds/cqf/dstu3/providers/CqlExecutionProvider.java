@@ -24,16 +24,18 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
+import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.evaluation.LibraryLoader;
+import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.dstu3.config.STU3LibraryLoader;
-import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
-import org.opencds.cqf.dstu3.helpers.DateHelper;
 import org.opencds.cqf.dstu3.helpers.FhirMeasureBundler;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
+import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
@@ -44,17 +46,17 @@ import ca.uhn.fhir.rest.annotation.RequiredParam;
  * Created by Bryn on 1/16/2017.
  */
 public class CqlExecutionProvider {
-    private ProviderFactory providerFactory;
-    private LibraryResolutionProvider libraryResourceProvider;
+    private EvaluationProviderFactory providerFactory;
+    private LibraryResolutionProvider<Library> libraryResolutionProvider;
 
-    public CqlExecutionProvider(LibraryResolutionProvider libraryResourceProvider, ProviderFactory providerFactory) {
+    public CqlExecutionProvider(LibraryResolutionProvider<Library> libraryResolutionProvider, EvaluationProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
-        this.libraryResourceProvider = libraryResourceProvider;
+        this.libraryResolutionProvider = libraryResolutionProvider;
     }
 
 
-    private LibraryResolutionProvider getLibraryResourceProvider() {
-        return this.libraryResourceProvider;
+    private LibraryResolutionProvider<Library>  getLibraryResourceProvider() {
+        return this.libraryResolutionProvider;
     }
 
     private List<Reference> cleanReferences(List<Reference> references) {
@@ -170,9 +172,9 @@ public class CqlExecutionProvider {
         // buildIncludes(libraries), instance.fhirType(), instance.fhirType(),
         // instance.fhirType(), cql);
 
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResourceProvider);
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResolutionProvider);
 
-        org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source,
+        org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(source,
                 libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
         Context context = new Context(library);
         context.setParameter(null, instance.fhirType(), instance);
@@ -204,12 +206,12 @@ public class CqlExecutionProvider {
         CqlTranslator translator;
         FhirMeasureBundler bundler = new FhirMeasureBundler();
 
-        STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
 
         List<Resource> results = new ArrayList<>();
 
         try {
-            translator = LibraryHelper.getTranslator(code, libraryLoader.getLibraryManager(),
+            translator = TranslatorHelper.getTranslator(code, libraryLoader.getLibraryManager(),
                     libraryLoader.getModelManager());
 
             if (translator.getErrors().size() > 0) {
@@ -238,7 +240,7 @@ public class CqlExecutionProvider {
 
         Map<String, List<Integer>> locations = getLocations(translator.getTranslatedLibrary().getLibrary());
 
-        org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(translator);
+        org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(translator);
         Context context = new Context(library);
 
         TerminologyProvider terminologyProvider = this.providerFactory.createTerminologyProvider(terminologyServiceUri, terminologyUser, terminologyPass);

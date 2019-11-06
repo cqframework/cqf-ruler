@@ -10,6 +10,8 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
@@ -22,10 +24,10 @@ import java.util.List;
 
 public class ApplyCqlOperationProvider {
 
-    private ProviderFactory providerFactory;
+    private EvaluationProviderFactory providerFactory;
     private IFhirResourceDao<Bundle> bundleDao;
 
-    public ApplyCqlOperationProvider(ProviderFactory providerFactory, IFhirResourceDao<Bundle> bundleDao) {
+    public ApplyCqlOperationProvider(EvaluationProviderFactory providerFactory, IFhirResourceDao<Bundle> bundleDao) {
         this.providerFactory = providerFactory;
         this.bundleDao = bundleDao;
     }
@@ -65,7 +67,7 @@ public class ApplyCqlOperationProvider {
                     List<String> extension = getExtension(base);
                     if (!extension.isEmpty()) {
                         String cql = String.format("using FHIR version '3.0.0' define x: %s", extension.get(1));
-                        library = LibraryHelper.translateLibrary(cql, new LibraryManager(new ModelManager()), new ModelManager());
+                        library = TranslatorHelper.translateLibrary(cql, new LibraryManager(new ModelManager()), new ModelManager());
                         context = new Context(library);
                         context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", "3.0.0"));
                         Object result = context.resolveExpressionRef("x").getExpression().evaluate(context);

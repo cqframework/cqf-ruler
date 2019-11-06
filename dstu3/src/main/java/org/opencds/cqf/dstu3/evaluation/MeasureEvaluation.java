@@ -8,6 +8,8 @@ import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.dstu3.builders.MeasureReportBuilder;
+import org.opencds.cqf.common.evaluation.MeasurePopulationType;
+import org.opencds.cqf.common.evaluation.MeasureScoring;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.Interval;

@@ -8,12 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
+import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.StringType;
-import org.opencds.cqf.dstu3.config.STU3LibrarySourceProvider;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -26,8 +26,10 @@ import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.param.StringParam;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.common.providers.LibraryResolutionProvider;
+import org.opencds.cqf.common.providers.LibrarySourceProvider;
 
-public class LibraryOperationsProvider implements org.opencds.cqf.dstu3.providers.LibraryResolutionProvider {
+public class LibraryOperationsProvider implements org.opencds.cqf.common.providers.LibraryResolutionProvider<Library> {
 
     private NarrativeProvider narrativeProvider;
     private DataRequirementsProvider dataRequirementsProvider;
@@ -52,16 +54,20 @@ public class LibraryOperationsProvider implements org.opencds.cqf.dstu3.provider
         return libraryManager;
     }
 
-    private STU3LibrarySourceProvider librarySourceProvider;
+    private LibrarySourceProvider<Library, Attachment> librarySourceProvider;
 
-    private STU3LibrarySourceProvider getLibrarySourceProvider() {
+    private LibrarySourceProvider<Library, Attachment> getLibrarySourceProvider() {
         if (librarySourceProvider == null) {
-            librarySourceProvider = new STU3LibrarySourceProvider(getLibraryResourceProvider());
+            librarySourceProvider = new LibrarySourceProvider<Library, Attachment>(
+                this.getLibraryResolutionProvider(),
+                x -> x.getContent(),
+                x -> x.getContentType(),
+                x -> x.getData());
         }
         return librarySourceProvider;
     }
 
-    private LibraryResolutionProvider getLibraryResourceProvider() {
+    private LibraryResolutionProvider<Library> getLibraryResolutionProvider() {
         return this;
     }
 
@@ -142,7 +148,7 @@ public class LibraryOperationsProvider implements org.opencds.cqf.dstu3.provider
     @Override
     public Library resolveLibraryByName(String libraryName, String libraryVersion) {
         Iterable<org.hl7.fhir.dstu3.model.Library> libraries = getLibrariesByName(libraryName);
-        org.hl7.fhir.dstu3.model.Library library = LibraryResolutionProvider.selectFromList(libraries, libraryVersion);
+        org.hl7.fhir.dstu3.model.Library library = LibraryResolutionProvider.selectFromList(libraries, libraryVersion, x -> x.getVersion());
 
         if (library == null) {
             throw new IllegalArgumentException(String.format("Could not resolve library name %s", libraryName));
@@ -167,7 +173,7 @@ public class LibraryOperationsProvider implements org.opencds.cqf.dstu3.provider
     private Iterable<org.hl7.fhir.dstu3.model.Library> resolveLibraries(List< IBaseResource > resourceList) {
         List<org.hl7.fhir.dstu3.model.Library> ret = new ArrayList<>();
         for (IBaseResource res : resourceList) {
-            Class clazz = res.getClass();
+            Class<?> clazz = res.getClass();
             ret.add((org.hl7.fhir.dstu3.model.Library)clazz.cast(res));
         }
         return ret;

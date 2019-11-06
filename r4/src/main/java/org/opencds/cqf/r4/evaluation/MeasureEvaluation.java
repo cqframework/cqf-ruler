@@ -1,18 +1,20 @@
 package org.opencds.cqf.r4.evaluation;
 
+import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 import org.hl7.fhir.r4.model.*;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Quantity;
-import org.opencds.cqf.r4.builders.MeasureReportBuilder;
-import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
-import org.opencds.cqf.r4.providers.ResourceProviderRegistry;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.common.evaluation.MeasurePopulationType;
+import org.opencds.cqf.common.evaluation.MeasureScoring;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.Interval;
+import org.opencds.cqf.r4.builders.MeasureReportBuilder;
+import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.qdm.fivepoint4.QdmContext;
 import org.opencds.cqf.qdm.fivepoint4.model.*;
 import org.opencds.cqf.qdm.fivepoint4.repository.PatientRepository;
@@ -21,15 +23,19 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+
+// TODO: Split this into FHIR and QDM MeasureEvalation Classes.
 public class MeasureEvaluation {
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureEvaluation.class);
 
     private DataProvider provider;
     private Interval measurementPeriod;
+    private DaoRegistry registry;
 
-    public MeasureEvaluation(DataProvider provider, Interval measurementPeriod) {
+    public MeasureEvaluation(DataProvider provider, DaoRegistry registry, Interval measurementPeriod) {
         this.provider = provider;
+        this.registry = registry;
         this.measurementPeriod = measurementPeriod;
     }
 
@@ -40,7 +46,7 @@ public class MeasureEvaluation {
             return evaluatePopulationMeasure(measure, context);
         }
 
-        Iterable<Object> patientRetrieve = provider.retrieve("Patient", patientId, "Patient", null, null, null, null, null, null, null, null);
+        Iterable<Object> patientRetrieve = provider.retrieve("Patient", "id", patientId, "Patient", null, null, null, null, null, null, null, null);
         Patient patient = null;
         if (patientRetrieve.iterator().hasNext()) {
             patient = (Patient) patientRetrieve.iterator().next();
@@ -56,7 +62,7 @@ public class MeasureEvaluation {
             return evaluateQdmPopulationMeasure(measure, context);
         }
 
-        Iterable<Object> patientRetrieve = provider.retrieve("Patient", patientId, "Patient", null, null, null, null, null, null, null, null);
+        Iterable<Object> patientRetrieve = provider.retrieve("Patient", "id", patientId, "Patient", null, null, null, null, null, null, null, null);
         org.opencds.cqf.qdm.fivepoint4.model.Patient patient = null;
         if (patientRetrieve.iterator().hasNext()) {
             patient = (org.opencds.cqf.qdm.fivepoint4.model.Patient) patientRetrieve.iterator().next();
@@ -85,30 +91,21 @@ public class MeasureEvaluation {
         );
 
         List<Patient> patients = new ArrayList<>();
-        if (provider instanceof ResourceProviderRegistry) {
-            IBundleProvider patientProvider = ((ResourceProviderRegistry) provider).resolveResourceProvider("Patient").getDao().search(map);
-            List<IBaseResource> SUBJECTLIST = patientProvider.getResources(0, patientProvider.size());
-            SUBJECTLIST.forEach(x -> patients.add((Patient) x));
-        }
+        IBundleProvider patientProvider = registry.getResourceDao("Patient").search(map);
+        List<IBaseResource> patientList = patientProvider.getResources(0, patientProvider.size());
+        patientList.forEach(x -> patients.add((Patient) x));
         return patients;
     }
 
     private List<org.opencds.cqf.qdm.fivepoint4.model.Patient> getAllQdmPatients() {
-        List<org.opencds.cqf.qdm.fivepoint4.model.Patient> patients = new ArrayList<>();
-        if (provider instanceof Qdm54DataProvider) {
-            List<org.opencds.cqf.qdm.fivepoint4.model.Patient> SUBJECTLIST = QdmContext.getBean(PatientRepository.class).findAll();
-            patients.addAll(SUBJECTLIST);
-        }
-        return patients;
+        return QdmContext.getBean(PatientRepository.class).findAll();
     }
 
     private List<Patient> getAllPatients() {
         List<Patient> patients = new ArrayList<>();
-        if (provider instanceof ResourceProviderRegistry) {
-            IBundleProvider patientProvider = ((ResourceProviderRegistry) provider).resolveResourceProvider("Patient").getDao().search(new SearchParameterMap());
-            List<IBaseResource> SUBJECTLIST = patientProvider.getResources(0, patientProvider.size());
-            SUBJECTLIST.forEach(x -> patients.add((Patient) x));
-        }
+        IBundleProvider patientProvider = registry.getResourceDao("Patient").search(new SearchParameterMap());
+        List<IBaseResource> patientList = patientProvider.getResources(0, patientProvider.size());
+        patientList.forEach(x -> patients.add((Patient) x));
         return patients;
     }
 

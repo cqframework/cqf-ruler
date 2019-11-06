@@ -156,3 +156,7 @@ org.eclipse.m2e.core.prefs
 LogMessages.html
 
 *.zip
+
+core.*
+heapdump.*
+Snap.*

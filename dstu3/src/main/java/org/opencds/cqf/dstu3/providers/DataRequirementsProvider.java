@@ -50,8 +50,10 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
+import org.opencds.cqf.common.evaluation.DataElementType;
+import org.opencds.cqf.common.helpers.TranslatorHelper;
+import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.dstu3.helpers.DataElementType;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 import org.opencds.cqf.dstu3.providers.CqfMeasure.TerminologyRef;
 import org.opencds.cqf.dstu3.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
@@ -76,12 +78,12 @@ public class DataRequirementsProvider {
     // 4. Update the Data Requirements on the Resources accordingly
     // Since the Library Loader only exposes the loaded libraries as ELM, we actually have to load them twice.
     // Once via the loader, Once manually
-    public CqfMeasure createCqfMeasure(Measure measure, LibraryResolutionProvider libraryResourceProvider) {
+    public CqfMeasure createCqfMeasure(Measure measure, LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = this.createLibraryMap(measure, libraryResourceProvider);
         return this.createCqfMeasure(measure, libraryMap);
     }
 
-    private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>>  createLibraryMap(Measure measure, LibraryResolutionProvider libraryResourceProvider) {
+    private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>>  createLibraryMap(Measure measure, LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResourceProvider);
         List<Library> libraries = LibraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = new HashMap<>();
@@ -533,7 +535,7 @@ public class DataRequirementsProvider {
             return null;
         }
 
-        CqlTranslator translator = LibraryHelper.getTranslator(
+        CqlTranslator translator = TranslatorHelper.getTranslator(
                 new ByteArrayInputStream(Base64.getDecoder().decode(cql.getDataElement().getValueAsString())),
                 libraryManager, modelManager);
 
@@ -570,7 +572,7 @@ public class DataRequirementsProvider {
         library.getContent().add(elm);
     }
 
-    public void ensureRelatedArtifacts(org.hl7.fhir.dstu3.model.Library library, CqlTranslator translator, LibraryResolutionProvider libraryResourceProvider)
+    public void ensureRelatedArtifacts(org.hl7.fhir.dstu3.model.Library library, CqlTranslator translator, LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider)
     {
         library.getRelatedArtifact().clear();
         org.hl7.elm.r1.Library elm = translator.toELM();

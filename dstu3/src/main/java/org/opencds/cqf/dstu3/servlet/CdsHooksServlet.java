@@ -20,7 +20,7 @@
 // import org.opencds.cqf.config.HapiProperties;
 // import org.opencds.cqf.cql.execution.Context;
 // import org.opencds.cqf.cql.execution.LibraryLoader;
-// import org.opencds.cqf.exceptions.InvalidRequestException;
+// import org.opencds.cqf.common.exceptions.InvalidRequestException;
 // import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 // import org.opencds.cqf.dstu3.providers.FHIRPlanDefinitionResourceProvider;
 // import org.slf4j.Logger;

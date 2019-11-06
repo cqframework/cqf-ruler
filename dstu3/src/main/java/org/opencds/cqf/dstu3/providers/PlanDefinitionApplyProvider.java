@@ -1,19 +1,15 @@
 package org.opencds.cqf.dstu3.providers;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.cqframework.cql.elm.execution.ExpressionDef;
-import org.cqframework.cql.elm.execution.ListTypeSpecifier;
-import org.cqframework.cql.elm.execution.ParameterDef;
-import org.cqframework.cql.elm.execution.UsingDef;
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
 import org.hl7.fhir.dstu3.model.CarePlan;
-import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -24,7 +20,11 @@ import org.hl7.fhir.dstu3.model.RequestGroup;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.common.exceptions.NotImplementedException;
+import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
+import org.opencds.cqf.cql.model.ModelResolver;
+import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.dstu3.builders.AttachmentBuilder;
 import org.opencds.cqf.dstu3.builders.CarePlanActivityBuilder;
 import org.opencds.cqf.dstu3.builders.CarePlanBuilder;
@@ -34,31 +34,20 @@ import org.opencds.cqf.dstu3.builders.ReferenceBuilder;
 import org.opencds.cqf.dstu3.builders.RelatedArtifactBuilder;
 import org.opencds.cqf.dstu3.builders.RequestGroupActionBuilder;
 import org.opencds.cqf.dstu3.builders.RequestGroupBuilder;
-import org.opencds.cqf.dstu3.config.STU3LibraryLoader;
-import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
-import org.opencds.cqf.cql.model.ModelResolver;
-import org.opencds.cqf.cql.runtime.DateTime;
-import org.opencds.cqf.exceptions.NotImplementedException;
-import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
-import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
 public class PlanDefinitionApplyProvider {
 
     private CqlExecutionProvider executionProvider;
     private ModelResolver modelResolver;
-    private LibraryResolutionProvider libraryResourceProvider;
     private ActivityDefinitionApplyProvider activitydefinitionApplyProvider;
 
     private IFhirResourceDao<PlanDefinition> planDefintionDao; 
@@ -66,13 +55,11 @@ public class PlanDefinitionApplyProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
-    public PlanDefinitionApplyProvider(FhirContext fhirContext, ActivityDefinitionApplyProvider activitydefinitionApplyProvider, 
-        LibraryResolutionProvider libraryResourceProvider, IFhirResourceDao<PlanDefinition> planDefintionDao, IFhirResourceDao<ActivityDefinition> activityDefinitionDao,
+    public PlanDefinitionApplyProvider(FhirContext fhirContext, ActivityDefinitionApplyProvider activitydefinitionApplyProvider, IFhirResourceDao<PlanDefinition> planDefintionDao, IFhirResourceDao<ActivityDefinition> activityDefinitionDao,
         CqlExecutionProvider executionProvider) {
         this.executionProvider = executionProvider;
         this.modelResolver = new Dstu3FhirModelResolver(fhirContext);
         this.activitydefinitionApplyProvider = activitydefinitionApplyProvider;
-        this.libraryResourceProvider = libraryResourceProvider;
         this.planDefintionDao = planDefintionDao;
         this.activityDefinitionDao = activityDefinitionDao;
     }
