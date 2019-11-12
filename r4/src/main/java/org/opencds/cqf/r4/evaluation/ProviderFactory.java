@@ -13,6 +13,7 @@ import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 
 // This class is a relatively dumb factory for data providers. It supports only
 // creating JPA providers for FHIR and QDM, and only basic auth for terminology
@@ -21,12 +22,15 @@ public class ProviderFactory implements EvaluationProviderFactory {
     DaoRegistry registry;
     TerminologyProvider defaultTerminologyProvider;
     FhirContext fhirContext;
+    ISearchParamRegistry searchParamRegistry;
 
     public ProviderFactory(FhirContext fhirContext, DaoRegistry registry,
+            ISearchParamRegistry searchParamRegistry,
             TerminologyProvider defaultTerminologyProvider) {
         this.defaultTerminologyProvider = defaultTerminologyProvider;
         this.registry = registry;
         this.fhirContext = fhirContext;
+        this.searchParamRegistry = searchParamRegistry;
     }
 
     public DataProvider createDataProvider(String model, String version) {
@@ -41,7 +45,7 @@ public class ProviderFactory implements EvaluationProviderFactory {
     public DataProvider createDataProvider(String model, String version, TerminologyProvider terminologyProvider) {
         if (model.equals("FHIR") && version.equals("4.0.0")) {
             R4FhirModelResolver modelResolver = new R4FhirModelResolver(this.fhirContext);
-            JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(this.registry);
+            JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(this.registry, this.searchParamRegistry);
             retrieveProvider.setTerminologyProvider(terminologyProvider);
             retrieveProvider.setExpandValueSets(true);
 

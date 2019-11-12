@@ -47,6 +47,7 @@ import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.rp.r4.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
+import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
 import ca.uhn.fhir.jpa.term.IHapiTerminologySvcR4;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
@@ -94,8 +95,10 @@ public class BaseServlet extends RestfulServer {
 
         registerProvider(appCtx.getBean(TerminologyUploaderProviderR4.class));
 
+        ISearchParamRegistry searchParamRegistry = appCtx.getBean(ISearchParamRegistry.class);
+
         TerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService",  IHapiTerminologySvcR4.class), getFhirContext(), (ValueSetResourceProvider)this.getResourceProvider(ValueSet.class));
-        EvaluationProviderFactory providerFactory = new ProviderFactory(this.fhirContext, this.registry, localSystemTerminologyProvider);
+        EvaluationProviderFactory providerFactory = new ProviderFactory(this.fhirContext, this.registry, searchParamRegistry, localSystemTerminologyProvider);
 
         resolveProviders(providerFactory);
 

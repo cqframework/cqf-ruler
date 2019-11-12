@@ -11,13 +11,15 @@ import org.opencds.cqf.cql.retrieve.*;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
-public class JpaFhirRetrieveProvider extends FhirRetrieveProvider {
+public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
     
     DaoRegistry registry;
 
-	public JpaFhirRetrieveProvider(DaoRegistry registry) {
+	public JpaFhirRetrieveProvider(DaoRegistry registry, ISearchParamRegistry searchParamRegistry) {
+        super (searchParamRegistry);
 		this.registry = registry;
 	}
 

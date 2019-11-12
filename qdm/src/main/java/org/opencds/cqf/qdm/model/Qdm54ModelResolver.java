@@ -94,17 +94,12 @@ public class Qdm54ModelResolver implements ModelResolver {
         }
 
         @Override
-        public Class resolveType(String typeName) {
+        public Class<?> resolveType(String typeName) {
                 return null;
         }
 
         @Override
-        public Class resolveType(Object value) {
-                return null;
-        }
-
-        @Override
-        public String resolveClassName(String typeName) {
+        public Class<?> resolveType(Object value) {
                 return null;
         }
 
