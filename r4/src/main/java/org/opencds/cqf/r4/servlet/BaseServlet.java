@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
+import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
+import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeSystem;
@@ -86,14 +88,12 @@ public class BaseServlet extends RestfulServer {
         registerProvider(systemProvider);
 
 
-        List<IResourceProvider> resourceProviders = appCtx.getBean("myResourceProvidersR4", List.class);
-        registerProviders(resourceProviders);
+        ResourceProviderFactory resourceProviders = appCtx.getBean("myResourceProvidersR4", ResourceProviderFactory.class);
+        registerProviders(resourceProviders.createProviders());
 
         JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao, appCtx.getBean(DaoConfig.class));
         confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
         setServerConformanceProvider(confProvider);
-
-        registerProvider(appCtx.getBean(TerminologyUploaderProviderR4.class));
 
         ISearchParamRegistry searchParamRegistry = appCtx.getBean(ISearchParamRegistry.class);
 
@@ -152,6 +152,8 @@ public class BaseServlet extends RestfulServer {
         {
             setServerAddressStrategy(new HardcodedServerAddressStrategy(serverAddress));
         }
+
+        registerProvider(appCtx.getBean(TerminologyUploaderProvider.class));
 
         if (HapiProperties.getCorsEnabled())
         {

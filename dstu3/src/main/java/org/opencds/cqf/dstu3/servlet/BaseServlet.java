@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
+import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
+import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.CodeSystem;
@@ -84,14 +86,12 @@ public class BaseServlet extends RestfulServer {
         Object systemProvider = appCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
         registerProvider(systemProvider);
 
-        List<IResourceProvider> resourceProviders = appCtx.getBean("myResourceProvidersDstu3", List.class);
-        registerProviders(resourceProviders);
+        ResourceProviderFactory resourceProviders = appCtx.getBean("myResourceProvidersDstu3", ResourceProviderFactory.class);
+        registerProviders(resourceProviders.createProviders());
 
         JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao, appCtx.getBean(DaoConfig.class));
         confProvider.setImplementationDescription("CQF Ruler FHIR DSTU3 Server");
         setServerConformanceProvider(confProvider);
-
-        registerProvider(appCtx.getBean(TerminologyUploaderProviderDstu3.class));
 
         ISearchParamRegistry searchParamRegistry = appCtx.getBean(ISearchParamRegistry.class);
 
@@ -151,7 +151,7 @@ public class BaseServlet extends RestfulServer {
             setServerAddressStrategy(new HardcodedServerAddressStrategy(serverAddress));
         }
 
-        registerProvider(appCtx.getBean(TerminologyUploaderProviderDstu3.class));
+        registerProvider(appCtx.getBean(TerminologyUploaderProvider.class));
 
         if (HapiProperties.getCorsEnabled())
         {
