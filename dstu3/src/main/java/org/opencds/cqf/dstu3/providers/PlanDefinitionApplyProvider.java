@@ -58,7 +58,7 @@ public class PlanDefinitionApplyProvider {
     public PlanDefinitionApplyProvider(FhirContext fhirContext, ActivityDefinitionApplyProvider activitydefinitionApplyProvider, IFhirResourceDao<PlanDefinition> planDefintionDao, IFhirResourceDao<ActivityDefinition> activityDefinitionDao,
         CqlExecutionProvider executionProvider) {
         this.executionProvider = executionProvider;
-        this.modelResolver = new Dstu3FhirModelResolver(fhirContext);
+        this.modelResolver = new Dstu3FhirModelResolver();
         this.activitydefinitionApplyProvider = activitydefinitionApplyProvider;
         this.planDefintionDao = planDefintionDao;
         this.activityDefinitionDao = activityDefinitionDao;

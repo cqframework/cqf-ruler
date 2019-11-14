@@ -59,7 +59,7 @@ public class PlanDefinitionApplyProvider {
     public PlanDefinitionApplyProvider(FhirContext fhirContext, ActivityDefinitionApplyProvider activitydefinitionApplyProvider, IFhirResourceDao<PlanDefinition> planDefintionDao, IFhirResourceDao<ActivityDefinition> activityDefinitionDao,
         CqlExecutionProvider executionProvider) {
         this.executionProvider = executionProvider;
-        this.modelResolver = new R4FhirModelResolver(fhirContext);
+        this.modelResolver = new R4FhirModelResolver();
         this.activityDefinitionApplyProvider = activitydefinitionApplyProvider;
         this.planDefintionDao = planDefintionDao;
         this.activityDefinitionDao = activityDefinitionDao;

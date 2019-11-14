@@ -43,7 +43,7 @@ public class ProviderFactory implements EvaluationProviderFactory {
 
     public DataProvider createDataProvider(String model, String version, TerminologyProvider terminologyProvider) {
         if (model.equals("FHIR") && version.equals("3.0.0")) {
-            Dstu3FhirModelResolver modelResolver = new Dstu3FhirModelResolver(this.fhirContext);
+            Dstu3FhirModelResolver modelResolver = new Dstu3FhirModelResolver();
             JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(this.registry, this.searchParamRegistry);
             retrieveProvider.setTerminologyProvider(terminologyProvider);
             retrieveProvider.setExpandValueSets(true);

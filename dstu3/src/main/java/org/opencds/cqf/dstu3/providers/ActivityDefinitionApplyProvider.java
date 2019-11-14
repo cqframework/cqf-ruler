@@ -22,7 +22,7 @@ public class ActivityDefinitionApplyProvider {
     private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
 
     public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider, IFhirResourceDao<ActivityDefinition> activityDefinitionDao) {
-        this.modelResolver = new Dstu3FhirModelResolver(fhirContext);
+        this.modelResolver = new Dstu3FhirModelResolver();
         this.executionProvider = executionProvider;
         this.activityDefinitionDao = activityDefinitionDao;
     }
