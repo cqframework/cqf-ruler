@@ -99,7 +99,7 @@ public class FhirServerConfig {
     /**
      * Do some fancy logging to create a nice access log that has details about each incoming request.
      */
-    public IServerInterceptor loggingInterceptor() {
+    public LoggingInterceptor loggingInterceptor() {
         LoggingInterceptor retVal = new LoggingInterceptor();
         retVal.setLoggerName(HapiProperties.getLoggerName());
         retVal.setMessageFormat(HapiProperties.getLoggerFormat());
@@ -112,7 +112,7 @@ public class FhirServerConfig {
      * This interceptor adds some pretty syntax highlighting in responses when a browser is detected
      */
     @Bean(autowire = Autowire.BY_TYPE)
-    public IServerInterceptor responseHighlighterInterceptor() {
+    public ResponseHighlighterInterceptor responseHighlighterInterceptor() {
         return new ResponseHighlighterInterceptor();
     }
 }

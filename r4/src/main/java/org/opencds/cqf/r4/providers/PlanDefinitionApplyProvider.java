@@ -212,7 +212,7 @@ public class PlanDefinitionApplyProvider {
                 logger.info("Resolving condition with description: " + condition.getExpression().getDescription());
             }
             if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
-                if (condition.hasExpression() && condition.getExpression().hasLanguage() && !condition.getExpression().getLanguage().toCode().equals("text/cql")) {
+                if (condition.hasExpression() && condition.getExpression().hasLanguage() && !condition.getExpression().getLanguage().equals("text/cql")) {
                     logger.warn("An action language other than CQL was found: " + condition.getExpression().getLanguage());
                     continue;
                 }

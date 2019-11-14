@@ -78,7 +78,7 @@ public class ActivityDefinitionBuilder extends BaseBuilder<ActivityDefinition> {
         dynamicValueComponent.setExpression(
                 new Expression()
                         .setDescription(description)
-                        .setLanguage(Expression.ExpressionLanguage.fromCode(language))
+                        .setLanguage(Expression.ExpressionLanguage.fromCode(language).toCode())
                         .setExpression(expression)
         );
         complexProperty.addDynamicValue(dynamicValueComponent);

@@ -30,15 +30,16 @@ public class NarrativeProvider {
     public NarrativeProvider(String pathToPropertiesFile)
     {
         CustomThymeleafNarrativeGenerator myGenerator = new CustomThymeleafNarrativeGenerator("classpath:ca/uhn/fhir/narrative/narratives.properties", pathToPropertiesFile);
-        myGenerator.setIgnoreFailures(false);
-        myGenerator.setIgnoreMissingTemplates(false);
+//        myGenerator.setIgnoreFailures(false);
+//        myGenerator.setIgnoreMissingTemplates(false);
         this.generator = myGenerator;
     }
 
     public Narrative getNarrative(FhirContext context, IBaseResource resource) {
-        Narrative narrative = new Narrative();
-        this.generator.generateNarrative(context, resource, narrative);
-        return narrative;
+//        Narrative narrative = new Narrative();
+//        this.generator.generateNarrative(context, resource, narrative);
+        this.generator.populateResourceNarrative(context, resource);
+        return ((DomainResource) resource).getText();
     }
 
     // args[0] == relative path to json resource -> i.e. library/library-demo.json
