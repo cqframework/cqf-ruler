@@ -47,11 +47,13 @@ public class LibraryHelper {
         // load libraries
           // load libraries
           for (CanonicalType ref : measure.getLibrary()) {
-            // if library is contained in measure, load it into server
-            if (ref.getId().startsWith("#")) {
+			// if library is contained in measure, load it into server
+            String id = CanonicalHelper.getId(ref);
+            if (id.startsWith("#")) {
+                id = id.substring(1);
                 for (Resource resource : measure.getContained()) {
                     if (resource instanceof org.hl7.fhir.r4.model.Library
-                            && resource.getIdElement().getIdPart().equals(ref.getId().substring(1)))
+                            && resource.getIdElement().getIdPart().equals(id))
                     {
                         libraryResourceProvider.update((org.hl7.fhir.r4.model.Library) resource);
                     }
@@ -59,11 +61,6 @@ public class LibraryHelper {
             }
 
             // We just loaded it into the server so we can access it by Id
-            String id = ref.getId();
-            if (id.startsWith("#")) {
-                id = id.substring(1);
-            }
-
             org.hl7.fhir.r4.model.Library library = libraryResourceProvider.resolveLibraryById(id);
             libraries.add(
                 libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
@@ -112,7 +109,7 @@ public class LibraryHelper {
     public static Library resolvePrimaryLibrary(Measure measure, org.opencds.cqf.cql.execution.LibraryLoader libraryLoader, LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider)
     {
         // default is the first library reference
-        String id = measure.getLibrary().get(0).getId();
+        String id = CanonicalHelper.getId(measure.getLibrary().get(0));
 
         Library library = resolveLibraryById(id, libraryLoader, libraryResourceProvider);
 
