@@ -25,6 +25,7 @@ import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
 import org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.dstu3.providers.CacheValueSetsProvider;
 import org.opencds.cqf.dstu3.providers.CodeSystemUpdateProvider;
+import org.opencds.cqf.dstu3.providers.CqfMeasure;
 import org.opencds.cqf.dstu3.providers.CqlExecutionProvider;
 import org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.dstu3.providers.MeasureOperationsProvider;
@@ -75,6 +76,10 @@ public class BaseServlet extends RestfulServer {
         // Fhir Context
         this.fhirContext = appCtx.getBean(FhirContext.class);
         this.fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+		this.fhirContext.registerCustomType(VersionedTerminologyRef.class);
+		this.fhirContext.registerCustomType(CodeTerminologyRef.class);
+		this.fhirContext.registerCustomType(PopulationCriteriaMap.class);
+		this.fhirContext.registerCustomType(CqfMeasure.class);
         setFhirContext(this.fhirContext);
 
 

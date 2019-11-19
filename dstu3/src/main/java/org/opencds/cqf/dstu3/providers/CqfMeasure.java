@@ -22,11 +22,13 @@ import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.UsageContext;
-import org.opencds.cqf.dstu3.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.dstu3.providers.TerminologyRef.TerminologyRefType;
 
 import ca.uhn.fhir.model.api.annotation.Child;
 import ca.uhn.fhir.model.api.annotation.Description;
+import ca.uhn.fhir.model.api.annotation.ResourceDef;
 
+@ResourceDef(name="CqfMeasure")
 public class CqfMeasure extends Measure {
     private static final long serialVersionUID = -1297192817969868337L;
 
@@ -58,9 +60,9 @@ public class CqfMeasure extends Measure {
     @Description(shortDefinition="Supplemental Data Elements of the library", formalDefinition="The supplemental data elements of the library as a MeasureGroupPopulationComponent." )
     protected List<MeasureGroupPopulationComponent> supplementalDataElements;
 
-    @Child(name = "terminology", type = {CqfMeasure.TerminologyRef.class}, order=33, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Child(name = "terminology", type = {TerminologyRef.class}, order=33, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="Terminology of the library", formalDefinition="The terminology referenced in the library" )
-    protected List<CqfMeasure.TerminologyRef> terminology;
+    protected List<TerminologyRef> terminology;
 
     @Child(name = "dataCriteria", type = {StringType.class}, order=34, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     @Description(shortDefinition="Data Elements of the library", formalDefinition="The data elements referenced in the library" )
@@ -659,16 +661,16 @@ public class CqfMeasure extends Measure {
     /**
      * @return {@link #terminology} (The terminology referenced in the library.)
      */
-    public List<CqfMeasure.TerminologyRef> getTerminology() { 
+    public List<TerminologyRef> getTerminology() { 
         if (this.terminology == null)
-            this.terminology = new ArrayList<CqfMeasure.TerminologyRef>();
+            this.terminology = new ArrayList<TerminologyRef>();
         return this.terminology;
     }
 
     /**
      * @return Returns a reference to <code>this</code> for easy method chaining
      */
-    public CqfMeasure setTerminology(List<CqfMeasure.TerminologyRef> theTerminology) { 
+    public CqfMeasure setTerminology(List<TerminologyRef> theTerminology) { 
         this.terminology = theTerminology;
         return this;
     }
@@ -679,19 +681,19 @@ public class CqfMeasure extends Measure {
 
     // TODO: Need to rethink this. Do we want all the termionologies to be the same type?
     // This was originally a string so I think the refactor is probably not right or incomplete.
-    public CqfMeasure.TerminologyRef addTerminology() { //3
-        CqfMeasure.TerminologyRef t = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.VALUESET, null, null);
+    public TerminologyRef addTerminology() { //3
+        TerminologyRef t = new VersionedTerminologyRef(TerminologyRefType.VALUESET, null, null);
         if (this.terminology == null)
-            this.terminology = new ArrayList<CqfMeasure.TerminologyRef>();
+            this.terminology = new ArrayList<TerminologyRef>();
         this.terminology.add(t);
         return t;
     }
 
-    public CqfMeasure addTerminology(CqfMeasure.TerminologyRef  t) { //3
+    public CqfMeasure addTerminology(TerminologyRef  t) { //3
         if (t == null)
             return this;
         if (this.terminology == null)
-            this.terminology = new ArrayList<CqfMeasure.TerminologyRef >();
+            this.terminology = new ArrayList<TerminologyRef >();
         this.terminology.add(t);
         return this;
     }
@@ -699,7 +701,7 @@ public class CqfMeasure extends Measure {
     /**
      * @return The first repetition of repeating field {@link #terminology}, creating it if it does not already exist
      */
-    public CqfMeasure.TerminologyRef getTerminologyFirstRep() { 
+    public TerminologyRef getTerminologyFirstRep() { 
         if (getTerminology().isEmpty()) {
             addTerminology();
         }
@@ -866,163 +868,5 @@ public class CqfMeasure extends Measure {
             for (MeasureSupplementalDataComponent i : measure.getSupplementalData())
                 supplementalData.add(i.copy());
         };
-    }
-
-    public static class CodeTerminologyRef extends TerminologyRef   {
-
-        public CodeTerminologyRef(String name, String id, String codeSystemName, String codeSystemId, String displayName) {
-            this.type = TerminologyRefType.CODE;
-            this.name = name;
-            this.id = id;
-            this.codeSystemName = codeSystemName;
-            this.codeSystemId = codeSystemId;
-            this.displayName = displayName;
-
-        }
-
-        protected String codeSystemName;
-        public String getcodeSystemName() {
-            return codeSystemName;
-        }
-
-        public void setcodeSystemName(String codeSystemName) {
-            this.codeSystemName = codeSystemName;
-        }
-
-        protected String codeSystemId;
-        public String getcodeSystemId() {
-            return codeSystemId;
-        }
-
-        public void setcodeSystemId(String codeSystemId) {
-            this.codeSystemId = codeSystemId;
-        }
-
-        protected String displayName;
-        public String getdisplayName() {
-            return displayName;
-        }
-
-        public void setdisplayName(String displayName) {
-            this.displayName = displayName;
-        }
-
-        @Override
-        public String getDefinition() {
-            String definition = "code \"" + name + "\" : '" + id + "' from \"" + codeSystemName + "\"";
-            if (this.displayName != null) {
-                definition += ( " display '" + this.displayName + "'");
-            }
-
-            return definition;
-        }
-
-    }
-
-    public static class VersionedTerminologyRef extends TerminologyRef {
-
-        public VersionedTerminologyRef(TerminologyRefType type, String name, String id) {
-            this.type = type;
-            this.name = name;
-            this.id = id;
-        }
-
-        public VersionedTerminologyRef(TerminologyRefType type, String name, String id, String version) {
-            this(type, name, id);
-            this.version = version;
-        }
-
-        protected String version;
-        public String getVersion() {
-            return version;
-        }
-
-        public void setVersion(String version) {
-            this.version = version;
-        }
-
-        @Override
-        public String getDefinition() {
-            String definition = "";
-            switch(type) {
-                case CODESYSTEM:
-                    definition += "codesystem";
-                    break;
-                case VALUESET:
-                    definition += "valueset";
-                    break;
-                default:
-                    break;
-            }
-
-            if (name != null && id != null) {
-                definition += (" \"" + name + "\" : '" + id + "'");
-            }
-
-            if (version != null) {
-                definition += (" version \"" + version + "\"");
-            }
-
-            return definition;
-        }
-    }
-
-    public abstract static class TerminologyRef implements ca.uhn.fhir.model.api.IElement {
-
-        public static enum TerminologyRefType {
-            VALUESET,
-            CODE,
-            CODESYSTEM
-        }
-
-        protected String name;
-        protected String id;
-        protected TerminologyRefType type;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public TerminologyRefType getType() {
-            return type;
-        }
-
-        public void setType(TerminologyRefType type) {
-            this.type = type;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean hasFormatComment() {
-            return false;
-        }
-
-        @Override
-        public List<String> getFormatCommentsPre() {
-            return null;
-        }
-
-        @Override
-        public List<String> getFormatCommentsPost() {
-            return null;
-        }
-
-        public abstract String getDefinition();
     }
 }

@@ -49,9 +49,9 @@ import org.hl7.fhir.r4.model.RelatedArtifact.RelatedArtifactType;
 import org.jsoup.Jsoup;
 import org.opencds.cqf.common.providers.InMemoryLibraryResourceProvider;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
-import org.opencds.cqf.r4.providers.CqfMeasure.CodeTerminologyRef;
-import org.opencds.cqf.r4.providers.CqfMeasure.TerminologyRef;
-import org.opencds.cqf.r4.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.r4.providers.CodeTerminologyRef;
+import org.opencds.cqf.r4.providers.TerminologyRef;
+import org.opencds.cqf.r4.providers.TerminologyRef.TerminologyRefType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 

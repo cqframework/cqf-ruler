@@ -53,7 +53,14 @@ public class MeasureReportBuilder extends BaseBuilder<MeasureReport> {
                             .setStart(Date.from(((DateTime) start).getDateTime().toInstant()))
                             .setEnd(Date.from(((DateTime) period.getEnd()).getDateTime().toInstant()))
             );
-        }
+		}
+		else if (start instanceof Date) {
+			this.complexProperty.setPeriod(
+                new Period()
+                        .setStart((Date) period.getStart())
+                        .setEnd((Date) period.getEnd())
+	        );
+		}
 
         return this;
     }

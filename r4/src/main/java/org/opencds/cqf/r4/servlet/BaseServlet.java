@@ -25,6 +25,8 @@ import org.opencds.cqf.r4.evaluation.ProviderFactory;
 import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
 import org.opencds.cqf.r4.providers.CodeSystemUpdateProvider;
+import org.opencds.cqf.r4.providers.CodeTerminologyRef;
+import org.opencds.cqf.r4.providers.CqfMeasure;
 import org.opencds.cqf.r4.providers.CqlExecutionProvider;
 import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.r4.providers.MeasureOperationsProvider;
@@ -33,6 +35,8 @@ import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
 import org.opencds.cqf.r4.providers.LibraryOperationsProvider;
 import org.opencds.cqf.r4.providers.NarrativeProvider;
 import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
+import org.opencds.cqf.r4.providers.PopulationCriteriaMap;
+import org.opencds.cqf.r4.providers.VersionedTerminologyRef;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -75,7 +79,11 @@ public class BaseServlet extends RestfulServer {
 
         // Fhir Context
         this.fhirContext = appCtx.getBean(FhirContext.class);
-        this.fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+		this.fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+		this.fhirContext.registerCustomType(VersionedTerminologyRef.class);
+		this.fhirContext.registerCustomType(CodeTerminologyRef.class);
+		this.fhirContext.registerCustomType(PopulationCriteriaMap.class);
+		this.fhirContext.registerCustomType(CqfMeasure.class);
         setFhirContext(this.fhirContext);
 
 

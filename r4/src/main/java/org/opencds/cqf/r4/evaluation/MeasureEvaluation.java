@@ -283,7 +283,7 @@ public class MeasureEvaluation {
                 }
                 report.addContained(SUBJECTLIST);
             }
-            populationReport.setCount(populationCount);
+			populationReport.setCount(populationCount);
             reportGroup.addPopulation(populationReport);
         }
     }
@@ -549,9 +549,9 @@ public class MeasureEvaluation {
         MeasureReportBuilder reportBuilder = new MeasureReportBuilder();
         reportBuilder.buildStatus("complete");
         reportBuilder.buildType(type);
-        reportBuilder.buildMeasureReference(measure.getIdElement().getValue());
+        reportBuilder.buildMeasureReference(measure.getIdElement().getIdPart());
         if (type == MeasureReport.MeasureReportType.INDIVIDUAL && !patients.isEmpty()) {
-            reportBuilder.buildPatientReference(patients.get(0).getIdElement().getValue());
+            reportBuilder.buildPatientReference(patients.get(0).getIdElement().getIdPart());
         }
         reportBuilder.buildPeriod(measurementPeriod);
 
@@ -566,7 +566,8 @@ public class MeasureEvaluation {
         }
 
         for (Measure.MeasureGroupComponent group : measure.getGroup()) {
-            MeasureReport.MeasureReportGroupComponent reportGroup = new MeasureReport.MeasureReportGroupComponent();
+			MeasureReport.MeasureReportGroupComponent reportGroup = new MeasureReport.MeasureReportGroupComponent();
+			reportGroup.setId(group.getId());
             report.getGroup().add(reportGroup);
 
             // Declare variables to avoid a hash lookup on every patient

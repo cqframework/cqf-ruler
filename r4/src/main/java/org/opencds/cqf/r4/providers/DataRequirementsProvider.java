@@ -58,9 +58,10 @@ import org.opencds.cqf.common.evaluation.DataElementType;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
-import org.opencds.cqf.r4.providers.CqfMeasure.TerminologyRef;
-import org.opencds.cqf.r4.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.r4.providers.TerminologyRef;
+import org.opencds.cqf.r4.providers.TerminologyRef.TerminologyRefType;
 
 
 public class DataRequirementsProvider {
@@ -116,13 +117,13 @@ public class DataRequirementsProvider {
         List<Measure.MeasureGroupPopulationComponent> definitionStatements = new ArrayList<>();
         List<Measure.MeasureGroupPopulationComponent> functionStatements = new ArrayList<>();
         List<Measure.MeasureGroupPopulationComponent> supplementalDataElements = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef> terminology = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef > codes = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef > codeSystems = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef > valueSets = new ArrayList<>();
+        List<TerminologyRef> terminology = new ArrayList<>();
+        List<TerminologyRef > codes = new ArrayList<>();
+        List<TerminologyRef > codeSystems = new ArrayList<>();
+        List<TerminologyRef > valueSets = new ArrayList<>();
         List<StringType> dataCriteria = new ArrayList<>();
 
-        String primaryLibraryId = measure.getLibrary().get(0).getId();
+        String primaryLibraryId = CanonicalHelper.getId(measure.getLibrary().get(0));
         Library primaryLibrary = libraryMap.values().stream()
             .filter(x -> x.getRight() != null)
             .filter(x -> x.getRight().getIdElement() != null && x.getRight().getIdElement().getIdPart().equals(primaryLibraryId))
@@ -148,9 +149,9 @@ public class DataRequirementsProvider {
                     String name = codeSystem.getName();
                     String version = codeSystem.getVersion();
 
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.CODESYSTEM, name, codeId, version);
+                    TerminologyRef term = new VersionedTerminologyRef(TerminologyRefType.CODESYSTEM, name, codeId, version);
                     Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : codeSystems) {
+                    for (TerminologyRef  t : codeSystems) {
                         if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }
@@ -177,9 +178,9 @@ public class DataRequirementsProvider {
                         }
                     }
 
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.CodeTerminologyRef(name, codeId, codeSystemName, codeSystemId, displayName);
+                    TerminologyRef term = new CodeTerminologyRef(name, codeId, codeSystemName, codeSystemId, displayName);
                     Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : codes) {
+                    for (TerminologyRef  t : codes) {
                         if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }
@@ -195,9 +196,9 @@ public class DataRequirementsProvider {
                     String valueSetId = valueSet.getId().replace("urn:oid:", "");
                     String name = valueSet.getName();
 
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.VALUESET, name, valueSetId);
+                    TerminologyRef term = new VersionedTerminologyRef(TerminologyRefType.VALUESET, name, valueSetId);
                     Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : valueSets) {
+                    for (TerminologyRef  t : valueSets) {
                         if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }

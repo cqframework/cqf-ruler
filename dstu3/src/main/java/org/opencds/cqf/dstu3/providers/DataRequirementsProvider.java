@@ -55,8 +55,8 @@ import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
-import org.opencds.cqf.dstu3.providers.CqfMeasure.TerminologyRef;
-import org.opencds.cqf.dstu3.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.dstu3.providers.TerminologyRef;
+import org.opencds.cqf.dstu3.providers.TerminologyRef.TerminologyRefType;
 
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.html.*;
@@ -122,10 +122,10 @@ public class DataRequirementsProvider {
         List<MeasureGroupPopulationComponent> definitionStatements = new ArrayList<>();
         List<MeasureGroupPopulationComponent> functionStatements = new ArrayList<>();
         List<MeasureGroupPopulationComponent> supplementalDataElements = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef> terminology = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef > codes = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef > codeSystems = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef > valueSets = new ArrayList<>();
+        List<TerminologyRef> terminology = new ArrayList<>();
+        List<TerminologyRef > codes = new ArrayList<>();
+        List<TerminologyRef > codeSystems = new ArrayList<>();
+        List<TerminologyRef > valueSets = new ArrayList<>();
         List<StringType> dataCriteria = new ArrayList<>();
 
         String primaryLibraryId = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
@@ -154,9 +154,9 @@ public class DataRequirementsProvider {
                     String name = codeSystem.getName();
                     String version = codeSystem.getVersion();
 
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.CODESYSTEM, name, codeId, version);
+                    TerminologyRef term = new VersionedTerminologyRef(TerminologyRefType.CODESYSTEM, name, codeId, version);
                     Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : codeSystems) {
+                    for (TerminologyRef  t : codeSystems) {
                         if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }
@@ -183,9 +183,9 @@ public class DataRequirementsProvider {
                         }
                     }
 
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.CodeTerminologyRef(name, codeId, codeSystemName, codeSystemId, displayName);
+                    TerminologyRef term = new CodeTerminologyRef(name, codeId, codeSystemName, codeSystemId, displayName);
                     Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : codes) {
+                    for (TerminologyRef  t : codes) {
                         if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }
@@ -201,9 +201,9 @@ public class DataRequirementsProvider {
                     String valueSetId = valueSet.getId().replace("urn:oid:", "");
                     String name = valueSet.getName();
 
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.VALUESET, name, valueSetId);
+                    TerminologyRef term = new VersionedTerminologyRef(TerminologyRefType.VALUESET, name, valueSetId);
                     Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : valueSets) {
+                    for (TerminologyRef  t : valueSets) {
                         if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }
