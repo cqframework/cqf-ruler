@@ -25,6 +25,7 @@ import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
 import org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.dstu3.providers.CacheValueSetsProvider;
 import org.opencds.cqf.dstu3.providers.CodeSystemUpdateProvider;
+import org.opencds.cqf.dstu3.providers.CodeTerminologyRef;
 import org.opencds.cqf.dstu3.providers.CqfMeasure;
 import org.opencds.cqf.dstu3.providers.CqlExecutionProvider;
 import org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider;
@@ -34,6 +35,8 @@ import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
 import org.opencds.cqf.dstu3.providers.LibraryOperationsProvider;
 import org.opencds.cqf.dstu3.providers.NarrativeProvider;
 import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
+import org.opencds.cqf.dstu3.providers.PopulationCriteriaMap;
+import org.opencds.cqf.dstu3.providers.VersionedTerminologyRef;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
