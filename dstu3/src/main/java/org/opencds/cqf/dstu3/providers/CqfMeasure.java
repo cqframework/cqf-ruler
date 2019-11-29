@@ -1,9 +1,7 @@
 package org.opencds.cqf.dstu3.providers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.hl7.fhir.dstu3.model.Attachment;
@@ -76,9 +74,9 @@ public class CqfMeasure extends Measure {
     @Description(shortDefinition="Additional documentation, citations, etc", formalDefinition="Related artifacts such as additional documentation, justification, or bibliographic references." )
     protected List<RelatedArtifact> citations;
 
-    @Child(name = "sharedPopulationCriteria", type = {}, order=37, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
+    @Child(name = "sharedPopulationCriteria", type = {PopulationCriteriaMap.class}, order=37, min=0, max=1, modifier=false, summary=false)
     @Description(shortDefinition="Shared critiera of the library", formalDefinition="The shared criteria of the measure." )
-    protected Map<String, Pair<String, String>> sharedPopulationCritieria;
+    protected PopulationCriteriaMap sharedPopulationCritieria;
     
     // @Child(name = "uniquePopulationGroup", type = {}, order=38, min=0, max=Child.MAX_UNLIMITED, modifier=false, summary=false)
     // @Description(shortDefinition="Population Statements of the library", formalDefinition="The populations of the library as a MeasureGroupComponent." )
@@ -89,7 +87,7 @@ public class CqfMeasure extends Measure {
      */
     public List<RelatedArtifact> getCitations() { 
       if (this.citations == null)
-        this.citations = new ArrayList<RelatedArtifact>();
+        this.citations = new ArrayList<>();
       return this.citations;
     }
 
@@ -113,7 +111,7 @@ public class CqfMeasure extends Measure {
     public RelatedArtifact addCitations() { //3
       RelatedArtifact t = new RelatedArtifact();
       if (this.citations == null)
-        this.citations = new ArrayList<RelatedArtifact>();
+        this.citations = new ArrayList<>();
       this.citations.add(t);
       return t;
     }
@@ -122,7 +120,7 @@ public class CqfMeasure extends Measure {
       if (t == null)
         return this;
       if (this.citations == null)
-        this.citations = new ArrayList<RelatedArtifact>();
+        this.citations = new ArrayList<>();
       this.citations.add(t);
       return this;
     }
@@ -142,7 +140,7 @@ public class CqfMeasure extends Measure {
     */
     public List<Library> getLibraries() { 
         if (this.libraries == null)
-            this.libraries = new ArrayList<Library>();
+            this.libraries = new ArrayList<>();
         return this.libraries;
     }
 
@@ -161,7 +159,7 @@ public class CqfMeasure extends Measure {
     public Library addLibraries() { //3
         Library t = new Library();
         if (this.libraries == null)
-            this.libraries = new ArrayList<Library>();
+            this.libraries = new ArrayList<>();
         this.libraries.add(t);
         return t;
     }
@@ -170,7 +168,7 @@ public class CqfMeasure extends Measure {
         if (t == null)
             return this;
         if (this.libraries == null)
-            this.libraries = new ArrayList<Library>();
+            this.libraries = new ArrayList<>();
         this.libraries.add(t);
         return this;
     }
@@ -191,7 +189,7 @@ public class CqfMeasure extends Measure {
     */
     public List<ParameterDefinition> getParameter() { 
         if (this.parameter == null)
-            this.parameter = new ArrayList<ParameterDefinition>();
+            this.parameter = new ArrayList<>();
         return this.parameter;
     }
 
@@ -215,7 +213,7 @@ public class CqfMeasure extends Measure {
     public ParameterDefinition addParameter() { //3
         ParameterDefinition t = new ParameterDefinition();
         if (this.parameter == null)
-            this.parameter = new ArrayList<ParameterDefinition>();
+            this.parameter = new ArrayList<>();
         this.parameter.add(t);
         return t;
     }
@@ -224,7 +222,7 @@ public class CqfMeasure extends Measure {
         if (t == null)
             return this;
         if (this.parameter == null)
-            this.parameter = new ArrayList<ParameterDefinition>();
+            this.parameter = new ArrayList<>();
         this.parameter.add(t);
         return this;
     }
@@ -244,7 +242,7 @@ public class CqfMeasure extends Measure {
      */
     public List<DataRequirement> getDataRequirement() { 
         if (this.dataRequirement == null)
-            this.dataRequirement = new ArrayList<DataRequirement>();
+            this.dataRequirement = new ArrayList<>();
         return this.dataRequirement;
     }
   
@@ -268,7 +266,7 @@ public class CqfMeasure extends Measure {
     public DataRequirement addDataRequirement() { //3
         DataRequirement t = new DataRequirement();
         if (this.dataRequirement == null)
-            this.dataRequirement = new ArrayList<DataRequirement>();
+            this.dataRequirement = new ArrayList<>();
         this.dataRequirement.add(t);
         return t;
     }
@@ -277,7 +275,7 @@ public class CqfMeasure extends Measure {
         if (t == null)
             return this;
         if (this.dataRequirement == null)
-            this.dataRequirement = new ArrayList<DataRequirement>();
+            this.dataRequirement = new ArrayList<>();
         this.dataRequirement.add(t);
         return this;
     }
@@ -297,7 +295,7 @@ public class CqfMeasure extends Measure {
      */
     public List<Attachment> getContent() { 
         if (this.content == null)
-            this.content = new ArrayList<Attachment>();
+            this.content = new ArrayList<>();
         return this.content;
     }
 
@@ -321,7 +319,7 @@ public class CqfMeasure extends Measure {
     public Attachment addContent() { //3
         Attachment t = new Attachment();
         if (this.content == null)
-            this.content = new ArrayList<Attachment>();
+            this.content = new ArrayList<>();
         this.content.add(t);
         return t;
     }
@@ -330,7 +328,7 @@ public class CqfMeasure extends Measure {
         if (t == null)
             return this;
         if (this.content == null)
-            this.content = new ArrayList<Attachment>();
+            this.content = new ArrayList<>();
         this.content.add(t);
         return this;
     }
@@ -346,16 +344,16 @@ public class CqfMeasure extends Measure {
     }
 
 
-    public Map<String, Pair<String,String>> getSharedPopulationCritieria() { 
+    public PopulationCriteriaMap getSharedPopulationCritieria() { 
         if (this.sharedPopulationCritieria == null)
-            this.sharedPopulationCritieria = new HashMap<String, Pair<String, String>>();
+            this.sharedPopulationCritieria = new PopulationCriteriaMap();
         return this.sharedPopulationCritieria;
     }
 
     /**
      * @return Returns a reference to <code>this</code> for easy method chaining
      */
-    public CqfMeasure setSharedPopulationCritiera(Map<String, Pair<String, String>> theSharedPopulationCriteria) { 
+    public CqfMeasure setSharedPopulationCritiera(PopulationCriteriaMap theSharedPopulationCriteria) { 
         this.sharedPopulationCritieria = theSharedPopulationCriteria;
         return this;
     }
@@ -363,13 +361,13 @@ public class CqfMeasure extends Measure {
     public boolean hasSharedPopulationCritiera() { 
         if (this.sharedPopulationCritieria == null)
             return false;
-        return this.sharedPopulationCritieria.size() > 0;
+        return this.sharedPopulationCritieria.getMap().size() > 0;
     }
 
     // public MeasureGroupComponent addSharedPopulationCritiera() { //3
     //     MeasureGroupComponent t = new MeasureGroupComponent();
     //     if (this.combinedPopulationGroup == null)
-    //         this.combinedPopulationGroup = new ArrayList<MeasureGroupComponent>();
+    //         this.combinedPopulationGroup = new ArrayList<>();
     //     this.combinedPopulationGroup.add(t);
     //     return t;
     // }
@@ -377,9 +375,7 @@ public class CqfMeasure extends Measure {
     public CqfMeasure addSharedPopulationCritiera(String key, String display, String description) { //3
         if (key == null || display == null || description == null)
             return this;
-        if (this.sharedPopulationCritieria == null)
-            this.sharedPopulationCritieria = new HashMap<String, Pair<String,String>>();
-        this.sharedPopulationCritieria.put(key, Pair.of(display, description));
+        this.getSharedPopulationCritieria().getMap().put(key, Pair.of(display, description));
         return this;
     }
 
@@ -398,7 +394,7 @@ public class CqfMeasure extends Measure {
      */
     // public List<MeasureGroupComponent> getUniquePopulationGroup() { 
     //     if (this.uniquePopulationGroup == null)
-    //         this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
+    //         this.uniquePopulationGroup = new ArrayList<>();
     //     return this.uniquePopulationGroup;
     // }
 
@@ -422,7 +418,7 @@ public class CqfMeasure extends Measure {
     // public MeasureGroupComponent addUniquePopulationGroup() { //3
     //     MeasureGroupComponent t = new MeasureGroupComponent();
     //     if (this.uniquePopulationGroup == null)
-    //         this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
+    //         this.uniquePopulationGroup = new ArrayList<>();
     //     this.uniquePopulationGroup.add(t);
     //     return t;
     // }
@@ -431,7 +427,7 @@ public class CqfMeasure extends Measure {
     //     if (t == null)
     //         return this;
     //     if (this.uniquePopulationGroup == null)
-    //         this.uniquePopulationGroup = new ArrayList<MeasureGroupComponent>();
+    //         this.uniquePopulationGroup = new ArrayList<>();
     //     this.uniquePopulationGroup.add(t);
     //     return this;
     // }
@@ -451,7 +447,7 @@ public class CqfMeasure extends Measure {
      */
     public List<MeasureGroupComponent> getPopulationStatements() { 
         if (this.populationStatements == null)
-            this.populationStatements = new ArrayList<MeasureGroupComponent>();
+            this.populationStatements = new ArrayList<>();
         return this.populationStatements;
     }
 
@@ -475,7 +471,7 @@ public class CqfMeasure extends Measure {
     public MeasureGroupComponent addPopulationStatements() { //3
         MeasureGroupComponent t = new MeasureGroupComponent();
         if (this.populationStatements == null)
-            this.populationStatements = new ArrayList<MeasureGroupComponent>();
+            this.populationStatements = new ArrayList<>();
         this.populationStatements.add(t);
         return t;
     }
@@ -484,7 +480,7 @@ public class CqfMeasure extends Measure {
         if (t == null)
             return this;
         if (this.populationStatements == null)
-            this.populationStatements = new ArrayList<MeasureGroupComponent>();
+            this.populationStatements = new ArrayList<>();
         this.populationStatements.add(t);
         return this;
     }
@@ -504,7 +500,7 @@ public class CqfMeasure extends Measure {
      */
     public List<MeasureGroupPopulationComponent> getDefinitionStatements() { 
         if (this.definitionStatements == null)
-            this.definitionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+            this.definitionStatements = new ArrayList<>();
         return this.definitionStatements;
     }
 
@@ -528,7 +524,7 @@ public class CqfMeasure extends Measure {
     public MeasureGroupPopulationComponent addDefinitionStatements() { //3
         MeasureGroupPopulationComponent t = new MeasureGroupPopulationComponent();
         if (this.definitionStatements == null)
-            this.definitionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+            this.definitionStatements = new ArrayList<>();
         this.definitionStatements.add(t);
         return t;
     }
@@ -537,7 +533,7 @@ public class CqfMeasure extends Measure {
         if (t == null)
             return this;
         if (this.definitionStatements == null)
-            this.definitionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+            this.definitionStatements = new ArrayList<>();
         this.definitionStatements.add(t);
         return this;
     }
@@ -557,7 +553,7 @@ public class CqfMeasure extends Measure {
      */
     public List<MeasureGroupPopulationComponent> getFunctionStatements() { 
         if (this.functionStatements == null)
-            this.functionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+            this.functionStatements = new ArrayList<>();
         return this.functionStatements;
     }
 
@@ -581,7 +577,7 @@ public class CqfMeasure extends Measure {
     public MeasureGroupPopulationComponent addFunctionStatements() { //3
         MeasureGroupPopulationComponent t = new MeasureGroupPopulationComponent();
         if (this.functionStatements == null)
-            this.functionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+            this.functionStatements = new ArrayList<>();
         this.functionStatements.add(t);
         return t;
     }
@@ -590,7 +586,7 @@ public class CqfMeasure extends Measure {
         if (t == null)
             return this;
         if (this.functionStatements == null)
-            this.functionStatements = new ArrayList<MeasureGroupPopulationComponent>();
+            this.functionStatements = new ArrayList<>();
         this.functionStatements.add(t);
         return this;
     }
@@ -606,11 +602,11 @@ public class CqfMeasure extends Measure {
     }
 
     /**
-     * @return {@link #supplementalSupplementalDataElements} (The supplemenetal data elements referenced in the library.)
+     * @return  (The supplemental data elements referenced in the library.)
      */
     public List<MeasureGroupPopulationComponent> getSupplementalDataElements() { 
         if (this.supplementalDataElements == null)
-            this.supplementalDataElements = new ArrayList<MeasureGroupPopulationComponent>();
+            this.supplementalDataElements = new ArrayList<>();
         return this.supplementalDataElements;
     }
 
@@ -634,7 +630,7 @@ public class CqfMeasure extends Measure {
     public MeasureGroupPopulationComponent addSupplementalDataElements() { //3
         MeasureGroupPopulationComponent t = new MeasureGroupPopulationComponent();
         if (this.supplementalDataElements == null)
-            this.supplementalDataElements = new ArrayList<MeasureGroupPopulationComponent>();
+            this.supplementalDataElements = new ArrayList<>();
         this.supplementalDataElements.add(t);
         return t;
     }
@@ -643,13 +639,13 @@ public class CqfMeasure extends Measure {
         if (t == null)
             return this;
         if (this.supplementalDataElements == null)
-            this.supplementalDataElements = new ArrayList<MeasureGroupPopulationComponent>();
+            this.supplementalDataElements = new ArrayList<>();
         this.supplementalDataElements.add(t);
         return this;
     }
 
     /**
-     * @return The first repetition of repeating field {@link #supplementalSupplementalDataElements}, creating it if it does not already exist
+     * @return The first repetition of repeating field , creating it if it does not already exist
      */
     public MeasureGroupPopulationComponent getSupplementalDataElementsFirstRep() { 
         if (getSupplementalDataElements().isEmpty()) {
@@ -663,7 +659,7 @@ public class CqfMeasure extends Measure {
      */
     public List<TerminologyRef> getTerminology() { 
         if (this.terminology == null)
-            this.terminology = new ArrayList<TerminologyRef>();
+            this.terminology = new ArrayList<>();
         return this.terminology;
     }
 
@@ -684,7 +680,7 @@ public class CqfMeasure extends Measure {
     public TerminologyRef addTerminology() { //3
         TerminologyRef t = new VersionedTerminologyRef(TerminologyRefType.VALUESET, null, null);
         if (this.terminology == null)
-            this.terminology = new ArrayList<TerminologyRef>();
+            this.terminology = new ArrayList<>();
         this.terminology.add(t);
         return t;
     }
@@ -693,7 +689,7 @@ public class CqfMeasure extends Measure {
         if (t == null)
             return this;
         if (this.terminology == null)
-            this.terminology = new ArrayList<TerminologyRef >();
+            this.terminology = new ArrayList<>();
         this.terminology.add(t);
         return this;
     }
@@ -713,7 +709,7 @@ public class CqfMeasure extends Measure {
      */
     public List<StringType> getDataCriteria() { 
         if (this.dataCriteria == null)
-            this.dataCriteria = new ArrayList<StringType>();
+            this.dataCriteria = new ArrayList<>();
         return this.dataCriteria;
     }
 
@@ -737,7 +733,7 @@ public class CqfMeasure extends Measure {
     public StringType addDataCriteria() { //3
         StringType t = new StringType();
         if (this.dataCriteria == null)
-            this.dataCriteria = new ArrayList<StringType>();
+            this.dataCriteria = new ArrayList<>();
         this.dataCriteria.add(t);
         return t;
     }
@@ -746,7 +742,7 @@ public class CqfMeasure extends Measure {
         if (t == null)
             return this;
         if (this.dataCriteria == null)
-            this.dataCriteria = new ArrayList<StringType>();
+            this.dataCriteria = new ArrayList<>();
         this.dataCriteria.add(t);
         return this;
     }
@@ -761,6 +757,8 @@ public class CqfMeasure extends Measure {
         return getDataCriteria().get(0);
     }
 
+    public CqfMeasure() {}
+
     public CqfMeasure(Measure measure) {
         super();
         id = measure.getIdElement() == null ? null : measure.getIdElement().copy();
@@ -769,23 +767,23 @@ public class CqfMeasure extends Measure {
         language = measure.getLanguageElement() == null ? null : measure.getLanguageElement().copy();
         text = measure.getText() == null ? null : measure.getText().copy();
         if (measure.getContained() != null) {
-            contained = new ArrayList<Resource>();
+            contained = new ArrayList<>();
             for (Resource i : measure.getContained())
                 contained.add(i.copy());
         };
         if (measure.getExtension() != null) {
-            extension = new ArrayList<Extension>();
+            extension = new ArrayList<>();
             for (Extension i : measure.getExtension())
                 extension.add(i.copy());
         };
         if (measure.getModifierExtension() != null) {
-            modifierExtension = new ArrayList<Extension>();
+            modifierExtension = new ArrayList<>();
             for (Extension i : measure.getModifierExtension())
                 modifierExtension.add(i.copy());
         };
         url = measure.getUrlElement() == null ? null : measure.getUrlElement().copy();
         if (measure.getIdentifier() != null) {
-            identifier = new ArrayList<Identifier>();
+            identifier = new ArrayList<>();
             for (Identifier i : measure.getIdentifier())
                 identifier.add(i.copy());
         };
@@ -803,38 +801,38 @@ public class CqfMeasure extends Measure {
         lastReviewDate = measure.getLastReviewDateElement() == null ? null : measure.getLastReviewDateElement().copy();
         effectivePeriod = measure.getEffectivePeriod() == null ? null : measure.getEffectivePeriod().copy();
         if (measure.getUseContext() != null) {
-            useContext = new ArrayList<UsageContext>();
+            useContext = new ArrayList<>();
             for (UsageContext i : measure.getUseContext())
                 useContext.add(i.copy());
         };
         if (measure.getJurisdiction() != null) {
-            jurisdiction = new ArrayList<CodeableConcept>();
+            jurisdiction = new ArrayList<>();
             for (CodeableConcept i : measure.getJurisdiction())
                 jurisdiction.add(i.copy());
         };
         if (measure.getTopic() != null) {
-            topic = new ArrayList<CodeableConcept>();
+            topic = new ArrayList<>();
             for (CodeableConcept i : measure.getTopic())
                 topic.add(i.copy());
         };
         if (measure.getContributor() != null) {
-            contributor = new ArrayList<Contributor>();
+            contributor = new ArrayList<>();
             for (Contributor i : measure.getContributor())
                 contributor.add(i.copy());
         };
         if (measure.getContact() != null) {
-            contact = new ArrayList<ContactDetail>();
+            contact = new ArrayList<>();
             for (ContactDetail i : measure.getContact())
                 contact.add(i.copy());
         };
         copyright = measure.getCopyrightElement() == null ? null : measure.getCopyrightElement().copy();
         if (measure.getRelatedArtifact() != null) {
-            relatedArtifact = new ArrayList<RelatedArtifact>();
+            relatedArtifact = new ArrayList<>();
             for (RelatedArtifact i : measure.getRelatedArtifact())
                 relatedArtifact.add(i.copy());
         };
         if (measure.getLibrary() != null) {
-            library = new ArrayList<Reference>();
+            library = new ArrayList<>();
             for (Reference i : measure.getLibrary())
                 library.add(i.copy());
         };
@@ -842,7 +840,7 @@ public class CqfMeasure extends Measure {
         scoring = measure.getScoring() == null ? null : measure.getScoring().copy();
         compositeScoring = measure.getCompositeScoring() == null ? null : measure.getCompositeScoring().copy();
         if (measure.getType() != null) {
-            type = new ArrayList<CodeableConcept>();
+            type = new ArrayList<>();
             for (CodeableConcept i : measure.getType())
                 type.add(i.copy());
         };
@@ -852,19 +850,19 @@ public class CqfMeasure extends Measure {
         clinicalRecommendationStatement = measure.getClinicalRecommendationStatementElement() == null ? null : measure.getClinicalRecommendationStatementElement().copy();
         improvementNotation = measure.getImprovementNotationElement() == null ? null : measure.getImprovementNotationElement().copy();
         if (measure.getDefinition() != null) {
-            definition = new ArrayList<MarkdownType>();
+            definition = new ArrayList<>();
             for (MarkdownType i : measure.getDefinition())
                 definition.add(i.copy());
         };
         guidance = measure.getGuidanceElement() == null ? null : measure.getGuidanceElement().copy();
         set = measure.getSetElement() == null ? null : measure.getSetElement().copy();
         if (measure.getGroup() != null) {
-            group = new ArrayList<MeasureGroupComponent>();
+            group = new ArrayList<>();
             for (MeasureGroupComponent i : measure.getGroup())
                 group.add(i.copy());
         };
         if (measure.getSupplementalData() != null) {
-            supplementalData = new ArrayList<MeasureSupplementalDataComponent>();
+            supplementalData = new ArrayList<>();
             for (MeasureSupplementalDataComponent i : measure.getSupplementalData())
                 supplementalData.add(i.copy());
         };

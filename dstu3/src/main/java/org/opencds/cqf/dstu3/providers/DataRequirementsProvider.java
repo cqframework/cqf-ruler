@@ -395,7 +395,7 @@ public class DataRequirementsProvider {
                 List<MeasureGroupPopulationComponent> newMgpc = new ArrayList<MeasureGroupPopulationComponent>();
                 for (int j = 0; j < mgc.getPopulation().size(); j++) {
                     MeasureGroupPopulationComponent mgpc = mgc.getPopulation().get(j);
-                    if (mgpc.hasCriteria() && !mgpc.getCriteria().isEmpty() && !cqfMeasure.getSharedPopulationCritieria().containsKey(mgpc.getCriteria())) {
+                    if (mgpc.hasCriteria() && !mgpc.getCriteria().isEmpty() && !cqfMeasure.getSharedPopulationCritieria().getMap().containsKey(mgpc.getCriteria())) {
                         String code = mgpc.getCode().getCodingFirstRep().getCode();
                         String display = HQMFProvider.measurePopulationValueSetMap.get(code).displayName;
                         mgpc.setName(display);
