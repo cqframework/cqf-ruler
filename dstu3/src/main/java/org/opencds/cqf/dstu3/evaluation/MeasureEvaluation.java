@@ -45,11 +45,12 @@ public class MeasureEvaluation {
             return evaluatePopulationMeasure(measure, context);
         }
 
-        Iterable<Object> patientRetrieve = provider.retrieve("Patient", "id", patientId, "Patient", null, null, null, null, null, null, null, null);
-        Patient patient = null;
-        if (patientRetrieve.iterator().hasNext()) {
-            patient = (Patient) patientRetrieve.iterator().next();
-        }
+        Patient patient = registry.getResourceDao(Patient.class).read(new IdType(patientId));
+//        Iterable<Object> patientRetrieve = provider.retrieve("Patient", "id", patientId, "Patient", null, null, null, null, null, null, null, null);
+//        Patient patient = null;
+//        if (patientRetrieve.iterator().hasNext()) {
+//            patient = (Patient) patientRetrieve.iterator().next();
+//        }
 
         return evaluate(measure, context, patient == null ? Collections.emptyList() : Collections.singletonList(patient), MeasureReport.MeasureReportType.INDIVIDUAL);
     }
