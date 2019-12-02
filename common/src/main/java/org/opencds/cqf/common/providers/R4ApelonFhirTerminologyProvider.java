@@ -5,28 +5,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
-import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
+import org.opencds.cqf.cql.terminology.fhir.R4FhirTerminologyProvider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.gclient.IQuery;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
-public class ApelonFhirTerminologyProvider extends FhirTerminologyProvider
+public class R4ApelonFhirTerminologyProvider extends R4FhirTerminologyProvider
     {
         private Map<String, List<Code>> cache = new HashMap<>();
 
-        public ApelonFhirTerminologyProvider() {
+        public R4ApelonFhirTerminologyProvider() {
             super();
         }
 
-        public ApelonFhirTerminologyProvider(FhirContext fhirContext) {
+        public R4ApelonFhirTerminologyProvider(FhirContext fhirContext) {
             super(fhirContext);
         }
 

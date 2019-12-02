@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.elm.execution.UsingDef;
@@ -28,6 +29,7 @@ import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.evaluation.LibraryLoader;
 import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
+import org.opencds.cqf.common.helpers.UsingHelper;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
@@ -242,19 +244,31 @@ public class CqlExecutionProvider {
 
         org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(translator);
         Context context = new Context(library);
-
-        TerminologyProvider terminologyProvider = this.providerFactory.createTerminologyProvider(terminologyServiceUri, terminologyUser, terminologyPass);
         context.registerLibraryLoader(libraryLoader);
-        context.registerTerminologyProvider(terminologyProvider);
-        for (UsingDef using : library.getUsings().getDef())
-        {
-            if (using.getLocalIdentifier().equals("System")) continue;
+        
+        List<Triple<String,String,String>> usingDefs = UsingHelper.getUsingUrlAndVersion(library.getUsings());
 
-            DataProvider dataProvider = this.providerFactory.createDataProvider(using.getLocalIdentifier(), using.getVersion(), terminologyProvider);
+        if (usingDefs.size() > 1) {
+            throw new IllegalArgumentException("Evaluation of Measure using multiple Models is not supported at this time.");
+        }
+
+        // If there are no Usings, there is probably not any place the Terminology
+        // actually used so I think the assumption that at least one provider exists is ok.
+        TerminologyProvider terminologyProvider = null;
+        if (usingDefs.size() > 0) {
+            // Creates a terminology provider based on the first using statement. This assumes the terminology
+            // server matches the FHIR version of the CQL.
+            terminologyProvider = this.providerFactory.createTerminologyProvider(
+                    usingDefs.get(0).getLeft(), usingDefs.get(0).getMiddle(),
+                        terminologyServiceUri, terminologyUser, terminologyPass);
+            context.registerTerminologyProvider(terminologyProvider);
+        }
+
+        for (Triple<String,String,String> def : usingDefs)
+        {
+            DataProvider dataProvider = this.providerFactory.createDataProvider(def.getLeft(), def.getMiddle(), terminologyProvider);
             context.registerDataProvider(
-                using.getLocalIdentifier().equals("FHIR") ? 
-                "http://hl7.org/fhir" :
-                "urn:healthit-gov:qdm:v5_4", 
+                def.getRight(), 
                 dataProvider);
         }
 

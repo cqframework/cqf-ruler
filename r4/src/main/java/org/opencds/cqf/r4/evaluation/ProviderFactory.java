@@ -4,11 +4,11 @@ import org.opencds.cqf.cql.data.CompositeDataProvider;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
+import org.opencds.cqf.cql.terminology.fhir.R4FhirTerminologyProvider;
 import org.opencds.cqf.qdm.model.Qdm54ModelResolver;
 import org.opencds.cqf.qdm.providers.Qdm54RetrieveProvider;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
-import org.opencds.cqf.common.providers.ApelonFhirTerminologyProvider;
+import org.opencds.cqf.common.providers.R4ApelonFhirTerminologyProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -38,7 +38,7 @@ public class ProviderFactory implements EvaluationProviderFactory {
     }
 
     public DataProvider createDataProvider(String model, String version, String url, String user, String pass) {
-        TerminologyProvider terminologyProvider = this.createTerminologyProvider(url, user, pass);
+        TerminologyProvider terminologyProvider = this.createTerminologyProvider(model, version, url, user, pass);
         return this.createDataProvider(model, version, terminologyProvider);
     }
 
@@ -59,14 +59,13 @@ public class ProviderFactory implements EvaluationProviderFactory {
                 String.format("Can't construct a data provider for model %s version %s", model, version));
     }
 
-    public TerminologyProvider createTerminologyProvider(String url, String user, String pass) {
-        if (url != null && !url.isEmpty()) {
-            if (url.contains("apelon.com")) {
-                return new ApelonFhirTerminologyProvider(this.fhirContext)
-                        .withBasicAuth(user, pass).setEndpoint(url, false);
-            } else {
-                return new FhirTerminologyProvider(this.fhirContext).withBasicAuth(user, pass).setEndpoint(url, false);
-            }
+    public TerminologyProvider createTerminologyProvider(String model, String version, String url, String user, String pass) {
+        if (model.equals("QDM") && url != null && url.contains("apelon.com")) {
+            return new R4ApelonFhirTerminologyProvider(this.fhirContext)
+            .withBasicAuth(user, pass).setEndpoint(url, false);
+        }
+        else if (url != null && !url.isEmpty()) {
+            return new R4FhirTerminologyProvider(this.fhirContext).withBasicAuth(user, pass).setEndpoint(url, false);
         } else
             return this.defaultTerminologyProvider;
     }
