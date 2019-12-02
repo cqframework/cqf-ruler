@@ -1,7 +1,9 @@
 package org.opencds.cqf.r4.evaluation;
 
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.UsingDef;
 import org.hl7.fhir.r4.model.Measure;
@@ -14,6 +16,7 @@ import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.common.helpers.UsingHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 
 import lombok.Data;
@@ -51,25 +54,32 @@ public class MeasureEvaluationSeed
         context = new Context(library);
         context.registerLibraryLoader(libraryLoader);
 
-        TerminologyProvider terminologyProvider = this.providerFactory.createTerminologyProvider(source, user, pass);
-        context.registerTerminologyProvider(terminologyProvider);
+        List<Triple<String,String,String>> usingDefs = UsingHelper.getUsingUrlAndVersion(library.getUsings());
 
+        if (usingDefs.size() > 1) {
+            throw new IllegalArgumentException("Evaluation of Measure using multiple Models is not supported at this time.");
+        }
 
-        for (UsingDef using : library.getUsings().getDef())
+        // If there are no Usings, there is probably not any place the Terminology
+        // actually used so I think the assumption that at least one provider exists is ok.
+        TerminologyProvider terminologyProvider = null;
+        if (usingDefs.size() > 0) {
+            // Creates a terminology provider based on the first using statement. This assumes the terminology
+            // server matches the FHIR version of the CQL.
+            terminologyProvider = this.providerFactory.createTerminologyProvider(
+                    usingDefs.get(0).getLeft(), usingDefs.get(0).getMiddle(),
+                        source, user, pass);
+            context.registerTerminologyProvider(terminologyProvider);
+        }
+
+        for (Triple<String,String,String> def : usingDefs)
         {
-            if (using.getLocalIdentifier().equals("System")) continue;
-
-            if (this.dataProvider != null) {
-                throw new IllegalArgumentException("Evaluation of Measure using multiple Models is not supported at this time.");
-            }
-
-            this.dataProvider = this.providerFactory.createDataProvider(using.getLocalIdentifier(), using.getVersion(), terminologyProvider);
+            this.dataProvider = this.providerFactory.createDataProvider(def.getLeft(), def.getMiddle(), terminologyProvider);
             context.registerDataProvider(
-                using.getLocalIdentifier().equals("FHIR") ? 
-                "http://hl7.org/fhir" :
-                "urn:healthit-gov:qdm:v5_4", 
+                def.getRight(), 
                 dataProvider);
         }
+
 
         // resolve the measurement period
         measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,

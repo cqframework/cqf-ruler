@@ -12,5 +12,5 @@ public interface EvaluationProviderFactory {
 
     public DataProvider createDataProvider(String model, String version, TerminologyProvider terminologyProvider);
 
-    public TerminologyProvider createTerminologyProvider(String url, String user, String pass);
+    public TerminologyProvider createTerminologyProvider(String model, String version, String url, String user, String pass);
 }
