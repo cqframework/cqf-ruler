@@ -59,7 +59,7 @@ public class ProviderFactory implements EvaluationProviderFactory {
     }
 
     public TerminologyProvider createTerminologyProvider(String model, String version, String url, String user, String pass) {
-        if (model.equals("QDM") && url != null && url.contains("apelon.com")) {
+        if (url != null && url.contains("apelon.com")) {
             return new Dstu3ApelonFhirTerminologyProvider(this.fhirContext)
             .withBasicAuth(user, pass).setEndpoint(url, false);
         }
