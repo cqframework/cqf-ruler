@@ -150,3 +150,10 @@ local.properties
 LogMessages.html
 
 *.zip
+/common/.flattened-pom.xml
+/dstu3/.flattened-pom.xml
+/r4/.flattened-pom.xml
+/.flattened-pom.xml
+/qdm/.flattened-pom.xml
+/cqf-ruler-dstu3/.flattened-pom.xml
+/cqf-ruler-r4/.flattened-pom.xml
