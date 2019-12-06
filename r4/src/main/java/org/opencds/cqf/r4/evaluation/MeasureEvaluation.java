@@ -551,7 +551,7 @@ public class MeasureEvaluation {
         reportBuilder.buildType(type);
         reportBuilder.buildMeasureReference(measure.getIdElement().getIdPart());
         if (type == MeasureReport.MeasureReportType.INDIVIDUAL && !patients.isEmpty()) {
-            reportBuilder.buildPatientReference(patients.get(0).getIdElement().getIdPart());
+            reportBuilder.buildPatientReference(patients.get(0).getIdElement().getId());
         }
         reportBuilder.buildPeriod(measurementPeriod);
 
