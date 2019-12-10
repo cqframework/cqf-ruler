@@ -561,9 +561,9 @@ public class DataRequirementsProvider {
         org.hl7.elm.r1.Library elm = translator.toELM();
         if (elm.getIncludes() != null && !elm.getIncludes().getDef().isEmpty()) {
             for (org.hl7.elm.r1.IncludeDef def : elm.getIncludes().getDef()) {
+				org.hl7.fhir.r4.model.Library relatedLibrary = libraryResourceProvider.resolveLibraryByName(def.getPath(), def.getVersion());
                 library.addRelatedArtifact(new RelatedArtifact().setType(RelatedArtifact.RelatedArtifactType.DEPENDSON)
-                        .setResource(
-                            libraryResourceProvider.resolveLibraryByName(def.getPath(), def.getVersion()).getId())
+                        .setResource(relatedLibrary.getIdElement().getResourceType() + "/" + relatedLibrary.getIdElement().getIdPart())
                 );
             }
         }
