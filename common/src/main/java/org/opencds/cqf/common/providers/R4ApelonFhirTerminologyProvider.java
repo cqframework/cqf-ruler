@@ -63,6 +63,11 @@ public class R4ApelonFhirTerminologyProvider extends R4FhirTerminologyProvider
 
         public String resolveByIdentifier(ValueSetInfo valueSet) {
             String valueSetId = valueSet.getId();
+
+            // Turns out we got a FHIR url. Let's use that.
+            if (valueSetId.startsWith("http")) {
+                return valueSetId;
+            }
             
             valueSetId = valueSetId.replace("urn:oid:", "");
 

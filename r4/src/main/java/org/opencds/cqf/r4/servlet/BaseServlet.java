@@ -20,6 +20,7 @@ import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.r4.evaluation.ProviderFactory;
 import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
@@ -48,13 +49,11 @@ import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.BaseJpaResourceProvider;
 import ca.uhn.fhir.jpa.provider.r4.JpaConformanceProviderR4;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
-import ca.uhn.fhir.jpa.provider.r4.TerminologyUploaderProviderR4;
 import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.rp.r4.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
-import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
 import ca.uhn.fhir.jpa.term.IHapiTerminologySvcR4;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
@@ -105,10 +104,10 @@ public class BaseServlet extends RestfulServer {
 
         ISearchParamRegistry searchParamRegistry = appCtx.getBean(ISearchParamRegistry.class);
 
-        TerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService",  IHapiTerminologySvcR4.class), getFhirContext(), (ValueSetResourceProvider)this.getResourceProvider(ValueSet.class));
+        JpaTerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService",  IHapiTerminologySvcR4.class), getFhirContext(), (ValueSetResourceProvider)this.getResourceProvider(ValueSet.class));
         EvaluationProviderFactory providerFactory = new ProviderFactory(this.fhirContext, this.registry, searchParamRegistry, localSystemTerminologyProvider);
 
-        resolveProviders(providerFactory);
+        resolveProviders(providerFactory, localSystemTerminologyProvider, this.registry, searchParamRegistry);
 
         // CdsHooksServlet.provider = provider;
 
@@ -188,7 +187,7 @@ public class BaseServlet extends RestfulServer {
 
     // Since resource provider resolution not lazy, the providers here must be resolved in the correct
     // order of dependencies.
-    private void resolveProviders(EvaluationProviderFactory providerFactory)
+    private void resolveProviders(EvaluationProviderFactory providerFactory, JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry, ISearchParamRegistry searchParamRegistry)
             throws ServletException
     {
         NarrativeProvider narrativeProvider = new NarrativeProvider();
@@ -225,9 +224,17 @@ public class BaseServlet extends RestfulServer {
         ActivityDefinitionApplyProvider actDefProvider = new ActivityDefinitionApplyProvider(this.fhirContext, cql, this.getDao(ActivityDefinition.class));
         this.registerProvider(actDefProvider);
 
+        JpaFhirRetrieveProvider localSystemRetrieveProvider = new JpaFhirRetrieveProvider(registry, searchParamRegistry);
+
         // PlanDefinition processing
-        PlanDefinitionApplyProvider planDefProvider = new PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(PlanDefinition.class), this.getDao(ActivityDefinition.class), cql);
+        PlanDefinitionApplyProvider planDefProvider = new PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(PlanDefinition.class), this.getDao(ActivityDefinition.class), cql, libraryProvider, 
+        localSystemTerminologyProvider, localSystemRetrieveProvider);
         this.registerProvider(planDefProvider);
+
+        CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
+        CdsHooksServlet.setLibraryResolutionProvider(libraryProvider);
+        CdsHooksServlet.setSystemTerminologyProvider(localSystemTerminologyProvider);
+        CdsHooksServlet.setSystemRetrieveProvider(localSystemRetrieveProvider);
     }
 
     protected <T extends IBaseResource> IFhirResourceDao<T> getDao(Class<T> clazz) {

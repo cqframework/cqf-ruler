@@ -121,7 +121,7 @@ public class LibraryHelper {
         return library;
     }
 
-    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition, LibraryLoader libraryLoader, LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {
+    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition, org.opencds.cqf.cql.execution.LibraryLoader libraryLoader, LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {
         String id = CanonicalHelper.getId(planDefinition.getLibrary().get(0));
 
         Library library = resolveLibraryById(id, libraryLoader, libraryResourceProvider);

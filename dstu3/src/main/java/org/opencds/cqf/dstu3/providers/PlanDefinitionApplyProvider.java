@@ -3,16 +3,34 @@ package org.opencds.cqf.dstu3.providers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
+import com.alphora.providers.Discovery;
+import com.alphora.providers.DiscoveryDataProvider;
+import com.alphora.providers.DiscoveryDataProviderDstu2;
+import com.alphora.providers.DiscoveryDataProviderStu3;
+import com.alphora.providers.DiscoveryItem;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.cqframework.cql.elm.execution.ExpressionDef;
+import org.cqframework.cql.elm.execution.IntervalTypeSpecifier;
+import org.cqframework.cql.elm.execution.ListTypeSpecifier;
+import org.cqframework.cql.elm.execution.ParameterDef;
+import org.cqframework.cql.elm.execution.TupleTypeSpecifier;
+import org.cqframework.cql.elm.execution.UsingDef;
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
 import org.hl7.fhir.dstu3.model.CarePlan;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
@@ -20,11 +38,19 @@ import org.hl7.fhir.dstu3.model.RequestGroup;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.exceptions.NotImplementedException;
+import org.opencds.cqf.common.providers.LibraryResolutionProvider;
+import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
+import org.opencds.cqf.cql.data.CompositeDataProvider;
 import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.model.ModelResolver;
 import org.opencds.cqf.cql.runtime.DateTime;
+import org.opencds.cqf.cql.runtime.Interval;
+import org.opencds.cqf.cql.runtime.Tuple;
 import org.opencds.cqf.dstu3.builders.AttachmentBuilder;
 import org.opencds.cqf.dstu3.builders.CarePlanActivityBuilder;
 import org.opencds.cqf.dstu3.builders.CarePlanBuilder;
@@ -34,34 +60,56 @@ import org.opencds.cqf.dstu3.builders.ReferenceBuilder;
 import org.opencds.cqf.dstu3.builders.RelatedArtifactBuilder;
 import org.opencds.cqf.dstu3.builders.RequestGroupActionBuilder;
 import org.opencds.cqf.dstu3.builders.RequestGroupBuilder;
+import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
 public class PlanDefinitionApplyProvider {
 
     private CqlExecutionProvider executionProvider;
     private ModelResolver modelResolver;
-    private ActivityDefinitionApplyProvider activitydefinitionApplyProvider;
+    private ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
 
     private IFhirResourceDao<PlanDefinition> planDefintionDao; 
     private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
+    private LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResolutionProvider;
+
+    private JpaTerminologyProvider terminologyProvider;
+    private JpaFhirRetrieveProvider fhirRetrieveProvider;
+
+    private FhirContext fhirContext;
 
     private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
-    public PlanDefinitionApplyProvider(FhirContext fhirContext, ActivityDefinitionApplyProvider activitydefinitionApplyProvider, IFhirResourceDao<PlanDefinition> planDefintionDao, IFhirResourceDao<ActivityDefinition> activityDefinitionDao,
-        CqlExecutionProvider executionProvider) {
+    public PlanDefinitionApplyProvider(FhirContext fhirContext, ActivityDefinitionApplyProvider activitydefinitionApplyProvider, 
+    IFhirResourceDao<PlanDefinition> planDefintionDao, IFhirResourceDao<ActivityDefinition> activityDefinitionDao,
+    CqlExecutionProvider executionProvider, LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResolutionProvider,
+    JpaTerminologyProvider terminologyProvider,
+    JpaFhirRetrieveProvider fhirRetrieveProvider) {
         this.executionProvider = executionProvider;
         this.modelResolver = new Dstu3FhirModelResolver();
-        this.activitydefinitionApplyProvider = activitydefinitionApplyProvider;
+        this.activityDefinitionApplyProvider = activitydefinitionApplyProvider;
         this.planDefintionDao = planDefintionDao;
         this.activityDefinitionDao = activityDefinitionDao;
+        this.libraryResolutionProvider = libraryResolutionProvider;
+        this.fhirContext = fhirContext;
+        this.terminologyProvider = terminologyProvider;
+        this.fhirRetrieveProvider = fhirRetrieveProvider;
+    }
+
+    public IFhirResourceDao<PlanDefinition> getDao() {
+        return this.planDefintionDao;
     }
 
     @Operation(name = "$apply", idempotent = true, type = PlanDefinition.class)
@@ -127,18 +175,18 @@ public class PlanDefinitionApplyProvider {
             }
 
             else {
-                ActivityDefinitionApplyProvider activitydefinitionProvider = this.activitydefinitionApplyProvider;
+                ActivityDefinitionApplyProvider activityDefinitionProvider = this.activityDefinitionApplyProvider;
                 Resource result;
                 try {
                     if (action.getDefinition().getReferenceElement().getIdPart().startsWith("#")) {
-                        result = activitydefinitionProvider.resolveActivityDefinition(
+                        result = activityDefinitionProvider.resolveActivityDefinition(
                                 (ActivityDefinition) resolveContained(session.getPlanDefinition(),
                                         action.getDefinition().getReferenceElement().getIdPart()),
                                 session.getPatientId(), session.getPractionerId(), session.getOrganizationId()
                         );
                     }
                     else {
-                        result = activitydefinitionProvider.apply(
+                        result = activityDefinitionProvider.apply(
                                 new IdType(action.getDefinition().getReferenceElement().getIdPart()),
                                 session.getPatientId(),
                                 session.getEncounterId(),
@@ -356,7 +404,7 @@ public class PlanDefinitionApplyProvider {
                             }
                             Resource resource = null;
                             try {
-                                resource = activitydefinitionApplyProvider.apply(
+                                resource = activityDefinitionApplyProvider.apply(
                                         new IdType(action.getDefinition().getReferenceElement().getIdPart()), patientId,
                                         null, null, null, null,
                                         null, null, null, null
@@ -365,19 +413,18 @@ public class PlanDefinitionApplyProvider {
                                 throw new RuntimeException("Error applying ActivityDefinition " + e.getMessage());
                             }
 
-//                            BaseFhirDataProvider provider = (BaseFhirDataProvider) context.resolveDataProvider(new QName("http://hl7.org/fhir", ""));
-//                            Parameters inParams = new Parameters();
-//                            inParams.addParameter().setName("patient").setValue(new StringType(patientId));
-//                            Parameters outParams = provider.getFhirClient()
-//                                    .operation()
-//                                    .onInstance(new IdDt("ActivityDefinition", action.getDefinition().getReferenceElement().getIdPart()))
-//                                    .named("$apply")
-//                                    .withParameters(inParams)
-//                                    .useHttpGet()
-//                                    .execute();
-//
-//                            List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
-//                            Resource resource = response.get(0).getResource().setId(UUID.randomUUID().toString());
+                            Parameters inParams = new Parameters();
+                            inParams.addParameter().setName("patient").setValue(new StringType(patientId));
+                            Parameters outParams = this.fhirContext.newRestfulGenericClient(HapiProperties.getServerBase())
+                                .operation()
+                                .onInstance(new IdDt("ActivityDefinition", action.getDefinition().getId()))
+                                .named("$apply")
+                                .withParameters(inParams)
+                                .useHttpGet()
+                                .execute();
+
+                            List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
+                            resource = response.get(0).getResource().setId(UUID.randomUUID().toString());
                             actionBuilder.buildResourceTarget(resource);
                             actionBuilder.buildResource(new ReferenceBuilder().buildReference(resource.getId()).build());
                         }
@@ -428,116 +475,118 @@ public class PlanDefinitionApplyProvider {
         throw new RuntimeException(String.format("Resource %s does not contain resource with id %s", resource.fhirType(), id));
     }
 
-//     private Map<String, Pair<PlanDefinition, Discovery>> discoveryCache = new HashMap<>();
+    private Map<String, Pair<PlanDefinition, Discovery>> discoveryCache = new HashMap<>();
 
-//     public List<Discovery> getDiscoveries(FhirVersionEnum version) {
-//         List<Discovery> discoveries = new ArrayList<>();
-//         IBundleProvider bundleProvider = this.planDefintionDao.search(new SearchParameterMap());
-//         for (IBaseResource resource : bundleProvider.getResources(0, bundleProvider.size())) {
-//             if (resource instanceof PlanDefinition) {
-//                 PlanDefinition planDefinition = (PlanDefinition) resource;
-//                 if (discoveryCache.containsKey(planDefinition.getIdElement().getIdPart())) {
-//                     Pair<PlanDefinition, Discovery> pair = discoveryCache.get(planDefinition.getIdElement().getIdPart());
-//                     if (pair.getLeft().hasMeta() && pair.getLeft().getMeta().hasLastUpdated()
-//                             && planDefinition.hasMeta() && planDefinition.getMeta().hasLastUpdated())
-//                     {
-//                         if (pair.getLeft().getMeta().getLastUpdated().equals(planDefinition.getMeta().getLastUpdated())) {
-//                             discoveries.add(pair.getRight());
-//                         }
-//                         else {
-//                             Discovery discovery = getDiscovery(planDefinition, version);
-//                             if (discovery == null) continue;
-//                             discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
-//                             discoveries.add(discovery);
-//                         }
-//                     }
-//                 }
-//                 else {
-//                     Discovery discovery = getDiscovery(planDefinition, version);
-//                     if (discovery == null) continue;
-//                     discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
-//                     discoveries.add(discovery);
-//                 }
-//             }
-//         }
-//         return discoveries;
-//     }
+    public List<Discovery> getDiscoveries(FhirVersionEnum version) {
+        List<Discovery> discoveries = new ArrayList<>();
+        IBundleProvider bundleProvider = this.planDefintionDao.search(new SearchParameterMap());
+        for (IBaseResource resource : bundleProvider.getResources(0, bundleProvider.size())) {
+            if (resource instanceof PlanDefinition) {
+                PlanDefinition planDefinition = (PlanDefinition) resource;
+                if (discoveryCache.containsKey(planDefinition.getIdElement().getIdPart())) {
+                    Pair<PlanDefinition, Discovery> pair = discoveryCache.get(planDefinition.getIdElement().getIdPart());
+                    if (pair.getLeft().hasMeta() && pair.getLeft().getMeta().hasLastUpdated()
+                            && planDefinition.hasMeta() && planDefinition.getMeta().hasLastUpdated())
+                    {
+                        if (pair.getLeft().getMeta().getLastUpdated().equals(planDefinition.getMeta().getLastUpdated())) {
+                            discoveries.add(pair.getRight());
+                        }
+                        else {
+                            Discovery discovery = getDiscovery(planDefinition, version);
+                            if (discovery == null) continue;
+                            discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
+                            discoveries.add(discovery);
+                        }
+                    }
+                }
+                else {
+                    Discovery discovery = getDiscovery(planDefinition, version);
+                    if (discovery == null) continue;
+                    discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
+                    discoveries.add(discovery);
+                }
+            }
+        }
+        return discoveries;
+    }
 
-//     public Discovery getDiscovery(PlanDefinition planDefinition, FhirVersionEnum version) {
-//         STU3LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResourceProvider);
-//         if (planDefinition.hasType()) {
-//             for (Coding typeCode : planDefinition.getType().getCoding()) {
-//                 if (typeCode.getCode().equals("eca-rule")) {
-//                     if (planDefinition.hasLibrary()) {
-//                         for (Reference reference : planDefinition.getLibrary()) {
-//                             org.cqframework.cql.elm.execution.Library library;
-//                             try {
-//                                 library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResourceProvider);
-//                             }
-//                             catch (Exception e)
-//                             {
-//                                 Discovery discovery = new Discovery();
-//                                 discovery.addItem(new DiscoveryItem().setUrl(e.getMessage()));
-//                                 return discovery;
-//                             }
+    public Discovery getDiscovery(PlanDefinition planDefinition, FhirVersionEnum version) {
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResolutionProvider);
+        if (planDefinition.hasType()) {
+            for (Coding typeCode : planDefinition.getType().getCoding()) {
+                if (typeCode.getCode().equals("eca-rule")) {
+                    if (planDefinition.hasLibrary()) {
+                        for (Reference reference : planDefinition.getLibrary()) {
+                            org.cqframework.cql.elm.execution.Library library;
+                            try {
+                                library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, this.libraryResolutionProvider);
+                            }
+                            catch (Exception e)
+                            {
+                                Discovery discovery = new Discovery();
+                                discovery.addItem(new DiscoveryItem().setUrl(e.getMessage()));
+                                return discovery;
+                            }
 
-//                             DiscoveryDataProvider discoveryDataProvider = null;
-//                             for (UsingDef using : library.getUsings().getDef()) {
-//                                 if (version == FhirVersionEnum.DSTU3 && using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("3.0.0")) {
-//                                     discoveryDataProvider = new DiscoveryDataProviderStu3();
-//                                 }
-//                                 else if (version == FhirVersionEnum.DSTU2 && using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("1.0.2")) {
-//                                     discoveryDataProvider = new DiscoveryDataProviderDstu2();
-//                                 }
-//                             }
-//                             if (discoveryDataProvider == null) {
-//                                 continue;
-//                             }
-//                             //
-//                             // discoveryDataProvider.setExpandValueSets(true);
-//                             // discoveryDataProvider.setTerminologyProvider(provider.getTerminologyProvider());
-//                             Context context = new Context(library);
-//                             //context.registerDataProvider("http://hl7.org/fhir", discoveryDataProvider);
-//                             //context.registerTerminologyProvider(provider.getTerminologyProvider());
-//                             context.registerLibraryLoader(libraryLoader
-//                             );
-//                             context.enterContext("Patient");
-//                             context.setContextValue(context.getCurrentContext(), "{{context.patientId}}");
-//                             // TODO - remove once engine issue is resolved
-//                             if (library.getParameters() != null) {
-//                                 for (ParameterDef params : library.getParameters().getDef()) {
-//                                     if (params.getParameterTypeSpecifier() instanceof ListTypeSpecifier) {
-//                                         context.setParameter(null, params.getName(), new ArrayList<>());
-//                                     }
-// //                                    else if (params.getParameterTypeSpecifier() instanceof IntervalTypeSpecifier) {
-// //                                        context.setParameter(null, params.getName(), new Interval(null, true, null, true));
-// //                                    }
-// //                                    else if (params.getParameterTypeSpecifier() instanceof TupleTypeSpecifier) {
-// //                                        context.setParameter(null, params.getName(), new Tuple());
-// //                                    }
-// //                                    else {
-// //                                        context.setParameter(null, params.getName(), new Object());
-// //                                    }
-//                                 }
-//                             }
-//                             for (ExpressionDef def : library.getStatements().getDef()) {
-//                                 try {
-//                                     def.getExpression().evaluate(context);
-//                                 } catch (Exception e) {
-//                                     // ignore
-//                                 }
-//                             }
+                            DiscoveryDataProvider discoveryDataProvider = null;
+                            for (UsingDef using : library.getUsings().getDef()) {
+                                if (version == FhirVersionEnum.DSTU3 && using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("3.0.0")) {
+                                    discoveryDataProvider = new DiscoveryDataProviderStu3();
+                                }
+                                else if (version == FhirVersionEnum.DSTU2 && using.getLocalIdentifier().equals("FHIR") && using.getVersion().equals("1.0.2")) {
+                                    discoveryDataProvider = new DiscoveryDataProviderDstu2();
+                                }
+                            }
+                            if (discoveryDataProvider == null) {
+                                continue;
+                            }
+                            //
+                            discoveryDataProvider.setExpandValueSets(true);
+                            discoveryDataProvider.setTerminologyProvider(this.terminologyProvider);
 
-//                             // TODO: Discovery data provider;
-//                             return null;
-//                             //return discoveryDataProvider.getDiscovery().setPlanDefinition(planDefinition);
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//         return null;
-//     }
+                            CompositeDataProvider provider = new CompositeDataProvider(modelResolver, discoveryDataProvider);
+                            Context context = new Context(library);
+                            context.registerDataProvider("http://hl7.org/fhir", provider);
+                            context.registerTerminologyProvider(terminologyProvider);
+                            context.registerLibraryLoader(libraryLoader);
+
+                            context.enterContext("Patient");
+                            context.setContextValue(context.getCurrentContext(), "{{context.patientId}}");
+                            // TODO - remove once engine issue is resolved
+                            if (library.getParameters() != null) {
+                                for (ParameterDef params : library.getParameters().getDef()) {
+                                    if (params.getParameterTypeSpecifier() instanceof ListTypeSpecifier) {
+                                        context.setParameter(null, params.getName(), new ArrayList<>());
+                                    }
+                                   else if (params.getParameterTypeSpecifier() instanceof IntervalTypeSpecifier) {
+                                       context.setParameter(null, params.getName(), new Interval(null, true, null, true));
+                                   }
+                                   else if (params.getParameterTypeSpecifier() instanceof TupleTypeSpecifier) {
+                                       context.setParameter(null, params.getName(), new Tuple());
+                                   }
+                                   else {
+                                       context.setParameter(null, params.getName(), new Object());
+                                   }
+                                }
+                            }
+                            for (ExpressionDef def : library.getStatements().getDef()) {
+                                try {
+                                    def.getExpression().evaluate(context);
+                                } catch (Exception e) {
+                                    // ignore
+                                }
+                            }
+
+                            // TODO: Discovery data provider;
+                            //return null;
+                            return discoveryDataProvider.getDiscovery().setPlanDefinition(planDefinition);
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }
 
 class Session {

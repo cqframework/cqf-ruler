@@ -93,7 +93,7 @@
         <url-pattern>/fhir/*</url-pattern>
     </servlet-mapping>
 
-    <!-- <servlet>
+    <servlet>
         <servlet-name>cds-services</servlet-name>
         <servlet-class>org.opencds.cqf.r4.servlet.CdsHooksServlet</servlet-class>
         <load-on-startup>4</load-on-startup>
@@ -105,7 +105,7 @@
     <servlet-mapping>
         <servlet-name>cds-services</servlet-name>
         <url-pattern>/cds-services/*</url-pattern>
-    </servlet-mapping> -->
+    </servlet-mapping>
 
     <filter>
         <filter-name>cross-origin</filter-name>

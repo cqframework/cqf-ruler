@@ -63,6 +63,11 @@ public class Dstu3ApelonFhirTerminologyProvider extends Dstu3FhirTerminologyProv
 
         public String resolveByIdentifier(ValueSetInfo valueSet) {
             String valueSetId = valueSet.getId();
+
+            // Turns out we got a FHIR url. Let's use that.
+            if (valueSetId.startsWith("http")) {
+                return valueSetId;
+            }
             
             valueSetId = valueSetId.replace("urn:oid:", "");
 
