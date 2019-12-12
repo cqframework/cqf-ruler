@@ -549,9 +549,10 @@ public class MeasureEvaluation {
         MeasureReportBuilder reportBuilder = new MeasureReportBuilder();
         reportBuilder.buildStatus("complete");
         reportBuilder.buildType(type);
-        reportBuilder.buildMeasureReference(measure.getIdElement().getIdPart());
+        reportBuilder.buildMeasureReference(measure.getIdElement().getResourceType() + "/" + measure.getIdElement().getIdPart());
         if (type == MeasureReport.MeasureReportType.INDIVIDUAL && !patients.isEmpty()) {
-            reportBuilder.buildPatientReference(patients.get(0).getIdElement().getIdPart());
+			IdType patientId = patients.get(0).getIdElement();
+            reportBuilder.buildPatientReference(patientId.getResourceType() + "/" + patientId.getIdPart());
         }
         reportBuilder.buildPeriod(measurementPeriod);
 
