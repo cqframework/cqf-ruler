@@ -41,7 +41,7 @@ public class ApplyCqlOperationProvider {
         return applyCql(bundle);
     }
 
-    @Operation(name = "$apply-cql")
+    @Operation(name = "$apply-cql", type = Bundle.class)
     public Bundle apply(@OperationParam(name = "resourceBundle", min = 1, max = 1, type = Bundle.class) Bundle bundle)
             throws FHIRException
     {
