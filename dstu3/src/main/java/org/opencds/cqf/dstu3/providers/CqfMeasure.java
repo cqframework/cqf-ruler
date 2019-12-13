@@ -867,4 +867,8 @@ public class CqfMeasure extends Measure {
                 supplementalData.add(i.copy());
         };
     }
+	
+	public String fhirType() {
+		return "CqfMeasure";
+	}
 }
