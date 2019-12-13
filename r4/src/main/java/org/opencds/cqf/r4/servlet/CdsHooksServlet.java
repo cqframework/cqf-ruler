@@ -150,6 +150,7 @@ public class CdsHooksServlet extends HttpServlet
 
             Context context = new Context(library);
             context.registerDataProvider("http://hl7.org/fhir", provider); // TODO make sure tooling handles remote provider case
+            context.registerTerminologyProvider(jpaTerminologyProvider);
             context.registerLibraryLoader(libraryLoader);
             context.setContextValue("Patient", hook.getRequest().getContext().getPatientId());
             context.setExpressionCaching(true);
