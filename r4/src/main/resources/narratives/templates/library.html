@@ -3,7 +3,7 @@
     <table class="grid dict">
         <tr th:if="${resource.hasId()}">
             <th scope="row"><b>Id: </b></th>
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.id}"></td>
+            <td style="padding-left: 25px; padding-right: 25px;" th:text="${resource.id}"></td>
         </tr>
         <tr>
             <th scope="row"><b>Type: </b></th>
@@ -13,23 +13,23 @@
             <tr style="vertical-align: top;">
                 <th th:if="${iter.index == 0}" th:rowspan="${iter.size}"  scope="row"><b>Identifier: </b></th>
                 <td style="padding-left: 25px; padding-right: 25px;">
-                    <b>system: </b> <span th:narrative="${ident.system}"></span>
+                    <b>system: </b> <span th:text="${ident.system}"></span>
                     <br/>
-                    <b>value: </b> <span th:narrative="${ident.value}"></span>
+                    <b>value: </b> <span th:text="${ident.value}"></span>
                 </td>
             </tr>
         </th:block>
         <tr  th:if="${resource.hasVersion()}">
             <th scope="row"><b>Version: </b></th>
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.version}"></td>
+            <td style="padding-left: 25px; padding-right: 25px;" th:text="${resource.version}"></td>
         </tr>
         <tr th:if="${resource.hasTitle()}">
             <th scope="row"><b>Title: </b></th> 
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.title}"></td>
+            <td style="padding-left: 25px; padding-right: 25px;" th:text="${resource.title}"></td>
         </tr>
         <tr th:if="${not resource.status.toCode().empty}">
             <th scope="row"><b>Status: </b></th>
-            <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${resource.status.toCode()}"></td>
+            <td style="padding-left: 25px; padding-right: 25px;" th:text="${resource.status.toCode()}"></td>
         </tr>
         <tr th:if="${resource.hasDescription()}">
             <th scope="row"><b>Description: </b></th>
@@ -53,14 +53,6 @@
             <tr style="vertical-align: top;">
                 <th th:if="${iter.index == 0}" th:rowspan="${iter.size}" scope="row"><b>Topic: </b></th>
                 <td style="padding-right: 25px;" th:narrative="${topics}"></td>
-            </tr>
-        </th:block>
-        <th:block th:each="cont, iter : ${resource.contributor}">
-            <tr style="vertical-align: top;">
-                <th th:if="${iter.index == 0}" th:rowspan="${iter.size}"  scope="row"><b>Contributor: </b></th>
-                <td style="padding-left: 25px; padding-right: 25px;">
-                    <b><span th:narrative="${cont.type.toCode()}"></span>: </b><span th:narrative="${cont.name}"></span>
-                </td>
             </tr>
         </th:block>
         <th:block th:each="related, iter : ${resource.relatedArtifact}">
@@ -114,7 +106,6 @@
                     <td style="padding-left: 25px; padding-right: 25px;" th:narrative="${dataReq}"></td>
             </tr>
         </th:block>
-        <!-- Filter down to human readable content-->
         <th:block th:each="con, iter : ${resource.content}">
             <tr th:if="${con.contentType == 'text/cql'}" style="vertical-align: top;">
                 <th scope="row" ><b>Content: </b></th>
