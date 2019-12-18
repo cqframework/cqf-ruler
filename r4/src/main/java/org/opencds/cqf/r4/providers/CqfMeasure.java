@@ -854,5 +854,9 @@ public class CqfMeasure extends Measure {
             for (MeasureSupplementalDataComponent i : measure.getSupplementalData())
                 supplementalData.add(i.copy());
         };
-    }
+	}
+	
+	public String fhirType() {
+		return "CqfMeasure";
+	}
 }

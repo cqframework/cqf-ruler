@@ -5,24 +5,24 @@
         </tr> -->
         <tr th:if="${resource.hasTitle()}" style="vertical-align: top;">
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Measure Title</span></td>
-            <td style="width:60%" colspan="1"><h1 style="font-size:10px" th:narrative="${resource.title}"></h1></td>
+            <td style="width:60%" colspan="1"><h1 style="font-size:10px" th:text="${resource.title}"></h1></td>
             <td style="background-color:#656565; width:10%" scope="row"><span class="td_label">Measure ID</span></td>
-            <td style="width:10%" colspan="1"><h1 style="font-size:10px" th:narrative="${resource.name}"></h1></td>
+            <td style="width:10%" colspan="1"><h1 style="font-size:10px" th:text="${resource.name}"></h1></td>
         </tr>
         <!-- <th:block th:each="ident, iter : ${resource.identifier}">
             <tr th:if="${ident.type.coding[0].code == 'CMS'}" style="vertical-align: top;">
                 <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">eCQM Identifier (Measure Authoring Tool)</span></td>
-                <td style="width:30%" th:narrative="${ident.value}"></td>
+                <td style="width:30%" th:text="${ident.value}"></td>
                 <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">eCQM Version number</span></td>
-                <td style="width:30%" th:narrative="${resource.version}"></td>
+                <td style="width:30%" th:text="${resource.version}"></td>
             </tr>
         </th:block>
         <th:block th:each="ident, iter : ${resource.identifier}">
             <tr th:if="${ident.type.coding[0].code == 'NQF'}" style="vertical-align: top;">
                 <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">NQF Number</span></td>
-                <td style="width:30%" th:narrative="${ident.value}"></td>
+                <td style="width:30%" th:text="${ident.value}"></td>
                 <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">GUID</span></td>
-                <td style="width:30%" th:narrative="${resource.url}"></td>
+                <td style="width:30%" th:text="${resource.url}"></td>
             </tr>
         </th:block> -->
         <tr th:if="${resource.hasDescription()}" style="vertical-align: top;">
@@ -35,15 +35,15 @@
         </tr>
         <tr>
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Measurement Period</span></td>
-            <td style="width:80%" colspan="3" th:narrative="${#dates.format(resource.effectivePeriod.start, 'MMMM d') + ' - ' + #dates.format(resource.effectivePeriod.end, 'MMMM d')}"></td>
+            <td style="width:80%" colspan="3" th:text="${#dates.format(resource.effectivePeriod.start, 'MMMM d') + ' - ' + #dates.format(resource.effectivePeriod.end, 'MMMM d')}"></td>
         </tr>
         <!-- <tr>
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Measure Steward</span></td>
-            <td style="width:80%" colspan="3" th:narrative="${resource.publisher}"></td>
+            <td style="width:80%" colspan="3" th:text="${resource.publisher}"></td>
         </tr>
         <tr>
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Measure Developer</span></td>
-            <td style="width:80%" colspan="3" th:narrative="${resource.publisher}"></td>
+            <td style="width:80%" colspan="3" th:text="${resource.publisher}"></td>
         </tr> -->
         <!-- <tr th:if="${resource.hasDisclaimer()}">
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Disclaimer</span></td>
@@ -85,47 +85,47 @@
         </tr>
         <tr th:if="${resource.hasScoring()}">
             <td style="width:20%" scope="row"><span>Scoring</span></td>
-            <td style="width:80%" colspan="3" th:narrative="${resource.scoring.coding[0].code.substring(0, 1).toUpperCase() + resource.scoring.coding[0].code.substring(1)}"></td>
+            <td style="width:80%" colspan="3" th:text="${resource.scoring.coding[0].code.substring(0, 1).toUpperCase() + resource.scoring.coding[0].code.substring(1)}"></td>
         </tr>
         <!-- <tr th:if="${resource.hasCompositeScoring()}">
             <td style="width:20%" scope="row"><span class="td_label">Composite Scoring</span></td>
-            <td style="width:80%" colspan="3" th:narrative="${resource.compositeScoring.getText().substring(0, 1).toUpperCase() + resource.compositeScoring.getText().substring(1)}"></td>
+            <td style="width:80%" colspan="3" th:text="${resource.compositeScoring.getText().substring(0, 1).toUpperCase() + resource.compositeScoring.getText().substring(1)}"></td>
         </tr> -->
         <th:block th:each="types, iter : ${resource.type}" >
             <tr style="vertical-align: top;">
                 <td th:if="${iter.index == 0}" th:rowspan="${iter.size}" style="width:20%" scope="row"><span>Type</span></td>
-                <td style="width:80%" colspan="3" th:narrative="${types.coding[0].code.substring(0, 1).toUpperCase() + types.coding[0].code.substring(1)}"></td>
+                <td style="width:80%" colspan="3" th:text="${types.coding[0].code.substring(0, 1).toUpperCase() + types.coding[0].code.substring(1)}"></td>
             </tr>
         </th:block>
         <!-- <tr th:if="${resource.hasStatus()}" style="vertical-align: top;">
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Status</span></td>
-            <td style="width:80%" colspan="3" th:narrative="${resource.status.toString().substring(0, 1).toUpperCase() + resource.status.toString().substring(1).toLowerCase()}"></td>
+            <td style="width:80%" colspan="3" th:text="${resource.status.toString().substring(0, 1).toUpperCase() + resource.status.toString().substring(1).toLowerCase()}"></td>
         </tr>
         <tr th:if="${resource.hasPurpose()}" style="vertical-align: top;">
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Purpose</span></td>
-            <td style="width:80%" colspan="3" th:narrative="${resource.purpose}"></td>
+            <td style="width:80%" colspan="3" th:text="${resource.purpose}"></td>
         </tr>
         <tr th:if="${resource.hasUsage()}" style="vertical-align: top;" >
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Usage</span></td>
-            <td style="width:80%" colspan="3" th:narrative="${resource.usage}"></td>
+            <td style="width:80%" colspan="3" th:text="${resource.usage}"></td>
         </tr>
         <th:block th:each="context, iter : ${resource.useContext}" >
             <tr style="vertical-align: top;">
                 <td th:if="${iter.index == 0}" th:rowspan="${iter.size}" style="background-color:#656565; width:20%" scope="row"><span class="td_label">Use Context</span></td>
-                <td style="width:80%" colspan="3" th:narrative="${context}"></td>
+                <td style="width:80%" colspan="3" th:text="${context}"></td>
             </tr>
         </th:block>
         <th:block th:each="topics, iter : ${resource.topic}" >
             <tr style="vertical-align: top;">
                 <td th:if="${iter.index == 0}" th:rowspan="${iter.size}" style="background-color:#656565; width:20%" scope="row"><span class="td_label">Topic</span></td>
-                <td style="width:80%" colspan="3" th:narrative="${topics}"></td>
+                <td style="width:80%" colspan="3" th:text="${topics}"></td>
             </tr>
         </th:block>
         <th:block th:each="cont, iter : ${resource.contributor}" >
             <tr style="vertical-align: top;">
                 <td th:if="${iter.index == 0}" th:rowspan="${iter.size}" style="background-color:#656565; width:20%" scope="row"><span class="td_label">Contributor</span></td>
                 <td style="width:80%" colspan="3">
-                    <b><span th:narrative="${cont.type.toCode()}"></span>: </b><span th:narrative="${cont.name}"></span>
+                    <b><span th:narrative="${cont.type.toCode()}"></span>: </b><span th:text="${cont.name}"></span>
                 </td>
             </tr>
         </th:block> -->
@@ -135,7 +135,7 @@
                 <td style="width:80%" colspan="3">
                     <p th:if="${lib.hasIdentifier()}"><b>identifier: </b><span th:narrative="${lib.identifier}"></span></p>
                     <p th:if="${lib.hasReference()}"><b>reference: </b><span th:narrative="${lib.reference}"></span></p>
-                    <p th:if="${lib.hasDisplay()}"><b>display: </b><span th:narrative="${lib.display}"></span></p>
+                    <p th:if="${lib.hasDisplay()}"><b>display: </b><span th:text="${lib.display}"></span></p>
                 </td>
             </tr>
         </th:block> -->
@@ -165,8 +165,8 @@
         </tr> -->
         <tr>
             <td style="width:20%" scope="row"><span>Improvement Notation</span></td>
-            <td th:if="${resource.improvementNotation == 'increase'}" style="width:80%" colspan="3" th:narrative="${'A higher rate indicates better performance.'}"></td>
-            <td th:if="${resource.improvementNotation == 'decrease'}" style="width:80%" colspan="3" th:narrative="${'A lower rate indicates better performance.'}"></td>
+            <td th:if="${resource.improvementNotation.coding && resource.improvementNotation.coding[0] && resource.improvementNotation.coding[0].code == 'increase'}" style="width:80%" colspan="3" th:text="${'A higher rate indicates better performance.'}"></td>
+            <td th:if="${resource.improvementNotation.coding && resource.improvementNotation.coding[0] && resource.improvementNotation.coding[0].code == 'decrease'}" style="width:80%" colspan="3" th:text="${'A lower rate indicates better performance.'}"></td>
         </tr>
         <tr th:if="${resource.hasGuidance()}">
             <td style="width:20%" scope="row"><span>Guidance</span></td>
@@ -311,15 +311,15 @@
         <li class="list-unstyled" style="list-style:none;padding-left:0px;">
         <th:block th:each="pops, iterp : ${groups.population}">
         <div class="treeview hover p-l-10">
-        <ul th:if="${pops.name}" class="list-unstyled">
-        <li class="list-unstyled"><input type="checkbox" th:id="${pops.name}" /><label th:for="${pops.name}" class="list-header"><strong th:text="${pops.name}"></strong></label>
+        <ul th:if="${pops.code && pops.code.coding && pops.code.coding[0] && pops.code.coding[0].display}" class="list-unstyled">
+        <li class="list-unstyled"><input type="checkbox" th:id="${pops.code.coding[0].display}" /><label th:for="${pops.code.coding[0].display}" class="list-header"><strong th:text="${pops.code.coding[0].display}"></strong></label>
             <ul class="code">
             <li class="list-unstyled">
             <div class="treeview hover p-l-10">
             <ul>
                 <li style="padding-left: 0px;">
                 <div>
-                <pre class="cql-definition-body" th:text="${pops.criteria}"></pre>
+                <pre class="cql-definition-body" th:text="${pops.criteria.expression}"></pre>
                 </div></li>
             </ul>&nbsp;
             </div></li>
@@ -357,15 +357,15 @@
       <ul class="list-unstyled" style="list-style:none;padding-left:0;">
        <li class="list-unstyled">
         <div class="treeview hover p-l-10">
-         <input type="checkbox" th:id="${defs.name}" />
-         <label th:for="${defs.name}" class="list-header"><strong th:text="${defs.name}"></strong></label>
+         <input type="checkbox" th:id="${defs.criteria.name}" />
+         <label th:for="${defs.criteria.name}" class="list-header"><strong th:text="${defs.criteria.name}"></strong></label>
          <ul class="code" style="margin-right: 20%; opacity: 1;">
           <li class="list-unstyled">
            <div>
             <ul style="padding-left: 0px;">
              <li style="padding-left: 0px;" class="list-unstyled">
               <div>
-               <pre class="cql-definition-body" th:text="${defs.criteria}"></pre>
+               <pre class="cql-definition-body" th:text="${defs.criteria.expression}"></pre>
               </div></li>
             </ul>&nbsp;
            </div></li>
@@ -383,15 +383,15 @@
       <ul class="list-unstyled" style="list-style:none;padding-left:0;">
        <li class="list-unstyled">
         <div class="treeview hover p-l-10">
-         <input type="checkbox" th:id="${defs.name}" />
-         <label th:for="${defs.name}" class="list-header"><strong th:text="${defs.name}"></strong></label>
+         <input type="checkbox" th:id="${defs.criteria.name}" />
+         <label th:for="${defs.criteria.name}" class="list-header"><strong th:text="${defs.criteria.name}"></strong></label>
          <ul class="code" style="margin-right: 20%; opacity: 1;">
           <li class="list-unstyled">
            <div>
             <ul style="padding-left: 0px;">
              <li style="padding-left: 0px;" class="list-unstyled">
               <div>
-               <pre class="cql-definition-body" th:text="${defs.criteria}"></pre>
+               <pre class="cql-definition-body" th:text="${defs.criteria.expression}"></pre>
               </div></li>
             </ul>&nbsp;
            </div></li>
@@ -418,15 +418,15 @@
    <ul style="list-style:none;padding-left: 25px;">
     <li class="list-unstyled">
      <div class="treeview hover p-l-10">
-      <input type="checkbox" th:id="${data.name}" />
-      <label th:for="${data.name}" class="list-header"><strong th:text="${data.name}"></strong></label>
+      <input type="checkbox" th:id="${data.criteria.name}" />
+      <label th:for="${data.criteria.name}" class="list-header"><strong th:text="${data.criteria.name}"></strong></label>
       <ul class="code" style="margin-right: 20%; opacity: 1;">
        <li class="list-unstyled">
         <div>
          <ul style="padding-left: 0px;">
           <li style="padding-left: 0px;" class="list-unstyled">
            <div>
-            <pre class="cql-definition-body" th:text="${data.criteria}"></pre>
+            <pre class="cql-definition-body" th:text="${data.criteria.expression}"></pre>
            </div></li>
          </ul>&nbsp;
         </div></li>
@@ -447,11 +447,11 @@
   </div>
   <div style="float:left; background:teal; height:3px; width:80%"></div>
   <table>
-        <tr th:if="${resource.hasSet()}" >
+        <!-- <tr th:if="${resource.hasSet()}" >
             <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Measure Set</span></td>
-            <td style="width:80%" th:narrative="${resource.set}"></td>
-        </tr>
-        <!-- <th:block th:each="con, iter : ${resource.content}">
+            <td style="width:80%" th:text="${resource.set}"></td>
+        </tr> -->
+        <th:block th:each="con, iter : ${resource.content}">
             <tr th:if="${con.contentType == 'text/cql'}" style="vertical-align: top;">
                 <td style="background-color:#656565; width:20%" scope="row"><span class="td_label">Content</span></td>
                 <td style="width:80%" ><b>type: </b><span th:text="${con.contentType}"></span></td>
@@ -466,6 +466,6 @@
                     </th:block>
                 </td>
             </tr>
-        </th:block > -->
+        </th:block >
     </table>
 </div>
