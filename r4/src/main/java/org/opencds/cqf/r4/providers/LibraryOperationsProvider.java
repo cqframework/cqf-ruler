@@ -88,8 +88,12 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         this.dataRequirementsProvider.ensureRelatedArtifacts(theResource, translator, this);
         this.dataRequirementsProvider.ensureDataRequirements(theResource, translator);
 
-        Narrative n = this.narrativeProvider.getNarrative(this.libraryResourceProvider.getContext(), theResource);
-        theResource.setText(n);
+		try {
+			Narrative n = this.narrativeProvider.getNarrative(this.libraryResourceProvider.getContext(), theResource);
+			theResource.setText(n);
+		} catch (Exception e) {
+			//Ignore the exception so the resource still gets updated
+		}
 
         return this.libraryResourceProvider.update(theRequest, theResource, theId,
                 theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);

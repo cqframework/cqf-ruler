@@ -111,9 +111,13 @@ public class MeasureOperationsProvider {
             }
         }
 
-        Narrative n = this.narrativeProvider.getNarrative(this.measureResourceProvider.getContext(), cqfMeasure);
-        theResource.setText(n.copy());
-        // logger.info("Narrative: " + n.getDivAsString());
+		try {
+			Narrative n = this.narrativeProvider.getNarrative(this.measureResourceProvider.getContext(), cqfMeasure);
+			theResource.setText(n.copy());
+		} catch (Exception e) {
+			//Ignore the exception so the resource still gets updated
+		}
+
         return this.measureResourceProvider.update(theRequest, theResource, theId,
                 theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
     }
