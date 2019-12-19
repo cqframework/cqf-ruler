@@ -10,6 +10,9 @@ import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.model.ModelResolver;
 import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
 
+import org.opencds.cqf.dstu3.helpers.Helper;
+
+
 import java.util.*;
 
 /**
@@ -40,7 +43,12 @@ public class ActivityDefinitionApplyProvider {
             throws InternalErrorException, FHIRException, ClassNotFoundException, IllegalAccessException,
             InstantiationException, ActivityDefinitionApplyException
     {
-        ActivityDefinition activityDefinition = this.activityDefinitionDao.read(theId);
+        ActivityDefinition activityDefinition;
+        try {
+            activityDefinition = this.activityDefinitionDao.read(theId);
+        } catch (Exception e) {
+            return Helper.createErrorOutcome("Unable to resolve ActivityDefinition/" + theId.getValueAsString());
+        }
 
         return resolveActivityDefinition(activityDefinition, patientId, practitionerId, organizationId);
     }

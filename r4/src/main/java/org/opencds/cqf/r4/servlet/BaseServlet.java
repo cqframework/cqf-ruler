@@ -1,13 +1,10 @@
 package org.opencds.cqf.r4.servlet;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.ServletException;
 
-import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
-import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeSystem;
@@ -17,23 +14,22 @@ import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.ValueSet;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
-import org.opencds.cqf.cql.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.searchparam.SearchParameterResolver;
 import org.opencds.cqf.r4.evaluation.ProviderFactory;
 import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
+import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
 import org.opencds.cqf.r4.providers.CodeSystemUpdateProvider;
 import org.opencds.cqf.r4.providers.CodeTerminologyRef;
 import org.opencds.cqf.r4.providers.CqfMeasure;
 import org.opencds.cqf.r4.providers.CqlExecutionProvider;
-import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
-import org.opencds.cqf.r4.providers.MeasureOperationsProvider;
 import org.opencds.cqf.r4.providers.HQMFProvider;
 import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
 import org.opencds.cqf.r4.providers.LibraryOperationsProvider;
+import org.opencds.cqf.r4.providers.MeasureOperationsProvider;
 import org.opencds.cqf.r4.providers.NarrativeProvider;
 import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
 import org.opencds.cqf.r4.providers.PopulationCriteriaMap;
@@ -47,6 +43,7 @@ import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.BaseJpaResourceProvider;
+import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
 import ca.uhn.fhir.jpa.provider.r4.JpaConformanceProviderR4;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
@@ -55,10 +52,10 @@ import ca.uhn.fhir.jpa.rp.r4.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.jpa.term.IHapiTerminologySvcR4;
+import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
-import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
@@ -224,7 +221,7 @@ public class BaseServlet extends RestfulServer {
         ActivityDefinitionApplyProvider actDefProvider = new ActivityDefinitionApplyProvider(this.fhirContext, cql, this.getDao(ActivityDefinition.class));
         this.registerProvider(actDefProvider);
 
-        JpaFhirRetrieveProvider localSystemRetrieveProvider = new JpaFhirRetrieveProvider(registry, searchParamRegistry);
+        JpaFhirRetrieveProvider localSystemRetrieveProvider = new JpaFhirRetrieveProvider(registry, new SearchParameterResolver(searchParamRegistry));
 
         // PlanDefinition processing
         PlanDefinitionApplyProvider planDefProvider = new PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(PlanDefinition.class), this.getDao(ActivityDefinition.class), cql, libraryProvider, 

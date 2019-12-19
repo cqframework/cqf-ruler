@@ -9,6 +9,8 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.model.ModelResolver;
 import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
+import org.opencds.cqf.r4.helpers.Helper;
+
 
 import java.util.*;
 
@@ -39,7 +41,13 @@ public class ActivityDefinitionApplyProvider {
             @OptionalParam(name = "setting") String setting,
             @OptionalParam(name = "settingContext") String settingContext) throws InternalErrorException, FHIRException,
             ClassNotFoundException, IllegalAccessException, InstantiationException, ActivityDefinitionApplyException {
-        ActivityDefinition activityDefinition = this.activityDefinitionDao.read(theId);
+        ActivityDefinition activityDefinition;
+
+        try {
+            activityDefinition = this.activityDefinitionDao.read(theId);
+        } catch (Exception e) {
+            return Helper.createErrorOutcome("Unable to resolve ActivityDefinition/" + theId.getValueAsString());
+        }
 
         return resolveActivityDefinition(activityDefinition, patientId, practitionerId, organizationId);
     }

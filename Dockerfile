@@ -1,10 +1,10 @@
-FROM maven:3.5.3-jdk-8 as builder
+FROM maven:3-jdk-11-openj9 as builder
 
 COPY . /build
 WORKDIR /build
 RUN mvn package -Dmaven.test.skip=true
 
-FROM jetty:9-jre8-alpine as runner
+FROM jetty:9-jre11 as runner
 USER jetty:jetty
 RUN mkdir -p /var/lib/jetty/target
 COPY --from=builder /build/cqf-ruler-dstu3/target/cqf-ruler-dstu3.war /var/lib/jetty/webapps/cqf-ruler-dstu3.war
