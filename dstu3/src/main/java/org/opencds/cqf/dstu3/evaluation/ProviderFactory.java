@@ -3,6 +3,7 @@ package org.opencds.cqf.dstu3.evaluation;
 import org.opencds.cqf.cql.data.CompositeDataProvider;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
+import org.opencds.cqf.cql.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.Dstu3FhirTerminologyProvider;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
@@ -44,7 +45,7 @@ public class ProviderFactory implements EvaluationProviderFactory {
     public DataProvider createDataProvider(String model, String version, TerminologyProvider terminologyProvider) {
         if (model.equals("FHIR") && version.equals("3.0.0")) {
             Dstu3FhirModelResolver modelResolver = new Dstu3FhirModelResolver();
-            JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(this.registry, this.searchParamRegistry);
+            JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(this.registry, new SearchParameterResolver(this.searchParamRegistry));
             retrieveProvider.setTerminologyProvider(terminologyProvider);
             retrieveProvider.setExpandValueSets(true);
 
