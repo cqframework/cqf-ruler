@@ -129,7 +129,7 @@ public class PlanDefinitionApplyProvider {
         PlanDefinition planDefinition = this.planDefintionDao.read(theId);
 
         if (planDefinition == null) {
-            throw new IllegalArgumentException("Couldn't find PlanDefintion " + theId);
+            throw new IllegalArgumentException("Couldn't find PlanDefinition " + theId);
         }
 
         logger.info("Performing $apply operation on PlanDefinition/" + theId);
