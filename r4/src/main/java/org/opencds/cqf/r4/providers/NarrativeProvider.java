@@ -3,9 +3,11 @@ package org.opencds.cqf.r4.providers;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.narrative.CustomThymeleafNarrativeGenerator;
 import ca.uhn.fhir.narrative.INarrativeGenerator;
+import ca.uhn.fhir.narrative2.ThymeleafNarrativeGenerator;
 import ca.uhn.fhir.parser.IParser;
 import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Narrative;
+import org.opencds.cqf.common.narrative.JarEnabledCustomThymeleafNarrativeGenerator;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import java.io.File;
@@ -24,14 +26,12 @@ public class NarrativeProvider {
     private INarrativeGenerator generator;
 
     public NarrativeProvider() {
-        this(NarrativeProvider.class.getClassLoader().getResource("narratives/narrative.properties").toString()); 
+        this(Thread.currentThread().getContextClassLoader().getResource("narratives/narrative.properties").toString()); 
     }
 
     public NarrativeProvider(String pathToPropertiesFile)
     {
-        CustomThymeleafNarrativeGenerator myGenerator = new CustomThymeleafNarrativeGenerator("classpath:ca/uhn/fhir/narrative/narratives.properties", pathToPropertiesFile);
-//        myGenerator.setIgnoreFailures(false);
-//        myGenerator.setIgnoreMissingTemplates(false);
+        ThymeleafNarrativeGenerator myGenerator = new JarEnabledCustomThymeleafNarrativeGenerator("classpath:ca/uhn/fhir/narrative/narratives.properties", pathToPropertiesFile);
         this.generator = myGenerator;
     }
 

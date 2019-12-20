@@ -14,4 +14,4 @@ server_address=$SERVER_ADDRESS_R4
 EOF
 ) >> /var/lib/jetty/webapps/r4.properties
 
-/docker-entrypoint.sh "$@"
+exec /docker-entrypoint.sh "$@"
