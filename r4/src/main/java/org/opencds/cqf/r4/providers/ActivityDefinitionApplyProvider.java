@@ -57,7 +57,6 @@ public class ActivityDefinitionApplyProvider {
             String practitionerId, String organizationId) throws FHIRException {
         Resource result = null;
         try {
-            // This is a little hacky...
             result = (Resource) Class.forName("org.hl7.fhir.r4.model." + activityDefinition.getKind().toCode())
                     .newInstance();
         } catch (Exception e) {
@@ -66,8 +65,8 @@ public class ActivityDefinitionApplyProvider {
         }
 
         switch (result.fhirType()) {
-        case "ProcedureRequest":
-            result = resolveProcedureRequest(activityDefinition, patientId, practitionerId, organizationId);
+        case "ServiceRequest":
+            result = resolveServiceRequest(activityDefinition, patientId, practitionerId, organizationId);
             break;
 
         case "MedicationRequest":
@@ -119,7 +118,7 @@ public class ActivityDefinitionApplyProvider {
         return result;
     }
 
-    private ServiceRequest resolveProcedureRequest(ActivityDefinition activityDefinition, String patientId,
+    private ServiceRequest resolveServiceRequest(ActivityDefinition activityDefinition, String patientId,
             String practitionerId, String organizationId) throws ActivityDefinitionApplyException {
         // status, intent, code, and subject are required
         ServiceRequest serviceRequest = new ServiceRequest();
