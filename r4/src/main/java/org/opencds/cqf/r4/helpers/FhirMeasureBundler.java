@@ -4,6 +4,9 @@ import org.opencds.cqf.cql.execution.Context;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
 
+/**
+ * Created by Bryn on 5/7/2016.
+ */
 public class FhirMeasureBundler {
     // Adds the resources returned from the given expressions to a bundle
     public Bundle bundle(Context context, String... expressionNames) {

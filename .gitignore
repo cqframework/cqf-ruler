@@ -141,13 +141,25 @@ local.properties
 /*.tmp
 *.txt
 
+target
+.project
 .settings
-.vscode
 .classpath
+.flattened-pom.xml
 .factorypath
+org.eclipse.m2e.core.prefs
 !/src/main/resources/hapi.properties
+
+.vscode
+
 
 LogMessages.html
 
 *.zip
+
+core.*
+heapdump.*
+Snap.*
+
 .flattened-pom.xml
+

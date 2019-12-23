@@ -17,7 +17,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            org.opencds.cqf.config.FhirServerConfigCommon,
+            org.opencds.cqf.common.config.FhirServerConfig,
             org.opencds.cqf.dstu3.config.FhirServerConfigDstu3
         </param-value>
     </context-param>
@@ -62,7 +62,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>qdm54</servlet-name>
-        <url-pattern>/qdm/*</url-pattern>
+        <url-pattern>/fhir/qdm/*</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -117,7 +117,7 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
-        <url-pattern>/qdm/*</url-pattern>
+        <url-pattern>/fhir/qdm/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>cross-origin</filter-name>

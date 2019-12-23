@@ -1,5 +1,6 @@
 package org.opencds.cqf.dstu3.servlet;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import com.alphora.evaluation.EvaluationContext;
@@ -17,13 +18,17 @@ import org.apache.http.entity.ContentType;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
-import org.opencds.cqf.config.HapiProperties;
+import org.opencds.cqf.cql.data.CompositeDataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.exceptions.InvalidRequestException;
+import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
+import org.opencds.cqf.common.config.HapiProperties;
+import org.opencds.cqf.common.exceptions.InvalidRequestException;
+import org.opencds.cqf.common.providers.LibraryResolutionProvider;
+import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
-import org.opencds.cqf.dstu3.providers.FHIRPlanDefinitionResourceProvider;
-import org.opencds.cqf.dstu3.providers.JpaDataProvider;
+import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
+import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +46,35 @@ import java.util.List;
 @WebServlet(name = "cds-services")
 public class CdsHooksServlet extends HttpServlet
 {
-    static JpaDataProvider provider;
     private FhirVersionEnum version = FhirVersionEnum.DSTU3;
     private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
+
+    private static PlanDefinitionApplyProvider planDefinitionProvider;
+
+    private static LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResolutionProvider;
+
+    private static JpaFhirRetrieveProvider fhirRetrieveProvider;
+
+    private static JpaTerminologyProvider jpaTerminologyProvider;
+
+
+    // TODO: There's probably a way to wire this all up using Spring
+    public static void setPlanDefinitionProvider(PlanDefinitionApplyProvider planDefinitionProvider) {
+        CdsHooksServlet.planDefinitionProvider = planDefinitionProvider;
+    }
+
+    public static void setLibraryResolutionProvider(
+            LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResolutionProvider) {
+        CdsHooksServlet.libraryResolutionProvider = libraryResolutionProvider;
+    }
+
+    public static void setSystemRetrieveProvider(JpaFhirRetrieveProvider fhirRetrieveProvider) {
+        CdsHooksServlet.fhirRetrieveProvider = fhirRetrieveProvider;
+    }
+
+    public static void setSystemTerminologyProvider(JpaTerminologyProvider jpaTerminologyProvider) {
+        CdsHooksServlet.jpaTerminologyProvider = jpaTerminologyProvider;
+    }
 
     // CORS Pre-flight
     @Override
@@ -108,17 +139,23 @@ public class CdsHooksServlet extends HttpServlet
 
             Hook hook = HookFactory.createHook(cdsHooksRequest);
 
-            PlanDefinition planDefinition = (PlanDefinition) provider.resolveResourceProvider("PlanDefinition").getDao().read(new IdType(hook.getRequest().getServiceName()));
-            LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader((org.opencds.cqf.dstu3.providers.LibraryResourceProvider) provider.resolveResourceProvider("Library"));
-            Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, (org.opencds.cqf.dstu3.providers.LibraryResourceProvider) provider.resolveResourceProvider("Library"));
+            PlanDefinition planDefinition = planDefinitionProvider.getDao().read(new IdType(hook.getRequest().getServiceName()));
+            LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResolutionProvider);
+            Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader,libraryResolutionProvider);
+
+            Dstu3FhirModelResolver resolver = new Dstu3FhirModelResolver();
+            CompositeDataProvider provider = new CompositeDataProvider(resolver, fhirRetrieveProvider);
 
             Context context = new Context(library);
-            context.registerDataProvider("http://hl7.org/fhir", provider.setEndpoint(baseUrl)); // TODO make sure tooling handles remote provider case
+            context.registerDataProvider("http://hl7.org/fhir", provider); // TODO make sure tooling handles remote provider case
+            context.registerTerminologyProvider(jpaTerminologyProvider);
             context.registerLibraryLoader(libraryLoader);
             context.setContextValue("Patient", hook.getRequest().getContext().getPatientId());
             context.setExpressionCaching(true);
 
-            EvaluationContext evaluationContext = new Stu3EvaluationContext(hook, version, provider.setEndpoint(baseUrl), context, library, planDefinition);
+            
+            EvaluationContext evaluationContext = new Stu3EvaluationContext(hook, version, FhirContext.forDstu3().newRestfulGenericClient(baseUrl), jpaTerminologyProvider, context, library, planDefinition);
+
 
             this.setAccessControlHeaders(response);
 
@@ -165,8 +202,7 @@ public class CdsHooksServlet extends HttpServlet
         JsonObject responseJson = new JsonObject();
         JsonArray services = new JsonArray();
 
-        FHIRPlanDefinitionResourceProvider provider = (FHIRPlanDefinitionResourceProvider) getProvider("PlanDefinition");
-        for (Discovery discovery : provider.getDiscoveries(version))
+        for (Discovery discovery : this.planDefinitionProvider.getDiscoveries(version))
         {
             PlanDefinition planDefinition = (PlanDefinition)discovery.getPlanDefinition();
             JsonObject service = new JsonObject();
@@ -252,18 +288,5 @@ public class CdsHooksServlet extends HttpServlet
             resp.setHeader("Access-Control-Expose-Headers", String.join(", ", Arrays.asList("Location", "Content-Location")));
             resp.setHeader("Access-Control-Max-Age", "86400");
         }
-    }
-
-    private IResourceProvider getProvider(String name)
-    {
-        for (IResourceProvider res : provider.getCollectionProviders())
-        {
-            if (res.getResourceType().getSimpleName().equals(name))
-            {
-                return res;
-            }
-        }
-
-        throw new IllegalArgumentException("This should never happen!");
     }
 }

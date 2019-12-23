@@ -6,7 +6,7 @@
 
     <p style="margin-bottom: 5px;">
         <b>type: </b>
-        <span th:narrative="${resource.type}"></span>
+        <span th:text="${resource.type}"></span>
     </p>
 
     <p style="margin-bottom: 5px;" th:each="pro : ${resource.profile}">
@@ -24,32 +24,18 @@
         <br/>
         <span style="padding-left: 25px;">
             <b>path: </b>
-            <span th:narrative="${cFilter.path}"></span>
+            <span th:text="${cFilter.path}"></span>
         </span>
-        <br  th:if="${cFilter.hasValueSetStringType() or cFilter.hasValueSetReference()}" />
-        <span style="padding-left: 25px;" th:if="${cFilter.hasValueSetStringType()}">
+        <br  th:if="${cFilter.hasValueSet()}" />
+        <span style="padding-left: 25px;" th:if="${cFilter.hasValueSet()}">
             <b>valueset: </b>
-            <span th:narrative="${cFilter.valueSetStringType}"></span>
+            <span th:text="${cFilter.valueSet}"></span>
         </span>
-        <span style="padding-left: 25px;" th:if="${cFilter.hasValueSetReference()}">
-            <b>valueset: </b>
-            <span th:narrative="${cFilter.valueSetReference}"></span>
-        </span>
-        <br th:if="${cFilter.hasValueCode()}" />
-        <span style="padding-left: 25px;" th:each="codes : ${cFilter.valueCode}">
-            <b>code:</b>
-            <span th:narrative="${codes}"></span>
-        </span>
-        <br th:if="${cFilter.hasValueCoding()}" />
-        <span style="padding-left: 25px;" th:each="codings : ${cFilter.valueCoding}">
+        <br th:if="${cFilter.hasCode()}" />
+        <span style="padding-left: 25px;" th:each="codings : ${cFilter.code}">
             <br />
             <b>coding:</b>
             <span style="padding-left: 25px;" th:narrative="${codings}"></span>
-        </span>
-        <br th:if="${cFilter.hasValueCodeableConcept()}" />
-        <span style="padding-left: 25px;" th:each="concepts : ${cFilter.valueCodeableConcept}">
-            <b>concept:</b>
-            <span style="padding-left: 25px;" th:narrative="${concepts}"></span>
         </span>
     </p>
 

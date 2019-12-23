@@ -6,7 +6,7 @@ import ca.uhn.fhir.context.ParserOptions;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 
-import org.opencds.cqf.config.HapiProperties;
+import org.opencds.cqf.common.config.HapiProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
