@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 @Configuration
 public class FhirServerConfigR4 extends BaseJavaConfigR4
 {
-    private final DataSource myDataSource;
+    protected final DataSource myDataSource;
 
     @Autowired
     public FhirServerConfigR4(DataSource myDataSource) {
