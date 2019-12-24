@@ -54,7 +54,6 @@ import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.ParameterDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.StringType;
-import org.opencds.cqf.common.evaluation.DataElementType;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.execution.LibraryLoader;
@@ -209,12 +208,6 @@ public class DataRequirementsProvider {
                   
                     for (DataRequirement data : cqfMeasure.getDataRequirement()) {
                         String type = data.getType();
-                        try {
-                            DataElementType dataType = DataElementType.valueOf(type.toUpperCase());
-                            type = dataType.toString();
-                        } catch (Exception e) {
-                            //Do Nothing.  Leave type as is.
-                        }
 
                         for (DataRequirement.DataRequirementCodeFilterComponent filter : data.getCodeFilter()) {
                             if (filter.hasValueSet() && filter.getValueSet().equalsIgnoreCase(valueSet.getId())) {

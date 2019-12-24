@@ -643,7 +643,6 @@ public class HQMFProvider {
 
             List<Path> paths = strings.stream().map(x -> Paths.get(toUri(x))).collect(Collectors.toList());
 
-            // Path pathToMeasure = Paths.get(HQMFProvider.class.getClassLoader().getResource("hqmf/examples/input/measure-cms130-QDM.json").toURI());
             // Path pathToLibrary = Paths.get(HQMFProvider.class.getClassLoader().getResource("narratives/examples/library/CMS146.json").toURI());
             Path pathToOutput = Paths.get("src/main/resources/hqmf/hqmf.xml").toAbsolutePath();
             Path pathToNarrativeOutput = Paths.get("src/main/resources/narratives/output.html").toAbsolutePath();
