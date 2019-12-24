@@ -80,7 +80,7 @@ public class HQMFProvider {
         }
     };
 
-    static class CodeMapping {
+    public static class CodeMapping {
         public CodeMapping(String code, String displayName, String criteriaName, String criteriaExtension) {
             this.code = code;
             this.displayName = displayName;
