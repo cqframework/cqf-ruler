@@ -110,7 +110,7 @@ public class HapiProperties {
         return null;
     }
 
-    private static String getProperty(String propertyName) {
+    public static String getProperty(String propertyName) {
         Properties properties = HapiProperties.getProperties();
 
         if (properties != null) {
@@ -120,7 +120,7 @@ public class HapiProperties {
         return null;
     }
 
-    private static String getProperty(String propertyName, String defaultValue) {
+    public static String getProperty(String propertyName, String defaultValue) {
         Properties properties = HapiProperties.getProperties();
 
         if (properties != null) {
