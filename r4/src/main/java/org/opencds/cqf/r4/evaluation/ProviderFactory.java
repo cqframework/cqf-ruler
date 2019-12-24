@@ -6,8 +6,6 @@ import org.opencds.cqf.cql.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.R4FhirTerminologyProvider;
-import org.opencds.cqf.qdm.model.Qdm54ModelResolver;
-import org.opencds.cqf.qdm.providers.Qdm54RetrieveProvider;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.R4ApelonFhirTerminologyProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
@@ -17,7 +15,7 @@ import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 
 // This class is a relatively dumb factory for data providers. It supports only
-// creating JPA providers for FHIR and QDM, and only basic auth for terminology
+// creating JPA providers for FHIR, and only basic auth for terminology
 public class ProviderFactory implements EvaluationProviderFactory {
 
     DaoRegistry registry;
@@ -51,9 +49,6 @@ public class ProviderFactory implements EvaluationProviderFactory {
             retrieveProvider.setExpandValueSets(true);
 
             return new CompositeDataProvider(modelResolver, retrieveProvider);
-        } else if (model.equals("QDM") && version.equals("5.4")) {
-            Qdm54RetrieveProvider retrieveProvider = new Qdm54RetrieveProvider(terminologyProvider);
-            return new CompositeDataProvider(new Qdm54ModelResolver(), retrieveProvider);
         }
 
         throw new IllegalArgumentException(

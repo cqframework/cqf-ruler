@@ -1,6 +1,6 @@
 package org.opencds.cqf.common.evaluation;
 
-// TODO: This seems to be QDM related. Refactor the MeasureEvalution to have a QDM specific component.
+// TODO: This seems to be QDM related
 public enum DataElementType {
     PATIENT("Patient"),
     PATIENTCHARACTERISTICETHNICITY("Patient Characteristic Ethnicity"),

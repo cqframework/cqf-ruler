@@ -164,24 +164,21 @@ public class MeasureOperationsProvider {
 
         // resolve report type
         MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), this.registry, seed.getMeasurementPeriod());
-        boolean isQdm = seed.getDataProvider().getPackageName().toLowerCase().contains("qdm");
         if (reportType != null) {
             switch (reportType) {
             case "patient":
-                return isQdm ? evaluator.evaluateQdmPatientMeasure(seed.getMeasure(), seed.getContext(), patientRef)
-                        : evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
+                return evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
             case "patient-list":
                 return evaluator.evaluateSubjectListMeasure(seed.getMeasure(), seed.getContext(), practitionerRef);
             case "population":
-                return isQdm ? evaluator.evaluateQdmPopulationMeasure(seed.getMeasure(), seed.getContext())
-                        : evaluator.evaluatePopulationMeasure(seed.getMeasure(), seed.getContext());
+                return  evaluator.evaluatePopulationMeasure(seed.getMeasure(), seed.getContext());
             default:
                 throw new IllegalArgumentException("Invalid report type: " + reportType);
             }
         }
 
         // default report type is patient
-        MeasureReport report = isQdm ? evaluator.evaluateQdmPatientMeasure(seed.getMeasure(), seed.getContext(), patientRef) : evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
+        MeasureReport report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
         if (productLine != null)
         {
             Extension ext = new Extension();
