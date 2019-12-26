@@ -121,7 +121,7 @@ public class MeasureEvaluation {
         if (criteria != null) {
             for (Resource resource : evaluateCriteria(context, patient, criteria)) {
                 inPopulation = true;
-                population.put(resource.getId(), resource);
+                population.put(resource.getIdElement().getIdPart(), resource);
             }
         }
 
@@ -130,17 +130,17 @@ public class MeasureEvaluation {
             if (exclusionCriteria != null) {
                 for (Resource resource : evaluateCriteria(context, patient, exclusionCriteria)) {
                     inPopulation = false;
-                    exclusionPopulation.put(resource.getId(), resource);
-                    population.remove(resource.getId());
+                    exclusionPopulation.put(resource.getIdElement().getIdPart(), resource);
+                    population.remove(resource.getIdElement().getIdPart());
                 }
             }
         }
 
         if (inPopulation && populationPatients != null) {
-            populationPatients.put(patient.getId(), patient);
+            populationPatients.put(patient.getIdElement().getIdPart(), patient);
         }
         if (!inPopulation && exclusionPatients != null) {
-            exclusionPatients.put(patient.getId(), patient);
+            exclusionPatients.put(patient.getIdElement().getIdPart(), patient);
         }
 
         return inPopulation;
@@ -156,9 +156,9 @@ public class MeasureEvaluation {
                 for (Patient patient : patientPopulation) {
                     ListResource.ListEntryComponent entry = new ListResource.ListEntryComponent()
                             .setItem(new Reference().setReference(
-                                    patient.getId().startsWith("Patient/") ?
-                                            patient.getId() :
-                                            String.format("Patient/%s", patient.getId()))
+                                    patient.getIdElement().getIdPart().startsWith("Patient/") ?
+                                            patient.getIdElement().getIdPart() :
+                                            String.format("Patient/%s", patient.getIdElement().getIdPart()))
                                     .setDisplay(patient.getNameFirstRep().getNameAsSingleString()));
                     SUBJECTLIST.addEntry(entry);
                 }
@@ -324,16 +324,16 @@ public class MeasureEvaluation {
                                     boolean inException = false;
                                     for (Resource resource : evaluateCriteria(context, patient, denominatorExceptionCriteria)) {
                                         inException = true;
-                                        denominatorException.put(resource.getId(), resource);
-                                        denominator.remove(resource.getId());
+                                        denominatorException.put(resource.getIdElement().getIdPart(), resource);
+                                        denominator.remove(resource.getIdElement().getIdPart());
                                         populateResourceMap(context, MeasurePopulationType.DENOMINATOREXCEPTION, resources, codeToResourceMap);
                                     }
                                     if (inException) {
                                         if (denominatorExceptionPatients != null) {
-                                            denominatorExceptionPatients.put(patient.getId(), patient);
+                                            denominatorExceptionPatients.put(patient.getIdElement().getIdPart(), patient);
                                         }
                                         if (denominatorPatients != null) {
-                                            denominatorPatients.remove(patient.getId());
+                                            denominatorPatients.remove(patient.getIdElement().getIdPart());
                                         }
                                     }
                                 }
@@ -367,7 +367,7 @@ public class MeasureEvaluation {
                             if (inMeasurePopulation) {
                                 // TODO: Evaluate measure observations
                                 for (Resource resource : evaluateCriteria(context, patient, measureObservationCriteria)) {
-                                    measureObservation.put(resource.getId(), resource);
+                                    measureObservation.put(resource.getIdElement().getIdPart(), resource);
                                 }
                             }
                         }
@@ -444,7 +444,7 @@ public class MeasureEvaluation {
         for (Object o : context.getEvaluatedResources()) {
             if (o instanceof Resource){
                 Resource r = (Resource)o;
-                String id = r.getId();
+                String id = (r.getIdElement().getResourceType() != null ? (r.getIdElement().getResourceType()  + "/") : "")+ r.getIdElement().getIdPart();
                 if (!codeHashSet.contains(id)) {
                     codeHashSet.add(id);
                 }
