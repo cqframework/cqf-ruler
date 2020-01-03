@@ -21,15 +21,12 @@ public class ProviderFactory implements EvaluationProviderFactory {
     DaoRegistry registry;
     TerminologyProvider defaultTerminologyProvider;
     FhirContext fhirContext;
-    ISearchParamRegistry searchParamRegistry;
 
     public ProviderFactory(FhirContext fhirContext, DaoRegistry registry,
-            ISearchParamRegistry searchParamRegistry,
             TerminologyProvider defaultTerminologyProvider) {
         this.defaultTerminologyProvider = defaultTerminologyProvider;
         this.registry = registry;
         this.fhirContext = fhirContext;
-        this.searchParamRegistry = searchParamRegistry;
     }
 
     public DataProvider createDataProvider(String model, String version) {
@@ -44,7 +41,7 @@ public class ProviderFactory implements EvaluationProviderFactory {
     public DataProvider createDataProvider(String model, String version, TerminologyProvider terminologyProvider) {
         if (model.equals("FHIR") && version.equals("4.0.0")) {
             R4FhirModelResolver modelResolver = new R4FhirModelResolver();
-            JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(this.registry, new SearchParameterResolver(this.searchParamRegistry));
+            JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(this.registry, new SearchParameterResolver(this.fhirContext));
             retrieveProvider.setTerminologyProvider(terminologyProvider);
             retrieveProvider.setExpandValueSets(true);
 
