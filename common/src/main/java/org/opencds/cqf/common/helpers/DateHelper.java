@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class DateHelper {
 
@@ -23,6 +24,7 @@ public class DateHelper {
         // for now support dates up to day precision
         Calendar calendar = Calendar.getInstance();
         calendar.clear();
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
         calendar.set(Calendar.YEAR, dateVals.get(0));
         if (dateVals.size() > 1) {
             // java.util.Date months are zero based, hence the negative 1 -- 2014-01 == February 2014
