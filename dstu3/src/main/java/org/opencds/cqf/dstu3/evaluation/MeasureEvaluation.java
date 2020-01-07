@@ -17,6 +17,7 @@ import org.opencds.cqf.dstu3.helpers.FhirMeasureBundler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class MeasureEvaluation {
@@ -41,17 +42,19 @@ public class MeasureEvaluation {
         }
 
         Patient patient = registry.getResourceDao(Patient.class).read(new IdType(patientId));
-//        Iterable<Object> patientRetrieve = provider.retrieve("Patient", "id", patientId, "Patient", null, null, null, null, null, null, null, null);
-//        Patient patient = null;
-//        if (patientRetrieve.iterator().hasNext()) {
-//            patient = (Patient) patientRetrieve.iterator().next();
-//        }
+        // Iterable<Object> patientRetrieve = provider.retrieve("Patient", "id",
+        // patientId, "Patient", null, null, null, null, null, null, null, null);
+        // Patient patient = null;
+        // if (patientRetrieve.iterator().hasNext()) {
+        // patient = (Patient) patientRetrieve.iterator().next();
+        // }
 
-        return evaluate(measure, context, patient == null ? Collections.emptyList() : Collections.singletonList(patient), MeasureReport.MeasureReportType.INDIVIDUAL);
+        return evaluate(measure, context,
+                patient == null ? Collections.emptyList() : Collections.singletonList(patient),
+                MeasureReport.MeasureReportType.INDIVIDUAL);
     }
 
-    public MeasureReport evaluatePatientListMeasure(Measure measure, Context context, String practitionerRef)
-    {
+    public MeasureReport evaluatePatientListMeasure(Measure measure, Context context, String practitionerRef) {
         logger.info("Generating patient-list report");
 
         List<Patient> patients = practitionerRef == null ? getAllPatients() : getPractitionerPatients(practitionerRef);
@@ -60,14 +63,8 @@ public class MeasureEvaluation {
 
     private List<Patient> getPractitionerPatients(String practitionerRef) {
         SearchParameterMap map = new SearchParameterMap();
-        map.add(
-                "general-practitioner",
-                new ReferenceParam(
-                        practitionerRef.startsWith("Practitioner/")
-                                ? practitionerRef
-                                : "Practitioner/" + practitionerRef
-                )
-        );
+        map.add("general-practitioner", new ReferenceParam(
+                practitionerRef.startsWith("Practitioner/") ? practitionerRef : "Practitioner/" + practitionerRef));
 
         List<Patient> patients = new ArrayList<>();
         IBundleProvider patientProvider = registry.getResourceDao("Patient").search(map);
@@ -90,12 +87,26 @@ public class MeasureEvaluation {
         return evaluate(measure, context, getAllPatients(), MeasureReport.MeasureReportType.SUMMARY);
     }
 
-    private Iterable<Resource> evaluateCriteria(Context context, Patient patient, Measure.MeasureGroupPopulationComponent pop) {
+    private Iterable<Resource> evaluateCriteria(Context context, Patient patient,
+            Measure.MeasureGroupPopulationComponent pop) {
         if (!pop.hasCriteria()) {
             return Collections.emptyList();
         }
 
         context.setContextValue("Patient", patient.getIdElement().getIdPart());
+        // Hack to clear expression cache
+        // See cqf-ruler github issue #153
+        try {
+            Field privateField = Context.class.getDeclaredField("expressions");
+            privateField.setAccessible(true);
+            LinkedHashMap<String, Object> expressions = (LinkedHashMap<String, Object>)privateField.get(context);
+            expressions.clear();
+            
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+ 
         Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
         if (result == null) {
             return Collections.emptyList();

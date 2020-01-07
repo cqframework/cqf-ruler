@@ -18,6 +18,7 @@ import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class MeasureEvaluation {
@@ -96,6 +97,19 @@ public class MeasureEvaluation {
         }
 
         context.setContextValue("Patient", patient.getIdElement().getIdPart());
+
+        // Hack to clear expression cache
+        // See cqf-ruler github issue #153
+        try {
+            Field privateField = Context.class.getDeclaredField("expressions");
+            privateField.setAccessible(true);
+            LinkedHashMap<String, Object> expressions = (LinkedHashMap<String, Object>)privateField.get(context);
+            expressions.clear();
+            
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         Object result = context.resolveExpressionRef(pop.getCriteria().getExpression()).evaluate(context);
         if (result == null) {
             Collections.emptyList();
