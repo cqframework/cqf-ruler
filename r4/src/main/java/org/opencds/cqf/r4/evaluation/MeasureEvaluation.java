@@ -104,7 +104,7 @@ public class MeasureEvaluation {
             Field privateField = Context.class.getDeclaredField("expressions");
             privateField.setAccessible(true);
             LinkedHashMap<String, Object> expressions = (LinkedHashMap<String, Object>)privateField.get(context);
-            expressions.clear();;
+            expressions.clear();
             
         } catch (Exception e) {
             // TODO Auto-generated catch block
