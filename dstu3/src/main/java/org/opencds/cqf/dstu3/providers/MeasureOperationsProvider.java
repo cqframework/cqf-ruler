@@ -324,7 +324,7 @@ public class MeasureOperationsProvider {
             @OptionalParam(name = "lastReceivedOn") String lastReceivedOn) throws FHIRException {
         // TODO: Spec says that the periods are not required, but I am not sure what to
         // do when they aren't supplied so I made them required
-        MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, null, patientRef,
+        MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null,  patientRef, null,
                 practitionerRef, lastReceivedOn, null, null, null);
         report.setGroup(null);
 
