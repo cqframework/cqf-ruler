@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
@@ -19,11 +19,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.HTML;
-import javax.swing.text.Element;
-import javax.swing.text.StyleConstants;
 import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -35,28 +30,29 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import com.google.common.collect.Lists;
 import com.jamesmurty.utils.XMLBuilder2;
 
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.jsoup.Jsoup;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Contributor;
+import org.hl7.fhir.dstu3.model.Contributor.ContributorType;
 import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.MarkdownType;
 import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.Narrative;
-import org.hl7.fhir.dstu3.model.Period;
-import org.hl7.fhir.dstu3.model.Contributor.ContributorType;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupPopulationComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureSupplementalDataComponent;
-import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
-import org.opencds.cqf.dstu3.providers.CqfMeasure.CodeTerminologyRef;
-import org.opencds.cqf.dstu3.providers.CqfMeasure.TerminologyRef;
-import org.opencds.cqf.dstu3.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
+import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.jsoup.Jsoup;
+import org.opencds.cqf.common.providers.InMemoryLibraryResourceProvider;
+import org.opencds.cqf.common.providers.LibraryResolutionProvider;
+import org.opencds.cqf.dstu3.providers.CodeTerminologyRef;
+import org.opencds.cqf.dstu3.providers.TerminologyRef;
+import org.opencds.cqf.dstu3.providers.TerminologyRef.TerminologyRefType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -84,7 +80,7 @@ public class HQMFProvider {
         }
     };
 
-    static class CodeMapping {
+    public static class CodeMapping {
         public CodeMapping(String code, String displayName, String criteriaName, String criteriaExtension) {
             this.code = code;
             this.displayName = displayName;
@@ -650,7 +646,6 @@ public class HQMFProvider {
 
             List<Path> paths = strings.stream().map(x -> Paths.get(toUri(x))).collect(Collectors.toList());
 
-            // Path pathToMeasure = Paths.get(HQMFProvider.class.getClassLoader().getResource("hqmf/examples/input/measure-cms130-QDM.json").toURI());
             // Path pathToLibrary = Paths.get(HQMFProvider.class.getClassLoader().getResource("narratives/examples/library/CMS146.json").toURI());
             Path pathToOutput = Paths.get("src/main/resources/hqmf/hqmf.xml").toAbsolutePath();
             Path pathToNarrativeOutput = Paths.get("src/main/resources/narratives/output.html").toAbsolutePath();
@@ -693,7 +688,8 @@ public class HQMFProvider {
             Measure measure = (Measure)resources.stream().filter(x -> (x instanceof Measure)).findFirst().get();
             List<Library> libraries = resources.stream().filter(x -> (x instanceof Library)).map(x -> (Library)x).collect(Collectors.toList());
 
-            LibraryResourceProvider lrp = new InMemoryLibraryResourceProvider(libraries);
+            LibraryResolutionProvider<Library> lrp = 
+                new InMemoryLibraryResourceProvider<Library>(libraries, x -> x.getIdElement().getIdPart(), x -> x.getName(), x -> x.getVersion());
 
             CqfMeasure cqfMeasure = dataRequirementsProvider.createCqfMeasure(measure, lrp);
             

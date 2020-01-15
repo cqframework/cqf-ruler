@@ -16,10 +16,5 @@
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opencds.cqf</groupId>
-            <artifactId>qdm</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

@@ -1,6 +1,6 @@
 package org.opencds.cqf.r4.builders;
 
-import org.opencds.cqf.builders.BaseBuilder;
+import org.opencds.cqf.common.builders.BaseBuilder;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Enumerations;
@@ -78,7 +78,7 @@ public class ActivityDefinitionBuilder extends BaseBuilder<ActivityDefinition> {
         dynamicValueComponent.setExpression(
                 new Expression()
                         .setDescription(description)
-                        .setLanguage(Expression.ExpressionLanguage.fromCode(language))
+                        .setLanguage(Expression.ExpressionLanguage.fromCode(language).toCode())
                         .setExpression(expression)
         );
         complexProperty.addDynamicValue(dynamicValueComponent);

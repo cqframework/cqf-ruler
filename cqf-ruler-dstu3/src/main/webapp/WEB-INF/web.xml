@@ -17,7 +17,7 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            org.opencds.cqf.config.FhirServerConfigCommon,
+            org.opencds.cqf.common.config.FhirServerConfig,
             org.opencds.cqf.dstu3.config.FhirServerConfigDstu3
         </param-value>
     </context-param>
@@ -42,29 +42,6 @@
         <servlet-name>LogMessages</servlet-name>
         <url-pattern>/LogMessages</url-pattern>
     </servlet-mapping> -->
-
-    <servlet>
-        <servlet-name>qdm54</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <init-param>
-            <param-name>contextClass</param-name>
-            <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-        </init-param>
-        <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>org.opencds.cqf.qdm.config.QdmServerConfig</param-value>
-        </init-param>
-        <init-param>
-            <param-name>FhirVersion</param-name>
-            <param-value>QDM</param-value>
-        </init-param>
-        <load-on-startup>3</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>qdm54</servlet-name>
-        <url-pattern>/qdm/*</url-pattern>
-    </servlet-mapping>
-
     <servlet>
         <servlet-name>spring</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -114,10 +91,6 @@
     <filter-mapping>
         <filter-name>cross-origin</filter-name>
         <url-pattern>/fhir/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>cross-origin</filter-name>
-        <url-pattern>/qdm/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>cross-origin</filter-name>

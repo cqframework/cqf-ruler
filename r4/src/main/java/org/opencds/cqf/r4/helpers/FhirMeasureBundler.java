@@ -4,6 +4,9 @@ import org.opencds.cqf.cql.execution.Context;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
 
+/**
+ * Created by Bryn on 5/7/2016.
+ */
 public class FhirMeasureBundler {
     // Adds the resources returned from the given expressions to a bundle
     public Bundle bundle(Context context, String... expressionNames) {
@@ -14,7 +17,8 @@ public class FhirMeasureBundler {
             for (Object element : (Iterable)result) {
                 Bundle.BundleEntryComponent entry = new Bundle.BundleEntryComponent();
                 entry.setResource((Resource)element);
-                entry.setFullUrl(((Resource)element).getId());
+                // The null check for resourceType handles Lists, which don't have a resource type.
+                entry.setFullUrl((((Resource)element).getIdElement().getResourceType() != null ? (((Resource)element).getIdElement().getResourceType()  + "/") : "") + ((Resource)element).getIdElement().getIdPart());
                 bundle.getEntry().add(entry);
             }
         }
@@ -28,7 +32,8 @@ public class FhirMeasureBundler {
         for (Resource resource : resources) {
             Bundle.BundleEntryComponent entry = new Bundle.BundleEntryComponent();
             entry.setResource(resource);
-            entry.setFullUrl(resource.getId());
+            // The null check for resourceType handles Lists, which don't have a resource type.
+            entry.setFullUrl((resource.getIdElement().getResourceType() != null ? (resource.getIdElement().getResourceType()  + "/") : "") + resource.getIdElement().getIdPart());
             bundle.getEntry().add(entry);
         }
 

@@ -1,6 +1,6 @@
 package org.opencds.cqf.r4.builders;//package org.opencds.cqf.r4.builders;
 
-import org.opencds.cqf.builders.BaseBuilder;
+import org.opencds.cqf.common.builders.BaseBuilder;
 import org.hl7.fhir.r4.model.StructureMap;
 
 public class StructuredMapStructureBuilder extends BaseBuilder<StructureMap.StructureMapStructureComponent> {

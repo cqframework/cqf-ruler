@@ -50,11 +50,12 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
+import org.opencds.cqf.common.helpers.TranslatorHelper;
+import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.dstu3.helpers.DataElementType;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
-import org.opencds.cqf.dstu3.providers.CqfMeasure.TerminologyRef;
-import org.opencds.cqf.dstu3.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.dstu3.providers.TerminologyRef;
+import org.opencds.cqf.dstu3.providers.TerminologyRef.TerminologyRefType;
 
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.html.*;
@@ -76,12 +77,12 @@ public class DataRequirementsProvider {
     // 4. Update the Data Requirements on the Resources accordingly
     // Since the Library Loader only exposes the loaded libraries as ELM, we actually have to load them twice.
     // Once via the loader, Once manually
-    public CqfMeasure createCqfMeasure(Measure measure, LibraryResourceProvider libraryResourceProvider) {
+    public CqfMeasure createCqfMeasure(Measure measure, LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = this.createLibraryMap(measure, libraryResourceProvider);
         return this.createCqfMeasure(measure, libraryMap);
     }
 
-    private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>>  createLibraryMap(Measure measure, LibraryResourceProvider libraryResourceProvider) {
+    private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>>  createLibraryMap(Measure measure, LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResourceProvider);
         List<Library> libraries = LibraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = new HashMap<>();
@@ -120,10 +121,10 @@ public class DataRequirementsProvider {
         List<MeasureGroupPopulationComponent> definitionStatements = new ArrayList<>();
         List<MeasureGroupPopulationComponent> functionStatements = new ArrayList<>();
         List<MeasureGroupPopulationComponent> supplementalDataElements = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef> terminology = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef > codes = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef > codeSystems = new ArrayList<>();
-        List<CqfMeasure.TerminologyRef > valueSets = new ArrayList<>();
+        List<TerminologyRef> terminology = new ArrayList<>();
+        List<TerminologyRef > codes = new ArrayList<>();
+        List<TerminologyRef > codeSystems = new ArrayList<>();
+        List<TerminologyRef > valueSets = new ArrayList<>();
         List<StringType> dataCriteria = new ArrayList<>();
 
         String primaryLibraryId = measure.getLibraryFirstRep().getReferenceElement().getIdPart();
@@ -152,9 +153,9 @@ public class DataRequirementsProvider {
                     String name = codeSystem.getName();
                     String version = codeSystem.getVersion();
 
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.CODESYSTEM, name, codeId, version);
+                    TerminologyRef term = new VersionedTerminologyRef(TerminologyRefType.CODESYSTEM, name, codeId, version);
                     Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : codeSystems) {
+                    for (TerminologyRef  t : codeSystems) {
                         if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }
@@ -181,9 +182,9 @@ public class DataRequirementsProvider {
                         }
                     }
 
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.CodeTerminologyRef(name, codeId, codeSystemName, codeSystemId, displayName);
+                    TerminologyRef term = new CodeTerminologyRef(name, codeId, codeSystemName, codeSystemId, displayName);
                     Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : codes) {
+                    for (TerminologyRef  t : codes) {
                         if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }
@@ -199,9 +200,9 @@ public class DataRequirementsProvider {
                     String valueSetId = valueSet.getId().replace("urn:oid:", "");
                     String name = valueSet.getName();
 
-                    CqfMeasure.TerminologyRef term = new CqfMeasure.VersionedTerminologyRef(TerminologyRefType.VALUESET, name, valueSetId);
+                    TerminologyRef term = new VersionedTerminologyRef(TerminologyRefType.VALUESET, name, valueSetId);
                     Boolean exists = false;
-                    for (CqfMeasure.TerminologyRef  t : valueSets) {
+                    for (TerminologyRef  t : valueSets) {
                         if (t.getDefinition().equalsIgnoreCase(term.getDefinition())) {
                             exists = true;
                         }
@@ -212,12 +213,6 @@ public class DataRequirementsProvider {
                   
                     for (DataRequirement data : cqfMeasure.getDataRequirement()) {
                         String type = data.getType();
-                        try {
-                            DataElementType dataType = DataElementType.valueOf(type.toUpperCase());
-                            type = dataType.toString();
-                        } catch (Exception e) {
-                            //Do Nothing.  Leave type as is.
-                        }
 
                         for (DataRequirementCodeFilterComponent filter : data.getCodeFilter()) {
                             if (filter.hasValueSetStringType() && filter.getValueSetStringType().getValueAsString().equalsIgnoreCase(valueSet.getId())) {
@@ -393,7 +388,7 @@ public class DataRequirementsProvider {
                 List<MeasureGroupPopulationComponent> newMgpc = new ArrayList<MeasureGroupPopulationComponent>();
                 for (int j = 0; j < mgc.getPopulation().size(); j++) {
                     MeasureGroupPopulationComponent mgpc = mgc.getPopulation().get(j);
-                    if (mgpc.hasCriteria() && !mgpc.getCriteria().isEmpty() && !cqfMeasure.getSharedPopulationCritieria().containsKey(mgpc.getCriteria())) {
+                    if (mgpc.hasCriteria() && !mgpc.getCriteria().isEmpty() && !cqfMeasure.getSharedPopulationCritieria().getMap().containsKey(mgpc.getCriteria())) {
                         String code = mgpc.getCode().getCodingFirstRep().getCode();
                         String display = HQMFProvider.measurePopulationValueSetMap.get(code).displayName;
                         mgpc.setName(display);
@@ -478,7 +473,7 @@ public class DataRequirementsProvider {
         return renderer.render(document);
     }
 
-    public org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure, LibraryResourceProvider libraryResourceProvider){
+    public org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure, LibraryResolutionProvider libraryResourceProvider){
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = this.createLibraryMap(measure, libraryResourceProvider);
         return this.getDataRequirements(measure, libraryMap.values().stream().map(x -> x.getRight()).filter(x -> x != null).collect(Collectors.toList()));
     }
@@ -533,7 +528,7 @@ public class DataRequirementsProvider {
             return null;
         }
 
-        CqlTranslator translator = LibraryHelper.getTranslator(
+        CqlTranslator translator = TranslatorHelper.getTranslator(
                 new ByteArrayInputStream(Base64.getDecoder().decode(cql.getDataElement().getValueAsString())),
                 libraryManager, modelManager);
 
@@ -570,7 +565,7 @@ public class DataRequirementsProvider {
         library.getContent().add(elm);
     }
 
-    public void ensureRelatedArtifacts(org.hl7.fhir.dstu3.model.Library library, CqlTranslator translator, LibraryResourceProvider libraryResourceProvider)
+    public void ensureRelatedArtifacts(org.hl7.fhir.dstu3.model.Library library, CqlTranslator translator, LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider)
     {
         library.getRelatedArtifact().clear();
         org.hl7.elm.r1.Library elm = translator.toELM();

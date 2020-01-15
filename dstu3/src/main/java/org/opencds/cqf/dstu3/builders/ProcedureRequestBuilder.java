@@ -1,6 +1,6 @@
 package org.opencds.cqf.dstu3.builders;
 
-import org.opencds.cqf.builders.BaseBuilder;
+import org.opencds.cqf.common.builders.BaseBuilder;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.ProcedureRequest;

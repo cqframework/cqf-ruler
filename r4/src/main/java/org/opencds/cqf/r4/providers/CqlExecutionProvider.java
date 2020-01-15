@@ -7,39 +7,56 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.elm.execution.UsingDef;
 import org.cqframework.cql.elm.tracking.TrackBack;
-import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.r4.config.R4LibraryLoader;
+import org.hl7.fhir.r4.model.ActivityDefinition;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.DomainResource;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Measure;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.Type;
+import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.evaluation.LibraryLoader;
+import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.common.helpers.TranslatorHelper;
+import org.opencds.cqf.common.helpers.UsingHelper;
+import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.terminology.fhir.FhirTerminologyProvider;
-import org.opencds.cqf.qdm.providers.Qdm54DataProvider;
-import org.opencds.cqf.r4.helpers.DateHelper;
+import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
+/**
+ * Created by Bryn on 1/16/2017.
+ */
 public class CqlExecutionProvider {
-    private JpaDataProvider provider;
-    private TerminologyProvider defaultTerminologyProvider;
+    private EvaluationProviderFactory providerFactory;
+    private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider;
 
-    public CqlExecutionProvider(JpaDataProvider provider) {
-        this.provider = provider;
-        this.defaultTerminologyProvider = provider.getTerminologyProvider();
+    public CqlExecutionProvider(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider, EvaluationProviderFactory providerFactory) {
+        this.providerFactory = providerFactory;
+        this.libraryResourceProvider = libraryResourceProvider;
     }
 
-    private LibraryResourceProvider getLibraryResourceProvider() {
-        return (LibraryResourceProvider) provider.resolveResourceProvider("Library");
+
+    private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> getLibraryResourceProvider() {
+        return this.libraryResourceProvider;
     }
 
     private List<CanonicalType> cleanReferences(List<CanonicalType> references) {
@@ -62,6 +79,7 @@ public class CqlExecutionProvider {
         }
         return cleanRefs;
     }
+
 
     private Iterable<CanonicalType> getLibraryReferences(DomainResource instance) {
         List<CanonicalType> references = new ArrayList<>();
@@ -104,7 +122,7 @@ public class CqlExecutionProvider {
 
         return cleanReferences(references);
     }
-
+   
     private String buildIncludes(Iterable<CanonicalType> references) {
         StringBuilder builder = new StringBuilder();
         for (CanonicalType reference : references) {
@@ -117,7 +135,13 @@ public class CqlExecutionProvider {
 
             // TODO: This assumes the libraries resource id is the same as the library name,
             // need to work this out better
-            builder.append(reference.getId());
+            Library lib =this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference));
+            if (lib.hasName()) {
+                builder.append(lib.getName());
+            }
+            else {
+                throw new RuntimeException("Library name unknown");
+            }
 
             if (reference.hasValue() && reference.getValue().split("\\|").length > 1) {
                 builder.append(" version '");
@@ -126,7 +150,7 @@ public class CqlExecutionProvider {
             }
 
             builder.append(" called ");
-            builder.append(reference.getValue().split("\\|")[0]);
+            builder.append(lib.getName());
         }
 
         return builder.toString();
@@ -148,9 +172,9 @@ public class CqlExecutionProvider {
                 "library LocalLibrary using FHIR version '4.0.0' include FHIRHelpers version '4.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
                 buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
 
-        R4LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
 
-        org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(source,
+        org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(source,
                 libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
         Context context = new Context(library);
         context.setParameter(null, instance.fhirType(), instance);
@@ -158,35 +182,8 @@ public class CqlExecutionProvider {
         context.setExpressionCaching(true);
         context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
-        context.registerDataProvider("http://hl7.org/fhir", provider);
+        context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", "4.0.0"));
         return context.resolveExpressionRef("Expression").evaluate(context);
-    }
-
-    private TerminologyProvider getTerminologyProvider(String url, String user, String pass) {
-        if (url != null && !url.isEmpty()) {
-            if (url.contains("apelon.com")) {
-                return new ApelonFhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
-            } else {
-                return new FhirTerminologyProvider().withBasicAuth(user, pass).setEndpoint(url, false);
-            }
-        } else
-            return this.defaultTerminologyProvider;
-    }
-
-    private DataProvider getDataProvider(String model, String version) {
-        if (model.equals("FHIR") && version.equals("4.0.0")) {
-            FhirContext fhirContext = provider.getFhirContext();
-            fhirContext.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-            provider.setFhirContext(fhirContext);
-            return provider;
-        }
-
-        else if (model.equals("QDM") && version.equals("5.4")) {
-            return new Qdm54DataProvider();
-        }
-
-        throw new IllegalArgumentException(
-                "Could not resolve data provider for data model: " + model + " using version: " + version);
     }
 
     @Operation(name = "$cql")
@@ -208,12 +205,12 @@ public class CqlExecutionProvider {
         CqlTranslator translator;
         FhirMeasureBundler bundler = new FhirMeasureBundler();
 
-        R4LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
 
         List<Resource> results = new ArrayList<>();
 
         try {
-            translator = LibraryHelper.getTranslator(code, libraryLoader.getLibraryManager(),
+            translator = TranslatorHelper.getTranslator(code, libraryLoader.getLibraryManager(),
                     libraryLoader.getModelManager());
 
             if (translator.getErrors().size() > 0) {
@@ -242,31 +239,34 @@ public class CqlExecutionProvider {
 
         Map<String, List<Integer>> locations = getLocations(translator.getTranslatedLibrary().getLibrary());
 
-        org.cqframework.cql.elm.execution.Library library = LibraryHelper.translateLibrary(translator);
+        org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(translator);
         Context context = new Context(library);
+        context.registerLibraryLoader(libraryLoader);
+        
+        List<Triple<String,String,String>> usingDefs = UsingHelper.getUsingUrlAndVersion(library.getUsings());
 
-        TerminologyProvider terminologyProvider = getTerminologyProvider(terminologyServiceUri, terminologyUser, terminologyPass);
-        DataProvider dataProvider;
-        for (UsingDef using : library.getUsings().getDef())
+        if (usingDefs.size() > 1) {
+            throw new IllegalArgumentException("Evaluation of Measure using multiple Models is not supported at this time.");
+        }
+
+        // If there are no Usings, there is probably not any place the Terminology
+        // actually used so I think the assumption that at least one provider exists is ok.
+        TerminologyProvider terminologyProvider = null;
+        if (usingDefs.size() > 0) {
+            // Creates a terminology provider based on the first using statement. This assumes the terminology
+            // server matches the FHIR version of the CQL.
+            terminologyProvider = this.providerFactory.createTerminologyProvider(
+                    usingDefs.get(0).getLeft(), usingDefs.get(0).getMiddle(),
+                        terminologyServiceUri, terminologyUser, terminologyPass);
+            context.registerTerminologyProvider(terminologyProvider);
+        }
+
+        for (Triple<String,String,String> def : usingDefs)
         {
-            if (using.getLocalIdentifier().equals("System")) continue;
-
-            dataProvider = getDataProvider(using.getLocalIdentifier(), using.getVersion());
-            if (dataProvider instanceof JpaDataProvider)
-            {
-                ((JpaDataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
-                ((JpaDataProvider) dataProvider).setExpandValueSets(true);
-                context.registerDataProvider("http://hl7.org/fhir", provider);
-                context.registerLibraryLoader(libraryLoader);
-                context.registerTerminologyProvider(terminologyProvider);
-            }
-            else
-            {
-                ((Qdm54DataProvider) dataProvider).setTerminologyProvider(terminologyProvider);
-                context.registerDataProvider("urn:healthit-gov:qdm:v5_4", dataProvider);
-                context.registerLibraryLoader(libraryLoader);
-                context.registerTerminologyProvider(terminologyProvider);
-            }
+            DataProvider dataProvider = this.providerFactory.createDataProvider(def.getLeft(), def.getMiddle(), terminologyProvider);
+            context.registerDataProvider(
+                def.getRight(), 
+                dataProvider);
         }
 
         if (parameters != null)
@@ -314,8 +314,8 @@ public class CqlExecutionProvider {
                     if (res == null) {
                         result.addParameter().setName("value").setValue(new StringType("null"));
                     }
-                    else if (res instanceof List) {
-                        if (((List) res).size() > 0 && ((List) res).get(0) instanceof Resource) {
+                    else if (res instanceof List<?>) {
+                        if (((List<?>) res).size() > 0 && ((List<?>) res).get(0) instanceof Resource) {
                             result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
                         }
                         else {

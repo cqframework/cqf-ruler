@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Reader;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
@@ -33,11 +33,25 @@ import javax.xml.validation.Validator;
 import com.jamesmurty.utils.XMLBuilder2;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.ContactDetail;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.MarkdownType;
+import org.hl7.fhir.r4.model.Measure;
+import org.hl7.fhir.r4.model.Measure.MeasureGroupComponent;
+import org.hl7.fhir.r4.model.Measure.MeasureGroupPopulationComponent;
+import org.hl7.fhir.r4.model.Measure.MeasureSupplementalDataComponent;
+import org.hl7.fhir.r4.model.Narrative;
+import org.hl7.fhir.r4.model.Period;
+import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.RelatedArtifact.RelatedArtifactType;
 import org.jsoup.Jsoup;
-import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.r4.providers.CqfMeasure.CodeTerminologyRef;
-import org.opencds.cqf.r4.providers.CqfMeasure.TerminologyRef;
-import org.opencds.cqf.r4.providers.CqfMeasure.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.common.providers.InMemoryLibraryResourceProvider;
+import org.opencds.cqf.common.providers.LibraryResolutionProvider;
+import org.opencds.cqf.r4.providers.CodeTerminologyRef;
+import org.opencds.cqf.r4.providers.TerminologyRef;
+import org.opencds.cqf.r4.providers.TerminologyRef.TerminologyRefType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -65,7 +79,7 @@ public class HQMFProvider {
         }
     };
 
-    static class CodeMapping {
+    public static class CodeMapping {
         public CodeMapping(String code, String displayName, String criteriaName, String criteriaExtension) {
             this.code = code;
             this.displayName = displayName;
@@ -319,7 +333,7 @@ public class HQMFProvider {
         // Reference (citations)
         if (m.hasRelatedArtifact()) {
             for (RelatedArtifact r : m.getRelatedArtifact()) {
-                if (r.hasType() && r.getType() == RelatedArtifact.RelatedArtifactType.CITATION) {
+                if (r.hasType() && r.getType() == RelatedArtifactType.CITATION) {
                     this.addMeasureAttributeWithCodeAndTextValue(xml, "REF", codeSystem, "Reference", "text/plain",
                             r.getCitation());
                 }
@@ -346,7 +360,7 @@ public class HQMFProvider {
 
         // TODO: Groups - It seems the HQMF measure supports descriptions for only  one group, the FHIR measure has descriptions per group
         if (m.hasGroup()) {
-            Measure.MeasureGroupComponent mgc = m.getGroupFirstRep();
+            MeasureGroupComponent mgc = m.getGroupFirstRep();
             this.addGroupMeasureAttributes(xml, codeSystem, mgc);
         }
 
@@ -355,10 +369,10 @@ public class HQMFProvider {
         // TODO: Supplemental Data Elements - The HQMF measure has a description of the elements, the FHIR measure does not.
     }
 
-    private void addGroupMeasureAttributes(XMLBuilder2 xml, String codeSystem, Measure.MeasureGroupComponent mgc) {
+    private void addGroupMeasureAttributes(XMLBuilder2 xml, String codeSystem, MeasureGroupComponent mgc) {
         for  (Map.Entry<String, CodeMapping> entry : measurePopulationValueSetMap.entrySet()) {
             String key = entry.getKey();
-            Measure.MeasureGroupPopulationComponent mgpc = GetPopulationForKey(key, mgc);
+            MeasureGroupPopulationComponent mgpc = GetPopulationForKey(key, mgc);
             if (mgpc != null) {
                 this.addMeasureAttributeWithCodeAndTextValue(xml, 
                     entry.getValue().code, codeSystem, entry.getValue().displayName, 
@@ -367,8 +381,8 @@ public class HQMFProvider {
         }
     }
 
-    private Measure.MeasureGroupPopulationComponent GetPopulationForKey(String key, Measure.MeasureGroupComponent mgc) {
-        for (Measure.MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
+    private MeasureGroupPopulationComponent GetPopulationForKey(String key, MeasureGroupComponent mgc) {
+        for (MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
             String mgpcIdentifier = mgpc.getCode().getCoding().get(0).getCode();
             if (key.equals(mgpcIdentifier)) {
                 return mgpc;
@@ -475,15 +489,15 @@ public class HQMFProvider {
                 String criteriaName = "PopulationCriteria_" + (i + 1);
                 String criteriaRoot = UUID.randomUUID().toString();
                 XMLBuilder2 readyForComponents = this.addPopulationCriteriaHeader(xml, criteriaName, criteriaRoot);
-                Measure.MeasureGroupComponent mgc = m.getGroupFirstRep();
-                for (Measure.MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
+                MeasureGroupComponent mgc = m.getGroupFirstRep();
+                for (MeasureGroupPopulationComponent mgpc : mgc.getPopulation()) {
                     String key = mgpc.getCode().getCoding().get(0).getCode();
                     CodeMapping mapping = measurePopulationValueSetMap.get(key);
                     this.addPopulationCriteriaComponentCriteria(readyForComponents, mapping.criteriaName, mapping.criteriaExtension, mapping.code, documentName + ".\"" + mgpc.getCriteria() + "\"", documentGuid);
                 }
 
                 if (m.hasSupplementalData()) {
-                    for (Measure.MeasureSupplementalDataComponent sde : m.getSupplementalData()) {
+                    for (MeasureSupplementalDataComponent sde : m.getSupplementalData()) {
                         this.addPopulationCriteriaComponentSDE(readyForComponents, UUID.randomUUID().toString(), documentName + ".\"" + sde.getCriteria() + "\"", documentGuid);
                     }
                 }
@@ -629,7 +643,6 @@ public class HQMFProvider {
 
             List<Path> paths = strings.stream().map(x -> Paths.get(toUri(x))).collect(Collectors.toList());
 
-            // Path pathToMeasure = Paths.get(HQMFProvider.class.getClassLoader().getResource("hqmf/examples/input/measure-cms130-QDM.json").toURI());
             // Path pathToLibrary = Paths.get(HQMFProvider.class.getClassLoader().getResource("narratives/examples/library/CMS146.json").toURI());
             Path pathToOutput = Paths.get("src/main/resources/hqmf/hqmf.xml").toAbsolutePath();
             Path pathToNarrativeOutput = Paths.get("src/main/resources/narratives/output.html").toAbsolutePath();
@@ -672,7 +685,7 @@ public class HQMFProvider {
             Measure measure = (Measure)resources.stream().filter(x -> (x instanceof Measure)).findFirst().get();
             List<Library> libraries = resources.stream().filter(x -> (x instanceof Library)).map(x -> (Library)x).collect(Collectors.toList());
 
-            LibraryResourceProvider lrp = new InMemoryLibraryResourceProvider(libraries);
+            LibraryResolutionProvider<Library> lrp = new InMemoryLibraryResourceProvider<Library>(libraries, x -> x.getIdElement().getIdPart(), x -> x.getName(), x -> x.getVersion());
 
             CqfMeasure cqfMeasure = dataRequirementsProvider.createCqfMeasure(measure, lrp);
             

@@ -6,7 +6,7 @@ import ca.uhn.fhir.context.ParserOptions;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 
-import org.opencds.cqf.config.HapiProperties;
+import org.opencds.cqf.common.config.HapiProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 @Configuration
 public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3
 {
-    private final DataSource myDataSource;
+    protected final DataSource myDataSource;
 
     @Autowired
     public FhirServerConfigDstu3(DataSource myDataSource) {
