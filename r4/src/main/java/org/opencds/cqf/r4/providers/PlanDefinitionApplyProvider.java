@@ -115,7 +115,7 @@ public class PlanDefinitionApplyProvider {
         return this.planDefintionDao;
     }
 
-    @Operation(name = "$apply", idempotent = true)
+    @Operation(name = "$apply", idempotent = true, type = PlanDefinition.class)
     public CarePlan applyPlanDefinition(
             @IdParam IdType theId,
             @RequiredParam(name="patient") String patientId,
