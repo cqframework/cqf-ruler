@@ -212,13 +212,13 @@
                 <tr th:if="${groups.population.size > 0}"  style="vertical-align: top;">
                     <td th:if="${iterp.index == 0}" th:rowspan="${groups.population.size}" style="background-color:#656565; width:20%" scope="row"><span class="td_label"
                         th:with="result=${iter.index * 1 + 1}"
-                        th:text="${groups.hasName ?  (groups.name +'\n(Population Criteria ' + result + ')') : ('Population Criteria ' + result)}"></span></td>
+                        th:text="${groups.hasId ? (groups.id +'\n(Population Criteria ' + result + ')') : ('Population Criteria ' + result)}"></span></td>
                     <td style="width:20%;">
-                       <span style="font-size:10px; font-weight: bold;" th:text="${pops.name}"></span>
+                       <span style="font-size:10px; font-weight: bold;" th:text="${pops.code.coding[0].display}"></span>
                     </td>
                     <td colspan="2" style="width:60%;">
                         <div style="overflow-x:hidden;overflow-y:auto">
-                            <pre th:text="${pops.description}"></pre>
+                            <pre th:text="${pops.criteria.expression}"></pre>
                         </div>
                     </td>
                 </tr>
