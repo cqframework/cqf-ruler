@@ -3,8 +3,8 @@ package org.opencds.cqf.dstu3.providers;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
-import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
 import ca.uhn.fhir.jpa.term.VersionIndependentConcept;
+import ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -25,11 +25,11 @@ import java.util.List;
  */
 public class JpaTerminologyProvider implements TerminologyProvider {
 
-    private IHapiTerminologySvcDstu3 terminologySvcDstu3;
+    private ITermReadSvcDstu3 terminologySvcDstu3;
     private FhirContext context;
     private ValueSetResourceProvider valueSetResourceProvider;
 
-    public JpaTerminologyProvider(IHapiTerminologySvcDstu3 terminologySvcDstu3, FhirContext context, ValueSetResourceProvider valueSetResourceProvider) {
+    public JpaTerminologyProvider(ITermReadSvcDstu3 terminologySvcDstu3, FhirContext context, ValueSetResourceProvider valueSetResourceProvider) {
         this.terminologySvcDstu3 = terminologySvcDstu3;
         this.context = context;
         this.valueSetResourceProvider = valueSetResourceProvider;
