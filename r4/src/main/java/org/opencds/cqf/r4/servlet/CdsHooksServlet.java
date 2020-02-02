@@ -166,6 +166,8 @@ public class CdsHooksServlet extends HttpServlet
 
             String jsonResponse = toJsonResponse(evaluator.evaluate(evaluationContext));
 
+            logger.info(jsonResponse);
+
             response.getWriter().println(jsonResponse);
         }
         catch (Exception e)
@@ -201,7 +203,7 @@ public class CdsHooksServlet extends HttpServlet
         JsonObject responseJson = new JsonObject();
         JsonArray services = new JsonArray();
 
-        for (Discovery discovery : planDefinitionProvider.getDiscoveries(version))
+        for (Discovery discovery : this.planDefinitionProvider.getDiscoveries(version))
         {
             PlanDefinition planDefinition = (PlanDefinition)discovery.getPlanDefinition();
             JsonObject service = new JsonObject();
@@ -210,13 +212,13 @@ public class CdsHooksServlet extends HttpServlet
                 if (planDefinition.hasAction())
                 {
                     // TODO - this needs some work - too naive
-                    // if (planDefinition.getActionFirstRep().hasTriggerDefinition())
-                    // {
-                    //     if (planDefinition.getActionFirstRep().getTriggerDefinitionFirstRep().hasEventName())
-                    //     {
-                    //         service.addProperty("hook", planDefinition.getActionFirstRep().getTriggerDefinitionFirstRep().getEventName());
-                    //     }
-                    // }
+                    if (planDefinition.getActionFirstRep().hasTrigger())
+                    {
+                        if (planDefinition.getActionFirstRep().getTriggerFirstRep().hasName())
+                        {
+                            service.addProperty("hook", planDefinition.getActionFirstRep().getTriggerFirstRep().getName());
+                        }
+                    }
                 }
                 if (planDefinition.hasName())
                 {
