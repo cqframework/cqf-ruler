@@ -3,6 +3,11 @@ package org.opencds.cqf.r4.servlet;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
+import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+
 import com.alphora.evaluation.EvaluationContext;
 import com.alphora.evaluation.R4EvaluationContext;
 import com.alphora.hooks.Hook;
@@ -39,6 +44,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -170,13 +177,31 @@ public class CdsHooksServlet extends HttpServlet
 
             response.getWriter().println(jsonResponse);
         }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+        catch (BaseServerResponseException e){
             this.setAccessControlHeaders(response);
 
-            response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
-            response.getWriter().println(toJsonResponse(Collections.singletonList(CdsCard.errorCard(e))));
+            switch (e.getStatusCode()) {
+                case 401:
+                case 403:
+                case 404:
+                    response.getWriter().println("ERROR: Precondition Failed. FHIR server returned: " + e.getStatusCode());
+                    response.getWriter().println(e.getMessage());
+                    response.setStatus(412);
+                    break;
+                default:
+                    response.getWriter().println("ERROR: Unhandled error. FHIR server returned: " + e.getStatusCode());
+                    response.getWriter().println(e.getMessage());
+                    response.setStatus(500);
+            }
+        }
+        catch(Exception e) {
+            this.setAccessControlHeaders(response);
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            response.getWriter().println("ERROR: Unhandled error.");
+            response.getWriter().println(exceptionAsString);
+            response.setStatus(500);
         }
     }
 
