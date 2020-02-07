@@ -162,8 +162,9 @@ public class MeasureEvaluation {
             MeasureReport.MeasureReportGroupPopulationComponent populationReport = new MeasureReport.MeasureReportGroupPopulationComponent();
             populationReport.setCode(populationCriteria.getCode());
             if (report.getType() == MeasureReport.MeasureReportType.PATIENTLIST && patientPopulation != null) {
-                ListResource SUBJECTLIST = new ListResource();
-                populationReport.setPatients(new Reference().setReference("#" + SUBJECTLIST.getId()));
+                ListResource subjectList = new ListResource();
+				subjectList.setId(UUID.randomUUID().toString());
+                populationReport.setPatients(new Reference().setReference("#" + subjectList.getId()));
                 for (Patient patient : patientPopulation) {
                     ListResource.ListEntryComponent entry = new ListResource.ListEntryComponent()
                             .setItem(new Reference().setReference(
@@ -171,9 +172,9 @@ public class MeasureEvaluation {
                                             patient.getIdElement().getIdPart() :
                                             String.format("Patient/%s", patient.getIdElement().getIdPart()))
                                     .setDisplay(patient.getNameFirstRep().getNameAsSingleString()));
-                    SUBJECTLIST.addEntry(entry);
+                    subjectList.addEntry(entry);
                 }
-                report.addContained(SUBJECTLIST);
+                report.addContained(subjectList);
             }
 			populationReport.setCount(populationCount);
             reportGroup.addPopulation(populationReport);
