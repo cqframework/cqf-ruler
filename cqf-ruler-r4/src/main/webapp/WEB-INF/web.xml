@@ -43,7 +43,7 @@
         <url-pattern>/LogMessages</url-pattern>
     </servlet-mapping> -->
 
-    <!-- <servlet>
+    <servlet>
         <servlet-name>spring</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
@@ -59,7 +59,7 @@
     <servlet-mapping>
         <servlet-name>spring</servlet-name>
         <url-pattern>/</url-pattern>
-    </servlet-mapping> -->
+    </servlet-mapping>
 
     <servlet>
         <servlet-name>fhirServlet</servlet-name>
