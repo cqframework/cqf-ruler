@@ -525,7 +525,7 @@ public class PlanDefinitionApplyProvider {
                             catch (Exception e)
                             {
                                 Discovery<PlanDefinition> discovery = new Discovery<>();
-                                discovery.addItem(new DiscoveryItem().setUrl(e.getMessage()));
+                                discovery.addItem(discovery.newItem().setUrl(e.getMessage()));
                                 return discovery;
                             }
 
@@ -555,29 +555,29 @@ public class PlanDefinitionApplyProvider {
                             context.enterContext("Patient");
                             context.setContextValue(context.getCurrentContext(), "{{context.patientId}}");
                             // TODO - remove once engine issue is resolved
-                            // if (library.getParameters() != null) {
-                            //     for (ParameterDef params : library.getParameters().getDef()) {
-                            //         if (params.getParameterTypeSpecifier() instanceof ListTypeSpecifier) {
-                            //             context.setParameter(null, params.getName(), new ArrayList<>());
-                            //         }
-                            //        else if (params.getParameterTypeSpecifier() instanceof IntervalTypeSpecifier) {
-                            //            context.setParameter(null, params.getName(), new Interval(null, true, null, true));
-                            //        }
-                            //        else if (params.getParameterTypeSpecifier() instanceof TupleTypeSpecifier) {
-                            //            context.setParameter(null, params.getName(), new Tuple());
-                            //        }
-                            //        else {
-                            //            context.setParameter(null, params.getName(), new Object());
-                            //        }
-                            //     }
-                            // }
-                            // for (ExpressionDef def : library.getStatements().getDef()) {
-                            //     try {
-                            //         def.getExpression().evaluate(context);
-                            //     } catch (Exception e) {
-                            //         // ignore
-                            //     }
-                            // }
+                            if (library.getParameters() != null) {
+                                for (ParameterDef params : library.getParameters().getDef()) {
+                                    if (params.getParameterTypeSpecifier() instanceof ListTypeSpecifier) {
+                                        context.setParameter(null, params.getName(), new ArrayList<>());
+                                    }
+                                   else if (params.getParameterTypeSpecifier() instanceof IntervalTypeSpecifier) {
+                                       context.setParameter(null, params.getName(), new Interval(null, true, null, true));
+                                   }
+                                   else if (params.getParameterTypeSpecifier() instanceof TupleTypeSpecifier) {
+                                       context.setParameter(null, params.getName(), new Tuple());
+                                   }
+                                   else {
+                                       context.setParameter(null, params.getName(), new Object());
+                                   }
+                                }
+                            }
+                            for (ExpressionDef def : library.getStatements().getDef()) {
+                                try {
+                                    def.getExpression().evaluate(context);
+                                } catch (Exception e) {
+                                    // ignore
+                                }
+                            }
                             return discoveryDataProvider.getDiscovery().setPlanDefinition(planDefinition);
                         }
                     }

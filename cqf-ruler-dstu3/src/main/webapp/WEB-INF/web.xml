@@ -25,7 +25,7 @@
     <!-- Servlets -->
     <!-- <servlet>
         <servlet-name>ViewStatusMessages</servlet-name>
-        <servlet-class>ch.qos.logback.classic.ViewStatusMessagesServlet</seFhirTesterConfigFhirTesterConfigrvlet-class>
+        <servlet-class>ch.qos.logback.classic.ViewStatusMessagesServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -42,6 +42,7 @@
         <servlet-name>LogMessages</servlet-name>
         <url-pattern>/LogMessages</url-pattern>
     </servlet-mapping> -->
+
     <servlet>
         <servlet-name>spring</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -51,7 +52,7 @@
         </init-param>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>org.opencds.cqf.config.FhirTesterConfig</param-value>
+            <param-value>org.opencds.cqf.common.config.FhirTesterConfig</param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
     </servlet>

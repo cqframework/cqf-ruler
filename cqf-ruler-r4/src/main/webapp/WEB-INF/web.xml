@@ -23,7 +23,7 @@
     </context-param>
 
     <!-- Servlets -->
-    <servlet>
+    <!-- <servlet>
         <servlet-name>ViewStatusMessages</servlet-name>
         <servlet-class>ch.qos.logback.classic.ViewStatusMessagesServlet</servlet-class>
     </servlet>
@@ -31,7 +31,7 @@
     <servlet-mapping>
         <servlet-name>ViewStatusMessages</servlet-name>
         <url-pattern>/StatusMessages</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping> -->
 
     <!-- <servlet>
         <servlet-name>LogMessages</servlet-name>
