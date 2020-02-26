@@ -179,12 +179,16 @@ public class BaseServlet extends RestfulServer {
         }
     }
 
+	protected NarrativeProvider getNarrativeProvider() {
+		return new NarrativeProvider();
+	}
+
     // Since resource provider resolution not lazy, the providers here must be resolved in the correct
     // order of dependencies.
     private void resolveProviders(EvaluationProviderFactory providerFactory, JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry)
             throws ServletException
     {
-        NarrativeProvider narrativeProvider = new NarrativeProvider();
+        NarrativeProvider narrativeProvider = this.getNarrativeProvider();
         HQMFProvider hqmfProvider = new HQMFProvider();
 
         // Code System Update
