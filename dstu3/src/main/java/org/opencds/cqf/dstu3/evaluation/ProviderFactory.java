@@ -1,5 +1,7 @@
 package org.opencds.cqf.dstu3.evaluation;
 
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import org.opencds.cqf.common.helpers.ClientHelper;
 import org.opencds.cqf.cql.data.CompositeDataProvider;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
@@ -54,12 +56,12 @@ public class ProviderFactory implements EvaluationProviderFactory {
     }
 
     public TerminologyProvider createTerminologyProvider(String model, String version, String url, String user, String pass) {
+        IGenericClient client = ClientHelper.getClient("dstu3", url, user, pass);
         if (url != null && url.contains("apelon.com")) {
-            return new Dstu3ApelonFhirTerminologyProvider(this.fhirContext)
-            .withBasicAuth(user, pass).setEndpoint(url, false);
+            return new Dstu3ApelonFhirTerminologyProvider(client);
         }
         else if (url != null && !url.isEmpty()) {
-            return new Dstu3FhirTerminologyProvider(this.fhirContext).withBasicAuth(user, pass).setEndpoint(url, false);
+            return new Dstu3FhirTerminologyProvider(client);
         } else
             return this.defaultTerminologyProvider;
     }
