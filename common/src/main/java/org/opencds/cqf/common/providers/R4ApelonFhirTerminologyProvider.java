@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.terminology.ValueSetInfo;
 import org.opencds.cqf.cql.terminology.fhir.R4FhirTerminologyProvider;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.gclient.IQuery;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -24,8 +24,8 @@ public class R4ApelonFhirTerminologyProvider extends R4FhirTerminologyProvider
             super();
         }
 
-        public R4ApelonFhirTerminologyProvider(FhirContext fhirContext) {
-            super(fhirContext);
+        public R4ApelonFhirTerminologyProvider(IGenericClient fhirClient) {
+            super(fhirClient) ;
         }
 
         @Override
