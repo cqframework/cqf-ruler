@@ -23,17 +23,17 @@ import org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.dstu3.providers.CacheValueSetsProvider;
 import org.opencds.cqf.dstu3.providers.CodeSystemUpdateProvider;
-import org.opencds.cqf.dstu3.providers.CodeTerminologyRef;
-import org.opencds.cqf.dstu3.providers.CqfMeasure;
 import org.opencds.cqf.dstu3.providers.CqlExecutionProvider;
 import org.opencds.cqf.dstu3.providers.HQMFProvider;
 import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
 import org.opencds.cqf.dstu3.providers.LibraryOperationsProvider;
 import org.opencds.cqf.dstu3.providers.MeasureOperationsProvider;
-import org.opencds.cqf.dstu3.providers.NarrativeProvider;
 import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
-import org.opencds.cqf.dstu3.providers.PopulationCriteriaMap;
-import org.opencds.cqf.dstu3.providers.VersionedTerminologyRef;
+import org.opencds.cqf.library.stu3.NarrativeProvider;
+import org.opencds.cqf.measure.stu3.CodeTerminologyRef;
+import org.opencds.cqf.measure.stu3.CqfMeasure;
+import org.opencds.cqf.measure.stu3.PopulationCriteriaMap;
+import org.opencds.cqf.measure.stu3.VersionedTerminologyRef;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -175,14 +175,18 @@ public class BaseServlet extends RestfulServer {
             CorsInterceptor interceptor = new CorsInterceptor(config);
             registerInterceptor(interceptor);
         }
-    }
+	}
+	
+	protected NarrativeProvider getNarrativeProvider() {
+		return new NarrativeProvider();
+	}
 
     // Since resource provider resolution not lazy, the providers here must be resolved in the correct
     // order of dependencies.
     private void resolveProviders(EvaluationProviderFactory providerFactory, JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry)
             throws ServletException
     {
-        NarrativeProvider narrativeProvider = new NarrativeProvider();
+        NarrativeProvider narrativeProvider = this.getNarrativeProvider();
         HQMFProvider hqmfProvider = new HQMFProvider();
 
         // Code System Update

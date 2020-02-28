@@ -195,7 +195,8 @@ public class CqlExecutionProvider {
             @OperationParam(name = "terminologyServiceUri") String terminologyServiceUri,
             @OperationParam(name = "terminologyUser") String terminologyUser,
             @OperationParam(name = "terminologyPass") String terminologyPass,
-            @OperationParam(name = "context") String contextParam,
+			@OperationParam(name = "context") String contextParam,
+			@OperationParam(name = "executionResults") String executionResults,
             @OperationParam(name = "parameters") Parameters parameters) {
 
         if (patientId == null && contextParam != null && contextParam.equals("Patient") ) {
@@ -316,7 +317,12 @@ public class CqlExecutionProvider {
                     }
                     else if (res instanceof List<?>) {
                         if (((List<?>) res).size() > 0 && ((List<?>) res).get(0) instanceof Resource) {
-                            result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
+							if (executionResults != null && executionResults.equals("Summary")) {
+								result.addParameter().setName("value").setValue(new StringType(((Resource)((List<?>) res).get(0)).getIdElement().getResourceType() + "/" + ((Resource)((List<?>) res).get(0)).getIdElement().getIdPart()));
+							}
+							else {
+								result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
+							}
                         }
                         else {
                             result.addParameter().setName("value").setValue(new StringType(res.toString()));
@@ -326,7 +332,12 @@ public class CqlExecutionProvider {
                         result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
                     }
                     else if (res instanceof Resource) {
-                        result.addParameter().setName("value").setResource((Resource)res);
+						if (executionResults != null && executionResults.equals("Summary")) {
+							result.addParameter().setName("value").setValue(new StringType(((Resource)res).getIdElement().getResourceType() + "/" + ((Resource)res).getIdElement().getIdPart()));
+						}
+						else {
+							result.addParameter().setName("value").setResource((Resource)res);
+						}
                     }
                     else {
                         result.addParameter().setName("value").setValue(new StringType(res.toString()));
