@@ -59,7 +59,7 @@ public class ProviderFactory implements EvaluationProviderFactory {
 
     public TerminologyProvider createTerminologyProvider(String model, String version, String url, String user, String pass) {
         if(url != null && !url.isEmpty()){
-            IGenericClient client = ClientHelper.getClient("dstu3", url, user, pass);
+            IGenericClient client = ClientHelper.getClient(FhirContext.forDstu3(), url, user, pass);
             if (url.contains("apelon.com")) {
                 return new Dstu3ApelonFhirTerminologyProvider(client);
             }
