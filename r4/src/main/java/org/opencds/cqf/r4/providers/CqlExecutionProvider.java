@@ -164,18 +164,55 @@ public class CqlExecutionProvider {
     public Object evaluateInContext(DomainResource instance, String cql, String patientId) {
         Iterable<CanonicalType> libraries = getLibraryReferences(instance);
 
+        String source = String.format(
+                "library LocalLibrary using FHIR version '4.0.0' include FHIRHelpers version '4.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
+                buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
+        
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        
+        org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(source,
+                libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
+        
+        // resolve execution context
+        Context context = setupContext(instance, patientId, libraryLoader, library);
+        return context.resolveExpressionRef("Expression").evaluate(context);
+    }
+
+    public Object evaluateInContext(DomainResource instance, String cql, String patientId, Boolean aliasedExpression) {
+        Iterable<CanonicalType> libraries = getLibraryReferences(instance);
+        if (aliasedExpression) {
+            Object result = null;
+            for (CanonicalType reference : libraries) {
+                Library lib =this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference));
+                if (lib == null)
+                {
+                    throw new RuntimeException("Library with id " + reference.getIdBase() + "not found");
+                }
+                LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+                // resolve primary library
+                org.cqframework.cql.elm.execution.Library library = LibraryHelper.resolveLibraryById(lib.getId(), libraryLoader, this.libraryResourceProvider);
+
+                // resolve execution context
+                Context context = setupContext(instance, patientId, libraryLoader, library);
+                result = context.resolveExpressionRef(cql).evaluate(context);
+                if (result != null) {
+                    return result;
+                }
+            }
+            throw new RuntimeException("Could not find Expression in Referenced Libraries");
+        }
+        else {
+            return evaluateInContext(instance, cql, patientId);
+        }
+    }
+
+
+    private Context setupContext(DomainResource instance, String patientId, LibraryLoader libraryLoader,
+            org.cqframework.cql.elm.execution.Library library) {
         // Provide the instance as the value of the '%context' parameter, as well as the
         // value of a parameter named the same as the resource
         // This enables expressions to access the resource by root, as well as through
         // the %context attribute
-        String source = String.format(
-                "library LocalLibrary using FHIR version '4.0.0' include FHIRHelpers version '4.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-                buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
-
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
-
-        org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(source,
-                libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
         Context context = new Context(library);
         context.setParameter(null, instance.fhirType(), instance);
         context.setParameter(null, "%context", instance);
@@ -183,7 +220,7 @@ public class CqlExecutionProvider {
         context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
         context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", "4.0.0"));
-        return context.resolveExpressionRef("Expression").evaluate(context);
+        return context;
     }
 
     @Operation(name = "$cql")
