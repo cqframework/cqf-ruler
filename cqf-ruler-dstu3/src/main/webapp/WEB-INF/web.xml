@@ -51,7 +51,7 @@
         </init-param>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>org.opencds.cqf.config.FhirTesterConfig</param-value>
+            <param-value>org.opencds.cqf.common.config.FhirTesterConfig</param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
     </servlet>
