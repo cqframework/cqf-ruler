@@ -255,6 +255,11 @@ public class PlanDefinitionApplyProvider {
     }
 
     private Boolean meetsConditions(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
+        if (action.hasAction()) {
+            for (PlanDefinition.PlanDefinitionActionComponent containedAction : action.getAction()) {
+                meetsConditions(session, containedAction);
+            }
+        }
         for (PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {
             // TODO start
             // TODO stop
@@ -262,7 +267,7 @@ public class PlanDefinitionApplyProvider {
                 logger.info("Resolving condition with description: " + condition.getExpression().getDescription());
             }
             if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
-                if (condition.hasExpression() && condition.getExpression().hasLanguage() && !condition.getExpression().getLanguage().equals("text/cql")) {
+                if (condition.hasExpression() && condition.getExpression().hasLanguage() && !condition.getExpression().getLanguage().equals("text/cql") && !condition.getExpression().getLanguage().equals("text/cql.name")) {
                     logger.warn("An action language other than CQL was found: " + condition.getExpression().getLanguage());
                     continue;
                 }
@@ -274,7 +279,13 @@ public class PlanDefinitionApplyProvider {
 
                 logger.info("Evaluating action condition expression " + condition.getExpression());
                 String cql = condition.getExpression().getExpression();
-                Object result = executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
+                String language = condition.getExpression().getLanguage();
+                Object result = null;
+                result = (language.equals("text/cql.name")) 
+                ?
+                    executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId(), true)
+                : 
+                    executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
 
                 if (result == null) {
                     logger.warn("Expression Returned null");
