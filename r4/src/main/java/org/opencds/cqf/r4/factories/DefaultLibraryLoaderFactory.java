@@ -1,5 +1,5 @@
 
-package org.opencds.cqf.common.factories;
+package org.opencds.cqf.r4.factories;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,9 +32,9 @@ import org.opencds.cqf.common.evaluation.RulerLibraryLoader;
 public class DefaultLibraryLoaderFactory implements LibraryLoaderFactory {
 
     private static final Map<VersionedIdentifier, Model> globalCache = new HashMap<>();
-    private LibraryResolutionProvider provider;
+    private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> provider;
 
-    public DefaultLibraryLoaderFactory(LibraryResolutionProvider provider) {
+    public DefaultLibraryLoaderFactory(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> provider) {
         this.provider = provider;
     }
 

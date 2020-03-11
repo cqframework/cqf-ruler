@@ -10,53 +10,53 @@ import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.evaluation.MeasurePopulationType;
 import org.opencds.cqf.common.evaluation.MeasureScoring;
-import org.opencds.cqf.cql.data.DataProvider;
-import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.r4.builders.MeasureReportBuilder;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.lang.reflect.Field;
 import java.util.*;
+
+import com.alphora.cql.service.Response;
+import com.alphora.cql.service.Service;
 
 public class MeasureEvaluation {
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureEvaluation.class);
 
-    private DataProvider provider;
-    private Interval measurementPeriod;
+    private Service service;
+    private com.alphora.cql.service.Parameters parameters;
+    private org.cqframework.cql.elm.execution.Library primaryLibrary;
     private DaoRegistry registry;
 
-    public MeasureEvaluation(DataProvider provider, DaoRegistry registry, Interval measurementPeriod) {
-        this.provider = provider;
+    public MeasureEvaluation(com.alphora.cql.service.Parameters parameters, Service service, org.cqframework.cql.elm.execution.Library primaryLibrary, DaoRegistry registry) {
+        this.service = service;
+        this.parameters = parameters;
+        this.primaryLibrary = primaryLibrary;
         this.registry = registry;
-        this.measurementPeriod = measurementPeriod;
     }
 
-    public MeasureReport evaluatePatientMeasure(Measure measure, Context context, String patientId) {
+    public MeasureReport evaluatePatientMeasure(Measure measure, String patientId) {
         logger.info("Generating individual report");
 
         if (patientId == null) {
-            return evaluatePopulationMeasure(measure, context);
+            return evaluatePopulationMeasure(measure);
         }
 
-        Iterable<Object> patientRetrieve = provider.retrieve("Patient", "id", patientId, "Patient", null, null, null, null, null, null, null, null);
-        Patient patient = null;
-        if (patientRetrieve.iterator().hasNext()) {
-            patient = (Patient) patientRetrieve.iterator().next();
-        }
+        Patient patient = registry.getResourceDao(Patient.class).read(new IdType(patientId));
+        parameters.contextParameters = Collections.singletonMap("Context Parameters", "Patient=" + patientId);
 
-        return evaluate(measure, context, patient == null ? Collections.emptyList() : Collections.singletonList(patient), MeasureReport.MeasureReportType.INDIVIDUAL);
+        return evaluate(measure, patient == null ? Collections.emptyList() : Collections.singletonList(patient), MeasureReport.MeasureReportType.INDIVIDUAL);
     }
 
-    public MeasureReport evaluateSubjectListMeasure(Measure measure, Context context, String practitionerRef)
+    public MeasureReport evaluateSubjectListMeasure(Measure measure, String practitionerRef)
     {
         logger.info("Generating patient-list report");
 
         List<Patient> patients = practitionerRef == null ? getAllPatients() : getPractitionerPatients(practitionerRef);
-        return evaluate(measure, context, patients, MeasureReport.MeasureReportType.SUBJECTLIST);
+        return evaluate(measure, patients, MeasureReport.MeasureReportType.SUBJECTLIST);
     }
 
     private List<Patient> getPractitionerPatients(String practitionerRef) {
@@ -85,36 +85,34 @@ public class MeasureEvaluation {
         return patients;
     }
 
-    public MeasureReport evaluatePopulationMeasure(Measure measure, Context context) {
+    public MeasureReport evaluatePopulationMeasure(Measure measure) {
         logger.info("Generating summary report");
+        List<Patient> patients = getAllPatients();
+        for (Patient patient : patients) {
+            parameters.contextParameters = Collections.singletonMap("Context Parameters", "Patient=" + patient.getIdElement().getIdPart());
+        }
 
-        return evaluate(measure, context, getAllPatients(), MeasureReport.MeasureReportType.SUMMARY);
+        return evaluate(measure, patients, MeasureReport.MeasureReportType.SUMMARY);
     }
 
-    private Iterable<Resource> evaluateCriteria(Context context, Patient patient, Measure.MeasureGroupPopulationComponent pop) {
+    private Iterable<Resource> evaluateCriteria(HashSet<Object> evaluatedResourceSet, Patient patient, Measure.MeasureGroupPopulationComponent pop) {
         if (!pop.hasCriteria()) {
             return Collections.emptyList();
         }
-
-        context.setContextValue("Patient", patient.getIdElement().getIdPart());
-
-        // Hack to clear expression cache
-        // See cqf-ruler github issue #153
-        try {
-            Field privateField = Context.class.getDeclaredField("expressions");
-            privateField.setAccessible(true);
-            LinkedHashMap<String, Object> expressions = (LinkedHashMap<String, Object>)privateField.get(context);
-            expressions.clear();
-            
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        Response response = service.evaluate(parameters);
+        if (evaluatedResourceSet != null) {
+            response.evaluationResult.libraryResults.values()
+        .forEach(
+            libraryResult -> libraryResult.expressionResults.values()
+                .stream()
+                .filter(expressionResult -> expressionResult instanceof Resource)
+                .forEach(expressionResult -> evaluatedResourceSet.add((Resource)expressionResult)));
         }
-        Object result = context.resolveExpressionRef(pop.getCriteria().getExpression()).evaluate(context);
+        Object result = response.evaluationResult.forLibrary(primaryLibrary.getIdentifier()).forExpression(pop.getCriteria().getExpression());
         if (result == null) {
-            Collections.emptyList();
+            return Collections.emptyList();
         }
-        
+
         if (result instanceof Boolean) {
             if (((Boolean)result)) {
                 return Collections.singletonList(patient);
@@ -127,13 +125,13 @@ public class MeasureEvaluation {
         return (Iterable)result;
     }
 
-    private boolean evaluatePopulationCriteria(Context context, Patient patient,
+    private boolean evaluatePopulationCriteria(HashSet<Object> evaluatedResourceSet, Patient patient,
                                                Measure.MeasureGroupPopulationComponent criteria, HashMap<String, Resource> population, HashMap<String, Patient> populationPatients,
                                                Measure.MeasureGroupPopulationComponent exclusionCriteria, HashMap<String, Resource> exclusionPopulation, HashMap<String, Patient> exclusionPatients
     ) {
         boolean inPopulation = false;
         if (criteria != null) {
-            for (Resource resource : evaluateCriteria(context, patient, criteria)) {
+            for (Resource resource : evaluateCriteria(evaluatedResourceSet, patient, criteria)) {
                 inPopulation = true;
                 population.put(resource.getIdElement().getIdPart(), resource);
             }
@@ -142,7 +140,7 @@ public class MeasureEvaluation {
         if (inPopulation) {
             // Are they in the exclusion?
             if (exclusionCriteria != null) {
-                for (Resource resource : evaluateCriteria(context, patient, exclusionCriteria)) {
+                for (Resource resource : evaluateCriteria(evaluatedResourceSet, patient, exclusionCriteria)) {
                     inPopulation = false;
                     exclusionPopulation.put(resource.getIdElement().getIdPart(), resource);
                     population.remove(resource.getIdElement().getIdPart());
@@ -184,7 +182,7 @@ public class MeasureEvaluation {
         }
     }
 
-    private MeasureReport evaluate(Measure measure, Context context, List<Patient> patients, MeasureReport.MeasureReportType type)
+    private MeasureReport evaluate(Measure measure, List<Patient> patients, MeasureReport.MeasureReportType type)
     {
         MeasureReportBuilder reportBuilder = new MeasureReportBuilder();
         reportBuilder.buildStatus("complete");
@@ -194,7 +192,7 @@ public class MeasureEvaluation {
 			IdType patientId = patients.get(0).getIdElement();
             reportBuilder.buildPatientReference(patientId.getResourceType() + "/" + patientId.getIdPart());
         }
-        reportBuilder.buildPeriod(measurementPeriod);
+        reportBuilder.buildPeriod((Interval)parameters.parameters.get(Pair.of(primaryLibrary.getLocalId(), "Measurement Period")));
 
         MeasureReport report = reportBuilder.build();
 
@@ -313,36 +311,37 @@ public class MeasureEvaluation {
                 case PROPORTION:
                 case RATIO: {
 
+                    HashSet<Object> evaluatedResourceSet = new HashSet<Object>();
                     // For each patient in the initial population
                     for (Patient patient : patients) {
 
                         // Are they in the initial population?
-                        boolean inInitialPopulation = evaluatePopulationCriteria(context, patient, initialPopulationCriteria,
+                        boolean inInitialPopulation = evaluatePopulationCriteria(evaluatedResourceSet, patient, initialPopulationCriteria,
                                 initialPopulation, initialPopulationPatients, null, null, null);
-                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
+                        populateResourceMap(evaluatedResourceSet, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
 
                         if (inInitialPopulation) {
                             // Are they in the denominator?
-                            boolean inDenominator = evaluatePopulationCriteria(context, patient,
+                            boolean inDenominator = evaluatePopulationCriteria(evaluatedResourceSet, patient,
                                     denominatorCriteria, denominator, denominatorPatients,
                                     denominatorExclusionCriteria, denominatorExclusion, denominatorExclusionPatients);
-                            populateResourceMap(context, MeasurePopulationType.DENOMINATOR, resources, codeToResourceMap);
+                            populateResourceMap(evaluatedResourceSet, MeasurePopulationType.DENOMINATOR, resources, codeToResourceMap);
 
                             if (inDenominator) {
                                 // Are they in the numerator?
-                                boolean inNumerator = evaluatePopulationCriteria(context, patient,
+                                boolean inNumerator = evaluatePopulationCriteria(evaluatedResourceSet, patient,
                                         numeratorCriteria, numerator, numeratorPatients,
                                         numeratorExclusionCriteria, numeratorExclusion, numeratorExclusionPatients);
-                                populateResourceMap(context, MeasurePopulationType.NUMERATOR, resources, codeToResourceMap);
+                                populateResourceMap(evaluatedResourceSet, MeasurePopulationType.NUMERATOR, resources, codeToResourceMap);
 
                                 if (!inNumerator && inDenominator && (denominatorExceptionCriteria != null)) {
                                     // Are they in the denominator exception?
                                     boolean inException = false;
-                                    for (Resource resource : evaluateCriteria(context, patient, denominatorExceptionCriteria)) {
+                                    for (Resource resource : evaluateCriteria(evaluatedResourceSet, patient, denominatorExceptionCriteria)) {
                                         inException = true;
                                         denominatorException.put(resource.getIdElement().getIdPart(), resource);
                                         denominator.remove(resource.getIdElement().getIdPart());
-                                        populateResourceMap(context, MeasurePopulationType.DENOMINATOREXCEPTION, resources, codeToResourceMap);
+                                        populateResourceMap(evaluatedResourceSet, MeasurePopulationType.DENOMINATOREXCEPTION, resources, codeToResourceMap);
                                     }
                                     if (inException) {
                                         if (denominatorExceptionPatients != null) {
@@ -366,23 +365,24 @@ public class MeasureEvaluation {
                 }
                 case CONTINUOUSVARIABLE: {
 
+                    HashSet<Object> evaluatedResourceSet = new HashSet<Object>();
                     // For each patient in the patient list
                     for (Patient patient : patients) {
 
                         // Are they in the initial population?
-                        boolean inInitialPopulation = evaluatePopulationCriteria(context, patient, initialPopulationCriteria,
+                        boolean inInitialPopulation = evaluatePopulationCriteria(evaluatedResourceSet, patient, initialPopulationCriteria,
                                 initialPopulation, initialPopulationPatients, null, null, null);
-                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
+                        populateResourceMap(evaluatedResourceSet, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
 
                         if (inInitialPopulation) {
                             // Are they in the measure population?
-                            boolean inMeasurePopulation = evaluatePopulationCriteria(context, patient,
+                            boolean inMeasurePopulation = evaluatePopulationCriteria(evaluatedResourceSet, patient,
                                     measurePopulationCriteria, measurePopulation, measurePopulationPatients,
                                     measurePopulationExclusionCriteria, measurePopulationExclusion, measurePopulationExclusionPatients);
 
                             if (inMeasurePopulation) {
                                 // TODO: Evaluate measure observations
-                                for (Resource resource : evaluateCriteria(context, patient, measureObservationCriteria)) {
+                                for (Resource resource : evaluateCriteria(evaluatedResourceSet, patient, measureObservationCriteria)) {
                                     measureObservation.put(resource.getIdElement().getIdPart(), resource);
                                 }
                             }
@@ -393,12 +393,13 @@ public class MeasureEvaluation {
                 }
                 case COHORT: {
 
+                    HashSet<Object> evaluatedResourceSet = new HashSet<Object>();
                     // For each patient in the patient list
                     for (Patient patient : patients) {
                         // Are they in the initial population?
-                        boolean inInitialPopulation = evaluatePopulationCriteria(context, patient, initialPopulationCriteria,
+                        boolean inInitialPopulation = evaluatePopulationCriteria(evaluatedResourceSet, patient, initialPopulationCriteria,
                                 initialPopulation, initialPopulationPatients, null, null, null);
-                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
+                        populateResourceMap(evaluatedResourceSet, MeasurePopulationType.INITIALPOPULATION, resources, codeToResourceMap);
                     }
 
                     break;
@@ -444,10 +445,10 @@ public class MeasureEvaluation {
     }
 
     private void populateResourceMap(
-            Context context, MeasurePopulationType type, HashMap<String, Resource> resources,
+            HashSet<Object> evaluatedResourceSet, MeasurePopulationType type, HashMap<String, Resource> resources,
             HashMap<String,HashSet<String>> codeToResourceMap)
     {
-        if (context.getEvaluatedResources().isEmpty()) {
+        if (evaluatedResourceSet.isEmpty()) {
             return;
         }
 
@@ -457,10 +458,10 @@ public class MeasureEvaluation {
 
         HashSet<String> codeHashSet = codeToResourceMap.get((type.toCode()));
 
-        for (Object o : context.getEvaluatedResources()) {
+        for (Object o : evaluatedResourceSet) {
             if (o instanceof Resource){
                 Resource r = (Resource)o;
-                String id = (r.getIdElement().getResourceType() != null ? (r.getIdElement().getResourceType()  + "/") : "") + r.getIdElement().getIdPart();
+                String id = (r.getIdElement().getResourceType() != null ? (r.getIdElement().getResourceType()  + "/") : "")+ r.getIdElement().getIdPart();
                 if (!codeHashSet.contains(id)) {
                     codeHashSet.add(id);
                 }
@@ -471,6 +472,6 @@ public class MeasureEvaluation {
             }
         }
 
-        context.clearEvaluatedResources();
+        evaluatedResourceSet.clear();
     }
 }

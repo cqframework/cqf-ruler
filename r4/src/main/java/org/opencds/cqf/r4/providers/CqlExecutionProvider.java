@@ -35,7 +35,7 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.common.evaluation.RulerLibraryLoader;
-import org.opencds.cqf.common.factories.DefaultLibraryLoaderFactory;
+import org.opencds.cqf.r4.factories.DefaultLibraryLoaderFactory;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.execution.LibraryResult;

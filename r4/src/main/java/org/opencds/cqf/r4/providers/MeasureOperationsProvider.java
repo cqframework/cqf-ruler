@@ -1,9 +1,12 @@
 package org.opencds.cqf.r4.providers;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,16 +30,23 @@ import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
-import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.library.r4.NarrativeProvider;
 import org.opencds.cqf.measure.r4.CqfMeasure;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluation;
-import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.opencds.cqf.cql.runtime.DateTime;
+import org.opencds.cqf.cql.runtime.Interval;
+import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.r4.factories.DefaultLibraryLoaderFactory;
+
+import com.alphora.cql.service.Service;
+import com.alphora.cql.service.factory.DataProviderFactory;
+import com.alphora.cql.service.factory.TerminologyProviderFactory;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
@@ -63,15 +73,17 @@ public class MeasureOperationsProvider {
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider;
     private MeasureResourceProvider measureResourceProvider;
     private DaoRegistry registry;
-    private EvaluationProviderFactory factory;
+    private DataProviderFactory dataProviderFactory;
+    private TerminologyProviderFactory terminologyProviderFactory;
 
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
 
-    public MeasureOperationsProvider(DaoRegistry registry, EvaluationProviderFactory factory, NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider, LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider,
+    public MeasureOperationsProvider(DaoRegistry registry, DataProviderFactory dataProviderFactory, TerminologyProviderFactory terminologyProviderFactory, NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider, LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider,
     MeasureResourceProvider measureResourceProvider) {
         this.registry = registry;
-        this.factory = factory;
+        this.dataProviderFactory = dataProviderFactory;
+        this.terminologyProviderFactory = terminologyProviderFactory;
 
         this.libraryResolutionProvider = libraryResolutionProvider;
         this.narrativeProvider = narrativeProvider;
@@ -113,13 +125,13 @@ public class MeasureOperationsProvider {
             }
         }
 
-		try {
+        try {
 			Narrative n = this.narrativeProvider.getNarrative(this.measureResourceProvider.getContext(), cqfMeasure);
 			theResource.setText(n.copy());
 		} catch (Exception e) {
 			//Ignore the exception so the resource still gets updated
-		}
-
+        }
+        
         return this.measureResourceProvider.update(theRequest, theResource, theId,
                 theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
     }
@@ -154,33 +166,61 @@ public class MeasureOperationsProvider {
             @OptionalParam(name = "lastReceivedOn") String lastReceivedOn,
             @OptionalParam(name = "source") String source, @OptionalParam(name = "user") String user,
             @OptionalParam(name = "pass") String pass) throws InternalErrorException, FHIRException {
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResolutionProvider);
-        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader, this.libraryResolutionProvider);
+        
+        DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.libraryResolutionProvider);
+        LibraryLoader libraryLoader = libraryFactory.create(this.libraryResolutionProvider);
         Measure measure = this.measureResourceProvider.getDao().read(theId);
 
         if (measure == null) {
             throw new RuntimeException("Could not find Measure/" + theId.getIdPart());
         }
+        
+        LibraryHelper.loadLibraries(measure, libraryLoader, this.libraryResolutionProvider);
 
-        seed.setup(measure, periodStart, periodEnd, productLine, source, user, pass);
+        // resolve primary library
+        org.cqframework.cql.elm.execution.Library library = LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader, this.libraryResolutionProvider);
+        
+
+        Map<Pair<String, String>, Object> parametersMap = new HashMap<Pair<String, String>, Object>();
+
+        if (periodStart != null && periodEnd != null) {
+            // resolve the measurement period
+            Interval measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
+            DateHelper.resolveRequestDate(periodEnd, false), true);
+
+            parametersMap.put(Pair.of(library.getLocalId(), "Measurement Period"),
+                    new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
+                            DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
+        }
+        
+        if (productLine != null) {
+            parametersMap.put(Pair.of(library.getLocalId(), "Product Line"), productLine);
+        }
+
+        //TODO: resolveContextParameters i.e. patient
+        com.alphora.cql.service.Parameters evaluationParameters = new com.alphora.cql.service.Parameters();
+        evaluationParameters.libraries = Collections.singletonList(library.toString());
+        evaluationParameters.parameters = parametersMap;      
+
+        Service service = new Service(libraryFactory, dataProviderFactory, terminologyProviderFactory, null, null, null, null);
 
         // resolve report type
-        MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), this.registry, seed.getMeasurementPeriod());
+        MeasureEvaluation evaluator = new MeasureEvaluation(evaluationParameters, service, library, this.registry);
         if (reportType != null) {
             switch (reportType) {
             case "patient":
-                return evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
-            case "patient-list":
-                return evaluator.evaluateSubjectListMeasure(seed.getMeasure(), seed.getContext(), practitionerRef);
+                return evaluator.evaluatePatientMeasure(measure, patientRef);
+            case "patient-list":  
+                return evaluator.evaluateSubjectListMeasure(measure, practitionerRef);
             case "population":
-                return  evaluator.evaluatePopulationMeasure(seed.getMeasure(), seed.getContext());
+                return evaluator.evaluatePopulationMeasure(measure);
             default:
                 throw new IllegalArgumentException("Invalid report type: " + reportType);
             }
         }
 
         // default report type is patient
-        MeasureReport report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
+        MeasureReport report = evaluator.evaluatePatientMeasure(measure, patientRef);
         if (productLine != null)
         {
             Extension ext = new Extension();
@@ -252,12 +292,38 @@ public class MeasureOperationsProvider {
                         .setDiv(new XhtmlNode().setValue(improvementNotation.getCodingFirstRep().getCode())));
             }
 
-            LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResolutionProvider);
-            MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader, this.libraryResolutionProvider);
-            seed.setup(measure, periodStart, periodEnd, null, null, null, null);
-            MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), this.registry, seed.getMeasurementPeriod());
+        DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.libraryResolutionProvider);
+        LibraryLoader libraryLoader = libraryFactory.create(this.libraryResolutionProvider);
+        
+        LibraryHelper.loadLibraries(measure, libraryLoader, this.libraryResolutionProvider);
+
+        // resolve primary library
+        org.cqframework.cql.elm.execution.Library library = LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader, this.libraryResolutionProvider);
+        
+
+        Map<Pair<String, String>, Object> parametersMap = new HashMap<Pair<String, String>, Object>();
+
+        if (periodStart != null && periodEnd != null) {
+            // resolve the measurement period
+            Interval measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
+            DateHelper.resolveRequestDate(periodEnd, false), true);
+
+            parametersMap.put(Pair.of(library.getLocalId(), "Measurement Period"),
+                    new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
+                            DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
+        }
+
+        //TODO: resolveContextParameters i.e. patient
+        com.alphora.cql.service.Parameters evaluationParameters = new com.alphora.cql.service.Parameters();
+        evaluationParameters.libraries = Collections.singletonList(library.toString());
+        evaluationParameters.parameters = parametersMap;      
+
+        Service service = new Service(libraryFactory, dataProviderFactory, terminologyProviderFactory, null, null, null, null);
+
+        // resolve report type
+        MeasureEvaluation evaluator = new MeasureEvaluation(evaluationParameters, service, library, this.registry);
             // TODO - this is configured for patient-level evaluation only
-            report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
+            report = evaluator.evaluatePatientMeasure(measure, patientRef);
 
             if (report.hasGroup() && measure.hasScoring()) {
                 int numerator = 0;
@@ -328,7 +394,7 @@ public class MeasureOperationsProvider {
             @OptionalParam(name = "lastReceivedOn") String lastReceivedOn) throws FHIRException {
         // TODO: Spec says that the periods are not required, but I am not sure what to
         // do when they aren't supplied so I made them required
-        MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, patientRef, null,
+        MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null,  patientRef, null,
                 practitionerRef, lastReceivedOn, null, null, null);
         report.setGroup(null);
 

@@ -37,7 +37,7 @@ import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.common.evaluation.RulerLibraryLoader;
-import org.opencds.cqf.common.factories.DefaultLibraryLoaderFactory;
+import org.opencds.cqf.dstu3.factories.DefaultLibraryLoaderFactory;
 import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.runtime.DateTime;

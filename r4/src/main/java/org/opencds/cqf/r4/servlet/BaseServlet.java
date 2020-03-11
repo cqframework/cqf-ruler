@@ -221,7 +221,7 @@ public class BaseServlet extends RestfulServer {
         this.registerProvider(bundleProvider);
 
         // Measure processing
-        MeasureOperationsProvider measureProvider = new MeasureOperationsProvider(this.registry, evaluationProviderFactory, narrativeProvider, hqmfProvider, 
+        MeasureOperationsProvider measureProvider = new MeasureOperationsProvider(this.registry, dataProviderFactory, terminologyProviderFactory, narrativeProvider, hqmfProvider, 
             libraryProvider, (MeasureResourceProvider)this.getResourceProvider(Measure.class));
         this.registerProvider(measureProvider);
 
