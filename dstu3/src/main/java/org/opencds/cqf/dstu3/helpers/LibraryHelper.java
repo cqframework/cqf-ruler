@@ -13,7 +13,7 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
 import org.hl7.fhir.dstu3.model.Resource;
-import org.opencds.cqf.common.evaluation.LibraryLoader;
+import org.opencds.cqf.common.evaluation.RulerLibraryLoader;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.providers.LibrarySourceProvider;
 
@@ -22,7 +22,7 @@ import org.opencds.cqf.common.providers.LibrarySourceProvider;
  */
 public class LibraryHelper {
 
-    public static LibraryLoader createLibraryLoader(LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> provider) {
+    public static RulerLibraryLoader createLibraryLoader(LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> provider) {
         ModelManager modelManager = new ModelManager();
         LibraryManager libraryManager = new LibraryManager(modelManager);
         libraryManager.getLibrarySourceLoader().clearProviders();
@@ -34,7 +34,7 @@ public class LibraryHelper {
                 x -> x.getContentType(),
                 x -> x.getData()));
 
-        return new LibraryLoader(libraryManager, modelManager);
+        return new RulerLibraryLoader(libraryManager, modelManager);
     }
 
 

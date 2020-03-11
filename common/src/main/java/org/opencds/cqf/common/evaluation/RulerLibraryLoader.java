@@ -19,7 +19,7 @@ import java.util.Map;
 
 import static org.opencds.cqf.common.helpers.TranslatorHelper.*;
 
-public class LibraryLoader implements org.opencds.cqf.cql.execution.LibraryLoader {
+public class RulerLibraryLoader implements org.opencds.cqf.cql.execution.LibraryLoader {
 
     private LibraryManager libraryManager;
     private ModelManager modelManager;
@@ -40,7 +40,7 @@ public class LibraryLoader implements org.opencds.cqf.cql.execution.LibraryLoade
         return this.modelManager;
     }
 
-    public LibraryLoader(LibraryManager libraryManager, ModelManager modelManager) {
+    public RulerLibraryLoader(LibraryManager libraryManager, ModelManager modelManager) {
         this.libraryManager = libraryManager;
         this.modelManager = modelManager;
     }

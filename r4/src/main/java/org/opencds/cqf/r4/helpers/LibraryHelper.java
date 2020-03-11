@@ -10,10 +10,9 @@ import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.PlanDefinition;
-import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
-import org.opencds.cqf.common.evaluation.LibraryLoader;
+import org.opencds.cqf.common.evaluation.RulerLibraryLoader;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.providers.LibrarySourceProvider;
 
@@ -22,7 +21,7 @@ import org.opencds.cqf.common.providers.LibrarySourceProvider;
  */
 public class LibraryHelper {
 
-    public static LibraryLoader createLibraryLoader(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> provider) {
+    public static RulerLibraryLoader createLibraryLoader(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> provider) {
         ModelManager modelManager = new ModelManager();
         LibraryManager libraryManager = new LibraryManager(modelManager);
         libraryManager.getLibrarySourceLoader().clearProviders();
@@ -34,7 +33,7 @@ public class LibraryHelper {
                 x -> x.getContentType(),
                 x -> x.getData()));
 
-        return new LibraryLoader(libraryManager, modelManager);
+        return new RulerLibraryLoader(libraryManager, modelManager);
     }
 
 

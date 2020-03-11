@@ -7,24 +7,30 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
+import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
-import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.runtime.DateTime;
-import org.opencds.cqf.r4.helpers.LibraryHelper;
 
 import java.math.BigDecimal;
 import java.util.*;
 
+import org.apache.commons.lang3.tuple.Pair;
+import com.alphora.cql.service.Response;
+import com.alphora.cql.service.Service;
+import com.alphora.cql.service.factory.DataProviderFactory;
+import com.alphora.cql.service.factory.TerminologyProviderFactory;
+
 public class ApplyCqlOperationProvider {
 
-    private EvaluationProviderFactory providerFactory;
+    private DataProviderFactory dataProviderFactory;
+    private TerminologyProviderFactory terminologyProviderFactory;
     private IFhirResourceDao<Bundle> bundleDao;
 
-    public ApplyCqlOperationProvider(EvaluationProviderFactory providerFactory, IFhirResourceDao<Bundle> bundleDao) {
-        this.providerFactory = providerFactory;
+    public ApplyCqlOperationProvider(DataProviderFactory dataProviderFactory, TerminologyProviderFactory terminologyProviderFactory, IFhirResourceDao<Bundle> bundleDao) {
+        this.dataProviderFactory = dataProviderFactory;
+        this.terminologyProviderFactory = terminologyProviderFactory;
         this.bundleDao = bundleDao;
     }
 
@@ -56,17 +62,22 @@ public class ApplyCqlOperationProvider {
 
     public Resource applyCqlToResource(Resource resource) throws FHIRException {
         Library library;
-        Context context;
         for (Property child : resource.children()) {
             for (Base base : child.getValues()) {
                 if (base != null) {
                     AbstractMap.SimpleEntry<String, String> extensions = getExtension(base);
                     if (extensions != null) {
-                        String cql = String.format("using FHIR version '4.0.0' define x: %s", extensions.getValue());
+                        String cql = String.format("library LocalLibrary using FHIR version '4.0.0' define Expression: %s", extensions.getValue());
                         library = TranslatorHelper.translateLibrary(cql, new LibraryManager(new ModelManager()), new ModelManager());
-                        context = new Context(library);
-                        context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", "4.0.0"));
-                        Object result = context.resolveExpressionRef("x").getExpression().evaluate(context);
+                        com.alphora.cql.service.Parameters parameters = new com.alphora.cql.service.Parameters();
+                        parameters.libraries = Collections.singletonList(library.toString());
+                        parameters.expressions = Collections.singletonList(Pair.of("LocalLibrary", "Expression"));
+                        parameters.parameters = Collections.singletonMap(Pair.of(null, resource.fhirType()), resource);
+                        Service service = new Service(null, this.dataProviderFactory, this.terminologyProviderFactory, null, null, null, null);
+                        Response response = service.evaluate(parameters);
+
+                        Object result = response.evaluationResult.forLibrary(new VersionedIdentifier().withId("LocalLibrary"))
+                            .forExpression("Expression");
                         if (extensions.getKey().equals("extension")) {
                             resource.setProperty(child.getName(), resolveType(result, base.fhirType()));
                         }

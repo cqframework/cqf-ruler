@@ -2,16 +2,26 @@ package org.opencds.cqf.r4.providers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import org.apache.commons.lang3.tuple.Triple;
+import com.alphora.cql.service.Response;
+import com.alphora.cql.service.Service;
+import com.alphora.cql.service.factory.DataProviderFactory;
+import org.opencds.cqf.common.factories.DefaultTerminologyProviderFactory;
+import com.alphora.cql.service.factory.TerminologyProviderFactory;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
-import org.cqframework.cql.elm.execution.UsingDef;
+import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.elm.tracking.TrackBack;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -24,21 +34,20 @@ import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
-import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
-import org.opencds.cqf.common.evaluation.LibraryLoader;
-import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.common.evaluation.RulerLibraryLoader;
+import org.opencds.cqf.common.factories.DefaultLibraryLoaderFactory;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
-import org.opencds.cqf.common.helpers.UsingHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
-import org.opencds.cqf.cql.data.DataProvider;
-import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.LibraryResult;
+import org.opencds.cqf.r4.helpers.CanonicalHelper;
+import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 
@@ -46,12 +55,16 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
  * Created by Bryn on 1/16/2017.
  */
 public class CqlExecutionProvider {
-    private EvaluationProviderFactory providerFactory;
+    private DataProviderFactory dataProviderFactory;
+    private TerminologyProviderFactory terminologyProviderFactory;
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider;
+    private TerminologyProvider localSystemTerminologyProvider;
 
-    public CqlExecutionProvider(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider, EvaluationProviderFactory providerFactory) {
-        this.providerFactory = providerFactory;
+    public CqlExecutionProvider(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider, DataProviderFactory dataProviderFactory, TerminologyProviderFactory terminologyProviderFactory, TerminologyProvider localSystemTerminologyProvider) {
+        this.dataProviderFactory = dataProviderFactory;
+        this.terminologyProviderFactory = terminologyProviderFactory;
         this.libraryResourceProvider = libraryResourceProvider;
+        this.localSystemTerminologyProvider = localSystemTerminologyProvider;
     }
 
 
@@ -122,68 +135,84 @@ public class CqlExecutionProvider {
 
         return cleanReferences(references);
     }
-   
-    private String buildIncludes(Iterable<CanonicalType> references) {
-        StringBuilder builder = new StringBuilder();
-        for (CanonicalType reference : references) {
-
-            if (builder.length() > 0) {
-                builder.append(" ");
-            }
-
-            builder.append("include ");
-
-            // TODO: This assumes the libraries resource id is the same as the library name,
-            // need to work this out better
-            Library lib =this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference));
-            if (lib.hasName()) {
-                builder.append(lib.getName());
-            }
-            else {
-                throw new RuntimeException("Library name unknown");
-            }
-
-            if (reference.hasValue() && reference.getValue().split("\\|").length > 1) {
-                builder.append(" version '");
-                builder.append(reference.getValue().split("\\|")[1]);
-                builder.append("'");
-            }
-
-            builder.append(" called ");
-            builder.append(lib.getName());
-        }
-
-        return builder.toString();
-    }
-
+    
+    /* Evaluates the given CQL expression in the context of the given resource */
+    /*
+     * If the resource has a library extension, or a library element, that library
+     * is loaded into the context for the expression
+     */
     /* Evaluates the given CQL expression in the context of the given resource */
     /*
      * If the resource has a library extension, or a library element, that library
      * is loaded into the context for the expression
      */
     public Object evaluateInContext(DomainResource instance, String cql, String patientId) {
-        Iterable<CanonicalType> libraries = getLibraryReferences(instance);
+        String libraryContent = constructLocalLibrary(instance, cql);
+        return evaluateLocalLibrary(instance, libraryContent);
+    }
 
-        // Provide the instance as the value of the '%context' parameter, as well as the
-        // value of a parameter named the same as the resource
-        // This enables expressions to access the resource by root, as well as through
-        // the %context attribute
+    // How should we handle the case that resource is null?
+    // We need to know the type to create the library.
+    private String constructLocalLibrary(IBaseResource resource, String expression) {
+        String resourceType = resource.fhirType();
+        String fhirVersion = resource.getStructureFhirVersionEnum().getFhirVersionString();
+        fhirVersion = fhirVersion.equals("3.0.2") || fhirVersion.equals("3.0.1")  ? fhirVersion = "3.0.0" : fhirVersion;
         String source = String.format(
-                "library LocalLibrary using FHIR version '4.0.0' include FHIRHelpers version '4.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-                buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
+                "library LocalLibrary using FHIR version '%s' include FHIRHelpers version '%s' called FHIRHelpers parameter %s %s define Expression: %s",
+                fhirVersion, fhirVersion, resourceType, resourceType, expression);
 
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        return source;
+    }
 
-        org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(source,
-                libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
-        Context context = new Context(library);
-        context.setParameter(null, instance.fhirType(), instance);
-        context.setParameter(null, "%context", instance);
-        context.setExpressionCaching(true);
-        context.registerLibraryLoader(libraryLoader);
-        context.setContextValue("Patient", patientId);
-        context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", "4.0.0"));
-        return context.resolveExpressionRef("Expression").evaluate(context);
+    private Object evaluateLocalLibrary(IBaseResource resource, String libraryContent) {
+        com.alphora.cql.service.Parameters parameters = new com.alphora.cql.service.Parameters();
+        parameters.libraries = Collections.singletonList(libraryContent);
+        parameters.expressions = Collections.singletonList(Pair.of("LocalLibrary", "Expression"));
+        parameters.parameters = Collections.singletonMap(Pair.of(null, resource.fhirType()), resource);
+        DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.getLibraryResourceProvider());
+        Service service = new Service(libraryFactory, this.dataProviderFactory, this.terminologyProviderFactory, null, null, null, null);
+        Response response = service.evaluate(parameters);
+
+        return response.evaluationResult.forLibrary(new VersionedIdentifier().withId("LocalLibrary"))
+                .forExpression("Expression");
+    }
+
+    public Object evaluateInContext(DomainResource instance, String cqlName, String patientId, Boolean aliasedExpression) {
+        List<String> libraries = new ArrayList<String>();
+        Iterable<CanonicalType> canonicalLibraries = getLibraryReferences(instance);
+
+        if (aliasedExpression) {
+            Object result = null;
+            for (CanonicalType reference : canonicalLibraries) {
+                Library lib =this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference));
+                if (lib == null)
+                {
+                    throw new RuntimeException("Library with id " + reference.getIdBase() + "not found");
+                }
+                
+                RulerLibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+                // resolve primary library
+                org.cqframework.cql.elm.execution.Library library = LibraryHelper.resolveLibraryById(lib.getId(), libraryLoader, this.libraryResourceProvider);
+                libraries.add(library.toString());
+
+                //TODO: resolveContextParameters i.e. patient
+                DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.getLibraryResourceProvider());
+                com.alphora.cql.service.Parameters parameters = new com.alphora.cql.service.Parameters();
+                parameters.libraryName = library.getIdentifier().getId();
+                parameters.libraries = libraries;
+                parameters.contextParameters = Collections.singletonMap("Context Parameters", "Patient=" + patientId);
+                Service service = new Service(libraryFactory, this.dataProviderFactory, this.terminologyProviderFactory, null, null, null, null);
+                
+                Response response = service.evaluate(parameters);
+
+                result = response.evaluationResult.forLibrary(library.getIdentifier()).forExpression(cqlName);
+                return result;
+            }
+            throw new RuntimeException("Could not find Expression in Referenced Libraries");
+        }
+        else {
+            return evaluateInContext(instance, cqlName, patientId);
+        }
     }
 
     @Operation(name = "$cql")
@@ -206,7 +235,7 @@ public class CqlExecutionProvider {
         CqlTranslator translator;
         FhirMeasureBundler bundler = new FhirMeasureBundler();
 
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        RulerLibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
 
         List<Resource> results = new ArrayList<>();
 
@@ -238,43 +267,15 @@ public class CqlExecutionProvider {
             return bundler.bundle(results);
         }
 
-        Map<String, List<Integer>> locations = getLocations(translator.getTranslatedLibrary().getLibrary());
-
         org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(translator);
-        Context context = new Context(library);
-        context.registerLibraryLoader(libraryLoader);
-        
-        List<Triple<String,String,String>> usingDefs = UsingHelper.getUsingUrlAndVersion(library.getUsings());
 
-        if (usingDefs.size() > 1) {
-            throw new IllegalArgumentException("Evaluation of Measure using multiple Models is not supported at this time.");
-        }
-
-        // If there are no Usings, there is probably not any place the Terminology
-        // actually used so I think the assumption that at least one provider exists is ok.
-        TerminologyProvider terminologyProvider = null;
-        if (usingDefs.size() > 0) {
-            // Creates a terminology provider based on the first using statement. This assumes the terminology
-            // server matches the FHIR version of the CQL.
-            terminologyProvider = this.providerFactory.createTerminologyProvider(
-                    usingDefs.get(0).getLeft(), usingDefs.get(0).getMiddle(),
-                        terminologyServiceUri, terminologyUser, terminologyPass);
-            context.registerTerminologyProvider(terminologyProvider);
-        }
-
-        for (Triple<String,String,String> def : usingDefs)
-        {
-            DataProvider dataProvider = this.providerFactory.createDataProvider(def.getLeft(), def.getMiddle(), terminologyProvider);
-            context.registerDataProvider(
-                def.getRight(), 
-                dataProvider);
-        }
+        Map<Pair<String, String>, Object> parametersMap = new HashMap<Pair<String, String>, Object>();
 
         if (parameters != null)
         {
             for (Parameters.ParametersParameterComponent pc : parameters.getParameter())
             {
-                context.setParameter(library.getLocalId(), pc.getName(), pc.getValue());
+                parametersMap.put(Pair.of(library.getLocalId(), pc.getName()), pc.getValue());
             }    
         }
 
@@ -283,79 +284,85 @@ public class CqlExecutionProvider {
             Interval measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
             DateHelper.resolveRequestDate(periodEnd, false), true);
 
-            context.setParameter(null, "Measurement Period",
+            parametersMap.put(Pair.of(library.getLocalId(), "Measurement Period"),
                     new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
                             DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
         }
-
+        
         if (productLine != null) {
-            context.setParameter(null, "Product Line", productLine);
+            parametersMap.put(Pair.of(library.getLocalId(), "Product Line"), productLine);
         }
 
+        //TODO: resolveContextParameters i.e. patient
+        com.alphora.cql.service.Parameters evaluationParameters = new com.alphora.cql.service.Parameters();
+        evaluationParameters.terminologyUri = terminologyServiceUri;
+        evaluationParameters.libraries = Collections.singletonList(library.toString());
+        evaluationParameters.parameters = parametersMap;
+        evaluationParameters.contextParameters = (contextParam.equals("Patient")) ? Collections.singletonMap("Context Parameters", "Patient=" + patientId) : Collections.singletonMap("Context Parameters", contextParam) ;
+        DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.getLibraryResourceProvider());
+        DefaultTerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory(FhirContext.forDstu3(), localSystemTerminologyProvider);
+        terminologyProviderFactory.setPass(terminologyPass);
+        terminologyProviderFactory.setUser(terminologyUser);  
 
-        context.setExpressionCaching(true);
-        if (library.getStatements() != null) {
-            for (org.cqframework.cql.elm.execution.ExpressionDef def : library.getStatements().getDef()) {
-                context.enterContext(def.getContext());
-                if (patientId != null && !patientId.isEmpty()) {
-                    context.setContextValue(context.getCurrentContext(), patientId);
+        Parameters result = null;
+        try {
+            Service service = new Service(libraryFactory, dataProviderFactory, terminologyProviderFactory, null, null, null, null);
+            Response response = service.evaluate(evaluationParameters);
+            
+            for (Entry<VersionedIdentifier, LibraryResult> libraryEntry : response.evaluationResult.libraryResults.entrySet()) {
+                for (Entry<String, Object> expressionEntry : libraryEntry.getValue().expressionResults.entrySet()) {
+                    Object res = expressionEntry.getValue();
+                    result = getResult(res, executionResults);
                 }
-                else {
-                    context.setContextValue(context.getCurrentContext(), "null");
-                }
-                Parameters result = new Parameters();
-
-                try {
-                    result.setId(def.getName());
-                    String location = String.format("[%d:%d]", locations.get(def.getName()).get(0), locations.get(def.getName()).get(1));
-                    result.addParameter().setName("location").setValue(new StringType(location));
-
-                    Object res = def instanceof org.cqframework.cql.elm.execution.FunctionDef ? "Definition successfully validated" : def.getExpression().evaluate(context);
-
-                    if (res == null) {
-                        result.addParameter().setName("value").setValue(new StringType("null"));
-                    }
-                    else if (res instanceof List<?>) {
-                        if (((List<?>) res).size() > 0 && ((List<?>) res).get(0) instanceof Resource) {
-							if (executionResults != null && executionResults.equals("Summary")) {
-								result.addParameter().setName("value").setValue(new StringType(((Resource)((List<?>) res).get(0)).getIdElement().getResourceType() + "/" + ((Resource)((List<?>) res).get(0)).getIdElement().getIdPart()));
-							}
-							else {
-								result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
-							}
-                        }
-                        else {
-                            result.addParameter().setName("value").setValue(new StringType(res.toString()));
-                        }
-                    }                
-                    else if (res instanceof Iterable) {
-                        result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
-                    }
-                    else if (res instanceof Resource) {
-						if (executionResults != null && executionResults.equals("Summary")) {
-							result.addParameter().setName("value").setValue(new StringType(((Resource)res).getIdElement().getResourceType() + "/" + ((Resource)res).getIdElement().getIdPart()));
-						}
-						else {
-							result.addParameter().setName("value").setResource((Resource)res);
-						}
-                    }
-                    else {
-                        result.addParameter().setName("value").setValue(new StringType(res.toString()));
-                    }
-
-                    result.addParameter().setName("resultType").setValue(new StringType(resolveType(res)));
-                }
-                catch (RuntimeException re) {
-                    re.printStackTrace();
-
-                    String message = re.getMessage() != null ? re.getMessage() : re.getClass().getName();
-                    result.addParameter().setName("error").setValue(new StringType(message));
-                }
-                results.add(result);
             }
         }
+        catch (RuntimeException re) {
+            re.printStackTrace();
+
+            String message = re.getMessage() != null ? re.getMessage() : re.getClass().getName();
+            result.addParameter().setName("error").setValue(new StringType(message));
+        }
+        results.add(result);
 
         return bundler.bundle(results);
+    }
+
+    private Parameters getResult(Object res, String executionResults) {
+        Parameters result = new Parameters();
+        FhirMeasureBundler bundler = new FhirMeasureBundler();
+        if (res == null) {
+            result.addParameter().setName("value").setValue(new StringType("null"));
+        }
+        else if (res instanceof List<?>) {
+            if (((List<?>) res).size() > 0 && ((List<?>) res).get(0) instanceof Resource) {
+                if (executionResults != null && executionResults.equals("Summary")) {
+                    result.addParameter().setName("value").setValue(new StringType(((Resource)((List<?>) res).get(0)).getIdElement().getResourceType() + "/" + ((Resource)((List<?>) res).get(0)).getIdElement().getIdPart()));
+                }
+                else {
+                    result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
+                }
+            }
+            else {
+                result.addParameter().setName("value").setValue(new StringType(res.toString()));
+            }
+        }                
+        else if (res instanceof Iterable) {
+            result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
+        }
+        else if (res instanceof Resource) {
+            if (executionResults != null && executionResults.equals("Summary")) {
+                result.addParameter().setName("value").setValue(new StringType(((Resource)res).getIdElement().getResourceType() + "/" + ((Resource)res).getIdElement().getIdPart()));
+            }
+            else {
+                result.addParameter().setName("value").setResource((Resource)res);
+            }
+        }
+        else {
+            result.addParameter().setName("value").setValue(new StringType(res.toString()));
+        }
+
+        result.addParameter().setName("resultType").setValue(new StringType(resolveType(res)));
+        return result;
     }
 
     private  Map<String, List<Integer>>  getLocations(org.hl7.elm.r1.Library library) {

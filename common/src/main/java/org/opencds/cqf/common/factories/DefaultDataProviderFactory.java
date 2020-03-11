@@ -14,6 +14,8 @@ import org.cqframework.cql.elm.execution.UsingDef;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.alphora.cql.service.factory.DataProviderFactory;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
@@ -21,7 +23,7 @@ import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
 
-public class DefaultDataProviderFactory {
+public class DefaultDataProviderFactory implements DataProviderFactory {
     private DaoRegistry registry;
     private FhirContext fhirContext;
     @SuppressWarnings("serial")
@@ -37,6 +39,14 @@ public class DefaultDataProviderFactory {
         this.registry = registry;
         this.fhirContext = fhirContext;
     }
+
+	@Override
+	public Map<String, DataProvider> create(Map<String, Pair<String, String>> modelVersionsAndUrls,
+			TerminologyProvider terminologyProvider) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
     Map<String, DataProvider> create(Map<VersionedIdentifier, Library> libraries, Map<String,String> modelUris, TerminologyProvider terminologyProvider) {
         Map<String, Pair<String, String>> versions = this.getVersions(libraries, modelUris);
         return this.getProviders(versions, terminologyProvider);

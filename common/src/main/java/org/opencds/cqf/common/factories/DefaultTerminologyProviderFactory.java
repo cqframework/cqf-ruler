@@ -2,14 +2,19 @@
 package org.opencds.cqf.common.factories;
 
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opencds.cqf.common.providers.Dstu3ApelonFhirTerminologyProvider;
 import org.opencds.cqf.common.providers.R4ApelonFhirTerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.Dstu3FhirTerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.R4FhirTerminologyProvider;
 
+import java.util.Map;
+
+import com.alphora.cql.service.factory.TerminologyProviderFactory;
+
 import ca.uhn.fhir.context.FhirContext;
 
-public class DefaultTerminologyProviderFactory {
+public class DefaultTerminologyProviderFactory implements TerminologyProviderFactory{
     private FhirContext fhirContext;
     private TerminologyProvider defaultTerminologyProvider;
     //This is a workaround for now these should be removed in the future
@@ -21,6 +26,15 @@ public class DefaultTerminologyProviderFactory {
         this.defaultTerminologyProvider = defaultTerminologyProvider;
     }
 
+    public DefaultTerminologyProviderFactory() {
+    }
+
+    @Override
+	public TerminologyProvider create(Map<String, Pair<String, String>> modelVersionsAndUrls, String terminologyUri) {
+		// TODO Auto-generated method stub
+		return null;
+    }
+    
     TerminologyProvider create(String terminologyUri) {
 		switch(fhirContext.getVersion().getVersion().getFhirVersionString()) {
             case "4.0.0":

@@ -4,6 +4,9 @@ import java.util.Arrays;
 
 import javax.servlet.ServletException;
 
+import com.alphora.cql.service.factory.DataProviderFactory;
+import com.alphora.cql.service.factory.TerminologyProviderFactory;
+
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Bundle;
@@ -16,6 +19,8 @@ import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.factories.DefaultDataProviderFactory;
+import org.opencds.cqf.common.factories.DefaultTerminologyProviderFactory;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.searchparam.SearchParameterResolver;
 import org.opencds.cqf.r4.evaluation.ProviderFactory;
@@ -101,7 +106,9 @@ public class BaseServlet extends RestfulServer {
         JpaTerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService",  ITermReadSvcR4.class), getFhirContext(), (ValueSetResourceProvider)this.getResourceProvider(ValueSet.class));
         EvaluationProviderFactory providerFactory = new ProviderFactory(this.fhirContext, this.registry, localSystemTerminologyProvider);
 
-        resolveProviders(providerFactory, localSystemTerminologyProvider, this.registry);
+        DataProviderFactory dataProviderFactory = new DefaultDataProviderFactory(registry, fhirContext);
+        TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory(fhirContext, localSystemTerminologyProvider);
+        resolveProviders(providerFactory, dataProviderFactory, terminologyProviderFactory, localSystemTerminologyProvider, this.registry);
 
         // CdsHooksServlet.provider = provider;
 
@@ -185,7 +192,7 @@ public class BaseServlet extends RestfulServer {
 
     // Since resource provider resolution not lazy, the providers here must be resolved in the correct
     // order of dependencies.
-    private void resolveProviders(EvaluationProviderFactory providerFactory, JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry)
+    private void resolveProviders(EvaluationProviderFactory evaluationProviderFactory, DataProviderFactory dataProviderFactory, TerminologyProviderFactory terminologyProviderFactory, JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry)
             throws ServletException
     {
         NarrativeProvider narrativeProvider = this.getNarrativeProvider();
@@ -206,15 +213,15 @@ public class BaseServlet extends RestfulServer {
         this.registerProvider(libraryProvider);
 
         // CQL Execution
-        CqlExecutionProvider cql = new CqlExecutionProvider(libraryProvider, providerFactory);
+        CqlExecutionProvider cql = new CqlExecutionProvider(libraryProvider, dataProviderFactory, terminologyProviderFactory, localSystemTerminologyProvider);
         this.registerProvider(cql);
 
         // Bundle processing
-        ApplyCqlOperationProvider bundleProvider = new ApplyCqlOperationProvider(providerFactory, this.getDao(Bundle.class));
+        ApplyCqlOperationProvider bundleProvider = new ApplyCqlOperationProvider(dataProviderFactory, terminologyProviderFactory, this.getDao(Bundle.class));
         this.registerProvider(bundleProvider);
 
         // Measure processing
-        MeasureOperationsProvider measureProvider = new MeasureOperationsProvider(this.registry, providerFactory, narrativeProvider, hqmfProvider, 
+        MeasureOperationsProvider measureProvider = new MeasureOperationsProvider(this.registry, evaluationProviderFactory, narrativeProvider, hqmfProvider, 
             libraryProvider, (MeasureResourceProvider)this.getResourceProvider(Measure.class));
         this.registerProvider(measureProvider);
 
