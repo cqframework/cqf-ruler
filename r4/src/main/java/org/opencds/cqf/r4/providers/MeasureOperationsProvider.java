@@ -188,19 +188,21 @@ public class MeasureOperationsProvider {
             Interval measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
             DateHelper.resolveRequestDate(periodEnd, false), true);
 
-            parametersMap.put(Pair.of(library.getLocalId(), "Measurement Period"),
+            parametersMap.put(Pair.of(null, "Measurement Period"),
                     new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
                             DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
         }
         
         if (productLine != null) {
-            parametersMap.put(Pair.of(library.getLocalId(), "Product Line"), productLine);
+            parametersMap.put(Pair.of(null, "Product Line"), productLine);
         }
 
         //TODO: resolveContextParameters i.e. patient
         com.alphora.cql.service.Parameters evaluationParameters = new com.alphora.cql.service.Parameters();
         evaluationParameters.libraries = Collections.singletonList(library.toString());
-        evaluationParameters.parameters = parametersMap;      
+        evaluationParameters.parameters = parametersMap;   
+        evaluationParameters.expressions =  new ArrayList<Pair<String, String>>();
+        evaluationParameters.libraryName = library.getIdentifier().getId();   
 
         Service service = new Service(libraryFactory, dataProviderFactory, terminologyProviderFactory, null, null, null, null);
 
@@ -308,7 +310,7 @@ public class MeasureOperationsProvider {
             Interval measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
             DateHelper.resolveRequestDate(periodEnd, false), true);
 
-            parametersMap.put(Pair.of(library.getLocalId(), "Measurement Period"),
+            parametersMap.put(Pair.of(null, "Measurement Period"),
                     new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
                             DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
         }
@@ -316,7 +318,8 @@ public class MeasureOperationsProvider {
         //TODO: resolveContextParameters i.e. patient
         com.alphora.cql.service.Parameters evaluationParameters = new com.alphora.cql.service.Parameters();
         evaluationParameters.libraries = Collections.singletonList(library.toString());
-        evaluationParameters.parameters = parametersMap;      
+        evaluationParameters.parameters = parametersMap;    
+        evaluationParameters.expressions =  new ArrayList<Pair<String, String>>();  
 
         Service service = new Service(libraryFactory, dataProviderFactory, terminologyProviderFactory, null, null, null, null);
 

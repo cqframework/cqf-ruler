@@ -194,7 +194,7 @@ public class MeasureEvaluation {
         if (type == MeasureReport.MeasureReportType.INDIVIDUAL && !patients.isEmpty()) {
             reportBuilder.buildPatientReference(patients.get(0).getIdElement().getValue());
         }
-        reportBuilder.buildPeriod((Interval)parameters.parameters.get(Pair.of(primaryLibrary.getLocalId(), "Measurement Period")));
+        reportBuilder.buildPeriod((Interval)parameters.parameters.get(Pair.of(null, "Measurement Period")));
 
         MeasureReport report = reportBuilder.build();
 

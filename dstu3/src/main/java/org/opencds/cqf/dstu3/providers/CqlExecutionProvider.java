@@ -203,6 +203,7 @@ public class CqlExecutionProvider {
                 com.alphora.cql.service.Parameters parameters = new com.alphora.cql.service.Parameters();
                 parameters.libraryName = library.getIdentifier().getId();
                 parameters.libraries = libraries;
+                parameters.expressions =  new ArrayList<Pair<String, String>>();
                 parameters.contextParameters = Collections.singletonMap("Context Parameters", "Patient=" + patientId);
                 Service service = new Service(libraryFactory, this.dataProviderFactory, this.terminologyProviderFactory, null, null, null, null);
                 
@@ -278,7 +279,7 @@ public class CqlExecutionProvider {
         {
             for (Parameters.ParametersParameterComponent pc : parameters.getParameter())
             {
-                parametersMap.put(Pair.of(library.getLocalId(), pc.getName()), pc.getValue());
+                parametersMap.put(Pair.of(null, pc.getName()), pc.getValue());
             }    
         }
 
@@ -287,13 +288,13 @@ public class CqlExecutionProvider {
             Interval measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
             DateHelper.resolveRequestDate(periodEnd, false), true);
 
-            parametersMap.put(Pair.of(library.getLocalId(), "Measurement Period"),
+            parametersMap.put(Pair.of(null, "Measurement Period"),
                     new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
                             DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
         }
         
         if (productLine != null) {
-            parametersMap.put(Pair.of(library.getLocalId(), "Product Line"), productLine);
+            parametersMap.put(Pair.of(null, "Product Line"), productLine);
         }
 
         //TODO: resolveContextParameters i.e. patient
@@ -301,6 +302,7 @@ public class CqlExecutionProvider {
         evaluationParameters.terminologyUri = terminologyServiceUri;
         evaluationParameters.libraries = Collections.singletonList(library.toString());
         evaluationParameters.parameters = parametersMap;
+        evaluationParameters.expressions =  new ArrayList<Pair<String, String>>();
         evaluationParameters.contextParameters = (contextParam.equals("Patient")) ? Collections.singletonMap("Context Parameters", "Patient=" + patientId) : Collections.singletonMap("Context Parameters", contextParam) ;
         DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.getLibraryResourceProvider());
         DefaultTerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory(FhirContext.forDstu3(), localSystemTerminologyProvider);

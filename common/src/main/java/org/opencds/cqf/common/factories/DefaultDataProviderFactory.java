@@ -43,8 +43,7 @@ public class DefaultDataProviderFactory implements DataProviderFactory {
 	@Override
 	public Map<String, DataProvider> create(Map<String, Pair<String, String>> modelVersionsAndUrls,
 			TerminologyProvider terminologyProvider) {
-		// TODO Auto-generated method stub
-		return null;
+        return this.getProviders(modelVersionsAndUrls, terminologyProvider);
 	}
 
     Map<String, DataProvider> create(Map<VersionedIdentifier, Library> libraries, Map<String,String> modelUris, TerminologyProvider terminologyProvider) {

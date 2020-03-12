@@ -31,8 +31,7 @@ public class DefaultTerminologyProviderFactory implements TerminologyProviderFac
 
     @Override
 	public TerminologyProvider create(Map<String, Pair<String, String>> modelVersionsAndUrls, String terminologyUri) {
-		// TODO Auto-generated method stub
-		return null;
+		return create(terminologyUri);
     }
     
     TerminologyProvider create(String terminologyUri) {
