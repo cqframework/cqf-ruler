@@ -7,6 +7,8 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.runtime.Interval;
 
+import org.opencds.cqf.cql.runtime.DateTime;
+
 import java.util.Date;
 
 public class MeasureReportBuilder extends BaseBuilder<MeasureReport> {
@@ -41,11 +43,22 @@ public class MeasureReportBuilder extends BaseBuilder<MeasureReport> {
     }
 
     public MeasureReportBuilder buildPeriod(Interval period) {
-        this.complexProperty.setPeriod(
+        Object start = period.getStart();
+        if (start instanceof DateTime) {
+            this.complexProperty.setPeriod(
+                    new Period()
+                            .setStart(Date.from(((DateTime) start).getDateTime().toInstant()))
+                            .setEnd(Date.from(((DateTime) period.getEnd()).getDateTime().toInstant()))
+            );
+		}
+		else if (start instanceof Date) {
+			this.complexProperty.setPeriod(
                 new Period()
                         .setStart((Date) period.getStart())
                         .setEnd((Date) period.getEnd())
-        );
+	        );
+		}
+
         return this;
     }
 }

@@ -199,6 +199,7 @@ public class MeasureOperationsProvider {
         evaluationParameters.libraries = Collections.singletonList(library.toString());
         evaluationParameters.parameters = parametersMap; 
         evaluationParameters.expressions =  new ArrayList<Pair<String, String>>();
+        evaluationParameters.libraryName = library.getIdentifier().getId();   
 
         Service service = new Service(libraryFactory, dataProviderFactory, terminologyProviderFactory, null, null, null, null);
 
