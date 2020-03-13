@@ -204,7 +204,7 @@ public class CqlExecutionProvider {
                 parameters.libraryName = library.getIdentifier().getId();
                 parameters.libraries = libraries;
                 parameters.expressions =  new ArrayList<Pair<String, String>>();
-                parameters.contextParameters = Collections.singletonMap("Context Parameters", "Patient=" + patientId);
+                parameters.contextParameters = Collections.singletonMap("Patient", patientId);
                 Service service = new Service(libraryFactory, this.dataProviderFactory, this.terminologyProviderFactory, null, null, null, null);
                 
                 Response response = service.evaluate(parameters);
@@ -303,7 +303,7 @@ public class CqlExecutionProvider {
         evaluationParameters.libraries = Collections.singletonList(library.toString());
         evaluationParameters.parameters = parametersMap;
         evaluationParameters.expressions =  new ArrayList<Pair<String, String>>();
-        evaluationParameters.contextParameters = (contextParam.equals("Patient")) ? Collections.singletonMap("Context Parameters", "Patient=" + patientId) : Collections.singletonMap("Context Parameters", contextParam) ;
+        evaluationParameters.contextParameters = (contextParam.equals("Patient")) ? Collections.singletonMap("Patient", patientId) : Collections.emptyMap();
         DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.getLibraryResourceProvider());
         DefaultTerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory(FhirContext.forDstu3(), localSystemTerminologyProvider);
         terminologyProviderFactory.setPass(terminologyPass);

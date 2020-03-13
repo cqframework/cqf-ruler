@@ -45,7 +45,7 @@ public class MeasureEvaluation {
         }
 
         Patient patient = registry.getResourceDao(Patient.class).read(new IdType(patientId));
-        parameters.contextParameters = Collections.singletonMap("Context Parameters", "Patient=" + patientId);
+        parameters.contextParameters = Collections.singletonMap("Patient", patientId);
         // Iterable<Object> patientRetrieve = provider.retrieve("Patient", "id",
         // patientId, "Patient", null, null, null, null, null, null, null, null);
         // Patient patient = null;
@@ -61,10 +61,12 @@ public class MeasureEvaluation {
     public MeasureReport evaluatePatientListMeasure(Measure measure, String practitionerRef) {
         logger.info("Generating patient-list report");
 
+        Map<String, String> patientMap = new HashMap<String, String>();
         List<Patient> patients = practitionerRef == null ? getAllPatients() : getPractitionerPatients(practitionerRef);
         for (Patient patient : patients) {
-            parameters.contextParameters = Collections.singletonMap("Context Parameters", "Patient=" + patient.getIdElement().getIdPart());
+            patientMap.put("Patient", patient.getIdElement().getIdPart());
         }
+        parameters.contextParameters = patientMap;
         return evaluate(measure, patients, MeasureReport.MeasureReportType.PATIENTLIST);
     }
 
@@ -91,9 +93,7 @@ public class MeasureEvaluation {
     public MeasureReport evaluatePopulationMeasure(Measure measure) {
         logger.info("Generating summary report");
         List<Patient> patients = getAllPatients();
-        for (Patient patient : patients) {
-            parameters.contextParameters = Collections.singletonMap("Context Parameters", "Patient=" + patient.getIdElement().getIdPart());
-        }
+        parameters.contextParameters = Collections.emptyMap();
 
         return evaluate(measure, patients, MeasureReport.MeasureReportType.SUMMARY);
     }

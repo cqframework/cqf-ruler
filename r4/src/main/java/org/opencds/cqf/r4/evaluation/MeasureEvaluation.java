@@ -46,7 +46,7 @@ public class MeasureEvaluation {
         }
 
         Patient patient = registry.getResourceDao(Patient.class).read(new IdType(patientId));
-        parameters.contextParameters = Collections.singletonMap("Context Parameters", "Patient=" + patientId);
+        parameters.contextParameters = Collections.singletonMap("Patient", patientId);
 
         return evaluate(measure, patient == null ? Collections.emptyList() : Collections.singletonList(patient), MeasureReport.MeasureReportType.INDIVIDUAL);
     }
@@ -88,9 +88,7 @@ public class MeasureEvaluation {
     public MeasureReport evaluatePopulationMeasure(Measure measure) {
         logger.info("Generating summary report");
         List<Patient> patients = getAllPatients();
-        for (Patient patient : patients) {
-            parameters.contextParameters = Collections.singletonMap("Context Parameters", "Patient=" + patient.getIdElement().getIdPart());
-        }
+        parameters.contextParameters = Collections.emptyMap();
 
         return evaluate(measure, patients, MeasureReport.MeasureReportType.SUMMARY);
     }
