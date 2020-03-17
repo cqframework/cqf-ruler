@@ -3,6 +3,9 @@ jdk: openjdk11
 os: linux
 dist: xenial
 
+services:
+  - docker
+
 cache:
   timeout: 180
   directories:
@@ -21,17 +24,18 @@ script:
 before_deploy:
   - 'if [[ "$TRAVIS_BRANCH" =~ master* ]]; then echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import; fi'
   - 'if [[ "$TRAVIS_BRANCH" =~ master* ]]; then echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust; fi'
+  - 'echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin'
 
 # NOTE: tests were already run as part of the script phase
 deploy:
   # deploy develop as a snapshot
   - provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true"
+    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true && docker build . -t contentgroup/cqf-ruler:develop && docker push contentgroup/cqf-ruler:develop"
     on:
       branch: develop
   # deploy master to production
   - provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -P release -DskipTests=true"
+    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -P release -DskipTests=true  && docker build . -t contentgroup/cqf-ruler && docker push contentgroup/cqf-ruler"
     on:
       branch: master
 
