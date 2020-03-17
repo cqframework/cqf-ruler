@@ -30,14 +30,16 @@ before_deploy:
 deploy:
   # deploy develop as a snapshot
   - provider: script
-    cleanup: false
     script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true && docker build . -t contentgroup/cqf-ruler:develop && docker push contentgroup/cqf-ruler:develop"
+    cleanup: false
+    skip_cleanup: true # This is the current correct option, but is soon to be deprecated by the above.
     on:
       branch: develop
   # deploy master to production
   - provider: script
-    cleanup: false
     script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -P release -DskipTests=true  && docker build . -t contentgroup/cqf-ruler && docker push contentgroup/cqf-ruler"
+    cleanup: false
+    skip_cleanup: true # This is the current correct option, but is soon to be deprecated by the above.
     on:
       branch: master
 
