@@ -16,7 +16,7 @@
     </modules>
 
     <properties>
-            <version.major>0</version.major>
+        <version.major>0</version.major>
         <version.minor>1</version.minor>
         <version.patch>14</version.patch>
         <!-- NOTE: Building under the release profile automatically drops the -SNAPSHOT extension -->
@@ -29,10 +29,10 @@
         <jackson_version>2.10.1</jackson_version>
         <derby_version>10.14.2.0</derby_version>
         <hapi_version>4.1.0</hapi_version>
-        <cqf_tooling_version>1.0.1-SNAPSHOT</cqf_tooling_version>
-        <cql_engine_version>1.3.12-SNAPSHOT</cql_engine_version>
-        <cqframework_version>1.3.20-SNAPSHOT</cqframework_version>
-        <cds_hooks_version>1.0.0-SNAPSHOT</cds_hooks_version>
+        <cqf_tooling_version>1.0.4</cqf_tooling_version>
+        <cql_engine_version>1.3.12</cql_engine_version>
+        <cqframework_version>1.3.19</cqframework_version>
+        <cds_hooks_version>1.0.0</cds_hooks_version>
 
         <!-- jetty plugin properties (used when starting server locally) -->
         <dev>true</dev>
