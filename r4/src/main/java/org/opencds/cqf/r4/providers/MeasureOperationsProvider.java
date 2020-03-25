@@ -14,6 +14,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.ListResource;
@@ -41,6 +42,8 @@ import org.slf4j.LoggerFactory;
 
 import org.opencds.cqf.cql.runtime.DateTime;
 import org.opencds.cqf.cql.runtime.Interval;
+import org.opencds.cqf.cql.terminology.TerminologyProvider;
+import org.opencds.cqf.common.factories.DefaultTerminologyProviderFactory;
 import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.r4.factories.DefaultLibraryLoaderFactory;
 
@@ -49,6 +52,7 @@ import com.alphora.cql.service.factory.DataProviderFactory;
 import com.alphora.cql.service.factory.TerminologyProviderFactory;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
@@ -74,22 +78,25 @@ public class MeasureOperationsProvider {
     private MeasureResourceProvider measureResourceProvider;
     private DaoRegistry registry;
     private DataProviderFactory dataProviderFactory;
-    private TerminologyProviderFactory terminologyProviderFactory;
+    private TerminologyProvider localSystemTerminologyProvider;
+    private FhirContext fhirContext;
 
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
 
-    public MeasureOperationsProvider(DaoRegistry registry, DataProviderFactory dataProviderFactory, TerminologyProviderFactory terminologyProviderFactory, NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider, LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider,
-    MeasureResourceProvider measureResourceProvider) {
+    public MeasureOperationsProvider(DaoRegistry registry, DataProviderFactory dataProviderFactory, TerminologyProvider localSystemTerminologyProvider, NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider, LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider,
+    MeasureResourceProvider measureResourceProvider, FhirContext fhirContext) {
         this.registry = registry;
         this.dataProviderFactory = dataProviderFactory;
-        this.terminologyProviderFactory = terminologyProviderFactory;
 
         this.libraryResolutionProvider = libraryResolutionProvider;
         this.narrativeProvider = narrativeProvider;
         this.hqmfProvider = hqmfProvider;
         this.dataRequirementsProvider = new DataRequirementsProvider();
         this.measureResourceProvider = measureResourceProvider;
+        this.localSystemTerminologyProvider = localSystemTerminologyProvider;
+        this.fhirContext = fhirContext;
+        
     }
 
     @Operation(name = "$hqmf", idempotent = true, type = Measure.class)
@@ -164,8 +171,7 @@ public class MeasureOperationsProvider {
             @OptionalParam(name = "productLine") String productLine,
             @OptionalParam(name = "practitioner") String practitionerRef,
             @OptionalParam(name = "lastReceivedOn") String lastReceivedOn,
-            @OptionalParam(name = "source") String source, @OptionalParam(name = "user") String user,
-            @OptionalParam(name = "pass") String pass) throws InternalErrorException, FHIRException {
+            @OperationParam(name = "endpoint") Endpoint endpoint) throws InternalErrorException, FHIRException {
         
         DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.libraryResolutionProvider);
         LibraryLoader libraryLoader = libraryFactory.create(this.libraryResolutionProvider);
@@ -197,12 +203,19 @@ public class MeasureOperationsProvider {
             parametersMap.put(Pair.of(null, "Product Line"), productLine);
         }
 
+        Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
+        if(endpoint != null) {
+            endpointIndex.put(endpoint.getAddress(), endpoint);
+        }
+
         //TODO: resolveContextParameters i.e. patient
         com.alphora.cql.service.Parameters evaluationParameters = new com.alphora.cql.service.Parameters();
         evaluationParameters.libraries = Collections.singletonList(library.toString());
         evaluationParameters.parameters = parametersMap;   
         evaluationParameters.expressions =  new ArrayList<Pair<String, String>>();
         evaluationParameters.libraryName = library.getIdentifier().getId();   
+
+        TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory<Endpoint>(fhirContext, this.localSystemTerminologyProvider, endpointIndex);
 
         Service service = new Service(libraryFactory, dataProviderFactory, terminologyProviderFactory, null, null, null, null);
 
@@ -261,7 +274,7 @@ public class MeasureOperationsProvider {
     @Operation(name = "$care-gaps", idempotent = true)
     public Bundle careGapsReport(@RequiredParam(name = "periodStart") String periodStart,
             @RequiredParam(name = "periodEnd") String periodEnd, @RequiredParam(name = "topic") String topic,
-            @RequiredParam(name = "patient") String patientRef) {
+            @RequiredParam(name = "patient") String patientRef, @OperationParam(name = "endpoint") Endpoint endpoint) {
         List<IBaseResource> measures = this.measureResourceProvider.getDao().search(new SearchParameterMap().add("topic",
                 new TokenParam().setModifier(TokenParamModifier.TEXT).setValue(topic))).getResources(0, 1000);
         Bundle careGapReport = new Bundle();
@@ -315,11 +328,18 @@ public class MeasureOperationsProvider {
                             DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
         }
 
+        Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
+        if(endpoint != null) {
+            endpointIndex.put(endpoint.getAddress(), endpoint);
+        }
+
         //TODO: resolveContextParameters i.e. patient
         com.alphora.cql.service.Parameters evaluationParameters = new com.alphora.cql.service.Parameters();
         evaluationParameters.libraries = Collections.singletonList(library.toString());
         evaluationParameters.parameters = parametersMap;    
         evaluationParameters.expressions =  new ArrayList<Pair<String, String>>();  
+
+        TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory<Endpoint>(fhirContext, this.localSystemTerminologyProvider, endpointIndex);
 
         Service service = new Service(libraryFactory, dataProviderFactory, terminologyProviderFactory, null, null, null, null);
 
@@ -394,11 +414,11 @@ public class MeasureOperationsProvider {
     public Parameters collectData(@IdParam IdType theId, @RequiredParam(name = "periodStart") String periodStart,
             @RequiredParam(name = "periodEnd") String periodEnd, @OptionalParam(name = "patient") String patientRef,
             @OptionalParam(name = "practitioner") String practitionerRef,
-            @OptionalParam(name = "lastReceivedOn") String lastReceivedOn) throws FHIRException {
+            @OptionalParam(name = "lastReceivedOn") String lastReceivedOn, @OperationParam(name = "endpoint") Endpoint endpoint) throws FHIRException {
         // TODO: Spec says that the periods are not required, but I am not sure what to
         // do when they aren't supplied so I made them required
         MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null,  patientRef, null,
-                practitionerRef, lastReceivedOn, null, null, null);
+                practitionerRef, lastReceivedOn, null);
         report.setGroup(null);
 
         Parameters parameters = new Parameters();

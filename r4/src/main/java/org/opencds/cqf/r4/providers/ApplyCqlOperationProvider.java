@@ -1,5 +1,6 @@
 package org.opencds.cqf.r4.providers;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -10,8 +11,10 @@ import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.opencds.cqf.common.factories.DefaultTerminologyProviderFactory;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.runtime.DateTime;
+import org.opencds.cqf.cql.terminology.TerminologyProvider;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -25,42 +28,54 @@ import com.alphora.cql.service.factory.TerminologyProviderFactory;
 public class ApplyCqlOperationProvider {
 
     private DataProviderFactory dataProviderFactory;
-    private TerminologyProviderFactory terminologyProviderFactory;
     private IFhirResourceDao<Bundle> bundleDao;
+    private TerminologyProvider localSystemTerminologyProvider;
+    private FhirContext fhirContext;
 
-    public ApplyCqlOperationProvider(DataProviderFactory dataProviderFactory, TerminologyProviderFactory terminologyProviderFactory, IFhirResourceDao<Bundle> bundleDao) {
+    public ApplyCqlOperationProvider(DataProviderFactory dataProviderFactory, TerminologyProvider localSystemTerminologyProvider, IFhirResourceDao<Bundle> bundleDao, FhirContext fhirContext) {
         this.dataProviderFactory = dataProviderFactory;
-        this.terminologyProviderFactory = terminologyProviderFactory;
         this.bundleDao = bundleDao;
+        this.localSystemTerminologyProvider = localSystemTerminologyProvider;
+        this.fhirContext = fhirContext;
     }
 
     @Operation(name = "$apply-cql", type = Bundle.class)
-    public Bundle apply(@IdParam IdType id) throws FHIRException {
+    public Bundle apply(@IdParam IdType id, @OperationParam(name = "endpoint") Endpoint endpoint) throws FHIRException {
+        Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
+        if(endpoint != null) {
+            endpointIndex.put(endpoint.getAddress(), endpoint);
+        }
+        TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory<Endpoint>(fhirContext, this.localSystemTerminologyProvider, endpointIndex);
         Bundle bundle = this.bundleDao.read(id);
         if (bundle == null) {
             throw new IllegalArgumentException("Could not find Bundle/" + id.getIdPart());
         }
-        return applyCql(bundle);
+        return applyCql(bundle, terminologyProviderFactory);
     }
 
     @Operation(name = "$apply-cql", type = Bundle.class)
-    public Bundle apply(@OperationParam(name = "resourceBundle", min = 1, max = 1, type = Bundle.class) Bundle bundle)
+    public Bundle apply(@OperationParam(name = "resourceBundle", min = 1, max = 1, type = Bundle.class) Bundle bundle, @OperationParam(name = "endpoint") Endpoint endpoint)
             throws FHIRException
     {
-        return applyCql(bundle);
+        Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
+        if(endpoint != null) {
+            endpointIndex.put(endpoint.getAddress(), endpoint);
+        }
+        TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory<Endpoint>(fhirContext, this.localSystemTerminologyProvider, endpointIndex);
+        return applyCql(bundle, terminologyProviderFactory);
     }
 
-    public Bundle applyCql(Bundle bundle) throws FHIRException {
+    public Bundle applyCql(Bundle bundle, TerminologyProviderFactory terminologyProviderFactory) throws FHIRException {
         for (Bundle.BundleEntryComponent entry : bundle.getEntry()) {
             if (entry.hasResource()) {
-                applyCqlToResource(entry.getResource());
+                applyCqlToResource(entry.getResource(), terminologyProviderFactory);
             }
         }
 
         return bundle;
     }
 
-    public Resource applyCqlToResource(Resource resource) throws FHIRException {
+    public Resource applyCqlToResource(Resource resource, TerminologyProviderFactory terminologyProviderFactory) throws FHIRException {
         Library library;
         for (Property child : resource.children()) {
             for (Base base : child.getValues()) {
@@ -73,7 +88,7 @@ public class ApplyCqlOperationProvider {
                         parameters.libraries = Collections.singletonList(library.toString());
                         parameters.expressions = Collections.singletonList(Pair.of("LocalLibrary", "Expression"));
                         parameters.parameters = Collections.singletonMap(Pair.of(null, resource.fhirType()), resource);
-                        Service service = new Service(null, this.dataProviderFactory, this.terminologyProviderFactory, null, null, null, null);
+                        Service service = new Service(null, this.dataProviderFactory, terminologyProviderFactory, null, null, null, null);
                         Response response = service.evaluate(parameters);
 
                         Object result = response.evaluationResult.forLibrary(new VersionedIdentifier().withId("LocalLibrary"))

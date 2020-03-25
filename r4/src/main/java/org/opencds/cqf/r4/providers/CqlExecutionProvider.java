@@ -1,7 +1,6 @@
 package org.opencds.cqf.r4.providers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +25,7 @@ import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DomainResource;
+import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
@@ -56,14 +56,14 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
  */
 public class CqlExecutionProvider {
     private DataProviderFactory dataProviderFactory;
-    private TerminologyProviderFactory terminologyProviderFactory;
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider;
+    private FhirContext fhirContext;
     private TerminologyProvider localSystemTerminologyProvider;
 
-    public CqlExecutionProvider(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider, DataProviderFactory dataProviderFactory, TerminologyProviderFactory terminologyProviderFactory, TerminologyProvider localSystemTerminologyProvider) {
+    public CqlExecutionProvider(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider, DataProviderFactory dataProviderFactory, FhirContext fhirContext, TerminologyProvider localSystemTerminologyProvider) {
         this.dataProviderFactory = dataProviderFactory;
-        this.terminologyProviderFactory = terminologyProviderFactory;
         this.libraryResourceProvider = libraryResourceProvider;
+        this.fhirContext = fhirContext;
         this.localSystemTerminologyProvider = localSystemTerminologyProvider;
     }
 
@@ -148,7 +148,9 @@ public class CqlExecutionProvider {
      */
     public Object evaluateInContext(DomainResource instance, String cql, String patientId) {
         String libraryContent = constructLocalLibrary(instance, cql);
-        return evaluateLocalLibrary(instance, libraryContent);
+        Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
+        TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory<Endpoint>(fhirContext, this.localSystemTerminologyProvider, endpointIndex);
+        return evaluateLocalLibrary(instance, libraryContent, terminologyProviderFactory);
     }
 
     // How should we handle the case that resource is null?
@@ -164,13 +166,13 @@ public class CqlExecutionProvider {
         return source;
     }
 
-    private Object evaluateLocalLibrary(IBaseResource resource, String libraryContent) {
+    private Object evaluateLocalLibrary(IBaseResource resource, String libraryContent, TerminologyProviderFactory terminologyProviderFactory) {
         com.alphora.cql.service.Parameters parameters = new com.alphora.cql.service.Parameters();
         parameters.libraries = Collections.singletonList(libraryContent);
         parameters.expressions = Collections.singletonList(Pair.of("LocalLibrary", "Expression"));
         parameters.parameters = Collections.singletonMap(Pair.of(null, resource.fhirType()), resource);
         DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.getLibraryResourceProvider());
-        Service service = new Service(libraryFactory, this.dataProviderFactory, this.terminologyProviderFactory, null, null, null, null);
+        Service service = new Service(libraryFactory, this.dataProviderFactory, terminologyProviderFactory, null, null, null, null);
         Response response = service.evaluate(parameters);
 
         return response.evaluationResult.forLibrary(new VersionedIdentifier().withId("LocalLibrary"))
@@ -180,6 +182,8 @@ public class CqlExecutionProvider {
     public Object evaluateInContext(DomainResource instance, String cqlName, String patientId, Boolean aliasedExpression) {
         List<String> libraries = new ArrayList<String>();
         Iterable<CanonicalType> canonicalLibraries = getLibraryReferences(instance);
+        Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
+        TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory<Endpoint>(fhirContext, this.localSystemTerminologyProvider, endpointIndex);
 
         if (aliasedExpression) {
             Object result = null;
@@ -202,7 +206,8 @@ public class CqlExecutionProvider {
                 parameters.libraries = libraries;
                 parameters.expressions =  new ArrayList<Pair<String, String>>();
                 parameters.contextParameters = Collections.singletonMap("Patient", patientId);
-                Service service = new Service(libraryFactory, this.dataProviderFactory, this.terminologyProviderFactory, null, null, null, null);
+                
+                Service service = new Service(libraryFactory, this.dataProviderFactory, terminologyProviderFactory, null, null, null, null);
                 
                 Response response = service.evaluate(parameters);
 
@@ -222,11 +227,9 @@ public class CqlExecutionProvider {
             @OperationParam(name="periodStart") String periodStart,
             @OperationParam(name="periodEnd") String periodEnd,
             @OperationParam(name="productLine") String productLine,
-            @OperationParam(name = "terminologyServiceUri") String terminologyServiceUri,
-            @OperationParam(name = "terminologyUser") String terminologyUser,
-            @OperationParam(name = "terminologyPass") String terminologyPass,
 			@OperationParam(name = "context") String contextParam,
 			@OperationParam(name = "executionResults") String executionResults,
+            @OperationParam(name = "endpoint") Endpoint endpoint,
             @OperationParam(name = "parameters") Parameters parameters) {
 
         if (patientId == null && contextParam != null && contextParam.equals("Patient") ) {
@@ -294,17 +297,20 @@ public class CqlExecutionProvider {
             parametersMap.put(Pair.of(null, "Product Line"), productLine);
         }
 
+        Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
+        if(endpoint != null) {
+            endpointIndex.put(endpoint.getAddress(), endpoint);
+        }
+
         //TODO: resolveContextParameters i.e. patient
         com.alphora.cql.service.Parameters evaluationParameters = new com.alphora.cql.service.Parameters();
-        evaluationParameters.terminologyUri = terminologyServiceUri;
+        evaluationParameters.terminologyUri = endpoint.getAddress();
         evaluationParameters.libraries = Collections.singletonList(library.toString());
         evaluationParameters.parameters = parametersMap;
         evaluationParameters.expressions =  new ArrayList<Pair<String, String>>();
         evaluationParameters.contextParameters = (contextParam.equals("Patient")) ? Collections.singletonMap("Patient", patientId) : Collections.emptyMap();
         DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.getLibraryResourceProvider());
-        DefaultTerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory(FhirContext.forDstu3(), localSystemTerminologyProvider);
-        terminologyProviderFactory.setPass(terminologyPass);
-        terminologyProviderFactory.setUser(terminologyUser);  
+        TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory<Endpoint>(fhirContext, this.localSystemTerminologyProvider, endpointIndex);
 
         Parameters result = null;
         try {
@@ -365,21 +371,6 @@ public class CqlExecutionProvider {
 
         result.addParameter().setName("resultType").setValue(new StringType(resolveType(res)));
         return result;
-    }
-
-    private  Map<String, List<Integer>>  getLocations(org.hl7.elm.r1.Library library) {
-        Map<String, List<Integer>> locations = new HashMap<>();
-
-        if (library.getStatements() == null) return locations;
-
-        for (org.hl7.elm.r1.ExpressionDef def : library.getStatements().getDef()) {
-            int startLine = def.getTrackbacks().isEmpty() ? 0 : def.getTrackbacks().get(0).getStartLine();
-            int startChar = def.getTrackbacks().isEmpty() ? 0 : def.getTrackbacks().get(0).getStartChar();
-            List<Integer> loc = Arrays.asList(startLine, startChar);
-            locations.put(def.getName(), loc);
-        }
-
-        return locations;
     }
 
     private String resolveType(Object result) {

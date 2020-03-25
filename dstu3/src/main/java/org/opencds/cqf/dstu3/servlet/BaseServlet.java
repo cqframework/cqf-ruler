@@ -5,7 +5,6 @@ import java.util.Arrays;
 import javax.servlet.ServletException;
 
 import com.alphora.cql.service.factory.DataProviderFactory;
-import com.alphora.cql.service.factory.TerminologyProviderFactory;
 
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
 import org.hl7.fhir.dstu3.model.Bundle;
@@ -18,12 +17,9 @@ import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.config.HapiProperties;
-import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.factories.DefaultDataProviderFactory;
-import org.opencds.cqf.common.factories.DefaultTerminologyProviderFactory;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.searchparam.SearchParameterResolver;
-import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
 import org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.dstu3.providers.CacheValueSetsProvider;
@@ -55,7 +51,6 @@ import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
-import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3;
 import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
@@ -104,11 +99,9 @@ public class BaseServlet extends RestfulServer {
         setServerConformanceProvider(confProvider);
 
         JpaTerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService", ITermReadSvcDstu3.class), getFhirContext(), (ValueSetResourceProvider)this.getResourceProvider(ValueSet.class));
-        EvaluationProviderFactory providerFactory = new ProviderFactory(this.fhirContext, this.registry, localSystemTerminologyProvider);
-
+        
         DataProviderFactory dataProviderFactory = new DefaultDataProviderFactory(registry, fhirContext);
-        TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory(fhirContext, localSystemTerminologyProvider);
-        resolveProviders(providerFactory, dataProviderFactory, terminologyProviderFactory, localSystemTerminologyProvider, this.registry);
+        resolveProviders(dataProviderFactory, localSystemTerminologyProvider, this.registry);
 
         /*
          * ETag Support
@@ -190,7 +183,7 @@ public class BaseServlet extends RestfulServer {
 
     // Since resource provider resolution not lazy, the providers here must be resolved in the correct
     // order of dependencies.
-    private void resolveProviders(EvaluationProviderFactory evaluationProviderFactory, DataProviderFactory dataProviderFactory, TerminologyProviderFactory terminologyProviderFactory, JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry)
+    private void resolveProviders(DataProviderFactory dataProviderFactory, JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry)
             throws ServletException
     {
         NarrativeProvider narrativeProvider = this.getNarrativeProvider();
@@ -211,22 +204,21 @@ public class BaseServlet extends RestfulServer {
         this.registerProvider(libraryProvider);
 
         // CQL Execution
-        CqlExecutionProvider cql = new CqlExecutionProvider(libraryProvider, dataProviderFactory, terminologyProviderFactory, localSystemTerminologyProvider);
+        CqlExecutionProvider cql = new CqlExecutionProvider(libraryProvider, dataProviderFactory, fhirContext, localSystemTerminologyProvider);
         this.registerProvider(cql);
 
         // Bundle processing
-        ApplyCqlOperationProvider bundleProvider = new ApplyCqlOperationProvider(dataProviderFactory, terminologyProviderFactory, this.getDao(Bundle.class));
+        ApplyCqlOperationProvider bundleProvider = new ApplyCqlOperationProvider(dataProviderFactory, localSystemTerminologyProvider, this.getDao(Bundle.class), fhirContext);
         this.registerProvider(bundleProvider);
 
         // Measure processing
-        MeasureOperationsProvider measureProvider = new MeasureOperationsProvider(this.registry, dataProviderFactory, terminologyProviderFactory, narrativeProvider, hqmfProvider, 
-            libraryProvider, (MeasureResourceProvider)this.getResourceProvider(Measure.class));
+        MeasureOperationsProvider measureProvider = new MeasureOperationsProvider(this.registry, dataProviderFactory, localSystemTerminologyProvider, narrativeProvider, hqmfProvider, 
+            libraryProvider, (MeasureResourceProvider)this.getResourceProvider(Measure.class), fhirContext);
         this.registerProvider(measureProvider);
 
         // // ActivityDefinition processing
         ActivityDefinitionApplyProvider actDefProvider = new ActivityDefinitionApplyProvider(this.fhirContext, cql, this.getDao(ActivityDefinition.class));
         this.registerProvider(actDefProvider);
-
 
         JpaFhirRetrieveProvider localSystemRetrieveProvider = new JpaFhirRetrieveProvider(registry, new SearchParameterResolver(this.fhirContext));
 

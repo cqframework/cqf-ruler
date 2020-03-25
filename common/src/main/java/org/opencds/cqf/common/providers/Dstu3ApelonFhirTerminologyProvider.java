@@ -12,6 +12,7 @@ import org.opencds.cqf.cql.terminology.ValueSetInfo;
 import org.opencds.cqf.cql.terminology.fhir.Dstu3FhirTerminologyProvider;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.IQuery;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -26,6 +27,10 @@ public class Dstu3ApelonFhirTerminologyProvider extends Dstu3FhirTerminologyProv
 
         public Dstu3ApelonFhirTerminologyProvider(FhirContext fhirContext) {
             super(fhirContext);
+        }
+
+        public Dstu3ApelonFhirTerminologyProvider(IGenericClient client) {
+            super(client);
         }
 
         @Override

@@ -111,14 +111,14 @@ public class DefaultDataProviderFactory implements DataProviderFactory {
             TerminologyProvider terminologyProvider) {
         switch (model) {
         case "http://hl7.org/fhir":
-            return this.getFHIRJpaProvider(version, uri, terminologyProvider);
+            return this.getFHIRJpaProvider(version, terminologyProvider);
 
         default:
             throw new IllegalArgumentException(String.format("Unknown data provider uri: %s", model));
         }
     }
 
-    public DataProvider getFHIRJpaProvider(String version, String uri, TerminologyProvider terminologyProvider) {
+    public DataProvider getFHIRJpaProvider(String version, TerminologyProvider terminologyProvider) {
         switch(version) {
             case "3.0.0":
                 Dstu3FhirModelResolver dstu3ModelResolver = new Dstu3FhirModelResolver();
