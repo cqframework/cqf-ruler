@@ -15,6 +15,33 @@
         <module>cqf-ruler-r4</module>
     </modules>
 
+    <name>cqf-ruler</name>
+    <description>CQL Ruler</description>
+    <url>https://github.com/DBCG/cqf-ruler/tree/master</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Bryn Rhodes</name>
+        </developer>
+        <developer>
+            <name>Chris Schuler</name>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/DBCG/cqf-ruler.git</connection>
+        <developerConnection>scm:git:ssh://github.com:DBCG/cqf-ruler.git</developerConnection>
+        <url>http://github.com/DBCG/cqf-ruler.git/tree/master</url>
+    </scm>
+
+
     <properties>
         <version.major>0</version.major>
         <version.minor>1</version.minor>
