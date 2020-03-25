@@ -1,14 +1,9 @@
-FROM maven:3-jdk-11-openj9 as builder
+FROM jetty:9-jre11
 
-COPY . /build
-WORKDIR /build
-RUN mvn package -Dmaven.test.skip=true
-
-FROM jetty:9-jre11 as runner
 USER jetty:jetty
 RUN mkdir -p /var/lib/jetty/target
-COPY --from=builder /build/cqf-ruler-dstu3/target/cqf-ruler-dstu3.war /var/lib/jetty/webapps/cqf-ruler-dstu3.war
-COPY --from=builder /build/cqf-ruler-r4/target/cqf-ruler-r4.war /var/lib/jetty/webapps/cqf-ruler-r4.war
+COPY ./cqf-ruler-dstu3/target/cqf-ruler-dstu3.war /var/lib/jetty/webapps/cqf-ruler-dstu3.war
+COPY ./cqf-ruler-r4/target/cqf-ruler-r4.war /var/lib/jetty/webapps/cqf-ruler-r4.war
 EXPOSE 8080
 
 ENV SERVER_ADDRESS_DSTU3="http://localhost:8080/cqf-ruler-dstu3/fhir"

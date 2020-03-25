@@ -10,12 +10,12 @@ import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
-import com.alphora.providers.Discovery;
-import com.alphora.providers.DiscoveryDataProvider;
-import com.alphora.providers.DiscoveryDataProviderDstu2;
-import com.alphora.providers.DiscoveryDataProviderR4;
-import com.alphora.providers.DiscoveryDataProviderStu3;
-import com.alphora.providers.DiscoveryItem;
+import org.opencds.cqf.cds.providers.Discovery;
+import org.opencds.cqf.cds.providers.DiscoveryDataProvider;
+import org.opencds.cqf.cds.providers.DiscoveryDataProviderDstu2;
+import org.opencds.cqf.cds.providers.DiscoveryDataProviderR4;
+import org.opencds.cqf.cds.providers.DiscoveryDataProviderStu3;
+import org.opencds.cqf.cds.providers.DiscoveryItem;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -255,6 +255,11 @@ public class PlanDefinitionApplyProvider {
     }
 
     private Boolean meetsConditions(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
+        if (action.hasAction()) {
+            for (PlanDefinition.PlanDefinitionActionComponent containedAction : action.getAction()) {
+                meetsConditions(session, containedAction);
+            }
+        }
         for (PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {
             // TODO start
             // TODO stop
@@ -262,7 +267,7 @@ public class PlanDefinitionApplyProvider {
                 logger.info("Resolving condition with description: " + condition.getExpression().getDescription());
             }
             if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
-                if (condition.hasExpression() && condition.getExpression().hasLanguage() && !condition.getExpression().getLanguage().equals("text/cql")) {
+                if (condition.hasExpression() && condition.getExpression().hasLanguage() && !condition.getExpression().getLanguage().equals("text/cql") && !condition.getExpression().getLanguage().equals("text/cql.name")) {
                     logger.warn("An action language other than CQL was found: " + condition.getExpression().getLanguage());
                     continue;
                 }
@@ -274,7 +279,13 @@ public class PlanDefinitionApplyProvider {
 
                 logger.info("Evaluating action condition expression " + condition.getExpression());
                 String cql = condition.getExpression().getExpression();
-                Object result = executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
+                String language = condition.getExpression().getLanguage();
+                Object result = null;
+                result = (language.equals("text/cql.name")) 
+                ?
+                    executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId(), true)
+                : 
+                    executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
 
                 if (result == null) {
                     logger.warn("Expression Returned null");
@@ -525,7 +536,7 @@ public class PlanDefinitionApplyProvider {
                             catch (Exception e)
                             {
                                 Discovery<PlanDefinition> discovery = new Discovery<>();
-                                discovery.addItem(new DiscoveryItem().setUrl(e.getMessage()));
+                                discovery.addItem(discovery.newItem().setUrl(e.getMessage()));
                                 return discovery;
                             }
 
@@ -555,29 +566,29 @@ public class PlanDefinitionApplyProvider {
                             context.enterContext("Patient");
                             context.setContextValue(context.getCurrentContext(), "{{context.patientId}}");
                             // TODO - remove once engine issue is resolved
-                            // if (library.getParameters() != null) {
-                            //     for (ParameterDef params : library.getParameters().getDef()) {
-                            //         if (params.getParameterTypeSpecifier() instanceof ListTypeSpecifier) {
-                            //             context.setParameter(null, params.getName(), new ArrayList<>());
-                            //         }
-                            //        else if (params.getParameterTypeSpecifier() instanceof IntervalTypeSpecifier) {
-                            //            context.setParameter(null, params.getName(), new Interval(null, true, null, true));
-                            //        }
-                            //        else if (params.getParameterTypeSpecifier() instanceof TupleTypeSpecifier) {
-                            //            context.setParameter(null, params.getName(), new Tuple());
-                            //        }
-                            //        else {
-                            //            context.setParameter(null, params.getName(), new Object());
-                            //        }
-                            //     }
-                            // }
-                            // for (ExpressionDef def : library.getStatements().getDef()) {
-                            //     try {
-                            //         def.getExpression().evaluate(context);
-                            //     } catch (Exception e) {
-                            //         // ignore
-                            //     }
-                            // }
+                            if (library.getParameters() != null) {
+                                for (ParameterDef params : library.getParameters().getDef()) {
+                                    if (params.getParameterTypeSpecifier() instanceof ListTypeSpecifier) {
+                                        context.setParameter(null, params.getName(), new ArrayList<>());
+                                    }
+                                   else if (params.getParameterTypeSpecifier() instanceof IntervalTypeSpecifier) {
+                                       context.setParameter(null, params.getName(), new Interval(null, true, null, true));
+                                   }
+                                   else if (params.getParameterTypeSpecifier() instanceof TupleTypeSpecifier) {
+                                       context.setParameter(null, params.getName(), new Tuple());
+                                   }
+                                   else {
+                                       context.setParameter(null, params.getName(), new Object());
+                                   }
+                                }
+                            }
+                            for (ExpressionDef def : library.getStatements().getDef()) {
+                                try {
+                                    def.getExpression().evaluate(context);
+                                } catch (Exception e) {
+                                    // ignore
+                                }
+                            }
                             return discoveryDataProvider.getDiscovery().setPlanDefinition(planDefinition);
                         }
                     }

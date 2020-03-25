@@ -160,6 +160,7 @@ public class MeasureEvaluation {
     private void addPopulationCriteriaReport(MeasureReport report, MeasureReport.MeasureReportGroupComponent reportGroup, Measure.MeasureGroupPopulationComponent populationCriteria, int populationCount, Iterable<Patient> patientPopulation) {
         if (populationCriteria != null) {
             MeasureReport.MeasureReportGroupPopulationComponent populationReport = new MeasureReport.MeasureReportGroupPopulationComponent();
+            populationReport.setIdentifier(populationCriteria.getIdentifier());
             populationReport.setCode(populationCriteria.getCode());
             if (report.getType() == MeasureReport.MeasureReportType.PATIENTLIST && patientPopulation != null) {
                 ListResource subjectList = new ListResource();
@@ -175,7 +176,7 @@ public class MeasureEvaluation {
                     subjectList.addEntry(entry);
                 }
                 report.addContained(subjectList);
-            }
+            }            
 			populationReport.setCount(populationCount);
             reportGroup.addPopulation(populationReport);
         }

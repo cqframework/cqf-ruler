@@ -10,11 +10,11 @@ import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
-import com.alphora.providers.Discovery;
-import com.alphora.providers.DiscoveryDataProvider;
-import com.alphora.providers.DiscoveryDataProviderDstu2;
-import com.alphora.providers.DiscoveryDataProviderStu3;
-import com.alphora.providers.DiscoveryItem;
+import org.opencds.cqf.cds.providers.Discovery;
+import org.opencds.cqf.cds.providers.DiscoveryDataProvider;
+import org.opencds.cqf.cds.providers.DiscoveryDataProviderDstu2;
+import org.opencds.cqf.cds.providers.DiscoveryDataProviderStu3;
+import org.opencds.cqf.cds.providers.DiscoveryItem;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -175,18 +175,17 @@ public class PlanDefinitionApplyProvider {
             }
 
             else {
-                ActivityDefinitionApplyProvider activityDefinitionProvider = this.activityDefinitionApplyProvider;
                 Resource result;
                 try {
                     if (action.getDefinition().getReferenceElement().getIdPart().startsWith("#")) {
-                        result = activityDefinitionProvider.resolveActivityDefinition(
+                        result = this.activityDefinitionApplyProvider.resolveActivityDefinition(
                                 (ActivityDefinition) resolveContained(session.getPlanDefinition(),
                                         action.getDefinition().getReferenceElement().getIdPart()),
                                 session.getPatientId(), session.getPractionerId(), session.getOrganizationId()
                         );
                     }
                     else {
-                        result = activityDefinitionProvider.apply(
+                        result = this.activityDefinitionApplyProvider.apply(
                                 new IdType(action.getDefinition().getReferenceElement().getIdPart()),
                                 session.getPatientId(),
                                 session.getEncounterId(),
@@ -201,7 +200,7 @@ public class PlanDefinitionApplyProvider {
                     }
 
                     if (result.getId() == null) {
-                        logger.warn("ActivityDefintion %s returned resource with no id, setting one", action.getDefinition().getReferenceElement().getIdPart());
+                        logger.warn("ActivityDefinition %s returned resource with no id, setting one", action.getDefinition().getReferenceElement().getIdPart());
                         result.setId( UUID.randomUUID().toString() );
                     }
                     session.getCarePlanBuilder()
@@ -507,6 +506,7 @@ public class PlanDefinitionApplyProvider {
                 else {
                     Discovery discovery = getDiscovery(planDefinition, version);
                     if (discovery == null) continue;
+                    discovery.setPlanDefinition(planDefinition);
                     discoveryCache.put(planDefinition.getIdElement().getIdPart(), new ImmutablePair<>(planDefinition, discovery));
                     discoveries.add(discovery);
                 }
@@ -529,7 +529,7 @@ public class PlanDefinitionApplyProvider {
                             catch (Exception e)
                             {
                                 Discovery discovery = new Discovery();
-                                discovery.addItem(new DiscoveryItem().setUrl(e.getMessage()));
+                                discovery.addItem(discovery.newItem().setUrl(e.getMessage()));
                                 return discovery;
                             }
 
@@ -582,8 +582,6 @@ public class PlanDefinitionApplyProvider {
                                 }
                             }
 
-                            // TODO: Discovery data provider;
-                            //return null;
                             return discoveryDataProvider.getDiscovery().setPlanDefinition(planDefinition);
                         }
                     }

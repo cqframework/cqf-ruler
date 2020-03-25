@@ -28,6 +28,7 @@ import ca.uhn.fhir.rest.param.StringParam;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.providers.LibrarySourceProvider;
+import org.opencds.cqf.library.stu3.NarrativeProvider;
 
 public class LibraryOperationsProvider implements org.opencds.cqf.common.providers.LibraryResolutionProvider<Library> {
 

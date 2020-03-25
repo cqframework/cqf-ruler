@@ -15,6 +15,7 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.providers.LibrarySourceProvider;
+import org.opencds.cqf.library.r4.NarrativeProvider;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -106,7 +107,6 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
 
         ModelManager modelManager = this.getModelManager();
         LibraryManager libraryManager = this.getLibraryManager(modelManager);
-
 
         String elm = "";
         CqlTranslator translator = this.dataRequirementsProvider.getTranslator(theResource, libraryManager, modelManager);

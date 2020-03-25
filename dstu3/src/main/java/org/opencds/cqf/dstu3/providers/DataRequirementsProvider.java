@@ -54,8 +54,11 @@ import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.execution.LibraryLoader;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
-import org.opencds.cqf.dstu3.providers.TerminologyRef;
-import org.opencds.cqf.dstu3.providers.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.measure.stu3.CodeTerminologyRef;
+import org.opencds.cqf.measure.stu3.CqfMeasure;
+import org.opencds.cqf.measure.stu3.TerminologyRef;
+import org.opencds.cqf.measure.stu3.VersionedTerminologyRef;
+import org.opencds.cqf.measure.stu3.TerminologyRef.TerminologyRefType;
 
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.html.*;
