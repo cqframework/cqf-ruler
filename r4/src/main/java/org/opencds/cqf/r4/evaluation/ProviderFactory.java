@@ -1,10 +1,14 @@
 package org.opencds.cqf.r4.evaluation;
 
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import org.opencds.cqf.common.helpers.ClientHelper;
+import org.opencds.cqf.common.providers.Dstu3ApelonFhirTerminologyProvider;
 import org.opencds.cqf.cql.data.CompositeDataProvider;
 import org.opencds.cqf.cql.data.DataProvider;
 import org.opencds.cqf.cql.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.terminology.fhir.Dstu3FhirTerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.R4FhirTerminologyProvider;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.R4ApelonFhirTerminologyProvider;
@@ -53,13 +57,13 @@ public class ProviderFactory implements EvaluationProviderFactory {
     }
 
     public TerminologyProvider createTerminologyProvider(String model, String version, String url, String user, String pass) {
-        if (url != null && url.contains("apelon.com")) {
-            return new R4ApelonFhirTerminologyProvider(this.fhirContext)
-            .withBasicAuth(user, pass).setEndpoint(url, false);
+        if(url != null && !url.isEmpty()){
+            IGenericClient client = ClientHelper.getClient(FhirContext.forR4(), url, user, pass);
+            if (url.contains("apelon.com")) {
+                return new R4ApelonFhirTerminologyProvider(client);
+            }
+            return new R4FhirTerminologyProvider(client);
         }
-        else if (url != null && !url.isEmpty()) {
-            return new R4FhirTerminologyProvider(this.fhirContext).withBasicAuth(user, pass).setEndpoint(url, false);
-        } else
-            return this.defaultTerminologyProvider;
+        return this.defaultTerminologyProvider;
     }
 }
