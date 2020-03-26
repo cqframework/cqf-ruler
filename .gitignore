@@ -156,6 +156,7 @@ org.eclipse.m2e.core.prefs
 LogMessages.html
 
 *.zip
+*.7z
 
 core.*
 heapdump.*
