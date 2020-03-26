@@ -49,13 +49,15 @@ public class DefaultTerminologyProviderFactory<Endpoint> implements TerminologyP
         // }
         // remoteuri = client connection
         // terminologyUri -> endpoint -> client -> provider
-        Endpoint endpoint = this.endpointIndex.get(terminologyUri);
-        IGenericClient client;
-        if (endpoint instanceof org.hl7.fhir.r4.model.Endpoint) {
-           client = ClientHelper.getClient(fhirContext, (org.hl7.fhir.r4.model.Endpoint)endpoint);
+        if (endpointIndex != null || !endpointIndex.isEmpty()) {
+            Endpoint endpoint = this.endpointIndex.get(terminologyUri);
+            IGenericClient client;
+            if (endpoint instanceof org.hl7.fhir.r4.model.Endpoint) {
+            client = ClientHelper.getClient(fhirContext, (org.hl7.fhir.r4.model.Endpoint)endpoint);
+            }
+            else 
+                client = ClientHelper.getClient(fhirContext, (org.hl7.fhir.dstu3.model.Endpoint)endpoint);
         }
-        else 
-            client = ClientHelper.getClient(fhirContext, (org.hl7.fhir.dstu3.model.Endpoint)endpoint);
         
 		switch(fhirContext.getVersion().getVersion().getFhirVersionString()) {
             case "4.0.0":

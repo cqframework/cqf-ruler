@@ -321,7 +321,7 @@ public class PlanDefinitionApplyProvider {
             requestGroupBuilder.buildExtension(extensions);
         }
 
-        resolveActions(planDefinition, planDefinition.getAction(), context, patientId, requestGroupBuilder, new ArrayList<>());
+        resolveActions(planDefinition.getAction(), context, patientId, requestGroupBuilder, new ArrayList<>());
 
         CarePlanActivityBuilder carePlanActivityBuilder = new CarePlanActivityBuilder();
         carePlanActivityBuilder.buildReferenceTarget(requestGroupBuilder.build());
@@ -330,7 +330,7 @@ public class PlanDefinitionApplyProvider {
         return carePlanBuilder.build();
     }
 
-    private void resolveActions(PlanDefinition planDefinition, List<PlanDefinition.PlanDefinitionActionComponent> actions, Context context,
+    private void resolveActions(List<PlanDefinition.PlanDefinitionActionComponent> actions, Context context,
                                 String patientId, RequestGroupBuilder requestGroupBuilder,
                                 List<RequestGroup.RequestGroupActionComponent> actionComponents)
     {
@@ -342,7 +342,7 @@ public class PlanDefinitionApplyProvider {
                         continue;
                     }
 
-                    Object result = executionProvider.evaluateInContext(planDefinition, condition.getExpression(), patientId);
+                    Object result = context.resolveExpressionRef(condition.getExpression()).getExpression().evaluate(context);
 
                     if (!(result instanceof Boolean)) {
                         continue;
@@ -439,15 +439,15 @@ public class PlanDefinitionApplyProvider {
                         for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue : action.getDynamicValue()) {
                             if (dynamicValue.hasPath() && dynamicValue.hasExpression()) {
                                 if (dynamicValue.getPath().endsWith("title")) { // summary
-                                    String title = (String) executionProvider.evaluateInContext(planDefinition, dynamicValue.getExpression(), patientId);
+                                    String title = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
                                     actionBuilder.buildTitle(title);
                                 }
                                 else if (dynamicValue.getPath().endsWith("description")) { // detail
-                                    String description = (String) executionProvider.evaluateInContext(planDefinition, dynamicValue.getExpression(), patientId);
+                                    String description = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
                                     actionBuilder.buildDescripition(description);
                                 }
                                 else if (dynamicValue.getPath().endsWith("extension")) { // indicator
-                                    String extension = (String) executionProvider.evaluateInContext(planDefinition, dynamicValue.getExpression(), patientId);
+                                    String extension = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
                                     actionBuilder.buildExtension(extension);
                                 }
                             }
@@ -459,7 +459,7 @@ public class PlanDefinitionApplyProvider {
                     }
 
                     if (action.hasAction()) {
-                        resolveActions(planDefinition, action.getAction(), context, patientId, requestGroupBuilder, actionComponents);
+                        resolveActions(action.getAction(), context, patientId, requestGroupBuilder, actionComponents);
                     }
                 }
             }

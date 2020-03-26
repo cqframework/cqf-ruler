@@ -255,6 +255,11 @@ public class PlanDefinitionApplyProvider {
     }
 
     private Boolean meetsConditions(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
+        if (action.hasAction()) {
+            for (PlanDefinition.PlanDefinitionActionComponent containedAction : action.getAction()) {
+                meetsConditions(session, containedAction);
+            }
+        }
         for (PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {
             // TODO start
             // TODO stop
@@ -262,7 +267,7 @@ public class PlanDefinitionApplyProvider {
                 logger.info("Resolving condition with description: " + condition.getExpression().getDescription());
             }
             if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
-                if (condition.hasExpression() && condition.getExpression().hasLanguage() && !condition.getExpression().getLanguage().equals("text/cql")) {
+                if (condition.hasExpression() && condition.getExpression().hasLanguage() && !condition.getExpression().getLanguage().equals("text/cql") && !condition.getExpression().getLanguage().equals("text/cql.name")) {
                     logger.warn("An action language other than CQL was found: " + condition.getExpression().getLanguage());
                     continue;
                 }
@@ -274,7 +279,13 @@ public class PlanDefinitionApplyProvider {
 
                 logger.info("Evaluating action condition expression " + condition.getExpression());
                 String cql = condition.getExpression().getExpression();
-                Object result = executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
+                String language = condition.getExpression().getLanguage();
+                Object result = null;
+                result = (language.equals("text/cql.name")) 
+                ?
+                    executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId(), true)
+                : 
+                    executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
 
                 if (result == null) {
                     logger.warn("Expression Returned null");
@@ -324,7 +335,7 @@ public class PlanDefinitionApplyProvider {
             requestGroupBuilder.buildExtension(extensions);
         }
 
-        resolveActions(planDefinition, planDefinition.getAction(), context, patientId, requestGroupBuilder, new ArrayList<>());
+        resolveActions(planDefinition.getAction(), context, patientId, requestGroupBuilder, new ArrayList<>());
 
         CarePlanActivityBuilder carePlanActivityBuilder = new CarePlanActivityBuilder();
         carePlanActivityBuilder.buildReferenceTarget(requestGroupBuilder.build());
@@ -333,7 +344,7 @@ public class PlanDefinitionApplyProvider {
         return carePlanBuilder.build();
     }
 
-    private void resolveActions(PlanDefinition planDefinition, List<PlanDefinition.PlanDefinitionActionComponent> actions, Context context,
+    private void resolveActions(List<PlanDefinition.PlanDefinitionActionComponent> actions, Context context,
                                 String patientId, RequestGroupBuilder requestGroupBuilder,
                                 List<RequestGroup.RequestGroupActionComponent> actionComponents)
     {
@@ -349,7 +360,7 @@ public class PlanDefinitionApplyProvider {
                         continue;
                     }
 
-                    Object result = executionProvider.evaluateInContext(planDefinition, condition.getExpression().getExpression(), patientId);
+                    Object result = context.resolveExpressionRef(condition.getExpression().getExpression()).getExpression().evaluate(context);
 
                     if (!(result instanceof Boolean)) {
                         continue;
@@ -435,15 +446,15 @@ public class PlanDefinitionApplyProvider {
                         for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue : action.getDynamicValue()) {
                             if (dynamicValue.hasPath() && dynamicValue.hasExpression()) {
                                 if (dynamicValue.getPath().endsWith("title")) { // summary
-                                    String title = (String) executionProvider.evaluateInContext(planDefinition, condition.getExpression().getExpression(), patientId);
+                                    String title = (String) context.resolveExpressionRef(dynamicValue.getExpression().getExpression()).evaluate(context);
                                     actionBuilder.buildTitle(title);
                                 }
                                 else if (dynamicValue.getPath().endsWith("description")) { // detail
-                                    String description = (String) executionProvider.evaluateInContext(planDefinition, condition.getExpression().getExpression(), patientId);
+                                    String description = (String) context.resolveExpressionRef(dynamicValue.getExpression().getExpression()).evaluate(context);
                                     actionBuilder.buildDescripition(description);
                                 }
                                 else if (dynamicValue.getPath().endsWith("extension")) { // indicator
-                                    String extension = (String) executionProvider.evaluateInContext(planDefinition, condition.getExpression().getExpression(), patientId);
+                                    String extension = (String) context.resolveExpressionRef(dynamicValue.getExpression().getExpression()).evaluate(context);
                                     actionBuilder.buildExtension(extension);
                                 }
                             }
@@ -455,7 +466,7 @@ public class PlanDefinitionApplyProvider {
                     }
 
                     if (action.hasAction()) {
-                        resolveActions(planDefinition, action.getAction(), context, patientId, requestGroupBuilder, actionComponents);
+                        resolveActions(action.getAction(), context, patientId, requestGroupBuilder, actionComponents);
                     }
                 }
             }

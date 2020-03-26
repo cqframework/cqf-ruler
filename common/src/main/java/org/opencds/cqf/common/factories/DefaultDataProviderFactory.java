@@ -17,15 +17,19 @@ import java.util.Map;
 import com.alphora.cql.service.factory.DataProviderFactory;
 
 import org.apache.commons.lang3.tuple.Pair;
-
+import org.opencds.cqf.common.helpers.ClientHelper;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 
-public class DefaultDataProviderFactory implements DataProviderFactory {
+public class DefaultDataProviderFactory<Endpoint> implements DataProviderFactory {
     private DaoRegistry registry;
     private FhirContext fhirContext;
+    private Map<String, Endpoint> endpointIndex;
+    private String dataProviderUri;
+
     @SuppressWarnings("serial")
     private static final Map<String, String> shorthandMap = new HashMap<String, String>() {
         {
@@ -35,15 +39,41 @@ public class DefaultDataProviderFactory implements DataProviderFactory {
         }
     };
 
-    public DefaultDataProviderFactory(DaoRegistry registry, FhirContext fhirContext) {
+    public DefaultDataProviderFactory(DaoRegistry registry, FhirContext fhirContext, Map<String, Endpoint> endpointIndex, String dataProviderUri) {
         this.registry = registry;
         this.fhirContext = fhirContext;
+        this.endpointIndex = endpointIndex;
+        this.dataProviderUri = dataProviderUri;
     }
 
 	@Override
 	public Map<String, DataProvider> create(Map<String, Pair<String, String>> modelVersionsAndUrls,
 			TerminologyProvider terminologyProvider) {
-        return this.getProviders(modelVersionsAndUrls, terminologyProvider);
+                // null = local database connection
+        if (dataProviderUri == null) {
+            return this.getProviders(modelVersionsAndUrls, terminologyProvider);
+        }
+        else {
+            // fileuri = file connection
+            // if (terminologyUri == fileuri *This already exists in the Service project* ) {
+            //     throw new IllegalArgumentException("File Uri is not supported by this server.");
+            // }
+            // remoteuri = client connection
+            // terminologyUri -> endpoint -> client -> provider
+            if (endpointIndex != null || !endpointIndex.isEmpty()) {
+                Endpoint endpoint = this.endpointIndex.get(dataProviderUri);
+                IGenericClient client;
+                if (endpoint instanceof org.hl7.fhir.r4.model.Endpoint) {
+                client = ClientHelper.getClient(fhirContext, (org.hl7.fhir.r4.model.Endpoint)endpoint);
+                }
+                else 
+                    client = ClientHelper.getClient(fhirContext, (org.hl7.fhir.dstu3.model.Endpoint)endpoint);
+            }
+            
+            // This should be get Client Based Providers, but there are none right now
+            return this.getProviders(modelVersionsAndUrls, terminologyProvider);
+        }
+        
 	}
 
     Map<String, DataProvider> create(Map<VersionedIdentifier, Library> libraries, Map<String,String> modelUris, TerminologyProvider terminologyProvider) {

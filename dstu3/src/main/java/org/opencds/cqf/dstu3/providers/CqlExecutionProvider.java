@@ -207,10 +207,12 @@ public class CqlExecutionProvider {
                 //TODO: resolveContextParameters i.e. patient
                 DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.getLibraryResourceProvider());
                 com.alphora.cql.service.Parameters parameters = new com.alphora.cql.service.Parameters();
+                Map<Pair<String, String>, Object> parametersMap = new HashMap<Pair<String, String>, Object>();
                 parameters.libraryName = library.getIdentifier().getId();
                 parameters.libraries = libraries;
                 parameters.expressions =  new ArrayList<Pair<String, String>>();
                 parameters.contextParameters = Collections.singletonMap("Patient", patientId);
+                parameters.parameters = parametersMap;
                 Service service = new Service(libraryFactory, this.dataProviderFactory, terminologyProviderFactory, null, null, null, null);
                 
                 Response response = service.evaluate(parameters);
@@ -301,14 +303,14 @@ public class CqlExecutionProvider {
             parametersMap.put(Pair.of(null, "Product Line"), productLine);
         }
 
+        //TODO: resolveContextParameters i.e. patient
+        com.alphora.cql.service.Parameters evaluationParameters = new com.alphora.cql.service.Parameters();
         Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
         if(endpoint != null) {
             endpointIndex.put(endpoint.getAddress(), endpoint);
+            evaluationParameters.terminologyUri = endpoint.getAddress();
         }
-
-        //TODO: resolveContextParameters i.e. patient
-        com.alphora.cql.service.Parameters evaluationParameters = new com.alphora.cql.service.Parameters();
-        evaluationParameters.terminologyUri = endpoint.getAddress();
+        evaluationParameters.libraryName = library.getIdentifier().getId();
         evaluationParameters.libraries = Collections.singletonList(library.toString());
         evaluationParameters.parameters = parametersMap;
         evaluationParameters.expressions =  new ArrayList<Pair<String, String>>();

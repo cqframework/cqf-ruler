@@ -1,6 +1,8 @@
 package org.opencds.cqf.dstu3.servlet;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 
@@ -100,7 +102,8 @@ public class BaseServlet extends RestfulServer {
 
         JpaTerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(appCtx.getBean("terminologyService", ITermReadSvcDstu3.class), getFhirContext(), (ValueSetResourceProvider)this.getResourceProvider(ValueSet.class));
         
-        DataProviderFactory dataProviderFactory = new DefaultDataProviderFactory(registry, fhirContext);
+        Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
+        DataProviderFactory dataProviderFactory = new DefaultDataProviderFactory<Endpoint>(registry, fhirContext, endpointIndex, null);
         resolveProviders(dataProviderFactory, localSystemTerminologyProvider, this.registry);
 
         /*
