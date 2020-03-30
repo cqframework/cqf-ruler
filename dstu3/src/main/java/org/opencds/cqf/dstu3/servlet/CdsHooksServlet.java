@@ -24,7 +24,7 @@ import org.apache.http.entity.ContentType;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
-import org.opencds.cqf.cds.discovery.DiscoveryResolution;
+import org.opencds.cqf.cds.discovery.DiscoveryResolutionStu3;
 import org.opencds.cqf.cds.evaluation.EvaluationContext;
 import org.opencds.cqf.cds.evaluation.Stu3EvaluationContext;
 import org.opencds.cqf.cds.hooks.Hook;
@@ -225,7 +225,7 @@ public class CdsHooksServlet extends HttpServlet
 
     private JsonObject getServices()
     {
-        return new DiscoveryResolution(FhirContext.forDstu3().newRestfulGenericClient(HapiProperties.getServerAddress())).resolve().getAsJson();
+        return new DiscoveryResolutionStu3(FhirContext.forDstu3().newRestfulGenericClient(HapiProperties.getServerAddress())).resolve().getAsJson();
     }
 
     private String toJsonResponse(List<CdsCard> cards)

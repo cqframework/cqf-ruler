@@ -8,7 +8,7 @@ import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
-import org.opencds.cqf.cds.discovery.DiscoveryResolution;
+import org.opencds.cqf.cds.discovery.DiscoveryResolutionR4;
 import org.opencds.cqf.cds.evaluation.EvaluationContext;
 import org.opencds.cqf.cds.evaluation.R4EvaluationContext;
 import org.opencds.cqf.cds.hooks.Hook;
@@ -224,7 +224,7 @@ public class CdsHooksServlet extends HttpServlet
 
     private JsonObject getServices()
     {
-        return new DiscoveryResolution(FhirContext.forR4().newRestfulGenericClient(HapiProperties.getServerAddress())).resolve().getAsJson();
+        return new DiscoveryResolutionR4(FhirContext.forR4().newRestfulGenericClient(HapiProperties.getServerAddress())).resolve().getAsJson();
     }
 
     private String toJsonResponse(List<CdsCard> cards)
