@@ -26,7 +26,7 @@ install several primary dependencies.
 
 Go to [http://www.oracle.com/technetwork/java/javase/downloads/](
 http://www.oracle.com/technetwork/java/javase/downloads/) and download the
-latest (version 8 or higher) JDK for your platform, and install it.
+latest (version 11 or higher) JDK for your platform, and install it.
 
 ### Apache Maven 3.5.3
 

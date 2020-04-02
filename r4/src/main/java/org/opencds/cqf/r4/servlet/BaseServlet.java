@@ -22,6 +22,11 @@ import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.factories.DefaultDataProviderFactory;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.searchparam.SearchParameterResolver;
+import org.opencds.cqf.library.r4.NarrativeProvider;
+import org.opencds.cqf.measure.r4.CodeTerminologyRef;
+import org.opencds.cqf.measure.r4.CqfMeasure;
+import org.opencds.cqf.measure.r4.PopulationCriteriaMap;
+import org.opencds.cqf.measure.r4.VersionedTerminologyRef;
 import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
@@ -31,11 +36,6 @@ import org.opencds.cqf.r4.providers.HQMFProvider;
 import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
 import org.opencds.cqf.r4.providers.LibraryOperationsProvider;
 import org.opencds.cqf.r4.providers.MeasureOperationsProvider;
-import org.opencds.cqf.library.r4.NarrativeProvider;
-import org.opencds.cqf.measure.r4.CqfMeasure;
-import org.opencds.cqf.measure.r4.CodeTerminologyRef;
-import org.opencds.cqf.measure.r4.VersionedTerminologyRef;
-import org.opencds.cqf.measure.r4.PopulationCriteriaMap;
 import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
@@ -214,7 +214,7 @@ public class BaseServlet extends RestfulServer {
         this.registerProvider(cql);
 
         // Bundle processing
-        ApplyCqlOperationProvider bundleProvider = new ApplyCqlOperationProvider(dataProviderFactory, localSystemTerminologyProvider, this.getDao(Bundle.class), fhirContext);
+        ApplyCqlOperationProvider bundleProvider = new ApplyCqlOperationProvider(dataProviderFactory, localSystemTerminologyProvider, this.getDao(Bundle.class), fhirContext, cql);
         this.registerProvider(bundleProvider);
 
         // Measure processing
@@ -229,8 +229,7 @@ public class BaseServlet extends RestfulServer {
         JpaFhirRetrieveProvider localSystemRetrieveProvider = new JpaFhirRetrieveProvider(registry, new SearchParameterResolver(this.fhirContext));
 
         // PlanDefinition processing
-        PlanDefinitionApplyProvider planDefProvider = new PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(PlanDefinition.class), this.getDao(ActivityDefinition.class), cql, libraryProvider, 
-        localSystemTerminologyProvider, localSystemRetrieveProvider);
+        PlanDefinitionApplyProvider planDefProvider = new PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(PlanDefinition.class), this.getDao(ActivityDefinition.class), cql);
         this.registerProvider(planDefProvider);
 
         CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);

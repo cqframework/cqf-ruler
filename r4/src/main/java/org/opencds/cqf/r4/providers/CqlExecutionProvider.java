@@ -48,6 +48,7 @@ import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.RuntimeResourceDefinition;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 
@@ -146,7 +147,7 @@ public class CqlExecutionProvider {
      * If the resource has a library extension, or a library element, that library
      * is loaded into the context for the expression
      */
-    public Object evaluateInContext(DomainResource instance, String cql, String patientId) {
+    public Object evaluateInContext(Resource instance, String cql, String patientId) {
         String libraryContent = constructLocalLibrary(instance, cql);
         Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
         TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory<Endpoint>(fhirContext, this.localSystemTerminologyProvider, endpointIndex);
@@ -171,17 +172,18 @@ public class CqlExecutionProvider {
         parameters.libraries = Collections.singletonList(libraryContent);
         parameters.expressions = Collections.singletonList(Pair.of("LocalLibrary", "Expression"));
         parameters.parameters = Collections.singletonMap(Pair.of(null, resource.fhirType()), resource);
-        DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.getLibraryResourceProvider());
-        Service service = new Service(libraryFactory, this.dataProviderFactory, terminologyProviderFactory, null, null, null, null);
+        Service service = new Service(null, this.dataProviderFactory, terminologyProviderFactory, null, null, null, null);
         Response response = service.evaluate(parameters);
 
         return response.evaluationResult.forLibrary(new VersionedIdentifier().withId("LocalLibrary"))
                 .forExpression("Expression");
     }
 
-    public Object evaluateInContext(DomainResource instance, String cqlName, String patientId, Boolean aliasedExpression) {
+    public Object evaluateInContext(Resource instance, String cqlName, String patientId, Boolean aliasedExpression) {
         List<String> libraries = new ArrayList<String>();
-        Iterable<CanonicalType> canonicalLibraries = getLibraryReferences(instance);
+        RuntimeResourceDefinition libraryDefinition = (RuntimeResourceDefinition)fhirContext.getResourceDefinition("Library");
+        String libraryClassName = libraryDefinition.getImplementingClass().getName();
+        Iterable<CanonicalType> canonicalLibraries = (libraryClassName.equals(instance.getClass().getName())) ? getLibraryReferences((DomainResource)instance) : new ArrayList<CanonicalType>();
         Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
         TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory<Endpoint>(fhirContext, this.localSystemTerminologyProvider, endpointIndex);
 
@@ -206,7 +208,13 @@ public class CqlExecutionProvider {
                 parameters.libraryName = library.getIdentifier().getId();
                 parameters.libraries = libraries;
                 parameters.expressions =  new ArrayList<Pair<String, String>>();
-                parameters.contextParameters = Collections.singletonMap("Patient", patientId);
+                if(patientId == null) {
+                    parameters.contextParameters = Collections.emptyMap();
+                }
+                else {
+                    parameters.contextParameters = Collections.singletonMap("Patient", patientId);
+                }
+                
                 parameters.parameters = parametersMap;
                 
                 Service service = new Service(libraryFactory, this.dataProviderFactory, terminologyProviderFactory, null, null, null, null);
@@ -312,7 +320,10 @@ public class CqlExecutionProvider {
         evaluationParameters.parameters = parametersMap;
         evaluationParameters.expressions =  new ArrayList<Pair<String, String>>();
         evaluationParameters.contextParameters = (contextParam.equals("Patient")) ? Collections.singletonMap("Patient", patientId) : Collections.emptyMap();
-        DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.getLibraryResourceProvider());
+        DefaultLibraryLoaderFactory libraryFactory = null;
+        if (!(this.getLibraryResourceProvider().resolveLibraryByName(library.getIdentifier().getId(), library.getIdentifier().getVersion()) == null)) {
+            libraryFactory = new DefaultLibraryLoaderFactory(this.getLibraryResourceProvider());
+        }
         TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory<Endpoint>(fhirContext, this.localSystemTerminologyProvider, endpointIndex);
 
         Parameters result = null;

@@ -31,12 +31,14 @@ public class ApplyCqlOperationProvider {
     private IFhirResourceDao<Bundle> bundleDao;
     private TerminologyProvider localSystemTerminologyProvider;
     private FhirContext fhirContext;
+    private CqlExecutionProvider cqlExecutionProvider;
 
-    public ApplyCqlOperationProvider(DataProviderFactory dataProviderFactory, TerminologyProvider localSystemTerminologyProvider, IFhirResourceDao<Bundle> bundleDao, FhirContext fhirContext) {
+    public ApplyCqlOperationProvider(DataProviderFactory dataProviderFactory, TerminologyProvider localSystemTerminologyProvider, IFhirResourceDao<Bundle> bundleDao, FhirContext fhirContext, CqlExecutionProvider cqlExecutionProvider) {
         this.dataProviderFactory = dataProviderFactory;
         this.bundleDao = bundleDao;
         this.localSystemTerminologyProvider = localSystemTerminologyProvider;
         this.fhirContext = fhirContext;
+        this.cqlExecutionProvider = cqlExecutionProvider;
     }
 
     @Operation(name = "$apply-cql", type = Bundle.class)
@@ -82,17 +84,7 @@ public class ApplyCqlOperationProvider {
                 if (base != null) {
                     AbstractMap.SimpleEntry<String, String> extensions = getExtension(base);
                     if (extensions != null) {
-                        String cql = String.format("library LocalLibrary using FHIR version '4.0.0' define Expression: %s", extensions.getValue());
-                        library = TranslatorHelper.translateLibrary(cql, new LibraryManager(new ModelManager()), new ModelManager());
-                        com.alphora.cql.service.Parameters parameters = new com.alphora.cql.service.Parameters();
-                        parameters.libraries = Collections.singletonList(library.toString());
-                        parameters.expressions = Collections.singletonList(Pair.of("LocalLibrary", "Expression"));
-                        parameters.parameters = Collections.singletonMap(Pair.of(null, resource.fhirType()), resource);
-                        Service service = new Service(null, this.dataProviderFactory, terminologyProviderFactory, null, null, null, null);
-                        Response response = service.evaluate(parameters);
-
-                        Object result = response.evaluationResult.forLibrary(new VersionedIdentifier().withId("LocalLibrary"))
-                            .forExpression("Expression");
+                        Object result = this.cqlExecutionProvider.evaluateInContext(resource, extensions.getValue(), "",  false);
                         if (extensions.getKey().equals("extension")) {
                             resource.setProperty(child.getName(), resolveType(result, base.fhirType()));
                         }

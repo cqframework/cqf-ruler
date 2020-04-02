@@ -8,13 +8,12 @@ import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
+import org.opencds.cqf.cds.discovery.DiscoveryResolutionR4;
 import org.opencds.cqf.cds.evaluation.EvaluationContext;
 import org.opencds.cqf.cds.evaluation.R4EvaluationContext;
 import org.opencds.cqf.cds.hooks.Hook;
 import org.opencds.cqf.cds.hooks.HookFactory;
 import org.opencds.cqf.cds.hooks.R4HookEvaluator;
-import org.opencds.cqf.cds.providers.Discovery;
-import org.opencds.cqf.cds.providers.DiscoveryItem;
 import org.opencds.cqf.cds.request.JsonHelper;
 import org.opencds.cqf.cds.request.Request;
 import org.opencds.cqf.cds.response.CdsCard;
@@ -159,7 +158,7 @@ public class CdsHooksServlet extends HttpServlet
             context.registerDataProvider("http://hl7.org/fhir", provider); // TODO make sure tooling handles remote provider case
             context.registerTerminologyProvider(jpaTerminologyProvider);
             context.registerLibraryLoader(libraryLoader);
-            context.setContextValue("Patient", hook.getRequest().getContext().getPatientId());
+            context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
             context.setExpressionCaching(true);
 
 
@@ -225,59 +224,7 @@ public class CdsHooksServlet extends HttpServlet
 
     private JsonObject getServices()
     {
-        JsonObject responseJson = new JsonObject();
-        JsonArray services = new JsonArray();
-
-        for (Discovery discovery : this.planDefinitionProvider.getDiscoveries(version))
-        {
-            PlanDefinition planDefinition = (PlanDefinition)discovery.getPlanDefinition();
-            JsonObject service = new JsonObject();
-            if (planDefinition != null)
-            {
-                if (planDefinition.hasAction())
-                {
-                    // TODO - this needs some work - too naive
-                    if (planDefinition.getActionFirstRep().hasTrigger())
-                    {
-                        if (planDefinition.getActionFirstRep().getTriggerFirstRep().hasName())
-                        {
-                            service.addProperty("hook", planDefinition.getActionFirstRep().getTriggerFirstRep().getName());
-                        }
-                    }
-                }
-                if (planDefinition.hasName())
-                {
-                    service.addProperty("name", planDefinition.getName());
-                }
-                if (planDefinition.hasTitle())
-                {
-                    service.addProperty("title", planDefinition.getTitle());
-                }
-                if (planDefinition.hasDescription())
-                {
-                    service.addProperty("description", planDefinition.getDescription());
-                }
-                service.addProperty("id", planDefinition.getIdElement().getIdPart());
-
-                if (!discovery.getItems().isEmpty())
-                {
-                    JsonObject prefetchContent = new JsonObject();
-                    for (DiscoveryItem item : (List<DiscoveryItem>)discovery.getItems())
-                    {
-                        prefetchContent.addProperty(item.getItemNo(), item.getUrl());
-                    }
-                    service.add("prefetch", prefetchContent);
-                }
-            }
-            else
-            {
-                service.addProperty("Error", ((DiscoveryItem)discovery.getItems().get(0)).getUrl());
-            }
-            services.add(service);
-        }
-
-        responseJson.add("services", services);
-        return responseJson;
+        return new DiscoveryResolutionR4(FhirContext.forR4().newRestfulGenericClient(HapiProperties.getServerAddress())).resolve().getAsJson();
     }
 
     private String toJsonResponse(List<CdsCard> cards)
