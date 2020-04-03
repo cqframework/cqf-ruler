@@ -5,11 +5,13 @@ import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.*;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Task.TaskRestrictionComponent;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.model.ModelResolver;
 import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
 import org.opencds.cqf.r4.helpers.Helper;
+import java.util.Calendar;
 
 
 import java.util.*;
@@ -65,6 +67,10 @@ public class ActivityDefinitionApplyProvider {
         }
 
         switch (result.fhirType()) {
+        case "Task":
+            result = resolveTask(activityDefinition, patientId, organizationId);
+            break;
+
         case "ServiceRequest":
             result = resolveServiceRequest(activityDefinition, patientId, practitionerId, organizationId);
             break;
@@ -116,6 +122,38 @@ public class ActivityDefinitionApplyProvider {
         }
 
         return result;
+    }
+
+    private Task resolveTask(ActivityDefinition activityDefinition, String patientId, String organizationId) throws ActivityDefinitionApplyException {
+        Task task = new Task();
+        task.setId(activityDefinition.getIdElement().getIdPart().replace("activitydefinition-", "task-"));
+        task.setStatus(Task.TaskStatus.DRAFT);
+        task.setIntent(Task.TaskIntent.PLAN);
+
+        if (activityDefinition.hasCode()) {
+            task.setCode(activityDefinition.getCode());
+        }
+
+        if (activityDefinition.hasExtension()) {
+            task.setExtension(activityDefinition.getExtension());
+        }
+
+        if (activityDefinition.hasDescription()) {
+            task.setDescription(activityDefinition.getDescription());
+        }
+
+        //Need to figure out setting the Tast Period
+        // if (activityDefinition.hasTiming()) {
+        //     TaskRestrictionComponent restrictionComponent = new TaskRestrictionComponent();
+        //     if (activityDefinition.hasTimingTiming()) {
+        //         restrictionComponent.setRepetitions(activityDefinition.getTimingTiming().getRepeat().getFrequency());
+        //         Calendar today = Calendar.getInstance();
+        //         //restrictionComponent.setPeriod(new Period().setEnd(Calendar.getInstance().setTime(today.getTime().getHours() + activityDefinition.getTimingTiming().getRepeat().getPeriod().intValue())));
+        //     }
+        //     task.setRestriction(restrictionComponent);
+        // }
+
+        return task;
     }
 
     private ServiceRequest resolveServiceRequest(ActivityDefinition activityDefinition, String patientId,

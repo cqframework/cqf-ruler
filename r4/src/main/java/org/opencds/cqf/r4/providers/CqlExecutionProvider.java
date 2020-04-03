@@ -181,9 +181,9 @@ public class CqlExecutionProvider {
 
     public Object evaluateInContext(Resource instance, String cqlName, String patientId, Boolean aliasedExpression) {
         List<String> libraries = new ArrayList<String>();
-        RuntimeResourceDefinition libraryDefinition = (RuntimeResourceDefinition)fhirContext.getResourceDefinition("Library");
-        String libraryClassName = libraryDefinition.getImplementingClass().getName();
-        Iterable<CanonicalType> canonicalLibraries = (libraryClassName.equals(instance.getClass().getName())) ? getLibraryReferences((DomainResource)instance) : new ArrayList<CanonicalType>();
+        // RuntimeResourceDefinition libraryDefinition = (RuntimeResourceDefinition)fhirContext.getResourceDefinition("Library");
+        // String libraryClassName = libraryDefinition.getImplementingClass().getName();
+        Iterable<CanonicalType> canonicalLibraries = (instance instanceof DomainResource) ? getLibraryReferences((DomainResource)instance) : new ArrayList<CanonicalType>();
         Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
         TerminologyProviderFactory terminologyProviderFactory = new DefaultTerminologyProviderFactory<Endpoint>(fhirContext, this.localSystemTerminologyProvider, endpointIndex);
 

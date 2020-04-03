@@ -3,7 +3,9 @@ package org.opencds.cqf.r4.providers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
@@ -21,6 +23,9 @@ import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.RequestGroup;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.PlanDefinition.ActionRelationshipType;
+import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
+import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionRelatedActionComponent;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.exceptions.NotImplementedException;
 import org.opencds.cqf.cql.execution.Context;
@@ -118,11 +123,26 @@ public class PlanDefinitionApplyProvider {
     }
 
     private CarePlan resolveActions(Session session) {
+        Map<String, PlanDefinitionActionComponent> metConditions = new HashMap<String, PlanDefinitionActionComponent>();
         for (PlanDefinition.PlanDefinitionActionComponent action : session.getPlanDefinition().getAction()) {
             // TODO - Apply input/output dataRequirements?
             if (meetsConditions(session, action)) {
-                resolveDefinition(session, action);
-                resolveDynamicActions(session, action);
+                if (action.hasRelatedAction()) {
+                    for (PlanDefinitionActionRelatedActionComponent relatedActionComponent : action.getRelatedAction()) {
+                        if(relatedActionComponent.getRelationship().equals(ActionRelationshipType.AFTER)) {
+                            if (metConditions.containsKey(relatedActionComponent.getActionId())) {
+                                metConditions.put(action.getId(), action);
+                                resolveDefinition(session, action);
+                                resolveDynamicActions(session, action);
+                            }
+                        }
+                    }
+                }
+                else {
+                    metConditions.put(action.getId(), action);
+                    resolveDefinition(session, action);
+                    resolveDynamicActions(session, action);
+                }
             }
         }
 
