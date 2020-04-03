@@ -1,54 +1,55 @@
 package org.opencds.cqf.dstu3.servlet;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.rest.server.IResourceProvider;
-import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
-import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
-import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-
-import org.opencds.cqf.cds.evaluation.EvaluationContext;
-import org.opencds.cqf.cds.evaluation.Stu3EvaluationContext;
-import org.opencds.cqf.cds.hooks.Hook;
-import org.opencds.cqf.cds.hooks.HookFactory;
-import org.opencds.cqf.cds.hooks.Stu3HookEvaluator;
-import org.opencds.cqf.cds.providers.Discovery;
-import org.opencds.cqf.cds.providers.DiscoveryItem;
-import org.opencds.cqf.cds.request.JsonHelper;
-import org.opencds.cqf.cds.request.Request;
-import org.opencds.cqf.cds.response.CdsCard;
-import com.google.gson.*;
-import org.apache.http.entity.ContentType;
-import org.cqframework.cql.elm.execution.Library;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.PlanDefinition;
-import org.opencds.cqf.cql.data.CompositeDataProvider;
-import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
-import org.opencds.cqf.common.config.HapiProperties;
-import org.opencds.cqf.common.exceptions.InvalidRequestException;
-import org.opencds.cqf.common.providers.LibraryResolutionProvider;
-import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
-import org.opencds.cqf.dstu3.helpers.LibraryHelper;
-import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
-import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.apache.http.entity.ContentType;
+import org.cqframework.cql.elm.execution.Library;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.opencds.cqf.cds.discovery.DiscoveryResolutionStu3;
+import org.opencds.cqf.cds.evaluation.EvaluationContext;
+import org.opencds.cqf.cds.evaluation.Stu3EvaluationContext;
+import org.opencds.cqf.cds.hooks.Hook;
+import org.opencds.cqf.cds.hooks.HookFactory;
+import org.opencds.cqf.cds.hooks.Stu3HookEvaluator;
+import org.opencds.cqf.cds.request.JsonHelper;
+import org.opencds.cqf.cds.request.Request;
+import org.opencds.cqf.cds.response.CdsCard;
+import org.opencds.cqf.common.config.HapiProperties;
+import org.opencds.cqf.common.exceptions.InvalidRequestException;
+import org.opencds.cqf.common.providers.LibraryResolutionProvider;
+import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
+import org.opencds.cqf.cql.data.CompositeDataProvider;
+import org.opencds.cqf.cql.execution.Context;
+import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
+import org.opencds.cqf.dstu3.helpers.LibraryHelper;
+import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
+import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 
 @WebServlet(name = "cds-services")
 public class CdsHooksServlet extends HttpServlet
@@ -157,7 +158,7 @@ public class CdsHooksServlet extends HttpServlet
             context.registerDataProvider("http://hl7.org/fhir", provider); // TODO make sure tooling handles remote provider case
             context.registerTerminologyProvider(jpaTerminologyProvider);
             context.registerLibraryLoader(libraryLoader);
-            context.setContextValue("Patient", hook.getRequest().getContext().getPatientId());
+            context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
             context.setExpressionCaching(true);
 
             
@@ -224,59 +225,7 @@ public class CdsHooksServlet extends HttpServlet
 
     private JsonObject getServices()
     {
-        JsonObject responseJson = new JsonObject();
-        JsonArray services = new JsonArray();
-
-        for (Discovery discovery : this.planDefinitionProvider.getDiscoveries(version))
-        {
-            PlanDefinition planDefinition = (PlanDefinition)discovery.getPlanDefinition();
-            JsonObject service = new JsonObject();
-            if (planDefinition != null)
-            {
-                if (planDefinition.hasAction())
-                {
-                    // TODO - this needs some work - too naive
-                    if (planDefinition.getActionFirstRep().hasTriggerDefinition())
-                    {
-                        if (planDefinition.getActionFirstRep().getTriggerDefinitionFirstRep().hasEventName())
-                        {
-                            service.addProperty("hook", planDefinition.getActionFirstRep().getTriggerDefinitionFirstRep().getEventName());
-                        }
-                    }
-                }
-                if (planDefinition.hasName())
-                {
-                    service.addProperty("name", planDefinition.getName());
-                }
-                if (planDefinition.hasTitle())
-                {
-                    service.addProperty("title", planDefinition.getTitle());
-                }
-                if (planDefinition.hasDescription())
-                {
-                    service.addProperty("description", planDefinition.getDescription());
-                }
-                service.addProperty("id", planDefinition.getIdElement().getIdPart());
-
-                if (!discovery.getItems().isEmpty())
-                {
-                    JsonObject prefetchContent = new JsonObject();
-                    for (DiscoveryItem item : (List<DiscoveryItem>)discovery.getItems())
-                    {
-                        prefetchContent.addProperty(item.getItemNo(), item.getUrl());
-                    }
-                    service.add("prefetch", prefetchContent);
-                }
-            }
-            else
-            {
-                service.addProperty("Error", ((DiscoveryItem)discovery.getItems().get(0)).getUrl());
-            }
-            services.add(service);
-        }
-
-        responseJson.add("services", services);
-        return responseJson;
+        return new DiscoveryResolutionStu3(FhirContext.forDstu3().newRestfulGenericClient(HapiProperties.getServerAddress())).resolve().getAsJson();
     }
 
     private String toJsonResponse(List<CdsCard> cards)
