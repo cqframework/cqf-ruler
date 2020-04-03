@@ -55,10 +55,10 @@ public class JpaTerminologyProvider implements TerminologyProvider {
         boolean needsExpand = false;
         ValueSet vs = null;
         if (valueSet.getId().startsWith("http://") || valueSet.getId().startsWith("https://")) {
-            if (!(valueSet.getCodeSystems().size() == 1 && valueSet.getCodeSystems().get(0).getVersion() == null)) {
-                throw new UnsupportedOperationException(String.format(
-                        "Could not expand value set %s; version and code system bindings are not supported at this time.",
-                        valueSet.getId()));
+            if (valueSet.getVersion() != null || (valueSet.getCodeSystems() != null && valueSet.getCodeSystems().size() > 0)) {
+                if (!(valueSet.getCodeSystems().size() == 1 && valueSet.getCodeSystems().get(0).getVersion() == null)) {
+                    throw new UnsupportedOperationException(String.format("Could not expand value set %s; version and code system bindings are not supported at this time.", valueSet.getId()));
+                }
             }
             IBundleProvider bundleProvider = valueSetResourceProvider.getDao()
                     .search(new SearchParameterMap().add(ValueSet.SP_URL, new UriParam(valueSet.getId())));
