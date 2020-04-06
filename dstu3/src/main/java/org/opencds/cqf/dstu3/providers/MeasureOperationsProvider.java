@@ -35,6 +35,8 @@ import org.opencds.cqf.dstu3.evaluation.MeasureEvaluation;
 import org.opencds.cqf.dstu3.evaluation.MeasureEvaluationSeed;
 import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
+import org.opencds.cqf.library.stu3.NarrativeProvider;
+import org.opencds.cqf.measure.stu3.CqfMeasure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

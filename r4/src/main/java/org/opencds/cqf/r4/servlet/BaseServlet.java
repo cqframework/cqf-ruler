@@ -23,17 +23,17 @@ import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
 import org.opencds.cqf.r4.providers.CodeSystemUpdateProvider;
-import org.opencds.cqf.r4.providers.CodeTerminologyRef;
-import org.opencds.cqf.r4.providers.CqfMeasure;
 import org.opencds.cqf.r4.providers.CqlExecutionProvider;
 import org.opencds.cqf.r4.providers.HQMFProvider;
 import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
 import org.opencds.cqf.r4.providers.LibraryOperationsProvider;
 import org.opencds.cqf.r4.providers.MeasureOperationsProvider;
-import org.opencds.cqf.r4.providers.NarrativeProvider;
+import org.opencds.cqf.library.r4.NarrativeProvider;
+import org.opencds.cqf.measure.r4.CqfMeasure;
+import org.opencds.cqf.measure.r4.CodeTerminologyRef;
+import org.opencds.cqf.measure.r4.VersionedTerminologyRef;
+import org.opencds.cqf.measure.r4.PopulationCriteriaMap;
 import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
-import org.opencds.cqf.r4.providers.PopulationCriteriaMap;
-import org.opencds.cqf.r4.providers.VersionedTerminologyRef;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -50,7 +50,6 @@ import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.rp.r4.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
-import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvcR4;
 import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
@@ -180,12 +179,16 @@ public class BaseServlet extends RestfulServer {
         }
     }
 
+	protected NarrativeProvider getNarrativeProvider() {
+		return new NarrativeProvider();
+	}
+
     // Since resource provider resolution not lazy, the providers here must be resolved in the correct
     // order of dependencies.
     private void resolveProviders(EvaluationProviderFactory providerFactory, JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry)
             throws ServletException
     {
-        NarrativeProvider narrativeProvider = new NarrativeProvider();
+        NarrativeProvider narrativeProvider = this.getNarrativeProvider();
         HQMFProvider hqmfProvider = new HQMFProvider();
 
         // Code System Update

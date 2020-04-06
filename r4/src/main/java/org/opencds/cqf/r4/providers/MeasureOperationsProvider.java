@@ -30,6 +30,8 @@ import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.library.r4.NarrativeProvider;
+import org.opencds.cqf.measure.r4.CqfMeasure;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluation;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
@@ -406,7 +408,7 @@ public class MeasureOperationsProvider {
 
     @Operation(name = "$submit-data", idempotent = true, type = Measure.class)
     public Resource submitData(RequestDetails details, @IdParam IdType theId,
-            @OperationParam(name = "measure-report", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
+            @OperationParam(name = "measurereport", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
             @OperationParam(name = "resource") List<IAnyResource> resources) {
         Bundle transactionBundle = new Bundle().setType(Bundle.BundleType.TRANSACTION);
 

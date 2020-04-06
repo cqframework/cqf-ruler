@@ -10,11 +10,11 @@ import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
-import com.alphora.providers.Discovery;
-import com.alphora.providers.DiscoveryDataProvider;
-import com.alphora.providers.DiscoveryDataProviderDstu2;
-import com.alphora.providers.DiscoveryDataProviderStu3;
-import com.alphora.providers.DiscoveryItem;
+import org.opencds.cqf.cds.providers.Discovery;
+import org.opencds.cqf.cds.providers.DiscoveryDataProvider;
+import org.opencds.cqf.cds.providers.DiscoveryDataProviderDstu2;
+import org.opencds.cqf.cds.providers.DiscoveryDataProviderStu3;
+import org.opencds.cqf.cds.providers.DiscoveryItem;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
