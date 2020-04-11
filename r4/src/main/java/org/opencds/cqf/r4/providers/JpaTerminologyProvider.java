@@ -11,6 +11,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.runtime.Code;
 import org.opencds.cqf.cql.terminology.CodeSystemInfo;
@@ -88,6 +89,15 @@ public class JpaTerminologyProvider implements TerminologyProvider {
                     }
                 }
             }
+
+            if (vs.hasExpansion() && vs.getExpansion().hasContains()) {
+                for (ValueSetExpansionContainsComponent vsecc : vs.getExpansion().getContains()) {
+                    codes.add(new Code().withCode(vsecc.getCode()).withSystem(vsecc.getSystem()));
+                }
+
+                return codes;
+            }
+            
         }
 
         List<VersionIndependentConcept> expansion = terminologySvcR4.expandValueSet(valueSet.getId());

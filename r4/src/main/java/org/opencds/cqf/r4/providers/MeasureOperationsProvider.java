@@ -216,7 +216,7 @@ public class MeasureOperationsProvider {
     //     return evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), "");
     // }
 
-    @Operation(name = "$care-gaps", idempotent = true)
+    @Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
     public Bundle careGapsReport(@RequiredParam(name = "periodStart") String periodStart,
             @RequiredParam(name = "periodEnd") String periodEnd, @RequiredParam(name = "topic") String topic,
             @RequiredParam(name = "patient") String patientRef) {
