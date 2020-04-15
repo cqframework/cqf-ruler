@@ -94,7 +94,7 @@ public class MeasureOperationsProvider {
             @IdParam IdType theId) {
         Measure theResource = this.measureResourceProvider.getDao().read(theId);
 
-        theResource.getRelatedArtifact().clear();
+        theResource.getRelatedArtifact().removeIf(relatedArtifact -> relatedArtifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON));
 
         CqfMeasure cqfMeasure = this.dataRequirementsProvider.createCqfMeasure(theResource, this.libraryResolutionProvider);
 
