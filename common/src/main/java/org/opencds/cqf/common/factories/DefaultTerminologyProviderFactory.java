@@ -9,7 +9,6 @@ import org.opencds.cqf.common.providers.R4ApelonFhirTerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.Dstu3FhirTerminologyProvider;
 import org.opencds.cqf.cql.terminology.fhir.R4FhirTerminologyProvider;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.alphora.cql.service.factory.TerminologyProviderFactory;
@@ -92,8 +91,4 @@ public class DefaultTerminologyProviderFactory<Endpoint> implements TerminologyP
         } else
             return this.localServerTerminologyProvider;
     }
-
-	public void setClient(IGenericClient client) {
-		this.client = client;
-	}
 }
