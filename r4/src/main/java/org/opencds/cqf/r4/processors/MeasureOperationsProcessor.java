@@ -154,7 +154,7 @@ public class MeasureOperationsProcessor {
      */
     public MeasureReport evaluateMeasure(IdType theId, String periodStart, String periodEnd, String measureRef,
      String reportType, String patientRef, String productLine, String practitionerRef, String lastReceivedOn,
-     Endpoint endpoint) throws InternalErrorException, FHIRException {
+     Endpoint terminologyEndpoint) throws InternalErrorException, FHIRException {
         
         DefaultLibraryLoaderFactory libraryFactory = new DefaultLibraryLoaderFactory(this.libraryResolutionProvider);
         LibraryLoader libraryLoader = libraryFactory.create(this.libraryResolutionProvider);
@@ -187,8 +187,8 @@ public class MeasureOperationsProcessor {
         }
 
         Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
-        if(endpoint != null) {
-            endpointIndex.put(endpoint.getAddress(), endpoint);
+        if(terminologyEndpoint != null) {
+            endpointIndex.put(terminologyEndpoint.getAddress(), terminologyEndpoint);
         }
 
         //TODO: resolveContextParameters i.e. patient
@@ -250,7 +250,7 @@ public class MeasureOperationsProcessor {
     //     return evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), "");
     // }
 
-    public Bundle careGapsReport( String periodStart, String periodEnd, String topic, String patientRef, Endpoint endpoint) {
+    public Bundle careGapsReport( String periodStart, String periodEnd, String topic, String patientRef, Endpoint terminologyEndpoint) {
         List<IBaseResource> measures = this.measureResourceProvider.getDao().search(new SearchParameterMap().add("topic",
                 new TokenParam().setModifier(TokenParamModifier.TEXT).setValue(topic))).getResources(0, 1000);
         Bundle careGapReport = new Bundle();
@@ -305,8 +305,8 @@ public class MeasureOperationsProcessor {
         }
 
         Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
-        if(endpoint != null) {
-            endpointIndex.put(endpoint.getAddress(), endpoint);
+        if(terminologyEndpoint != null) {
+            endpointIndex.put(terminologyEndpoint.getAddress(), terminologyEndpoint);
         }
 
         //TODO: resolveContextParameters i.e. patient
