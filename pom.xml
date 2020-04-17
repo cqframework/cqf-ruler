@@ -45,7 +45,7 @@
     <properties>
         <version.major>0</version.major>
         <version.minor>1</version.minor>
-        <version.patch>14.3</version.patch>
+        <version.patch>14.4</version.patch>
         <!-- NOTE: Building under the release profile automatically drops the -SNAPSHOT extension -->
         <revision>${version.major}.${version.minor}.${version.patch}-SNAPSHOT</revision>
 
