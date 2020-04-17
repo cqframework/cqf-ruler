@@ -232,7 +232,7 @@ public class BaseServlet extends RestfulServer {
         PlanDefinitionApplyProvider planDefProvider = new PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(PlanDefinition.class), this.getDao(ActivityDefinition.class), cql);
         this.registerProvider(planDefProvider);
 
-        CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
+        CdsHooksServlet.setPlanDefinitionProvider(planDefProvider.getProcessor());
         CdsHooksServlet.setLibraryResolutionProvider(libraryProvider);
         CdsHooksServlet.setSystemTerminologyProvider(localSystemTerminologyProvider);
         CdsHooksServlet.setSystemRetrieveProvider(localSystemRetrieveProvider);

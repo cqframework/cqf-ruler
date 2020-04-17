@@ -2,11 +2,7 @@ package org.opencds.cqf.r4.servlet;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.rest.server.IResourceProvider;
-import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
-import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 import org.opencds.cqf.cds.discovery.DiscoveryResolutionR4;
 import org.opencds.cqf.cds.evaluation.EvaluationContext;
@@ -25,15 +21,14 @@ import org.hl7.fhir.r4.model.PlanDefinition;
 import org.opencds.cqf.cql.data.CompositeDataProvider;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.execution.LibraryLoader;
-import org.opencds.cqf.cql.model.ModelResolver;
 import org.opencds.cqf.cql.model.R4FhirModelResolver;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.exceptions.InvalidRequestException;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
+import org.opencds.cqf.r4.processors.PlanDefinitionApplyProcessor;
 import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
-import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +51,7 @@ public class CdsHooksServlet extends HttpServlet
     private FhirVersionEnum version = FhirVersionEnum.R4;
     private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 
-    private static PlanDefinitionApplyProvider planDefinitionProvider;
+    private static PlanDefinitionApplyProcessor planDefinitionApplyProcessor;
 
     private static LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider;
 
@@ -66,8 +61,8 @@ public class CdsHooksServlet extends HttpServlet
 
 
     // TODO: There's probably a way to wire this all up using Spring
-    public static void setPlanDefinitionProvider(PlanDefinitionApplyProvider planDefinitionProvider) {
-        CdsHooksServlet.planDefinitionProvider = planDefinitionProvider;
+    public static void setPlanDefinitionProvider(PlanDefinitionApplyProcessor planDefinitionProcessor) {
+        CdsHooksServlet.planDefinitionApplyProcessor = planDefinitionProcessor;
     }
 
     public static void setLibraryResolutionProvider(
@@ -146,7 +141,7 @@ public class CdsHooksServlet extends HttpServlet
 
             Hook hook = HookFactory.createHook(cdsHooksRequest);
 
-            PlanDefinition planDefinition = planDefinitionProvider.getDao().read(new IdType(hook.getRequest().getServiceName()));
+            PlanDefinition planDefinition = planDefinitionApplyProcessor.getDao().read(new IdType(hook.getRequest().getServiceName()));
             LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResolutionProvider);
             Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider);
 

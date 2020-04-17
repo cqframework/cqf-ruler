@@ -48,4 +48,9 @@ public class CqlExecutionProvider {
     public Object evaluateInContext(Resource instance, String cqlName, String patientId, Boolean aliasedExpression) {
         return cqlExecutionProcessor.evaluateInContext(instance, cqlName, patientId, aliasedExpression);
     }
+
+
+	public CqlExecutionProcessor getProcessor() {
+		return cqlExecutionProcessor;
+	}
 }
