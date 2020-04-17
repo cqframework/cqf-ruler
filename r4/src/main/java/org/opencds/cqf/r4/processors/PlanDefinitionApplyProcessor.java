@@ -14,6 +14,7 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.CarePlan;
 import org.hl7.fhir.r4.model.DomainResource;
+import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Parameters;
@@ -28,6 +29,7 @@ import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionComponent;
 import org.hl7.fhir.r4.model.PlanDefinition.PlanDefinitionActionRelatedActionComponent;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.exceptions.NotImplementedException;
+import org.opencds.cqf.common.helpers.ClientHelper;
 import org.opencds.cqf.cql.execution.Context;
 import org.opencds.cqf.cql.model.ModelResolver;
 import org.opencds.cqf.cql.model.R4FhirModelResolver;
@@ -47,40 +49,35 @@ import org.opencds.cqf.r4.providers.CqlExecutionProvider;
 import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.model.primitive.IdDt;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 public class PlanDefinitionApplyProcessor {
 
     private CqlExecutionProvider executionProvider;
     private ModelResolver modelResolver;
     private ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
-
-    private IFhirResourceDao<PlanDefinition> planDefintionDao; 
-    private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
-
+    private IGenericClient artifactClient;
     private FhirContext fhirContext;
 
-    public PlanDefinitionApplyProcessor(FhirContext fhirContext, ActivityDefinitionApplyProvider activitydefinitionApplyProvider, 
-    IFhirResourceDao<PlanDefinition> planDefintionDao, IFhirResourceDao<ActivityDefinition> activityDefinitionDao,
-    CqlExecutionProvider executionProvider) {
+    public PlanDefinitionApplyProcessor(FhirContext fhirContext, ActivityDefinitionApplyProvider activitydefinitionApplyProvider, DaoRegistry registry, CqlExecutionProvider executionProvider) {
         this.executionProvider = executionProvider;
         this.modelResolver = new R4FhirModelResolver();
         this.activityDefinitionApplyProvider = activitydefinitionApplyProvider;
-        this.planDefintionDao = planDefintionDao;
-        this.activityDefinitionDao = activityDefinitionDao;
         this.fhirContext = fhirContext;
     }
 
-    public IFhirResourceDao<PlanDefinition> getDao() {
-        return this.planDefintionDao;
+    public IGenericClient getArtifactClient() {
+        return artifactClient;
     }
 
     public CarePlan applyPlanDefinition(IdType theId, String patientId, String encounterId,
      String practitionerId, String organizationId, String userType, String userLanguage,
-      String userTaskContext, String setting, String settingContext)
+      String userTaskContext, String setting, String settingContext, Endpoint artifactEndpoint)
         throws IOException, JAXBException, FHIRException {
-        PlanDefinition planDefinition = this.planDefintionDao.read(theId);
+        this.artifactClient = ClientHelper.getClient(fhirContext, artifactEndpoint);
+        PlanDefinition planDefinition = artifactClient.read().resource(PlanDefinition.class).withId(theId).execute();
 
         if (planDefinition == null) {
             throw new IllegalArgumentException("Couldn't find PlanDefinition " + theId);
@@ -375,7 +372,7 @@ public class PlanDefinitionApplyProcessor {
                     if (action.hasDefinition()) {
                         if (action.getDefinitionCanonicalType().getValue().contains("ActivityDefinition")) {
                             ActivityDefinition activityDefinition =
-                                    this.activityDefinitionDao.read(new IdType("ActivityDefinition", action.getDefinitionCanonicalType().getId()));
+                                    artifactClient.read().resource(ActivityDefinition.class).withId(new IdType("ActivityDefinition", action.getDefinitionCanonicalType().getId())).execute();
                             if (activityDefinition.hasDescription()) {
                                 actionBuilder.buildDescripition(activityDefinition.getDescription());
                             }

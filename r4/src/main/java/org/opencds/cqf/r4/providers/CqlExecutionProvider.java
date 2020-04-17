@@ -32,9 +32,15 @@ public class CqlExecutionProvider {
             @OperationParam(name="productLine") String productLine,
 			@OperationParam(name = "context") String contextParam,
 			@OperationParam(name = "executionResults") String executionResults,
-            @OperationParam(name = "endpoint") Endpoint endpoint,
+            @OperationParam(name = "endpoint") Endpoint terminologyEndpoint,
             @OperationParam(name = "parameters") Parameters parameters) {
-            return cqlExecutionProcessor.evaluate(code, patientId, periodStart, periodEnd, productLine, contextParam, executionResults, endpoint, parameters);
+            
+            //for now defaulting to localhost, but I believe this should be set to the server address either using the config or endpoint initialized after running server.
+            if(terminologyEndpoint == null) {
+                terminologyEndpoint = new Endpoint();
+                terminologyEndpoint.setAddress("http://localhost:8080/cqf-ruler-r4/fhir/");
+            }
+            return cqlExecutionProcessor.evaluate(code, patientId, periodStart, periodEnd, productLine, contextParam, executionResults, terminologyEndpoint, parameters);
     }
 
     //kept in to avoid conflicts

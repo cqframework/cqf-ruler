@@ -21,8 +21,6 @@ public class DefaultTerminologyProviderFactory<Endpoint> implements TerminologyP
     private FhirContext fhirContext;
     private TerminologyProvider localServerTerminologyProvider;
     private Map<String, Endpoint> endpointIndex;
-    //This is a workaround for now these should be removed in the future
-    private IGenericClient client;
 
     public DefaultTerminologyProviderFactory(FhirContext fhirContext, TerminologyProvider localServerTerminologyProvider, Map<String, Endpoint> endpointIndex) {
         this.fhirContext = fhirContext;
@@ -40,7 +38,8 @@ public class DefaultTerminologyProviderFactory<Endpoint> implements TerminologyP
     
     TerminologyProvider create(String terminologyUri) {
         // null = local database connection
-        if (terminologyUri == null) {
+        if (terminologyUri == null || terminologyUri == "http://localhost:8080/cqf-ruler-r4/fhir/" || terminologyUri == "http://localhost:8080/cqf-ruler-r4/fhir"
+        || terminologyUri == "http://localhost:8080/cqf-ruler-dstu3/fhir/" || terminologyUri == "http://localhost:8080/cqf-ruler-dstu3/fhir") {
             return localServerTerminologyProvider;
         }
         // fileuri = file connection
@@ -49,14 +48,18 @@ public class DefaultTerminologyProviderFactory<Endpoint> implements TerminologyP
         // }
         // remoteuri = client connection
         // terminologyUri -> endpoint -> client -> provider
+        IGenericClient client;
         if (endpointIndex != null || !endpointIndex.isEmpty()) {
             Endpoint endpoint = this.endpointIndex.get(terminologyUri);
-            IGenericClient client;
             if (endpoint instanceof org.hl7.fhir.r4.model.Endpoint) {
-            client = ClientHelper.getClient(fhirContext, (org.hl7.fhir.r4.model.Endpoint)endpoint);
+                client = ClientHelper.getClient(fhirContext, (org.hl7.fhir.r4.model.Endpoint)endpoint);
             }
-            else 
+            else {
                 client = ClientHelper.getClient(fhirContext, (org.hl7.fhir.dstu3.model.Endpoint)endpoint);
+            }
+        }
+        else {
+            throw new RuntimeException("Must provide a terminology Endpoint for Evaluation.");
         }
         
 		switch(fhirContext.getVersion().getVersion().getFhirVersionString()) {

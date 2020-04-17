@@ -9,7 +9,6 @@ import org.opencds.cqf.cql.terminology.fhir.HeaderInjectionInterceptor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class ClientHelper {
@@ -27,22 +26,26 @@ public class ClientHelper {
     public static IGenericClient getClient(FhirContext fhirContext, org.hl7.fhir.dstu3.model.Endpoint endpoint)
     {
         IGenericClient client = getClient(fhirContext, endpoint.getAddress());
-        List<String> headerList = endpoint.getHeader().stream().map(headerString -> headerString.asStringValue()).collect(Collectors.toList());
-        registerAuth(client, headerList);
+        if (endpoint.hasHeader()){
+            List<String> headerList = endpoint.getHeader().stream().map(headerString -> headerString.asStringValue()).collect(Collectors.toList());
+            registerAuth(client, headerList);
+        }
         return client;
     }
 
     public static IGenericClient getClient(FhirContext fhirContext, org.hl7.fhir.r4.model.Endpoint endpoint)
     {
         IGenericClient client = getClient(fhirContext, endpoint.getAddress());
-        List<String> headerList = endpoint.getHeader().stream().map(headerString -> headerString.asStringValue()).collect(Collectors.toList());
-        registerAuth(client, headerList);
+        if (endpoint.hasHeader()){
+            List<String> headerList = endpoint.getHeader().stream().map(headerString -> headerString.asStringValue()).collect(Collectors.toList());
+            registerAuth(client, headerList);
+        }
         return client;
     }
 
     private static void registerAuth(IGenericClient client, List<String> headerList) {
         Map<String, String> headerMap = setupHeaderMap(headerList);
-        for (Entry<String, String> entry : headerMap.entrySet()) {
+        for (Map.Entry<String, String> entry : headerMap.entrySet()) {
             IClientInterceptor headInterceptor = new HeaderInjectionInterceptor(entry.getKey(), entry.getValue());
             client.registerInterceptor(headInterceptor);
         }
@@ -65,10 +68,11 @@ public class ClientHelper {
                 String[] authSplit = header.split(":");
                 leftAuth = authSplit[0];
                 rightAuth = authSplit[1];
-                headerMap.put(leftAuth, rightAuth);                
+                headerMap.put(leftAuth, rightAuth);
             }
-            
+
         }
         return headerMap;
     }
+
 }

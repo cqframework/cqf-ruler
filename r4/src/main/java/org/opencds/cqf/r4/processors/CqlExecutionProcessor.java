@@ -64,7 +64,7 @@ public class CqlExecutionProcessor {
 
     public Bundle evaluate(String code, String patientId,
      String periodStart, String periodEnd, String productLine,
-      String contextParam, String executionResults, Endpoint endpoint, Parameters parameters) {
+      String contextParam, String executionResults, Endpoint terminologyEndpoint, Parameters parameters) {
 
         if (patientId == null && contextParam != null && contextParam.equals("Patient") ) {
             throw new IllegalArgumentException("Must specify a patientId when executing in Patient context.");
@@ -134,9 +134,9 @@ public class CqlExecutionProcessor {
         //TODO: resolveContextParameters i.e. patient
         com.alphora.cql.service.Parameters evaluationParameters = new com.alphora.cql.service.Parameters();
         Map<String, Endpoint> endpointIndex = new HashMap<String, Endpoint>();
-        if(endpoint != null) {
-            endpointIndex.put(endpoint.getAddress(), endpoint);
-            evaluationParameters.terminologyUri = endpoint.getAddress();
+        if(terminologyEndpoint != null) {
+            endpointIndex.put(terminologyEndpoint.getAddress(), terminologyEndpoint);
+            evaluationParameters.terminologyUri = terminologyEndpoint.getAddress();
         }
         
         evaluationParameters.libraryName = library.getIdentifier().getId();

@@ -42,7 +42,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @WebServlet(name = "cds-services")
@@ -141,7 +140,7 @@ public class CdsHooksServlet extends HttpServlet
 
             Hook hook = HookFactory.createHook(cdsHooksRequest);
 
-            PlanDefinition planDefinition = planDefinitionApplyProcessor.getDao().read(new IdType(hook.getRequest().getServiceName()));
+            PlanDefinition planDefinition = planDefinitionApplyProcessor.getArtifactClient().read().resource(PlanDefinition.class).withId(new IdType(hook.getRequest().getServiceName())).execute();
             LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResolutionProvider);
             Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider);
 
