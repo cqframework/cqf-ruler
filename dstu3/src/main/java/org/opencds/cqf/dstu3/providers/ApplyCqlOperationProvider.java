@@ -1,26 +1,36 @@
 package org.opencds.cqf.dstu3.providers;
 
-import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
-import ca.uhn.fhir.jpa.rp.dstu3.BundleResourceProvider;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OperationParam;
-import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
-import org.cqframework.cql.elm.execution.Library;
-import org.hl7.fhir.dstu3.model.*;
-import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
-import org.opencds.cqf.common.helpers.TranslatorHelper;
-import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.runtime.DateTime;
-import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
-import org.opencds.cqf.dstu3.helpers.LibraryHelper;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.elm.execution.Library;
+import org.hl7.fhir.dstu3.model.Base;
+import org.hl7.fhir.dstu3.model.BooleanType;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.DateTimeType;
+import org.hl7.fhir.dstu3.model.DateType;
+import org.hl7.fhir.dstu3.model.DecimalType;
+import org.hl7.fhir.dstu3.model.Element;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.IntegerType;
+import org.hl7.fhir.dstu3.model.Property;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.exceptions.FHIRException;
+import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.helpers.TranslatorHelper;
+import org.opencds.cqf.cql.engine.execution.Context;
+import org.opencds.cqf.cql.engine.runtime.DateTime;
+
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 
 public class ApplyCqlOperationProvider {
 
@@ -43,8 +53,7 @@ public class ApplyCqlOperationProvider {
 
     @Operation(name = "$apply-cql", type = Bundle.class)
     public Bundle apply(@OperationParam(name = "resourceBundle", min = 1, max = 1, type = Bundle.class) Bundle bundle)
-            throws FHIRException
-    {
+            throws FHIRException {
         return applyCql(bundle);
     }
 
@@ -67,14 +76,15 @@ public class ApplyCqlOperationProvider {
                     List<String> extension = getExtension(base);
                     if (!extension.isEmpty()) {
                         String cql = String.format("using FHIR version '3.0.0' define x: %s", extension.get(1));
-                        library = TranslatorHelper.translateLibrary(cql, new LibraryManager(new ModelManager()), new ModelManager());
+                        library = TranslatorHelper.translateLibrary(cql, new LibraryManager(new ModelManager()),
+                                new ModelManager());
                         context = new Context(library);
-                        context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", "3.0.0"));
+                        context.registerDataProvider("http://hl7.org/fhir",
+                                this.providerFactory.createDataProvider("FHIR", "3.0.0"));
                         Object result = context.resolveExpressionRef("x").getExpression().evaluate(context);
                         if (extension.get(0).equals("extension")) {
                             resource.setProperty(child.getName(), resolveType(result, base.fhirType()));
-                        }
-                        else {
+                        } else {
                             String type = base.getChildByName(extension.get(0)).getTypeCode();
                             base.setProperty(extension.get(0), resolveType(result, type));
                         }
@@ -92,13 +102,13 @@ public class ApplyCqlOperationProvider {
                 if (childBase != null) {
                     if (((Element) childBase).hasExtension()) {
                         for (Extension extension : ((Element) childBase).getExtension()) {
-                            if (extension.getUrl().equals("http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression")) {
+                            if (extension.getUrl()
+                                    .equals("http://hl7.org/fhir/StructureDefinition/cqif-cqlExpression")) {
                                 retVal.add(child.getName());
                                 retVal.add(extension.getValue().primitiveValue());
                             }
                         }
-                    }
-                    else if (childBase instanceof Extension) {
+                    } else if (childBase instanceof Extension) {
                         retVal.add(child.getName());
                         retVal.add(((Extension) childBase).getValue().primitiveValue());
                     }
@@ -111,31 +121,27 @@ public class ApplyCqlOperationProvider {
     private Base resolveType(Object source, String type) {
         if (source instanceof Integer) {
             return new IntegerType((Integer) source);
-        }
-        else if (source instanceof BigDecimal) {
+        } else if (source instanceof BigDecimal) {
             return new DecimalType((BigDecimal) source);
-        }
-        else if (source instanceof Boolean) {
+        } else if (source instanceof Boolean) {
             return new BooleanType().setValue((Boolean) source);
-        }
-        else if (source instanceof String) {
+        } else if (source instanceof String) {
             return new StringType((String) source);
-        }
-        else if (source instanceof DateTime) {
+        } else if (source instanceof DateTime) {
             if (type.equals("dateTime")) {
                 return new DateTimeType().setValue(Date.from(((DateTime) source).getDateTime().toInstant()));
             }
             if (type.equals("date")) {
                 return new DateType().setValue(Date.from(((DateTime) source).getDateTime().toInstant()));
             }
-        }
-        else if (source instanceof org.opencds.cqf.cql.runtime.Date)
-        {
+        } else if (source instanceof org.opencds.cqf.cql.engine.runtime.Date) {
             if (type.equals("dateTime")) {
-                return new DateTimeType().setValue(java.sql.Date.valueOf(((org.opencds.cqf.cql.runtime.Date) source).getDate()));
+                return new DateTimeType()
+                        .setValue(java.sql.Date.valueOf(((org.opencds.cqf.cql.engine.runtime.Date) source).getDate()));
             }
             if (type.equals("date")) {
-                return new DateType().setValue(java.sql.Date.valueOf(((org.opencds.cqf.cql.runtime.Date) source).getDate()));
+                return new DateType()
+                        .setValue(java.sql.Date.valueOf(((org.opencds.cqf.cql.engine.runtime.Date) source).getDate()));
             }
         }
 

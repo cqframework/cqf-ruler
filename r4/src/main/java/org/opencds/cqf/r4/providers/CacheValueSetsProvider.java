@@ -1,5 +1,17 @@
 package org.opencds.cqf.r4.providers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ValueSet;
+import org.opencds.cqf.r4.helpers.Helper;
+
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -12,13 +24,6 @@ import ca.uhn.fhir.rest.client.interceptor.BasicAuthInterceptor;
 import ca.uhn.fhir.rest.param.StringAndListParam;
 import ca.uhn.fhir.rest.param.StringOrListParam;
 import ca.uhn.fhir.rest.param.StringParam;
-import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.r4.helpers.Helper;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 
 public class CacheValueSetsProvider {
 
@@ -30,14 +35,10 @@ public class CacheValueSetsProvider {
         this.endpointDao = endpointDao;
     }
 
-    @Operation(name="cache-valuesets", idempotent = true, type = Endpoint.class)
-    public Resource cacheValuesets(
-            RequestDetails details,
-            @IdParam IdType theId,
-            @RequiredParam(name="valuesets") StringAndListParam valuesets,
-            @OptionalParam(name="user") String userName,
-            @OptionalParam(name="pass") String password
-    ) {
+    @Operation(name = "cache-valuesets", idempotent = true, type = Endpoint.class)
+    public Resource cacheValuesets(RequestDetails details, @IdParam IdType theId,
+            @RequiredParam(name = "valuesets") StringAndListParam valuesets,
+            @OptionalParam(name = "user") String userName, @OptionalParam(name = "pass") String password) {
 
         Endpoint endpoint = this.endpointDao.read(theId);
 
@@ -50,8 +51,7 @@ public class CacheValueSetsProvider {
         if (userName != null || password != null) {
             if (userName == null) {
                 Helper.createErrorOutcome("Password was provided, but not a user name.");
-            }
-            else if (password == null) {
+            } else if (password == null) {
                 Helper.createErrorOutcome("User name was provided, but not a password.");
             }
 
@@ -66,7 +66,8 @@ public class CacheValueSetsProvider {
             for (StringOrListParam params : valuesets.getValuesAsQueryTokens()) {
                 for (StringParam valuesetId : params.getValuesAsQueryTokens()) {
                     bundleToPost.addEntry()
-                            .setRequest(new Bundle.BundleEntryRequestComponent().setMethod(Bundle.HTTPVerb.PUT).setUrl("ValueSet/" + valuesetId.getValue()))
+                            .setRequest(new Bundle.BundleEntryRequestComponent().setMethod(Bundle.HTTPVerb.PUT)
+                                    .setUrl("ValueSet/" + valuesetId.getValue()))
                             .setResource(resolveValueSet(client, valuesetId.getValue()));
                 }
             }
@@ -81,44 +82,35 @@ public class CacheValueSetsProvider {
         ValueSet clean = expandedValueSet.copy().setExpansion(null);
 
         Map<String, ValueSet.ConceptSetComponent> concepts = new HashMap<>();
-        for (ValueSet.ValueSetExpansionContainsComponent expansion : expandedValueSet.getExpansion().getContains())
-        {
+        for (ValueSet.ValueSetExpansionContainsComponent expansion : expandedValueSet.getExpansion().getContains()) {
             if (!expansion.hasSystem()) {
                 continue;
             }
 
             if (concepts.containsKey(expansion.getSystem())) {
                 concepts.get(expansion.getSystem())
-                        .addConcept(
-                                new ValueSet.ConceptReferenceComponent()
-                                        .setCode(expansion.hasCode() ? expansion.getCode() : null)
-                                        .setDisplay(expansion.hasDisplay() ? expansion.getDisplay() : null)
-                        );
+                        .addConcept(new ValueSet.ConceptReferenceComponent()
+                                .setCode(expansion.hasCode() ? expansion.getCode() : null)
+                                .setDisplay(expansion.hasDisplay() ? expansion.getDisplay() : null));
             }
 
             else {
-                concepts.put(
-                        expansion.getSystem(),
+                concepts.put(expansion.getSystem(),
                         new ValueSet.ConceptSetComponent().setSystem(expansion.getSystem())
-                                .addConcept(
-                                        new ValueSet.ConceptReferenceComponent()
-                                                .setCode(expansion.hasCode() ? expansion.getCode() : null)
-                                                .setDisplay(expansion.hasDisplay() ? expansion.getDisplay() : null)
-                                )
-                );
+                                .addConcept(new ValueSet.ConceptReferenceComponent()
+                                        .setCode(expansion.hasCode() ? expansion.getCode() : null)
+                                        .setDisplay(expansion.hasDisplay() ? expansion.getDisplay() : null)));
             }
         }
 
-        clean.setCompose(
-                new ValueSet.ValueSetComposeComponent()
-                        .setInclude(new ArrayList<>(concepts.values()))
-        );
+        clean.setCompose(new ValueSet.ValueSetComposeComponent().setInclude(new ArrayList<>(concepts.values())));
 
         return clean;
     }
 
     private ValueSet resolveValueSet(IGenericClient client, String valuesetId) {
-        ValueSet valueSet = client.fetchResourceFromUrl(ValueSet.class, client.getServerBase() + "/ValueSet/" + valuesetId);
+        ValueSet valueSet = client.fetchResourceFromUrl(ValueSet.class,
+                client.getServerBase() + "/ValueSet/" + valuesetId);
 
         boolean expand = false;
         if (valueSet.hasCompose()) {
@@ -130,19 +122,11 @@ public class CacheValueSetsProvider {
         }
 
         if (expand) {
-            return getCachedValueSet(
-                    client
-                            .operation()
-                            .onInstance(new IdType("ValueSet", valuesetId))
-                            .named("$expand")
-                            .withNoParameters(Parameters.class)
-                            .returnResourceType(ValueSet.class)
-                            .execute()
-            );
+            return getCachedValueSet(client.operation().onInstance(new IdType("ValueSet", valuesetId)).named("$expand")
+                    .withNoParameters(Parameters.class).returnResourceType(ValueSet.class).execute());
         }
 
         valueSet.setVersion(valueSet.getVersion() + "-cache");
         return valueSet;
     }
 }
-

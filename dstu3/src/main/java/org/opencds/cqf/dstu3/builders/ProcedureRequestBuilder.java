@@ -1,23 +1,22 @@
 package org.opencds.cqf.dstu3.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.ProcedureRequest;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class ProcedureRequestBuilder extends BaseBuilder<ProcedureRequest> {
 
-    // TODO -  this is a start, but should be extended for completeness.
+    // TODO - this is a start, but should be extended for completeness.
 
     public ProcedureRequestBuilder() {
-        this( new ProcedureRequest());
+        this(new ProcedureRequest());
     }
 
     public ProcedureRequestBuilder(ProcedureRequest complexProperty) {
         super(complexProperty);
     }
-
 
     public ProcedureRequestBuilder buildId(String id) {
         complexProperty.setId(id);
@@ -40,12 +39,8 @@ public class ProcedureRequestBuilder extends BaseBuilder<ProcedureRequest> {
     }
 
     public ProcedureRequestBuilder buildCode(Coding coding) {
-        complexProperty.setCode(
-                new CodeableConceptBuilder()
-                        .buildCoding(coding)
-                        .build()
-        );
-        return  this;
+        complexProperty.setCode(new CodeableConceptBuilder().buildCoding(coding).build());
+        return this;
     }
 
     public ProcedureRequestBuilder buildIntent(ProcedureRequest.ProcedureRequestIntent intent) {
@@ -79,22 +74,13 @@ public class ProcedureRequestBuilder extends BaseBuilder<ProcedureRequest> {
     }
 
     public ProcedureRequestBuilder buildSubject(String subject) {
-        complexProperty.setSubject(
-                new ReferenceBuilder()
-                        .buildReference(subject)
-                        .build()
-        );
+        complexProperty.setSubject(new ReferenceBuilder().buildReference(subject).build());
         return this;
     }
 
     public ProcedureRequestBuilder buildRequester(String requester) {
-        ProcedureRequest.ProcedureRequestRequesterComponent requestRequesterComponent
-            = new ProcedureRequest.ProcedureRequestRequesterComponent();
-        requestRequesterComponent.setAgent(
-                new ReferenceBuilder()
-                        .buildReference(requester)
-                        .build()
-        );
+        ProcedureRequest.ProcedureRequestRequesterComponent requestRequesterComponent = new ProcedureRequest.ProcedureRequestRequesterComponent();
+        requestRequesterComponent.setAgent(new ReferenceBuilder().buildReference(requester).build());
         complexProperty.setRequester(requestRequesterComponent);
         return this;
     }

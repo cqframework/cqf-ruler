@@ -1,9 +1,9 @@
 package org.opencds.cqf.dstu3.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
-import org.hl7.fhir.dstu3.model.ValueSet;
-
 import java.util.List;
+
+import org.hl7.fhir.dstu3.model.ValueSet;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class ValueSetComposeBuilder extends BaseBuilder<ValueSet.ValueSetComposeComponent> {
 

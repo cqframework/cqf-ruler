@@ -1,9 +1,9 @@
 package org.opencds.cqf.r4.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
-import org.hl7.fhir.r4.model.Period;
-
 import java.util.Date;
+
+import org.hl7.fhir.r4.model.Period;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class PeriodBuilder extends BaseBuilder<Period> {
 

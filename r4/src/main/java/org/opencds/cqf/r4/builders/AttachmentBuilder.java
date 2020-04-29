@@ -1,10 +1,10 @@
 package org.opencds.cqf.r4.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
+import java.util.List;
+
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Extension;
-
-import java.util.List;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class AttachmentBuilder extends BaseBuilder<Attachment> {
 

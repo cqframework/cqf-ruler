@@ -1,18 +1,37 @@
 package org.opencds.cqf.r4.providers;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
-import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.hl7.fhir.r4.model.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.cql.model.R4FhirModelResolver;
-import org.opencds.cqf.cql.model.ModelResolver;
+import org.hl7.fhir.r4.model.ActivityDefinition;
+import org.hl7.fhir.r4.model.Attachment;
+import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.Communication;
+import org.hl7.fhir.r4.model.CommunicationRequest;
+import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.MedicationRequest;
+import org.hl7.fhir.r4.model.Procedure;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.SupplyRequest;
 import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
+import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.r4.helpers.Helper;
 
-
-import java.util.*;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 /**
  * Created by Bryn on 1/16/2017.
@@ -65,33 +84,33 @@ public class ActivityDefinitionApplyProvider {
         }
 
         switch (result.fhirType()) {
-        case "ServiceRequest":
-            result = resolveServiceRequest(activityDefinition, patientId, practitionerId, organizationId);
-            break;
+            case "ServiceRequest":
+                result = resolveServiceRequest(activityDefinition, patientId, practitionerId, organizationId);
+                break;
 
-        case "MedicationRequest":
-            result = resolveMedicationRequest(activityDefinition, patientId);
-            break;
+            case "MedicationRequest":
+                result = resolveMedicationRequest(activityDefinition, patientId);
+                break;
 
-        case "SupplyRequest":
-            result = resolveSupplyRequest(activityDefinition, practitionerId, organizationId);
-            break;
+            case "SupplyRequest":
+                result = resolveSupplyRequest(activityDefinition, practitionerId, organizationId);
+                break;
 
-        case "Procedure":
-            result = resolveProcedure(activityDefinition, patientId);
-            break;
+            case "Procedure":
+                result = resolveProcedure(activityDefinition, patientId);
+                break;
 
-        case "DiagnosticReport":
-            result = resolveDiagnosticReport(activityDefinition, patientId);
-            break;
+            case "DiagnosticReport":
+                result = resolveDiagnosticReport(activityDefinition, patientId);
+                break;
 
-        case "Communication":
-            result = resolveCommunication(activityDefinition, patientId);
-            break;
+            case "Communication":
+                result = resolveCommunication(activityDefinition, patientId);
+                break;
 
-        case "CommunicationRequest":
-            result = resolveCommunicationRequest(activityDefinition, patientId);
-            break;
+            case "CommunicationRequest":
+                result = resolveCommunicationRequest(activityDefinition, patientId);
+                break;
         }
 
         // TODO: Apply expression extensions on any element?

@@ -3,7 +3,6 @@ package org.opencds.cqf.common.config;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Driver;
 
-import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import ca.uhn.fhir.jpa.dao.DaoConfig;
-import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 
@@ -32,10 +31,13 @@ public class FhirServerConfig {
     public FhirServerConfig() {
         ourLog.info("Server configured to " + (this.allowContainsSearches ? "allow" : "deny") + " contains searches");
         ourLog.info("Server configured to " + (this.allowMultipleDelete ? "allow" : "deny") + " multiple deletes");
-        ourLog.info("Server configured to " + (this.allowExternalReferences ? "allow" : "deny") + " external references");
+        ourLog.info(
+                "Server configured to " + (this.allowExternalReferences ? "allow" : "deny") + " external references");
         ourLog.info("Server configured to " + (this.expungeEnabled ? "enable" : "disable") + " expunges");
-        ourLog.info("Server configured to " + (this.allowPlaceholderReferences ? "allow" : "deny") + " placeholder references");
-        ourLog.info("Server configured to " + (this.allowOverrideDefaultSearchParams ? "allow" : "deny") + " overriding default search params");
+        ourLog.info("Server configured to " + (this.allowPlaceholderReferences ? "allow" : "deny")
+                + " placeholder references");
+        ourLog.info("Server configured to " + (this.allowOverrideDefaultSearchParams ? "allow" : "deny")
+                + " overriding default search params");
     }
 
     /**
@@ -54,10 +56,11 @@ public class FhirServerConfig {
 
         Integer maxFetchSize = HapiProperties.getMaximumFetchSize();
         retVal.setFetchSizeDefaultMaximum(maxFetchSize);
-        ourLog.info("Server configured to have a maximum fetch size of " + (maxFetchSize == Integer.MAX_VALUE? "'unlimited'": maxFetchSize));
+        ourLog.info("Server configured to have a maximum fetch size of "
+                + (maxFetchSize == Integer.MAX_VALUE ? "'unlimited'" : maxFetchSize));
 
         Long reuseCachedSearchResultsMillis = HapiProperties.getReuseCachedSearchResultsMillis();
-        retVal.setReuseCachedSearchResultsForMillis(reuseCachedSearchResultsMillis );
+        retVal.setReuseCachedSearchResultsForMillis(reuseCachedSearchResultsMillis);
         ourLog.info("Server configured to cache search results for {} milliseconds", reuseCachedSearchResultsMillis);
 
         return retVal;
@@ -75,16 +78,17 @@ public class FhirServerConfig {
     }
 
     /**
-     * The following bean configures the database connection. The 'url' property value of "jdbc:derby:directory:jpaserver_derby_files;create=true" indicates that the server should save resources in a
-     * directory called "jpaserver_derby_files".
+     * The following bean configures the database connection. The 'url' property
+     * value of "jdbc:derby:directory:jpaserver_derby_files;create=true" indicates
+     * that the server should save resources in a directory called
+     * "jpaserver_derby_files".
      *
-     * A URL to a remote database could also be placed here, along with login credentials and other properties supported by BasicDataSource.
+     * A URL to a remote database could also be placed here, along with login
+     * credentials and other properties supported by BasicDataSource.
      */
     @Bean(destroyMethod = "close")
-    public BasicDataSource dataSource()
-            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
-            InvocationTargetException, InstantiationException
-    {
+    public BasicDataSource dataSource() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+            InvocationTargetException, InstantiationException {
         BasicDataSource retVal = new BasicDataSource();
         Driver driver = (Driver) Class.forName(HapiProperties.getDataSourceDriver()).getConstructor().newInstance();
         retVal.setDriver(driver);
@@ -95,9 +99,9 @@ public class FhirServerConfig {
         return retVal;
     }
 
-
     /**
-     * Do some fancy logging to create a nice access log that has details about each incoming request.
+     * Do some fancy logging to create a nice access log that has details about each
+     * incoming request.
      */
     public LoggingInterceptor loggingInterceptor() {
         LoggingInterceptor retVal = new LoggingInterceptor();
@@ -109,7 +113,8 @@ public class FhirServerConfig {
     }
 
     /**
-     * This interceptor adds some pretty syntax highlighting in responses when a browser is detected
+     * This interceptor adds some pretty syntax highlighting in responses when a
+     * browser is detected
      */
     @Bean(autowire = Autowire.BY_TYPE)
     public ResponseHighlighterInterceptor responseHighlighterInterceptor() {

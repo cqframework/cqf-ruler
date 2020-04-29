@@ -1,14 +1,15 @@
 package org.opencds.cqf.common.config;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
+
+import com.google.common.annotations.VisibleForTesting;
+
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
-import com.google.common.annotations.VisibleForTesting;
-
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Properties;
 
 public class HapiProperties {
     static final String ALLOW_EXTERNAL_REFERENCES = "allow_external_references";
@@ -59,8 +60,8 @@ public class HapiProperties {
     }
 
     /**
-     * This is mostly here for unit tests. Use the actual properties file
-     * to set values
+     * This is mostly here for unit tests. Use the actual properties file to set
+     * values
      */
     @VisibleForTesting
     public static void setProperty(String theKey, String theValue) {
@@ -70,7 +71,7 @@ public class HapiProperties {
     public static Properties getProperties() {
         if (properties == null) {
             // Load the configurable properties file
-            try (InputStream in = HapiProperties.class.getClassLoader().getResourceAsStream(HAPI_PROPERTIES)){
+            try (InputStream in = HapiProperties.class.getClassLoader().getResourceAsStream(HAPI_PROPERTIES)) {
                 HapiProperties.properties = new Properties();
                 HapiProperties.properties.load(in);
             } catch (Exception e) {
@@ -78,8 +79,8 @@ public class HapiProperties {
             }
 
             Properties overrideProps = loadOverrideProperties();
-            if(overrideProps != null) {
-              properties.putAll(overrideProps);
+            if (overrideProps != null) {
+                properties.putAll(overrideProps);
             }
         }
 
@@ -87,22 +88,24 @@ public class HapiProperties {
     }
 
     /**
-     * If a configuration file path is explicitly specified via -Dhapi.properties=<path>, the properties there will
-     * be used to override the entries in the default hapi.properties file (currently under WEB-INF/classes)
-     * @return properties loaded from the explicitly specified configuraiton file if there is one, or null otherwise.
+     * If a configuration file path is explicitly specified via
+     * -Dhapi.properties=<path>, the properties there will be used to override the
+     * entries in the default hapi.properties file (currently under WEB-INF/classes)
+     * 
+     * @return properties loaded from the explicitly specified configuraiton file if
+     *         there is one, or null otherwise.
      */
     private static Properties loadOverrideProperties() {
         String confFile = System.getProperty(HAPI_PROPERTIES + "." + HapiProperties.getProperty(FHIR_VERSION));
         if (confFile == null) {
             confFile = System.getProperty(HAPI_PROPERTIES);
         }
-        if(confFile != null) {
+        if (confFile != null) {
             try {
                 Properties props = new Properties();
                 props.load(new FileInputStream(confFile));
                 return props;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new ConfigurationException("Could not load HAPI properties file: " + confFile, e);
             }
         }
@@ -213,7 +216,8 @@ public class HapiProperties {
     }
 
     public static String getLoggerFormat() {
-        return HapiProperties.getProperty(LOGGER_FORMAT, "Path[${servletPath}] Source[${requestHeader.x-forwarded-for}] Operation[${operationType} ${operationName} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}] ResponseEncoding[${responseEncodingNoDefault}]");
+        return HapiProperties.getProperty(LOGGER_FORMAT,
+                "Path[${servletPath}] Source[${requestHeader.x-forwarded-for}] Operation[${operationType} ${operationName} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}] ResponseEncoding[${responseEncodingNoDefault}]");
     }
 
     public static String getLoggerErrorFormat() {
@@ -237,7 +241,8 @@ public class HapiProperties {
     }
 
     public static String getDataSourceUrl() {
-        return HapiProperties.getProperty(DATASOURCE_URL, "jdbc:derby:directory:target/jpaserver_derby_files;create=true");
+        return HapiProperties.getProperty(DATASOURCE_URL,
+                "jdbc:derby:directory:target/jpaserver_derby_files;create=true");
     }
 
     public static String getDataSourceUsername() {
