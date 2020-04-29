@@ -273,7 +273,7 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-schematron</artifactId>
-            <version>5.0.4</version>
+            <version>5.6.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>Saxon-HE</artifactId>
