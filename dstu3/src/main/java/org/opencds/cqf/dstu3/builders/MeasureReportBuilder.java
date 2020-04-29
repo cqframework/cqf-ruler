@@ -1,13 +1,13 @@
 package org.opencds.cqf.dstu3.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
+import java.util.Date;
+
 import org.hl7.fhir.dstu3.model.MeasureReport;
 import org.hl7.fhir.dstu3.model.Period;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.cql.runtime.Interval;
-
-import java.util.Date;
+import org.opencds.cqf.common.builders.BaseBuilder;
+import org.opencds.cqf.cql.engine.runtime.Interval;
 
 public class MeasureReportBuilder extends BaseBuilder<MeasureReport> {
 
@@ -41,11 +41,7 @@ public class MeasureReportBuilder extends BaseBuilder<MeasureReport> {
     }
 
     public MeasureReportBuilder buildPeriod(Interval period) {
-        this.complexProperty.setPeriod(
-                new Period()
-                        .setStart((Date) period.getStart())
-                        .setEnd((Date) period.getEnd())
-        );
+        this.complexProperty.setPeriod(new Period().setStart((Date) period.getStart()).setEnd((Date) period.getEnd()));
         return this;
     }
 }

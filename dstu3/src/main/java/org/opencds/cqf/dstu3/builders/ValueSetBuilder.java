@@ -1,9 +1,9 @@
 package org.opencds.cqf.dstu3.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class ValueSetBuilder extends BaseBuilder<ValueSet> {
 

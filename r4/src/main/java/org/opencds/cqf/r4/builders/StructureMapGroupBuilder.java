@@ -1,7 +1,7 @@
 package org.opencds.cqf.r4.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
 import org.hl7.fhir.r4.model.StructureMap;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class StructureMapGroupBuilder extends BaseBuilder<StructureMap.StructureMapGroupComponent> {
 
@@ -28,7 +28,6 @@ public class StructureMapGroupBuilder extends BaseBuilder<StructureMap.Structure
         return this;
     }
 
-
     public StructureMapGroupBuilder buildInputSource(String name) {
         StructureMap.StructureMapGroupInputComponent input = new StructureMap.StructureMapGroupInputComponent();
         input.setName(name);
@@ -46,7 +45,8 @@ public class StructureMapGroupBuilder extends BaseBuilder<StructureMap.Structure
         return this;
     }
 
-    public StructureMapGroupBuilder buildRule(StructureMap.StructureMapGroupRuleComponent structureMapGroupRuleComponent) {
+    public StructureMapGroupBuilder buildRule(
+            StructureMap.StructureMapGroupRuleComponent structureMapGroupRuleComponent) {
         complexProperty.addRule(structureMapGroupRuleComponent);
         return this;
     }

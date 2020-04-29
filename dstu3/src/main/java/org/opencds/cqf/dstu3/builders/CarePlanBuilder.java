@@ -1,11 +1,17 @@
 package org.opencds.cqf.dstu3.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
-import org.hl7.fhir.dstu3.model.*;
-import org.hl7.fhir.exceptions.FHIRException;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hl7.fhir.dstu3.model.Annotation;
+import org.hl7.fhir.dstu3.model.CarePlan;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Period;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.exceptions.FHIRException;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class CarePlanBuilder extends BaseBuilder<CarePlan> {
 

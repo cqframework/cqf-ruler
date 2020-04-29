@@ -1,10 +1,7 @@
 package org.opencds.cqf.r4.config;
 
-import ca.uhn.fhir.context.ConfigurationException;
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.ParserOptions;
-import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
-import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
 import org.opencds.cqf.common.config.HapiProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +10,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
+import ca.uhn.fhir.context.ConfigurationException;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.ParserOptions;
+import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
+import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 
 @Configuration
-public class FhirServerConfigR4 extends BaseJavaConfigR4
-{
+public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     protected final DataSource myDataSource;
 
     @Autowired
@@ -27,20 +26,20 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4
     }
 
     @Override
-	public FhirContext fhirContextR4() {
-		FhirContext retVal = FhirContext.forR4();
+    public FhirContext fhirContextR4() {
+        FhirContext retVal = FhirContext.forR4();
 
-		// Don't strip versions in some places
-		ParserOptions parserOptions = retVal.getParserOptions();
-		parserOptions.setDontStripVersionsFromReferencesAtPaths("AuditEvent.entity.what");
+        // Don't strip versions in some places
+        ParserOptions parserOptions = retVal.getParserOptions();
+        parserOptions.setDontStripVersionsFromReferencesAtPaths("AuditEvent.entity.what");
 
-		return retVal;
-	}
+        return retVal;
+    }
 
     /**
-     * We override the paging provider definition so that we can customize
-     * the default/max page sizes for search results. You can set these however
-     * you want, although very large page sizes will require a lot of RAM.
+     * We override the paging provider definition so that we can customize the
+     * default/max page sizes for search results. You can set these however you
+     * want, although very large page sizes will require a lot of RAM.
      */
     @Override
     public DatabaseBackedPagingProvider databaseBackedPagingProvider() {

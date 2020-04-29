@@ -1,15 +1,9 @@
 package org.opencds.cqf.common.evaluation;
 
-import org.cqframework.cql.cql2elm.CqlTranslator;
-import org.cqframework.cql.cql2elm.CqlTranslatorException;
-import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
-import org.cqframework.cql.cql2elm.CqlTranslatorException.ErrorSeverity;
-import org.cqframework.cql.cql2elm.LibraryBuilder.SignatureLevel;
-import org.cqframework.cql.elm.execution.Library;
-import org.cqframework.cql.elm.execution.VersionedIdentifier;
+import static org.opencds.cqf.common.helpers.TranslatorHelper.errorsToString;
+import static org.opencds.cqf.common.helpers.TranslatorHelper.getTranslator;
+import static org.opencds.cqf.common.helpers.TranslatorHelper.readLibrary;
 
-import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -17,9 +11,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.opencds.cqf.common.helpers.TranslatorHelper.*;
+import javax.xml.bind.JAXBException;
 
-public class LibraryLoader implements org.opencds.cqf.cql.execution.LibraryLoader {
+import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.CqlTranslatorException;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
+import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.elm.execution.Library;
+import org.cqframework.cql.elm.execution.VersionedIdentifier;
+
+public class LibraryLoader implements org.opencds.cqf.cql.engine.execution.LibraryLoader {
 
     private LibraryManager libraryManager;
     private ModelManager modelManager;
@@ -78,12 +80,8 @@ public class LibraryLoader implements org.opencds.cqf.cql.execution.LibraryLoade
                 .withVersion(libraryIdentifier.getVersion());
 
         ArrayList<CqlTranslatorException> errors = new ArrayList<>();
-        org.hl7.elm.r1.Library translatedLibrary = libraryManager.resolveLibrary(identifier, ErrorSeverity.Error,
-                SignatureLevel.All,
-                new CqlTranslator.Options[] { CqlTranslator.Options.EnableAnnotations,
-                        CqlTranslator.Options.EnableLocators, CqlTranslator.Options.DisableListDemotion,
-                        CqlTranslator.Options.DisableListPromotion, CqlTranslator.Options.DisableMethodInvocation },
-                errors).getLibrary();
+        org.hl7.elm.r1.Library translatedLibrary = libraryManager
+                .resolveLibrary(identifier, CqlTranslatorOptions.defaultOptions(), errors).getLibrary();
 
         if (CqlTranslatorException.HasErrors(errors)) {
             throw new IllegalArgumentException(errorsToString(errors));

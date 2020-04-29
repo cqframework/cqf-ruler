@@ -1,19 +1,37 @@
 package org.opencds.cqf.dstu3.providers;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
-import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.hl7.fhir.dstu3.model.*;
-import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
-import org.opencds.cqf.cql.model.ModelResolver;
-import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import org.hl7.fhir.dstu3.model.ActivityDefinition;
+import org.hl7.fhir.dstu3.model.Attachment;
+import org.hl7.fhir.dstu3.model.BooleanType;
+import org.hl7.fhir.dstu3.model.Communication;
+import org.hl7.fhir.dstu3.model.CommunicationRequest;
+import org.hl7.fhir.dstu3.model.DiagnosticReport;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.MedicationRequest;
+import org.hl7.fhir.dstu3.model.Procedure;
+import org.hl7.fhir.dstu3.model.ProcedureRequest;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.dstu3.model.SupplyRequest;
+import org.hl7.fhir.exceptions.FHIRException;
+import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
+import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.dstu3.helpers.Helper;
 
-
-import java.util.*;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OptionalParam;
+import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 /**
  * Created by Bryn on 1/16/2017.
@@ -24,25 +42,24 @@ public class ActivityDefinitionApplyProvider {
     private ModelResolver modelResolver;
     private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
 
-    public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider, IFhirResourceDao<ActivityDefinition> activityDefinitionDao) {
+    public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider,
+            IFhirResourceDao<ActivityDefinition> activityDefinitionDao) {
         this.modelResolver = new Dstu3FhirModelResolver();
         this.executionProvider = executionProvider;
         this.activityDefinitionDao = activityDefinitionDao;
     }
 
     @Operation(name = "$apply", idempotent = true, type = ActivityDefinition.class)
-    public Resource apply(@IdParam IdType theId, @RequiredParam(name="patient") String patientId,
-                          @OptionalParam(name="encounter") String encounterId,
-                          @OptionalParam(name="practitioner") String practitionerId,
-                          @OptionalParam(name="organization") String organizationId,
-                          @OptionalParam(name="userType") String userType,
-                          @OptionalParam(name="userLanguage") String userLanguage,
-                          @OptionalParam(name="userTaskContext") String userTaskContext,
-                          @OptionalParam(name="setting") String setting,
-                          @OptionalParam(name="settingContext") String settingContext)
-            throws InternalErrorException, FHIRException, ClassNotFoundException, IllegalAccessException,
-            InstantiationException, ActivityDefinitionApplyException
-    {
+    public Resource apply(@IdParam IdType theId, @RequiredParam(name = "patient") String patientId,
+            @OptionalParam(name = "encounter") String encounterId,
+            @OptionalParam(name = "practitioner") String practitionerId,
+            @OptionalParam(name = "organization") String organizationId,
+            @OptionalParam(name = "userType") String userType,
+            @OptionalParam(name = "userLanguage") String userLanguage,
+            @OptionalParam(name = "userTaskContext") String userTaskContext,
+            @OptionalParam(name = "setting") String setting,
+            @OptionalParam(name = "settingContext") String settingContext) throws InternalErrorException, FHIRException,
+            ClassNotFoundException, IllegalAccessException, InstantiationException, ActivityDefinitionApplyException {
         ActivityDefinition activityDefinition;
         try {
             activityDefinition = this.activityDefinitionDao.read(theId);
@@ -55,15 +72,13 @@ public class ActivityDefinitionApplyProvider {
 
     // For library use
     public Resource resolveActivityDefinition(ActivityDefinition activityDefinition, String patientId,
-                                              String practitionerId, String organizationId)
-            throws FHIRException
-    {
+            String practitionerId, String organizationId) throws FHIRException {
         Resource result = null;
         try {
             // This is a little hacky...
-            result = (Resource) Class.forName("org.hl7.fhir.dstu3.model." + activityDefinition.getKind().toCode()).newInstance();
-        }
-        catch (Exception e) {
+            result = (Resource) Class.forName("org.hl7.fhir.dstu3.model." + activityDefinition.getKind().toCode())
+                    .newInstance();
+        } catch (Exception e) {
             e.printStackTrace();
             throw new FHIRException("Could not find org.hl7.fhir.dstu3.model." + activityDefinition.getKind().toCode());
         }
@@ -100,15 +115,16 @@ public class ActivityDefinitionApplyProvider {
 
         // TODO: Apply expression extensions on any element?
 
-        for (ActivityDefinition.ActivityDefinitionDynamicValueComponent dynamicValue : activityDefinition.getDynamicValue())
-        {
+        for (ActivityDefinition.ActivityDefinitionDynamicValueComponent dynamicValue : activityDefinition
+                .getDynamicValue()) {
             if (dynamicValue.getExpression() != null) {
                 /*
-                    TODO: Passing the activityDefinition as context here because that's what will have the libraries,
-                          but perhaps the "context" here should be the result resource?
-                */
-                Object value =
-                        executionProvider.evaluateInContext(activityDefinition, dynamicValue.getExpression(), patientId);
+                 * TODO: Passing the activityDefinition as context here because that's what will
+                 * have the libraries, but perhaps the "context" here should be the result
+                 * resource?
+                 */
+                Object value = executionProvider.evaluateInContext(activityDefinition, dynamicValue.getExpression(),
+                        patientId);
 
                 // TODO need to verify type... yay
                 if (value instanceof Boolean) {
@@ -122,9 +138,7 @@ public class ActivityDefinitionApplyProvider {
     }
 
     private ProcedureRequest resolveProcedureRequest(ActivityDefinition activityDefinition, String patientId,
-                                                     String practitionerId, String organizationId)
-            throws ActivityDefinitionApplyException
-    {
+            String practitionerId, String organizationId) throws ActivityDefinitionApplyException {
         // status, intent, code, and subject are required
         ProcedureRequest procedureRequest = new ProcedureRequest();
         procedureRequest.setStatus(ProcedureRequest.ProcedureRequestStatus.DRAFT);
@@ -133,16 +147,12 @@ public class ActivityDefinitionApplyProvider {
 
         if (practitionerId != null) {
             procedureRequest.setRequester(
-                    new ProcedureRequest.ProcedureRequestRequesterComponent()
-                            .setAgent(new Reference(practitionerId))
-            );
+                    new ProcedureRequest.ProcedureRequestRequesterComponent().setAgent(new Reference(practitionerId)));
         }
 
         else if (organizationId != null) {
             procedureRequest.setRequester(
-                    new ProcedureRequest.ProcedureRequestRequesterComponent()
-                            .setAgent(new Reference(organizationId))
-            );
+                    new ProcedureRequest.ProcedureRequestRequesterComponent().setAgent(new Reference(organizationId)));
         }
 
         if (activityDefinition.hasExtension()) {
@@ -159,30 +169,29 @@ public class ActivityDefinitionApplyProvider {
         }
 
         if (activityDefinition.hasBodySite()) {
-            procedureRequest.setBodySite( activityDefinition.getBodySite());
+            procedureRequest.setBodySite(activityDefinition.getBodySite());
         }
 
         if (activityDefinition.hasProduct()) {
-            throw new ActivityDefinitionApplyException("Product does not map to "+activityDefinition.getKind());
+            throw new ActivityDefinitionApplyException("Product does not map to " + activityDefinition.getKind());
         }
 
         if (activityDefinition.hasDosage()) {
-            throw new ActivityDefinitionApplyException("Dosage does not map to "+activityDefinition.getKind());
+            throw new ActivityDefinitionApplyException("Dosage does not map to " + activityDefinition.getKind());
         }
 
         return procedureRequest;
     }
 
     private MedicationRequest resolveMedicationRequest(ActivityDefinition activityDefinition, String patientId)
-            throws ActivityDefinitionApplyException
-    {
+            throws ActivityDefinitionApplyException {
         // intent, medication, and subject are required
         MedicationRequest medicationRequest = new MedicationRequest();
         medicationRequest.setIntent(MedicationRequest.MedicationRequestIntent.ORDER);
         medicationRequest.setSubject(new Reference(patientId));
 
         if (activityDefinition.hasProduct()) {
-            medicationRequest.setMedication( activityDefinition.getProduct());
+            medicationRequest.setMedication(activityDefinition.getProduct());
         }
 
         else {
@@ -190,7 +199,7 @@ public class ActivityDefinitionApplyProvider {
         }
 
         if (activityDefinition.hasDosage()) {
-            medicationRequest.setDosageInstruction( activityDefinition.getDosage());
+            medicationRequest.setDosageInstruction(activityDefinition.getDosage());
         }
 
         if (activityDefinition.hasBodySite()) {
@@ -209,29 +218,22 @@ public class ActivityDefinitionApplyProvider {
     }
 
     private SupplyRequest resolveSupplyRequest(ActivityDefinition activityDefinition, String practionerId,
-                                               String organizationId) throws ActivityDefinitionApplyException
-    {
+            String organizationId) throws ActivityDefinitionApplyException {
         SupplyRequest supplyRequest = new SupplyRequest();
 
         if (practionerId != null) {
             supplyRequest.setRequester(
-                    new SupplyRequest.SupplyRequestRequesterComponent()
-                            .setAgent(new Reference(practionerId))
-            );
+                    new SupplyRequest.SupplyRequestRequesterComponent().setAgent(new Reference(practionerId)));
         }
 
         if (organizationId != null) {
             supplyRequest.setRequester(
-                    new SupplyRequest.SupplyRequestRequesterComponent()
-                            .setAgent(new Reference(organizationId))
-            );
+                    new SupplyRequest.SupplyRequestRequesterComponent().setAgent(new Reference(organizationId)));
         }
 
-        if (activityDefinition.hasQuantity()){
-            supplyRequest.setOrderedItem(
-                    new SupplyRequest.SupplyRequestOrderedItemComponent()
-                            .setQuantity( activityDefinition.getQuantity())
-            );
+        if (activityDefinition.hasQuantity()) {
+            supplyRequest.setOrderedItem(new SupplyRequest.SupplyRequestOrderedItemComponent()
+                    .setQuantity(activityDefinition.getQuantity()));
         }
 
         else {
@@ -243,15 +245,15 @@ public class ActivityDefinitionApplyProvider {
         }
 
         if (activityDefinition.hasProduct()) {
-            throw new ActivityDefinitionApplyException("Product does not map to "+activityDefinition.getKind());
+            throw new ActivityDefinitionApplyException("Product does not map to " + activityDefinition.getKind());
         }
 
         if (activityDefinition.hasDosage()) {
-            throw new ActivityDefinitionApplyException("Dosage does not map to "+activityDefinition.getKind());
+            throw new ActivityDefinitionApplyException("Dosage does not map to " + activityDefinition.getKind());
         }
 
         if (activityDefinition.hasBodySite()) {
-            throw new ActivityDefinitionApplyException("Bodysite does not map to "+activityDefinition.getKind());
+            throw new ActivityDefinitionApplyException("Bodysite does not map to " + activityDefinition.getKind());
         }
 
         return supplyRequest;
@@ -286,7 +288,8 @@ public class ActivityDefinitionApplyProvider {
         }
 
         else {
-            throw new ActivityDefinitionApplyException("Missing required ActivityDefinition.code property for DiagnosticReport");
+            throw new ActivityDefinitionApplyException(
+                    "Missing required ActivityDefinition.code property for DiagnosticReport");
         }
 
         if (activityDefinition.hasRelatedArtifact()) {

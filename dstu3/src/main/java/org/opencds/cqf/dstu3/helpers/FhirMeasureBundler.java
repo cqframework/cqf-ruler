@@ -1,8 +1,8 @@
 package org.opencds.cqf.dstu3.helpers;
 
-import org.opencds.cqf.cql.execution.Context;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Resource;
+import org.opencds.cqf.cql.engine.execution.Context;
 
 /**
  * Created by Bryn on 5/7/2016.
@@ -14,11 +14,14 @@ public class FhirMeasureBundler {
         bundle.setType(Bundle.BundleType.COLLECTION);
         for (String expressionName : expressionNames) {
             Object result = context.resolveExpressionRef(expressionName).evaluate(context);
-            for (Object element : (Iterable)result) {
+            for (Object element : (Iterable) result) {
                 Bundle.BundleEntryComponent entry = new Bundle.BundleEntryComponent();
-                entry.setResource((Resource)element);
-                // The null check for resourceType handles Lists, which don't have a resource type.
-                entry.setFullUrl((((Resource)element).getIdElement().getResourceType() != null ? (((Resource)element).getIdElement().getResourceType()  + "/") : "") + ((Resource)element).getIdElement().getIdPart());
+                entry.setResource((Resource) element);
+                // The null check for resourceType handles Lists, which don't have a resource
+                // type.
+                entry.setFullUrl((((Resource) element).getIdElement().getResourceType() != null
+                        ? (((Resource) element).getIdElement().getResourceType() + "/")
+                        : "") + ((Resource) element).getIdElement().getIdPart());
                 bundle.getEntry().add(entry);
             }
         }
@@ -32,8 +35,11 @@ public class FhirMeasureBundler {
         for (Resource resource : resources) {
             Bundle.BundleEntryComponent entry = new Bundle.BundleEntryComponent();
             entry.setResource(resource);
-            // The null check for resourceType handles Lists, which don't have a resource type.
-            entry.setFullUrl((resource.getIdElement().getResourceType() != null ? (resource.getIdElement().getResourceType()  + "/") : "") + resource.getIdElement().getIdPart());
+            // The null check for resourceType handles Lists, which don't have a resource
+            // type.
+            entry.setFullUrl((resource.getIdElement().getResourceType() != null
+                    ? (resource.getIdElement().getResourceType() + "/")
+                    : "") + resource.getIdElement().getIdPart());
             bundle.getEntry().add(entry);
         }
 

@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
-import org.cqframework.cql.elm.execution.UsingDef;
 import org.cqframework.cql.elm.tracking.TrackBack;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Bundle;
@@ -30,11 +29,11 @@ import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.helpers.UsingHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
-import org.opencds.cqf.cql.data.DataProvider;
-import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.runtime.DateTime;
-import org.opencds.cqf.cql.runtime.Interval;
-import org.opencds.cqf.cql.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.engine.data.DataProvider;
+import org.opencds.cqf.cql.engine.execution.Context;
+import org.opencds.cqf.cql.engine.runtime.DateTime;
+import org.opencds.cqf.cql.engine.runtime.Interval;
+import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
@@ -49,11 +48,11 @@ public class CqlExecutionProvider {
     private EvaluationProviderFactory providerFactory;
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider;
 
-    public CqlExecutionProvider(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider, EvaluationProviderFactory providerFactory) {
+    public CqlExecutionProvider(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider,
+            EvaluationProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
         this.libraryResourceProvider = libraryResourceProvider;
     }
-
 
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> getLibraryResourceProvider() {
         return this.libraryResourceProvider;
@@ -79,7 +78,6 @@ public class CqlExecutionProvider {
         }
         return cleanRefs;
     }
-
 
     private Iterable<CanonicalType> getLibraryReferences(DomainResource instance) {
         List<CanonicalType> references = new ArrayList<>();
@@ -122,7 +120,7 @@ public class CqlExecutionProvider {
 
         return cleanReferences(references);
     }
-   
+
     private String buildIncludes(Iterable<CanonicalType> references) {
         StringBuilder builder = new StringBuilder();
         for (CanonicalType reference : references) {
@@ -135,11 +133,10 @@ public class CqlExecutionProvider {
 
             // TODO: This assumes the libraries resource id is the same as the library name,
             // need to work this out better
-            Library lib =this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference));
+            Library lib = this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference));
             if (lib.hasName()) {
                 builder.append(lib.getName());
-            }
-            else {
+            } else {
                 throw new RuntimeException("Library name unknown");
             }
 
@@ -167,12 +164,12 @@ public class CqlExecutionProvider {
         String source = String.format(
                 "library LocalLibrary using FHIR version '4.0.0' include FHIRHelpers version '4.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
                 buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
-        
+
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
-        
+
         org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(source,
                 libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
-        
+
         // resolve execution context
         Context context = setupContext(instance, patientId, libraryLoader, library);
         return context.resolveExpressionRef("Expression").evaluate(context);
@@ -183,14 +180,14 @@ public class CqlExecutionProvider {
         if (aliasedExpression) {
             Object result = null;
             for (CanonicalType reference : libraries) {
-                Library lib =this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference));
-                if (lib == null)
-                {
+                Library lib = this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference));
+                if (lib == null) {
                     throw new RuntimeException("Library with id " + reference.getIdBase() + "not found");
                 }
                 LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
                 // resolve primary library
-                org.cqframework.cql.elm.execution.Library library = LibraryHelper.resolveLibraryById(lib.getId(), libraryLoader, this.libraryResourceProvider);
+                org.cqframework.cql.elm.execution.Library library = LibraryHelper.resolveLibraryById(lib.getId(),
+                        libraryLoader, this.libraryResourceProvider);
 
                 // resolve execution context
                 Context context = setupContext(instance, patientId, libraryLoader, library);
@@ -200,12 +197,10 @@ public class CqlExecutionProvider {
                 }
             }
             throw new RuntimeException("Could not find Expression in Referenced Libraries");
-        }
-        else {
+        } else {
             return evaluateInContext(instance, cql, patientId);
         }
     }
-
 
     private Context setupContext(DomainResource instance, String patientId, LibraryLoader libraryLoader,
             org.cqframework.cql.elm.execution.Library library) {
@@ -226,17 +221,17 @@ public class CqlExecutionProvider {
     @Operation(name = "$cql")
     public Bundle evaluate(@OperationParam(name = "code") String code,
             @OperationParam(name = "patientId") String patientId,
-            @OperationParam(name="periodStart") String periodStart,
-            @OperationParam(name="periodEnd") String periodEnd,
-            @OperationParam(name="productLine") String productLine,
+            @OperationParam(name = "periodStart") String periodStart,
+            @OperationParam(name = "periodEnd") String periodEnd,
+            @OperationParam(name = "productLine") String productLine,
             @OperationParam(name = "terminologyServiceUri") String terminologyServiceUri,
             @OperationParam(name = "terminologyUser") String terminologyUser,
             @OperationParam(name = "terminologyPass") String terminologyPass,
-			@OperationParam(name = "context") String contextParam,
-			@OperationParam(name = "executionResults") String executionResults,
+            @OperationParam(name = "context") String contextParam,
+            @OperationParam(name = "executionResults") String executionResults,
             @OperationParam(name = "parameters") Parameters parameters) {
 
-        if (patientId == null && contextParam != null && contextParam.equals("Patient") ) {
+        if (patientId == null && contextParam != null && contextParam.equals("Patient")) {
             throw new IllegalArgumentException("Must specify a patientId when executing in Patient context.");
         }
 
@@ -256,8 +251,8 @@ public class CqlExecutionProvider {
                     Parameters result = new Parameters();
                     TrackBack tb = cte.getLocator();
                     if (tb != null) {
-                       String location = String.format("[%d:%d]",tb.getStartLine(), tb.getStartChar());
-                       result.addParameter().setName("location").setValue(new StringType(location));
+                        String location = String.format("[%d:%d]", tb.getStartLine(), tb.getStartChar());
+                        result.addParameter().setName("location").setValue(new StringType(location));
                     }
 
                     result.setId("Error");
@@ -280,45 +275,43 @@ public class CqlExecutionProvider {
         org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(translator);
         Context context = new Context(library);
         context.registerLibraryLoader(libraryLoader);
-        
-        List<Triple<String,String,String>> usingDefs = UsingHelper.getUsingUrlAndVersion(library.getUsings());
+
+        List<Triple<String, String, String>> usingDefs = UsingHelper.getUsingUrlAndVersion(library.getUsings());
 
         if (usingDefs.size() > 1) {
-            throw new IllegalArgumentException("Evaluation of Measure using multiple Models is not supported at this time.");
+            throw new IllegalArgumentException(
+                    "Evaluation of Measure using multiple Models is not supported at this time.");
         }
 
         // If there are no Usings, there is probably not any place the Terminology
-        // actually used so I think the assumption that at least one provider exists is ok.
+        // actually used so I think the assumption that at least one provider exists is
+        // ok.
         TerminologyProvider terminologyProvider = null;
         if (usingDefs.size() > 0) {
-            // Creates a terminology provider based on the first using statement. This assumes the terminology
+            // Creates a terminology provider based on the first using statement. This
+            // assumes the terminology
             // server matches the FHIR version of the CQL.
-            terminologyProvider = this.providerFactory.createTerminologyProvider(
-                    usingDefs.get(0).getLeft(), usingDefs.get(0).getMiddle(),
-                        terminologyServiceUri, terminologyUser, terminologyPass);
+            terminologyProvider = this.providerFactory.createTerminologyProvider(usingDefs.get(0).getLeft(),
+                    usingDefs.get(0).getMiddle(), terminologyServiceUri, terminologyUser, terminologyPass);
             context.registerTerminologyProvider(terminologyProvider);
         }
 
-        for (Triple<String,String,String> def : usingDefs)
-        {
-            DataProvider dataProvider = this.providerFactory.createDataProvider(def.getLeft(), def.getMiddle(), terminologyProvider);
-            context.registerDataProvider(
-                def.getRight(), 
-                dataProvider);
+        for (Triple<String, String, String> def : usingDefs) {
+            DataProvider dataProvider = this.providerFactory.createDataProvider(def.getLeft(), def.getMiddle(),
+                    terminologyProvider);
+            context.registerDataProvider(def.getRight(), dataProvider);
         }
 
-        if (parameters != null)
-        {
-            for (Parameters.ParametersParameterComponent pc : parameters.getParameter())
-            {
+        if (parameters != null) {
+            for (Parameters.ParametersParameterComponent pc : parameters.getParameter()) {
                 context.setParameter(library.getLocalId(), pc.getName(), pc.getValue());
-            }    
+            }
         }
 
         if (periodStart != null && periodEnd != null) {
             // resolve the measurement period
             Interval measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
-            DateHelper.resolveRequestDate(periodEnd, false), true);
+                    DateHelper.resolveRequestDate(periodEnd, false), true);
 
             context.setParameter(null, "Measurement Period",
                     new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
@@ -329,60 +322,58 @@ public class CqlExecutionProvider {
             context.setParameter(null, "Product Line", productLine);
         }
 
-
         context.setExpressionCaching(true);
         if (library.getStatements() != null) {
             for (org.cqframework.cql.elm.execution.ExpressionDef def : library.getStatements().getDef()) {
                 context.enterContext(def.getContext());
                 if (patientId != null && !patientId.isEmpty()) {
                     context.setContextValue(context.getCurrentContext(), patientId);
-                }
-                else {
+                } else {
                     context.setContextValue(context.getCurrentContext(), "null");
                 }
                 Parameters result = new Parameters();
 
                 try {
                     result.setId(def.getName());
-                    String location = String.format("[%d:%d]", locations.get(def.getName()).get(0), locations.get(def.getName()).get(1));
+                    String location = String.format("[%d:%d]", locations.get(def.getName()).get(0),
+                            locations.get(def.getName()).get(1));
                     result.addParameter().setName("location").setValue(new StringType(location));
 
-                    Object res = def instanceof org.cqframework.cql.elm.execution.FunctionDef ? "Definition successfully validated" : def.getExpression().evaluate(context);
+                    Object res = def instanceof org.cqframework.cql.elm.execution.FunctionDef
+                            ? "Definition successfully validated"
+                            : def.getExpression().evaluate(context);
 
                     if (res == null) {
                         result.addParameter().setName("value").setValue(new StringType("null"));
-                    }
-                    else if (res instanceof List<?>) {
+                    } else if (res instanceof List<?>) {
                         if (((List<?>) res).size() > 0 && ((List<?>) res).get(0) instanceof Resource) {
-							if (executionResults != null && executionResults.equals("Summary")) {
-								result.addParameter().setName("value").setValue(new StringType(((Resource)((List<?>) res).get(0)).getIdElement().getResourceType() + "/" + ((Resource)((List<?>) res).get(0)).getIdElement().getIdPart()));
-							}
-							else {
-								result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
-							}
-                        }
-                        else {
+                            if (executionResults != null && executionResults.equals("Summary")) {
+                                result.addParameter().setName("value")
+                                        .setValue(new StringType(((Resource) ((List<?>) res).get(0)).getIdElement()
+                                                .getResourceType() + "/"
+                                                + ((Resource) ((List<?>) res).get(0)).getIdElement().getIdPart()));
+                            } else {
+                                result.addParameter().setName("value").setResource(bundler.bundle((Iterable) res));
+                            }
+                        } else {
                             result.addParameter().setName("value").setValue(new StringType(res.toString()));
                         }
-                    }                
-                    else if (res instanceof Iterable) {
-                        result.addParameter().setName("value").setResource(bundler.bundle((Iterable)res));
-                    }
-                    else if (res instanceof Resource) {
-						if (executionResults != null && executionResults.equals("Summary")) {
-							result.addParameter().setName("value").setValue(new StringType(((Resource)res).getIdElement().getResourceType() + "/" + ((Resource)res).getIdElement().getIdPart()));
-						}
-						else {
-							result.addParameter().setName("value").setResource((Resource)res);
-						}
-                    }
-                    else {
+                    } else if (res instanceof Iterable) {
+                        result.addParameter().setName("value").setResource(bundler.bundle((Iterable) res));
+                    } else if (res instanceof Resource) {
+                        if (executionResults != null && executionResults.equals("Summary")) {
+                            result.addParameter().setName("value")
+                                    .setValue(new StringType(((Resource) res).getIdElement().getResourceType() + "/"
+                                            + ((Resource) res).getIdElement().getIdPart()));
+                        } else {
+                            result.addParameter().setName("value").setResource((Resource) res);
+                        }
+                    } else {
                         result.addParameter().setName("value").setValue(new StringType(res.toString()));
                     }
 
                     result.addParameter().setName("resultType").setValue(new StringType(resolveType(res)));
-                }
-                catch (RuntimeException re) {
+                } catch (RuntimeException re) {
                     re.printStackTrace();
 
                     String message = re.getMessage() != null ? re.getMessage() : re.getClass().getName();
@@ -395,10 +386,11 @@ public class CqlExecutionProvider {
         return bundler.bundle(results);
     }
 
-    private  Map<String, List<Integer>>  getLocations(org.hl7.elm.r1.Library library) {
+    private Map<String, List<Integer>> getLocations(org.hl7.elm.r1.Library library) {
         Map<String, List<Integer>> locations = new HashMap<>();
 
-        if (library.getStatements() == null) return locations;
+        if (library.getStatements() == null)
+            return locations;
 
         for (org.hl7.elm.r1.ExpressionDef def : library.getStatements().getDef()) {
             int startLine = def.getTrackbacks().isEmpty() ? 0 : def.getTrackbacks().get(0).getStartLine();
@@ -413,9 +405,12 @@ public class CqlExecutionProvider {
     private String resolveType(Object result) {
         String type = result == null ? "Null" : result.getClass().getSimpleName();
         switch (type) {
-            case "BigDecimal": return "Decimal";
-            case "ArrayList": return "List";
-            case "FhirBundleCursor": return "Retrieve";
+            case "BigDecimal":
+                return "Decimal";
+            case "ArrayList":
+                return "List";
+            case "FhirBundleCursor":
+                return "Retrieve";
         }
         return type;
     }
