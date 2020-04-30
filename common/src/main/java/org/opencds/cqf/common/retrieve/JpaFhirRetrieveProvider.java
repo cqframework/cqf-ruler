@@ -1,10 +1,12 @@
 package org.opencds.cqf.common.retrieve;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.engine.fhir.retrieve.SearchParamFhirRetrieveProvider;
@@ -44,8 +46,10 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
         var hapiMap = new ca.uhn.fhir.jpa.searchparam.SearchParameterMap();
         try {
 
-            var method = List.of(hapiMap.getClass().getMethods()).stream()
-                    .filter(x -> x.getName().equals("put") && Modifier.isPrivate(x.getModifiers())).findFirst().get();
+            var methods = hapiMap.getClass().getDeclaredMethods();
+            var methodList = List.of(methods);
+            List<Method> puts = methodList.stream().filter(x -> x.getName().equals("put")).collect(Collectors.toList());
+            var method = puts.get(0);
             method.setAccessible(true);
 
             for (var entry : map.entrySet()) {
@@ -54,6 +58,7 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
 
         } catch (Exception e) {
             // TODO: Add logging.
+            System.out.println(e.getMessage());
         }
 
         IFhirResourceDao<?> dao = this.registry.getResourceDao(dataType);
