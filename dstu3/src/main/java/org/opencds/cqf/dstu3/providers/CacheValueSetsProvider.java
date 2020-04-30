@@ -16,6 +16,7 @@ import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -37,8 +38,8 @@ public class CacheValueSetsProvider {
 
     @Operation(name = "cache-valuesets", idempotent = true, type = Endpoint.class)
     public Resource cacheValuesets(RequestDetails details, @IdParam IdType theId,
-            @RequiredParam(name = "valuesets") StringAndListParam valuesets,
-            @OptionalParam(name = "user") String userName, @OptionalParam(name = "pass") String password) {
+            @OperationParam(name = "valuesets") StringAndListParam valuesets,
+            @OperationParam(name = "user") String userName, @OperationParam(name = "pass") String password) {
 
         Endpoint endpoint = this.endpointDao.read(theId);
 

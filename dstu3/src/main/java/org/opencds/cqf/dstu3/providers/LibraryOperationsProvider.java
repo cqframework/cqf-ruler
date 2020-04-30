@@ -23,6 +23,7 @@ import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
@@ -95,7 +96,7 @@ public class LibraryOperationsProvider implements org.opencds.cqf.common.provide
     }
 
     @Operation(name = "$get-elm", idempotent = true, type = Library.class)
-    public Parameters getElm(@IdParam IdType theId, @OptionalParam(name = "format") String format) {
+    public Parameters getElm(@IdParam IdType theId, @OperationParam(name = "format") String format) {
         Library theResource = this.libraryResourceProvider.getDao().read(theId);
         // this.formatCql(theResource);
 

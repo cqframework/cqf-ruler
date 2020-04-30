@@ -45,6 +45,7 @@ import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.annotation.OptionalParam;
 import ca.uhn.fhir.rest.annotation.RequiredParam;
 
@@ -78,15 +79,15 @@ public class PlanDefinitionApplyProvider {
     }
 
     @Operation(name = "$apply", idempotent = true, type = PlanDefinition.class)
-    public CarePlan applyPlanDefinition(@IdParam IdType theId, @RequiredParam(name = "patient") String patientId,
-            @OptionalParam(name = "encounter") String encounterId,
-            @OptionalParam(name = "practitioner") String practitionerId,
-            @OptionalParam(name = "organization") String organizationId,
-            @OptionalParam(name = "userType") String userType,
-            @OptionalParam(name = "userLanguage") String userLanguage,
-            @OptionalParam(name = "userTaskContext") String userTaskContext,
-            @OptionalParam(name = "setting") String setting,
-            @OptionalParam(name = "settingContext") String settingContext)
+    public CarePlan applyPlanDefinition(@IdParam IdType theId, @OperationParam(name = "patient") String patientId,
+            @OperationParam(name = "encounter") String encounterId,
+            @OperationParam(name = "practitioner") String practitionerId,
+            @OperationParam(name = "organization") String organizationId,
+            @OperationParam(name = "userType") String userType,
+            @OperationParam(name = "userLanguage") String userLanguage,
+            @OperationParam(name = "userTaskContext") String userTaskContext,
+            @OperationParam(name = "setting") String setting,
+            @OperationParam(name = "settingContext") String settingContext)
             throws IOException, JAXBException, FHIRException {
         PlanDefinition planDefinition = this.planDefintionDao.read(theId);
 
