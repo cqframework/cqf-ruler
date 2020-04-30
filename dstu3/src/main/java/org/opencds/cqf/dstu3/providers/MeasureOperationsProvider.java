@@ -151,14 +151,15 @@ public class MeasureOperationsProvider {
      *
      */
     @Operation(name = "$evaluate-measure", idempotent = true, type = Measure.class)
-    public MeasureReport evaluateMeasure(@IdParam IdType theId, @RequiredParam(name = "periodStart") String periodStart,
-            @RequiredParam(name = "periodEnd") String periodEnd, @OptionalParam(name = "measure") String measureRef,
-            @OptionalParam(name = "reportType") String reportType, @OptionalParam(name = "patient") String patientRef,
-            @OptionalParam(name = "productLine") String productLine,
-            @OptionalParam(name = "practitioner") String practitionerRef,
-            @OptionalParam(name = "lastReceivedOn") String lastReceivedOn,
-            @OptionalParam(name = "source") String source, @OptionalParam(name = "user") String user,
-            @OptionalParam(name = "pass") String pass) throws InternalErrorException, FHIRException {
+    public MeasureReport evaluateMeasure(@IdParam IdType theId,
+            @OperationParam(name = "periodStart") String periodStart,
+            @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "measure") String measureRef,
+            @OperationParam(name = "reportType") String reportType, @OperationParam(name = "patient") String patientRef,
+            @OperationParam(name = "productLine") String productLine,
+            @OperationParam(name = "practitioner") String practitionerRef,
+            @OperationParam(name = "lastReceivedOn") String lastReceivedOn,
+            @OperationParam(name = "source") String source, @OperationParam(name = "user") String user,
+            @OperationParam(name = "pass") String pass) throws InternalErrorException, FHIRException {
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResolutionProvider);
         MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader,
                 this.libraryResolutionProvider);
@@ -231,9 +232,9 @@ public class MeasureOperationsProvider {
     // }
 
     @Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
-    public Bundle careGapsReport(@RequiredParam(name = "periodStart") String periodStart,
-            @RequiredParam(name = "periodEnd") String periodEnd, @RequiredParam(name = "topic") String topic,
-            @RequiredParam(name = "patient") String patientRef) {
+    public Bundle careGapsReport(@OperationParam(name = "periodStart") String periodStart,
+            @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "topic") String topic,
+            @OperationParam(name = "patient") String patientRef) {
         List<IBaseResource> measures = this.measureResourceProvider.getDao().search(new SearchParameterMap()
                 .add("topic", new TokenParam().setModifier(TokenParamModifier.TEXT).setValue(topic)))
                 .getResources(0, 1000);
@@ -339,10 +340,10 @@ public class MeasureOperationsProvider {
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)
-    public Parameters collectData(@IdParam IdType theId, @RequiredParam(name = "periodStart") String periodStart,
-            @RequiredParam(name = "periodEnd") String periodEnd, @OptionalParam(name = "patient") String patientRef,
-            @OptionalParam(name = "practitioner") String practitionerRef,
-            @OptionalParam(name = "lastReceivedOn") String lastReceivedOn) throws FHIRException {
+    public Parameters collectData(@IdParam IdType theId, @OperationParam(name = "periodStart") String periodStart,
+            @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "patient") String patientRef,
+            @OperationParam(name = "practitioner") String practitionerRef,
+            @OperationParam(name = "lastReceivedOn") String lastReceivedOn) throws FHIRException {
         // TODO: Spec says that the periods are not required, but I am not sure what to
         // do when they aren't supplied so I made them required
         MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, patientRef, null,
@@ -417,8 +418,8 @@ public class MeasureOperationsProvider {
     // TODO - this needs a lot of work
     @Operation(name = "$data-requirements", idempotent = true, type = Measure.class)
     public org.hl7.fhir.dstu3.model.Library dataRequirements(@IdParam IdType theId,
-            @RequiredParam(name = "startPeriod") String startPeriod,
-            @RequiredParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
+            @OperationParam(name = "startPeriod") String startPeriod,
+            @OperationParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
 
         Measure measure = this.measureResourceProvider.getDao().read(theId);
         return this.dataRequirementsProvider.getDataRequirements(measure, this.libraryResolutionProvider);
