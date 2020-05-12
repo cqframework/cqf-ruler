@@ -38,6 +38,7 @@ import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.dstu3.helpers.FhirMeasureBundler;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 
@@ -47,11 +48,13 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 public class CqlExecutionProvider {
     private EvaluationProviderFactory providerFactory;
     private LibraryResolutionProvider<Library> libraryResolutionProvider;
+    private FhirContext context;
 
     public CqlExecutionProvider(LibraryResolutionProvider<Library> libraryResolutionProvider,
-            EvaluationProviderFactory providerFactory) {
+            EvaluationProviderFactory providerFactory, FhirContext context) {
         this.providerFactory = providerFactory;
         this.libraryResolutionProvider = libraryResolutionProvider;
+        this.context = context;
     }
 
     private LibraryResolutionProvider<Library> getLibraryResourceProvider() {
@@ -157,13 +160,14 @@ public class CqlExecutionProvider {
      */
     public Object evaluateInContext(DomainResource instance, String cql, String patientId) {
         Iterable<Reference> libraries = getLibraryReferences(instance);
+        String fhirVersion = this.context.getVersion().getVersion().getFhirVersionString();
 
         // Provide the instance as the value of the '%context' parameter, as well as the
         // value of a parameter named the same as the resource
         // This enables expressions to access the resource by root, as well as through
         // the %context attribute
         String source = String.format(
-                "library LocalLibrary using FHIR version '3.0.0' include FHIRHelpers version '3.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
+                "library LocalLibrary using FHIR version '"+ fhirVersion + "' include FHIRHelpers version '"+ fhirVersion + "' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
                 buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
         // String source = String.format("library LocalLibrary using FHIR version '1.8'
         // include FHIRHelpers version '1.8' called FHIRHelpers %s parameter %s %s
@@ -182,7 +186,7 @@ public class CqlExecutionProvider {
         context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
 
-        context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", "3.0.0"));
+        context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", fhirVersion));
         return context.resolveExpressionRef("Expression").evaluate(context);
     }
 
