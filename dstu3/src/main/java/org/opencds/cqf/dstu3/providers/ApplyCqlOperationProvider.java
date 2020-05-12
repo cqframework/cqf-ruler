@@ -73,7 +73,8 @@ public class ApplyCqlOperationProvider {
     public Resource applyCqlToResource(Resource resource) throws FHIRException {
         Library library;
         Context context;
-        String fhirVersion = this.context.getVersion().getVersion().getFhirVersionString();
+        // String fhirVersion = this.context.getVersion().getVersion().getFhirVersionString();
+        String fhirVersion = "3.0.0";
         for (Property child : resource.children()) {
             for (Base base : child.getValues()) {
                 if (base != null) {
