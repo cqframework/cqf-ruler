@@ -160,7 +160,8 @@ public class CqlExecutionProvider {
      */
     public Object evaluateInContext(DomainResource instance, String cql, String patientId) {
         Iterable<Reference> libraries = getLibraryReferences(instance);
-        String fhirVersion = this.context.getVersion().getVersion().getFhirVersionString();
+        //String fhirVersion = this.context.getVersion().getVersion().getFhirVersionString();
+        String fhirVersion = "3.0.0";
 
         // Provide the instance as the value of the '%context' parameter, as well as the
         // value of a parameter named the same as the resource
