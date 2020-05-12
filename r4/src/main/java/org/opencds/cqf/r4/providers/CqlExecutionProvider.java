@@ -38,6 +38,7 @@ import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 
@@ -47,11 +48,13 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 public class CqlExecutionProvider {
     private EvaluationProviderFactory providerFactory;
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider;
+    private FhirContext context;
 
     public CqlExecutionProvider(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider,
-            EvaluationProviderFactory providerFactory) {
+            EvaluationProviderFactory providerFactory, FhirContext context) {
         this.providerFactory = providerFactory;
         this.libraryResourceProvider = libraryResourceProvider;
+        this.context = context;
     }
 
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> getLibraryResourceProvider() {
@@ -161,8 +164,10 @@ public class CqlExecutionProvider {
     public Object evaluateInContext(DomainResource instance, String cql, String patientId) {
         Iterable<CanonicalType> libraries = getLibraryReferences(instance);
 
+        String fhirVersion = this.context.getVersion().getVersion().getFhirVersionString();
+
         String source = String.format(
-                "library LocalLibrary using FHIR version '4.0.0' include FHIRHelpers version '4.0.0' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
+                "library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"+ fhirVersion +"' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
                 buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
 
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
@@ -214,7 +219,7 @@ public class CqlExecutionProvider {
         context.setExpressionCaching(true);
         context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
-        context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", "4.0.0"));
+        context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", this.context.getVersion().getVersion().getFhirVersionString()));
         return context;
     }
 

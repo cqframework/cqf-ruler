@@ -209,12 +209,12 @@ public class BaseServlet extends RestfulServer {
         this.registerProvider(libraryProvider);
 
         // CQL Execution
-        CqlExecutionProvider cql = new CqlExecutionProvider(libraryProvider, providerFactory);
+        CqlExecutionProvider cql = new CqlExecutionProvider(libraryProvider, providerFactory, this.fhirContext);
         this.registerProvider(cql);
 
         // Bundle processing
         ApplyCqlOperationProvider bundleProvider = new ApplyCqlOperationProvider(providerFactory,
-                this.getDao(Bundle.class));
+                this.getDao(Bundle.class), this.fhirContext);
         this.registerProvider(bundleProvider);
 
         // Measure processing

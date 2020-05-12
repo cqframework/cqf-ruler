@@ -27,6 +27,7 @@ import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -36,10 +37,12 @@ public class ApplyCqlOperationProvider {
 
     private EvaluationProviderFactory providerFactory;
     private IFhirResourceDao<Bundle> bundleDao;
+    FhirContext context;
 
-    public ApplyCqlOperationProvider(EvaluationProviderFactory providerFactory, IFhirResourceDao<Bundle> bundleDao) {
+    public ApplyCqlOperationProvider(EvaluationProviderFactory providerFactory, IFhirResourceDao<Bundle> bundleDao, FhirContext context) {
         this.providerFactory = providerFactory;
         this.bundleDao = bundleDao;
+        this.context = context;
     }
 
     @Operation(name = "$apply-cql", type = Bundle.class)
@@ -70,17 +73,18 @@ public class ApplyCqlOperationProvider {
     public Resource applyCqlToResource(Resource resource) throws FHIRException {
         Library library;
         Context context;
+        String fhirVersion = this.context.getVersion().getVersion().getFhirVersionString();
         for (Property child : resource.children()) {
             for (Base base : child.getValues()) {
                 if (base != null) {
                     List<String> extension = getExtension(base);
                     if (!extension.isEmpty()) {
-                        String cql = String.format("using FHIR version '3.0.0' define x: %s", extension.get(1));
+                        String cql = String.format("using FHIR version '"+ fhirVersion + "' define x: %s", extension.get(1));
                         library = TranslatorHelper.translateLibrary(cql, new LibraryManager(new ModelManager()),
                                 new ModelManager());
                         context = new Context(library);
                         context.registerDataProvider("http://hl7.org/fhir",
-                                this.providerFactory.createDataProvider("FHIR", "3.0.0"));
+                                this.providerFactory.createDataProvider("FHIR", fhirVersion));
                         Object result = context.resolveExpressionRef("x").getExpression().evaluate(context);
                         if (extension.get(0).equals("extension")) {
                             resource.setProperty(child.getName(), resolveType(result, base.fhirType()));
