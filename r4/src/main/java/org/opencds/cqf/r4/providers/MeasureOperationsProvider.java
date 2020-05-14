@@ -223,11 +223,14 @@ public class MeasureOperationsProvider {
 
     @Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
     public Bundle careGapsReport(@RequiredParam(name = "periodStart") String periodStart,
-            @RequiredParam(name = "periodEnd") String periodEnd, @RequiredParam(name = "topic") String topic,
-            @RequiredParam(name = "subject") String subject) {
-        SearchParameterMap theParams = new SearchParameterMap();
-        IQueryParameterType parameter = new TokenParam(topic);
-        theParams.add("topic", parameter);
+            @RequiredParam(name = "periodEnd") String periodEnd,
+            @RequiredParam(name = "subject") String subject, @OptionalParam(name = "topic") String topic) {
+        SearchParameterMap theParams = new SearchParameterMap();    
+        if (topic != null && !topic.equals("")) {
+            var topicParam = new TokenParam(topic);
+            theParams.add("topic", topicParam);
+        }
+        
         List<IBaseResource> measures =  this.measureResourceProvider.getDao().search(theParams).getResources(0, 1000);
                
         Bundle careGapReport = new Bundle();
@@ -240,7 +243,7 @@ public class MeasureOperationsProvider {
                 .addCoding(new Coding().setSystem("http://loinc.org").setCode("57024-2"));
         composition.setStatus(Composition.CompositionStatus.FINAL).setType(typeCode)
                 .setSubject(new Reference(subject.startsWith("Patient/") ? subject : "Patient/" + subject))
-                .setTitle(topic + " Care Gap Report");
+                .setTitle((topic != null && !topic.equals("") ? topic : "") + " Care Gap Report");
 
         List<MeasureReport> reports = new ArrayList<>();
         MeasureReport report = new MeasureReport();
