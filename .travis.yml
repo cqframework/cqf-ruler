@@ -28,6 +28,13 @@ before_deploy:
 
 # NOTE: tests were already run as part of the script phase
 deploy:
+   # deploy gic as a snapshot
+   - provider: script
+   script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true && docker build . -t contentgroup/cqf-ruler:gic && docker push contentgroup/cqf-ruler:gic"
+   cleanup: false
+   skip_cleanup: true # This is the current correct option, but is soon to be deprecated by the above.
+   on:
+     branch: davinci_gic
   # deploy develop as a snapshot
   - provider: script
     script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true && docker build . -t contentgroup/cqf-ruler:develop && docker push contentgroup/cqf-ruler:develop"
