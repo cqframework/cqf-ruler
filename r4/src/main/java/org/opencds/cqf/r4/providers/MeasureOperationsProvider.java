@@ -224,7 +224,7 @@ public class MeasureOperationsProvider {
     @Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
     public Bundle careGapsReport(@RequiredParam(name = "periodStart") String periodStart,
             @RequiredParam(name = "periodEnd") String periodEnd, @RequiredParam(name = "topic") String topic,
-            @RequiredParam(name = "patient") String patientRef) {
+            @RequiredParam(name = "subject") String subject) {
         SearchParameterMap theParams = new SearchParameterMap();
         IQueryParameterType parameter = new TokenParam(topic);
         theParams.add("topic", parameter);
@@ -239,7 +239,7 @@ public class MeasureOperationsProvider {
         CodeableConcept typeCode = new CodeableConcept()
                 .addCoding(new Coding().setSystem("http://loinc.org").setCode("57024-2"));
         composition.setStatus(Composition.CompositionStatus.FINAL).setType(typeCode)
-                .setSubject(new Reference(patientRef.startsWith("Patient/") ? patientRef : "Patient/" + patientRef))
+                .setSubject(new Reference(subject.startsWith("Patient/") ? subject : "Patient/" + subject))
                 .setTitle(topic + " Care Gap Report");
 
         List<MeasureReport> reports = new ArrayList<>();
@@ -265,7 +265,7 @@ public class MeasureOperationsProvider {
             seed.setup(measure, periodStart, periodEnd, null, null, null, null);
             MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), this.registry, seed.getMeasurementPeriod());
             // TODO - this is configured for patient-level evaluation only
-            report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
+            report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), subject);
 
             if (report.hasGroup() && measure.hasScoring()) {
                 int numerator = 0;
