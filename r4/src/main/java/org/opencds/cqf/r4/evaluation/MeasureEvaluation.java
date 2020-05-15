@@ -121,7 +121,7 @@ public class MeasureEvaluation {
         }
         Object result = context.resolveExpressionRef(pop.getCriteria().getExpression()).evaluate(context);
         if (result == null) {
-            Collections.emptyList();
+            return Collections.emptyList();
         }
 
         if (result instanceof Boolean) {
