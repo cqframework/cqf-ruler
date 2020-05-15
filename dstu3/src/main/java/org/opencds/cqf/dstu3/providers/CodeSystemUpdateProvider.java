@@ -1,7 +1,13 @@
 package org.opencds.cqf.dstu3.providers;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,15 +47,15 @@ public class CodeSystemUpdateProvider {
     @Operation(name = "$updateCodeSystems", idempotent = true)
     public OperationOutcome updateCodeSystems() {
         IBundleProvider valuesets = this.valueSetDao.search(new SearchParameterMap());
-        OperationOutcome response = new OperationOutcome();
 
-        OperationOutcome outcome;
-        for (IBaseResource valueSet : valuesets.getResources(0, valuesets.size())) {
-            outcome = this.performCodeSystemUpdate((ValueSet) valueSet);
-            if (outcome.hasIssue()) {
-                for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
-                    response.addIssue(issue);
-                }
+        List<ValueSet> valueSets =  valuesets.getResources(0, valuesets.size()).stream().map(x -> (ValueSet)x).collect(Collectors.toList());
+
+        OperationOutcome outcome = this.performCodeSystemUpdate(valueSets);
+
+        OperationOutcome response = new OperationOutcome();
+        if (outcome.hasIssue()) {
+            for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
+                response.addIssue(issue);
             }
         }
 
@@ -75,32 +81,55 @@ public class CodeSystemUpdateProvider {
             return responseBuilder.buildIssue("error", "notfound", "Unable to find Resource: " + theId.getId()).build();
         }
 
-        return performCodeSystemUpdate(vs);
+        return performCodeSystemUpdate(Collections.singletonList(vs));
     }
 
-    public OperationOutcome performCodeSystemUpdate(ValueSet vs) {
+    public OperationOutcome performCodeSystemUpdate(List<ValueSet> valueSets) {
         OperationOutcomeBuilder responseBuilder = new OperationOutcomeBuilder();
 
         List<String> codeSystems = new ArrayList<>();
+
+        // Possible for this to run out of memory with really large ValueSets and CodeSystems.
+        Map<String, Set<String>> codesBySystem = new HashMap<>();
+        for (var vs : valueSets){
+
         if (vs.hasCompose() && vs.getCompose().hasInclude()) {
-            CodeSystem codeSystem;
             for (ValueSet.ConceptSetComponent csc : vs.getCompose().getInclude()) {
-                if (!csc.hasSystem())
+                if (!csc.hasSystem() || !csc.hasConcept()){
                     continue;
+                }
 
-                codeSystem = getCodeSystemByUrl(csc.getSystem());
+                var system = csc.getSystem();
+                if (!codesBySystem.containsKey(system)){
+                    codesBySystem.put(system, new HashSet<>());
+                }
 
-                if (!csc.hasConcept())
-                    continue;
-
-                updateCodeSystem(codeSystem.setUrl(csc.getSystem()), getUnionDistinctCodes(csc, codeSystem));
-
-                codeSystems.add(codeSystem.getUrl());
+                var codes = codesBySystem.get(system);
+                
+                codes.addAll(csc.getConcept().stream().map(ValueSet.ConceptReferenceComponent::getCode)
+                .collect(Collectors.toList()));
             }
         }
 
-        return responseBuilder.buildIssue("information", "informational",
-                "Successfully updated the following CodeSystems: " + String.join(", ", codeSystems)).build();
+        }
+
+        for(var entry : codesBySystem.entrySet()) {
+            var system = entry.getKey();
+            var codeSystem = getCodeSystemByUrl(system);
+            updateCodeSystem(codeSystem.setUrl(system), getUnionDistinctCodes(entry.getValue(), codeSystem));
+
+            codeSystems.add(codeSystem.getUrl());
+
+        }
+
+        if (codeSystems.size() > 0) {
+            return responseBuilder.buildIssue("information", "informational",
+            "Successfully updated the following CodeSystems: " + String.join(", ", codeSystems)).build();
+        }
+        else {
+            return responseBuilder.buildIssue("information", "informational",
+            "No code systems were updated").build();
+        }
     }
 
     /***
@@ -128,17 +157,15 @@ public class CodeSystemUpdateProvider {
      * @param codeSystem    A CodeSystem resource
      * @return List of distinct codes strings
      */
-    private List<String> getUnionDistinctCodes(ValueSet.ConceptSetComponent valueSetCodes, CodeSystem codeSystem) {
+    private Set<String> getUnionDistinctCodes(Set<String> valueSetCodes, CodeSystem codeSystem) {
         if (!codeSystem.hasConcept()) {
-            return valueSetCodes.getConcept().stream().map(ValueSet.ConceptReferenceComponent::getCode)
-                    .collect(Collectors.toList());
+            return valueSetCodes;
         }
-        return Stream.concat(
-                valueSetCodes.getConcept().stream().map(ValueSet.ConceptReferenceComponent::getCode)
-                        .collect(Collectors.toList()).stream(),
-                codeSystem.getConcept().stream().map(CodeSystem.ConceptDefinitionComponent::getCode)
-                        .collect(Collectors.toList()).stream())
-                .distinct().collect(Collectors.toList());
+
+        valueSetCodes.addAll(codeSystem.getConcept().stream().map(CodeSystem.ConceptDefinitionComponent::getCode)
+            .collect(Collectors.toUnmodifiableSet()));
+
+        return valueSetCodes;
     }
 
     /***
@@ -147,7 +174,7 @@ public class CodeSystemUpdateProvider {
      * @param codeSystem A CodeSystem resource
      * @param codes      List of (unique) code strings
      */
-    private void updateCodeSystem(CodeSystem codeSystem, List<String> codes) {
+    private void updateCodeSystem(CodeSystem codeSystem, Set<String> codes) {
         codeSystem
                 .setConcept(codes.stream().map(x -> new CodeSystem.ConceptDefinitionComponent().setCode(x))
                         .collect(Collectors.toList()))
