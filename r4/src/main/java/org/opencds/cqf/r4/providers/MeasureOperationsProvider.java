@@ -230,6 +230,8 @@ public class MeasureOperationsProvider {
             @RequiredParam(name = "periodEnd") String periodEnd,
             @RequiredParam(name = "subject") String subject, @OptionalParam(name = "topic") String topic) {
  
+        //TODO: topic should be many
+        
         if (subject == null || subject.equals("")) {
             throw new IllegalArgumentException("Subject is required.");
         }
