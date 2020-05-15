@@ -274,12 +274,10 @@ public class MeasureOperationsProvider {
                 section.setTitle(measure.getTitle());
             }
         
-            LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResolutionProvider);
-            MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader, this.libraryResolutionProvider);
-            seed.setup(measure, periodStart, periodEnd, null, null, null, null);
-            MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), this.registry, seed.getMeasurementPeriod());
             // TODO - this is configured for patient-level evaluation only
-            report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), subject);
+            report = evaluateMeasure(measure.getIdElement(), periodStart, periodEnd, null, null, subject, null,
+            null, null, null, null, null);
+                        
             report.setId(UUID.randomUUID().toString());
             report.setDate(new Date());
             report.setImprovementNotation(measure.getImprovementNotation());
