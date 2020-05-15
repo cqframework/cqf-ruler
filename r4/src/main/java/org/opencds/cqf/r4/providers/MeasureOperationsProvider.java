@@ -10,8 +10,10 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.ListResource;
@@ -25,6 +27,8 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.DetectedIssue.DetectedIssueEvidenceComponent;
+import org.hl7.fhir.r4.model.DetectedIssue.DetectedIssueStatus;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
@@ -263,8 +267,9 @@ public class MeasureOperationsProvider {
                 .setTitle("Care Gap Report");
 
         List<MeasureReport> reports = new ArrayList<>();
+        List<DetectedIssue> detectedIssues = new ArrayList<DetectedIssue>(); 
         MeasureReport report = null;
-        
+           
         for (IBaseResource resource : measures) {
             
             Measure measure = (Measure) resource;      
@@ -329,20 +334,26 @@ public class MeasureOperationsProvider {
 
                 // TODO - this is super hacky ... change once improvementNotation is specified
                 // as a code
-                String improvementNotation = measure.getImprovementNotation().getCodingFirstRep().getCode().toLowerCase();
+                String improvementNotation = measure.getImprovementNotation().getCodingFirstRep().getCode().toLowerCase();                
                 if (
                     ((improvementNotation.equals("increase")) && (proportion < 1.0))
                         ||  ((improvementNotation.equals("decrease")) && (proportion > 0.0))) {
                         //WIP
                         // add DetectedIssue added to section.entry
-                        // DetectedIssue detectedIssue = new DetectedIssue();
-                        // section.addEntry(
-                        //     new Reference(measure.getIdElement().getResourceType() + "/" + measure.getIdElement().getIdPart()));
-                 
+                        DetectedIssue detectedIssue = new DetectedIssue();
+                        detectedIssue.setId(UUID.randomUUID().toString());
+                        detectedIssue.setStatus(DetectedIssueStatus.FINAL);
+                        detectedIssue.getEvidence().add(new DetectedIssueEvidenceComponent().addDetail(new Reference("MeasureReport/" + report.getId())));
+                        CodeableConcept code = new CodeableConcept()
+                            .addCoding(new Coding().setSystem("http://hl7.org/fhir/us/davinci-deqm/CodeSystem/detectedissue-category").setCode("care-gap"));
+                        detectedIssue.setCode(code);
+                                                
+                        section.addEntry(
+                             new Reference("DetectedIssue/" + detectedIssue.getIdElement().getIdPart()));  
+                        composition.addSection(section);   
                         
-                        composition.addSection(section);
-                        reports.add(report);
-     
+                        detectedIssues.add(detectedIssue);   
+                        reports.add(report);     
                 } 
 
                 // TODO - add other types of improvement notation cases
@@ -353,6 +364,10 @@ public class MeasureOperationsProvider {
 
         for (MeasureReport rep : reports) {
             careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
+        }
+
+        for (DetectedIssue detectedIssue: detectedIssues) {
+            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue));
         }
 
         return careGapReport;
