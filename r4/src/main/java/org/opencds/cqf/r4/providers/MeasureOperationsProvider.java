@@ -338,11 +338,11 @@ public class MeasureOperationsProvider {
                 if (
                     ((improvementNotation.equals("increase")) && (proportion < 1.0))
                         ||  ((improvementNotation.equals("decrease")) && (proportion > 0.0))) {
-                        //WIP
-                        // add DetectedIssue added to section.entry
+
                         DetectedIssue detectedIssue = new DetectedIssue();
                         detectedIssue.setId(UUID.randomUUID().toString());
                         detectedIssue.setStatus(DetectedIssueStatus.FINAL);
+                        detectedIssue.setPatient(new Reference(subject.startsWith("Patient/") ? subject : "Patient/" + subject));
                         detectedIssue.getEvidence().add(new DetectedIssueEvidenceComponent().addDetail(new Reference("MeasureReport/" + report.getId())));
                         CodeableConcept code = new CodeableConcept()
                             .addCoding(new Coding().setSystem("http://hl7.org/fhir/us/davinci-deqm/CodeSystem/detectedissue-category").setCode("care-gap"));
