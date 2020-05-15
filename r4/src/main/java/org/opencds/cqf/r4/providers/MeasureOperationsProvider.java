@@ -230,7 +230,7 @@ public class MeasureOperationsProvider {
             @RequiredParam(name = "periodEnd") String periodEnd,
             @RequiredParam(name = "subject") String subject, @OptionalParam(name = "topic") String topic) {
  
-        //TODO: topic should be many
+        //TODO: topic should allow many
         
         if (subject == null || subject.equals("")) {
             throw new IllegalArgumentException("Subject is required.");
@@ -314,28 +314,35 @@ public class MeasureOperationsProvider {
                     }
                 }
 
+                //TODO: implement this per the spec
+                //Holding off on implementiation using Measure Score pending guidance re consideration for programs that don't perform the calculation (they just use numer/denom)
                 double proportion = 0.0;
                 if (measure.getScoring().hasCoding() && denominator != 0) {
                     for (Coding coding : measure.getScoring().getCoding()) {
                         if (coding.hasCode() && coding.getCode().equals("proportion")) {
-                            proportion = numerator / denominator;
+                            if (denominator != 0.0 ) {
+                                proportion = numerator / denominator;
+                            }
                         }
                     }
                 }
 
                 // TODO - this is super hacky ... change once improvementNotation is specified
                 // as a code
-                if (measure.getImprovementNotation().getCodingFirstRep().getCode().toLowerCase().equals("increase")) {
-                    if (proportion < 1.0) {
+                String improvementNotation = measure.getImprovementNotation().getCodingFirstRep().getCode().toLowerCase();
+                if (
+                    ((improvementNotation.equals("increase")) && (proportion < 1.0))
+                        ||  ((improvementNotation.equals("decrease")) && (proportion > 0.0))) {
+                            //WIP
+                    //     DetectedIssue detectedIssue = new DetectedIssue();
+                    //     section.addEntry(
+                    // new Reference(measure.getIdElement().getResourceType() + "/" + measure.getIdElement().getIdPart()));
+            if (measure.hasTitle()) {
+                        // add DetectedIssue added to section.entry
                         composition.addSection(section);
                         reports.add(report);
-                    }
-                } else if (measure.getImprovementNotation().getCodingFirstRep().getCode().toLowerCase().equals("decrease")) {
-                    if (proportion > 0.0) {
-                        composition.addSection(section);
-                        reports.add(report);
-                    }
-                }
+     
+                } 
 
                 // TODO - add other types of improvement notation cases
             }
