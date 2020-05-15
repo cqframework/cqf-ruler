@@ -1,6 +1,7 @@
 package org.opencds.cqf.r4.providers;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -247,12 +248,8 @@ public class MeasureOperationsProvider {
         Bundle careGapReport = new Bundle();
         careGapReport.setType(Bundle.BundleType.DOCUMENT);
 
-        Composition composition = new Composition();
-        // TODO - this is a placeholder code for now ... replace with preferred code
-        // once identified
-        CodeableConcept typeCode = new CodeableConcept()
-                .addCoding(new Coding().setSystem("http://loinc.org").setCode("57024-2"));
-        composition.setStatus(Composition.CompositionStatus.FINAL).setType(typeCode)
+        Composition composition = new Composition();   
+        composition.setStatus(Composition.CompositionStatus.FINAL)
                 .setSubject(new Reference(subject.startsWith("Patient/") ? subject : "Patient/" + subject))
                 .setTitle((topic != null && !topic.equals("") ? topic : "") + " Care Gap Report");
 
@@ -261,19 +258,13 @@ public class MeasureOperationsProvider {
         
         for (IBaseResource resource : measures) {
             
-            Measure measure = (Measure) resource;       
+            Measure measure = (Measure) resource;      
             Composition.SectionComponent section = new Composition.SectionComponent();
 
             if (measure.hasTitle()) {
                 section.setTitle(measure.getTitle());
             }
-            CodeableConcept improvementNotation = new CodeableConcept().addCoding(new Coding().setCode("increase").setSystem("http://terminology.hl7.org/CodeSystem/measure-improvement-notation")); // defaulting to "increase"
-            if (measure.hasImprovementNotation()) {
-                improvementNotation = measure.getImprovementNotation();
-                section.setText(new Narrative().setStatus(Narrative.NarrativeStatus.GENERATED)
-                        .setDiv(new XhtmlNode().setValue(improvementNotation.getCodingFirstRep().getCode())));
-            }
-
+        
             LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResolutionProvider);
             MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader, this.libraryResolutionProvider);
             seed.setup(measure, periodStart, periodEnd, null, null, null, null);
@@ -281,8 +272,11 @@ public class MeasureOperationsProvider {
             // TODO - this is configured for patient-level evaluation only
             report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), subject);
             report.setId(UUID.randomUUID().toString());
-            section.addEntry(
-                new Reference("MeasureReport/" + report.getId()));
+            report.setDate(new Date());
+            report.setImprovementNotation(measure.getImprovementNotation());
+            section.setFocus(new Reference("MeasureReport/" + report.getId()));
+            //TODO: DetectedIssue
+            //section.addEntry(new Reference("MeasureReport/" + report.getId()));
 
             if (report.hasGroup() && measure.hasScoring()) {
                 int numerator = 0;
@@ -321,12 +315,12 @@ public class MeasureOperationsProvider {
 
                 // TODO - this is super hacky ... change once improvementNotation is specified
                 // as a code
-                if (improvementNotation.getCodingFirstRep().getCode().toLowerCase().equals("increase")) {
+                if (measure.getImprovementNotation().getCodingFirstRep().getCode().toLowerCase().equals("increase")) {
                     if (proportion < 1.0) {
                         composition.addSection(section);
                         reports.add(report);
                     }
-                } else if (improvementNotation.getCodingFirstRep().getCode().toLowerCase().equals("decrease")) {
+                } else if (measure.getImprovementNotation().getCodingFirstRep().getCode().toLowerCase().equals("decrease")) {
                     if (proportion > 0.0) {
                         composition.addSection(section);
                         reports.add(report);
