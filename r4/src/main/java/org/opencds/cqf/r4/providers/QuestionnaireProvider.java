@@ -6,12 +6,12 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.util.BundleUtil;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.QuestionnaireResponse;
+import com.github.dnault.xmlpatch.repackaged.org.jaxen.util.SingletonList;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.utilities.BundleUtils;
+
+import java.util.List;
 
 import static org.opencds.cqf.common.helpers.ClientHelper.getClient;
 
@@ -23,51 +23,45 @@ public class QuestionnaireProvider {
     }
 
     @Operation(name = "$extract", idempotent = false, type = QuestionnaireResponse.class)
-    public Observation extractObservationFromQuestionnaireResponse(@OperationParam(name = "questionnaireResponse") QuestionnaireResponse questionnaireResponse) {
-        Observation newObs = new Observation();
-        newObs.setId("123456");
+    public Bundle extractObservationFromQuestionnaireResponse(@OperationParam(name = "questionnaireResponse") QuestionnaireResponse questionnaireResponse) {
         Bundle observationsFromQuestionnaireResponse = createObservationBundle(questionnaireResponse);
         Bundle returnBundle = sendObservationBundle(observationsFromQuestionnaireResponse);
-        return newObs;
+        return returnBundle;
     }
 
     private Bundle createObservationBundle(QuestionnaireResponse questionnaireResponse){
         Bundle newBundle = new Bundle();
-
-        QuestionnaireResponse.QuestionnaireResponseItemComponent item = questionnaireResponse.getItem().get(0);
-        String answer = item.getAnswer().get(0).getValueStringType().getValue();
-        Observation obs = new Observation();
-        obs.setStatus(Observation.ObservationStatus.FINAL);
- //       obs.setCode();
-//        obs.setValue() =
-/*
-            Bundle bundleToPost = new Bundle();
-            for (StringOrListParam params : valuesets.getValuesAsQueryTokens()) {
-                for (StringParam valuesetId : params.getValuesAsQueryTokens()) {
-                    bundleToPost.addEntry()
-                            .setRequest(new Bundle.BundleEntryRequestComponent().setMethod(Bundle.HTTPVerb.PUT)
-                                    .setUrl("ValueSet/" + valuesetId.getValue()))
-                            .setResource(resolveValueSet(client, valuesetId.getValue()));
-                }
-            }
-
- */
 
         Identifier bundleId = new Identifier();
         bundleId.setValue(questionnaireResponse.getId());
         newBundle.setType(Bundle.BundleType.TRANSACTION);
         newBundle.setIdentifier(bundleId);
 
+        questionnaireResponse.getItem().stream().forEach(item ->{
+            newBundle.addEntry(extractItem(item, questionnaireResponse.getQuestionnaire()));
+        });
+        return newBundle;
+    }
+
+    //TODO - ids need work; add encounter; what more??
+    private Bundle.BundleEntryComponent extractItem(QuestionnaireResponse.QuestionnaireResponseItemComponent item, String questionnaire){
+        //       obs.setCode();
+//        obs.setValue() =
+
+        Observation obs = new Observation();
+        obs.setStatus(Observation.ObservationStatus.FINAL);
+        obs.setId(item.getLinkId());
+//        obs.setDerivedFrom(new SingletonList("QuestionnaireResponse." + questionnaire + "." + item.getLinkId()));
+        obs.setValue(new StringType(item.getText() + "::" + item.getAnswer().get(0).getValueStringType().getValue()));
+
         Bundle.BundleEntryRequestComponent berc = new Bundle.BundleEntryRequestComponent();
         berc.setMethod(Bundle.HTTPVerb.PUT);
-        berc.setUrl("Observation/65austin");
+        berc.setUrl("Observation/" + item.getId() + "." + item.getLinkId());
 
         Bundle.BundleEntryComponent bec = new Bundle.BundleEntryComponent();
         bec.setResource(obs);
         bec.setRequest(berc);
-
-        newBundle.addEntry(bec);
-        return newBundle;
+        return bec;
     }
 
     private Bundle sendObservationBundle(Bundle observationsBundle){
@@ -76,25 +70,10 @@ public class QuestionnaireProvider {
         String password = HapiProperties.getObservationPassword();
 
         IGenericClient client = getClient(fhirContext, url, user, password);
-Bundle testBundle = new Bundle();
-IParser iParser = fhirContext.newJsonParser();
         Bundle outcomeBundle = client.transaction()
                 .withBundle(observationsBundle)
                 .execute();
         return outcomeBundle;
-/*
-        Bundle result = new Bundle();
-        try {
-            result = client.operation().onServer()
-                    .named("$process-reference-list")
-                    .withParameter(Parameters.class, "reference-list", referenceList)
-                    .encodedJson()
-                    .returnResourceType(Bundle.class)
-                    .execute();
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
-*/
     }
 
     /**
