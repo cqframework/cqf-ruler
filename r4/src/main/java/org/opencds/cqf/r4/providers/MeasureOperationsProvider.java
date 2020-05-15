@@ -10,7 +10,6 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Extension;
@@ -18,7 +17,9 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.ListResource;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
+import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Narrative;
+import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.RelatedArtifact;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.model.api.IQueryParameterType;
@@ -227,11 +229,16 @@ public class MeasureOperationsProvider {
     public Bundle careGapsReport(@RequiredParam(name = "periodStart") String periodStart,
             @RequiredParam(name = "periodEnd") String periodEnd,
             @RequiredParam(name = "subject") String subject, @OptionalParam(name = "topic") String topic) {
-        SearchParameterMap theParams = new SearchParameterMap();  
-
+ 
         if (subject == null || subject.equals("")) {
-            throw new IllegalArgumentException("Subject isrequired.");
+            throw new IllegalArgumentException("Subject is required.");
         }
+
+        //TODO: this is an org hack.  Need to figure out what the right thing is.
+        IFhirResourceDao<Organization> orgDao = this.registry.getResourceDao(Organization.class);
+        var org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
+        
+        SearchParameterMap theParams = new SearchParameterMap(); 
 
         // if (theId != null) {
         //     var measureParam = new StringParam(theId.getIdPart());
@@ -251,7 +258,7 @@ public class MeasureOperationsProvider {
         Composition composition = new Composition();   
         composition.setStatus(Composition.CompositionStatus.FINAL)
                 .setSubject(new Reference(subject.startsWith("Patient/") ? subject : "Patient/" + subject))
-                .setTitle((topic != null && !topic.equals("") ? topic : "") + " Care Gap Report");
+                .setTitle("Care Gap Report");
 
         List<MeasureReport> reports = new ArrayList<>();
         MeasureReport report = null;
@@ -274,6 +281,9 @@ public class MeasureOperationsProvider {
             report.setId(UUID.randomUUID().toString());
             report.setDate(new Date());
             report.setImprovementNotation(measure.getImprovementNotation());
+            //TODO: this is an org hack
+            report.setReporter(new Reference("Organization/" + org.get(0).getIdElement().getIdPart()));
+            report.setMeta(new Meta().addProfile("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/indv-measurereport-deqm"));
             section.setFocus(new Reference("MeasureReport/" + report.getId()));
             //TODO: DetectedIssue
             //section.addEntry(new Reference("MeasureReport/" + report.getId()));
