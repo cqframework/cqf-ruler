@@ -5,15 +5,7 @@ import java.util.Arrays;
 import javax.servlet.ServletException;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.ActivityDefinition;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.CodeSystem;
-import org.hl7.fhir.r4.model.Endpoint;
-import org.hl7.fhir.r4.model.Library;
-import org.hl7.fhir.r4.model.Measure;
-import org.hl7.fhir.r4.model.Meta;
-import org.hl7.fhir.r4.model.PlanDefinition;
-import org.hl7.fhir.r4.model.ValueSet;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
@@ -24,16 +16,7 @@ import org.opencds.cqf.measure.r4.CqfMeasure;
 import org.opencds.cqf.measure.r4.PopulationCriteriaMap;
 import org.opencds.cqf.measure.r4.VersionedTerminologyRef;
 import org.opencds.cqf.r4.evaluation.ProviderFactory;
-import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
-import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
-import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
-import org.opencds.cqf.r4.providers.CodeSystemUpdateProvider;
-import org.opencds.cqf.r4.providers.CqlExecutionProvider;
-import org.opencds.cqf.r4.providers.HQMFProvider;
-import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
-import org.opencds.cqf.r4.providers.LibraryOperationsProvider;
-import org.opencds.cqf.r4.providers.MeasureOperationsProvider;
-import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
+import org.opencds.cqf.r4.providers.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -235,6 +218,10 @@ public class BaseServlet extends RestfulServer {
         PlanDefinitionApplyProvider planDefProvider = new PlanDefinitionApplyProvider(this.fhirContext, actDefProvider,
                 this.getDao(PlanDefinition.class), this.getDao(ActivityDefinition.class), cql);
         this.registerProvider(planDefProvider);
+
+        // QuestionnaireResponse processing
+        QuestionnaireProvider questionnaireProvider = new QuestionnaireProvider(this.fhirContext);
+        this.registerProvider(questionnaireProvider);
 
         CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
         CdsHooksServlet.setLibraryResolutionProvider(libraryProvider);

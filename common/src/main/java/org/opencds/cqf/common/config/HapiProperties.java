@@ -345,4 +345,12 @@ public class HapiProperties {
         String value = HapiProperties.getProperty(REUSE_CACHED_SEARCH_RESULTS_MILLIS, "-1");
         return Long.valueOf(value);
     }
+
+    public static String getObservationEndpoint() {
+        return HapiProperties.getProperty("observation.endpoint");
+    }
+    public static String getObservationUserName(){return HapiProperties.getProperty("observation.username");};
+    public static String getObservationPassword(){return HapiProperties.getProperty("observation.password");};
+
+
 }
