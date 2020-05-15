@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -225,11 +226,21 @@ public class MeasureOperationsProvider {
     public Bundle careGapsReport(@RequiredParam(name = "periodStart") String periodStart,
             @RequiredParam(name = "periodEnd") String periodEnd,
             @RequiredParam(name = "subject") String subject, @OptionalParam(name = "topic") String topic) {
-        SearchParameterMap theParams = new SearchParameterMap();    
+        SearchParameterMap theParams = new SearchParameterMap();  
+
+        if (subject == null || subject.equals("")) {
+            throw new IllegalArgumentException("Subject isrequired.");
+        }
+
+        // if (theId != null) {
+        //     var measureParam = new StringParam(theId.getIdPart());
+        //     theParams.add("_id", measureParam);
+        // }
+
         if (topic != null && !topic.equals("")) {
             var topicParam = new TokenParam(topic);
             theParams.add("topic", topicParam);
-        }
+        }       
         
         List<IBaseResource> measures =  this.measureResourceProvider.getDao().search(theParams).getResources(0, 1000);
                
@@ -246,13 +257,13 @@ public class MeasureOperationsProvider {
                 .setTitle((topic != null && !topic.equals("") ? topic : "") + " Care Gap Report");
 
         List<MeasureReport> reports = new ArrayList<>();
-        MeasureReport report = new MeasureReport();
+        MeasureReport report = null;
+        
         for (IBaseResource resource : measures) {
+            
+            Measure measure = (Measure) resource;       
             Composition.SectionComponent section = new Composition.SectionComponent();
 
-            Measure measure = (Measure) resource;
-            section.addEntry(
-                    new Reference(measure.getIdElement().getResourceType() + "/" + measure.getIdElement().getIdPart()));
             if (measure.hasTitle()) {
                 section.setTitle(measure.getTitle());
             }
@@ -269,6 +280,9 @@ public class MeasureOperationsProvider {
             MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), this.registry, seed.getMeasurementPeriod());
             // TODO - this is configured for patient-level evaluation only
             report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), subject);
+            report.setId(UUID.randomUUID().toString());
+            section.addEntry(
+                new Reference("MeasureReport/" + report.getId()));
 
             if (report.hasGroup() && measure.hasScoring()) {
                 int numerator = 0;
