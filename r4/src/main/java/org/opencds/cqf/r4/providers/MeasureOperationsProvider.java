@@ -333,12 +333,13 @@ public class MeasureOperationsProvider {
                 if (
                     ((improvementNotation.equals("increase")) && (proportion < 1.0))
                         ||  ((improvementNotation.equals("decrease")) && (proportion > 0.0))) {
-                            //WIP
-                    //     DetectedIssue detectedIssue = new DetectedIssue();
-                    //     section.addEntry(
-                    // new Reference(measure.getIdElement().getResourceType() + "/" + measure.getIdElement().getIdPart()));
-            if (measure.hasTitle()) {
+                        //WIP
                         // add DetectedIssue added to section.entry
+                        // DetectedIssue detectedIssue = new DetectedIssue();
+                        // section.addEntry(
+                        //     new Reference(measure.getIdElement().getResourceType() + "/" + measure.getIdElement().getIdPart()));
+                 
+                        
                         composition.addSection(section);
                         reports.add(report);
      
