@@ -209,19 +209,25 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         } else {
             terminologyProvider = this.defaultTerminologyProvider;
         }
-
-        // TODO: If the terminology server and the data server are the same and the data server supports fast "in"
-        // you don't need to expand. Otherwise, do.
+        
         DataProvider dataProvider;
         if (dataEndpoint != null) {
             IGenericClient client = ClientHelperDos.getClient(resolver.getFhirContext(), dataEndpoint);
             RestFhirRetrieveProvider retriever = new RestFhirRetrieveProvider(new SearchParameterResolver(resolver.getFhirContext()), client);
             retriever.setTerminologyProvider(terminologyProvider);
-            retriever.setExpandValueSets(true);
+            if (terminologyEndpoint != null && !terminologyEndpoint.getAddress().equals(dataEndpoint.getAddress())) {
+                retriever.setExpandValueSets(true);
+            }
+
             dataProvider = new CompositeDataProvider(resolver, retriever);
         } else {
             RetrieveProvider retriever = new JpaFhirRetrieveProvider(this.registry,
                     new SearchParameterResolver(resolver.getFhirContext()));
+            retriever.setTerminologyProvider(terminologyProvider);
+            // Assume it's a different server, therefore need to expand.
+            if (terminologyEndpoint != null) {
+                retriever.setExpandValueSets(true);
+            }
 
             dataProvider = new CompositeDataProvider(resolver, retriever);
         }
