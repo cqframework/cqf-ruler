@@ -53,9 +53,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jetty.version>9.4.14.v20181114</jetty.version>
+        <jetty.version>9.4.28.v20200408</jetty.version>
         <jackson.version>2.10.1</jackson.version>
-        <derby.version>10.14.2.0</derby.version>
         <hapi.version>4.2.0</hapi.version>
         <cqf-tooling.version>1.1.0-SNAPSHOT</cqf-tooling.version>
         <cql-engine.version>1.4.0-SNAPSHOT</cql-engine.version>
@@ -243,31 +242,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.4.1212.jre7</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.197</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>${derby.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derbynet</artifactId>
-            <version>${derby.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derbyclient</artifactId>
-            <version>${derby.version}</version>
         </dependency>
 
         <dependency>
