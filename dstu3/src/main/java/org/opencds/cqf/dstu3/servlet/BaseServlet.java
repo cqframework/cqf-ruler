@@ -57,6 +57,7 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 
 public class BaseServlet extends RestfulServer {
@@ -141,6 +142,9 @@ public class BaseServlet extends RestfulServer {
          */
         ResponseHighlighterInterceptor responseHighlighterInterceptor = appCtx.getBean(ResponseHighlighterInterceptor.class);
         this.registerInterceptor(responseHighlighterInterceptor);
+
+        LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+        this.registerInterceptor(loggingInterceptor);
 
         /*
          * If you are hosting this server at a specific DNS name, the server will try to figure out the FHIR base URL
