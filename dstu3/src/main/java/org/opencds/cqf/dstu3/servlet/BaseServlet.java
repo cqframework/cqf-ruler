@@ -139,16 +139,13 @@ public class BaseServlet extends RestfulServer {
          * This interceptor formats the output using nice colourful HTML output when the
          * request is detected to come from a browser.
          */
-        ResponseHighlighterInterceptor responseHighlighterInterceptor = appCtx
-                .getBean(ResponseHighlighterInterceptor.class);
+        ResponseHighlighterInterceptor responseHighlighterInterceptor = appCtx.getBean(ResponseHighlighterInterceptor.class);
         this.registerInterceptor(responseHighlighterInterceptor);
 
         /*
-         * If you are hosting this server at a specific DNS name, the server will try to
-         * figure out the FHIR base URL based on what the web container tells it, but
-         * this doesn't always work. If you are setting links in your search bundles
-         * that just refer to "localhost", you might want to use a server address
-         * strategy:
+         * If you are hosting this server at a specific DNS name, the server will try to figure out the FHIR base URL
+         * based on what the web container tells it, but this doesn't always work. If you are setting links in your
+         * search bundles that just refer to "localhost", you might want to use a server address strategy:
          */
         String serverAddress = HapiProperties.getServerAddress();
         if (serverAddress != null && serverAddress.length() > 0) {
