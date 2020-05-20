@@ -30,7 +30,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.6</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
@@ -60,7 +59,7 @@
                     <webApp>
                         <contextPath>/cqf-ruler-dstu3</contextPath>
                         <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
-                                                <!-- Prevent unnecessary scanning to reduce start time -->
+                        <!-- Prevent unnecessary scanning to reduce start time -->
                         <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
                         <containerIncludeJarPattern>^$</containerIncludeJarPattern>
                     </webApp>
