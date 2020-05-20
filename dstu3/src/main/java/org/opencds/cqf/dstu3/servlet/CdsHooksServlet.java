@@ -108,15 +108,13 @@ public class CdsHooksServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         logger.info(request.getRequestURI());
 
         try {
             // validate that we are dealing with JSON
             if (!request.getContentType().startsWith("application/json")) {
-                throw new ServletException(String.format("Invalid content type %s. Please use application/json.",
-                        request.getContentType()));
+                throw new ServletException(String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
             }
 
             String baseUrl = request.getRequestURL().toString().replace(request.getPathInfo(), "")
@@ -124,10 +122,10 @@ public class CdsHooksServlet extends HttpServlet {
             String service = request.getPathInfo().replace("/", "");
 
             JsonParser parser = new JsonParser();
-            Request cdsHooksRequest = new Request(service, parser.parse(request.getReader()).getAsJsonObject(),
-                    JsonHelper.getObjectRequired(getService(service), "prefetch"));
+            JsonObject requestJson = parser.parse(request.getReader()).getAsJsonObject();
+            logger.info(requestJson.toString());
 
-            logger.info(cdsHooksRequest.getRequestJson().toString());
+            Request cdsHooksRequest = new Request(service, requestJson, JsonHelper.getObjectRequired(getService(service), "prefetch"));
 
             Hook hook = HookFactory.createHook(cdsHooksRequest);
 
@@ -170,8 +168,7 @@ public class CdsHooksServlet extends HttpServlet {
                 case 401:
                 case 403:
                 case 404:
-                    response.getWriter()
-                            .println("ERROR: Precondition Failed. FHIR server returned: " + e.getStatusCode());
+                    response.getWriter().println("ERROR: Precondition Failed. FHIR server returned: " + e.getStatusCode());
                     response.getWriter().println(e.getMessage());
                     response.setStatus(412);
                     break;
