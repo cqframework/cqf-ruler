@@ -60,6 +60,9 @@
                     <webApp>
                         <contextPath>/cqf-ruler-dstu3</contextPath>
                         <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
+                                                <!-- Prevent unnecessary scanning to reduce start time -->
+                        <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+                        <containerIncludeJarPattern>^$</containerIncludeJarPattern>
                     </webApp>
                 </configuration>
             </plugin>
