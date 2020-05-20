@@ -7,10 +7,12 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.util.BundleUtil;
 import com.github.dnault.xmlpatch.repackaged.org.jaxen.util.SingletonList;
+import org.hl7.fhir.DateTime;
 import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.utilities.BundleUtils;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.opencds.cqf.common.helpers.ClientHelper.getClient;
@@ -38,21 +40,23 @@ public class QuestionnaireProvider {
         newBundle.setIdentifier(bundleId);
 
         questionnaireResponse.getItem().stream().forEach(item ->{
-            newBundle.addEntry(extractItem(item, questionnaireResponse.getQuestionnaire()));
+            newBundle.addEntry(extractItem(item, questionnaireResponse));
         });
         return newBundle;
     }
 
-    //TODO - ids need work; add encounter; what more??
-    private Bundle.BundleEntryComponent extractItem(QuestionnaireResponse.QuestionnaireResponseItemComponent item, String questionnaire){
+    //TODO - ids need work; add encounter; subject/patient; effectiveDateTime; value
+    // TODO - using value for questionnaire question - NOT THE RIGHT PLACE!!
+    private Bundle.BundleEntryComponent extractItem(QuestionnaireResponse.QuestionnaireResponseItemComponent item, QuestionnaireResponse questionnaireResponse){
         //       obs.setCode();
 //        obs.setValue() =
 
         Observation obs = new Observation();
         obs.setStatus(Observation.ObservationStatus.FINAL);
         obs.setId(item.getLinkId());
-//        obs.setDerivedFrom(new SingletonList("QuestionnaireResponse." + questionnaire + "." + item.getLinkId()));
+//        obs.setDerivedFrom(new SingletonList(questionnaireResponse.get);  //create a reference to the QuestionnaireResponse  ????
         obs.setValue(new StringType(item.getText() + "::" + item.getAnswer().get(0).getValueStringType().getValue()));
+        obs.setEffective(new DateTimeType( questionnaireResponse.getMeta().getLastUpdated()));
 
         Bundle.BundleEntryRequestComponent berc = new Bundle.BundleEntryRequestComponent();
         berc.setMethod(Bundle.HTTPVerb.PUT);
