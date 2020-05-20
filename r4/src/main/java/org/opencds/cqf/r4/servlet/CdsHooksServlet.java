@@ -114,7 +114,7 @@ public class CdsHooksServlet extends HttpServlet {
 
         try {
             // validate that we are dealing with JSON
-            if (!request.getContentType().startsWith("application/json")) {
+            if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
                 throw new ServletException(String.format("Invalid content type %s. Please use application/json.",
                         request.getContentType()));
             }
