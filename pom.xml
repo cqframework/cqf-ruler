@@ -60,6 +60,7 @@
         <cql-engine.version>1.4.0-SNAPSHOT</cql-engine.version>
         <cqframework.version>1.4.9-SNAPSHOT</cqframework.version>
         <cds-hooks.version>1.1.0-SNAPSHOT</cds-hooks.version>
+        <slf4j.version>1.7.30</slf4j.version>
 
         <!-- jetty plugin properties (used when starting server locally) -->
         <dev>true</dev>
@@ -213,11 +214,11 @@
             <version>1.2.3</version>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.slf4j</groupId>-->
-        <!--<artifactId>jcl-over-slf4j</artifactId>-->
-        <!--<version>1.7.22</version>-->
-        <!--</dependency>-->
+        <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+        </dependency>
 
         <!-- Needed for JEE/Servlet support -->
         <dependency>
