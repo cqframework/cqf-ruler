@@ -31,11 +31,9 @@ public class FhirServerConfig {
     public FhirServerConfig() {
         ourLog.info("Server configured to " + (this.allowContainsSearches ? "allow" : "deny") + " contains searches");
         ourLog.info("Server configured to " + (this.allowMultipleDelete ? "allow" : "deny") + " multiple deletes");
-        ourLog.info(
-                "Server configured to " + (this.allowExternalReferences ? "allow" : "deny") + " external references");
+        ourLog.info("Server configured to " + (this.allowExternalReferences ? "allow" : "deny") + " external references");
         ourLog.info("Server configured to " + (this.expungeEnabled ? "enable" : "disable") + " expunges");
-        ourLog.info("Server configured to " + (this.allowPlaceholderReferences ? "allow" : "deny")
-                + " placeholder references");
+        ourLog.info("Server configured to " + (this.allowPlaceholderReferences ? "allow" : "deny") + " placeholder references");
         ourLog.info("Server configured to " + (this.allowOverrideDefaultSearchParams ? "allow" : "deny")
                 + " overriding default search params");
     }

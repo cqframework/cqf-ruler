@@ -54,6 +54,7 @@ import ca.uhn.fhir.jpa.term.api.ITermReadSvcR4;
 import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
+import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
@@ -89,8 +90,7 @@ public class BaseServlet extends RestfulServer {
         Object systemProvider = appCtx.getBean("mySystemProviderR4", JpaSystemProviderR4.class);
         registerProvider(systemProvider);
 
-        ResourceProviderFactory resourceProviders = appCtx.getBean("myResourceProvidersR4",
-                ResourceProviderFactory.class);
+        ResourceProviderFactory resourceProviders = appCtx.getBean("myResourceProvidersR4", ResourceProviderFactory.class);
         registerProviders(resourceProviders.createProviders());
 
         JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao,
@@ -101,8 +101,7 @@ public class BaseServlet extends RestfulServer {
         JpaTerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(
                 appCtx.getBean("terminologyService", ITermReadSvcR4.class), getFhirContext(),
                 (ValueSetResourceProvider) this.getResourceProvider(ValueSet.class));
-        EvaluationProviderFactory providerFactory = new ProviderFactory(this.fhirContext, this.registry,
-                localSystemTerminologyProvider);
+        EvaluationProviderFactory providerFactory = new ProviderFactory(this.fhirContext, this.registry, localSystemTerminologyProvider);
 
         resolveProviders(providerFactory, localSystemTerminologyProvider, this.registry);
 
@@ -144,6 +143,9 @@ public class BaseServlet extends RestfulServer {
         ResponseHighlighterInterceptor responseHighlighterInterceptor = appCtx
                 .getBean(ResponseHighlighterInterceptor.class);
         this.registerInterceptor(responseHighlighterInterceptor);
+
+        LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
+        this.registerInterceptor(loggingInterceptor);
 
         /*
          * If you are hosting this server at a specific DNS name, the server will try to
@@ -194,13 +196,11 @@ public class BaseServlet extends RestfulServer {
         HQMFProvider hqmfProvider = new HQMFProvider();
 
         // Code System Update
-        CodeSystemUpdateProvider csUpdate = new CodeSystemUpdateProvider(this.getDao(ValueSet.class),
-                this.getDao(CodeSystem.class));
+        CodeSystemUpdateProvider csUpdate = new CodeSystemUpdateProvider(this.getDao(ValueSet.class), this.getDao(CodeSystem.class));
         this.registerProvider(csUpdate);
 
         // Cache Value Sets
-        CacheValueSetsProvider cvs = new CacheValueSetsProvider(this.registry.getSystemDao(),
-                this.getDao(Endpoint.class));
+        CacheValueSetsProvider cvs = new CacheValueSetsProvider(this.registry.getSystemDao(), this.getDao(Endpoint.class));
         this.registerProvider(cvs);
 
         // Library processing

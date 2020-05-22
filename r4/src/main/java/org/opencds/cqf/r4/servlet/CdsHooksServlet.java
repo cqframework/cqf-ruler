@@ -40,6 +40,7 @@ import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
+import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
@@ -114,7 +115,7 @@ public class CdsHooksServlet extends HttpServlet {
 
         try {
             // validate that we are dealing with JSON
-            if (!request.getContentType().startsWith("application/json")) {
+            if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
                 throw new ServletException(String.format("Invalid content type %s. Please use application/json.",
                         request.getContentType()));
             }
@@ -165,30 +166,61 @@ public class CdsHooksServlet extends HttpServlet {
             response.getWriter().println(jsonResponse);
         } catch (BaseServerResponseException e) {
             this.setAccessControlHeaders(response);
-
-            switch (e.getStatusCode()) {
-                case 401:
-                case 403:
-                case 404:
-                    response.getWriter()
-                            .println("ERROR: Precondition Failed. FHIR server returned: " + e.getStatusCode());
-                    response.getWriter().println(e.getMessage());
-                    response.setStatus(412);
-                    break;
-                default:
-                    response.getWriter().println("ERROR: Unhandled error. FHIR server returned: " + e.getStatusCode());
-                    response.getWriter().println(e.getMessage());
-                    response.setStatus(500);
-            }
-        } catch (Exception e) {
+            response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
+            response.getWriter().println("ERROR: Exception connecting to remote server.");
+            this.printMessageAndCause(e, response);
+            this.handleServerResponseExecption((BaseServerResponseException) e.getCause(), response);
+            this.printStackTrack(e, response);
+        } catch (DataProviderException e) {
             this.setAccessControlHeaders(response);
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String exceptionAsString = sw.toString();
-            response.getWriter().println("ERROR: Unhandled error.");
-            response.getWriter().println(exceptionAsString);
-            response.setStatus(500);
+            response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
+            response.getWriter().println("ERROR: Exception in DataProvider.");
+            this.printMessageAndCause(e, response);
+            if (e.getCause() != null && (e.getCause() instanceof BaseServerResponseException)) {
+                this.handleServerResponseExecption((BaseServerResponseException) e.getCause(), response);
+            }
+
+            this.printStackTrack(e, response);
+        } catch (Exception e) {
+            throw new ServletException("ERROR: Exception in cds-hooks processing.", e);
         }
+    }
+
+    private void handleServerResponseExecption(BaseServerResponseException e, HttpServletResponse response)
+            throws IOException {
+        switch (e.getStatusCode()) {
+            case 401:
+            case 403:
+                response.getWriter().println("Precondition Failed. Remote FHIR server returned: " + e.getStatusCode());
+                response.getWriter().println(
+                        "Ensure that the fhirAuthorization token is set or that the remote server allows unauthenticated access.");
+                response.setStatus(412);
+                break;
+            case 404:
+                response.getWriter().println("Precondition Failed. Remote FHIR server returned: " + e.getStatusCode());
+                response.getWriter().println("Ensure the resource exists on the remote server.");
+                response.setStatus(412);
+                break;
+            default:
+                response.getWriter().println("Unhandled Error in Remote FHIR server: " + e.getStatusCode());
+        }
+    }
+
+    private void printMessageAndCause(Exception e, HttpServletResponse response) throws IOException {
+        if (e.getMessage() != null) {
+            response.getWriter().println(e.getMessage());
+        }
+
+        if (e.getCause() != null && e.getCause().getMessage() != null) {
+            response.getWriter().println(e.getCause().getMessage());
+        }
+    }
+
+    private void printStackTrack(Exception e, HttpServletResponse response) throws IOException {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        String exceptionAsString = sw.toString();
+        response.getWriter().println(exceptionAsString);
     }
 
     private JsonObject getService(String service) {

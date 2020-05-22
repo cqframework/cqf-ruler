@@ -53,14 +53,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jetty.version>9.4.14.v20181114</jetty.version>
+        <jetty.version>9.4.28.v20200408</jetty.version>
         <jackson.version>2.10.1</jackson.version>
-        <derby.version>10.14.2.0</derby.version>
         <hapi.version>4.2.0</hapi.version>
         <cqf-tooling.version>1.1.0-SNAPSHOT</cqf-tooling.version>
         <cql-engine.version>1.4.0-SNAPSHOT</cql-engine.version>
         <cqframework.version>1.4.9-SNAPSHOT</cqframework.version>
         <cds-hooks.version>1.1.0-SNAPSHOT</cds-hooks.version>
+        <slf4j.version>1.7.30</slf4j.version>
 
         <!-- jetty plugin properties (used when starting server locally) -->
         <dev>true</dev>
@@ -214,11 +214,11 @@
             <version>1.2.3</version>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.slf4j</groupId>-->
-        <!--<artifactId>jcl-over-slf4j</artifactId>-->
-        <!--<version>1.7.22</version>-->
-        <!--</dependency>-->
+        <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+        </dependency>
 
         <!-- Needed for JEE/Servlet support -->
         <dependency>
@@ -243,31 +243,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.4.1212.jre7</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.197</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>${derby.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derbynet</artifactId>
-            <version>${derby.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derbyclient</artifactId>
-            <version>${derby.version}</version>
         </dependency>
 
         <dependency>
@@ -369,6 +347,11 @@
                         <source>11</source>
                         <target>11</target>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.2.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
