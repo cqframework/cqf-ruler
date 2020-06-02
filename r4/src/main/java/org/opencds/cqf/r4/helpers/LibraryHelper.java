@@ -43,16 +43,14 @@ public class LibraryHelper {
         List<org.cqframework.cql.elm.execution.Library> libraries = new ArrayList<org.cqframework.cql.elm.execution.Library>();
 
         // load libraries
-          // load libraries
-          for (CanonicalType ref : measure.getLibrary()) {
-			// if library is contained in measure, load it into server
+        for (CanonicalType ref : measure.getLibrary()) {
+            // if library is contained in measure, load it into server
             String id = CanonicalHelper.getId(ref);
             if (id.startsWith("#")) {
                 id = id.substring(1);
                 for (Resource resource : measure.getContained()) {
                     if (resource instanceof org.hl7.fhir.r4.model.Library
-                            && resource.getIdElement().getIdPart().equals(id))
-                    {
+                            && resource.getIdElement().getIdPart().equals(id)) {
                         libraryResourceProvider.update((org.hl7.fhir.r4.model.Library) resource);
                     }
                 }
@@ -60,12 +58,14 @@ public class LibraryHelper {
 
             // We just loaded it into the server so we can access it by Id
             org.hl7.fhir.r4.model.Library library = libraryResourceProvider.resolveLibraryById(id);
+
             libraries.add(
-                libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
+                    libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
             );
         }
 
-        for (RelatedArtifact artifact : measure.getRelatedArtifact()) {
+        org.hl7.fhir.r4.model.Library primaryLibrary = libraryResourceProvider.resolveLibraryById(libraries.get(0).getIdentifier().getId());
+        for (RelatedArtifact artifact : primaryLibrary.getRelatedArtifact()) {
             if (artifact.hasType() && artifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.hasResource()) {
                 org.hl7.fhir.r4.model.Library library = libraryResourceProvider.resolveLibraryById(artifact.getResource());
                 libraries.add(

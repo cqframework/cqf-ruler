@@ -67,7 +67,8 @@ public class LibraryHelper {
             );
         }
 
-        for (RelatedArtifact artifact : measure.getRelatedArtifact()) {
+        org.hl7.fhir.dstu3.model.Library primaryLibrary = libraryResourceProvider.resolveLibraryById(libraries.get(0).getIdentifier().getId());
+        for (RelatedArtifact artifact : primaryLibrary.getRelatedArtifact()) {
             if (artifact.hasType() && artifact.getType().equals(RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.getResource().hasReference()) {
                 org.hl7.fhir.dstu3.model.Library library = libraryResourceProvider.resolveLibraryById(artifact.getResource().getReferenceElement().getIdPart());
                 libraries.add(
