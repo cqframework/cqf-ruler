@@ -140,12 +140,12 @@ public class CdsHooksServlet extends HttpServlet {
             Dstu3FhirModelResolver resolver = new Dstu3FhirModelResolver();
             CompositeDataProvider provider = new CompositeDataProvider(resolver, fhirRetrieveProvider);
 
+            Context context = new Context(library);
+
             DebugMap debugMap = new DebugMap();
             debugMap.setIsLoggingEnabled(true);
-            debugMap.addDebugEntry(library.getIdentifier().getId(), new DebugLocator(DebugLocator.DebugLocatorType.NODE_TYPE, "Retrieve"), DebugAction.WATCH);
-
-            Context context = new Context(library);
             context.setDebugMap(debugMap);
+
             context.registerDataProvider("http://hl7.org/fhir", provider); // TODO make sure tooling handles remote
                                                                            // provider case
             context.registerTerminologyProvider(jpaTerminologyProvider);
