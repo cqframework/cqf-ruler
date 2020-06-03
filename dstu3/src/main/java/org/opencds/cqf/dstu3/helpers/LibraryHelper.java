@@ -123,8 +123,7 @@ public class LibraryHelper {
         return library;
     }
 
-    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition,
-            org.opencds.cqf.cql.engine.execution.LibraryLoader libraryLoader,
+    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition, org.opencds.cqf.cql.engine.execution.LibraryLoader libraryLoader,
             LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
         String id = planDefinition.getLibraryFirstRep().getReferenceElement().getIdPart();
 

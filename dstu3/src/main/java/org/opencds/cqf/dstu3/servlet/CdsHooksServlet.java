@@ -38,6 +38,9 @@ import org.opencds.cqf.common.exceptions.InvalidRequestException;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
+import org.opencds.cqf.cql.engine.debug.DebugAction;
+import org.opencds.cqf.cql.engine.debug.DebugLocator;
+import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
@@ -109,40 +112,40 @@ public class CdsHooksServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         logger.info(request.getRequestURI());
 
         try {
             // validate that we are dealing with JSON
             if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
-                throw new ServletException(String.format("Invalid content type %s. Please use application/json.",
-                        request.getContentType()));
+                throw new ServletException(String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
             }
 
             String baseUrl = request.getRequestURL().toString().replace(request.getPathInfo(), "")
-                    .replace(request.getServletPath(), "") + "/fhir";
+                .replace(request.getServletPath(), "") + "/fhir";
             String service = request.getPathInfo().replace("/", "");
 
             JsonParser parser = new JsonParser();
             JsonObject requestJson = parser.parse(request.getReader()).getAsJsonObject();
             logger.info(requestJson.toString());
 
-            Request cdsHooksRequest = new Request(service, requestJson,
-                    JsonHelper.getObjectRequired(getService(service), "prefetch"));
+            Request cdsHooksRequest = new Request(service, requestJson, JsonHelper.getObjectRequired(getService(service), "prefetch"));
 
             Hook hook = HookFactory.createHook(cdsHooksRequest);
 
-            PlanDefinition planDefinition = planDefinitionProvider.getDao()
-                    .read(new IdType(hook.getRequest().getServiceName()));
+            PlanDefinition planDefinition = planDefinitionProvider.getDao().read(new IdType(hook.getRequest().getServiceName()));
             LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResolutionProvider);
-            Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader,
-                    libraryResolutionProvider);
+            Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider);
 
             Dstu3FhirModelResolver resolver = new Dstu3FhirModelResolver();
             CompositeDataProvider provider = new CompositeDataProvider(resolver, fhirRetrieveProvider);
 
+            DebugMap debugMap = new DebugMap();
+            debugMap.setIsLoggingEnabled(true);
+            debugMap.addDebugEntry(library.getIdentifier().getId(), new DebugLocator(DebugLocator.DebugLocatorType.NODE_TYPE, "Retrieve"), DebugAction.WATCH);
+
             Context context = new Context(library);
+            context.setDebugMap(debugMap);
             context.registerDataProvider("http://hl7.org/fhir", provider); // TODO make sure tooling handles remote
                                                                            // provider case
             context.registerTerminologyProvider(jpaTerminologyProvider);
@@ -150,9 +153,8 @@ public class CdsHooksServlet extends HttpServlet {
             context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
             context.setExpressionCaching(true);
 
-            EvaluationContext evaluationContext = new Stu3EvaluationContext(hook, version,
-                    FhirContext.forDstu3().newRestfulGenericClient(baseUrl), jpaTerminologyProvider, context, library,
-                    planDefinition);
+            EvaluationContext evaluationContext = new Stu3EvaluationContext(hook, version, FhirContext.forDstu3().newRestfulGenericClient(baseUrl),
+                jpaTerminologyProvider, context, library, planDefinition);
 
             this.setAccessControlHeaders(response);
 
@@ -193,8 +195,7 @@ public class CdsHooksServlet extends HttpServlet {
             case 401:
             case 403:
                 response.getWriter().println("Precondition Failed. Remote FHIR server returned: " + e.getStatusCode());
-                response.getWriter().println(
-                        "Ensure that the fhirAuthorization token is set or that the remote server allows unauthenticated access.");
+                response.getWriter().println("Ensure that the fhirAuthorization token is set or that the remote server allows unauthenticated access.");
                 response.setStatus(412);
                 break;
             case 404:
