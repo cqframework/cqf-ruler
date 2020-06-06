@@ -9,12 +9,13 @@ import org.opencds.cqf.cql.engine.execution.Context;
  */
 public class FhirMeasureBundler {
     // Adds the resources returned from the given expressions to a bundle
+    @SuppressWarnings("unchecked")
     public Bundle bundle(Context context, String... expressionNames) {
         Bundle bundle = new Bundle();
         bundle.setType(Bundle.BundleType.COLLECTION);
         for (String expressionName : expressionNames) {
             Object result = context.resolveExpressionRef(expressionName).evaluate(context);
-            for (Object element : (Iterable) result) {
+            for (Object element : (Iterable<Object>) result) {
                 Bundle.BundleEntryComponent entry = new Bundle.BundleEntryComponent();
                 entry.setResource((Resource) element);
                 // The null check for resourceType handles Lists, which don't have a resource

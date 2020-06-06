@@ -1,7 +1,6 @@
 package org.opencds.cqf.common.retrieve;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,12 +11,16 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.engine.fhir.retrieve.SearchParamFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterMap;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
 public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
+
+    private static final Logger logger = LoggerFactory.getLogger(JpaFhirRetrieveProvider.class);
 
     DaoRegistry registry;
 
@@ -57,8 +60,7 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
             }
 
         } catch (Exception e) {
-            // TODO: Add logging.
-            System.out.println(e.getMessage());
+            logger.warn("Error converting search parameter map", e);
         }
 
         IFhirResourceDao<?> dao = this.registry.getResourceDao(dataType);

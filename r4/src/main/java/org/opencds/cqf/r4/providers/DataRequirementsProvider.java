@@ -71,7 +71,7 @@ public class DataRequirementsProvider {
     // 1. Find the Primary Library Resource
     // 2. Load the Primary Library as ELM. This will recursively load the dependent
     // libraries as ELM by Name
-    // 3. Load the Library Depedencies as Resources
+    // 3. Load the Library Dependencies as Resources
     // 4. Update the Data Requirements on the Resources accordingly
     // Since the Library Loader only exposes the loaded libraries as ELM, we
     // actually have to load them twice.
@@ -141,7 +141,6 @@ public class DataRequirementsProvider {
                 .entrySet()) {
             Library library = libraryEntry.getValue().getLeft();
             org.hl7.fhir.r4.model.Library libraryResource = libraryEntry.getValue().getRight();
-            Boolean isPrimaryLibrary = libraryResource != null && libraryResource.getId().equals(primaryLibraryId);
             String libraryNamespace = "";
             if (primaryLibrary.getIncludes() != null) {
                 for (IncludeDef include : primaryLibrary.getIncludes().getDef()) {
@@ -380,7 +379,7 @@ public class DataRequirementsProvider {
             }
         }
 
-        // If there's only one group every critieria was shared. Kill the group.
+        // If there's only one group every criteria was shared. Kill the group.
         if (cqfMeasure.getGroup().size() == 1) {
             cqfMeasure.getGroup().clear();
         }

@@ -61,6 +61,7 @@ import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 
 public class BaseServlet extends RestfulServer {
+    private static final long serialVersionUID = 1L;
     DaoRegistry registry;
     FhirContext fhirContext;
 
@@ -187,6 +188,7 @@ public class BaseServlet extends RestfulServer {
     // Since resource provider resolution not lazy, the providers here must be
     // resolved in the correct
     // order of dependencies.
+    @SuppressWarnings("unchecked")
     private void resolveProviders(EvaluationProviderFactory providerFactory,
             JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry) throws ServletException {
         NarrativeProvider narrativeProvider = this.getNarrativeProvider();
@@ -208,7 +210,7 @@ public class BaseServlet extends RestfulServer {
         this.registerProvider(libraryProvider);
 
         // CQL Execution
-        CqlExecutionProvider cql = new CqlExecutionProvider(libraryProvider, providerFactory, this.fhirContext);
+        CqlExecutionProvider cql = new CqlExecutionProvider(libraryProvider, providerFactory);
         this.registerProvider(cql);
 
         // Bundle processing
@@ -245,6 +247,7 @@ public class BaseServlet extends RestfulServer {
         return this.registry.getResourceDao(clazz);
     }
 
+    @SuppressWarnings("unchecked")
     protected <T extends IBaseResource> BaseJpaResourceProvider<T> getResourceProvider(Class<T> clazz) {
         return (BaseJpaResourceProvider<T>) this.getResourceProviders().stream()
                 .filter(x -> x.getResourceType().getSimpleName().equals(clazz.getSimpleName())).findFirst().get();

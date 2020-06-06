@@ -223,6 +223,7 @@ public class CqlExecutionProvider {
         return context;
     }
 
+    @SuppressWarnings("unchecked")
     @Operation(name = "$cql")
     public Bundle evaluate(@OperationParam(name = "code") String code,
             @OperationParam(name = "patientId") String patientId,
@@ -358,13 +359,13 @@ public class CqlExecutionProvider {
                                                 .getResourceType() + "/"
                                                 + ((Resource) ((List<?>) res).get(0)).getIdElement().getIdPart()));
                             } else {
-                                result.addParameter().setName("value").setResource(bundler.bundle((Iterable) res));
+                                result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res));
                             }
                         } else {
                             result.addParameter().setName("value").setValue(new StringType(res.toString()));
                         }
                     } else if (res instanceof Iterable) {
-                        result.addParameter().setName("value").setResource(bundler.bundle((Iterable) res));
+                        result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res));
                     } else if (res instanceof Resource) {
                         if (executionResults != null && executionResults.equals("Summary")) {
                             result.addParameter().setName("value")

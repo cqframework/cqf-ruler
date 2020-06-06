@@ -1,7 +1,6 @@
 package org.opencds.cqf.dstu3.providers;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,14 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.ValueSet;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.dstu3.builders.OperationOutcomeBuilder;
 import org.opencds.cqf.dstu3.builders.RandomIdBuilder;
 

@@ -46,8 +46,6 @@ import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
 
 public class PlanDefinitionApplyProvider {
 
@@ -55,7 +53,7 @@ public class PlanDefinitionApplyProvider {
     private ModelResolver modelResolver;
     private ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
 
-    private IFhirResourceDao<PlanDefinition> planDefintionDao;
+    private IFhirResourceDao<PlanDefinition> planDefinitionDao;
     private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
 
     private FhirContext fhirContext;
@@ -63,19 +61,19 @@ public class PlanDefinitionApplyProvider {
     private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
     public PlanDefinitionApplyProvider(FhirContext fhirContext,
-            ActivityDefinitionApplyProvider activitydefinitionApplyProvider,
-            IFhirResourceDao<PlanDefinition> planDefintionDao,
+            ActivityDefinitionApplyProvider activityDefinitionApplyProvider,
+            IFhirResourceDao<PlanDefinition> planDefinitionDao,
             IFhirResourceDao<ActivityDefinition> activityDefinitionDao, CqlExecutionProvider executionProvider) {
         this.executionProvider = executionProvider;
         this.modelResolver = new R4FhirModelResolver();
-        this.activityDefinitionApplyProvider = activitydefinitionApplyProvider;
-        this.planDefintionDao = planDefintionDao;
+        this.activityDefinitionApplyProvider = activityDefinitionApplyProvider;
+        this.planDefinitionDao = planDefinitionDao;
         this.activityDefinitionDao = activityDefinitionDao;
         this.fhirContext = fhirContext;
     }
 
     public IFhirResourceDao<PlanDefinition> getDao() {
-        return this.planDefintionDao;
+        return this.planDefinitionDao;
     }
 
     @Operation(name = "$apply", idempotent = true, type = PlanDefinition.class)
@@ -89,7 +87,7 @@ public class PlanDefinitionApplyProvider {
             @OperationParam(name = "setting") String setting,
             @OperationParam(name = "settingContext") String settingContext)
             throws IOException, JAXBException, FHIRException {
-        PlanDefinition planDefinition = this.planDefintionDao.read(theId);
+        PlanDefinition planDefinition = this.planDefinitionDao.read(theId);
 
         if (planDefinition == null) {
             throw new IllegalArgumentException("Couldn't find PlanDefinition " + theId);
@@ -146,11 +144,11 @@ public class PlanDefinitionApplyProvider {
                         result = this.activityDefinitionApplyProvider.resolveActivityDefinition(
                                 (ActivityDefinition) resolveContained(session.getPlanDefinition(),
                                         action.getDefinitionCanonicalType().getValue()),
-                                session.getPatientId(), session.getPractionerId(), session.getOrganizationId());
+                                session.getPatientId(), session.getPractitionerId(), session.getOrganizationId());
                     } else {
                         result = this.activityDefinitionApplyProvider.apply(
                                 new IdType(CanonicalHelper.getId(action.getDefinitionCanonicalType())),
-                                session.getPatientId(), session.getEncounterId(), session.getPractionerId(),
+                                session.getPatientId(), session.getEncounterId(), session.getPractitionerId(),
                                 session.getOrganizationId(), null, session.getUserLanguage(),
                                 session.getUserTaskContext(), session.getSetting(), session.getSettingContext());
                     }
@@ -183,7 +181,7 @@ public class PlanDefinitionApplyProvider {
 
                 else {
 
-                    // TODO - likely need more date tranformations
+                    // TODO - likely need more date transformations
                     if (result instanceof DateTime) {
                         result = new JavaDateBuilder().buildFromDateTime((DateTime) result).build();
                     }
@@ -441,7 +439,7 @@ public class PlanDefinitionApplyProvider {
 class Session {
     private final String patientId;
     private final PlanDefinition planDefinition;
-    private final String practionerId;
+    private final String practitionerId;
     private final String organizationId;
     private final String userType;
     private final String userLanguage;
@@ -458,7 +456,7 @@ class Session {
         this.planDefinition = planDefinition;
         this.carePlanBuilder = builder;
         this.encounterId = encounterId;
-        this.practionerId = practitionerId;
+        this.practitionerId = practitionerId;
         this.organizationId = organizationId;
         this.userType = userType;
         this.userLanguage = userLanguage;
@@ -487,8 +485,8 @@ class Session {
         return this.encounterId;
     }
 
-    public String getPractionerId() {
-        return practionerId;
+    public String getPractitionerId() {
+        return practitionerId;
     }
 
     public String getOrganizationId() {

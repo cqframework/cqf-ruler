@@ -19,7 +19,6 @@ import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.evaluation.MeasurePopulationType;
 import org.opencds.cqf.common.evaluation.MeasureScoring;
-import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.dstu3.builders.MeasureReportBuilder;
@@ -36,12 +35,10 @@ public class MeasureEvaluation {
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureEvaluation.class);
 
-    private DataProvider provider;
     private Interval measurementPeriod;
     private DaoRegistry registry;
 
-    public MeasureEvaluation(DataProvider provider, DaoRegistry registry, Interval measurementPeriod) {
-        this.provider = provider;
+    public MeasureEvaluation(DaoRegistry registry, Interval measurementPeriod) {
         this.registry = registry;
         this.measurementPeriod = measurementPeriod;
     }
@@ -99,6 +96,7 @@ public class MeasureEvaluation {
         return evaluate(measure, context, getAllPatients(), MeasureReport.MeasureReportType.SUMMARY);
     }
 
+    @SuppressWarnings("unchecked")
     private Iterable<Resource> evaluateCriteria(Context context, Patient patient,
             Measure.MeasureGroupPopulationComponent pop) {
         if (!pop.hasCriteria()) {
@@ -115,8 +113,7 @@ public class MeasureEvaluation {
             expressions.clear();
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.warn("Error resetting expression cache", e);
         }
 
         Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
@@ -132,7 +129,7 @@ public class MeasureEvaluation {
             }
         }
 
-        return (Iterable) result;
+        return (Iterable<Resource>) result;
     }
 
     private boolean evaluatePopulationCriteria(Context context, Patient patient,
@@ -317,6 +314,7 @@ public class MeasureEvaluation {
                             }
                             break;
                         case MEASUREOBSERVATION:
+                            measureObservation = new HashMap<>();
                             break;
                     }
                 }
@@ -419,8 +417,7 @@ public class MeasureEvaluation {
 
                     // For each patient in the patient list
                     for (Patient patient : patients) {
-                        // Are they in the initial population?
-                        boolean inInitialPopulation = evaluatePopulationCriteria(context, patient,
+                        evaluatePopulationCriteria(context, patient,
                                 initialPopulationCriteria, initialPopulation, initialPopulationPatients, null, null,
                                 null);
                         populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources,

@@ -38,8 +38,6 @@ import org.opencds.cqf.common.exceptions.InvalidRequestException;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
-import org.opencds.cqf.cql.engine.debug.DebugAction;
-import org.opencds.cqf.cql.engine.debug.DebugLocator;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
@@ -57,6 +55,7 @@ import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 
 @WebServlet(name = "cds-services")
 public class CdsHooksServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
     private FhirVersionEnum version = FhirVersionEnum.R4;
     private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 
@@ -157,7 +156,7 @@ public class CdsHooksServlet extends HttpServlet {
             context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
             context.setExpressionCaching(true);
 
-            EvaluationContext evaluationContext = new R4EvaluationContext(hook, version,
+            EvaluationContext<PlanDefinition> evaluationContext = new R4EvaluationContext(hook, version,
                     FhirContext.forR4().newRestfulGenericClient(baseUrl), jpaTerminologyProvider, context, library,
                     planDefinition);
 
@@ -177,7 +176,7 @@ public class CdsHooksServlet extends HttpServlet {
             response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
             response.getWriter().println("ERROR: Exception connecting to remote server.");
             this.printMessageAndCause(e, response);
-            this.handleServerResponseExecption((BaseServerResponseException) e.getCause(), response);
+            this.handleServerResponseException((BaseServerResponseException) e.getCause(), response);
             this.printStackTrack(e, response);
         } catch (DataProviderException e) {
             this.setAccessControlHeaders(response);
@@ -185,7 +184,7 @@ public class CdsHooksServlet extends HttpServlet {
             response.getWriter().println("ERROR: Exception in DataProvider.");
             this.printMessageAndCause(e, response);
             if (e.getCause() != null && (e.getCause() instanceof BaseServerResponseException)) {
-                this.handleServerResponseExecption((BaseServerResponseException) e.getCause(), response);
+                this.handleServerResponseException((BaseServerResponseException) e.getCause(), response);
             }
 
             this.printStackTrack(e, response);
@@ -194,7 +193,7 @@ public class CdsHooksServlet extends HttpServlet {
         }
     }
 
-    private void handleServerResponseExecption(BaseServerResponseException e, HttpServletResponse response)
+    private void handleServerResponseException(BaseServerResponseException e, HttpServletResponse response)
             throws IOException {
         switch (e.getStatusCode()) {
             case 401:
