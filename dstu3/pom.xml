@@ -17,10 +17,5 @@
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.opencds.cqf</groupId>
-            <artifactId>tooling</artifactId>
-            <version>${cqf-tooling.version}</version>
-        </dependency>
     </dependencies>
 </project>

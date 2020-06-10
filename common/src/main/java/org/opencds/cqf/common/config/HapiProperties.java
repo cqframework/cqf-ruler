@@ -232,9 +232,9 @@ public class HapiProperties {
         return HapiProperties.getProperty(DATASOURCE_DRIVER, "org.apache.derby.jdbc.EmbeddedDriver");
     }
 
-    public static Object getDriver() {
-        return new org.apache.derby.jdbc.EmbeddedDriver();
-    }
+    // public static Object getDriver() {
+    //     return new org.apache.derby.jdbc.EmbeddedDriver();
+    // }
 
     public static Integer getDataSourceMaxPoolSize() {
         return HapiProperties.getIntegerProperty(DATASOURCE_MAX_POOL_SIZE, 10);
