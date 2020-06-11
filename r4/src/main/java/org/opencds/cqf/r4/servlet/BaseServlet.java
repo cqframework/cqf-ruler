@@ -223,6 +223,11 @@ public class BaseServlet extends RestfulServer {
         QuestionnaireProvider questionnaireProvider = new QuestionnaireProvider(this.fhirContext);
         this.registerProvider(questionnaireProvider);
 
+        if(HapiProperties.getOAuthEnabled()) {
+            OAuthProvider oauthProvider = new OAuthProvider();
+            this.registerProvider(oauthProvider);
+        }
+
         CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
         CdsHooksServlet.setLibraryResolutionProvider(libraryProvider);
         CdsHooksServlet.setSystemTerminologyProvider(localSystemTerminologyProvider);
