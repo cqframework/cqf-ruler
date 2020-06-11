@@ -222,6 +222,7 @@ public class BaseServlet extends RestfulServer {
         if(HapiProperties.getOAuthEnabled()) {
             OAuthProvider oauthProvider = new OAuthProvider();
             this.registerProvider(oauthProvider);
+            this.setServerConformanceProvider(oauthProvider);
         }
 
         CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
