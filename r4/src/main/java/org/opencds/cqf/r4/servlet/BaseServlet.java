@@ -219,10 +219,6 @@ public class BaseServlet extends RestfulServer {
                 this.getDao(PlanDefinition.class), this.getDao(ActivityDefinition.class), cql);
         this.registerProvider(planDefProvider);
 
-        // QuestionnaireResponse processing
-        QuestionnaireProvider questionnaireProvider = new QuestionnaireProvider(this.fhirContext);
-        this.registerProvider(questionnaireProvider);
-
         if(HapiProperties.getOAuthEnabled()) {
             OAuthProvider oauthProvider = new OAuthProvider();
             this.registerProvider(oauthProvider);
