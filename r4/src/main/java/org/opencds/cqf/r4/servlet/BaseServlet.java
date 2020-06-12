@@ -76,10 +76,17 @@ public class BaseServlet extends RestfulServer {
         ResourceProviderFactory resourceProviders = appCtx.getBean("myResourceProvidersR4", ResourceProviderFactory.class);
         registerProviders(resourceProviders.createProviders());
 
-        JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao,
-                appCtx.getBean(DaoConfig.class));
-        confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
-        setServerConformanceProvider(confProvider);
+        if(HapiProperties.getOAuthEnabled()) {
+            OAuthProvider oauthProvider = new OAuthProvider(this, systemDao,
+                    appCtx.getBean(DaoConfig.class));
+            this.registerProvider(oauthProvider);
+            this.setServerConformanceProvider(oauthProvider);
+        }else {
+            JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao,
+                    appCtx.getBean(DaoConfig.class));
+            confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
+            setServerConformanceProvider(confProvider);
+        }
 
         JpaTerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(
                 appCtx.getBean("terminologyService", ITermReadSvcR4.class), getFhirContext(),
@@ -218,12 +225,6 @@ public class BaseServlet extends RestfulServer {
         PlanDefinitionApplyProvider planDefProvider = new PlanDefinitionApplyProvider(this.fhirContext, actDefProvider,
                 this.getDao(PlanDefinition.class), this.getDao(ActivityDefinition.class), cql);
         this.registerProvider(planDefProvider);
-
-        if(HapiProperties.getOAuthEnabled()) {
-            OAuthProvider oauthProvider = new OAuthProvider();
-            this.registerProvider(oauthProvider);
-            this.setServerConformanceProvider(oauthProvider);
-        }
 
         CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
         CdsHooksServlet.setLibraryResolutionProvider(libraryProvider);
