@@ -25,7 +25,7 @@ public class OAuthProvider extends JpaConformanceProviderR4 {
         super(theRestfulServer, theSystemDao, theDaoConfig);
     }
 
-        @Metadata
+    @Metadata
     @Override
     public CapabilityStatement getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
         CapabilityStatement retVal;
