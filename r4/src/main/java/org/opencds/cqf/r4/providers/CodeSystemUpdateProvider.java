@@ -88,7 +88,7 @@ public class CodeSystemUpdateProvider {
 
         // Possible for this to run out of memory with really large ValueSets and CodeSystems.
         Map<String, Set<String>> codesBySystem = new HashMap<>();
-        for (var vs : valueSets){
+        for (ValueSet vs : valueSets){
 
         if (vs.hasCompose() && vs.getCompose().hasInclude()) {
             for (ValueSet.ConceptSetComponent csc : vs.getCompose().getInclude()) {
@@ -96,12 +96,12 @@ public class CodeSystemUpdateProvider {
                     continue;
                 }
 
-                var system = csc.getSystem();
+                String system = csc.getSystem();
                 if (!codesBySystem.containsKey(system)){
                     codesBySystem.put(system, new HashSet<>());
                 }
 
-                var codes = codesBySystem.get(system);
+                Set<String> codes = codesBySystem.get(system);
                 
                 codes.addAll(csc.getConcept().stream().map(ValueSet.ConceptReferenceComponent::getCode)
                 .collect(Collectors.toList()));
@@ -110,9 +110,9 @@ public class CodeSystemUpdateProvider {
 
         }
 
-        for(var entry : codesBySystem.entrySet()) {
-            var system = entry.getKey();
-            var codeSystem = getCodeSystemByUrl(system);
+        for(Map.Entry<String, Set<String>> entry : codesBySystem.entrySet()) {
+            String system = entry.getKey();
+            CodeSystem codeSystem = getCodeSystemByUrl(system);
             updateCodeSystem(codeSystem.setUrl(system), getUnionDistinctCodes(entry.getValue(), codeSystem));
 
             codeSystems.add(codeSystem.getUrl());
