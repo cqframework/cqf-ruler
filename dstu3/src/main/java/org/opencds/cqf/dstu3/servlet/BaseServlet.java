@@ -29,6 +29,7 @@ import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
 import org.opencds.cqf.dstu3.providers.LibraryOperationsProvider;
 import org.opencds.cqf.dstu3.providers.MeasureOperationsProvider;
 import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
+import org.opencds.cqf.dstu3.providers.OAuthProvider;
 import org.opencds.cqf.library.stu3.NarrativeProvider;
 import org.opencds.cqf.measure.stu3.CodeTerminologyRef;
 import org.opencds.cqf.measure.stu3.CqfMeasure;
@@ -95,10 +96,18 @@ public class BaseServlet extends RestfulServer {
                 ResourceProviderFactory.class);
         registerProviders(resourceProviders.createProviders());
 
-        JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao,
-                appCtx.getBean(DaoConfig.class));
-        confProvider.setImplementationDescription("CQF Ruler FHIR DSTU3 Server");
-        setServerConformanceProvider(confProvider);
+        if(HapiProperties.getOAuthEnabled()) {
+            OAuthProvider oauthProvider = new OAuthProvider(this, systemDao,
+                    appCtx.getBean(DaoConfig.class));
+            this.registerProvider(oauthProvider);
+            this.setServerConformanceProvider(oauthProvider);
+        }else {
+
+            JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao,
+                    appCtx.getBean(DaoConfig.class));
+            confProvider.setImplementationDescription("CQF Ruler FHIR DSTU3 Server");
+            setServerConformanceProvider(confProvider);
+        }
 
         JpaTerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(
                 appCtx.getBean("terminologyService", ITermReadSvcDstu3.class), getFhirContext(),

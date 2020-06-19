@@ -48,6 +48,17 @@ public class HapiProperties {
     static final String ALLOW_CONTAINS_SEARCHES = "allow_contains_searches";
     static final String ALLOW_OVERRIDE_DEFAULT_SEARCH_PARAMS = "allow_override_default_search_params";
     static final String EMAIL_FROM = "email.from";
+    static final String OAUTH_ENABLED = "oauth.enabled";
+    static final String OAUTH_SECURITY_CORS = "oauth.securityCors";
+    static final String OAUTH_SECURITY_URL = "oauth.securityUrl";
+    static final String OAUTH_SECURITY_EXT_AUTH_URL = "oauth.securityExtAuthUrl";
+    static final String OAUTH_SECURITY_EXT_AUTH_VALUE_URI = "oauth.securityExtAuthValueUri";
+    static final String OAUTH_SECURITY_EXT_TOKEN_URL = "oauth.securityExtTokenUrl";
+    static final String OAUTH_SECURITY_EXT_TOKEN_VALUE_URI = "oauth.securityExtTokenValueUri";
+    static final String OAUTH_SERVICE_SYSTEM = "oauth.serviceSystem";
+    static final String OAUTH_SERVICE_CODE = "oauth.serviceCode";
+    static final String OAUTH_SERVICE_DISPLAY = "oauth.serviceDisplay";
+    static final String OAUTH_SERVICE_TEXT = "oauth.serviceText";
 
     private static Properties properties;
 
@@ -345,4 +356,23 @@ public class HapiProperties {
         String value = HapiProperties.getProperty(REUSE_CACHED_SEARCH_RESULTS_MILLIS, "-1");
         return Long.valueOf(value);
     }
+
+    public static String getObservationEndpoint() {
+        return HapiProperties.getProperty("observation.endpoint");
+    }
+    public static String getObservationUserName(){return HapiProperties.getProperty("observation.username");};
+    public static String getObservationPassword(){return HapiProperties.getProperty("observation.password");};
+
+    //************************* OAuth *******************************************************
+    public static Boolean getOAuthEnabled(){return HapiProperties.getBooleanProperty(OAUTH_ENABLED, true);}
+    public static Boolean getOauthSecurityCors(){return HapiProperties.getBooleanProperty(OAUTH_SECURITY_CORS, true);}
+    public static String getOauthSecurityUrl(){return HapiProperties.getProperty(OAUTH_SECURITY_URL, "");}
+    public static String getOauthSecurityExtAuthUrl(){return HapiProperties.getProperty(OAUTH_SECURITY_EXT_AUTH_URL, "");}
+    public static String getOauthSecurityExtAuthValueUri(){return HapiProperties.getProperty(OAUTH_SECURITY_EXT_AUTH_VALUE_URI, "");}
+    public static String getOauthSecurityExtTokenUrl(){return HapiProperties.getProperty(OAUTH_SECURITY_EXT_TOKEN_URL, "");}
+    public static String getOauthSecurityExtTokenValueUri(){return HapiProperties.getProperty(OAUTH_SECURITY_EXT_TOKEN_VALUE_URI, "");}
+    public static String getOauthServiceSystem(){return HapiProperties.getProperty(OAUTH_SERVICE_SYSTEM, "");}
+    public static String getOauthServiceCode(){return HapiProperties.getProperty(OAUTH_SERVICE_CODE, "");}
+    public static String getOauthServiceDisplay(){return HapiProperties.getProperty(OAUTH_SERVICE_DISPLAY, "");}
+    public static String getOauthServiceText(){return HapiProperties.getProperty(OAUTH_SERVICE_TEXT, "");}
 }

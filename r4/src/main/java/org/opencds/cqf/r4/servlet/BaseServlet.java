@@ -34,6 +34,7 @@ import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
 import org.opencds.cqf.r4.providers.LibraryOperationsProvider;
 import org.opencds.cqf.r4.providers.MeasureOperationsProvider;
 import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
+import org.opencds.cqf.r4.providers.OAuthProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -83,6 +84,7 @@ public class BaseServlet extends RestfulServer {
         this.fhirContext.registerCustomType(CqfMeasure.class);
         setFhirContext(this.fhirContext);
 
+
         // System and Resource Daos
         IFhirSystemDao<Bundle, Meta> systemDao = appCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
         this.registry = appCtx.getBean(DaoRegistry.class);
@@ -91,13 +93,21 @@ public class BaseServlet extends RestfulServer {
         Object systemProvider = appCtx.getBean("mySystemProviderR4", JpaSystemProviderR4.class);
         registerProvider(systemProvider);
 
+
         ResourceProviderFactory resourceProviders = appCtx.getBean("myResourceProvidersR4", ResourceProviderFactory.class);
         registerProviders(resourceProviders.createProviders());
 
-        JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao,
-                appCtx.getBean(DaoConfig.class));
-        confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
-        setServerConformanceProvider(confProvider);
+        if(HapiProperties.getOAuthEnabled()) {
+            OAuthProvider oauthProvider = new OAuthProvider(this, systemDao,
+                    appCtx.getBean(DaoConfig.class));
+            this.registerProvider(oauthProvider);
+            this.setServerConformanceProvider(oauthProvider);
+        }else {
+            JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao,
+                    appCtx.getBean(DaoConfig.class));
+            confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
+            setServerConformanceProvider(confProvider);
+        }
 
         JpaTerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(
                 appCtx.getBean("terminologyService", ITermReadSvcR4.class), getFhirContext(),
