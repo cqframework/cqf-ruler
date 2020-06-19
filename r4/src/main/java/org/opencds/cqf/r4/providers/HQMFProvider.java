@@ -2,13 +2,10 @@ package org.opencds.cqf.r4.providers;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -19,16 +16,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 
 import com.jamesmurty.utils.XMLBuilder2;
 
@@ -55,7 +47,6 @@ import org.opencds.cqf.measure.r4.CqfMeasure;
 import org.opencds.cqf.measure.r4.TerminologyRef;
 import org.opencds.cqf.measure.r4.TerminologyRef.TerminologyRefType;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -63,6 +54,8 @@ import ca.uhn.fhir.parser.IParser;
 public class HQMFProvider {
 
     private static Map<String, String> measureTypeValueSetMap = new HashMap<String, String>() {
+        private static final long serialVersionUID = 1L;
+
         {
             put("PROCESS", "Process");
             put("OUTCOME", "Outcome");
@@ -73,6 +66,8 @@ public class HQMFProvider {
     };
 
     private static Map<String, String> measureScoringValueSetMap = new HashMap<String, String>() {
+        private static final long serialVersionUID = 1L;
+
         {
             put("PROPOR", "Proportion");
             put("RATIO", "Ratio");
@@ -97,6 +92,7 @@ public class HQMFProvider {
     }
 
     public static Map<String, CodeMapping> measurePopulationValueSetMap = new HashMap<String, CodeMapping>() {
+        private static final long serialVersionUID = 1L;
         {
             put("initial-population",
                     new CodeMapping("IPOP", "Initial Population", "initialPopulationCriteria", "initialPopulation"));
@@ -105,7 +101,7 @@ public class HQMFProvider {
                     "numeratorExclusions"));
             put("denominator", new CodeMapping("DENOM", "Denominator", "denominatorCriteria", "denominator"));
             put("denominator-exclusion", new CodeMapping("DENEX", "Denominator Exclusion",
-                    "denominatorExclusionCritieria", "denominatorExclusions"));
+                    "denominatorExclusionCriteria", "denominatorExclusions"));
             put("denominator-exception", new CodeMapping("DENEXCEP", "Denominator Exception",
                     "denominatorExceptionCriteria", "denominatorExceptions"));
             // TODO: Figure out what the codes for these are (MPOP, MPOPEX, MPOPEXCEP are
@@ -326,7 +322,7 @@ public class HQMFProvider {
         this.addMeasureAttributeWithCodeAndTextValue(xml, "RAT", codeSystem, "Rationale", "text/plain",
                 m.hasRationale() ? m.getRationale() : "None");
 
-        // Clinical Recomendation Statement
+        // Clinical Recommendation Statement
         this.addMeasureAttributeWithCodeAndTextValue(xml, "CRS", codeSystem, "Clinical Recommendation Statement",
                 "text/plain", m.hasClinicalRecommendationStatement() ? m.getClinicalRecommendationStatement() : "None");
 
@@ -546,10 +542,10 @@ public class HQMFProvider {
                 .up();
     }
 
-    private XMLBuilder2 addPopulationCriteriaHeader(XMLBuilder2 xml, String crtieriaName, String criteriaRoot) {
+    private XMLBuilder2 addPopulationCriteriaHeader(XMLBuilder2 xml, String criteriaName, String criteriaRoot) {
         return xml.root().elem("component").elem("populationCriteriaSection").elem("templateId").elem("item")
                 .a("extension", "2017-08-01").a("root", "2.16.840.1.113883.10.20.28.2.7").up().up().elem("id")
-                .a("extension", crtieriaName).a("root", criteriaRoot).up().elem("code").a("code", "57026-7")
+                .a("extension", criteriaName).a("root", criteriaRoot).up().elem("code").a("code", "57026-7")
                 .a("codeSystem", "2.16.840.1.113883.6.1").up().elem("title").a("value", "Population Criteria Section")
                 .up().elem("text").up();
     }
@@ -607,32 +603,32 @@ public class HQMFProvider {
         }
     }
 
-    private boolean validateHQMF(String xml) {
-        try {
-            return this.validateXML(this.loadHQMFSchema(), xml);
-        } catch (SAXException e) {
-            return false;
-        }
-    }
+    // private boolean validateHQMF(String xml) {
+    //     try {
+    //         return this.validateXML(this.loadHQMFSchema(), xml);
+    //     } catch (SAXException e) {
+    //         return false;
+    //     }
+    // }
 
-    private boolean validateXML(Schema schema, String xml) {
-        try {
-            Validator validator = schema.newValidator();
-            validator.validate(new StreamSource(new StringReader(xml)));
-        } catch (IOException | SAXException e) {
-            System.out.println("Exception: " + e.getMessage());
-            return false;
-        }
-        return true;
-    }
+    // private boolean validateXML(Schema schema, String xml) {
+    //     try {
+    //         Validator validator = schema.newValidator();
+    //         validator.validate(new StreamSource(new StringReader(xml)));
+    //     } catch (IOException | SAXException e) {
+    //         System.out.println("Exception: " + e.getMessage());
+    //         return false;
+    //     }
+    //     return true;
+    // }
 
-    private Schema loadHQMFSchema() throws SAXException {
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        URL hqmfSchema = ClassLoader.getSystemClassLoader().getResource("hqmf/schemas/EMeasure_N1.xsd");
-        return factory.newSchema(hqmfSchema);
-    }
+    // private Schema loadHQMFSchema() throws SAXException {
+    //     SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    //     URL hqmfSchema = ClassLoader.getSystemClassLoader().getResource("hqmf/schemas/EMeasure_N1.xsd");
+    //     return factory.newSchema(hqmfSchema);
+    // }
 
-    // args[0] == relative path to json measure -> i.e. measure/mesure-demo.json
+    // args[0] == relative path to json measure -> i.e. measure/measure-demo.json
     // (optional)
     // args[1] == path to resource output -> i.e.
     // library/library-demo.json(optional)

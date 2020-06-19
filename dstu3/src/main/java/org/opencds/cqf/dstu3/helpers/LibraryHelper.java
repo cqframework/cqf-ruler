@@ -63,13 +63,14 @@ public class LibraryHelper {
                     .load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion())));
         }
 
-        for (RelatedArtifact artifact : measure.getRelatedArtifact()) {
-            if (artifact.hasType() && artifact.getType().equals(RelatedArtifactType.DEPENDSON) && artifact.hasResource()
-                    && artifact.getResource().hasReference()) {
-                org.hl7.fhir.dstu3.model.Library library = libraryResourceProvider
-                        .resolveLibraryById(artifact.getResource().getReferenceElement().getIdPart());
-                libraries.add(libraryLoader
-                        .load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion())));
+        VersionedIdentifier primaryLibraryId = libraries.get(0).getIdentifier();
+        org.hl7.fhir.dstu3.model.Library primaryLibrary = libraryResourceProvider.resolveLibraryByName(primaryLibraryId.getId(), primaryLibraryId.getVersion());
+        for (RelatedArtifact artifact : primaryLibrary.getRelatedArtifact()) {
+            if (artifact.hasType() && artifact.getType().equals(RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.getResource().hasReference()) {
+                org.hl7.fhir.dstu3.model.Library library = libraryResourceProvider.resolveLibraryById(artifact.getResource().getReferenceElement().getIdPart());
+                libraries.add(
+                    libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
+                );
             }
         }
 
@@ -123,8 +124,7 @@ public class LibraryHelper {
         return library;
     }
 
-    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition,
-            org.opencds.cqf.cql.engine.execution.LibraryLoader libraryLoader,
+    public static Library resolvePrimaryLibrary(PlanDefinition planDefinition, org.opencds.cqf.cql.engine.execution.LibraryLoader libraryLoader,
             LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
         String id = planDefinition.getLibraryFirstRep().getReferenceElement().getIdPart();
 

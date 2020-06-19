@@ -13,6 +13,8 @@ import org.cqframework.cql.elm.execution.UsingDef;
 public class UsingHelper {
 
     private static Map<String, String> urlsByModelName = new HashMap<String, String>() {
+        private static final long serialVersionUID = 1L;
+
         {
             put("FHIR", "http://hl7.org/fhir");
             put("QDM", "urn:healthit-gov:qdm:v5_4");

@@ -40,13 +40,12 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -123,7 +122,7 @@ public class MeasureOperationsProvider {
             Narrative n = this.narrativeProvider.getNarrative(this.measureResourceProvider.getContext(), cqfMeasure);
             theResource.setText(n.copy());
         } catch (Exception e) {
-            // Ignore the exception so the resource still gets updated
+            logger.info("Error generating narrative", e);
         }
 
         return this.measureResourceProvider.update(theRequest, theResource, theId,
@@ -430,6 +429,7 @@ public class MeasureOperationsProvider {
         return this.dataRequirementsProvider.getDataRequirements(measure, this.libraryResolutionProvider);
     }
 
+    @SuppressWarnings("unchecked")
     @Operation(name = "$submit-data", idempotent = true, type = Measure.class)
     public Resource submitData(RequestDetails details, @IdParam IdType theId,
             @OperationParam(name = "measurereport", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
@@ -458,7 +458,7 @@ public class MeasureOperationsProvider {
             }
         }
 
-        return (Resource) this.registry.getSystemDao().transaction(details, transactionBundle);
+        return (Resource) ((IFhirSystemDao<Bundle,?>)this.registry.getSystemDao()).transaction(details, transactionBundle);
     }
 
     private Bundle createTransactionBundle(Bundle bundle) {

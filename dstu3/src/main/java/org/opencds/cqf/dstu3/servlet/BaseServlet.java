@@ -19,7 +19,17 @@ import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
-import org.opencds.cqf.dstu3.providers.*;
+import org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider;
+import org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider;
+import org.opencds.cqf.dstu3.providers.CacheValueSetsProvider;
+import org.opencds.cqf.dstu3.providers.CodeSystemUpdateProvider;
+import org.opencds.cqf.dstu3.providers.CqlExecutionProvider;
+import org.opencds.cqf.dstu3.providers.HQMFProvider;
+import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
+import org.opencds.cqf.dstu3.providers.LibraryOperationsProvider;
+import org.opencds.cqf.dstu3.providers.MeasureOperationsProvider;
+import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
+import org.opencds.cqf.dstu3.providers.OAuthProvider;
 import org.opencds.cqf.library.stu3.NarrativeProvider;
 import org.opencds.cqf.measure.stu3.CodeTerminologyRef;
 import org.opencds.cqf.measure.stu3.CqfMeasure;
@@ -52,6 +62,7 @@ import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 
 public class BaseServlet extends RestfulServer {
+    private static final long serialVersionUID = 1L;
     DaoRegistry registry;
     FhirContext fhirContext;
 
@@ -186,6 +197,7 @@ public class BaseServlet extends RestfulServer {
     // Since resource provider resolution not lazy, the providers here must be
     // resolved in the correct
     // order of dependencies.
+    @SuppressWarnings("unchecked")
     private void resolveProviders(EvaluationProviderFactory providerFactory,
             JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry) throws ServletException {
         NarrativeProvider narrativeProvider = this.getNarrativeProvider();
@@ -207,7 +219,7 @@ public class BaseServlet extends RestfulServer {
         this.registerProvider(libraryProvider);
 
         // CQL Execution
-        CqlExecutionProvider cql = new CqlExecutionProvider(libraryProvider, providerFactory, this.fhirContext);
+        CqlExecutionProvider cql = new CqlExecutionProvider(libraryProvider, providerFactory);
         this.registerProvider(cql);
 
         // Bundle processing
@@ -244,6 +256,7 @@ public class BaseServlet extends RestfulServer {
         return this.registry.getResourceDao(clazz);
     }
 
+    @SuppressWarnings("unchecked")
     protected <T extends IBaseResource> BaseJpaResourceProvider<T> getResourceProvider(Class<T> clazz) {
         return (BaseJpaResourceProvider<T>) this.getResourceProviders().stream()
                 .filter(x -> x.getResourceType().getSimpleName().equals(clazz.getSimpleName())).findFirst().get();

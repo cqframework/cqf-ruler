@@ -99,6 +99,7 @@ public class MeasureEvaluation {
         return evaluate(measure, context, getAllPatients(), MeasureReport.MeasureReportType.SUMMARY);
     }
 
+    @SuppressWarnings("unchecked")
     private Iterable<Resource> evaluateCriteria(Context context, Patient patient,
             Measure.MeasureGroupPopulationComponent pop) {
         if (!pop.hasCriteria()) {
@@ -116,8 +117,7 @@ public class MeasureEvaluation {
             expressions.clear();
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.warn("Error resetting expression cache", e);
         }
         Object result = context.resolveExpressionRef(pop.getCriteria().getExpression()).evaluate(context);
         if (result == null) {
@@ -132,7 +132,7 @@ public class MeasureEvaluation {
             }
         }
 
-        return (Iterable) result;
+        return (Iterable<Resource>) result;
     }
 
     private boolean evaluatePopulationCriteria(Context context, Patient patient,
@@ -318,6 +318,7 @@ public class MeasureEvaluation {
                             }
                             break;
                         case MEASUREOBSERVATION:
+                            measureObservation = new HashMap<>();
                             break;
                     }
                 }
@@ -420,8 +421,7 @@ public class MeasureEvaluation {
 
                     // For each patient in the patient list
                     for (Patient patient : patients) {
-                        // Are they in the initial population?
-                        boolean inInitialPopulation = evaluatePopulationCriteria(context, patient,
+                        evaluatePopulationCriteria(context, patient,
                                 initialPopulationCriteria, initialPopulation, initialPopulationPatients, null, null,
                                 null);
                         populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources,

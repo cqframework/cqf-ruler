@@ -1,23 +1,28 @@
 package org.opencds.cqf.common.retrieve;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.engine.fhir.retrieve.SearchParamFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterMap;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
+import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
 public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
+
+    private static final Logger logger = LoggerFactory.getLogger(JpaFhirRetrieveProvider.class);
 
     DaoRegistry registry;
 
@@ -43,22 +48,21 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
     protected Collection<Object> executeQuery(String dataType, SearchParameterMap map) {
         // TODO: Once HAPI breaks this out from the server dependencies
         // we can include it on its own.
-        var hapiMap = new ca.uhn.fhir.jpa.searchparam.SearchParameterMap();
+        ca.uhn.fhir.jpa.searchparam.SearchParameterMap hapiMap = new ca.uhn.fhir.jpa.searchparam.SearchParameterMap();
         try {
 
-            var methods = hapiMap.getClass().getDeclaredMethods();
-            var methodList = List.of(methods);
+            Method[] methods = hapiMap.getClass().getDeclaredMethods();
+            List<Method> methodList = List.of(methods);
             List<Method> puts = methodList.stream().filter(x -> x.getName().equals("put")).collect(Collectors.toList());
-            var method = puts.get(0);
+            Method method = puts.get(0);
             method.setAccessible(true);
 
-            for (var entry : map.entrySet()) {
+            for (Map.Entry<String, List<List<IQueryParameterType>>> entry : map.entrySet()) {
                 method.invoke(hapiMap, entry.getKey(), entry.getValue());
             }
 
         } catch (Exception e) {
-            // TODO: Add logging.
-            System.out.println(e.getMessage());
+            logger.warn("Error converting search parameter map", e);
         }
 
         IFhirResourceDao<?> dao = this.registry.getResourceDao(dataType);

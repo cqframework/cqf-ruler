@@ -38,7 +38,6 @@ import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.dstu3.helpers.FhirMeasureBundler;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 
@@ -48,13 +47,11 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 public class CqlExecutionProvider {
     private EvaluationProviderFactory providerFactory;
     private LibraryResolutionProvider<Library> libraryResolutionProvider;
-    private FhirContext context;
 
     public CqlExecutionProvider(LibraryResolutionProvider<Library> libraryResolutionProvider,
-            EvaluationProviderFactory providerFactory, FhirContext context) {
+            EvaluationProviderFactory providerFactory) {
         this.providerFactory = providerFactory;
         this.libraryResolutionProvider = libraryResolutionProvider;
-        this.context = context;
     }
 
     private LibraryResolutionProvider<Library> getLibraryResourceProvider() {
@@ -191,6 +188,7 @@ public class CqlExecutionProvider {
         return context.resolveExpressionRef("Expression").evaluate(context);
     }
 
+    @SuppressWarnings("unchecked")
     @Operation(name = "$cql")
     public Bundle evaluate(@OperationParam(name = "code") String code,
             @OperationParam(name = "patientId") String patientId,
@@ -319,12 +317,12 @@ public class CqlExecutionProvider {
                         result.addParameter().setName("value").setValue(new StringType("null"));
                     } else if (res instanceof List<?>) {
                         if (((List<?>) res).size() > 0 && ((List<?>) res).get(0) instanceof Resource) {
-                            result.addParameter().setName("value").setResource(bundler.bundle((Iterable) res));
+                            result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res));
                         } else {
                             result.addParameter().setName("value").setValue(new StringType(res.toString()));
                         }
                     } else if (res instanceof Iterable) {
-                        result.addParameter().setName("value").setResource(bundler.bundle((Iterable) res));
+                        result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res));
                     } else if (res instanceof Resource) {
                         result.addParameter().setName("value").setResource((Resource) res);
                     } else {

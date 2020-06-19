@@ -5,7 +5,15 @@ import java.util.Arrays;
 import javax.servlet.ServletException;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.ActivityDefinition;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CodeSystem;
+import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Measure;
+import org.hl7.fhir.r4.model.Meta;
+import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
@@ -16,7 +24,17 @@ import org.opencds.cqf.measure.r4.CqfMeasure;
 import org.opencds.cqf.measure.r4.PopulationCriteriaMap;
 import org.opencds.cqf.measure.r4.VersionedTerminologyRef;
 import org.opencds.cqf.r4.evaluation.ProviderFactory;
-import org.opencds.cqf.r4.providers.*;
+import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
+import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
+import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
+import org.opencds.cqf.r4.providers.CodeSystemUpdateProvider;
+import org.opencds.cqf.r4.providers.CqlExecutionProvider;
+import org.opencds.cqf.r4.providers.HQMFProvider;
+import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
+import org.opencds.cqf.r4.providers.LibraryOperationsProvider;
+import org.opencds.cqf.r4.providers.MeasureOperationsProvider;
+import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
+import org.opencds.cqf.r4.providers.OAuthProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -44,6 +62,7 @@ import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 
 public class BaseServlet extends RestfulServer {
+    private static final long serialVersionUID = 1L;
     DaoRegistry registry;
     FhirContext fhirContext;
 
@@ -65,6 +84,7 @@ public class BaseServlet extends RestfulServer {
         this.fhirContext.registerCustomType(CqfMeasure.class);
         setFhirContext(this.fhirContext);
 
+
         // System and Resource Daos
         IFhirSystemDao<Bundle, Meta> systemDao = appCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
         this.registry = appCtx.getBean(DaoRegistry.class);
@@ -72,6 +92,7 @@ public class BaseServlet extends RestfulServer {
         // System and Resource Providers
         Object systemProvider = appCtx.getBean("mySystemProviderR4", JpaSystemProviderR4.class);
         registerProvider(systemProvider);
+
 
         ResourceProviderFactory resourceProviders = appCtx.getBean("myResourceProvidersR4", ResourceProviderFactory.class);
         registerProviders(resourceProviders.createProviders());
@@ -180,6 +201,7 @@ public class BaseServlet extends RestfulServer {
     // Since resource provider resolution not lazy, the providers here must be
     // resolved in the correct
     // order of dependencies.
+    @SuppressWarnings("unchecked")
     private void resolveProviders(EvaluationProviderFactory providerFactory,
             JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry) throws ServletException {
         NarrativeProvider narrativeProvider = this.getNarrativeProvider();
@@ -236,6 +258,7 @@ public class BaseServlet extends RestfulServer {
         return this.registry.getResourceDao(clazz);
     }
 
+    @SuppressWarnings("unchecked")
     protected <T extends IBaseResource> BaseJpaResourceProvider<T> getResourceProvider(Class<T> clazz) {
         return (BaseJpaResourceProvider<T>) this.getResourceProviders().stream()
                 .filter(x -> x.getResourceType().getSimpleName().equals(clazz.getSimpleName())).findFirst().get();

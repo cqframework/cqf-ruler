@@ -41,13 +41,12 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -119,9 +118,14 @@ public class MeasureOperationsProvider {
                 }
             }
         }
+        
+        try {
+            Narrative n = this.narrativeProvider.getNarrative(this.measureResourceProvider.getContext(), cqfMeasure);
+            theResource.setText(n.copy());
+        } catch (Exception e) {
+            logger.info("Error generating narrative", e);
+        }
 
-        Narrative n = this.narrativeProvider.getNarrative(this.measureResourceProvider.getContext(), cqfMeasure);
-        theResource.setText(n.copy());
         // logger.info("Narrative: " + n.getDivAsString());
         return this.measureResourceProvider.update(theRequest, theResource, theId,
                 theRequestDetails.getConditionalUrl(RestOperationTypeEnum.UPDATE), theRequestDetails);
@@ -172,7 +176,7 @@ public class MeasureOperationsProvider {
         seed.setup(measure, periodStart, periodEnd, productLine, source, user, pass);
 
         // resolve report type
-        MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), this.registry,
+        MeasureEvaluation evaluator = new MeasureEvaluation(this.registry,
                 seed.getMeasurementPeriod());
         if (reportType != null) {
             switch (reportType) {
@@ -272,7 +276,7 @@ public class MeasureOperationsProvider {
             MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader,
                     this.libraryResolutionProvider);
             seed.setup(measure, periodStart, periodEnd, null, null, null, null);
-            MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), this.registry,
+            MeasureEvaluation evaluator = new MeasureEvaluation(this.registry,
                     seed.getMeasurementPeriod());
             // TODO - this is configured for patient-level evaluation only
             report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
@@ -425,6 +429,7 @@ public class MeasureOperationsProvider {
         return this.dataRequirementsProvider.getDataRequirements(measure, this.libraryResolutionProvider);
     }
 
+    @SuppressWarnings("unchecked")
     @Operation(name = "$submit-data", idempotent = true, type = Measure.class)
     public Resource submitData(RequestDetails details, @IdParam IdType theId,
             @OperationParam(name = "measure-report", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
@@ -453,7 +458,7 @@ public class MeasureOperationsProvider {
             }
         }
 
-        return (Resource) this.registry.getSystemDao().transaction(details, transactionBundle);
+        return (Resource) ((IFhirSystemDao<Bundle, ?>)this.registry.getSystemDao()).transaction(details, transactionBundle);
     }
 
     private Bundle createTransactionBundle(Bundle bundle) {

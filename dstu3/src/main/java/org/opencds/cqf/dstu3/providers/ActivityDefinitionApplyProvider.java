@@ -30,8 +30,6 @@ import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 /**
@@ -77,9 +75,7 @@ public class ActivityDefinitionApplyProvider {
             String practitionerId, String organizationId) throws FHIRException {
         Resource result = null;
         try {
-            // This is a little hacky...
-            result = (Resource) Class.forName("org.hl7.fhir.dstu3.model." + activityDefinition.getKind().toCode())
-                    .newInstance();
+            result = (Resource) Class.forName("org.hl7.fhir.dstu3.model." + activityDefinition.getKind().toCode()).getConstructor().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
             throw new FHIRException("Could not find org.hl7.fhir.dstu3.model." + activityDefinition.getKind().toCode());
@@ -205,7 +201,7 @@ public class ActivityDefinitionApplyProvider {
         }
 
         if (activityDefinition.hasBodySite()) {
-            throw new ActivityDefinitionApplyException("Bodysite does not map to " + activityDefinition.getKind());
+            throw new ActivityDefinitionApplyException("BodySite does not map to " + activityDefinition.getKind());
         }
 
         if (activityDefinition.hasCode()) {
@@ -219,13 +215,13 @@ public class ActivityDefinitionApplyProvider {
         return medicationRequest;
     }
 
-    private SupplyRequest resolveSupplyRequest(ActivityDefinition activityDefinition, String practionerId,
+    private SupplyRequest resolveSupplyRequest(ActivityDefinition activityDefinition, String practitionerId,
             String organizationId) throws ActivityDefinitionApplyException {
         SupplyRequest supplyRequest = new SupplyRequest();
 
-        if (practionerId != null) {
+        if (practitionerId != null) {
             supplyRequest.setRequester(
-                    new SupplyRequest.SupplyRequestRequesterComponent().setAgent(new Reference(practionerId)));
+                    new SupplyRequest.SupplyRequestRequesterComponent().setAgent(new Reference(practitionerId)));
         }
 
         if (organizationId != null) {
@@ -255,7 +251,7 @@ public class ActivityDefinitionApplyProvider {
         }
 
         if (activityDefinition.hasBodySite()) {
-            throw new ActivityDefinitionApplyException("Bodysite does not map to " + activityDefinition.getKind());
+            throw new ActivityDefinitionApplyException("BodySite does not map to " + activityDefinition.getKind());
         }
 
         return supplyRequest;

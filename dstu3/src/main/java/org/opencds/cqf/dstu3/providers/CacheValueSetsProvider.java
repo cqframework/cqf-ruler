@@ -17,8 +17,6 @@ import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.interceptor.BasicAuthInterceptor;
@@ -28,10 +26,10 @@ import ca.uhn.fhir.rest.param.StringParam;
 
 public class CacheValueSetsProvider {
 
-    private IFhirSystemDao systemDao;
+    private IFhirSystemDao<Bundle, ?> systemDao;
     private IFhirResourceDao<Endpoint> endpointDao;
 
-    public CacheValueSetsProvider(IFhirSystemDao systemDao, IFhirResourceDao<Endpoint> endpointDao) {
+    public CacheValueSetsProvider(IFhirSystemDao<Bundle, ?> systemDao, IFhirResourceDao<Endpoint> endpointDao) {
         this.systemDao = systemDao;
         this.endpointDao = endpointDao;
     }
