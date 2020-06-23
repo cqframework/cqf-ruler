@@ -3,6 +3,7 @@ package org.opencds.cqf.dstu3.helpers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
@@ -67,10 +68,17 @@ public class LibraryHelper {
         org.hl7.fhir.dstu3.model.Library primaryLibrary = libraryResourceProvider.resolveLibraryByName(primaryLibraryId.getId(), primaryLibraryId.getVersion());
         for (RelatedArtifact artifact : primaryLibrary.getRelatedArtifact()) {
             if (artifact.hasType() && artifact.getType().equals(RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.getResource().hasReference()) {
-                org.hl7.fhir.dstu3.model.Library library = libraryResourceProvider.resolveLibraryById(artifact.getResource().getReferenceElement().getIdPart());
-                libraries.add(
-                    libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
-                );
+                if (artifact.getResource().getReferenceElement().getResourceType().equals("Library")) {
+                    org.hl7.fhir.dstu3.model.Library library = libraryResourceProvider.resolveLibraryById(artifact.getResource().getReferenceElement().getIdPart());
+                    
+                    if (library == null) {
+                        throw new IllegalArgumentException(String.format("Unable to resolve library reference: %s", artifact.getResource().getReference()));
+                    }
+
+                    libraries.add(
+                        libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
+                    );
+                }
             }
         }
 

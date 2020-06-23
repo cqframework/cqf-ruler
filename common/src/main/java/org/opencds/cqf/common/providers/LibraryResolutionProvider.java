@@ -8,6 +8,8 @@ public interface LibraryResolutionProvider<LibraryType> {
 
     public LibraryType resolveLibraryByName(String libraryName, String libraryVersion);
 
+    public LibraryType resolveLibraryByCanonicalUrl(String libraryUrl);
+
 
     // Hmmm... Probably need to think through this use case a bit more.
     // Should we throw an exception? Should this be a different interface?
