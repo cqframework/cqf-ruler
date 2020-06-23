@@ -160,7 +160,7 @@ public class CodeSystemUpdateProvider {
         }
 
         valueSetCodes.addAll(codeSystem.getConcept().stream().map(CodeSystem.ConceptDefinitionComponent::getCode)
-            .collect(Collectors.toUnmodifiableSet()));
+            .collect(Collectors.toSet()));
 
         return valueSetCodes;
     }

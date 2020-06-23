@@ -2,6 +2,7 @@ package org.opencds.cqf.common.retrieve;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +53,7 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
         try {
 
             Method[] methods = hapiMap.getClass().getDeclaredMethods();
-            List<Method> methodList = List.of(methods);
+            List<Method> methodList = Arrays.asList(methods);
             List<Method> puts = methodList.stream().filter(x -> x.getName().equals("put")).collect(Collectors.toList());
             Method method = puts.get(0);
             method.setAccessible(true);

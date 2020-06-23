@@ -1,18 +1,22 @@
 package org.opencds.cqf.r4.providers;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Meta;
+import org.hl7.fhir.r4.model.UriType;
+import org.opencds.cqf.common.config.HapiProperties;
+
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.r4.JpaConformanceProviderR4;
-import ca.uhn.fhir.jpa.searchparam.registry.SearchParamRegistryImpl;
 import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
-import org.hl7.fhir.dstu3.model.StringType;
-import org.hl7.fhir.r4.hapi.rest.server.ServerCapabilityStatementProvider;
-import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.common.config.HapiProperties;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class OAuthProvider extends JpaConformanceProviderR4 {
     /**

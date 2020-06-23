@@ -65,17 +65,23 @@ public class LibraryHelper {
         org.hl7.fhir.r4.model.Library primaryLibrary = libraryResourceProvider.resolveLibraryByName(primaryLibraryId.getId(), primaryLibraryId.getVersion());
         for (RelatedArtifact artifact : primaryLibrary.getRelatedArtifact()) {
             if (artifact.hasType() && artifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.hasResource()) {
-                if (artifact.getResource().contains(("/Library/"))) {
-                    org.hl7.fhir.r4.model.Library library = libraryResourceProvider.resolveLibraryByCanonicalUrl(artifact.getResource());
-
-                    if (library == null) {
-                        throw new IllegalArgumentException(String.format("Unable to resolve library reference: %s", artifact.getResource()));
-                    }
-                    
-                    libraries.add(
-                        libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
-                    );
+                org.hl7.fhir.r4.model.Library library = null;
+                // Raw references to Library/libraryId or libraryId
+                if (artifact.getResource().startsWith("Library/") || ! artifact.getResource().contains("/")) {
+                    library = libraryResourceProvider.resolveLibraryById(artifact.getResource().replace("Library/", ""));
                 }
+                // Full url (e.g. http://hl7.org/fhir/us/Library/FHIRHelpers)
+                else if (artifact.getResource().contains(("/Library/"))) {
+                    library = libraryResourceProvider.resolveLibraryByCanonicalUrl(artifact.getResource());
+                }
+
+                if (library == null) {
+                    throw new IllegalArgumentException(String.format("Unable to resolve library reference: %s", artifact.getResource()));
+                }
+                
+                libraries.add(
+                    libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
+                );
             }
         }
 

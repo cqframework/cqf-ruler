@@ -148,7 +148,7 @@ public class LibraryOperationsProvider implements org.opencds.cqf.common.provide
     public Library resolveLibraryByCanonicalUrl(String url) {
         Objects.requireNonNull(url, "url must not be null");
 
-        String[] parts = url.split("|");
+        String[] parts = url.split("\\|");
         String resourceUrl = parts[0];
         String version = null;
         if (parts.length > 1) {
