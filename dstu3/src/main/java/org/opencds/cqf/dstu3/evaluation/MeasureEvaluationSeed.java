@@ -18,9 +18,6 @@ import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 
-import lombok.Data;
-
-@Data
 public class MeasureEvaluationSeed {
     private Measure measure;
     private Context context;
@@ -35,6 +32,22 @@ public class MeasureEvaluationSeed {
         this.providerFactory = providerFactory;
         this.libraryLoader = libraryLoader;
         this.libraryResourceProvider = libraryResourceProvider;
+    }
+
+    public Measure getMeasure() {
+        return this.measure;
+    }
+
+    public Context getContext() {
+        return this.context;
+    }
+
+    public Interval getMeasurementPeriod() {
+        return this.measurementPeriod;
+    }
+
+    public DataProvider getDataProvider() {
+        return this.dataProvider;
     }
 
     public void setup(Measure measure, String periodStart, String periodEnd, String productLine, String source,

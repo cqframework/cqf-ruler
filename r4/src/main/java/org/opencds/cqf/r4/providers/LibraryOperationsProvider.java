@@ -2,6 +2,7 @@ package org.opencds.cqf.r4.providers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,6 +28,8 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriParam;
 
 public class LibraryOperationsProvider implements LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> {
 
@@ -155,6 +158,32 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         }
 
         return library;
+    }
+
+    @Override 
+    public Library resolveLibraryByCanonicalUrl(String url) {
+        Objects.requireNonNull(url, "url must not be null");
+
+        String[] parts = url.split("|");
+        String resourceUrl = parts[0];
+        String version = null;
+        if (parts.length > 1) {
+            version = parts[1];
+        }
+
+        SearchParameterMap map = new SearchParameterMap();
+        map.add("url", new UriParam(resourceUrl));
+        if (version != null) {
+            map.add("version", new TokenParam(version));
+        }
+
+        ca.uhn.fhir.rest.api.server.IBundleProvider bundleProvider = this.libraryResourceProvider.getDao().search(map);
+
+        if (bundleProvider.size() == 0) {
+            return null;
+        }
+        List<IBaseResource> resourceList = bundleProvider.getResources(0, bundleProvider.size());
+        return  LibraryResolutionProvider.selectFromList(resolveLibraries(resourceList), version, x -> x.getVersion());
     }
 
     private Iterable<org.hl7.fhir.r4.model.Library> getLibrariesByName(String name) {

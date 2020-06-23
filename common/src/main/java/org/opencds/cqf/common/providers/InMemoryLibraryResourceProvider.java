@@ -57,4 +57,10 @@ public class InMemoryLibraryResourceProvider<LibraryType> implements LibraryReso
         this.libraries.put(this.getId.apply(library), library);
     }
 
+    @Override
+    public LibraryType resolveLibraryByCanonicalUrl(String libraryUrl) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
