@@ -47,6 +47,7 @@ public class QuestionnaireProvider {
         Observation obs = new Observation();
         obs.setEffective(new DateTimeType(authored));
         obs.setStatus(Observation.ObservationStatus.FINAL);
+        obs.setSubject(questionnaireResponse.getSubject());
         Coding qrCoding = new Coding();
         qrCoding.setCode("74465-6");
         qrCoding.setDisplay(" Questionnaire response Document");
@@ -75,7 +76,6 @@ public class QuestionnaireProvider {
         String user = HapiProperties.getObservationUserName();
         String password = HapiProperties.getObservationPassword();
 
-System.out.println(fhirContext.newJsonParser().encodeResourceToString(observationsBundle));
         IGenericClient client = getClient(fhirContext, url, user, password);
         Bundle outcomeBundle = client.transaction()
                 .withBundle(observationsBundle)
