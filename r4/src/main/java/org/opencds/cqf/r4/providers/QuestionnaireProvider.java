@@ -25,7 +25,16 @@ public class QuestionnaireProvider {
             Bundle returnBundle = sendObservationBundle(observationsFromQuestionnaireResponse);
             return returnBundle;
         }
-        return null;
+        return createErrorBundle("The QuestionnaireResponse was null.");
+    }
+
+    private Bundle createErrorBundle(String errorMessage){
+        Bundle errorBundle = new Bundle();
+        Identifier bundleId = new Identifier();
+        bundleId.setValue("Error in QuestionnaireResponse/$extract  " + errorMessage);
+        errorBundle.setType(Bundle.BundleType.MESSAGE);
+        errorBundle.setIdentifier(bundleId);
+        return errorBundle;
     }
 
     private Bundle createObservationBundle(QuestionnaireResponse questionnaireResponse){
@@ -50,7 +59,7 @@ public class QuestionnaireProvider {
         obs.setSubject(questionnaireResponse.getSubject());
         Coding qrCoding = new Coding();
         qrCoding.setCode("74465-6");
-        qrCoding.setDisplay(" Questionnaire response Document");
+        qrCoding.setDisplay("Questionnaire response Document");
         obs.setCode(new CodeableConcept().addCoding(qrCoding));
         obs.setId(questionnaireResponse.getIdElement().getIdPart() + "." + item.getLinkId());
         switch(item.getAnswer().get(0).getValue().fhirType()){
@@ -73,13 +82,15 @@ public class QuestionnaireProvider {
 
     private Bundle sendObservationBundle(Bundle observationsBundle){
         String url = HapiProperties.getObservationEndpoint();
-        String user = HapiProperties.getObservationUserName();
-        String password = HapiProperties.getObservationPassword();
+        if(null != url && url.length() > 0) {
+            String user = HapiProperties.getObservationUserName();
+            String password = HapiProperties.getObservationPassword();
 
-        IGenericClient client = getClient(fhirContext, url, user, password);
-        Bundle outcomeBundle = client.transaction()
-                .withBundle(observationsBundle)
-                .execute();
-        return outcomeBundle;
-    }
+            IGenericClient client = getClient(fhirContext, url, user, password);
+            Bundle outcomeBundle = client.transaction()
+                    .withBundle(observationsBundle)
+                    .execute();
+            return outcomeBundle;
+        }
+        return createErrorBundle("The observation.endpoint in hapi.properties was not set.");    }
 }
