@@ -247,7 +247,7 @@ public class BaseServlet extends RestfulServer {
         QuestionnaireProvider questionnaireProvider = new QuestionnaireProvider(this.fhirContext);
         this.registerProvider(questionnaireProvider);
 
-        // QuestionnaireResponse processing
+        // Observation processing
         ObservationProvider observationProvider = new ObservationProvider(this.fhirContext);
         this.registerProvider(observationProvider);
     }
