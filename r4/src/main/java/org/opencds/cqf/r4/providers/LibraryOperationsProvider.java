@@ -164,7 +164,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
     public Library resolveLibraryByCanonicalUrl(String url) {
         Objects.requireNonNull(url, "url must not be null");
 
-        String[] parts = url.split("|");
+        String[] parts = url.split("\\|");
         String resourceUrl = parts[0];
         String version = null;
         if (parts.length > 1) {
