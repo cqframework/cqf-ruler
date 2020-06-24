@@ -59,6 +59,10 @@ public class HapiProperties {
     static final String OAUTH_SERVICE_CODE = "oauth.serviceCode";
     static final String OAUTH_SERVICE_DISPLAY = "oauth.serviceDisplay";
     static final String OAUTH_SERVICE_TEXT = "oauth.serviceText";
+    static final String QUESTIONNAIRE_RESPONSE_ENABLED = "questionnaireResponseExtract.enabled";
+    static final String QUESTIONNAIRE_RESPONSE_ENDPOINT = "questionnaireResponseExtract.endpoint";
+    static final String QUESTIONNAIRE_RESPONSE_USERNAME = "questionnaireResponseExtract.username";
+    static final String QUESTIONNAIRE_RESPONSE_PASSWORD = "questionnaireResponseExtract.password";
 
     private static Properties properties;
 
@@ -357,14 +361,8 @@ public class HapiProperties {
         return Long.valueOf(value);
     }
 
-    public static String getObservationEndpoint() {
-        return HapiProperties.getProperty("observation.endpoint");
-    }
-    public static String getObservationUserName(){return HapiProperties.getProperty("observation.username");};
-    public static String getObservationPassword(){return HapiProperties.getProperty("observation.password");};
-
     //************************* OAuth *******************************************************
-    public static Boolean getOAuthEnabled(){return HapiProperties.getBooleanProperty(OAUTH_ENABLED, true);}
+    public static Boolean getOAuthEnabled(){return HapiProperties.getBooleanProperty(OAUTH_ENABLED, false);}
     public static Boolean getOauthSecurityCors(){return HapiProperties.getBooleanProperty(OAUTH_SECURITY_CORS, true);}
     public static String getOauthSecurityUrl(){return HapiProperties.getProperty(OAUTH_SECURITY_URL, "");}
     public static String getOauthSecurityExtAuthUrl(){return HapiProperties.getProperty(OAUTH_SECURITY_EXT_AUTH_URL, "");}
@@ -375,4 +373,9 @@ public class HapiProperties {
     public static String getOauthServiceCode(){return HapiProperties.getProperty(OAUTH_SERVICE_CODE, "");}
     public static String getOauthServiceDisplay(){return HapiProperties.getProperty(OAUTH_SERVICE_DISPLAY, "");}
     public static String getOauthServiceText(){return HapiProperties.getProperty(OAUTH_SERVICE_TEXT, "");}
+
+    public static Boolean getQuestionnaireResponseExtractEnabled(){return HapiProperties.getBooleanProperty(QUESTIONNAIRE_RESPONSE_ENABLED, false);}
+    public static String getQuestionnaireResponseExtractEndpoint() {return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_ENDPOINT);}
+    public static String getQuestionnaireResponseExtractUserName(){return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_USERNAME);};
+    public static String getQuestionnaireResponseExtractPassword(){return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_PASSWORD);};
 }
