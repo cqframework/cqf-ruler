@@ -20,21 +20,12 @@ public class QuestionnaireProvider {
 
     @Operation(name = "$extract", idempotent = false, type = QuestionnaireResponse.class)
     public Bundle extractObservationFromQuestionnaireResponse(@OperationParam(name = "questionnaireResponse") QuestionnaireResponse questionnaireResponse) {
-        if(questionnaireResponse != null) {
-            Bundle observationsFromQuestionnaireResponse = createObservationBundle(questionnaireResponse);
-            Bundle returnBundle = sendObservationBundle(observationsFromQuestionnaireResponse);
-            return returnBundle;
+        if(questionnaireResponse == null) {
+            throw new IllegalArgumentException("Unable to perform operation $extract.  The QuestionnaireResponse was null");
         }
-        return createErrorBundle("The QuestionnaireResponse was null.");
-    }
-
-    private Bundle createErrorBundle(String errorMessage){
-        Bundle errorBundle = new Bundle();
-        Identifier bundleId = new Identifier();
-        bundleId.setValue("Error in QuestionnaireResponse/$extract  " + errorMessage);
-        errorBundle.setType(Bundle.BundleType.MESSAGE);
-        errorBundle.setIdentifier(bundleId);
-        return errorBundle;
+        Bundle observationsFromQuestionnaireResponse = createObservationBundle(questionnaireResponse);
+        Bundle returnBundle = sendObservationBundle(observationsFromQuestionnaireResponse);
+        return returnBundle;
     }
 
     private Bundle createObservationBundle(QuestionnaireResponse questionnaireResponse){
@@ -80,17 +71,18 @@ public class QuestionnaireProvider {
         return bec;
     }
 
-    private Bundle sendObservationBundle(Bundle observationsBundle){
+    private Bundle sendObservationBundle(Bundle observationsBundle) throws IllegalArgumentException{
         String url = HapiProperties.getObservationEndpoint();
-        if(null != url && url.length() > 0) {
-            String user = HapiProperties.getObservationUserName();
-            String password = HapiProperties.getObservationPassword();
-
-            IGenericClient client = getClient(fhirContext, url, user, password);
-            Bundle outcomeBundle = client.transaction()
-                    .withBundle(observationsBundle)
-                    .execute();
-            return outcomeBundle;
+        if (null == url || url.length() < 1) {
+            throw new IllegalArgumentException("Unable to transmit observation bundle.  No observation.endpoint defined in hapi.properties.");
         }
-        return createErrorBundle("The observation.endpoint in hapi.properties was not set.");    }
+        String user = HapiProperties.getObservationUserName();
+        String password = HapiProperties.getObservationPassword();
+
+        IGenericClient client = getClient(fhirContext, url, user, password);
+        Bundle outcomeBundle = client.transaction()
+                .withBundle(observationsBundle)
+                .execute();
+        return outcomeBundle;
+    }
 }
