@@ -63,6 +63,7 @@ public class HapiProperties {
     static final String QUESTIONNAIRE_RESPONSE_ENDPOINT = "questionnaireResponseExtract.endpoint";
     static final String QUESTIONNAIRE_RESPONSE_USERNAME = "questionnaireResponseExtract.username";
     static final String QUESTIONNAIRE_RESPONSE_PASSWORD = "questionnaireResponseExtract.password";
+    static final String OBSERVATION_TRANSFORM_ENABLED = "observationTransform.enabled";
 
     private static Properties properties;
 
@@ -378,4 +379,6 @@ public class HapiProperties {
     public static String getQuestionnaireResponseExtractEndpoint() {return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_ENDPOINT);}
     public static String getQuestionnaireResponseExtractUserName(){return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_USERNAME);};
     public static String getQuestionnaireResponseExtractPassword(){return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_PASSWORD);};
+
+    public static Boolean getObservationTransformEnabled(){return HapiProperties.getBooleanProperty(OBSERVATION_TRANSFORM_ENABLED, false);}
 }

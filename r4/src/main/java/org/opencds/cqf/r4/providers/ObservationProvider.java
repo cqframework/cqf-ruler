@@ -33,10 +33,8 @@ public class ObservationProvider {
         conceptMapOut.setStatus(Enumerations.PublicationStatus.ACTIVE);
 
 
-        Bundle observationsFromQuestionnaireResponse = createObservationBundle(questionnaireResponse);
-        Bundle returnBundle = sendObservationBundle(observationsFromQuestionnaireResponse);
+//        Bundle observationsFromQuestionnaireResponse = createObservationBundle(questionnaireResponse);
+        Bundle returnBundle = new Bundle();//sendObservationBundle(observationsFromQuestionnaireResponse);
         return returnBundle;
     }
-
-    private 
 }

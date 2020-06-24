@@ -249,8 +249,10 @@ public class BaseServlet extends RestfulServer {
             this.registerProvider(questionnaireProvider);
         }
         // Observation processing
-        ObservationProvider observationProvider = new ObservationProvider(this.fhirContext);
-        this.registerProvider(observationProvider);
+        if(HapiProperties.getObservationTransformEnabled()) {
+            ObservationProvider observationProvider = new ObservationProvider(this.fhirContext);
+            this.registerProvider(observationProvider);
+        }
 
     }
 
