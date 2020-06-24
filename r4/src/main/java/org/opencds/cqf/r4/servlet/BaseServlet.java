@@ -24,17 +24,7 @@ import org.opencds.cqf.measure.r4.CqfMeasure;
 import org.opencds.cqf.measure.r4.PopulationCriteriaMap;
 import org.opencds.cqf.measure.r4.VersionedTerminologyRef;
 import org.opencds.cqf.r4.evaluation.ProviderFactory;
-import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
-import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
-import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
-import org.opencds.cqf.r4.providers.CodeSystemUpdateProvider;
-import org.opencds.cqf.r4.providers.CqlExecutionProvider;
-import org.opencds.cqf.r4.providers.HQMFProvider;
-import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
-import org.opencds.cqf.r4.providers.LibraryOperationsProvider;
-import org.opencds.cqf.r4.providers.MeasureOperationsProvider;
-import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
-import org.opencds.cqf.r4.providers.OAuthProvider;
+import org.opencds.cqf.r4.providers.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -252,6 +242,10 @@ public class BaseServlet extends RestfulServer {
         CdsHooksServlet.setLibraryResolutionProvider(libraryProvider);
         CdsHooksServlet.setSystemTerminologyProvider(localSystemTerminologyProvider);
         CdsHooksServlet.setSystemRetrieveProvider(localSystemRetrieveProvider);
+
+        // QuestionnaireResponse processing
+        QuestionnaireProvider questionnaireProvider = new QuestionnaireProvider(this.fhirContext);
+        this.registerProvider(questionnaireProvider);
     }
 
     protected <T extends IBaseResource> IFhirResourceDao<T> getDao(Class<T> clazz) {

@@ -19,17 +19,7 @@ import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
-import org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider;
-import org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider;
-import org.opencds.cqf.dstu3.providers.CacheValueSetsProvider;
-import org.opencds.cqf.dstu3.providers.CodeSystemUpdateProvider;
-import org.opencds.cqf.dstu3.providers.CqlExecutionProvider;
-import org.opencds.cqf.dstu3.providers.HQMFProvider;
-import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
-import org.opencds.cqf.dstu3.providers.LibraryOperationsProvider;
-import org.opencds.cqf.dstu3.providers.MeasureOperationsProvider;
-import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
-import org.opencds.cqf.dstu3.providers.OAuthProvider;
+import org.opencds.cqf.dstu3.providers.*;
 import org.opencds.cqf.library.stu3.NarrativeProvider;
 import org.opencds.cqf.measure.stu3.CodeTerminologyRef;
 import org.opencds.cqf.measure.stu3.CqfMeasure;
@@ -250,6 +240,10 @@ public class BaseServlet extends RestfulServer {
         CdsHooksServlet.setLibraryResolutionProvider(libraryProvider);
         CdsHooksServlet.setSystemTerminologyProvider(localSystemTerminologyProvider);
         CdsHooksServlet.setSystemRetrieveProvider(localSystemRetrieveProvider);
+
+        // QuestionnaireResponse processing
+        QuestionnaireProvider questionnaireProvider = new QuestionnaireProvider(this.fhirContext);
+        this.registerProvider(questionnaireProvider);
     }
 
     protected <T extends IBaseResource> IFhirResourceDao<T> getDao(Class<T> clazz) {
