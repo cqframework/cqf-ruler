@@ -242,8 +242,10 @@ public class BaseServlet extends RestfulServer {
         CdsHooksServlet.setSystemRetrieveProvider(localSystemRetrieveProvider);
 
         // QuestionnaireResponse processing
-        QuestionnaireProvider questionnaireProvider = new QuestionnaireProvider(this.fhirContext);
-        this.registerProvider(questionnaireProvider);
+        if(HapiProperties.getQuestionnaireResponseExtractEnabled()) {
+            QuestionnaireProvider questionnaireProvider = new QuestionnaireProvider(this.fhirContext);
+            this.registerProvider(questionnaireProvider);
+        }
     }
 
     protected <T extends IBaseResource> IFhirResourceDao<T> getDao(Class<T> clazz) {

@@ -72,12 +72,12 @@ public class QuestionnaireProvider {
     }
 
     private Bundle sendObservationBundle(Bundle observationsBundle) throws IllegalArgumentException{
-        String url = HapiProperties.getObservationEndpoint();
+        String url = HapiProperties.getQuestionnaireResponseExtractEndpoint();
         if (null == url || url.length() < 1) {
             throw new IllegalArgumentException("Unable to transmit observation bundle.  No observation.endpoint defined in hapi.properties.");
         }
-        String user = HapiProperties.getObservationUserName();
-        String password = HapiProperties.getObservationPassword();
+        String user = HapiProperties.getQuestionnaireResponseExtractUserName();
+        String password = HapiProperties.getQuestionnaireResponseExtractPassword();
 
         IGenericClient client = getClient(fhirContext, url, user, password);
         Bundle outcomeBundle = client.transaction()
