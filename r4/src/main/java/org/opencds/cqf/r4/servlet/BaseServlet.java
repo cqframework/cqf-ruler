@@ -246,6 +246,10 @@ public class BaseServlet extends RestfulServer {
         // QuestionnaireResponse processing
         QuestionnaireProvider questionnaireProvider = new QuestionnaireProvider(this.fhirContext);
         this.registerProvider(questionnaireProvider);
+
+        // QuestionnaireResponse processing
+        ObservationProvider observationProvider = new ObservationProvider(this.fhirContext);
+        this.registerProvider(observationProvider);
     }
 
     protected <T extends IBaseResource> IFhirResourceDao<T> getDao(Class<T> clazz) {
