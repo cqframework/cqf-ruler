@@ -4,7 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.dstu3.model.*;
 import org.opencds.cqf.common.config.HapiProperties;
 
 import java.util.Date;
