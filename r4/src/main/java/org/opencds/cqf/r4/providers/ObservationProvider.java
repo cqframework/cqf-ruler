@@ -42,23 +42,40 @@ public class ObservationProvider {
         if(null == transformConceptMap) {
             throw new IllegalArgumentException("Unable to perform operation Observation$transform.  Unable to get concept map.");
         }
-        HashMap<String, String> codeMappings = new HashMap<>();
-        transformConceptMap.getGroup().forEach(group -> group.getElement().forEach(codeElement -> codeMappings.put(codeElement.getCode(), codeElement.getTarget().get(0).getCode())));
-
-        List<Observation> observations = (List<Observation>) BundleUtil.toListOfResources(fhirContext, observationsBundle).stream()
+        List<Observation> observations = BundleUtil.toListOfResources(fhirContext, observationsBundle).stream()
                 .filter(resource -> resource instanceof Observation)
                 .map(Observation.class::cast)
                 .collect(Collectors.toList());
-        observations.forEach(observation -> {
-            if (codeMappings.get(observation.getCode().getCoding().get(0).getCode()) != null) {
-                if(HapiProperties.getObservationTransformReplaceCode()){
-                    observation.getCode().getCoding().get(0).setCode(codeMappings.get(observation.getCode().getCoding().get(0).getCode()));
-                }else{
-                    observation.getCode().getCoding().add(new Coding("", codeMappings.get(observation.getCode().getCoding().get(0).getCode()), observation.getCode().getCoding().get(0).getDisplay()));
-                }
-            }
-        });
+        /**
+         * TODO - There must be a more efficient way to loop through this, but so far I have not come up with it.
+         */
+        transformConceptMap.getGroup().forEach(group -> {
+            HashMap<String, ConceptMap.TargetElementComponent> codeMappings = new HashMap<>();
+            String targetSystem = group.getTarget();
+            group.getElement().forEach(codeElement -> {
+                codeMappings.put(codeElement.getCode(), codeElement.getTarget().get(0));
+            });
+            observations.forEach(observation -> {
+                if(observation.getValue().fhirType().equalsIgnoreCase("codeableconcept")){
+                    if (codeMappings.get(observation.getValueCodeableConcept().getCoding().get(0).getCode()) != null) {
+                        if(HapiProperties.getObservationTransformReplaceCode()){
+                            String obsValueCode = observation.getValueCodeableConcept().getCoding().get(0).getCode();
+                            observation.getValueCodeableConcept().getCoding().get(0).setCode(codeMappings.get(obsValueCode).getCode());
+                            observation.getValueCodeableConcept().getCoding().get(0).setDisplay(codeMappings.get(obsValueCode).getDisplay());
+                            observation.getValueCodeableConcept().getCoding().get(0).setSystem(targetSystem);
+                        }else{
+                            String obsValueCode = observation.getValueCodeableConcept().getCoding().get(0).getCode();
+                            Coding newCoding = new Coding();
+                            newCoding.setSystem(targetSystem);
+                            newCoding.setCode(codeMappings.get(obsValueCode).getCode());
+                            newCoding.setDisplay(codeMappings.get(obsValueCode).getDisplay());
+                            observation. getValueCodeableConcept().getCoding().add(newCoding);
+                        }
+                    }
 
+                }
+            });
+        });
         return observationsBundle;
     }
 }
