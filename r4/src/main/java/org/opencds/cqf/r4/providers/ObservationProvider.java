@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.opencds.cqf.common.config.HapiProperties.getObservationTransformReplaceCode;
 import static org.opencds.cqf.common.helpers.ClientHelper.getClient;
 
 public class ObservationProvider {
@@ -57,22 +56,22 @@ public class ObservationProvider {
             });
             observations.forEach(observation -> {
                 if(observation.getValue().fhirType().equalsIgnoreCase("codeableconcept")){
-                    if (codeMappings.get(observation.getValueCodeableConcept().getCoding().get(0).getCode()) != null) {
-                        if(HapiProperties.getObservationTransformReplaceCode()){
-                            String obsValueCode = observation.getValueCodeableConcept().getCoding().get(0).getCode();
-                            observation.getValueCodeableConcept().getCoding().get(0).setCode(codeMappings.get(obsValueCode).getCode());
-                            observation.getValueCodeableConcept().getCoding().get(0).setDisplay(codeMappings.get(obsValueCode).getDisplay());
-                            observation.getValueCodeableConcept().getCoding().get(0).setSystem(targetSystem);
-                        }else{
-                            String obsValueCode = observation.getValueCodeableConcept().getCoding().get(0).getCode();
-                            Coding newCoding = new Coding();
-                            newCoding.setSystem(targetSystem);
-                            newCoding.setCode(codeMappings.get(obsValueCode).getCode());
-                            newCoding.setDisplay(codeMappings.get(obsValueCode).getDisplay());
-                            observation. getValueCodeableConcept().getCoding().add(newCoding);
+                    String obsValueCode = observation.getValueCodeableConcept().getCoding().get(0).getCode();
+                    if(obsValueCode != null) {
+                        if (codeMappings.get(observation.getValueCodeableConcept().getCoding().get(0).getCode()) != null) {
+                            if (HapiProperties.getObservationTransformReplaceCode()) {
+                                observation.getValueCodeableConcept().getCoding().get(0).setCode(codeMappings.get(obsValueCode).getCode());
+                                observation.getValueCodeableConcept().getCoding().get(0).setDisplay(codeMappings.get(obsValueCode).getDisplay());
+                                observation.getValueCodeableConcept().getCoding().get(0).setSystem(targetSystem);
+                            } else {
+                                Coding newCoding = new Coding();
+                                newCoding.setSystem(targetSystem);
+                                newCoding.setCode(codeMappings.get(obsValueCode).getCode());
+                                newCoding.setDisplay(codeMappings.get(obsValueCode).getDisplay());
+                                observation.getValueCodeableConcept().getCoding().add(newCoding);
+                            }
                         }
                     }
-
                 }
             });
         });
