@@ -55,10 +55,10 @@
         <jetty.version>9.4.28.v20200408</jetty.version>
         <jackson.version>2.10.1</jackson.version>
         <hapi.version>4.2.0</hapi.version>
-        <cqf-tooling.version>1.1.0-SNAPSHOT</cqf-tooling.version>
-        <cql-engine.version>1.4.0-SNAPSHOT</cql-engine.version>
-        <cqframework.version>1.4.9-SNAPSHOT</cqframework.version>
-        <cds-hooks.version>1.1.0-SNAPSHOT</cds-hooks.version>
+        <cqf-tooling.version>1.1.1</cqf-tooling.version>
+        <cql-engine.version>1.4.0</cql-engine.version>
+        <cqframework.version>1.4.9</cqframework.version>
+        <cds-hooks.version>1.1.0</cds-hooks.version>
         <slf4j.version>1.7.30</slf4j.version>
 
         <!-- jetty plugin properties (used when starting server locally) -->
