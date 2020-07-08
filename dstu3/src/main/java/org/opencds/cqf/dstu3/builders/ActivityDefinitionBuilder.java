@@ -1,23 +1,24 @@
 package org.opencds.cqf.dstu3.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Enumerations;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class ActivityDefinitionBuilder extends BaseBuilder<ActivityDefinition> {
 
-    // TODO -  this is a start, but should be extended for completeness.
+    // TODO - this is a start, but should be extended for completeness.
 
     public ActivityDefinitionBuilder() {
         super(new ActivityDefinition());
     }
 
-    public ActivityDefinitionBuilder(ActivityDefinition activityDefinition ) {
+    public ActivityDefinitionBuilder(ActivityDefinition activityDefinition) {
         super(activityDefinition);
     }
 
-    public ActivityDefinitionBuilder buildIdentification(String url, String version, Enumerations.PublicationStatus status) {
+    public ActivityDefinitionBuilder buildIdentification(String url, String version,
+            Enumerations.PublicationStatus status) {
         complexProperty.setUrl(url);
         complexProperty.setVersion(version);
         complexProperty.setStatus(status);
@@ -71,7 +72,8 @@ public class ActivityDefinitionBuilder extends BaseBuilder<ActivityDefinition> {
         return this;
     }
 
-    public ActivityDefinitionBuilder buildDynamicValue(String description, String path, String language, String expression) {
+    public ActivityDefinitionBuilder buildDynamicValue(String description, String path, String language,
+            String expression) {
         ActivityDefinition.ActivityDefinitionDynamicValueComponent dynamicValueComponent = new ActivityDefinition.ActivityDefinitionDynamicValueComponent();
         dynamicValueComponent.setDescription(description);
         dynamicValueComponent.setLanguage(language);
@@ -81,7 +83,7 @@ public class ActivityDefinitionBuilder extends BaseBuilder<ActivityDefinition> {
         return this;
     }
 
-    public ActivityDefinitionBuilder buildCqlDynamicValue(String description, String path, String expression ) {
+    public ActivityDefinitionBuilder buildCqlDynamicValue(String description, String path, String expression) {
         return this.buildDynamicValue(description, path, "text/cql", expression);
     }
 }

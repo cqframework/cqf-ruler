@@ -1,5 +1,18 @@
 package org.opencds.cqf.dstu3.providers;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hl7.fhir.dstu3.model.CodeSystem;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.ValueSet;
+import org.hl7.fhir.dstu3.model.ValueSet.ValueSetExpansionContainsComponent;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.cql.engine.runtime.Code;
+import org.opencds.cqf.cql.engine.terminology.CodeSystemInfo;
+import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.engine.terminology.ValueSetInfo;
+
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
@@ -8,18 +21,6 @@ import ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import org.hl7.fhir.dstu3.model.CodeSystem;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.ValueSet;
-import org.hl7.fhir.dstu3.model.ValueSet.ValueSetExpansionContainsComponent;
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.cql.runtime.Code;
-import org.opencds.cqf.cql.terminology.CodeSystemInfo;
-import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.terminology.ValueSetInfo;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Christopher Schuler on 7/17/2017.
@@ -55,9 +56,12 @@ public class JpaTerminologyProvider implements TerminologyProvider {
         boolean needsExpand = false;
         ValueSet vs = null;
         if (valueSet.getId().startsWith("http://") || valueSet.getId().startsWith("https://")) {
-            if (valueSet.getVersion() != null || (valueSet.getCodeSystems() != null && valueSet.getCodeSystems().size() > 0)) {
+            if (valueSet.getVersion() != null
+                    || (valueSet.getCodeSystems() != null && valueSet.getCodeSystems().size() > 0)) {
                 if (!(valueSet.getCodeSystems().size() == 1 && valueSet.getCodeSystems().get(0).getVersion() == null)) {
-                    throw new UnsupportedOperationException(String.format("Could not expand value set %s; version and code system bindings are not supported at this time.", valueSet.getId()));
+                    throw new UnsupportedOperationException(String.format(
+                            "Could not expand value set %s; version and code system bindings are not supported at this time.",
+                            valueSet.getId()));
                 }
             }
             IBundleProvider bundleProvider = valueSetResourceProvider.getDao()

@@ -1,24 +1,23 @@
 package org.opencds.cqf.r4.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.ServiceRequest;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class ServiceRequestBuilder extends BaseBuilder<ServiceRequest> {
 
-    // TODO -  this is a start, but should be extended for completeness.
+    // TODO - this is a start, but should be extended for completeness.
 
     public ServiceRequestBuilder() {
-        this( new ServiceRequest());
+        this(new ServiceRequest());
     }
 
     public ServiceRequestBuilder(ServiceRequest complexProperty) {
         super(complexProperty);
     }
-
 
     public ServiceRequestBuilder buildId(String id) {
         complexProperty.setId(id);
@@ -41,12 +40,8 @@ public class ServiceRequestBuilder extends BaseBuilder<ServiceRequest> {
     }
 
     public ServiceRequestBuilder buildCode(Coding coding) {
-        complexProperty.setCode(
-                new CodeableConceptBuilder()
-                        .buildCoding(coding)
-                        .build()
-        );
-        return  this;
+        complexProperty.setCode(new CodeableConceptBuilder().buildCoding(coding).build());
+        return this;
     }
 
     public ServiceRequestBuilder buildIntent(ServiceRequest.ServiceRequestIntent intent) {
@@ -80,11 +75,7 @@ public class ServiceRequestBuilder extends BaseBuilder<ServiceRequest> {
     }
 
     public ServiceRequestBuilder buildSubject(String subject) {
-        complexProperty.setSubject(
-                new ReferenceBuilder()
-                        .buildReference(subject)
-                        .build()
-        );
+        complexProperty.setSubject(new ReferenceBuilder().buildReference(subject).build());
         return this;
     }
 

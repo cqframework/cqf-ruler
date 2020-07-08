@@ -1,10 +1,10 @@
 package org.opencds.cqf.r4.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
+import java.util.Date;
+
 import org.hl7.fhir.r4.model.Annotation;
 import org.hl7.fhir.r4.model.Type;
-
-import java.util.Date;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class AnnotationBuilder extends BaseBuilder<Annotation> {
 

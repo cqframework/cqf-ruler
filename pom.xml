@@ -44,22 +44,22 @@
 
     <properties>
         <version.major>0</version.major>
-        <version.minor>1</version.minor>
-        <version.patch>14.6</version.patch>
+        <version.minor>3</version.minor>
+        <version.patch>0</version.patch>
         <!-- NOTE: Building under the release profile automatically drops the -SNAPSHOT extension -->
         <revision>${version.major}.${version.minor}.${version.patch}-SNAPSHOT</revision>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jetty_version>9.4.14.v20181114</jetty_version>
-        <jackson_version>2.10.1</jackson_version>
-        <derby_version>10.14.2.0</derby_version>
-        <hapi_version>4.1.0</hapi_version>
-        <cqf_tooling_version>1.0.4</cqf_tooling_version>
-        <cql_engine_version>1.3.12.1</cql_engine_version>
-        <cqframework_version>1.3.19</cqframework_version>
-        <cds_hooks_version>1.0.3</cds_hooks_version>
+        <jetty.version>9.4.28.v20200408</jetty.version>
+        <jackson.version>2.10.1</jackson.version>
+        <hapi.version>4.2.0</hapi.version>
+        <cqf-tooling.version>1.1.1</cqf-tooling.version>
+        <cql-engine.version>1.4.0</cql-engine.version>
+        <cqframework.version>1.4.9</cqframework.version>
+        <cds-hooks.version>1.1.0</cds-hooks.version>
+        <slf4j.version>1.7.30</slf4j.version>
 
         <!-- jetty plugin properties (used when starting server locally) -->
         <dev>true</dev>
@@ -95,7 +95,7 @@
         <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>tooling</artifactId>
-            <version>${cqf_tooling_version}</version>
+            <version>${cqf-tooling.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -105,9 +105,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.opencds.cqf</groupId>
-            <artifactId>cql-engine</artifactId>
-            <version>${cql_engine_version}</version>
+            <groupId>org.opencds.cqf.cql</groupId>
+            <artifactId>engine</artifactId>
+            <version>${cql-engine.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -117,9 +117,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.opencds.cqf</groupId>
-            <artifactId>cql-engine-fhir</artifactId>
-            <version>${cql_engine_version}</version>
+            <groupId>org.opencds.cqf.cql</groupId>
+            <artifactId>engine.fhir</artifactId>
+            <version>${cql-engine.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -131,76 +131,76 @@
         <dependency>
             <groupId>info.cqframework</groupId>
             <artifactId>cql-to-elm</artifactId>
-            <version>${cqframework_version}</version>
+            <version>${cqframework.version}</version>
         </dependency>
 
         <dependency>
             <groupId>info.cqframework</groupId>
             <artifactId>cql-formatter</artifactId>
-            <version>${cqframework_version}</version>
+            <version>${cqframework.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>cds</artifactId>
-            <version>${cds_hooks_version}</version>
+            <version>${cds-hooks.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson_version}</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>${jackson_version}</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <!-- This dependency includes the core HAPI-FHIR classes -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-base</artifactId>
-            <version>${hapi_version}</version>
+            <version>${hapi.version}</version>
         </dependency>
 
         <!-- At least one "structures" JAR must also be included -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-dstu2</artifactId>
-            <version>${hapi_version}</version>
+            <version>${hapi.version}</version>
         </dependency>
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-dstu3</artifactId>
-            <version>${hapi_version}</version>
+            <version>${hapi.version}</version>
         </dependency>
 
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-converter</artifactId>
-            <version>${hapi_version}</version>
+            <version>${hapi.version}</version>
         </dependency>
 
         <!-- This dependency includes the JPA server itself, which is packaged separately from the rest of HAPI FHIR -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-base</artifactId>
-            <version>${hapi_version}</version>
+            <version>${hapi.version}</version>
         </dependency>
 
         <!-- This dependency is used for the "FHIR Tester" web app overlay -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-testpage-overlay</artifactId>
-            <version>${hapi_version}</version>
+            <version>${hapi.version}</version>
             <type>war</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-testpage-overlay</artifactId>
-            <version>${hapi_version}</version>
+            <version>${hapi.version}</version>
             <classifier>classes</classifier>
             <scope>provided</scope>
         </dependency>
@@ -213,11 +213,11 @@
             <version>1.2.3</version>
         </dependency>
 
-        <!--<dependency>-->
-        <!--<groupId>org.slf4j</groupId>-->
-        <!--<artifactId>jcl-over-slf4j</artifactId>-->
-        <!--<version>1.7.22</version>-->
-        <!--</dependency>-->
+        <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+        </dependency>
 
         <!-- Needed for JEE/Servlet support -->
         <dependency>
@@ -242,37 +242,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.4.1212.jre7</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.197</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-            <version>${derby_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derbynet</artifactId>
-            <version>${derby_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derbyclient</artifactId>
-            <version>${derby_version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-schematron</artifactId>
-            <version>5.0.4</version>
+            <version>5.6.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>Saxon-HE</artifactId>
@@ -281,17 +259,17 @@
             </exclusions>
         </dependency>
 
-        <dependency>
+        <!-- <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.4</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlets</artifactId>
-            <version>${jetty_version}</version>
+            <version>${jetty.version}</version>
         </dependency>
 
         <dependency>
@@ -358,23 +336,28 @@
                 <plugin>
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-maven-plugin</artifactId>
-                    <version>${jetty_version}</version>
+                    <version>${jetty.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.0</version>
                     <configuration>
-                        <source>11</source>
-                        <target>11</target>
+                        <source>1.8</source>
+                        <target>1.8</target>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.2.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.2.0</version>
                     <configuration>
-                        <source>11</source>
+                        <source>8</source>
                     </configuration>
                     <executions>
                         <execution>
@@ -447,7 +430,7 @@
                         </execution>
                     </executions>
                 </plugin>
-                   <plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>2.19.1</version>
@@ -463,7 +446,7 @@
                         </execution>
                     </executions>
                 </plugin>
-                 <plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.21.0</version>
@@ -479,22 +462,22 @@
                     <version>1.1.0</version>
                     <configuration>
                         <updatePomFile>true</updatePomFile>
-                        <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                        <flattenMode>ossrh</flattenMode>
                     </configuration>
                     <executions>
                         <execution>
-                        <id>flatten</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>flatten</goal>
-                        </goals>
+                            <id>flatten</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>flatten</goal>
+                            </goals>
                         </execution>
                         <execution>
-                        <id>flatten.clean</id>
-                        <phase>clean</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
+                            <id>flatten.clean</id>
+                            <phase>clean</phase>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
                         </execution>
                     </executions>
                 </plugin>

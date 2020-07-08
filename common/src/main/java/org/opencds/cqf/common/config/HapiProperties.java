@@ -1,14 +1,15 @@
 package org.opencds.cqf.common.config;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
+
+import com.google.common.annotations.VisibleForTesting;
+
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
-import com.google.common.annotations.VisibleForTesting;
-
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Properties;
 
 public class HapiProperties {
     static final String ALLOW_EXTERNAL_REFERENCES = "allow_external_references";
@@ -47,6 +48,21 @@ public class HapiProperties {
     static final String ALLOW_CONTAINS_SEARCHES = "allow_contains_searches";
     static final String ALLOW_OVERRIDE_DEFAULT_SEARCH_PARAMS = "allow_override_default_search_params";
     static final String EMAIL_FROM = "email.from";
+    static final String OAUTH_ENABLED = "oauth.enabled";
+    static final String OAUTH_SECURITY_CORS = "oauth.securityCors";
+    static final String OAUTH_SECURITY_URL = "oauth.securityUrl";
+    static final String OAUTH_SECURITY_EXT_AUTH_URL = "oauth.securityExtAuthUrl";
+    static final String OAUTH_SECURITY_EXT_AUTH_VALUE_URI = "oauth.securityExtAuthValueUri";
+    static final String OAUTH_SECURITY_EXT_TOKEN_URL = "oauth.securityExtTokenUrl";
+    static final String OAUTH_SECURITY_EXT_TOKEN_VALUE_URI = "oauth.securityExtTokenValueUri";
+    static final String OAUTH_SERVICE_SYSTEM = "oauth.serviceSystem";
+    static final String OAUTH_SERVICE_CODE = "oauth.serviceCode";
+    static final String OAUTH_SERVICE_DISPLAY = "oauth.serviceDisplay";
+    static final String OAUTH_SERVICE_TEXT = "oauth.serviceText";
+    static final String QUESTIONNAIRE_RESPONSE_ENABLED = "questionnaireResponseExtract.enabled";
+    static final String QUESTIONNAIRE_RESPONSE_ENDPOINT = "questionnaireResponseExtract.endpoint";
+    static final String QUESTIONNAIRE_RESPONSE_USERNAME = "questionnaireResponseExtract.username";
+    static final String QUESTIONNAIRE_RESPONSE_PASSWORD = "questionnaireResponseExtract.password";
 
     private static Properties properties;
 
@@ -59,8 +75,8 @@ public class HapiProperties {
     }
 
     /**
-     * This is mostly here for unit tests. Use the actual properties file
-     * to set values
+     * This is mostly here for unit tests. Use the actual properties file to set
+     * values
      */
     @VisibleForTesting
     public static void setProperty(String theKey, String theValue) {
@@ -70,7 +86,7 @@ public class HapiProperties {
     public static Properties getProperties() {
         if (properties == null) {
             // Load the configurable properties file
-            try (InputStream in = HapiProperties.class.getClassLoader().getResourceAsStream(HAPI_PROPERTIES)){
+            try (InputStream in = HapiProperties.class.getClassLoader().getResourceAsStream(HAPI_PROPERTIES)) {
                 HapiProperties.properties = new Properties();
                 HapiProperties.properties.load(in);
             } catch (Exception e) {
@@ -78,8 +94,8 @@ public class HapiProperties {
             }
 
             Properties overrideProps = loadOverrideProperties();
-            if(overrideProps != null) {
-              properties.putAll(overrideProps);
+            if (overrideProps != null) {
+                properties.putAll(overrideProps);
             }
         }
 
@@ -87,22 +103,24 @@ public class HapiProperties {
     }
 
     /**
-     * If a configuration file path is explicitly specified via -Dhapi.properties=<path>, the properties there will
-     * be used to override the entries in the default hapi.properties file (currently under WEB-INF/classes)
-     * @return properties loaded from the explicitly specified configuraiton file if there is one, or null otherwise.
+     * If a configuration file path is explicitly specified via
+     * -Dhapi.properties=<path>, the properties there will be used to override the
+     * entries in the default hapi.properties file (currently under WEB-INF/classes)
+     * 
+     * @return properties loaded from the explicitly specified configuraiton file if
+     *         there is one, or null otherwise.
      */
     private static Properties loadOverrideProperties() {
         String confFile = System.getProperty(HAPI_PROPERTIES + "." + HapiProperties.getProperty(FHIR_VERSION));
         if (confFile == null) {
             confFile = System.getProperty(HAPI_PROPERTIES);
         }
-        if(confFile != null) {
+        if (confFile != null) {
             try {
                 Properties props = new Properties();
                 props.load(new FileInputStream(confFile));
                 return props;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new ConfigurationException("Could not load HAPI properties file: " + confFile, e);
             }
         }
@@ -213,7 +231,8 @@ public class HapiProperties {
     }
 
     public static String getLoggerFormat() {
-        return HapiProperties.getProperty(LOGGER_FORMAT, "Path[${servletPath}] Source[${requestHeader.x-forwarded-for}] Operation[${operationType} ${operationName} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}] ResponseEncoding[${responseEncodingNoDefault}]");
+        return HapiProperties.getProperty(LOGGER_FORMAT,
+                "Path[${servletPath}] Source[${requestHeader.x-forwarded-for}] Operation[${operationType} ${operationName} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}] ResponseEncoding[${responseEncodingNoDefault}]");
     }
 
     public static String getLoggerErrorFormat() {
@@ -228,16 +247,17 @@ public class HapiProperties {
         return HapiProperties.getProperty(DATASOURCE_DRIVER, "org.apache.derby.jdbc.EmbeddedDriver");
     }
 
-    public static Object getDriver() {
-        return new org.apache.derby.jdbc.EmbeddedDriver();
-    }
+    // public static Object getDriver() {
+    //     return new org.apache.derby.jdbc.EmbeddedDriver();
+    // }
 
     public static Integer getDataSourceMaxPoolSize() {
         return HapiProperties.getIntegerProperty(DATASOURCE_MAX_POOL_SIZE, 10);
     }
 
     public static String getDataSourceUrl() {
-        return HapiProperties.getProperty(DATASOURCE_URL, "jdbc:derby:directory:target/jpaserver_derby_files;create=true");
+        return HapiProperties.getProperty(DATASOURCE_URL,
+                "jdbc:derby:directory:target/jpaserver_derby_files;create=true");
     }
 
     public static String getDataSourceUsername() {
@@ -340,4 +360,22 @@ public class HapiProperties {
         String value = HapiProperties.getProperty(REUSE_CACHED_SEARCH_RESULTS_MILLIS, "-1");
         return Long.valueOf(value);
     }
+
+    //************************* OAuth *******************************************************
+    public static Boolean getOAuthEnabled(){return HapiProperties.getBooleanProperty(OAUTH_ENABLED, false);}
+    public static Boolean getOauthSecurityCors(){return HapiProperties.getBooleanProperty(OAUTH_SECURITY_CORS, true);}
+    public static String getOauthSecurityUrl(){return HapiProperties.getProperty(OAUTH_SECURITY_URL, "");}
+    public static String getOauthSecurityExtAuthUrl(){return HapiProperties.getProperty(OAUTH_SECURITY_EXT_AUTH_URL, "");}
+    public static String getOauthSecurityExtAuthValueUri(){return HapiProperties.getProperty(OAUTH_SECURITY_EXT_AUTH_VALUE_URI, "");}
+    public static String getOauthSecurityExtTokenUrl(){return HapiProperties.getProperty(OAUTH_SECURITY_EXT_TOKEN_URL, "");}
+    public static String getOauthSecurityExtTokenValueUri(){return HapiProperties.getProperty(OAUTH_SECURITY_EXT_TOKEN_VALUE_URI, "");}
+    public static String getOauthServiceSystem(){return HapiProperties.getProperty(OAUTH_SERVICE_SYSTEM, "");}
+    public static String getOauthServiceCode(){return HapiProperties.getProperty(OAUTH_SERVICE_CODE, "");}
+    public static String getOauthServiceDisplay(){return HapiProperties.getProperty(OAUTH_SERVICE_DISPLAY, "");}
+    public static String getOauthServiceText(){return HapiProperties.getProperty(OAUTH_SERVICE_TEXT, "");}
+
+    public static Boolean getQuestionnaireResponseExtractEnabled(){return HapiProperties.getBooleanProperty(QUESTIONNAIRE_RESPONSE_ENABLED, false);}
+    public static String getQuestionnaireResponseExtractEndpoint() {return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_ENDPOINT);}
+    public static String getQuestionnaireResponseExtractUserName(){return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_USERNAME);};
+    public static String getQuestionnaireResponseExtractPassword(){return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_PASSWORD);};
 }

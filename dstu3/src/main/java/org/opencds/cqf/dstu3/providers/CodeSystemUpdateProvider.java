@@ -1,5 +1,22 @@
 package org.opencds.cqf.dstu3.providers;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.hl7.fhir.dstu3.model.CodeSystem;
+import org.hl7.fhir.dstu3.model.Enumerations;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.OperationOutcome;
+import org.hl7.fhir.dstu3.model.ValueSet;
+import org.opencds.cqf.dstu3.builders.OperationOutcomeBuilder;
+import org.opencds.cqf.dstu3.builders.RandomIdBuilder;
+
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -7,129 +24,123 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.UriParam;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.hl7.fhir.dstu3.model.CodeSystem;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.OperationOutcome;
-import org.hl7.fhir.dstu3.model.ValueSet;
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.dstu3.builders.OperationOutcomeBuilder;
-import org.opencds.cqf.dstu3.builders.RandomIdBuilder;
-import org.hl7.fhir.dstu3.model.*;
-
-public class CodeSystemUpdateProvider
-{
+public class CodeSystemUpdateProvider {
     private IFhirResourceDao<ValueSet> valueSetDao;
     private IFhirResourceDao<CodeSystem> codeSystemDao;
 
-    public CodeSystemUpdateProvider(IFhirResourceDao<ValueSet> valueSetDao, IFhirResourceDao<CodeSystem> codeSystemDao)
-    {
+    public CodeSystemUpdateProvider(IFhirResourceDao<ValueSet> valueSetDao,
+            IFhirResourceDao<CodeSystem> codeSystemDao) {
         this.valueSetDao = valueSetDao;
         this.codeSystemDao = codeSystemDao;
     }
 
     /***
-     * Update existing CodeSystems with the codes in all ValueSet resources.
-     * System level CodeSystem update operation
+     * Update existing CodeSystems with the codes in all ValueSet resources. System
+     * level CodeSystem update operation
      *
-     * @return FHIR OperationOutcome detailing the success or failure of the operation
+     * @return FHIR OperationOutcome detailing the success or failure of the
+     *         operation
      */
     @Operation(name = "$updateCodeSystems", idempotent = true)
-    public OperationOutcome updateCodeSystems()
-    {
+    public OperationOutcome updateCodeSystems() {
         IBundleProvider valuesets = this.valueSetDao.search(new SearchParameterMap());
-        OperationOutcome response = new OperationOutcome();
 
-        OperationOutcome outcome;
-        for (IBaseResource valueSet : valuesets.getResources(0, valuesets.size()))
-        {
-            outcome = this.performCodeSystemUpdate((ValueSet) valueSet);
-            if (outcome.hasIssue())
-            {
-                for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue())
-                {
-                    response.addIssue(issue);
-                }
+        List<ValueSet> valueSets =  valuesets.getResources(0, valuesets.size()).stream().map(x -> (ValueSet)x).collect(Collectors.toList());
+
+        OperationOutcome outcome = this.performCodeSystemUpdate(valueSets);
+
+        OperationOutcome response = new OperationOutcome();
+        if (outcome.hasIssue()) {
+            for (OperationOutcome.OperationOutcomeIssueComponent issue : outcome.getIssue()) {
+                response.addIssue(issue);
             }
         }
 
         return response;
     }
 
-       /***
+    /***
      * Update existing CodeSystems with the codes in the specified ValueSet.
      *
-     * This is for development environment purposes to enable ValueSet expansion and validation
-     * without complete CodeSystems.
+     * This is for development environment purposes to enable ValueSet expansion and
+     * validation without complete CodeSystems.
      *
      * @param theId the id of the ValueSet
-     * @return FHIR OperationOutcome detailing the success or failure of the operation
+     * @return FHIR OperationOutcome detailing the success or failure of the
+     *         operation
      */
     @Operation(name = "$updateCodeSystems", idempotent = true, type = ValueSet.class)
-    public OperationOutcome updateCodeSystems(@IdParam IdType theId)
-    {
+    public OperationOutcome updateCodeSystems(@IdParam IdType theId) {
         ValueSet vs = this.valueSetDao.read(theId);
 
         OperationOutcomeBuilder responseBuilder = new OperationOutcomeBuilder();
-        if (vs == null)
-        {
+        if (vs == null) {
             return responseBuilder.buildIssue("error", "notfound", "Unable to find Resource: " + theId.getId()).build();
         }
 
-        return performCodeSystemUpdate(vs);
+        return performCodeSystemUpdate(Collections.singletonList(vs));
     }
 
-    public OperationOutcome performCodeSystemUpdate(ValueSet vs)
-    {
+    public OperationOutcome performCodeSystemUpdate(List<ValueSet> valueSets) {
         OperationOutcomeBuilder responseBuilder = new OperationOutcomeBuilder();
 
         List<String> codeSystems = new ArrayList<>();
-        if (vs.hasCompose() && vs.getCompose().hasInclude())
-        {
-            CodeSystem codeSystem;
-            for (ValueSet.ConceptSetComponent csc : vs.getCompose().getInclude())
-            {
-                if (!csc.hasSystem()) continue;
 
-                codeSystem = getCodeSystemByUrl(csc.getSystem());
+        // Possible for this to run out of memory with really large ValueSets and CodeSystems.
+        Map<String, Set<String>> codesBySystem = new HashMap<>();
+        for (ValueSet vs : valueSets){
 
-                if (!csc.hasConcept()) continue;
+        if (vs.hasCompose() && vs.getCompose().hasInclude()) {
+            for (ValueSet.ConceptSetComponent csc : vs.getCompose().getInclude()) {
+                if (!csc.hasSystem() || !csc.hasConcept()){
+                    continue;
+                }
 
-                updateCodeSystem(
-                        codeSystem.setUrl(csc.getSystem()),
-                        getUnionDistinctCodes(csc, codeSystem)
-                );
+                String system = csc.getSystem();
+                if (!codesBySystem.containsKey(system)){
+                    codesBySystem.put(system, new HashSet<>());
+                }
 
-                codeSystems.add(codeSystem.getUrl());
+                Set<String> codes = codesBySystem.get(system);
+                
+                codes.addAll(csc.getConcept().stream().map(ValueSet.ConceptReferenceComponent::getCode)
+                .collect(Collectors.toList()));
             }
         }
 
-        return responseBuilder.buildIssue(
-                "information",
-                "informational",
-                "Successfully updated the following CodeSystems: " + String.join(", ", codeSystems)
-        ).build();
+        }
+
+        for(Map.Entry<String, Set<String>> entry : codesBySystem.entrySet()) {
+            String system = entry.getKey();
+            CodeSystem codeSystem = getCodeSystemByUrl(system);
+            updateCodeSystem(codeSystem.setUrl(system), getUnionDistinctCodes(entry.getValue(), codeSystem));
+
+            codeSystems.add(codeSystem.getUrl());
+
+        }
+
+        if (codeSystems.size() > 0) {
+            return responseBuilder.buildIssue("information", "informational",
+            "Successfully updated the following CodeSystems: " + String.join(", ", codeSystems)).build();
+        }
+        else {
+            return responseBuilder.buildIssue("information", "informational",
+            "No code systems were updated").build();
+        }
     }
 
     /***
      * Fetch CodeSystem matching the given url search parameter
      *
      * @param url The url of the CodeSystem to fetch
-     * @return The CodeSystem that matches the url parameter or a new CodeSystem with the url and id populated
+     * @return The CodeSystem that matches the url parameter or a new CodeSystem
+     *         with the url and id populated
      */
-    private CodeSystem getCodeSystemByUrl(String url)
-    {
-        IBundleProvider bundleProvider =
-                this.codeSystemDao.search(
-                                new SearchParameterMap().add(CodeSystem.SP_URL, new UriParam(url))
-                );
+    private CodeSystem getCodeSystemByUrl(String url) {
+        IBundleProvider bundleProvider = this.codeSystemDao
+                .search(new SearchParameterMap().add(CodeSystem.SP_URL, new UriParam(url)));
 
-        if (bundleProvider.size() >= 1)
-        {
+        if (bundleProvider.size() >= 1) {
             return (CodeSystem) bundleProvider.getResources(0, 1).get(0);
         }
 
@@ -140,41 +151,31 @@ public class CodeSystemUpdateProvider
      * Perform union of codes within a ValueSet and CodeSystem
      *
      * @param valueSetCodes The codes contained within a ValueSet
-     * @param codeSystem A CodeSystem resource
+     * @param codeSystem    A CodeSystem resource
      * @return List of distinct codes strings
      */
-    private List<String> getUnionDistinctCodes(ValueSet.ConceptSetComponent valueSetCodes, CodeSystem codeSystem)
-    {
-        if (!codeSystem.hasConcept())
-        {
-            return valueSetCodes.getConcept().stream().map(ValueSet.ConceptReferenceComponent::getCode).collect(Collectors.toList());
+    private Set<String> getUnionDistinctCodes(Set<String> valueSetCodes, CodeSystem codeSystem) {
+        if (!codeSystem.hasConcept()) {
+            return valueSetCodes;
         }
-        return Stream.concat(
-                valueSetCodes.getConcept().stream().map(
-                        ValueSet.ConceptReferenceComponent::getCode).collect(Collectors.toList()
-                ).stream(),
-                codeSystem.getConcept().stream().map(
-                        CodeSystem.ConceptDefinitionComponent::getCode).collect(Collectors.toList()
-                ).stream()
-        )
-                .distinct()
-                .collect(Collectors.toList());
+
+        valueSetCodes.addAll(codeSystem.getConcept().stream().map(CodeSystem.ConceptDefinitionComponent::getCode)
+            .collect(Collectors.toSet()));
+
+        return valueSetCodes;
     }
 
     /***
      * Overwrite the given CodeSystem codes with the given codes
      *
      * @param codeSystem A CodeSystem resource
-     * @param codes List of (unique) code strings
+     * @param codes      List of (unique) code strings
      */
-    private void updateCodeSystem(CodeSystem codeSystem, List<String> codes)
-    {
-        codeSystem.setConcept(
-                codes.stream().map(
-                        x -> new CodeSystem.ConceptDefinitionComponent().setCode(x)
-                )
-                .collect(Collectors.toList())
-        ).setContent(CodeSystem.CodeSystemContentMode.COMPLETE).setStatus(Enumerations.PublicationStatus.ACTIVE);
+    private void updateCodeSystem(CodeSystem codeSystem, Set<String> codes) {
+        codeSystem
+                .setConcept(codes.stream().map(x -> new CodeSystem.ConceptDefinitionComponent().setCode(x))
+                        .collect(Collectors.toList()))
+                .setContent(CodeSystem.CodeSystemContentMode.COMPLETE).setStatus(Enumerations.PublicationStatus.ACTIVE);
 
         this.codeSystemDao.update(codeSystem);
     }
