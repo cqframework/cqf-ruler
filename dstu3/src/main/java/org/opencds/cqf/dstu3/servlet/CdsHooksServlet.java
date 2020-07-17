@@ -30,6 +30,7 @@ import org.opencds.cqf.cds.evaluation.Stu3EvaluationContext;
 import org.opencds.cqf.cds.hooks.Hook;
 import org.opencds.cqf.cds.hooks.HookFactory;
 import org.opencds.cqf.cds.hooks.Stu3HookEvaluator;
+import org.opencds.cqf.cds.providers.ProviderConfiguration;
 import org.opencds.cqf.cds.request.JsonHelper;
 import org.opencds.cqf.cds.request.Request;
 import org.opencds.cqf.cds.response.CdsCard;
@@ -67,6 +68,19 @@ public class CdsHooksServlet extends HttpServlet {
     private static JpaFhirRetrieveProvider fhirRetrieveProvider;
 
     private static JpaTerminologyProvider jpaTerminologyProvider;
+
+    private ProviderConfiguration providerConfiguration;
+
+    public ProviderConfiguration getProviderConfiguration() {
+        if (providerConfiguration == null) {
+            providerConfiguration = new ProviderConfiguration(
+                HapiProperties.getCdsHooksFhirServerExpandValueSets(),
+                HapiProperties.getCdsHooksFhirServerMaxCodesPerQuery(),
+                HapiProperties.getCdsHooksFhirServerSearchStyleEnum());
+        }
+
+        return providerConfiguration;
+    }
 
     // TODO: There's probably a way to wire this all up using Spring
     public static void setPlanDefinitionProvider(PlanDefinitionApplyProvider planDefinitionProvider) {
@@ -154,7 +168,8 @@ public class CdsHooksServlet extends HttpServlet {
             context.setExpressionCaching(true);
 
             EvaluationContext<PlanDefinition> evaluationContext = new Stu3EvaluationContext(hook, version, FhirContext.forDstu3().newRestfulGenericClient(baseUrl),
-                jpaTerminologyProvider, context, library, planDefinition);
+                jpaTerminologyProvider, context, library,
+                planDefinition, this.getProviderConfiguration());
 
             this.setAccessControlHeaders(response);
 
