@@ -9,6 +9,7 @@ import com.google.common.annotations.VisibleForTesting;
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.api.SearchStyleEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
 
 public class HapiProperties {
@@ -63,6 +64,10 @@ public class HapiProperties {
     static final String QUESTIONNAIRE_RESPONSE_ENDPOINT = "questionnaireResponseExtract.endpoint";
     static final String QUESTIONNAIRE_RESPONSE_USERNAME = "questionnaireResponseExtract.username";
     static final String QUESTIONNAIRE_RESPONSE_PASSWORD = "questionnaireResponseExtract.password";
+
+    static final String CDSHOOKS_FHIRSERVER_MAXCODESPERQUERY = "cds_hooks.fhirServer.maxCodesPerQuery";
+    static final String CDSHOOKS_FHIRSERVER_EXPANDVALUESETS = "cds_hooks.fhirServer.expandValueSets";
+    static final String CDSHOOKS_FHIRSERVER_SEARCHSTYLE= "cds_hooks.fhirServer.searchStyle";
 
     private static Properties properties;
 
@@ -378,4 +383,17 @@ public class HapiProperties {
     public static String getQuestionnaireResponseExtractEndpoint() {return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_ENDPOINT);}
     public static String getQuestionnaireResponseExtractUserName(){return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_USERNAME);};
     public static String getQuestionnaireResponseExtractPassword(){return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_PASSWORD);};
+
+    //************************* CDS_HOOKS ****************
+    public static Integer getCdsHooksFhirServerMaxCodesPerQuery() { return HapiProperties.getIntegerProperty(CDSHOOKS_FHIRSERVER_MAXCODESPERQUERY, 64);}
+    public static Boolean getCdsHooksFhirServerExpandValueSets() { return HapiProperties.getBooleanProperty(CDSHOOKS_FHIRSERVER_EXPANDVALUESETS, true);}
+    public static SearchStyleEnum getCdsHooksFhirServerSearchStyleEnum() {
+        String searchStyleEnumString = HapiProperties.getProperty(CDSHOOKS_FHIRSERVER_SEARCHSTYLE);
+
+        if (searchStyleEnumString != null && searchStyleEnumString.length() > 0) {
+            return SearchStyleEnum.valueOf(searchStyleEnumString);
+        }
+
+        return SearchStyleEnum.GET;
+    }
 }

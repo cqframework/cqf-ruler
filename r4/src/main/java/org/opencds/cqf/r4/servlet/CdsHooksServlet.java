@@ -30,6 +30,7 @@ import org.opencds.cqf.cds.evaluation.R4EvaluationContext;
 import org.opencds.cqf.cds.hooks.Hook;
 import org.opencds.cqf.cds.hooks.HookFactory;
 import org.opencds.cqf.cds.hooks.R4HookEvaluator;
+import org.opencds.cqf.cds.providers.ProviderConfiguration;
 import org.opencds.cqf.cds.request.JsonHelper;
 import org.opencds.cqf.cds.request.Request;
 import org.opencds.cqf.cds.response.CdsCard;
@@ -67,6 +68,19 @@ public class CdsHooksServlet extends HttpServlet {
     private static JpaFhirRetrieveProvider fhirRetrieveProvider;
 
     private static JpaTerminologyProvider jpaTerminologyProvider;
+
+    private ProviderConfiguration providerConfiguration;
+
+    public ProviderConfiguration getProviderConfiguration() {
+        if (providerConfiguration == null) {
+            providerConfiguration = new ProviderConfiguration(
+                HapiProperties.getCdsHooksFhirServerExpandValueSets() ,
+                HapiProperties.getCdsHooksFhirServerMaxCodesPerQuery(),
+                HapiProperties.getCdsHooksFhirServerSearchStyleEnum());
+        }
+
+        return providerConfiguration;
+    }
 
     // TODO: There's probably a way to wire this all up using Spring
     public static void setPlanDefinitionProvider(PlanDefinitionApplyProvider planDefinitionProvider) {
@@ -159,7 +173,7 @@ public class CdsHooksServlet extends HttpServlet {
 
             EvaluationContext<PlanDefinition> evaluationContext = new R4EvaluationContext(hook, version,
                     FhirContext.forR4().newRestfulGenericClient(baseUrl), jpaTerminologyProvider, context, library,
-                    planDefinition);
+                    planDefinition, this.getProviderConfiguration());
 
             this.setAccessControlHeaders(response);
 
