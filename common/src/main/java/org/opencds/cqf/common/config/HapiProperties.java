@@ -9,6 +9,7 @@ import com.google.common.annotations.VisibleForTesting;
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.api.SearchStyleEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
 
 public class HapiProperties {
@@ -63,10 +64,16 @@ public class HapiProperties {
     static final String QUESTIONNAIRE_RESPONSE_ENDPOINT = "questionnaireResponseExtract.endpoint";
     static final String QUESTIONNAIRE_RESPONSE_USERNAME = "questionnaireResponseExtract.username";
     static final String QUESTIONNAIRE_RESPONSE_PASSWORD = "questionnaireResponseExtract.password";
+  
     static final String OBSERVATION_TRANSFORM_ENABLED = "observationTransform.enabled";
     static final String OBSERVATION_TRANSFORM_USERNAME = "observationTransform.username";
     static final String OBSERVATION_TRANSFORM_PASSWORD = "observationTransform.password";
     static final String OBSERVATION_TRANSFORM_REPLACE_CODE = "observationTransform.replaceCode";
+
+    static final String CDSHOOKS_FHIRSERVER_MAXCODESPERQUERY = "cds_hooks.fhirServer.maxCodesPerQuery";
+    static final String CDSHOOKS_FHIRSERVER_EXPANDVALUESETS = "cds_hooks.fhirServer.expandValueSets";
+    static final String CDSHOOKS_FHIRSERVER_SEARCHSTYLE= "cds_hooks.fhirServer.searchStyle";
+
     private static Properties properties;
 
     /*
@@ -386,4 +393,17 @@ public class HapiProperties {
     public static String getObservationTransformUsername(){return HapiProperties.getProperty(OBSERVATION_TRANSFORM_USERNAME);}
     public static String getObservationTransformPassword(){return HapiProperties.getProperty(OBSERVATION_TRANSFORM_PASSWORD);}
     public static Boolean getObservationTransformReplaceCode(){return HapiProperties.getBooleanProperty(OBSERVATION_TRANSFORM_REPLACE_CODE, false);}
+
+    //************************* CDS_HOOKS ****************
+    public static Integer getCdsHooksFhirServerMaxCodesPerQuery() { return HapiProperties.getIntegerProperty(CDSHOOKS_FHIRSERVER_MAXCODESPERQUERY, 64);}
+    public static Boolean getCdsHooksFhirServerExpandValueSets() { return HapiProperties.getBooleanProperty(CDSHOOKS_FHIRSERVER_EXPANDVALUESETS, true);}
+    public static SearchStyleEnum getCdsHooksFhirServerSearchStyleEnum() {
+        String searchStyleEnumString = HapiProperties.getProperty(CDSHOOKS_FHIRSERVER_SEARCHSTYLE);
+
+        if (searchStyleEnumString != null && searchStyleEnumString.length() > 0) {
+            return SearchStyleEnum.valueOf(searchStyleEnumString);
+        }
+
+        return SearchStyleEnum.GET;
+    }
 }
