@@ -221,7 +221,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
 
             dataProvider = new CompositeDataProvider(resolver, retriever);
         } else {
-            RetrieveProvider retriever = new JpaFhirRetrieveProvider(this.registry,
+            JpaFhirRetrieveProvider retriever = new JpaFhirRetrieveProvider(this.registry,
                     new SearchParameterResolver(resolver.getFhirContext()));
             retriever.setTerminologyProvider(terminologyProvider);
             // Assume it's a different server, therefore need to expand.
