@@ -159,6 +159,29 @@ public class BaseServlet extends RestfulServer {
         if (serverAddress != null && serverAddress.length() > 0) {
             setServerAddressStrategy(new HardcodedServerAddressStrategy(serverAddress));
         }
+
+        registerProvider(appCtx.getBean(TerminologyUploaderProvider.class));
+
+        if (HapiProperties.getCorsEnabled()) {
+            CorsConfiguration config = new CorsConfiguration();
+            config.addAllowedHeader("x-fhir-starter");
+            config.addAllowedHeader("Origin");
+            config.addAllowedHeader("Accept");
+            config.addAllowedHeader("X-Requested-With");
+            config.addAllowedHeader("Content-Type");
+            config.addAllowedHeader("Authorization");
+            config.addAllowedHeader("Cache-Control");
+
+            config.addAllowedOrigin(HapiProperties.getCorsAllowedOrigin());
+
+            config.addExposedHeader("Location");
+            config.addExposedHeader("Content-Location");
+            config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+            // Create the interceptor and register it
+            CorsInterceptor interceptor = new CorsInterceptor(config);
+            registerInterceptor(interceptor);
+        }
     }
 
     protected NarrativeProvider getNarrativeProvider() {
