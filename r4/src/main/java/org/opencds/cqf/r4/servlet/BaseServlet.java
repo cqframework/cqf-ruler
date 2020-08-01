@@ -207,7 +207,7 @@ public class BaseServlet extends RestfulServer {
 
         // Library processing
         LibraryOperationsProvider libraryProvider = new LibraryOperationsProvider(
-                (LibraryResourceProvider) this.getResourceProvider(Library.class), narrativeProvider);
+                (LibraryResourceProvider) this.getResourceProvider(Library.class), narrativeProvider, registry, localSystemTerminologyProvider);
         this.registerProvider(libraryProvider);
 
         // CQL Execution
@@ -253,7 +253,6 @@ public class BaseServlet extends RestfulServer {
             ObservationProvider observationProvider = new ObservationProvider(this.fhirContext);
             this.registerProvider(observationProvider);
         }
-
     }
 
     protected <T extends IBaseResource> IFhirResourceDao<T> getDao(Class<T> clazz) {
