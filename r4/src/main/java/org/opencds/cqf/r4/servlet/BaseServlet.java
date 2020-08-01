@@ -248,6 +248,12 @@ public class BaseServlet extends RestfulServer {
             QuestionnaireProvider questionnaireProvider = new QuestionnaireProvider(this.fhirContext);
             this.registerProvider(questionnaireProvider);
         }
+        // Observation processing
+        if(HapiProperties.getObservationTransformEnabled()) {
+            ObservationProvider observationProvider = new ObservationProvider(this.fhirContext);
+            this.registerProvider(observationProvider);
+        }
+
     }
 
     protected <T extends IBaseResource> IFhirResourceDao<T> getDao(Class<T> clazz) {

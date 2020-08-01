@@ -64,6 +64,11 @@ public class HapiProperties {
     static final String QUESTIONNAIRE_RESPONSE_ENDPOINT = "questionnaireResponseExtract.endpoint";
     static final String QUESTIONNAIRE_RESPONSE_USERNAME = "questionnaireResponseExtract.username";
     static final String QUESTIONNAIRE_RESPONSE_PASSWORD = "questionnaireResponseExtract.password";
+  
+    static final String OBSERVATION_TRANSFORM_ENABLED = "observationTransform.enabled";
+    static final String OBSERVATION_TRANSFORM_USERNAME = "observationTransform.username";
+    static final String OBSERVATION_TRANSFORM_PASSWORD = "observationTransform.password";
+    static final String OBSERVATION_TRANSFORM_REPLACE_CODE = "observationTransform.replaceCode";
 
     static final String CDSHOOKS_FHIRSERVER_MAXCODESPERQUERY = "cds_hooks.fhirServer.maxCodesPerQuery";
     static final String CDSHOOKS_FHIRSERVER_EXPANDVALUESETS = "cds_hooks.fhirServer.expandValueSets";
@@ -383,6 +388,11 @@ public class HapiProperties {
     public static String getQuestionnaireResponseExtractEndpoint() {return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_ENDPOINT);}
     public static String getQuestionnaireResponseExtractUserName(){return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_USERNAME);};
     public static String getQuestionnaireResponseExtractPassword(){return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_PASSWORD);};
+
+    public static Boolean getObservationTransformEnabled(){return HapiProperties.getBooleanProperty(OBSERVATION_TRANSFORM_ENABLED, false);}
+    public static String getObservationTransformUsername(){return HapiProperties.getProperty(OBSERVATION_TRANSFORM_USERNAME);}
+    public static String getObservationTransformPassword(){return HapiProperties.getProperty(OBSERVATION_TRANSFORM_PASSWORD);}
+    public static Boolean getObservationTransformReplaceCode(){return HapiProperties.getBooleanProperty(OBSERVATION_TRANSFORM_REPLACE_CODE, false);}
 
     //************************* CDS_HOOKS ****************
     public static Integer getCdsHooksFhirServerMaxCodesPerQuery() { return HapiProperties.getIntegerProperty(CDSHOOKS_FHIRSERVER_MAXCODESPERQUERY, 64);}
