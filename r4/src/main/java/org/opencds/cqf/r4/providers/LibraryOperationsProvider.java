@@ -215,7 +215,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             IGenericClient client = ClientHelperDos.getClient(resolver.getFhirContext(), dataEndpoint);
             RestFhirRetrieveProvider retriever = new RestFhirRetrieveProvider(new SearchParameterResolver(resolver.getFhirContext()), client);
             retriever.setTerminologyProvider(terminologyProvider);
-            if (terminologyEndpoint != null && !terminologyEndpoint.getAddress().equals(dataEndpoint.getAddress())) {
+            if (terminologyEndpoint == null ||(terminologyEndpoint != null && !terminologyEndpoint.getAddress().equals(dataEndpoint.getAddress()))) {
                 retriever.setExpandValueSets(true);
             }
 
