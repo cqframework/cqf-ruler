@@ -28,6 +28,7 @@ import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
+import org.opencds.cqf.cds.providers.PriorityRetrieveProvider;
 import org.opencds.cqf.common.evaluation.LibraryLoader;
 import org.opencds.cqf.common.helpers.ClientHelperDos;
 import org.opencds.cqf.common.helpers.DateHelper;
@@ -51,6 +52,7 @@ import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.execution.provider.BundleRetrieveProvider;
 import org.opencds.cqf.library.r4.NarrativeProvider;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
@@ -185,7 +187,8 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             @OperationParam(name = "dataEndpoint") Endpoint dataEndpoint,
             @OperationParam(name = "context") String contextParam,
             @OperationParam(name = "executionResults") String executionResults,
-            @OperationParam(name = "parameters") Parameters parameters) {
+            @OperationParam(name = "parameters") Parameters parameters,
+            @OperationParam(name = "additionalData") Bundle additionalData) {
 
         if (patientId == null && contextParam != null && contextParam.equals("Patient")) {
             throw new IllegalArgumentException("Must specify a patientId when executing in Patient context.");
@@ -209,6 +212,8 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         } else {
             terminologyProvider = this.defaultTerminologyProvider;
         }
+
+        BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(resolver, additionalData);
         
         DataProvider dataProvider;
         if (dataEndpoint != null) {
@@ -219,7 +224,9 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                 retriever.setExpandValueSets(true);
             }
 
-            dataProvider = new CompositeDataProvider(resolver, retriever);
+            PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(bundleProvider, retriever);
+
+            dataProvider = new CompositeDataProvider(resolver, priorityProvider);
         } else {
             JpaFhirRetrieveProvider retriever = new JpaFhirRetrieveProvider(this.registry,
                     new SearchParameterResolver(resolver.getFhirContext()));
@@ -229,7 +236,9 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                 retriever.setExpandValueSets(true);
             }
 
-            dataProvider = new CompositeDataProvider(resolver, retriever);
+            PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(bundleProvider, retriever);
+
+            dataProvider = new CompositeDataProvider(resolver, priorityProvider);
         }
 
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
