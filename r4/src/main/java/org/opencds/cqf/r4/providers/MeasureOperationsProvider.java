@@ -252,6 +252,10 @@ public class MeasureOperationsProvider {
 
         // TODO: topic should allow many
 
+        if(null != subjectGroup && subjectGroup.length() > 0){
+
+        }
+
         if (practitionerRef == null || practitionerRef.equals("")) {
             return new Parameters().addParameter(
                 new Parameters.ParametersParameterComponent()
