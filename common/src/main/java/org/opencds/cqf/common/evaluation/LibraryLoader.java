@@ -80,9 +80,7 @@ public class LibraryLoader implements org.opencds.cqf.cql.engine.execution.Libra
                 .withVersion(libraryIdentifier.getVersion());
 
         ArrayList<CqlTranslatorException> errors = new ArrayList<>();
-        CqlTranslatorOptions translatorOptions = CqlTranslatorOptions.defaultOptions();
-        translatorOptions.getOptions().add(CqlTranslator.Options.EnableDateRangeOptimization);
-        org.hl7.elm.r1.Library translatedLibrary = libraryManager.resolveLibrary(identifier, translatorOptions, errors).getLibrary();
+        org.hl7.elm.r1.Library translatedLibrary = libraryManager.resolveLibrary(identifier, CqlTranslatorOptions.defaultOptions(), errors).getLibrary();
 
         if (CqlTranslatorException.HasErrors(errors)) {
             throw new IllegalArgumentException(errorsToString(errors));
