@@ -212,8 +212,6 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         } else {
             terminologyProvider = this.defaultTerminologyProvider;
         }
-
-        BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(resolver, additionalData);
         
         DataProvider dataProvider;
         if (dataEndpoint != null) {
@@ -224,9 +222,17 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                 retriever.setExpandValueSets(true);
             }
 
-            PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(bundleProvider, retriever);
+            if (additionalData != null) {
+                BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(resolver, additionalData, terminologyProvider);
+                PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(bundleProvider, retriever);
+                dataProvider = new CompositeDataProvider(resolver, priorityProvider);
+            }
+            else
+            {
+                dataProvider = new CompositeDataProvider(resolver, retriever);
+            }
 
-            dataProvider = new CompositeDataProvider(resolver, priorityProvider);
+            
         } else {
             JpaFhirRetrieveProvider retriever = new JpaFhirRetrieveProvider(this.registry,
                     new SearchParameterResolver(resolver.getFhirContext()));
@@ -236,9 +242,15 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                 retriever.setExpandValueSets(true);
             }
 
-            PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(bundleProvider, retriever);
-
-            dataProvider = new CompositeDataProvider(resolver, priorityProvider);
+            if (additionalData != null) {
+                BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(resolver, additionalData, terminologyProvider);
+                PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(bundleProvider, retriever);
+                dataProvider = new CompositeDataProvider(resolver, priorityProvider);
+            }
+            else
+            {
+                dataProvider = new CompositeDataProvider(resolver, retriever);
+            }
         }
 
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
