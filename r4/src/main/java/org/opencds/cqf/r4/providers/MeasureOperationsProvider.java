@@ -282,7 +282,7 @@ public class MeasureOperationsProvider {
     private Bundle patientCareGap(String periodStart, String periodEnd, String subject, String topic, String measure) {
         //TODO: this is an org hack.  Need to figure out what the right thing is.
         IFhirResourceDao<Organization> orgDao = this.registry.getResourceDao(Organization.class);
-        var org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
+        List<IBaseResource> org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
 
         SearchParameterMap theParams = new SearchParameterMap();
 
@@ -292,7 +292,7 @@ public class MeasureOperationsProvider {
         // }
 
         if (topic != null && !topic.equals("")) {
-            var topicParam = new TokenParam(topic);
+            TokenParam topicParam = new TokenParam(topic);
             theParams.add("topic", topicParam);
         }
         List<IBaseResource> measures = getMeasureList(theParams, measure);
