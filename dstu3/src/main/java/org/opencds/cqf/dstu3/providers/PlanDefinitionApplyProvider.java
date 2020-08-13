@@ -23,10 +23,10 @@ import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.exceptions.NotImplementedException;
-import org.opencds.cqf.cql.execution.Context;
-import org.opencds.cqf.cql.model.Dstu3FhirModelResolver;
-import org.opencds.cqf.cql.model.ModelResolver;
-import org.opencds.cqf.cql.runtime.DateTime;
+import org.opencds.cqf.cql.engine.execution.Context;
+import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.dstu3.builders.AttachmentBuilder;
 import org.opencds.cqf.dstu3.builders.CarePlanActivityBuilder;
 import org.opencds.cqf.dstu3.builders.CarePlanBuilder;
@@ -44,8 +44,7 @@ import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 
 public class PlanDefinitionApplyProvider {
 
@@ -53,43 +52,41 @@ public class PlanDefinitionApplyProvider {
     private ModelResolver modelResolver;
     private ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
 
-    private IFhirResourceDao<PlanDefinition> planDefintionDao; 
+    private IFhirResourceDao<PlanDefinition> planDefinitionDao;
     private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
 
     private FhirContext fhirContext;
 
     private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
-    public PlanDefinitionApplyProvider(FhirContext fhirContext, ActivityDefinitionApplyProvider activitydefinitionApplyProvider, 
-    IFhirResourceDao<PlanDefinition> planDefintionDao, IFhirResourceDao<ActivityDefinition> activityDefinitionDao,
-    CqlExecutionProvider executionProvider) {
+    public PlanDefinitionApplyProvider(FhirContext fhirContext,
+            ActivityDefinitionApplyProvider activityDefinitionApplyProvider,
+            IFhirResourceDao<PlanDefinition> planDefinitionDao,
+            IFhirResourceDao<ActivityDefinition> activityDefinitionDao, CqlExecutionProvider executionProvider) {
         this.executionProvider = executionProvider;
         this.modelResolver = new Dstu3FhirModelResolver();
-        this.activityDefinitionApplyProvider = activitydefinitionApplyProvider;
-        this.planDefintionDao = planDefintionDao;
+        this.activityDefinitionApplyProvider = activityDefinitionApplyProvider;
+        this.planDefinitionDao = planDefinitionDao;
         this.activityDefinitionDao = activityDefinitionDao;
         this.fhirContext = fhirContext;
     }
 
     public IFhirResourceDao<PlanDefinition> getDao() {
-        return this.planDefintionDao;
+        return this.planDefinitionDao;
     }
 
     @Operation(name = "$apply", idempotent = true, type = PlanDefinition.class)
-    public CarePlan applyPlanDefinition(
-            @IdParam IdType theId,
-            @RequiredParam(name="patient") String patientId,
-            @OptionalParam(name="encounter") String encounterId,
-            @OptionalParam(name="practitioner") String practitionerId,
-            @OptionalParam(name="organization") String organizationId,
-            @OptionalParam(name="userType") String userType,
-            @OptionalParam(name="userLanguage") String userLanguage,
-            @OptionalParam(name="userTaskContext") String userTaskContext,
-            @OptionalParam(name="setting") String setting,
-            @OptionalParam(name="settingContext") String settingContext)
-        throws IOException, JAXBException, FHIRException
-    {
-        PlanDefinition planDefinition = this.planDefintionDao.read(theId);
+    public CarePlan applyPlanDefinition(@IdParam IdType theId, @OperationParam(name = "patient") String patientId,
+            @OperationParam(name = "encounter") String encounterId,
+            @OperationParam(name = "practitioner") String practitionerId,
+            @OperationParam(name = "organization") String organizationId,
+            @OperationParam(name = "userType") String userType,
+            @OperationParam(name = "userLanguage") String userLanguage,
+            @OperationParam(name = "userTaskContext") String userTaskContext,
+            @OperationParam(name = "setting") String setting,
+            @OperationParam(name = "settingContext") String settingContext)
+            throws IOException, JAXBException, FHIRException {
+        PlanDefinition planDefinition = this.planDefinitionDao.read(theId);
 
         if (planDefinition == null) {
             throw new IllegalArgumentException("Couldn't find PlanDefinition " + theId);
@@ -99,19 +96,20 @@ public class PlanDefinitionApplyProvider {
 
         CarePlanBuilder builder = new CarePlanBuilder();
 
-        builder
-                .buildDefinition(new Reference(planDefinition.getIdElement().getIdPart()))
-                .buildSubject(new Reference(patientId))
-                .buildStatus(CarePlan.CarePlanStatus.DRAFT);
+        builder.buildDefinition(new Reference(planDefinition.getIdElement().getIdPart()))
+                .buildSubject(new Reference(patientId)).buildStatus(CarePlan.CarePlanStatus.DRAFT);
 
-        if (encounterId != null) builder.buildContext(new Reference(encounterId));
-        if (practitionerId != null) builder.buildAuthor(new Reference(practitionerId));
-        if (organizationId != null) builder.buildAuthor(new Reference(organizationId));
-        if (userLanguage != null) builder.buildLanguage(userLanguage);
+        if (encounterId != null)
+            builder.buildContext(new Reference(encounterId));
+        if (practitionerId != null)
+            builder.buildAuthor(new Reference(practitionerId));
+        if (organizationId != null)
+            builder.buildAuthor(new Reference(organizationId));
+        if (userLanguage != null)
+            builder.buildLanguage(userLanguage);
 
-        Session session =
-                new Session(planDefinition, builder, patientId, encounterId, practitionerId,
-                        organizationId, userType, userLanguage, userTaskContext, setting, settingContext);
+        Session session = new Session(planDefinition, builder, patientId, encounterId, practitionerId, organizationId,
+                userType, userLanguage, userTaskContext, setting, settingContext);
 
         return resolveActions(session);
     }
@@ -130,11 +128,12 @@ public class PlanDefinitionApplyProvider {
 
     private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
         if (action.hasDefinition()) {
-            logger.debug("Resolving definition "+ action.getDefinition().getReference());
+            logger.debug("Resolving definition " + action.getDefinition().getReference());
             Reference definition = action.getDefinition();
             if (definition.getReference().startsWith(session.getPlanDefinition().fhirType())) {
                 logger.error("Currently cannot resolve nested PlanDefinitions");
-                throw new NotImplementedException("Plan Definition refers to sub Plan Definition, this is not yet supported");
+                throw new NotImplementedException(
+                        "Plan Definition refers to sub Plan Definition, this is not yet supported");
             }
 
             else {
@@ -144,64 +143,46 @@ public class PlanDefinitionApplyProvider {
                         result = this.activityDefinitionApplyProvider.resolveActivityDefinition(
                                 (ActivityDefinition) resolveContained(session.getPlanDefinition(),
                                         action.getDefinition().getReferenceElement().getIdPart()),
-                                session.getPatientId(), session.getPractionerId(), session.getOrganizationId()
-                        );
-                    }
-                    else {
+                                session.getPatientId(), session.getPractitionerId(), session.getOrganizationId());
+                    } else {
                         result = this.activityDefinitionApplyProvider.apply(
                                 new IdType(action.getDefinition().getReferenceElement().getIdPart()),
-                                session.getPatientId(),
-                                session.getEncounterId(),
-                                session.getPractionerId(),
-                                session.getOrganizationId(),
-                                null,
-                                session.getUserLanguage(),
-                                session.getUserTaskContext(),
-                                session.getSetting(),
-                                session.getSettingContext()
-                        );
+                                session.getPatientId(), session.getEncounterId(), session.getPractitionerId(),
+                                session.getOrganizationId(), null, session.getUserLanguage(),
+                                session.getUserTaskContext(), session.getSetting(), session.getSettingContext());
                     }
 
                     if (result.getId() == null) {
-                        logger.warn("ActivityDefinition %s returned resource with no id, setting one", action.getDefinition().getReferenceElement().getIdPart());
-                        result.setId( UUID.randomUUID().toString() );
+                        logger.warn("ActivityDefinition %s returned resource with no id, setting one",
+                                action.getDefinition().getReferenceElement().getIdPart());
+                        result.setId(UUID.randomUUID().toString());
                     }
-                    session.getCarePlanBuilder()
-                            .buildContained(result)
-                            .buildActivity(
-                                    new CarePlanActivityBuilder()
-                                            .buildReference( new Reference("#"+result.getId()) )
-                                            .build()
-                            );
+                    session.getCarePlanBuilder().buildContained(result).buildActivity(
+                            new CarePlanActivityBuilder().buildReference(new Reference("#" + result.getId())).build());
                 } catch (Exception e) {
-                    logger.error("ERROR: ActivityDefinition %s could not be applied and threw exception %s", action.getDefinition(), e.toString());
+                    logger.error("ERROR: ActivityDefinition %s could not be applied and threw exception %s",
+                            action.getDefinition(), e.toString());
                 }
             }
         }
     }
 
     private void resolveDynamicActions(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
-        for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue: action.getDynamicValue())
-        {
+        for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue : action.getDynamicValue()) {
             logger.info("Resolving dynamic value %s %s", dynamicValue.getPath(), dynamicValue.getExpression());
             if (dynamicValue.hasExpression()) {
-                Object result =
-                        executionProvider
-                                .evaluateInContext(session.getPlanDefinition(), dynamicValue.getExpression(), session.getPatientId());
+                Object result = executionProvider.evaluateInContext(session.getPlanDefinition(),
+                        dynamicValue.getExpression(), session.getPatientId());
 
-                if (dynamicValue.hasPath() && dynamicValue.getPath().equals("$this"))
-                {
+                if (dynamicValue.hasPath() && dynamicValue.getPath().equals("$this")) {
                     session.setCarePlan((CarePlan) result);
                 }
 
                 else {
 
-                    // TODO - likely need more date tranformations
+                    // TODO - likely need more date transformations
                     if (result instanceof DateTime) {
-                        result =
-                                new JavaDateBuilder()
-                                        .buildFromDateTime((DateTime) result)
-                                        .build();
+                        result = new JavaDateBuilder().buildFromDateTime((DateTime) result).build();
                     }
 
                     else if (result instanceof String) {
@@ -215,7 +196,7 @@ public class PlanDefinitionApplyProvider {
     }
 
     private Boolean meetsConditions(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
-        for (PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {
+        for (PlanDefinition.PlanDefinitionActionConditionComponent condition : action.getCondition()) {
             // TODO start
             // TODO stop
             if (condition.hasDescription()) {
@@ -234,8 +215,9 @@ public class PlanDefinitionApplyProvider {
 
                 logger.info("Evaluating action condition expression " + condition.getExpression());
                 String cql = condition.getExpression();
-                Object result = executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId());
-                
+                Object result = executionProvider.evaluateInContext(session.getPlanDefinition(), cql,
+                        session.getPatientId());
+
                 if (result == null) {
                     logger.warn("Expression Returned null");
                     return false;
@@ -294,18 +276,18 @@ public class PlanDefinitionApplyProvider {
     }
 
     private void resolveActions(List<PlanDefinition.PlanDefinitionActionComponent> actions, Context context,
-                                String patientId, RequestGroupBuilder requestGroupBuilder,
-                                List<RequestGroup.RequestGroupActionComponent> actionComponents)
-    {
+            String patientId, RequestGroupBuilder requestGroupBuilder,
+            List<RequestGroup.RequestGroupActionComponent> actionComponents) {
         for (PlanDefinition.PlanDefinitionActionComponent action : actions) {
             boolean conditionsMet = true;
-            for (PlanDefinition.PlanDefinitionActionConditionComponent condition: action.getCondition()) {
+            for (PlanDefinition.PlanDefinitionActionConditionComponent condition : action.getCondition()) {
                 if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
                     if (!condition.hasExpression()) {
                         continue;
                     }
 
-                    Object result = context.resolveExpressionRef(condition.getExpression()).getExpression().evaluate(context);
+                    Object result = context.resolveExpressionRef(condition.getExpression()).getExpression()
+                            .evaluate(context);
 
                     if (!(result instanceof Boolean)) {
                         continue;
@@ -352,9 +334,11 @@ public class PlanDefinitionApplyProvider {
                         actionBuilder.buildType(action.getType());
                     }
                     if (action.hasDefinition()) {
-                        if (action.getDefinition().getReferenceElement().getResourceType().equals("ActivityDefinition")) {
+                        if (action.getDefinition().getReferenceElement().getResourceType()
+                                .equals("ActivityDefinition")) {
                             if (action.getDefinition().getResource() != null) {
-                                ActivityDefinition activityDefinition = (ActivityDefinition) action.getDefinition().getResource();
+                                ActivityDefinition activityDefinition = (ActivityDefinition) action.getDefinition()
+                                        .getResource();
                                 ReferenceBuilder referenceBuilder = new ReferenceBuilder();
                                 referenceBuilder.buildDisplay(activityDefinition.getDescription());
                                 actionBuilder.buildResource(referenceBuilder.build());
@@ -364,53 +348,54 @@ public class PlanDefinitionApplyProvider {
                                 }
                             }
 
-                            ActivityDefinition activityDefinition =
-                                    this.activityDefinitionDao.read(action.getDefinition().getReferenceElement());
+                            ActivityDefinition activityDefinition = this.activityDefinitionDao
+                                    .read(action.getDefinition().getReferenceElement());
                             if (activityDefinition.hasDescription()) {
                                 actionBuilder.buildDescripition(activityDefinition.getDescription());
                             }
                             Resource resource = null;
                             try {
-                                resource = activityDefinitionApplyProvider.apply(
-                                        new IdType(action.getDefinition().getReferenceElement().getIdPart()), patientId,
-                                        null, null, null, null,
-                                        null, null, null, null
-                                ).setId(UUID.randomUUID().toString());
-                            } catch (FHIRException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+                                resource = activityDefinitionApplyProvider
+                                        .apply(new IdType(action.getDefinition().getReferenceElement().getIdPart()),
+                                                patientId, null, null, null, null, null, null, null, null)
+                                        .setId(UUID.randomUUID().toString());
+                            } catch (FHIRException | ClassNotFoundException | InstantiationException
+                                    | IllegalAccessException e) {
                                 throw new RuntimeException("Error applying ActivityDefinition " + e.getMessage());
                             }
 
                             Parameters inParams = new Parameters();
                             inParams.addParameter().setName("patient").setValue(new StringType(patientId));
-                            Parameters outParams = this.fhirContext.newRestfulGenericClient(HapiProperties.getServerBase())
-                                .operation()
-                                .onInstance(new IdDt("ActivityDefinition", action.getDefinition().getId()))
-                                .named("$apply")
-                                .withParameters(inParams)
-                                .useHttpGet()
-                                .execute();
+                            Parameters outParams = this.fhirContext
+                                    .newRestfulGenericClient(HapiProperties.getServerBase()).operation()
+                                    .onInstance(new IdDt("ActivityDefinition", action.getDefinition().getId()))
+                                    .named("$apply").withParameters(inParams).useHttpGet().execute();
 
                             List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
                             resource = response.get(0).getResource().setId(UUID.randomUUID().toString());
                             actionBuilder.buildResourceTarget(resource);
-                            actionBuilder.buildResource(new ReferenceBuilder().buildReference(resource.getId()).build());
+                            actionBuilder
+                                    .buildResource(new ReferenceBuilder().buildReference(resource.getId()).build());
                         }
                     }
 
-                    // Dynamic values populate the RequestGroup - there is a bit of hijacking going on here...
+                    // Dynamic values populate the RequestGroup - there is a bit of hijacking going
+                    // on here...
                     if (action.hasDynamicValue()) {
-                        for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue : action.getDynamicValue()) {
+                        for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue : action
+                                .getDynamicValue()) {
                             if (dynamicValue.hasPath() && dynamicValue.hasExpression()) {
                                 if (dynamicValue.getPath().endsWith("title")) { // summary
-                                    String title = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
+                                    String title = (String) context.resolveExpressionRef(dynamicValue.getExpression())
+                                            .evaluate(context);
                                     actionBuilder.buildTitle(title);
-                                }
-                                else if (dynamicValue.getPath().endsWith("description")) { // detail
-                                    String description = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
+                                } else if (dynamicValue.getPath().endsWith("description")) { // detail
+                                    String description = (String) context
+                                            .resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
                                     actionBuilder.buildDescripition(description);
-                                }
-                                else if (dynamicValue.getPath().endsWith("extension")) { // indicator
-                                    String extension = (String) context.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
+                                } else if (dynamicValue.getPath().endsWith("extension")) { // indicator
+                                    String extension = (String) context
+                                            .resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
                                     actionBuilder.buildExtension(extension);
                                 }
                             }
@@ -439,14 +424,15 @@ public class PlanDefinitionApplyProvider {
             }
         }
 
-        throw new RuntimeException(String.format("Resource %s does not contain resource with id %s", resource.fhirType(), id));
+        throw new RuntimeException(
+                String.format("Resource %s does not contain resource with id %s", resource.fhirType(), id));
     }
 }
 
 class Session {
     private final String patientId;
     private final PlanDefinition planDefinition;
-    private final String practionerId;
+    private final String practitionerId;
     private final String organizationId;
     private final String userType;
     private final String userLanguage;
@@ -457,14 +443,13 @@ class Session {
     private String encounterId;
 
     public Session(PlanDefinition planDefinition, CarePlanBuilder builder, String patientId, String encounterId,
-                   String practitionerId, String organizationId, String userType, String userLanguage,
-                   String userTaskContext, String setting, String settingContext)
-    {
+            String practitionerId, String organizationId, String userType, String userLanguage, String userTaskContext,
+            String setting, String settingContext) {
         this.patientId = patientId;
         this.planDefinition = planDefinition;
         this.carePlanBuilder = builder;
         this.encounterId = encounterId;
-        this.practionerId = practitionerId;
+        this.practitionerId = practitionerId;
         this.organizationId = organizationId;
         this.userType = userType;
         this.userLanguage = userLanguage;
@@ -493,8 +478,8 @@ class Session {
         return this.encounterId;
     }
 
-    public String getPractionerId() {
-        return practionerId;
+    public String getPractitionerId() {
+        return practitionerId;
     }
 
     public String getOrganizationId() {

@@ -1,9 +1,9 @@
 package org.opencds.cqf.r4.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class ExtensionBuilder extends BaseBuilder<Extension> {
 

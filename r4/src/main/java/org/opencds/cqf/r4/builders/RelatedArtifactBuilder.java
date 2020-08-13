@@ -1,9 +1,9 @@
 package org.opencds.cqf.r4.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class RelatedArtifactBuilder extends BaseBuilder<RelatedArtifact> {
 

@@ -1,7 +1,7 @@
 package org.opencds.cqf.r4.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
 import org.hl7.fhir.r4.model.StructureMap;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class StructuredMapRuleBuilder extends BaseBuilder<StructureMap.StructureMapGroupRuleComponent> {
 
@@ -30,17 +30,13 @@ public class StructuredMapRuleBuilder extends BaseBuilder<StructureMap.Structure
 
     public StructuredMapRuleBuilder buildTargetSetValue(String target, String targetField, String value) {
         return buildTarget(
-                new StructuredMapRuleTargetBuilder()
-                        .buildTransformSetValue(target, targetField, value)
-                        .build());
+                new StructuredMapRuleTargetBuilder().buildTransformSetValue(target, targetField, value).build());
     }
 
-    public StructuredMapRuleBuilder buildTarget(String target, String targetField, StructureMap.StructureMapTransform transform, String...params)
-    {
+    public StructuredMapRuleBuilder buildTarget(String target, String targetField,
+            StructureMap.StructureMapTransform transform, String... params) {
         return buildTarget(
-                new StructuredMapRuleTargetBuilder()
-                        .buildTransform(target, targetField, transform, params)
-                        .build());
+                new StructuredMapRuleTargetBuilder().buildTransform(target, targetField, transform, params).build());
     }
 
 }

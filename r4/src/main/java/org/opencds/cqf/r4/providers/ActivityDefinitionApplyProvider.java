@@ -1,18 +1,36 @@
 package org.opencds.cqf.r4.providers;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
-import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-import org.hl7.fhir.r4.model.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.cql.model.R4FhirModelResolver;
-import org.opencds.cqf.cql.model.ModelResolver;
+import org.hl7.fhir.r4.model.ActivityDefinition;
+import org.hl7.fhir.r4.model.Attachment;
+import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.Communication;
+import org.hl7.fhir.r4.model.CommunicationRequest;
+import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.MedicationRequest;
+import org.hl7.fhir.r4.model.Procedure;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.SupplyRequest;
 import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
+import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.r4.helpers.Helper;
 
-
-import java.util.*;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 /**
  * Created by Bryn on 1/16/2017.
@@ -31,16 +49,17 @@ public class ActivityDefinitionApplyProvider {
     }
 
     @Operation(name = "$apply", idempotent = true, type = ActivityDefinition.class)
-    public Resource apply(@IdParam IdType theId, @RequiredParam(name = "patient") String patientId,
-            @OptionalParam(name = "encounter") String encounterId,
-            @OptionalParam(name = "practitioner") String practitionerId,
-            @OptionalParam(name = "organization") String organizationId,
-            @OptionalParam(name = "userType") String userType,
-            @OptionalParam(name = "userLanguage") String userLanguage,
-            @OptionalParam(name = "userTaskContext") String userTaskContext,
-            @OptionalParam(name = "setting") String setting,
-            @OptionalParam(name = "settingContext") String settingContext) throws InternalErrorException, FHIRException,
-            ClassNotFoundException, IllegalAccessException, InstantiationException, ActivityDefinitionApplyException {
+    public Resource apply(@IdParam IdType theId, @OperationParam(name = "patient") String patientId,
+            @OperationParam(name = "encounter") String encounterId,
+            @OperationParam(name = "practitioner") String practitionerId,
+            @OperationParam(name = "organization") String organizationId,
+            @OperationParam(name = "userType") String userType,
+            @OperationParam(name = "userLanguage") String userLanguage,
+            @OperationParam(name = "userTaskContext") String userTaskContext,
+            @OperationParam(name = "setting") String setting,
+            @OperationParam(name = "settingContext") String settingContext)
+            throws InternalErrorException, FHIRException, ClassNotFoundException, IllegalAccessException,
+            InstantiationException, ActivityDefinitionApplyException {
         ActivityDefinition activityDefinition;
 
         try {
@@ -57,41 +76,40 @@ public class ActivityDefinitionApplyProvider {
             String practitionerId, String organizationId) throws FHIRException {
         Resource result = null;
         try {
-            result = (Resource) Class.forName("org.hl7.fhir.r4.model." + activityDefinition.getKind().toCode())
-                    .newInstance();
+            result = (Resource) Class.forName("org.hl7.fhir.r4.model." + activityDefinition.getKind().toCode()).getConstructor().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
             throw new FHIRException("Could not find org.hl7.fhir.r4.model." + activityDefinition.getKind().toCode());
         }
 
         switch (result.fhirType()) {
-        case "ServiceRequest":
-            result = resolveServiceRequest(activityDefinition, patientId, practitionerId, organizationId);
-            break;
+            case "ServiceRequest":
+                result = resolveServiceRequest(activityDefinition, patientId, practitionerId, organizationId);
+                break;
 
-        case "MedicationRequest":
-            result = resolveMedicationRequest(activityDefinition, patientId);
-            break;
+            case "MedicationRequest":
+                result = resolveMedicationRequest(activityDefinition, patientId);
+                break;
 
-        case "SupplyRequest":
-            result = resolveSupplyRequest(activityDefinition, practitionerId, organizationId);
-            break;
+            case "SupplyRequest":
+                result = resolveSupplyRequest(activityDefinition, practitionerId, organizationId);
+                break;
 
-        case "Procedure":
-            result = resolveProcedure(activityDefinition, patientId);
-            break;
+            case "Procedure":
+                result = resolveProcedure(activityDefinition, patientId);
+                break;
 
-        case "DiagnosticReport":
-            result = resolveDiagnosticReport(activityDefinition, patientId);
-            break;
+            case "DiagnosticReport":
+                result = resolveDiagnosticReport(activityDefinition, patientId);
+                break;
 
-        case "Communication":
-            result = resolveCommunication(activityDefinition, patientId);
-            break;
+            case "Communication":
+                result = resolveCommunication(activityDefinition, patientId);
+                break;
 
-        case "CommunicationRequest":
-            result = resolveCommunicationRequest(activityDefinition, patientId);
-            break;
+            case "CommunicationRequest":
+                result = resolveCommunicationRequest(activityDefinition, patientId);
+                break;
         }
 
         // TODO: Apply expression extensions on any element?
@@ -182,7 +200,7 @@ public class ActivityDefinitionApplyProvider {
         }
 
         if (activityDefinition.hasBodySite()) {
-            throw new ActivityDefinitionApplyException("Bodysite does not map to " + activityDefinition.getKind());
+            throw new ActivityDefinitionApplyException("BodySite does not map to " + activityDefinition.getKind());
         }
 
         if (activityDefinition.hasCode()) {
@@ -196,12 +214,12 @@ public class ActivityDefinitionApplyProvider {
         return medicationRequest;
     }
 
-    private SupplyRequest resolveSupplyRequest(ActivityDefinition activityDefinition, String practionerId,
+    private SupplyRequest resolveSupplyRequest(ActivityDefinition activityDefinition, String practitionerId,
             String organizationId) throws ActivityDefinitionApplyException {
         SupplyRequest supplyRequest = new SupplyRequest();
 
-        if (practionerId != null) {
-            supplyRequest.setRequester(new Reference(practionerId));
+        if (practitionerId != null) {
+            supplyRequest.setRequester(new Reference(practitionerId));
         }
 
         if (organizationId != null) {
@@ -229,7 +247,7 @@ public class ActivityDefinitionApplyProvider {
         }
 
         if (activityDefinition.hasBodySite()) {
-            throw new ActivityDefinitionApplyException("Bodysite does not map to " + activityDefinition.getKind());
+            throw new ActivityDefinitionApplyException("BodySite does not map to " + activityDefinition.getKind());
         }
 
         return supplyRequest;

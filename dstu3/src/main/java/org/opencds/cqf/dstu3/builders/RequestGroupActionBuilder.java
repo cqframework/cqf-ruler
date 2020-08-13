@@ -1,10 +1,16 @@
 package org.opencds.cqf.dstu3.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
-import org.hl7.fhir.dstu3.model.*;
-
 import java.util.Collections;
 import java.util.List;
+
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import org.hl7.fhir.dstu3.model.RequestGroup;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class RequestGroupActionBuilder extends BaseBuilder<RequestGroup.RequestGroupActionComponent> {
 
@@ -50,7 +56,8 @@ public class RequestGroupActionBuilder extends BaseBuilder<RequestGroup.RequestG
     }
 
     public RequestGroupActionBuilder buildExtension(String extension) {
-        complexProperty.setExtension(Collections.singletonList(new Extension().setUrl("http://example.org").setValue(new StringType(extension))));
+        complexProperty.setExtension(Collections
+                .singletonList(new Extension().setUrl("http://example.org").setValue(new StringType(extension))));
         return this;
     }
 

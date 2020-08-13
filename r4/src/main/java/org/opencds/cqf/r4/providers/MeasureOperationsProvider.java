@@ -9,6 +9,10 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IAnyResource;
+import org.hl7.fhir.instance.model.api.IBase;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -29,15 +33,10 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.DetectedIssue.DetectedIssueEvidenceComponent;
 import org.hl7.fhir.r4.model.DetectedIssue.DetectedIssueStatus;
-import org.hl7.fhir.ParametersParameter;
-import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.instance.model.api.IAnyResource;
-import org.hl7.fhir.instance.model.api.IBase;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
-import org.opencds.cqf.cql.execution.LibraryLoader;
+import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.library.r4.NarrativeProvider;
 import org.opencds.cqf.measure.r4.CqfMeasure;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluation;
@@ -49,14 +48,13 @@ import org.slf4j.LoggerFactory;
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.annotation.OptionalParam;
-import ca.uhn.fhir.rest.annotation.RequiredParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -134,7 +132,7 @@ public class MeasureOperationsProvider {
             Narrative n = this.narrativeProvider.getNarrative(this.measureResourceProvider.getContext(), cqfMeasure);
             theResource.setText(n.copy());
         } catch (Exception e) {
-            // Ignore the exception so the resource still gets updated
+            logger.info("Error generating narrative", e);
         }
 
         return this.measureResourceProvider.update(theRequest, theResource, theId,
@@ -165,14 +163,15 @@ public class MeasureOperationsProvider {
      *
      */
     @Operation(name = "$evaluate-measure", idempotent = true, type = Measure.class)
-    public MeasureReport evaluateMeasure(@IdParam IdType theId, @RequiredParam(name = "periodStart") String periodStart,
-            @RequiredParam(name = "periodEnd") String periodEnd, @OptionalParam(name = "measure") String measureRef,
-            @OptionalParam(name = "reportType") String reportType, @OptionalParam(name = "patient") String patientRef,
-            @OptionalParam(name = "productLine") String productLine,
-            @OptionalParam(name = "practitioner") String practitionerRef,
-            @OptionalParam(name = "lastReceivedOn") String lastReceivedOn,
-            @OptionalParam(name = "source") String source, @OptionalParam(name = "user") String user,
-            @OptionalParam(name = "pass") String pass) throws InternalErrorException, FHIRException {
+    public MeasureReport evaluateMeasure(@IdParam IdType theId,
+            @OperationParam(name = "periodStart") String periodStart,
+            @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "measure") String measureRef,
+            @OperationParam(name = "reportType") String reportType, @OperationParam(name = "patient") String patientRef,
+            @OperationParam(name = "productLine") String productLine,
+            @OperationParam(name = "practitioner") String practitionerRef,
+            @OperationParam(name = "lastReceivedOn") String lastReceivedOn,
+            @OperationParam(name = "source") String source, @OperationParam(name = "user") String user,
+            @OperationParam(name = "pass") String pass) throws InternalErrorException, FHIRException {
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResolutionProvider);
         MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader,
                 this.libraryResolutionProvider);
@@ -245,10 +244,10 @@ public class MeasureOperationsProvider {
     // }
 
     @Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
-    public Parameters careGapsReport(@RequiredParam(name = "periodStart") String periodStart,
-            @RequiredParam(name = "periodEnd") String periodEnd, @OptionalParam(name = "subject") String subject,
-            @OptionalParam(name = "subjectGroup") String subjectGroup, @OptionalParam(name = "topic") String topic,
-            @OptionalParam(name = "practitioner") String practitionerRef) {
+    public Parameters careGapsReport(@OperationParam(name = "periodStart") String periodStart,
+            @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "subject") String subject,
+            @OperationParam(name = "subjectGroup") String subjectGroup, @OperationParam(name = "topic") String topic,
+            @OperationParam(name = "practitioner") String practitionerRef) {
 
         // TODO: topic should allow many
 
@@ -277,7 +276,7 @@ public class MeasureOperationsProvider {
 
         //TODO: this is an org hack.  Need to figure out what the right thing is.
         IFhirResourceDao<Organization> orgDao = this.registry.getResourceDao(Organization.class);
-        var org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
+        List<IBaseResource> org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
         
         SearchParameterMap theParams = new SearchParameterMap(); 
 
@@ -287,7 +286,7 @@ public class MeasureOperationsProvider {
         // }
 
         if (topic != null && !topic.equals("")) {
-            var topicParam = new TokenParam(topic);
+            TokenParam topicParam = new TokenParam(topic);
             theParams.add("topic", topicParam);
         }       
         
@@ -409,10 +408,10 @@ public class MeasureOperationsProvider {
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)
-    public Parameters collectData(@IdParam IdType theId, @RequiredParam(name = "periodStart") String periodStart,
-            @RequiredParam(name = "periodEnd") String periodEnd, @OptionalParam(name = "patient") String patientRef,
-            @OptionalParam(name = "practitioner") String practitionerRef,
-            @OptionalParam(name = "lastReceivedOn") String lastReceivedOn) throws FHIRException {
+    public Parameters collectData(@IdParam IdType theId, @OperationParam(name = "periodStart") String periodStart,
+            @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "patient") String patientRef,
+            @OperationParam(name = "practitioner") String practitionerRef,
+            @OperationParam(name = "lastReceivedOn") String lastReceivedOn) throws FHIRException {
         // TODO: Spec says that the periods are not required, but I am not sure what to
         // do when they aren't supplied so I made them required
         MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, patientRef, null,
@@ -460,7 +459,8 @@ public class MeasureOperationsProvider {
 
     private void resolveReferences(Resource resource, Parameters parameters, Map<String, Resource> resourceMap) {
         List<IBase> values;
-        for (BaseRuntimeChildDefinition child : this.measureResourceProvider.getContext().getResourceDefinition(resource).getChildren()) {
+        for (BaseRuntimeChildDefinition child : this.measureResourceProvider.getContext()
+                .getResourceDefinition(resource).getChildren()) {
             values = child.getAccessor().getValues(resource);
             if (values == null || values.isEmpty()) {
                 continue;
@@ -486,16 +486,17 @@ public class MeasureOperationsProvider {
     // TODO - this needs a lot of work
     @Operation(name = "$data-requirements", idempotent = true, type = Measure.class)
     public org.hl7.fhir.r4.model.Library dataRequirements(@IdParam IdType theId,
-            @RequiredParam(name = "startPeriod") String startPeriod,
-            @RequiredParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
-        
+            @OperationParam(name = "startPeriod") String startPeriod,
+            @OperationParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
+
         Measure measure = this.measureResourceProvider.getDao().read(theId);
         return this.dataRequirementsProvider.getDataRequirements(measure, this.libraryResolutionProvider);
     }
 
+    @SuppressWarnings("unchecked")
     @Operation(name = "$submit-data", idempotent = true, type = Measure.class)
     public Resource submitData(RequestDetails details, @IdParam IdType theId,
-            @OperationParam(name = "measure-report", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
+            @OperationParam(name = "measurereport", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
             @OperationParam(name = "resource") List<IAnyResource> resources) {
         Bundle transactionBundle = new Bundle().setType(Bundle.BundleType.TRANSACTION);
 
@@ -521,7 +522,7 @@ public class MeasureOperationsProvider {
             }
         }
 
-        return (Resource) this.registry.getSystemDao().transaction(details, transactionBundle);
+        return (Resource) ((IFhirSystemDao<Bundle,?>)this.registry.getSystemDao()).transaction(details, transactionBundle);
     }
 
     private Bundle createTransactionBundle(Bundle bundle) {

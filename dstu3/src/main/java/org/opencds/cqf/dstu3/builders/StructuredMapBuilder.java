@@ -1,10 +1,10 @@
 package org.opencds.cqf.dstu3.builders;
 
-import org.opencds.cqf.common.builders.BaseBuilder;
+import java.util.UUID;
+
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.StructureMap;
-
-import java.util.UUID;
+import org.opencds.cqf.common.builders.BaseBuilder;
 
 public class StructuredMapBuilder extends BaseBuilder<StructureMap> {
 
@@ -12,7 +12,7 @@ public class StructuredMapBuilder extends BaseBuilder<StructureMap> {
         super(new StructureMap());
     }
 
-    public StructuredMapBuilder(StructureMap activityDefinition ) {
+    public StructuredMapBuilder(StructureMap activityDefinition) {
         super(activityDefinition);
     }
 
@@ -20,6 +20,7 @@ public class StructuredMapBuilder extends BaseBuilder<StructureMap> {
         complexProperty.setUrl(UUID.randomUUID().toString());
         return this;
     }
+
     public StructuredMapBuilder buildRandomUrl() {
         return buildUrl("urn:uuid:" + UUID.randomUUID().toString());
     }
