@@ -7,12 +7,8 @@ import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
-import org.hl7.fhir.dstu3.model.Measure;
-import org.hl7.fhir.dstu3.model.PlanDefinition;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.RelatedArtifact.RelatedArtifactType;
-import org.hl7.fhir.dstu3.model.Resource;
 import org.opencds.cqf.common.evaluation.LibraryLoader;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.providers.LibrarySourceProvider;
@@ -59,8 +55,10 @@ public class LibraryHelper {
             }
 
             org.hl7.fhir.dstu3.model.Library library = libraryResourceProvider.resolveLibraryById(id);
-            libraries.add(libraryLoader
-                    .load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion())));
+            if (library != null && isLogicLibrary(library)) {
+                libraries.add(libraryLoader
+                        .load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion())));
+            }
         }
 
         VersionedIdentifier primaryLibraryId = libraries.get(0).getIdentifier();
@@ -69,14 +67,12 @@ public class LibraryHelper {
             if (artifact.hasType() && artifact.getType().equals(RelatedArtifactType.DEPENDSON) && artifact.hasResource() && artifact.getResource().hasReference()) {
                 if (artifact.getResource().getReferenceElement().getResourceType().equals("Library")) {
                     org.hl7.fhir.dstu3.model.Library library = libraryResourceProvider.resolveLibraryById(artifact.getResource().getReferenceElement().getIdPart());
-                    
-                    if (library == null) {
-                        throw new IllegalArgumentException(String.format("Unable to resolve library reference: %s", artifact.getResource().getReference()));
-                    }
 
-                    libraries.add(
-                        libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
-                    );
+                    if (library != null && isLogicLibrary(library)) {
+                        libraries.add(
+                                libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
+                        );
+                    }
                 }
             }
         }
@@ -87,6 +83,29 @@ public class LibraryHelper {
         }
 
         return libraries;
+    }
+
+    private static boolean isLogicLibrary(org.hl7.fhir.dstu3.model.Library library) {
+        if (library == null) {
+            return false;
+        }
+
+        if (!library.hasType()) {
+            return false;
+        }
+
+        if (!library.getType().hasCoding()) {
+            return false;
+        }
+
+        for (Coding c : library.getType().getCoding()) {
+            if (c.hasSystem() && c.getSystem().equals("http://hl7.org/fhir/library-type")
+                    && c.hasCode() && c.getCode().equals("logic-library")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static Library resolveLibraryById(String libraryId,
