@@ -1,6 +1,7 @@
 package org.opencds.cqf.r4.providers;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -310,8 +311,8 @@ public class MeasureOperationsProvider {
         MeasureReport report = null;
 
         for (IBaseResource resource : measures) {
-
             Measure measureResource = (Measure) resource;
+           
             Composition.SectionComponent section = new Composition.SectionComponent();
 
             if (measureResource.hasTitle()) {
@@ -326,7 +327,9 @@ public class MeasureOperationsProvider {
             report.setDate(new Date());
             report.setImprovementNotation(measureResource.getImprovementNotation());
             //TODO: this is an org hack && requires an Organization to be in the ruler
-            report.setReporter(new Reference("Organization/" + org.get(0).getIdElement().getIdPart()));
+            if (org != null && org.size() > 0) {
+                report.setReporter(new Reference("Organization/" + org.get(0).getIdElement().getIdPart()));
+            }
             report.setMeta(new Meta().addProfile("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/indv-measurereport-deqm"));
             section.setFocus(new Reference("MeasureReport/" + report.getId()));
             //TODO: DetectedIssue
@@ -413,22 +416,32 @@ public class MeasureOperationsProvider {
     }
 
     private List<IBaseResource> getMeasureList(SearchParameterMap theParams, String measure){
-        if(null != measure && measure.length() > 0){
+        if(measure != null && measure.length() > 0){
             List<IBaseResource> finalMeasureList = new ArrayList<>();
             List<IBaseResource> allMeasures = this.measureResourceProvider
                     .getDao()
                     .search(theParams)
                     .getResources(0, 1000);
             for(String singleName: measure.split(",")){
+                if (singleName.equals("")) {
+                    continue;
+                }
                 allMeasures.forEach(measureResource -> {
                     if(((Measure)measureResource).getName().equalsIgnoreCase(singleName.trim())) {
-                        finalMeasureList.add(measureResource);
+                        if (measureResource != null) {
+                            finalMeasureList.add(measureResource);
+                        }
                     }
                 });
             }
             return finalMeasureList;
         }else {
-            return this.measureResourceProvider.getDao().search(theParams).getResources(0, 1000);
+            return 
+            //TODO: this needs to be restricted to only the current measure.  It seems to be returning all versions in history.
+                this.measureResourceProvider.getDao().search(theParams).getResources(0, 1000)
+                    .stream()
+                    .filter(resource -> ((Measure)resource).getUrl() != null && !((Measure)resource).getUrl().equals(""))
+                    .collect(Collectors.toList());
         }
     }
 
