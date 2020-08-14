@@ -5,10 +5,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
@@ -36,8 +34,6 @@ import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
-
-import static org.opencds.cqf.common.helpers.ClientHelper.getClient;
 
 public class MeasureOperationsProvider {
 
@@ -223,22 +219,23 @@ public class MeasureOperationsProvider {
     public Parameters careGapsReport(@OperationParam(name = "periodStart") String periodStart,
                                      @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "subject") String subject,
                                      @OperationParam(name = "topic") String topic,@OperationParam(name = "practitioner") String practitioner,
-                                     @OperationParam(name = "measure") String measure){
+                                     @OperationParam(name = "measure") String measure, @OperationParam(name="status")String status,
+                                     @OperationParam(name = "organization") String organization){
         //TODO: status - optional if null all gaps - if closed-gap code only those gaps that are closed if open-gap code only those that are open
         //TODO: topic should allow many and be a union of them
         //TODO: "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
         Parameters returnParams = new Parameters();
-        if(careGapParameterValidation(periodStart, periodEnd, subject, topic, practitioner, measure)) {
+        if(careGapParameterValidation(periodStart, periodEnd, subject, topic, practitioner, measure, status, organization)) {
             if(subject.startsWith("Patient/")){
                 returnParams.addParameter(new Parameters.ParametersParameterComponent()
                         .setName("Gaps in Care Report - " + subject)
-                        .setResource(patientCareGap(periodStart, periodEnd, subject, topic, measure)));
+                        .setResource(patientCareGap(periodStart, periodEnd, subject, topic, measure, status)));
                 return returnParams;
             }else if(subject.startsWith("Group/")) {
                 (getPatientListFromGroup(subject))
                     .forEach(groupSubject -> returnParams.addParameter(new Parameters.ParametersParameterComponent()
                     .setName("Gaps in Care Report - " + groupSubject)
-                    .setResource(patientCareGap(periodStart, periodEnd, groupSubject, topic, measure))));
+                    .setResource(patientCareGap(periodStart, periodEnd, groupSubject, topic, measure, status))));
             }
             return returnParams;
         }
@@ -246,7 +243,7 @@ public class MeasureOperationsProvider {
             return new Parameters().addParameter(
                     new Parameters.ParametersParameterComponent()
                             .setName("Gaps in Care Report - " + subject)
-                            .setResource(patientCareGap(periodStart, periodEnd, subject, topic, measure)));
+                            .setResource(patientCareGap(periodStart, periodEnd, subject, topic, measure,status)));
         }
         return returnParams;
     }
@@ -266,21 +263,30 @@ public class MeasureOperationsProvider {
     }
 
     private Boolean careGapParameterValidation(String periodStart, String periodEnd, String subject, String topic,
-                                               String practitioner, String measure){
+                                               String practitioner, String measure, String status, String organization){
         if(periodStart == null || periodStart.equals("") ||
             periodEnd == null || periodEnd.equals("")){
             throw new IllegalArgumentException("periodStart and periodEnd are required.");
         }
+        //TODO - remove this - covered in check of subject/practitioner/organization - left in for now 'cause we need a subject to develop
         if (subject == null || subject.equals("")) {
             throw new IllegalArgumentException("Subject is required.");
         }
-        if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
-            throw new IllegalArgumentException("Subject must follow the format of either Patient/ID OR Group/ID.");
+        if(null != subject) {
+            if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
+                throw new IllegalArgumentException("Subject must follow the format of either Patient/ID OR Group/ID.");
+            }
+        }
+        if(null != practitioner && null == organization){
+            throw new IllegalArgumentException("If a practitioner is specified then an organization must also be specified.");
+        }
+        if(null == subject && null == practitioner && null == organization){
+            throw new IllegalArgumentException("periodStart AND periodEnd AND (subject OR organization OR (practitioner AND organization)) MUST be provided");
         }
         return true;
     }
 
-    private Bundle patientCareGap(String periodStart, String periodEnd, String subject, String topic, String measure) {
+    private Bundle patientCareGap(String periodStart, String periodEnd, String subject, String topic, String measure, String status) {
         //TODO: this is an org hack.  Need to figure out what the right thing is.
         IFhirResourceDao<Organization> orgDao = this.registry.getResourceDao(Organization.class);
         List<IBaseResource> org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
