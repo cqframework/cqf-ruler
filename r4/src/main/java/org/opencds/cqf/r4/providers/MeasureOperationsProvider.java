@@ -411,19 +411,16 @@ public class MeasureOperationsProvider {
                         composition.addSection(section);
 
                         detectedIssues.add(detectedIssue);
-                        reports.add(report);
                 }
+                reports.add(report);
 
                 // TODO - add other types of improvement notation cases
             }
         }
-        if((null == status || status == "")
-                || (hasIssue && !"closed-gap".equalsIgnoreCase(status))
-                ||(!hasIssue && !"open-gap".equalsIgnoreCase(status))){
+        if((null == status || status == "")                                 //everything
+                || (hasIssue && !"closed-gap".equalsIgnoreCase(status))     //filter out closed-gap that has issues  for OPEN-GAP
+                ||(!hasIssue && !"open-gap".equalsIgnoreCase(status))){     //filet out open-gap without issues  for CLOSE-GAP
             careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
-        }
-        if((null == status || status == "")
-                || (hasIssue && !"closed-gap".equalsIgnoreCase(status))) {
             for (MeasureReport rep : reports) {
                 careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
             }
