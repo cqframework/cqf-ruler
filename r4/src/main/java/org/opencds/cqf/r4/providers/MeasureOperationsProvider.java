@@ -233,9 +233,17 @@ public class MeasureOperationsProvider {
                 return returnParams;
             }else if(subject.startsWith("Group/")) {
                 (getPatientListFromGroup(subject))
-                    .forEach(groupSubject -> returnParams.addParameter(new Parameters.ParametersParameterComponent()
-                    .setName("Gaps in Care Report - " + groupSubject)
-                    .setResource(patientCareGap(periodStart, periodEnd, groupSubject, topic, measure, status))));
+                    .forEach(groupSubject ->{
+                        Bundle patientGapBundle = patientCareGap(periodStart, periodEnd, groupSubject, topic, measure, status);
+                        if(null != patientGapBundle){
+                            returnParams.addParameter(new Parameters.ParametersParameterComponent()
+                                    .setName("Gaps in Care Report - " + groupSubject)
+                                    .setResource(patientGapBundle));
+                        }
+                    });
+//                groupSubject -> returnParams.addParameter(new Parameters.ParametersParameterComponent()
+//                    .setName("Gaps in Care Report - " + groupSubject)
+//                    .setResource(patientCareGap(periodStart, periodEnd, groupSubject, topic, measure, status))));
             }
             return returnParams;
         }
@@ -274,8 +282,11 @@ public class MeasureOperationsProvider {
         }
         if(null != subject) {
             if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
-                throw new IllegalArgumentException("Subject must follow the format of either Patient/ID OR Group/ID.");
+                throw new IllegalArgumentException("Subject must follow the format of either 'Patient/ID' OR 'Group/ID'.");
             }
+        }
+        if(null != status && (!status.equalsIgnoreCase("open-gap") && !status.equalsIgnoreCase("closed-gap"))){
+            throw new IllegalArgumentException("If status is present, it must be either 'open-gap' or 'closed-gap'.");
         }
         if(null != practitioner && null == organization){
             throw new IllegalArgumentException("If a practitioner is specified then an organization must also be specified.");
@@ -315,6 +326,7 @@ public class MeasureOperationsProvider {
         List<MeasureReport> reports = new ArrayList<>();
         List<DetectedIssue> detectedIssues = new ArrayList<DetectedIssue>();
         MeasureReport report = null;
+        boolean hasIssue = false;
 
         for (IBaseResource resource : measures) {
             Measure measureResource = (Measure) resource;
@@ -383,10 +395,10 @@ public class MeasureOperationsProvider {
                 // TODO - this is super hacky ... change once improvementNotation is specified
                 // as a code
                 String improvementNotation = measureResource.getImprovementNotation().getCodingFirstRep().getCode().toLowerCase();
-                if (
-                    ((improvementNotation.equals("increase")) && (proportion < 1.0))
-                        ||  ((improvementNotation.equals("decrease")) && (proportion > 0.0))) {
-
+                if (((improvementNotation.equals("increase")) && (proportion < 1.0))
+                        ||  ((improvementNotation.equals("decrease")) && (proportion > 0.0))
+                        && (null == status || "".equalsIgnoreCase(status) || "open-gap".equalsIgnoreCase(status))) {
+                        hasIssue = true;
                         DetectedIssue detectedIssue = new DetectedIssue();
                         detectedIssue.setId(UUID.randomUUID().toString());
                         detectedIssue.setStatus(DetectedIssue.DetectedIssueStatus.FINAL);
@@ -407,17 +419,24 @@ public class MeasureOperationsProvider {
                 // TODO - add other types of improvement notation cases
             }
         }
-
-        careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
-
-        for (MeasureReport rep : reports) {
-            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
+        if((null == status || status == "")
+                || (hasIssue && !"closed-gap".equalsIgnoreCase(status))
+                ||(!hasIssue && !"open-gap".equalsIgnoreCase(status))){
+            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
         }
+        if((null == status || status == "")
+                || (hasIssue && !"closed-gap".equalsIgnoreCase(status))) {
+            for (MeasureReport rep : reports) {
+                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
+            }
 
-        for (DetectedIssue detectedIssue: detectedIssues) {
-            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue));
+            for (DetectedIssue detectedIssue : detectedIssues) {
+                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue));
+            }
         }
-
+        if(careGapReport.getEntry().isEmpty()){
+            return null;
+        }
         return careGapReport;
     }
 
