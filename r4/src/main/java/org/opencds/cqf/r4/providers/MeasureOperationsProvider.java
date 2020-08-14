@@ -232,6 +232,7 @@ public class MeasureOperationsProvider {
                         .setResource(patientCareGap(periodStart, periodEnd, subject, topic, measure, status)));
                 return returnParams;
             }else if(subject.startsWith("Group/")) {
+                returnParams.setId((status==null?"all-gaps": status) + "-" + subject.replace("/","_") + "-report");
                 (getPatientListFromGroup(subject))
                     .forEach(groupSubject ->{
                         Bundle patientGapBundle = patientCareGap(periodStart, periodEnd, groupSubject, topic, measure, status);
@@ -241,9 +242,6 @@ public class MeasureOperationsProvider {
                                     .setResource(patientGapBundle));
                         }
                     });
-//                groupSubject -> returnParams.addParameter(new Parameters.ParametersParameterComponent()
-//                    .setName("Gaps in Care Report - " + groupSubject)
-//                    .setResource(patientCareGap(periodStart, periodEnd, groupSubject, topic, measure, status))));
             }
             return returnParams;
         }
