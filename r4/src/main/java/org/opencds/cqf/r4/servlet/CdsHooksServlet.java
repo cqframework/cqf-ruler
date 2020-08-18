@@ -193,6 +193,7 @@ public class CdsHooksServlet extends HttpServlet {
             this.printMessageAndCause(e, response);
             this.handleServerResponseException(e, response);
             this.printStackTrack(e, response);
+            logger.error(e.toString());
         } catch (DataProviderException e) {
             this.setAccessControlHeaders(response);
             response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
@@ -203,6 +204,7 @@ public class CdsHooksServlet extends HttpServlet {
             }
 
             this.printStackTrack(e, response);
+            logger.error(e.toString());
         }
         catch (CqlException e) {
             this.setAccessControlHeaders(response);
@@ -214,8 +216,10 @@ public class CdsHooksServlet extends HttpServlet {
             }
 
             this.printStackTrack(e, response);
+            logger.error(e.toString());
         }
         catch (Exception e) {
+            logger.error(e.toString());
             throw new ServletException("ERROR: Exception in cds-hooks processing.", e);
         }
     }
