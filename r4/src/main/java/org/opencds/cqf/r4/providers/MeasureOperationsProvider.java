@@ -1,5 +1,6 @@
 package org.opencds.cqf.r4.providers;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -315,11 +316,18 @@ public class MeasureOperationsProvider {
 
         Bundle careGapReport = new Bundle();
         careGapReport.setType(Bundle.BundleType.DOCUMENT);
+        careGapReport.setTimestamp(new Date());
 
         Composition composition = new Composition();
         composition.setStatus(Composition.CompositionStatus.FINAL)
                 .setSubject(new Reference(subject.startsWith("Patient/") ? subject : "Patient/" + subject))
-                .setTitle("Care Gap Report");
+                .setTitle("Care Gap Report for " + subject)
+                .setDate(new Date())
+                .setType(new CodeableConcept()
+                        .addCoding(new Coding()
+                                .setCode("gaps-doc")
+                                .setSystem("http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-doc-type")
+                                .setDisplay("Gaps in Care Report")));
 
         List<MeasureReport> reports = new ArrayList<>();
         List<DetectedIssue> detectedIssues = new ArrayList<DetectedIssue>();
