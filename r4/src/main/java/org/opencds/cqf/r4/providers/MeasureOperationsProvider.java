@@ -1,6 +1,5 @@
 package org.opencds.cqf.r4.providers;
 
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -425,14 +424,35 @@ public class MeasureOperationsProvider {
                 // TODO - add other types of improvement notation cases
             }
         }
+        Parameters parameters = new Parameters();
         if((null == status || status == "")                                 //everything
                 || (hasIssue && !"closed-gap".equalsIgnoreCase(status))     //filter out closed-gap that has issues  for OPEN-GAP
                 ||(!hasIssue && !"open-gap".equalsIgnoreCase(status))){     //filet out open-gap without issues  for CLOSE-GAP
             careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
             for (MeasureReport rep : reports) {
                 careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
+                if (report.hasContained()) {
+                    for (Resource contained : report.getContained()) {
+                        if (contained instanceof Bundle) {
+                            addEvaluatedResourcesToParameters((Bundle) contained, parameters);
+                            if(null != parameters && !parameters.isEmpty()) {
+                                List <Reference> evaluatedResource = new ArrayList<>();
+                                parameters.getParameter().forEach(parameter -> {
+                                    Reference newEvaluatedResourceItem = new Reference();
+                                    newEvaluatedResourceItem.setReference(parameter.getResource().getId());
+                                    List<Extension> evalResourceExt = new ArrayList<>();
+                                    evalResourceExt.add(new Extension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-ppopulationReference",
+                                            new CodeableConcept()
+                                                    .addCoding(new Coding("http://teminology.hl7.org/CodeSystem/measure-population", "initial-population", "initial-population"))));
+                                    newEvaluatedResourceItem.setExtension(evalResourceExt);
+                                    evaluatedResource.add(newEvaluatedResourceItem);
+                                });
+                                report.setEvaluatedResource(evaluatedResource);
+                            }
+                        }
+                    }
+                }
             }
-
             for (DetectedIssue detectedIssue : detectedIssues) {
                 careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue));
             }
