@@ -30,6 +30,16 @@ public class LibraryHelper {
         return new LibraryLoader(libraryManager, modelManager);
     }
 
+    public static LibraryLoader createLibraryLoader(org.cqframework.cql.cql2elm.LibrarySourceProvider provider) {
+        ModelManager modelManager = new ModelManager();
+        LibraryManager libraryManager = new LibraryManager(modelManager);
+        libraryManager.getLibrarySourceLoader().clearProviders();
+
+        libraryManager.getLibrarySourceLoader().registerProvider(provider);
+
+        return new LibraryLoader(libraryManager, modelManager);
+    }
+
     public static List<org.cqframework.cql.elm.execution.Library> loadLibraries(Measure measure,
             org.opencds.cqf.cql.engine.execution.LibraryLoader libraryLoader,
             LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {

@@ -28,6 +28,7 @@ import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.opencds.cqf.cds.providers.PriorityRetrieveProvider;
 import org.opencds.cqf.common.evaluation.LibraryLoader;
 import org.opencds.cqf.common.helpers.ClientHelperDos;
@@ -70,6 +71,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import ca.uhn.fhir.util.BundleUtil;
 
 public class LibraryOperationsProvider implements LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> {
 
@@ -194,7 +196,22 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             throw new IllegalArgumentException("Must specify a patientId when executing in Patient context.");
         }
 
-        Library theResource = this.libraryResourceProvider.getDao().read(theId);
+        Bundle libraryBundle = new Bundle();
+        Library theResource = null;
+        if (additionalData != null) {
+            for (BundleEntryComponent entry : additionalData.getEntry()) {
+                if (entry.getResource().fhirType().equals("Library")) {
+                    libraryBundle.addEntry(entry);
+                    if (entry.getResource().getIdElement().equals(theId)) {
+                        theResource = (Library) entry.getResource();
+                    }
+                }
+            }
+        }
+
+        if (theResource == null) {
+            theResource = this.libraryResourceProvider.getDao().read(theId);
+        }
 
         VersionedIdentifier libraryIdentifier = new VersionedIdentifier().withId(theResource.getName())
                 .withVersion(theResource.getVersion());
@@ -253,7 +270,12 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             }
         }
 
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        org.cqframework.cql.cql2elm.LibrarySourceProvider bundleLibraryProvider = new R4BundleLibrarySourceProvider(libraryBundle);
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(bundleLibraryProvider);
+        LibraryResolutionProvider<Library> provider = this.getLibraryResourceProvider();
+        libraryLoader.getLibraryManager().getLibrarySourceLoader().registerProvider(
+            new LibrarySourceProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment>(provider,
+                    x -> x.getContent(), x -> x.getContentType(), x -> x.getData()));
 
         CqlEngine engine = new CqlEngine(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider);
 
