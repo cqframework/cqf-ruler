@@ -54,6 +54,7 @@ public class QuestionnaireProvider {
         qrCategoryCoding.setSystem("http://hl7.org/fhir/observation-category");
         obs.setCategory(Collections.singletonList(new CodeableConcept().addCoding(qrCategoryCoding)));
         Coding qrCoding = new Coding();
+        qrCoding.setSystem("http://loinc.org");
         qrCoding.setCode("74465-6");
         qrCoding.setDisplay("Questionnaire response Document");
         obs.setCode(new CodeableConcept().addCoding(qrCoding));
