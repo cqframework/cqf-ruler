@@ -3,9 +3,14 @@ package org.opencds.cqf.r4.providers;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.r4.model.*;
+import org.opencds.cqf.cql.engine.fhir.model.FhirModelResolver;
+import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
+
+import ca.uhn.fhir.util.BundleUtil;
 
 public class R4BundleLibrarySourceProvider extends VersionComparingLibrarySourceProvider  {
 
@@ -27,9 +32,13 @@ public class R4BundleLibrarySourceProvider extends VersionComparingLibrarySource
     }
 
     public Library getLibrary(String name, String version) {
-        // TODO: Check the bundle
+        FhirModelResolver resolver = new R4FhirModelResolver();
+        Optional<Library> result = BundleUtil.toListOfResourcesOfType(resolver.getFhirContext(), this.bundle, Library.class)
+            .stream()
+            .filter(library -> library.getName().equals(name) && library.getVersion().equals(version))
+            .findFirst();
 
-        return null;
+        return result.isPresent() ? result.get() : null;
     }
 
     private InputStream getCqlStream(Library library) {
