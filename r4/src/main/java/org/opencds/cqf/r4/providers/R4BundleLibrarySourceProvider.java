@@ -3,14 +3,10 @@ package org.opencds.cqf.r4.providers;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.cql.engine.fhir.model.FhirModelResolver;
-import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
-
-import ca.uhn.fhir.util.BundleUtil;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 
 public class R4BundleLibrarySourceProvider extends VersionComparingLibrarySourceProvider  {
 
@@ -32,13 +28,18 @@ public class R4BundleLibrarySourceProvider extends VersionComparingLibrarySource
     }
 
     public Library getLibrary(String name, String version) {
-        FhirModelResolver resolver = new R4FhirModelResolver();
-        Optional<Library> result = BundleUtil.toListOfResourcesOfType(resolver.getFhirContext(), this.bundle, Library.class)
-            .stream()
-            .filter(library -> library.getName().equals(name) && library.getVersion().equals(version))
-            .findFirst();
-
-        return result.isPresent() ? result.get() : null;
+        if (bundle != null) {
+            Library theResource = null;
+            for (BundleEntryComponent entry : bundle.getEntry()) {
+                if (entry.getResource().fhirType().equals("Library")) {
+                    theResource = (Library)entry.getResource();
+                    if (theResource.getName().equals(name) && theResource.getVersion().equals(version)) {
+                        return theResource;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private InputStream getCqlStream(Library library) {
