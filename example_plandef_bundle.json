@@ -1,0 +1,64 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "PlanDefinition",
+        "id": "pd-example",
+        "meta": {
+          "versionId": "1",
+          "lastUpdated": "2020-07-31T20:16:38.519+00:00"
+        },
+        "action": [
+          {
+            "condition": [
+              {
+                "kind": "applicability",
+                "expression": {
+                  "language": "text/cql",
+                  "expression": "true"
+                }
+              }
+            ],
+            "id": "medication-action-1",
+            "title": "Administer Medication 1",
+            "definitionCanonical": "ActivityDefinition/ad-example"
+          },
+          {
+            "condition": [
+              {
+                "kind": "applicability",
+                "expression": {
+                  "language": "text/cql",
+                  "expression": "true"
+                }
+              }
+            ],
+            "id": "medication-action-2",
+            "title": "Administer Medication 2",
+            "definitionCanonical": "ActivityDefinition/ad-example"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "PlanDefinition/pd-example"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ActivityDefinition",
+        "id": "ad-example",
+        "kind": "MedicationRequest",
+        "productCodeableConcept": {
+          "text": "Medication 1"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ActivityDefinition/ad-example"
+      }
+    }
+  ]
+}
