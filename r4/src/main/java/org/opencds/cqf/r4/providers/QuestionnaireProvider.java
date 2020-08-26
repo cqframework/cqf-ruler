@@ -75,14 +75,10 @@ public class QuestionnaireProvider {
         obs.setDerivedFrom(Collections.singletonList(questionnaireResponseReference));
         Extension linkIdExtension = new Extension();
         linkIdExtension.setUrl("http://hl7.org/fhir/uv/sdc/StructureDefinition/derivedFromLinkId");
-        linkIdExtension.setValue(new StringType(item.getLinkId()));
-//   Extension refExtension = new Extension();
-//        refExtension.setUrl(ExtensionEnum.GRCONTAINED.getUrl());
-//        if(!mReport.hasId()){
-//            mReport.setId(UUID.randomUUID().toString());
-//        }
-//        refExtension.setValue(new Reference("#" + mReport.getId()));
-//        newGuidanceResponse.addExtension(refExtension);        obs.
+        Extension innerLinkIdExtension = new Extension();
+        innerLinkIdExtension.setUrl("text");
+        innerLinkIdExtension.setValue(new StringType(item.getLinkId()));
+        linkIdExtension.setExtension(Collections.singletonList(innerLinkIdExtension));
         obs.addExtension(linkIdExtension);
         Bundle.BundleEntryRequestComponent berc = new Bundle.BundleEntryRequestComponent();
         berc.setMethod(Bundle.HTTPVerb.PUT);
