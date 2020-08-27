@@ -8,20 +8,15 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.ListResource;
-import org.hl7.fhir.r4.model.Measure;
-import org.hl7.fhir.r4.model.MeasureReport;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Quantity;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.common.evaluation.MeasurePopulationType;
 import org.opencds.cqf.common.evaluation.MeasureScoring;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.Context;
+import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.r4.builders.MeasureReportBuilder;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
@@ -218,6 +213,8 @@ public class MeasureEvaluation {
             throw new RuntimeException("Measure scoring is required in order to calculate.");
         }
 
+        List<Measure.MeasureSupplementalDataComponent> sde = new ArrayList<>();
+        HashMap<String, HashMap<String, Integer>> sdeAccumulators = null;
         for (Measure.MeasureGroupComponent group : measure.getGroup()) {
             MeasureReport.MeasureReportGroupComponent reportGroup = new MeasureReport.MeasureReportGroupComponent();
             reportGroup.setId(group.getId());
@@ -256,6 +253,8 @@ public class MeasureEvaluation {
             HashMap<String, Patient> measurePopulationPatients = null;
             HashMap<String, Patient> measurePopulationExclusionPatients = null;
 
+            sdeAccumulators = new HashMap<>();
+             sde = measure.getSupplementalData();
             for (Measure.MeasureGroupPopulationComponent pop : group.getPopulation()) {
                 MeasurePopulationType populationType = MeasurePopulationType
                         .fromCode(pop.getCode().getCodingFirstRep().getCode());
@@ -330,7 +329,6 @@ public class MeasureEvaluation {
 
                     // For each patient in the initial population
                     for (Patient patient : patients) {
-
                         // Are they in the initial population?
                         boolean inInitialPopulation = evaluatePopulationCriteria(context, patient,
                                 initialPopulationCriteria, initialPopulation, initialPopulationPatients, null, null,
@@ -377,6 +375,7 @@ public class MeasureEvaluation {
                                 }
                             }
                         }
+                        populateSDEAccumulators(measure, context, patient, sdeAccumulators, sde);
                     }
 
                     // Calculate actual measure score, Count(numerator) / Count(denominator)
@@ -413,6 +412,7 @@ public class MeasureEvaluation {
                                 }
                             }
                         }
+                        populateSDEAccumulators(measure, context, patient, sdeAccumulators,sde);
                     }
 
                     break;
@@ -426,6 +426,7 @@ public class MeasureEvaluation {
                                 null);
                         populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources,
                                 codeToResourceMap);
+                        populateSDEAccumulators(measure, context, patient, sdeAccumulators, sde);
                     }
 
                     break;
@@ -479,9 +480,74 @@ public class MeasureEvaluation {
             FhirMeasureBundler bundler = new FhirMeasureBundler();
             org.hl7.fhir.r4.model.Bundle evaluatedResources = bundler.bundle(resources.values());
             evaluatedResources.setId(UUID.randomUUID().toString());
-            report.setEvaluatedResource(Collections.singletonList(new Reference('#' + evaluatedResources.getId())));
-            report.addContained(evaluatedResources);
+            report.setEvaluatedResource(Collections.singletonList(new Reference(evaluatedResources.getId())));
+//            report.addContained(evaluatedResources);
         }
+        if (sdeAccumulators.size() > 0) {
+            report = processAccumulators(report, sdeAccumulators, sde);
+        }
+
+        return report;
+    }
+
+    private void populateSDEAccumulators(Measure measure, Context context, Patient patient,HashMap<String, HashMap<String, Integer>> sdeAccumulators, List<Measure.MeasureSupplementalDataComponent> sde){
+        context.setContextValue("Patient", patient.getIdElement().getIdPart());
+        List<Object> sdeList = sde.stream().map(sdeItem -> context.resolveExpressionRef(sdeItem.getCriteria().getExpression()).evaluate(context)).collect(Collectors.toList());
+        if(!sdeList.isEmpty()) {
+            for (int i = 0; i < sdeList.size(); i++) {
+                Object sdeListItem = sdeList.get(i);
+                String sdeAccumulatorKey = sde.get(i).getCode().getText();
+                switch (sdeListItem.getClass().getSimpleName()) {
+                    case "Code":
+                        HashMap<String, Integer> sdeCodeItem = sdeAccumulators.get(sdeAccumulatorKey);
+                        String code = ((Code)sdeListItem).getCode();
+                        if (null != sdeCodeItem) {
+                            Integer sdeItemValue = sdeCodeItem.get(sdeListItem);
+                            sdeItemValue++;
+                            sdeCodeItem.put(code, sdeItemValue);
+                            sdeAccumulators.put(sdeAccumulatorKey, sdeCodeItem);
+                        } else {
+                            HashMap<String, Integer> newSDEItem = new HashMap<>();
+                            newSDEItem.put(code, 1);
+                            sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
+                        }
+                        break;
+                    case "ArrayList":
+                        if(((ArrayList)sdeListItem).size() > 0){
+                            Coding sdeItemCoding = (Coding) ((ArrayList)sdeListItem).get(0);
+                            String sdeItemCode = sdeItemCoding.getCode();
+                            HashMap<String, Integer> sdeItem = sdeAccumulators.get(sdeAccumulatorKey);
+                            if (null != sdeItem) {
+                                Integer sdeItemValue = sdeItem.get(sdeListItem);
+                                sdeItemValue++;
+                                sdeItem.put(sdeItemCode, sdeItemValue);
+                                sdeAccumulators.put(sdeAccumulatorKey, sdeItem);
+                            } else {
+                                HashMap<String, Integer> newSDEItem = new HashMap<>();
+                                newSDEItem.put(sdeItemCode, 1);
+                                sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
+    private MeasureReport processAccumulators(MeasureReport report, HashMap<String, HashMap<String, Integer>> sdeAccumulators,
+                                              List<Measure.MeasureSupplementalDataComponent> sde){
+        sdeAccumulators.forEach((sdeKey, sdeAcumulator) -> {
+            sdeAcumulator.forEach((sdeAcumulatorKey, sdeAcumulatorValue)->{
+              System.out.println(sdeAcumulatorKey + "/" + sdeAcumulatorValue);
+                Observation obs = new Observation();
+                obs.setStatus(Observation.ObservationStatus.FINAL);
+                obs.setId(UUID.randomUUID().toString());
+                obs.setCode(new CodeableConcept().setText(sdeAcumulatorKey.toString()));
+                obs.setValue(new StringType(sdeAcumulatorValue.toString()));
+                report.addContained(obs);
+            });
+        });
+        //entry.getKey() + "/" + entry.getValue()).forEach(System.out::println);
 
         return report;
     }
