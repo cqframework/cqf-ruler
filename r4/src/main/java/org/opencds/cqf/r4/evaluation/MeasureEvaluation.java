@@ -520,15 +520,18 @@ public class MeasureEvaluation {
                             }
                             break;
                     }
+                    if(null == code){
+                        continue;
+                    }
                     if (null != sdeItemMap && null != sdeItemMap.get(code)) {
                         Integer sdeItemValue = sdeItemMap.get(code);
                         sdeItemValue++;
                         sdeItemMap.put(code, sdeItemValue);
                         sdeAccumulators.get(sdeAccumulatorKey).put(code, sdeItemValue);
                     } else {
-                        HashMap<String, Integer> newSDEItem = new HashMap<>();
-                        newSDEItem.put(code, 1);
                         if (null == sdeAccumulators.get(sdeAccumulatorKey)) {
+                            HashMap<String, Integer> newSDEItem = new HashMap<>();
+                            newSDEItem.put(code, 1);
                             sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
                         } else {
                             sdeAccumulators.get(sdeAccumulatorKey).put(code, 1);
