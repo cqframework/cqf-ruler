@@ -509,15 +509,19 @@ public class MeasureEvaluation {
                         case "Code":
                             HashMap<String, Integer> sdeCodeItem = sdeAccumulators.get(sdeAccumulatorKey);
                             String code = ((Code) sdeListItem).getCode();
-                            if (null != sdeCodeItem) {
-                                Integer sdeItemValue = sdeCodeItem.get(sdeListItem);
+                            if (null != sdeCodeItem && null != sdeCodeItem.get(code)) {
+                                Integer sdeItemValue = sdeCodeItem.get(code);
                                 sdeItemValue++;
                                 sdeCodeItem.put(code, sdeItemValue);
-                                sdeAccumulators.put(sdeAccumulatorKey, sdeCodeItem);
+                                sdeAccumulators.get(sdeAccumulatorKey).put(code, sdeItemValue);
                             } else {
                                 HashMap<String, Integer> newSDEItem = new HashMap<>();
                                 newSDEItem.put(code, 1);
-                                sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
+                                if(null == sdeAccumulators.get(sdeAccumulatorKey)){
+                                    sdeAccumulators.put(sdeAccumulatorKey,newSDEItem);
+                                }else{
+                                    sdeAccumulators.get(sdeAccumulatorKey).put(code, 1);
+                                }
                             }
                             break;
                         case "ArrayList":
@@ -525,15 +529,20 @@ public class MeasureEvaluation {
                                 Coding sdeItemCoding = (Coding) ((ArrayList) sdeListItem).get(0);
                                 String sdeItemCode = sdeItemCoding.getCode();
                                 HashMap<String, Integer> sdeItem = sdeAccumulators.get(sdeAccumulatorKey);
-                                if (null != sdeItem) {
+                                if (null != sdeItem && null != sdeItem.get(sdeListItem)) {
                                     Integer sdeItemValue = sdeItem.get(sdeListItem);
                                     sdeItemValue++;
                                     sdeItem.put(sdeItemCode, sdeItemValue);
-                                    sdeAccumulators.put(sdeAccumulatorKey, sdeItem);
+                                    //sdeAccumulators.put(sdeAccumulatorKey, sdeItem);
+                                    sdeAccumulators.get(sdeAccumulatorKey).put(sdeItemCode, sdeItemValue);
                                 } else {
                                     HashMap<String, Integer> newSDEItem = new HashMap<>();
                                     newSDEItem.put(sdeItemCode, 1);
-                                    sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
+                                    if(null == sdeAccumulators.get(sdeAccumulatorKey)){
+                                            sdeAccumulators.put(sdeAccumulatorKey,newSDEItem);
+                                    }else{
+                                        sdeAccumulators.get(sdeAccumulatorKey).put(sdeItemCode, 1);
+                                    }
                                 }
                             }
                             break;
@@ -548,7 +557,6 @@ public class MeasureEvaluation {
         List<Reference> newRefList = new ArrayList<>();
         sdeAccumulators.forEach((sdeKey, sdeAccumulator) -> {
             sdeAccumulator.forEach((sdeAccumulatorKey, sdeAcumulatorValue)->{
-              System.out.println(sdeAccumulatorKey + "/" + sdeAcumulatorValue);
                 Observation obs = new Observation();
                 obs.setStatus(Observation.ObservationStatus.FINAL);
                 obs.setId(UUID.randomUUID().toString());
