@@ -477,11 +477,18 @@ public class MeasureEvaluation {
         }
 
         if (!resources.isEmpty()) {
+            List<Reference> evaluatedResourceIds = new ArrayList<>();
+            resources.forEach((key, resource) -> {
+                evaluatedResourceIds.add(new Reference("#" + resource.getId()));
+            });
+            report.setEvaluatedResource(evaluatedResourceIds);
+            /*
             FhirMeasureBundler bundler = new FhirMeasureBundler();
             org.hl7.fhir.r4.model.Bundle evaluatedResources = bundler.bundle(resources.values());
             evaluatedResources.setId(UUID.randomUUID().toString());
             report.setEvaluatedResource(Collections.singletonList(new Reference(evaluatedResources.getId())));
-//            report.addContained(evaluatedResources);
+            report.addContained(evaluatedResources);
+            */
         }
         if (sdeAccumulators.size() > 0) {
             report = processAccumulators(report, sdeAccumulators, sde);
@@ -496,39 +503,41 @@ public class MeasureEvaluation {
         if(!sdeList.isEmpty()) {
             for (int i = 0; i < sdeList.size(); i++) {
                 Object sdeListItem = sdeList.get(i);
-                String sdeAccumulatorKey = sde.get(i).getCode().getText();
-                switch (sdeListItem.getClass().getSimpleName()) {
-                    case "Code":
-                        HashMap<String, Integer> sdeCodeItem = sdeAccumulators.get(sdeAccumulatorKey);
-                        String code = ((Code)sdeListItem).getCode();
-                        if (null != sdeCodeItem) {
-                            Integer sdeItemValue = sdeCodeItem.get(sdeListItem);
-                            sdeItemValue++;
-                            sdeCodeItem.put(code, sdeItemValue);
-                            sdeAccumulators.put(sdeAccumulatorKey, sdeCodeItem);
-                        } else {
-                            HashMap<String, Integer> newSDEItem = new HashMap<>();
-                            newSDEItem.put(code, 1);
-                            sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
-                        }
-                        break;
-                    case "ArrayList":
-                        if(((ArrayList)sdeListItem).size() > 0){
-                            Coding sdeItemCoding = (Coding) ((ArrayList)sdeListItem).get(0);
-                            String sdeItemCode = sdeItemCoding.getCode();
-                            HashMap<String, Integer> sdeItem = sdeAccumulators.get(sdeAccumulatorKey);
-                            if (null != sdeItem) {
-                                Integer sdeItemValue = sdeItem.get(sdeListItem);
+                if(null != sdeListItem) {
+                    String sdeAccumulatorKey = sde.get(i).getCode().getText();
+                    switch (sdeListItem.getClass().getSimpleName()) {
+                        case "Code":
+                            HashMap<String, Integer> sdeCodeItem = sdeAccumulators.get(sdeAccumulatorKey);
+                            String code = ((Code) sdeListItem).getCode();
+                            if (null != sdeCodeItem) {
+                                Integer sdeItemValue = sdeCodeItem.get(sdeListItem);
                                 sdeItemValue++;
-                                sdeItem.put(sdeItemCode, sdeItemValue);
-                                sdeAccumulators.put(sdeAccumulatorKey, sdeItem);
+                                sdeCodeItem.put(code, sdeItemValue);
+                                sdeAccumulators.put(sdeAccumulatorKey, sdeCodeItem);
                             } else {
                                 HashMap<String, Integer> newSDEItem = new HashMap<>();
-                                newSDEItem.put(sdeItemCode, 1);
+                                newSDEItem.put(code, 1);
                                 sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
                             }
-                        }
-                        break;
+                            break;
+                        case "ArrayList":
+                            if (((ArrayList) sdeListItem).size() > 0) {
+                                Coding sdeItemCoding = (Coding) ((ArrayList) sdeListItem).get(0);
+                                String sdeItemCode = sdeItemCoding.getCode();
+                                HashMap<String, Integer> sdeItem = sdeAccumulators.get(sdeAccumulatorKey);
+                                if (null != sdeItem) {
+                                    Integer sdeItemValue = sdeItem.get(sdeListItem);
+                                    sdeItemValue++;
+                                    sdeItem.put(sdeItemCode, sdeItemValue);
+                                    sdeAccumulators.put(sdeAccumulatorKey, sdeItem);
+                                } else {
+                                    HashMap<String, Integer> newSDEItem = new HashMap<>();
+                                    newSDEItem.put(sdeItemCode, 1);
+                                    sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
+                                }
+                            }
+                            break;
+                    }
                 }
             }
         }
@@ -536,19 +545,21 @@ public class MeasureEvaluation {
 
     private MeasureReport processAccumulators(MeasureReport report, HashMap<String, HashMap<String, Integer>> sdeAccumulators,
                                               List<Measure.MeasureSupplementalDataComponent> sde){
-        sdeAccumulators.forEach((sdeKey, sdeAcumulator) -> {
-            sdeAcumulator.forEach((sdeAcumulatorKey, sdeAcumulatorValue)->{
-              System.out.println(sdeAcumulatorKey + "/" + sdeAcumulatorValue);
+        List<Reference> newRefList = new ArrayList<>();
+        sdeAccumulators.forEach((sdeKey, sdeAccumulator) -> {
+            sdeAccumulator.forEach((sdeAccumulatorKey, sdeAcumulatorValue)->{
+              System.out.println(sdeAccumulatorKey + "/" + sdeAcumulatorValue);
                 Observation obs = new Observation();
                 obs.setStatus(Observation.ObservationStatus.FINAL);
                 obs.setId(UUID.randomUUID().toString());
-                obs.setCode(new CodeableConcept().setText(sdeAcumulatorKey.toString()));
+                obs.setCode(new CodeableConcept().setText(sdeAccumulatorKey.toString()));
                 obs.setValue(new StringType(sdeAcumulatorValue.toString()));
+                newRefList.add(new Reference("#" + obs.getId()));
                 report.addContained(obs);
             });
         });
-        //entry.getKey() + "/" + entry.getValue()).forEach(System.out::println);
-
+        newRefList.addAll(report.getEvaluatedResource());
+        report.setEvaluatedResource(newRefList);
         return report;
     }
 
