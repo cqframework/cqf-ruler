@@ -505,47 +505,34 @@ public class MeasureEvaluation {
                 Object sdeListItem = sdeList.get(i);
                 if(null != sdeListItem) {
                     String sdeAccumulatorKey = sde.get(i).getCode().getText();
+                    HashMap<String, Integer> sdeItemMap = sdeAccumulators.get(sdeAccumulatorKey);
+                    String code = "";
+
                     switch (sdeListItem.getClass().getSimpleName()) {
                         case "Code":
-                            HashMap<String, Integer> sdeCodeItem = sdeAccumulators.get(sdeAccumulatorKey);
-                            String code = ((Code) sdeListItem).getCode();
-                            if (null != sdeCodeItem && null != sdeCodeItem.get(code)) {
-                                Integer sdeItemValue = sdeCodeItem.get(code);
-                                sdeItemValue++;
-                                sdeCodeItem.put(code, sdeItemValue);
-                                sdeAccumulators.get(sdeAccumulatorKey).put(code, sdeItemValue);
-                            } else {
-                                HashMap<String, Integer> newSDEItem = new HashMap<>();
-                                newSDEItem.put(code, 1);
-                                if(null == sdeAccumulators.get(sdeAccumulatorKey)){
-                                    sdeAccumulators.put(sdeAccumulatorKey,newSDEItem);
-                                }else{
-                                    sdeAccumulators.get(sdeAccumulatorKey).put(code, 1);
-                                }
-                            }
+                            code = ((Code) sdeListItem).getCode();
                             break;
                         case "ArrayList":
                             if (((ArrayList) sdeListItem).size() > 0) {
-                                Coding sdeItemCoding = (Coding) ((ArrayList) sdeListItem).get(0);
-                                String sdeItemCode = sdeItemCoding.getCode();
-                                HashMap<String, Integer> sdeItem = sdeAccumulators.get(sdeAccumulatorKey);
-                                if (null != sdeItem && null != sdeItem.get(sdeItemCode)) {
-                                    Integer sdeItemValue = sdeItem.get(sdeItemCode);
-                                    sdeItemValue++;
-                                    sdeItem.put(sdeItemCode, sdeItemValue);
-                                    //sdeAccumulators.put(sdeAccumulatorKey, sdeItem);
-                                    sdeAccumulators.get(sdeAccumulatorKey).put(sdeItemCode, sdeItemValue);
-                                } else {
-                                    HashMap<String, Integer> newSDEItem = new HashMap<>();
-                                    newSDEItem.put(sdeItemCode, 1);
-                                    if(null == sdeAccumulators.get(sdeAccumulatorKey)){
-                                            sdeAccumulators.put(sdeAccumulatorKey,newSDEItem);
-                                    }else{
-                                        sdeAccumulators.get(sdeAccumulatorKey).put(sdeItemCode, 1);
-                                    }
-                                }
+                                code  = ((Coding) ((ArrayList) sdeListItem).get(0)).getCode();
+                            }else{
+                                continue;
                             }
                             break;
+                    }
+                    if (null != sdeItemMap && null != sdeItemMap.get(code)) {
+                        Integer sdeItemValue = sdeItemMap.get(code);
+                        sdeItemValue++;
+                        sdeItemMap.put(code, sdeItemValue);
+                        sdeAccumulators.get(sdeAccumulatorKey).put(code, sdeItemValue);
+                    } else {
+                        HashMap<String, Integer> newSDEItem = new HashMap<>();
+                        newSDEItem.put(code, 1);
+                        if (null == sdeAccumulators.get(sdeAccumulatorKey)) {
+                            sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
+                        } else {
+                            sdeAccumulators.get(sdeAccumulatorKey).put(code, 1);
+                        }
                     }
                 }
             }
