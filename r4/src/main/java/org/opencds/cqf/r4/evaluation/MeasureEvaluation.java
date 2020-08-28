@@ -479,7 +479,7 @@ public class MeasureEvaluation {
         if (!resources.isEmpty()) {
             List<Reference> evaluatedResourceIds = new ArrayList<>();
             resources.forEach((key, resource) -> {
-                evaluatedResourceIds.add(new Reference("#" + resource.getId()));
+                evaluatedResourceIds.add(new Reference(resource.getId()));
             });
             report.setEvaluatedResource(evaluatedResourceIds);
             /*
