@@ -56,16 +56,18 @@ public class MeasureEvaluation {
             patient = (Patient) patientRetrieve.iterator().next();
         }
 
+        boolean isSingle = true;
         return evaluate(measure, context,
                 patient == null ? Collections.emptyList() : Collections.singletonList(patient),
-                MeasureReport.MeasureReportType.INDIVIDUAL);
+                MeasureReport.MeasureReportType.INDIVIDUAL, isSingle);
     }
 
     public MeasureReport evaluateSubjectListMeasure(Measure measure, Context context, String practitionerRef) {
         logger.info("Generating patient-list report");
 
         List<Patient> patients = practitionerRef == null ? getAllPatients() : getPractitionerPatients(practitionerRef);
-        return evaluate(measure, context, patients, MeasureReport.MeasureReportType.SUBJECTLIST);
+        boolean isSingle = false;
+        return evaluate(measure, context, patients, MeasureReport.MeasureReportType.SUBJECTLIST, isSingle);
     }
 
     private List<Patient> getPractitionerPatients(String practitionerRef) {
@@ -91,7 +93,8 @@ public class MeasureEvaluation {
     public MeasureReport evaluatePopulationMeasure(Measure measure, Context context) {
         logger.info("Generating summary report");
 
-        return evaluate(measure, context, getAllPatients(), MeasureReport.MeasureReportType.SUMMARY);
+        boolean isSingle = false;
+        return evaluate(measure, context, getAllPatients(), MeasureReport.MeasureReportType.SUMMARY, isSingle);
     }
 
     @SuppressWarnings("unchecked")
@@ -191,7 +194,7 @@ public class MeasureEvaluation {
     }
 
     private MeasureReport evaluate(Measure measure, Context context, List<Patient> patients,
-            MeasureReport.MeasureReportType type) {
+            MeasureReport.MeasureReportType type, boolean isSingle) {
         MeasureReportBuilder reportBuilder = new MeasureReportBuilder();
         reportBuilder.buildStatus("complete");
         reportBuilder.buildType(type);
@@ -491,13 +494,14 @@ public class MeasureEvaluation {
             */
         }
         if (sdeAccumulators.size() > 0) {
-            report = processAccumulators(report, sdeAccumulators, sde);
+            report = processAccumulators(report, sdeAccumulators, sde, isSingle, patients);
         }
 
         return report;
     }
 
-    private void populateSDEAccumulators(Measure measure, Context context, Patient patient,HashMap<String, HashMap<String, Integer>> sdeAccumulators, List<Measure.MeasureSupplementalDataComponent> sde){
+    private void populateSDEAccumulators(Measure measure, Context context, Patient patient,HashMap<String, HashMap<String, Integer>> sdeAccumulators,
+                                         List<Measure.MeasureSupplementalDataComponent> sde){
         context.setContextValue("Patient", patient.getIdElement().getIdPart());
         List<Object> sdeList = sde.stream().map(sdeItem -> context.resolveExpressionRef(sdeItem.getCriteria().getExpression()).evaluate(context)).collect(Collectors.toList());
         if(!sdeList.isEmpty()) {
@@ -505,6 +509,9 @@ public class MeasureEvaluation {
                 Object sdeListItem = sdeList.get(i);
                 if(null != sdeListItem) {
                     String sdeAccumulatorKey = sde.get(i).getCode().getText();
+                    if(null == sdeAccumulatorKey || sdeAccumulatorKey.length() < 1){
+                        sdeAccumulatorKey = sde.get(i).getCriteria().getExpression();
+                    }
                     HashMap<String, Integer> sdeItemMap = sdeAccumulators.get(sdeAccumulatorKey);
                     String code = "";
 
@@ -543,7 +550,7 @@ public class MeasureEvaluation {
     }
 
     private MeasureReport processAccumulators(MeasureReport report, HashMap<String, HashMap<String, Integer>> sdeAccumulators,
-                                              List<Measure.MeasureSupplementalDataComponent> sde){
+                                              List<Measure.MeasureSupplementalDataComponent> sde, boolean isSingle, List<Patient> patients){
         List<Reference> newRefList = new ArrayList<>();
         sdeAccumulators.forEach((sdeKey, sdeAccumulator) -> {
             sdeAccumulator.forEach((sdeAccumulatorKey, sdeAcumulatorValue)->{
@@ -551,7 +558,33 @@ public class MeasureEvaluation {
                 obs.setStatus(Observation.ObservationStatus.FINAL);
                 obs.setId(UUID.randomUUID().toString());
                 obs.setCode(new CodeableConcept().setText(sdeAccumulatorKey.toString()));
-                obs.setValue(new StringType(sdeAcumulatorValue.toString()));
+                if(!isSingle) {
+                    //TODO - how much variety is expected in this extension??
+                    Extension groupExtension = new Extension().setUrl("http://hl7.org/fhir/StructureDefinition/cqf-measureInfo");
+                    Extension extExtMeasure = new Extension()
+                            .setUrl("measure")
+                            //TODO - needs to be canonical
+                            .setValue(new CanonicalType("http://hl7.org/fhir/us/cqfmeasures/" + report.getMeasure()));
+                    groupExtension.addExtension(extExtMeasure);
+                    Extension extExtPop = new Extension()
+                            .setUrl("populationId")
+                            .setValue(new StringType(sdeKey));
+                    groupExtension.addExtension(extExtPop);
+                    obs.setValue(new StringType(sdeAcumulatorValue.toString()));
+                    obs.addExtension(groupExtension);
+                }else{
+                    //TODO - send in patients; loop through them looking at extension.getExtension(0).extension..get(0).getUrl() = UriType[http://hl7.org/fhir/us/core/StructureDefinition/us-core-race]
+                    //    get extension.extension.(0).getvalue() where value is Coding
+                    // patients.get(0).getExtension().get(0).getExtension().get(0).getValue()
+                    Coding valueCoding = new Coding();
+                    valueCoding = (Coding) patients.get(0).getExtension().get(0).getExtension().get(0).getValue();
+                    valueCoding.setSystem(((Coding) patients.get(0).getExtension().get(0).getExtension().get(0).getValue()).getSystem());
+                    valueCoding.setCode(((Coding) patients.get(0).getExtension().get(0).getExtension().get(0).getValue()).getCode());
+                    valueCoding.setDisplay(((Coding) patients.get(0).getExtension().get(0).getExtension().get(0).getValue()).getDisplay());
+                    CodeableConcept cc = new CodeableConcept();
+                    cc.setCoding(Collections.singletonList(valueCoding));
+                    obs.setValue(cc);
+                }
                 newRefList.add(new Reference("#" + obs.getId()));
                 report.addContained(obs);
             });
