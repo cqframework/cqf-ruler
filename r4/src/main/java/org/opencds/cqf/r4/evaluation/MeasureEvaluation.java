@@ -529,8 +529,8 @@ public class MeasureEvaluation {
                                 Coding sdeItemCoding = (Coding) ((ArrayList) sdeListItem).get(0);
                                 String sdeItemCode = sdeItemCoding.getCode();
                                 HashMap<String, Integer> sdeItem = sdeAccumulators.get(sdeAccumulatorKey);
-                                if (null != sdeItem && null != sdeItem.get(sdeListItem)) {
-                                    Integer sdeItemValue = sdeItem.get(sdeListItem);
+                                if (null != sdeItem && null != sdeItem.get(sdeItemCode)) {
+                                    Integer sdeItemValue = sdeItem.get(sdeItemCode);
                                     sdeItemValue++;
                                     sdeItem.put(sdeItemCode, sdeItemValue);
                                     //sdeAccumulators.put(sdeAccumulatorKey, sdeItem);
