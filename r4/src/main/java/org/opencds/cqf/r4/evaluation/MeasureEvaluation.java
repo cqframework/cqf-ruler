@@ -557,13 +557,29 @@ public class MeasureEvaluation {
                 Observation obs = new Observation();
                 obs.setStatus(Observation.ObservationStatus.FINAL);
                 obs.setId(UUID.randomUUID().toString());
-                obs.setCode(new CodeableConcept().setText(sdeAccumulatorKey.toString()));
+                Coding valueCoding = new Coding();
+                if(sdeKey.equalsIgnoreCase("sde-sex")){
+                    valueCoding.setCode(sdeAccumulatorKey);
+                }else {
+                    String coreCategory = sdeKey.substring(sdeKey.lastIndexOf('-'));
+                    patients.forEach((pt)-> {
+                        pt.getExtension().forEach((ptExt) -> {
+                            if (ptExt.getUrl().contains(coreCategory)) {
+                                String code = ((Coding) ptExt.getExtension().get(0).getValue()).getCode();
+                                if(code.equalsIgnoreCase(sdeAccumulatorKey)) {
+                                    valueCoding.setSystem(((Coding) ptExt.getExtension().get(0).getValue()).getSystem());
+                                    valueCoding.setCode(code);
+                                    valueCoding.setDisplay(((Coding) ptExt.getExtension().get(0).getValue()).getDisplay());
+                                }
+                            }
+                        });
+                    });
+                }
+                CodeableConcept obsCodeableConcept = new CodeableConcept();
                 if(!isSingle) {
-                    //TODO - how much variety is expected in this extension??
                     Extension groupExtension = new Extension().setUrl("http://hl7.org/fhir/StructureDefinition/cqf-measureInfo");
                     Extension extExtMeasure = new Extension()
                             .setUrl("measure")
-                            //TODO - needs to be canonical
                             .setValue(new CanonicalType("http://hl7.org/fhir/us/cqfmeasures/" + report.getMeasure()));
                     groupExtension.addExtension(extExtMeasure);
                     Extension extExtPop = new Extension()
@@ -572,18 +588,13 @@ public class MeasureEvaluation {
                     groupExtension.addExtension(extExtPop);
                     obs.setValue(new StringType(sdeAcumulatorValue.toString()));
                     obs.addExtension(groupExtension);
+                    valueCoding.setCode(sdeAccumulatorKey);
+                    obsCodeableConcept.setCoding(Collections.singletonList(valueCoding));
+                    obs.setCode(obsCodeableConcept);
                 }else{
-                    //TODO - send in patients; loop through them looking at extension.getExtension(0).extension..get(0).getUrl() = UriType[http://hl7.org/fhir/us/core/StructureDefinition/us-core-race]
-                    //    get extension.extension.(0).getvalue() where value is Coding
-                    // patients.get(0).getExtension().get(0).getExtension().get(0).getValue()
-                    Coding valueCoding = new Coding();
-                    valueCoding = (Coding) patients.get(0).getExtension().get(0).getExtension().get(0).getValue();
-                    valueCoding.setSystem(((Coding) patients.get(0).getExtension().get(0).getExtension().get(0).getValue()).getSystem());
-                    valueCoding.setCode(((Coding) patients.get(0).getExtension().get(0).getExtension().get(0).getValue()).getCode());
-                    valueCoding.setDisplay(((Coding) patients.get(0).getExtension().get(0).getExtension().get(0).getValue()).getDisplay());
-                    CodeableConcept cc = new CodeableConcept();
-                    cc.setCoding(Collections.singletonList(valueCoding));
-                    obs.setValue(cc);
+                    obs.setCode(new CodeableConcept().setText(sdeKey));
+                    obsCodeableConcept.setCoding(Collections.singletonList(valueCoding));
+                    obs.setValue(obsCodeableConcept);
                 }
                 newRefList.add(new Reference("#" + obs.getId()));
                 report.addContained(obs);
