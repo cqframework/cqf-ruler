@@ -576,18 +576,18 @@ public class MeasureEvaluation {
                     });
                 }
                 CodeableConcept obsCodeableConcept = new CodeableConcept();
+                Extension obsExtension = new Extension().setUrl("http://hl7.org/fhir/StructureDefinition/cqf-measureInfo");
+                Extension extExtMeasure = new Extension()
+                        .setUrl("measure")
+                        .setValue(new CanonicalType("http://hl7.org/fhir/us/cqfmeasures/" + report.getMeasure()));
+                obsExtension.addExtension(extExtMeasure);
+                Extension extExtPop = new Extension()
+                        .setUrl("populationId")
+                        .setValue(new StringType(sdeKey));
+                obsExtension.addExtension(extExtPop);
+                obs.addExtension(obsExtension);
+                obs.setValue(new IntegerType(sdeAcumulatorValue));
                 if(!isSingle) {
-                    Extension groupExtension = new Extension().setUrl("http://hl7.org/fhir/StructureDefinition/cqf-measureInfo");
-                    Extension extExtMeasure = new Extension()
-                            .setUrl("measure")
-                            .setValue(new CanonicalType("http://hl7.org/fhir/us/cqfmeasures/" + report.getMeasure()));
-                    groupExtension.addExtension(extExtMeasure);
-                    Extension extExtPop = new Extension()
-                            .setUrl("populationId")
-                            .setValue(new StringType(sdeKey));
-                    groupExtension.addExtension(extExtPop);
-                    obs.setValue(new IntegerType(sdeAcumulatorValue));
-                    obs.addExtension(groupExtension);
                     valueCoding.setCode(sdeAccumulatorKey);
                     obsCodeableConcept.setCoding(Collections.singletonList(valueCoding));
                     obs.setCode(obsCodeableConcept);
