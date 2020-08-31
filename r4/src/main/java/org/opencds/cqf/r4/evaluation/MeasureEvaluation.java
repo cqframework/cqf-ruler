@@ -586,7 +586,7 @@ public class MeasureEvaluation {
                             .setUrl("populationId")
                             .setValue(new StringType(sdeKey));
                     groupExtension.addExtension(extExtPop);
-                    obs.setValue(new StringType(sdeAcumulatorValue.toString()));
+                    obs.setValue(new IntegerType(sdeAcumulatorValue));
                     obs.addExtension(groupExtension);
                     valueCoding.setCode(sdeAccumulatorKey);
                     obsCodeableConcept.setCoding(Collections.singletonList(valueCoding));
