@@ -69,6 +69,11 @@ public class LibraryHelper {
             }
         }
 
+        if (libraries.isEmpty()) {
+            throw new IllegalArgumentException(String
+                    .format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
+        }
+
         VersionedIdentifier primaryLibraryId = libraries.get(0).getIdentifier();
         org.hl7.fhir.r4.model.Library primaryLibrary = libraryResourceProvider.resolveLibraryByName(primaryLibraryId.getId(), primaryLibraryId.getVersion());
         for (RelatedArtifact artifact : primaryLibrary.getRelatedArtifact()) {
@@ -91,11 +96,6 @@ public class LibraryHelper {
             }
         }
 
-        if (libraries.isEmpty()) {
-            throw new IllegalArgumentException(String
-                    .format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
-        }
-
         return libraries;
     }
 
@@ -105,6 +105,16 @@ public class LibraryHelper {
         }
 
         if (!library.hasType()) {
+            // If no type is specified, assume it is a logic library based on whether there is a CQL content element.
+            if (library.hasContent()) {
+                for (Attachment a : library.getContent()) {
+                    if (a.hasContentType() && (a.getContentType().equals("text/cql")
+                            || a.getContentType().equals("application/elm+xml")
+                            || a.getContentType().equals("application/elm+json"))) {
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 
