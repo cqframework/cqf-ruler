@@ -37,6 +37,7 @@ public class LibraryHelper {
         List<org.cqframework.cql.elm.execution.Library> libraries = new ArrayList<org.cqframework.cql.elm.execution.Library>();
 
         // load libraries
+        //TODO: if there's a bad measure argument, this blows up for an obscure error
         for (Reference ref : measure.getLibrary()) {
             // if library is contained in measure, load it into server
             if (ref.getReferenceElement().getIdPart().startsWith("#")) {
