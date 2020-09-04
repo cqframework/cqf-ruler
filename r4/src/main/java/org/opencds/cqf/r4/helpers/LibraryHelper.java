@@ -46,6 +46,7 @@ public class LibraryHelper {
         List<org.cqframework.cql.elm.execution.Library> libraries = new ArrayList<org.cqframework.cql.elm.execution.Library>();
 
         // load libraries
+        //TODO: if there's a bad measure argument, this blows up for an obscure error
         for (CanonicalType ref : measure.getLibrary()) {
             // if library is contained in measure, load it into server
             String id = CanonicalHelper.getId(ref);
@@ -66,6 +67,11 @@ public class LibraryHelper {
                         libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
                 );
             }
+        }
+
+        if (libraries.isEmpty()) {
+            throw new IllegalArgumentException(String
+                    .format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
         }
 
         VersionedIdentifier primaryLibraryId = libraries.get(0).getIdentifier();
@@ -90,11 +96,6 @@ public class LibraryHelper {
             }
         }
 
-        if (libraries.isEmpty()) {
-            throw new IllegalArgumentException(String
-                    .format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
-        }
-
         return libraries;
     }
 
@@ -104,6 +105,16 @@ public class LibraryHelper {
         }
 
         if (!library.hasType()) {
+            // If no type is specified, assume it is a logic library based on whether there is a CQL content element.
+            if (library.hasContent()) {
+                for (Attachment a : library.getContent()) {
+                    if (a.hasContentType() && (a.getContentType().equals("text/cql")
+                            || a.getContentType().equals("application/elm+xml")
+                            || a.getContentType().equals("application/elm+json"))) {
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 
