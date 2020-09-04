@@ -237,7 +237,7 @@ public class MeasureOperationsProvider {
                 (getPatientListFromGroup(subject))
                     .forEach(groupSubject ->{
                         Bundle patientGapBundle = patientCareGap(periodStart, periodEnd, groupSubject, topic, measure, status);
-                        if(null != patientGapBundle){
+                         if(null != patientGapBundle){
                             returnParams.addParameter(new Parameters.ParametersParameterComponent()
                                     .setName("Gaps in Care Report - " + groupSubject)
                                     .setResource(patientGapBundle));
@@ -262,9 +262,14 @@ public class MeasureOperationsProvider {
         Iterable<Object> groupRetrieve = dataProvider.retrieve("Group", "id", subjectGroupRef, "Group", null, null, null,
                 null, null, null, null, null);
         Group group;
-        if (groupRetrieve.iterator().hasNext()) {
-            group = (Group) groupRetrieve.iterator().next();
-            group.getMember().forEach(member -> patientList.add(member.getEntity().getReference()));
+        Iterator<Object> objIterator = groupRetrieve.iterator();
+        if (objIterator.hasNext()) {
+            while(objIterator.hasNext()) {
+                group = (Group) objIterator.next();
+                if (group.getIdElement().getIdPart().equalsIgnoreCase(subjectGroupRef.substring(subjectGroupRef.lastIndexOf("/") + 1)) ) {
+                    group.getMember().forEach(member -> patientList.add(member.getEntity().getReference()));
+                }
+            }
         }
         return patientList;
     }
