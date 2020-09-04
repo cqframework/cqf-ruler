@@ -411,7 +411,10 @@ public class MeasureOperationsProvider {
                         detectedIssue.setPatient(new Reference(subject.startsWith("Patient/") ? subject : "Patient/" + subject));
                         detectedIssue.getEvidence().add(new DetectedIssue.DetectedIssueEvidenceComponent().addDetail(new Reference("MeasureReport/" + report.getId())));
                         CodeableConcept code = new CodeableConcept()
-                            .addCoding(new Coding().setSystem("http://hl7.org/fhir/us/davinci-deqm/CodeSystem/detectedissue-category").setCode("care-gap"));
+                            .addCoding(new Coding()
+                            .setSystem("http://hl7.org/fhir/us/davinci-deqm/CodeSystem/detectedissue-category")
+                            .setCode("care-gap")
+                            .setDisplay("Gap in Care Detected"));
                         detectedIssue.setCode(code);
 
                         section.addEntry(
