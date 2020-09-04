@@ -12,6 +12,7 @@ import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
@@ -335,7 +336,7 @@ public class MeasureOperationsProvider {
 
         for (IBaseResource resource : measures) {
             Measure measureResource = (Measure) resource;
-           
+
             Composition.SectionComponent section = new Composition.SectionComponent();
 
             if (measureResource.hasTitle()) {
@@ -415,10 +416,13 @@ public class MeasureOperationsProvider {
 
                         section.addEntry(
                              new Reference("DetectedIssue/" + detectedIssue.getIdElement().getIdPart()));
-                        composition.addSection(section);
-
                         detectedIssues.add(detectedIssue);
+                }else {
+                    section.setText(new Narrative()
+                            .setStatus(Narrative.NarrativeStatus.GENERATED)
+                            .setDiv(new XhtmlNode().setValue("<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>No detected issues.</p></div>")));
                 }
+                    composition.addSection(section);
                 reports.add(report);
 
                 // TODO - add other types of improvement notation cases
@@ -427,7 +431,7 @@ public class MeasureOperationsProvider {
         Parameters parameters = new Parameters();
         if((null == status || status == "")                                 //everything
                 || (hasIssue && !"closed-gap".equalsIgnoreCase(status))     //filter out closed-gap that has issues  for OPEN-GAP
-                ||(!hasIssue && !"open-gap".equalsIgnoreCase(status))){     //filet out open-gap without issues  for CLOSE-GAP
+                ||(!hasIssue && !"open-gap".equalsIgnoreCase(status))){     //filter out open-gap without issues  for CLOSE-GAP
             careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
             for (MeasureReport rep : reports) {
                 careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
@@ -441,7 +445,7 @@ public class MeasureOperationsProvider {
                                     Reference newEvaluatedResourceItem = new Reference();
                                     newEvaluatedResourceItem.setReference(parameter.getResource().getId());
                                     List<Extension> evalResourceExt = new ArrayList<>();
-                                    evalResourceExt.add(new Extension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-ppopulationReference",
+                                    evalResourceExt.add(new Extension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
                                             new CodeableConcept()
                                                     .addCoding(new Coding("http://teminology.hl7.org/CodeSystem/measure-population", "initial-population", "initial-population"))));
                                     newEvaluatedResourceItem.setExtension(evalResourceExt);
@@ -484,7 +488,7 @@ public class MeasureOperationsProvider {
             }
             return finalMeasureList;
         }else {
-            return 
+            return
             //TODO: this needs to be restricted to only the current measure.  It seems to be returning all versions in history.
                 this.measureResourceProvider.getDao().search(theParams).getResources(0, 1000)
                     .stream()
@@ -589,7 +593,7 @@ public class MeasureOperationsProvider {
         /*
          * TODO - resource validation using $data-requirements operation (params are the
          * provided id and the measurement period from the MeasureReport)
-         * 
+         *
          * TODO - profile validation ... not sure how that would work ... (get
          * StructureDefinition from URL or must it be stored in Ruler?)
          */
