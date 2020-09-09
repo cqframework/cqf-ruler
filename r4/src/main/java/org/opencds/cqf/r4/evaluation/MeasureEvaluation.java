@@ -13,7 +13,21 @@ import java.util.stream.Collectors;
 import org.cqframework.cql.elm.execution.ExpressionDef;
 import org.cqframework.cql.elm.execution.FunctionDef;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.IntegerType;
+import org.hl7.fhir.r4.model.ListResource;
+import org.hl7.fhir.r4.model.Measure;
+import org.hl7.fhir.r4.model.MeasureReport;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Quantity;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.common.evaluation.MeasurePopulationType;
 import org.opencds.cqf.common.evaluation.MeasureScoring;
 import org.opencds.cqf.cql.engine.data.DataProvider;
@@ -22,7 +36,6 @@ import org.opencds.cqf.cql.engine.execution.Variable;
 import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.r4.builders.MeasureReportBuilder;
-import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -578,8 +591,8 @@ public class MeasureEvaluation {
                             code = ((Code) sdeListItem).getCode();
                             break;
                         case "ArrayList":
-                            if (((ArrayList) sdeListItem).size() > 0) {
-                                code  = ((Coding) ((ArrayList) sdeListItem).get(0)).getCode();
+                            if (((ArrayList<?>) sdeListItem).size() > 0) {
+                                code  = ((Coding) ((ArrayList<?>) sdeListItem).get(0)).getCode();
                             }else{
                                 continue;
                             }
@@ -611,7 +624,7 @@ public class MeasureEvaluation {
                                               List<Measure.MeasureSupplementalDataComponent> sde, boolean isSingle, List<Patient> patients){
         List<Reference> newRefList = new ArrayList<>();
         sdeAccumulators.forEach((sdeKey, sdeAccumulator) -> {
-            sdeAccumulator.forEach((sdeAccumulatorKey, sdeAcumulatorValue)->{
+            sdeAccumulator.forEach((sdeAccumulatorKey, sdeAccumulatorValue)->{
                 Observation obs = new Observation();
                 obs.setStatus(Observation.ObservationStatus.FINAL);
                 obs.setId(UUID.randomUUID().toString());
@@ -644,7 +657,7 @@ public class MeasureEvaluation {
                         .setValue(new StringType(sdeKey));
                 obsExtension.addExtension(extExtPop);
                 obs.addExtension(obsExtension);
-                obs.setValue(new IntegerType(sdeAcumulatorValue));
+                obs.setValue(new IntegerType(sdeAccumulatorValue));
                 if(!isSingle) {
                     valueCoding.setCode(sdeAccumulatorKey);
                     obsCodeableConcept.setCoding(Collections.singletonList(valueCoding));

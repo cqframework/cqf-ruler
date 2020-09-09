@@ -1,18 +1,42 @@
 package org.opencds.cqf.dstu3.providers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
-import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Composition;
+import org.hl7.fhir.dstu3.model.DetectedIssue;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.Group;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Library;
+import org.hl7.fhir.dstu3.model.ListResource;
+import org.hl7.fhir.dstu3.model.Measure;
+import org.hl7.fhir.dstu3.model.MeasureReport;
+import org.hl7.fhir.dstu3.model.Meta;
+import org.hl7.fhir.dstu3.model.Narrative;
+import org.hl7.fhir.dstu3.model.Organization;
+import org.hl7.fhir.dstu3.model.Parameters;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.utilities.xhtml.XhtmlNode;
-import org.hl7.fhir.dstu3.model.*;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
@@ -26,8 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
+
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -37,7 +60,6 @@ import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.TokenParam;
-import ca.uhn.fhir.rest.param.TokenParamModifier;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 public class MeasureOperationsProvider {
@@ -274,6 +296,7 @@ public class MeasureOperationsProvider {
         return patientList;
     }
 
+    @SuppressWarnings("unused")
     private Boolean careGapParameterValidation(String periodStart, String periodEnd, String subject, String topic,
                                                String practitioner, String measure, String status, String organization){
         if(periodStart == null || periodStart.equals("") ||
@@ -394,7 +417,7 @@ public class MeasureOperationsProvider {
                 }
 
                 //TODO: implement this per the spec
-                //Holding off on implementiation using Measure Score pending guidance re consideration for programs that don't perform the calculation (they just use numer/denom)
+                //Holding off on implementation using Measure Score pending guidance re consideration for programs that don't perform the calculation (they just use numer/denom)
                 double proportion = 0.0;
                 if (measureResource.getScoring().hasCoding() && denominator != 0) {
                     for (Coding coding : measureResource.getScoring().getCoding()) {
@@ -419,8 +442,8 @@ public class MeasureOperationsProvider {
                         detectedIssue.setPatient(new Reference(subject.startsWith("Patient/") ? subject : "Patient/" + subject));
                         // TODO: No evidence on DSTU3 detected issue
                         // detectedIssue.getEvidence().add(new DetectedIssue.DetectedIssueEvidenceComponent().addDetail(new Reference("MeasureReport/" + report.getId())));
-                        CodeableConcept code = new CodeableConcept()
-                            .addCoding(new Coding().setSystem("http://hl7.org/fhir/us/davinci-deqm/CodeSystem/detectedissue-category").setCode("care-gap"));
+                        // CodeableConcept code = new CodeableConcept()
+                        //    .addCoding(new Coding().setSystem("http://hl7.org/fhir/us/davinci-deqm/CodeSystem/detectedissue-category").setCode("care-gap"));
                         
                         // TODO: No code on DSTU3 detected issue
                         //detectedIssue.setCode(code);

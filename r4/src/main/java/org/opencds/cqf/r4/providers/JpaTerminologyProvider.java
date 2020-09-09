@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent;
@@ -27,13 +26,11 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 public class JpaTerminologyProvider implements TerminologyProvider {
 
     private ITermReadSvcR4 terminologySvcR4;
-    private FhirContext context;
     private ValueSetResourceProvider valueSetResourceProvider;
 
     public JpaTerminologyProvider(ITermReadSvcR4 terminologySvcR4, FhirContext context,
             ValueSetResourceProvider valueSetResourceProvider) {
         this.terminologySvcR4 = terminologySvcR4;
-        this.context = context;
         this.valueSetResourceProvider = valueSetResourceProvider;
     }
 

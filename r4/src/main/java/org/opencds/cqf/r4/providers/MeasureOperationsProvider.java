@@ -268,6 +268,7 @@ public class MeasureOperationsProvider {
         return patientList;
     }
 
+    @SuppressWarnings("unused")
     private Boolean careGapParameterValidation(String periodStart, String periodEnd, String subject, String topic,
                                                String practitioner, String measure, String status, String organization){
         if(periodStart == null || periodStart.equals("") ||
@@ -385,7 +386,7 @@ public class MeasureOperationsProvider {
                 }
 
                 //TODO: implement this per the spec
-                //Holding off on implementiation using Measure Score pending guidance re consideration for programs that don't perform the calculation (they just use numer/denom)
+                //Holding off on implementation using Measure Score pending guidance re consideration for programs that don't perform the calculation (they just use numer/denom)
                 double proportion = 0.0;
                 if (measureResource.getScoring().hasCoding() && denominator != 0) {
                     for (Coding coding : measureResource.getScoring().getCoding()) {

@@ -29,13 +29,11 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 public class JpaTerminologyProvider implements TerminologyProvider {
 
     private ITermReadSvcDstu3 terminologySvcDstu3;
-    private FhirContext context;
     private ValueSetResourceProvider valueSetResourceProvider;
 
     public JpaTerminologyProvider(ITermReadSvcDstu3 terminologySvcDstu3, FhirContext context,
             ValueSetResourceProvider valueSetResourceProvider) {
         this.terminologySvcDstu3 = terminologySvcDstu3;
-        this.context = context;
         this.valueSetResourceProvider = valueSetResourceProvider;
     }
 
