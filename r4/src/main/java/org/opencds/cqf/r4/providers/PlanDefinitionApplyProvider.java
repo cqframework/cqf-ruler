@@ -112,29 +112,57 @@ public class PlanDefinitionApplyProvider {
         Session session = new Session(planDefinition, builder, patientId, encounterId, practitionerId, organizationId,
                 userType, userLanguage, userTaskContext, setting, settingContext);
 
+        logger.info("call resolveActions");
         return resolveActions(session);
     }
 
     private CarePlan resolveActions(Session session) {
+        logger.info("Resolving the Actions");
         for (PlanDefinition.PlanDefinitionActionComponent action : session.getPlanDefinition().getAction()) {
+            logger.info("Action is " + action);
             // TODO - Apply input/output dataRequirements?
             if (meetsConditions(session, action)) {
+                logger.info("conditions are met");
                 resolveDefinition(session, action);
                 resolveDynamicActions(session, action);
             }
         }
-
+        logger.info("Returning careplan");
         return session.getCarePlan();
     }
 
     private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
+        logger.info("Resolving the definitions");
         if (action.hasDefinition()) {
             logger.debug("Resolving definition " + action.getDefinitionCanonicalType().getValue());
             String definition = action.getDefinitionCanonicalType().getValue();
             if (definition.startsWith(session.getPlanDefinition().fhirType())) {
-                logger.error("Currently cannot resolve nested PlanDefinitions");
-                throw new NotImplementedException(
-                        "Plan Definition refers to sub Plan Definition, this is not yet supported");
+                IdType id = new IdType(definition);
+                CarePlan plan = null;
+                try {
+                    plan = applyPlanDefinition(id,
+                            session.getPatientId(),
+                            session.getEncounterId(),
+                            session.getPractitionerId(),
+                            session.getOrganizationId(),
+                            session.getUserType(),
+                            session.getUserLanguage(),
+                            session.getUserTaskContext(),
+                            session.getSetting(),
+                            session.getSettingContext());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JAXBException e) {
+                    e.printStackTrace();
+                }
+                if (plan != null) {
+                    session.getCarePlanBuilder().buildContained(plan).buildActivity(
+                            new CarePlanActivityBuilder().buildReference(new Reference("#" + plan.getId())).build());
+                }
+                else
+                {
+                    logger.error("nested plan failed");
+                }
             }
 
             else {
@@ -197,14 +225,18 @@ public class PlanDefinitionApplyProvider {
     }
 
     private Boolean meetsConditions(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
+        logger.info("in meets");
         if (action.hasAction()) {
+            logger.info("action has action");
             for (PlanDefinition.PlanDefinitionActionComponent containedAction : action.getAction()) {
+                logger.info("meets action is "+containedAction);
                 meetsConditions(session, containedAction);
             }
         }
         for (PlanDefinition.PlanDefinitionActionConditionComponent condition : action.getCondition()) {
             // TODO start
             // TODO stop
+            logger.info("meetsConditions for Loop");
             if (condition.hasExpression() && condition.getExpression().hasDescription()) {
                 logger.info("Resolving condition with description: " + condition.getExpression().getDescription());
             }
@@ -247,7 +279,7 @@ public class PlanDefinitionApplyProvider {
                 }
             }
         }
-
+        logger.info("in meets return true");
         return true;
     }
 
