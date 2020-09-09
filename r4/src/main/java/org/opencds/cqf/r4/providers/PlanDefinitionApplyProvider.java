@@ -8,19 +8,9 @@ import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
+import org.fhir.ucum.Canonical;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.r4.model.ActivityDefinition;
-import org.hl7.fhir.r4.model.CarePlan;
-import org.hl7.fhir.r4.model.DomainResource;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.PlanDefinition;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.RequestGroup;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.exceptions.NotImplementedException;
 import org.opencds.cqf.cql.engine.execution.Context;
@@ -112,27 +102,22 @@ public class PlanDefinitionApplyProvider {
         Session session = new Session(planDefinition, builder, patientId, encounterId, practitionerId, organizationId,
                 userType, userLanguage, userTaskContext, setting, settingContext);
 
-        logger.info("call resolveActions");
         return resolveActions(session);
     }
 
     private CarePlan resolveActions(Session session) {
-        logger.info("Resolving the Actions");
         for (PlanDefinition.PlanDefinitionActionComponent action : session.getPlanDefinition().getAction()) {
-            logger.info("Action is " + action);
             // TODO - Apply input/output dataRequirements?
             if (meetsConditions(session, action)) {
-                logger.info("conditions are met");
                 resolveDefinition(session, action);
                 resolveDynamicActions(session, action);
             }
         }
-        logger.info("Returning careplan");
+
         return session.getCarePlan();
     }
 
     private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
-        logger.info("Resolving the definitions");
         if (action.hasDefinition()) {
             logger.debug("Resolving definition " + action.getDefinitionCanonicalType().getValue());
             String definition = action.getDefinitionCanonicalType().getValue();
@@ -156,8 +141,18 @@ public class PlanDefinitionApplyProvider {
                     e.printStackTrace();
                 }
                 if (plan != null) {
-                    session.getCarePlanBuilder().buildContained(plan).buildActivity(
-                            new CarePlanActivityBuilder().buildReference(new Reference("#" + plan.getId())).build());
+                    // iterate over nested plans and get contained activities
+                    List<Resource> containedList =  plan.getContained();
+                    for(Resource r: containedList)
+                    {
+                        session.getCarePlanBuilder().buildContained(r).buildActivity(
+                                new CarePlanActivityBuilder().buildReference(new Reference("#" + r.getId())).build());
+                    }
+                    List<CanonicalType> canonicalList = plan.getInstantiatesCanonical();
+                    for(CanonicalType c: canonicalList)
+                    {
+                        session.getCarePlanBuilder().buildInstantiatesCanonical(c.getValueAsString());
+                    }
                 }
                 else
                 {
@@ -225,18 +220,14 @@ public class PlanDefinitionApplyProvider {
     }
 
     private Boolean meetsConditions(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
-        logger.info("in meets");
         if (action.hasAction()) {
-            logger.info("action has action");
             for (PlanDefinition.PlanDefinitionActionComponent containedAction : action.getAction()) {
-                logger.info("meets action is "+containedAction);
                 meetsConditions(session, containedAction);
             }
         }
         for (PlanDefinition.PlanDefinitionActionConditionComponent condition : action.getCondition()) {
             // TODO start
             // TODO stop
-            logger.info("meetsConditions for Loop");
             if (condition.hasExpression() && condition.getExpression().hasDescription()) {
                 logger.info("Resolving condition with description: " + condition.getExpression().getDescription());
             }
@@ -279,7 +270,6 @@ public class PlanDefinitionApplyProvider {
                 }
             }
         }
-        logger.info("in meets return true");
         return true;
     }
 
