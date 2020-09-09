@@ -142,14 +142,12 @@ public class PlanDefinitionApplyProvider {
                 }
                 if (plan != null) {
                     // iterate over nested plans and get contained activities
-                    List<Resource> containedList =  plan.getContained();
-                    for(Resource r: containedList)
+                    for(Resource r: plan.getContained())
                     {
                         session.getCarePlanBuilder().buildContained(r).buildActivity(
                                 new CarePlanActivityBuilder().buildReference(new Reference("#" + r.getId())).build());
                     }
-                    List<CanonicalType> canonicalList = plan.getInstantiatesCanonical();
-                    for(CanonicalType c: canonicalList)
+                    for(CanonicalType c: plan.getInstantiatesCanonical())
                     {
                         session.getCarePlanBuilder().buildInstantiatesCanonical(c.getValueAsString());
                     }
