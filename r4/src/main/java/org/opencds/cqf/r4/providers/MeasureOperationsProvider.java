@@ -229,7 +229,7 @@ public class MeasureOperationsProvider {
         if(careGapParameterValidation(periodStart, periodEnd, subject, topic, practitioner, measure, status, organization)) {
             if(subject.startsWith("Patient/")){
                 returnParams.addParameter(new Parameters.ParametersParameterComponent()
-                        .setName("Gaps in Care Report - " + subject)
+                        .setName("result")
                         .setResource(patientCareGap(periodStart, periodEnd, subject, topic, measure, status)));
                 return returnParams;
             }else if(subject.startsWith("Group/")) {
@@ -239,7 +239,7 @@ public class MeasureOperationsProvider {
                         Bundle patientGapBundle = patientCareGap(periodStart, periodEnd, groupSubject, topic, measure, status);
                          if(null != patientGapBundle){
                             returnParams.addParameter(new Parameters.ParametersParameterComponent()
-                                    .setName("Gaps in Care Report - " + groupSubject)
+                                    .setName("result")
                                     .setResource(patientGapBundle));
                         }
                     });
@@ -337,7 +337,6 @@ public class MeasureOperationsProvider {
         List<MeasureReport> reports = new ArrayList<>();
         List<DetectedIssue> detectedIssues = new ArrayList<DetectedIssue>();
         MeasureReport report = null;
-        boolean hasIssue = false;
 
         for (IBaseResource resource : measures) {
             Measure measureResource = (Measure) resource;
@@ -407,9 +406,10 @@ public class MeasureOperationsProvider {
                 // as a code
                 String improvementNotation = measureResource.getImprovementNotation().getCodingFirstRep().getCode().toLowerCase();
                 if (((improvementNotation.equals("increase")) && (proportion < 1.0))
-                        ||  ((improvementNotation.equals("decrease")) && (proportion > 0.0))
-                        && (null == status || "".equalsIgnoreCase(status) || "open-gap".equalsIgnoreCase(status))) {
-                        hasIssue = true;
+                        ||  ((improvementNotation.equals("decrease")) && (proportion > 0.0))) {
+                        if (status != null && status.equalsIgnoreCase("closed-gap")) {
+                            continue;
+                        }
                         DetectedIssue detectedIssue = new DetectedIssue();
                         detectedIssue.setId(UUID.randomUUID().toString());
                         detectedIssue.setStatus(DetectedIssue.DetectedIssueStatus.FINAL);
@@ -426,49 +426,50 @@ public class MeasureOperationsProvider {
                              new Reference("DetectedIssue/" + detectedIssue.getIdElement().getIdPart()));
                         detectedIssues.add(detectedIssue);
                 }else {
+                    if (status != null && status.equalsIgnoreCase("open-gap")) {
+                        continue;
+                    }
                     section.setText(new Narrative()
                             .setStatus(Narrative.NarrativeStatus.GENERATED)
                             .setDiv(new XhtmlNode().setValue("<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>No detected issues.</p></div>")));
                 }
-                    composition.addSection(section);
+                composition.addSection(section);
                 reports.add(report);
 
                 // TODO - add other types of improvement notation cases
             }
         }
         Parameters parameters = new Parameters();
-        if((null == status || status == "")                                 //everything
-                || (hasIssue && !"closed-gap".equalsIgnoreCase(status))     //filter out closed-gap that has issues  for OPEN-GAP
-                ||(!hasIssue && !"open-gap".equalsIgnoreCase(status))){     //filter out open-gap without issues  for CLOSE-GAP
-            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
-            for (MeasureReport rep : reports) {
-                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
-                if (report.hasContained()) {
-                    for (Resource contained : report.getContained()) {
-                        if (contained instanceof Bundle) {
-                            addEvaluatedResourcesToParameters((Bundle) contained, parameters);
-                            if(null != parameters && !parameters.isEmpty()) {
-                                List <Reference> evaluatedResource = new ArrayList<>();
-                                parameters.getParameter().forEach(parameter -> {
-                                    Reference newEvaluatedResourceItem = new Reference();
-                                    newEvaluatedResourceItem.setReference(parameter.getResource().getId());
-                                    List<Extension> evalResourceExt = new ArrayList<>();
-                                    evalResourceExt.add(new Extension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
-                                            new CodeableConcept()
-                                                    .addCoding(new Coding("http://teminology.hl7.org/CodeSystem/measure-population", "initial-population", "initial-population"))));
-                                    newEvaluatedResourceItem.setExtension(evalResourceExt);
-                                    evaluatedResource.add(newEvaluatedResourceItem);
-                                });
-                                report.setEvaluatedResource(evaluatedResource);
-                            }
+ 
+        careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
+        for (MeasureReport rep : reports) {
+            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
+            if (report.hasContained()) {
+                for (Resource contained : report.getContained()) {
+                    if (contained instanceof Bundle) {
+                        addEvaluatedResourcesToParameters((Bundle) contained, parameters);
+                        if(null != parameters && !parameters.isEmpty()) {
+                            List <Reference> evaluatedResource = new ArrayList<>();
+                            parameters.getParameter().forEach(parameter -> {
+                                Reference newEvaluatedResourceItem = new Reference();
+                                newEvaluatedResourceItem.setReference(parameter.getResource().getId());
+                                List<Extension> evalResourceExt = new ArrayList<>();
+                                evalResourceExt.add(new Extension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+                                        new CodeableConcept()
+                                                .addCoding(new Coding("http://teminology.hl7.org/CodeSystem/measure-population", "initial-population", "initial-population"))));
+                                newEvaluatedResourceItem.setExtension(evalResourceExt);
+                                evaluatedResource.add(newEvaluatedResourceItem);
+                            });
+                            report.setEvaluatedResource(evaluatedResource);
                         }
                     }
                 }
             }
-            for (DetectedIssue detectedIssue : detectedIssues) {
-                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue));
-            }
         }
+        for (DetectedIssue detectedIssue : detectedIssues) {
+            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue));
+        }
+ 
         if(careGapReport.getEntry().isEmpty()){
             return null;
         }
