@@ -229,7 +229,7 @@ public class MeasureOperationsProvider {
         if(careGapParameterValidation(periodStart, periodEnd, subject, topic, practitioner, measure, status, organization)) {
             if(subject.startsWith("Patient/")){
                 returnParams.addParameter(new Parameters.ParametersParameterComponent()
-                        .setName("result")
+                        .setName("return")
                         .setResource(patientCareGap(periodStart, periodEnd, subject, topic, measure, status)));
                 return returnParams;
             }else if(subject.startsWith("Group/")) {
@@ -239,7 +239,7 @@ public class MeasureOperationsProvider {
                         Bundle patientGapBundle = patientCareGap(periodStart, periodEnd, groupSubject, topic, measure, status);
                          if(null != patientGapBundle){
                             returnParams.addParameter(new Parameters.ParametersParameterComponent()
-                                    .setName("result")
+                                    .setName("return")
                                     .setResource(patientGapBundle));
                         }
                     });
