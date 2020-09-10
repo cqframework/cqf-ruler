@@ -137,8 +137,8 @@ public class CdsHooksServlet extends HttpServlet {
                         request.getContentType()));
             }
 
-            String baseUrl = request.getRequestURL().toString().replace(request.getPathInfo(), "")
-                    .replace(request.getServletPath(), "") + "/fhir";
+            String baseUrl = HapiProperties.getServerAddress();
+
             String service = request.getPathInfo().replace("/", "");
 
             JsonParser parser = new JsonParser();
