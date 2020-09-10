@@ -478,6 +478,10 @@ public class MeasureOperationsProvider {
 
     private List<IBaseResource> getMeasureList(SearchParameterMap theParams, String measure){
         List<IBaseResource> finalMeasureList = new ArrayList<>();
+        if(measure == null || measure.length() <= 0) {
+            return finalMeasureList;
+        }
+        
         for(String theId: measure.split(",")){
             if (theId.equals("")) {
                 continue;
