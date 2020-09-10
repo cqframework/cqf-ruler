@@ -477,22 +477,26 @@ public class MeasureOperationsProvider {
     }
 
     private List<IBaseResource> getMeasureList(SearchParameterMap theParams, String measure){
-        List<IBaseResource> finalMeasureList = new ArrayList<>();
-        if(measure == null || measure.length() <= 0) {
+        if(measure != null && measure.length() > 0) {
+            List<IBaseResource> finalMeasureList = new ArrayList<>();
+            for(String theId: measure.split(",")){
+                if (theId.equals("")) {
+                    continue;
+                }
+                Measure measureResource  = this.measureResourceProvider.getDao().read(new IdType(theId.trim()));
+                if (measureResource != null) {
+                    finalMeasureList.add(measureResource);
+                }
+            }
             return finalMeasureList;
-        }
-        
-        for(String theId: measure.split(",")){
-            if (theId.equals("")) {
-                continue;
-            }
-            Measure measureResource  = this.measureResourceProvider.getDao().read(new IdType(theId.trim()));
-            if (measureResource != null) {
-                finalMeasureList.add(measureResource);
-            }
-        }
-        
-        return finalMeasureList;
+        } 
+
+        return
+        //TODO: this needs to be restricted to only the current measure.  It seems to be returning all versions in history.
+            this.measureResourceProvider.getDao().search(theParams).getResources(0, 1000)
+                .stream()
+                .filter(resource -> ((Measure)resource).getUrl() != null && !((Measure)resource).getUrl().equals(""))
+                .collect(Collectors.toList());    
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)
