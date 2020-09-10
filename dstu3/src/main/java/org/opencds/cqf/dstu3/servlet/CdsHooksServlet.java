@@ -135,8 +135,8 @@ public class CdsHooksServlet extends HttpServlet {
                 throw new ServletException(String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
             }
 
-            String baseUrl = request.getRequestURL().toString().replace(request.getPathInfo(), "")
-                .replace(request.getServletPath(), "") + "/fhir";
+            
+            String baseUrl = HapiProperties.getServerAddress();
             String service = request.getPathInfo().replace("/", "");
 
             JsonParser parser = new JsonParser();
