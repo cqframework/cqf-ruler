@@ -477,33 +477,18 @@ public class MeasureOperationsProvider {
     }
 
     private List<IBaseResource> getMeasureList(SearchParameterMap theParams, String measure){
-        if(measure != null && measure.length() > 0){
-            List<IBaseResource> finalMeasureList = new ArrayList<>();
-            List<IBaseResource> allMeasures = this.measureResourceProvider
-                    .getDao()
-                    .search(theParams)
-                    .getResources(0, 1000);
-            for(String singleName: measure.split(",")){
-                if (singleName.equals("")) {
-                    continue;
-                }
-                allMeasures.forEach(measureResource -> {
-                    if(((Measure)measureResource).getName().equalsIgnoreCase(singleName.trim())) {
-                        if (measureResource != null) {
-                            finalMeasureList.add(measureResource);
-                        }
-                    }
-                });
+        List<IBaseResource> finalMeasureList = new ArrayList<>();
+        for(String theId: measure.split(",")){
+            if (theId.equals("")) {
+                continue;
             }
-            return finalMeasureList;
-        }else {
-            return
-            //TODO: this needs to be restricted to only the current measure.  It seems to be returning all versions in history.
-                this.measureResourceProvider.getDao().search(theParams).getResources(0, 1000)
-                    .stream()
-                    .filter(resource -> ((Measure)resource).getUrl() != null && !((Measure)resource).getUrl().equals(""))
-                    .collect(Collectors.toList());
+            Measure measureResource  = this.measureResourceProvider.getDao().read(new IdType(theId.trim()));
+            if (measureResource != null) {
+                finalMeasureList.add(measureResource);
+            }
         }
+        
+        return finalMeasureList;
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)
