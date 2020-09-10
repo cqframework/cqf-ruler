@@ -29,6 +29,9 @@ public class FhirServerConfig {
     private Boolean allowOverrideDefaultSearchParams = HapiProperties.getAllowOverrideDefaultSearchParams();
     private String emailFrom = HapiProperties.getEmailFrom();
 
+    private Boolean enforceReferentialIntegrityOnWrite = HapiProperties.getEnforceReferentialIntegrityOnWrite();
+    private Boolean enforceReferentialIntegrityOnDelete = HapiProperties.getEnforceReferentialIntegrityOnDelete();
+
     public FhirServerConfig() {
         ourLog.info("Server configured to " + (this.allowContainsSearches ? "allow" : "deny") + " contains searches");
         ourLog.info("Server configured to " + (this.allowMultipleDelete ? "allow" : "deny") + " multiple deletes");
@@ -37,6 +40,10 @@ public class FhirServerConfig {
         ourLog.info("Server configured to " + (this.allowPlaceholderReferences ? "allow" : "deny") + " placeholder references");
         ourLog.info("Server configured to " + (this.allowOverrideDefaultSearchParams ? "allow" : "deny")
                 + " overriding default search params");
+        ourLog.info("Server configured to " + (this.enforceReferentialIntegrityOnDelete ? "enforce" : "ignore")
+                + " referential integrity on delete");
+        ourLog.info("Server configured to " + (this.enforceReferentialIntegrityOnDelete ? "enforce" : "ignore")
+                + " referential integrity on write");
     }
 
     /**
@@ -52,6 +59,8 @@ public class FhirServerConfig {
         retVal.setExpungeEnabled(this.expungeEnabled);
         retVal.setAutoCreatePlaceholderReferenceTargets(this.allowPlaceholderReferences);
         retVal.setEmailFromAddress(this.emailFrom);
+        retVal.setEnforceReferentialIntegrityOnDelete(this.enforceReferentialIntegrityOnDelete);
+        retVal.setEnforceReferentialIntegrityOnWrite(this.enforceReferentialIntegrityOnWrite);
 
         Integer maxFetchSize = HapiProperties.getMaximumFetchSize();
         retVal.setFetchSizeDefaultMaximum(maxFetchSize);
