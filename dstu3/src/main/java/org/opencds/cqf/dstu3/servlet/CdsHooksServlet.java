@@ -147,6 +147,14 @@ public class CdsHooksServlet extends HttpServlet {
 
             Hook hook = HookFactory.createHook(cdsHooksRequest);
 
+            logger.info("cds-hooks hook: " + hook.getRequest().getHook());
+            logger.info("cds-hooks hook instance: " + hook.getRequest().getHookInstance());
+            logger.info("cds-hooks maxCodesPerQuery: " + this.getProviderConfiguration().getMaxCodesPerQuery());
+            logger.info("cds-hooks expandValueSets: " + this.getProviderConfiguration().getExpandValueSets());
+            logger.info("cds-hooks searchStyle: " + this.getProviderConfiguration().getSearchStyle());
+            logger.info("cds-hooks local server address: " + baseUrl);
+            logger.info("cds-hooks fhir server address: " + hook.getRequest().getFhirServerUrl());
+
             PlanDefinition planDefinition = planDefinitionProvider.getDao().read(new IdType(hook.getRequest().getServiceName()));
             LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResolutionProvider);
             Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider);

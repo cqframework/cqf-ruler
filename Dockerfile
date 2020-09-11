@@ -1,7 +1,7 @@
 FROM jetty:9-jre11
 
 USER jetty:jetty
-RUN mkdir -p /var/lib/jetty/target
+RUN mkdir -p /var/lib/jetty/webapps/config
 COPY ./cqf-ruler-dstu3/target/cqf-ruler-dstu3.war /var/lib/jetty/webapps/cqf-ruler-dstu3.war
 COPY ./cqf-ruler-r4/target/cqf-ruler-r4.war /var/lib/jetty/webapps/cqf-ruler-r4.war
 EXPOSE 8080
@@ -14,7 +14,7 @@ ENV SERVER_ADDRESS_R4="http://localhost:8080/cqf-ruler-r4/fhir"
 # ENV DATASOURCE_DRIVER="org.apache.derby.jdbc.EmbeddedDriver"
 # ENV DATASOURCE_URL="jdbc:derby:directory:target/jpaserver_derby_files;create=true"
 # ENV DATASOURCE_URL= DATASOURCE_USERNAME=
-ENV JAVA_OPTIONS="-Dhapi.properties.DSTU3=/var/lib/jetty/webapps/dstu3.properties -Dhapi.properties.R4=/var/lib/jetty/webapps/r4.properties"
+ENV JAVA_OPTIONS="-Dhapi.properties.DSTU3=/var/lib/jetty/webapps/config/dstu3.properties -Dhapi.properties.R4=/var/lib/jetty/webapps/config/r4.properties"
 
 COPY --chown=jetty:jetty ./scripts/docker-entrypoint-override.sh /docker-entrypoint-override.sh
 ENTRYPOINT [ "/docker-entrypoint-override.sh" ]
