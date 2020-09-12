@@ -155,6 +155,7 @@ public class CdsHooksServlet extends HttpServlet {
             logger.info("cds-hooks maxCodesPerQuery: " + this.getProviderConfiguration().getMaxCodesPerQuery());
             logger.info("cds-hooks expandValueSets: " + this.getProviderConfiguration().getExpandValueSets());
             logger.info("cds-hooks searchStyle: " + this.getProviderConfiguration().getSearchStyle());
+            logger.info("cds-hooks prefetch maxUriLength: " + this.getProviderConfiguration().getMaxUriLength());
             logger.info("cds-hooks local server address: " + baseUrl);
             logger.info("cds-hooks fhir server address: " + hook.getRequest().getFhirServerUrl());
 
