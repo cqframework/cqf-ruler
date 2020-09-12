@@ -76,7 +76,8 @@ public class CdsHooksServlet extends HttpServlet {
             providerConfiguration = new ProviderConfiguration(
                 HapiProperties.getCdsHooksFhirServerExpandValueSets() ,
                 HapiProperties.getCdsHooksFhirServerMaxCodesPerQuery(),
-                HapiProperties.getCdsHooksFhirServerSearchStyleEnum());
+                HapiProperties.getCdsHooksFhirServerSearchStyleEnum(),
+                HapiProperties.getCdsHooksPreFetchMaxUriLength());
         }
 
         return providerConfiguration;
@@ -285,8 +286,11 @@ public class CdsHooksServlet extends HttpServlet {
     }
 
     private JsonObject getServices() {
-        return new DiscoveryResolutionR4(FhirContext.forR4().newRestfulGenericClient(HapiProperties.getServerAddress()))
-                .resolve().getAsJson();
+        DiscoveryResolutionR4 discoveryResolutionR4 = new DiscoveryResolutionR4(
+                FhirContext.forR4().newRestfulGenericClient(HapiProperties.getServerAddress()));
+        discoveryResolutionR4.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
+        return discoveryResolutionR4.resolve()
+                        .getAsJson();
     }
 
     private String toJsonResponse(List<CdsCard> cards) {

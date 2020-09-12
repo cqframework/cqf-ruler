@@ -76,7 +76,8 @@ public class CdsHooksServlet extends HttpServlet {
             providerConfiguration = new ProviderConfiguration(
                 HapiProperties.getCdsHooksFhirServerExpandValueSets(),
                 HapiProperties.getCdsHooksFhirServerMaxCodesPerQuery(),
-                HapiProperties.getCdsHooksFhirServerSearchStyleEnum());
+                HapiProperties.getCdsHooksFhirServerSearchStyleEnum(),
+                HapiProperties.getCdsHooksPreFetchMaxUriLength());
         }
 
         return providerConfiguration;
@@ -279,8 +280,10 @@ public class CdsHooksServlet extends HttpServlet {
     }
 
     private JsonObject getServices() {
-        return new DiscoveryResolutionStu3(
-                FhirContext.forDstu3().newRestfulGenericClient(HapiProperties.getServerAddress())).resolve()
+        DiscoveryResolutionStu3 discoveryResolutionStu3 = new DiscoveryResolutionStu3(
+                FhirContext.forDstu3().newRestfulGenericClient(HapiProperties.getServerAddress()));
+        discoveryResolutionStu3.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
+        return discoveryResolutionStu3.resolve()
                         .getAsJson();
     }
 
