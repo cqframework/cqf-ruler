@@ -11,6 +11,7 @@ import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.helpers.UsingHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
+import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
@@ -102,5 +103,9 @@ public class MeasureEvaluationSeed {
         }
 
         context.setExpressionCaching(true);
+
+        DebugMap debugMap = new DebugMap();
+        debugMap.setIsLoggingEnabled(true);
+        context.setDebugMap(debugMap);
     }
 }

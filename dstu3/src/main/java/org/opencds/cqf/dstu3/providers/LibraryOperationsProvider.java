@@ -18,7 +18,7 @@ import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.providers.LibrarySourceProvider;
-import org.opencds.cqf.library.stu3.NarrativeProvider;
+import org.opencds.cqf.tooling.library.stu3.NarrativeProvider;
 
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;

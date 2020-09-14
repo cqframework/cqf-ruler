@@ -1,8 +1,9 @@
 package org.opencds.cqf.dstu3.providers;
 
-import ca.uhn.fhir.jpa.dao.DaoConfig;
-import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
+import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
@@ -12,8 +13,8 @@ import org.opencds.cqf.common.config.HapiProperties;
 import javax.servlet.http.HttpServletRequest;
 
 public class OAuthProvider extends JpaConformanceProviderDstu3 {
-    public OAuthProvider(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig) {
-        super(theRestfulServer, theSystemDao, theDaoConfig);
+    public OAuthProvider(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry) {
+        super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry);
     }
 
     @Metadata
