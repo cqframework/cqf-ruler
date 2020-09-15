@@ -18,6 +18,7 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.DecimalType;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
@@ -45,6 +46,7 @@ import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.cql.engine.runtime.Interval;
+import org.opencds.cqf.cql.engine.runtime.Quantity;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.execution.provider.BundleRetrieveProvider;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
@@ -343,6 +345,8 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                         } else {
                             result.addParameter().setName("value").setResource((Resource) res);
                         }
+                    } else if (res instanceof Quantity) {
+                        result.addParameter().setName("value").setValue(new DecimalType(((Quantity) res).getValue()));
                     } else {
                         result.addParameter().setName("value").setValue(new StringType(res.toString()));
                     }
