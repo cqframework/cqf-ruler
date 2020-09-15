@@ -18,6 +18,7 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
@@ -343,6 +344,14 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                         } else {
                             result.addParameter().setName("value").setResource((Resource) res);
                         }
+                    } else if (res instanceof Quantity) {
+                        Quantity quantity = (Quantity) res;
+                        org.opencds.cqf.cql.engine.runtime.Quantity cqlQuantity = new org.opencds.cqf.cql.engine.runtime.Quantity();
+                        cqlQuantity.setValue(quantity.getValue());
+                        if (quantity.hasUnit()) {
+                            cqlQuantity.setUnit(quantity.getUnit());
+                        }
+                        result.addParameter().setName("value").setValue(new StringType(cqlQuantity.toString()));
                     } else {
                         result.addParameter().setName("value").setValue(new StringType(res.toString()));
                     }
