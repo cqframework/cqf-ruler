@@ -8,9 +8,20 @@ import java.util.UUID;
 
 import javax.xml.bind.JAXBException;
 
-import org.fhir.ucum.Canonical;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.ActivityDefinition;
+import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CarePlan;
+import org.hl7.fhir.r4.model.DomainResource;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.RequestGroup;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.exceptions.NotImplementedException;
 import org.opencds.cqf.cql.engine.execution.Context;
@@ -135,12 +146,7 @@ public class PlanDefinitionApplyProvider {
                             session.getUserTaskContext(),
                             session.getSetting(),
                             session.getSettingContext());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JAXBException e) {
-                    e.printStackTrace();
-                }
-                if (plan != null) {
+
                     // iterate over nested plans and get contained activities
                     for(Resource r: plan.getContained())
                     {
@@ -151,9 +157,9 @@ public class PlanDefinitionApplyProvider {
                     {
                         session.getCarePlanBuilder().buildInstantiatesCanonical(c.getValueAsString());
                     }
-                }
-                else
-                {
+
+                } catch (IOException | JAXBException e) {
+                    e.printStackTrace();
                     logger.error("nested plan failed");
                 }
             }
