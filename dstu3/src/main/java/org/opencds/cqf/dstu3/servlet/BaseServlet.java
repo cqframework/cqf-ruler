@@ -20,19 +20,19 @@ import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.dstu3.evaluation.ProviderFactory;
 import org.opencds.cqf.dstu3.providers.*;
-import org.opencds.cqf.library.stu3.NarrativeProvider;
-import org.opencds.cqf.measure.stu3.CodeTerminologyRef;
-import org.opencds.cqf.measure.stu3.CqfMeasure;
-import org.opencds.cqf.measure.stu3.PopulationCriteriaMap;
-import org.opencds.cqf.measure.stu3.VersionedTerminologyRef;
+import org.opencds.cqf.tooling.library.stu3.NarrativeProvider;
+import org.opencds.cqf.tooling.measure.stu3.CodeTerminologyRef;
+import org.opencds.cqf.tooling.measure.stu3.CqfMeasure;
+import org.opencds.cqf.tooling.measure.stu3.PopulationCriteriaMap;
+import org.opencds.cqf.tooling.measure.stu3.VersionedTerminologyRef;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.cors.CorsConfiguration;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.dao.DaoConfig;
-import ca.uhn.fhir.jpa.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
-import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.BaseJpaResourceProvider;
 import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
@@ -41,8 +41,9 @@ import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
+import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3;
-import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
+import ca.uhn.fhir.jpa.api.rp.ResourceProviderFactory;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
@@ -83,18 +84,18 @@ public class BaseServlet extends RestfulServer {
         registerProvider(systemProvider);
 
         ResourceProviderFactory resourceProviders = appCtx.getBean("myResourceProvidersDstu3",
-                ResourceProviderFactory.class);
+                        ResourceProviderFactory.class);
         registerProviders(resourceProviders.createProviders());
 
         if(HapiProperties.getOAuthEnabled()) {
             OAuthProvider oauthProvider = new OAuthProvider(this, systemDao,
-                    appCtx.getBean(DaoConfig.class));
+                    appCtx.getBean(DaoConfig.class), appCtx.getBean(ISearchParamRegistry.class));
             this.registerProvider(oauthProvider);
             this.setServerConformanceProvider(oauthProvider);
         }else {
 
             JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao,
-                    appCtx.getBean(DaoConfig.class));
+                    appCtx.getBean(DaoConfig.class), appCtx.getBean(ISearchParamRegistry.class));
             confProvider.setImplementationDescription("CQF Ruler FHIR DSTU3 Server");
             setServerConformanceProvider(confProvider);
         }

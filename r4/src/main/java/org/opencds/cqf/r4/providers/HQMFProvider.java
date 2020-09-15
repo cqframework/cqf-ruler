@@ -41,11 +41,11 @@ import org.hl7.fhir.r4.model.RelatedArtifact.RelatedArtifactType;
 import org.jsoup.Jsoup;
 import org.opencds.cqf.common.providers.InMemoryLibraryResourceProvider;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
-import org.opencds.cqf.library.r4.NarrativeProvider;
-import org.opencds.cqf.measure.r4.CodeTerminologyRef;
-import org.opencds.cqf.measure.r4.CqfMeasure;
-import org.opencds.cqf.measure.r4.TerminologyRef;
-import org.opencds.cqf.measure.r4.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
+import org.opencds.cqf.tooling.measure.r4.CodeTerminologyRef;
+import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
+import org.opencds.cqf.tooling.measure.r4.TerminologyRef;
+import org.opencds.cqf.tooling.measure.r4.TerminologyRef.TerminologyRefType;
 import org.w3c.dom.Document;
 
 import ca.uhn.fhir.context.FhirContext;

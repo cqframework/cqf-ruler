@@ -12,7 +12,7 @@ import org.opencds.cqf.cql.engine.fhir.terminology.Dstu3FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 

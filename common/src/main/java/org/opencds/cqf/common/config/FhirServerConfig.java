@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import ca.uhn.fhir.jpa.dao.DaoConfig;
+import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.model.config.PartitionSettings;
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
@@ -28,6 +29,9 @@ public class FhirServerConfig {
     private Boolean allowOverrideDefaultSearchParams = HapiProperties.getAllowOverrideDefaultSearchParams();
     private String emailFrom = HapiProperties.getEmailFrom();
 
+    private Boolean enforceReferentialIntegrityOnWrite = HapiProperties.getEnforceReferentialIntegrityOnWrite();
+    private Boolean enforceReferentialIntegrityOnDelete = HapiProperties.getEnforceReferentialIntegrityOnDelete();
+
     public FhirServerConfig() {
         ourLog.info("Server configured to " + (this.allowContainsSearches ? "allow" : "deny") + " contains searches");
         ourLog.info("Server configured to " + (this.allowMultipleDelete ? "allow" : "deny") + " multiple deletes");
@@ -36,6 +40,10 @@ public class FhirServerConfig {
         ourLog.info("Server configured to " + (this.allowPlaceholderReferences ? "allow" : "deny") + " placeholder references");
         ourLog.info("Server configured to " + (this.allowOverrideDefaultSearchParams ? "allow" : "deny")
                 + " overriding default search params");
+        ourLog.info("Server configured to " + (this.enforceReferentialIntegrityOnDelete ? "enforce" : "ignore")
+                + " referential integrity on delete");
+        ourLog.info("Server configured to " + (this.enforceReferentialIntegrityOnDelete ? "enforce" : "ignore")
+                + " referential integrity on write");
     }
 
     /**
@@ -51,6 +59,8 @@ public class FhirServerConfig {
         retVal.setExpungeEnabled(this.expungeEnabled);
         retVal.setAutoCreatePlaceholderReferenceTargets(this.allowPlaceholderReferences);
         retVal.setEmailFromAddress(this.emailFrom);
+        retVal.setEnforceReferentialIntegrityOnDelete(this.enforceReferentialIntegrityOnDelete);
+        retVal.setEnforceReferentialIntegrityOnWrite(this.enforceReferentialIntegrityOnWrite);
 
         Integer maxFetchSize = HapiProperties.getMaximumFetchSize();
         retVal.setFetchSizeDefaultMaximum(maxFetchSize);
@@ -75,15 +85,6 @@ public class FhirServerConfig {
         return modelConfig;
     }
 
-    /**
-     * The following bean configures the database connection. The 'url' property
-     * value of "jdbc:derby:directory:jpaserver_derby_files;create=true" indicates
-     * that the server should save resources in a directory called
-     * "jpaserver_derby_files".
-     *
-     * A URL to a remote database could also be placed here, along with login
-     * credentials and other properties supported by BasicDataSource.
-     */
     @Bean(destroyMethod = "close")
     public BasicDataSource dataSource() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
             InvocationTargetException, InstantiationException {
@@ -118,4 +119,9 @@ public class FhirServerConfig {
     public ResponseHighlighterInterceptor responseHighlighterInterceptor() {
         return new ResponseHighlighterInterceptor();
     }
+
+    @Bean
+	public PartitionSettings partitionSettings() {
+		return new PartitionSettings();
+	}
 }

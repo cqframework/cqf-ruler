@@ -8,25 +8,36 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.cqframework.cql.elm.execution.ExpressionDef;
+import org.cqframework.cql.elm.execution.FunctionDef;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.IntegerType;
 import org.hl7.fhir.dstu3.model.ListResource;
 import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.MeasureReport;
+import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.dstu3.model.UriType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.evaluation.MeasurePopulationType;
 import org.opencds.cqf.common.evaluation.MeasureScoring;
 import org.opencds.cqf.cql.engine.execution.Context;
+import org.opencds.cqf.cql.engine.execution.Variable;
+import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.dstu3.builders.MeasureReportBuilder;
-import org.opencds.cqf.dstu3.helpers.FhirMeasureBundler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ca.uhn.fhir.jpa.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.ReferenceParam;
@@ -58,16 +69,20 @@ public class MeasureEvaluation {
         // patient = (Patient) patientRetrieve.iterator().next();
         // }
 
+
+
+        boolean isSingle = true;
         return evaluate(measure, context,
                 patient == null ? Collections.emptyList() : Collections.singletonList(patient),
-                MeasureReport.MeasureReportType.INDIVIDUAL);
+                MeasureReport.MeasureReportType.INDIVIDUAL, isSingle);
     }
 
     public MeasureReport evaluatePatientListMeasure(Measure measure, Context context, String practitionerRef) {
         logger.info("Generating patient-list report");
 
         List<Patient> patients = practitionerRef == null ? getAllPatients() : getPractitionerPatients(practitionerRef);
-        return evaluate(measure, context, patients, MeasureReport.MeasureReportType.PATIENTLIST);
+        boolean isSingle = false;
+        return evaluate(measure, context, patients, MeasureReport.MeasureReportType.PATIENTLIST, isSingle);
     }
 
     private List<Patient> getPractitionerPatients(String practitionerRef) {
@@ -93,17 +108,12 @@ public class MeasureEvaluation {
     public MeasureReport evaluatePopulationMeasure(Measure measure, Context context) {
         logger.info("Generating summary report");
 
-        return evaluate(measure, context, getAllPatients(), MeasureReport.MeasureReportType.SUMMARY);
+        boolean isSingle = false;
+        return evaluate(measure, context, getAllPatients(), MeasureReport.MeasureReportType.SUMMARY, isSingle);
     }
 
     @SuppressWarnings("unchecked")
-    private Iterable<Resource> evaluateCriteria(Context context, Patient patient,
-            Measure.MeasureGroupPopulationComponent pop) {
-        if (!pop.hasCriteria()) {
-            return Collections.emptyList();
-        }
-
-        context.setContextValue("Patient", patient.getIdElement().getIdPart());
+    private void clearExpressionCache(Context context) {
         // Hack to clear expression cache
         // See cqf-ruler github issue #153
         try {
@@ -115,6 +125,66 @@ public class MeasureEvaluation {
         } catch (Exception e) {
             logger.warn("Error resetting expression cache", e);
         }
+    }
+
+    private Resource evaluateObservationCriteria(Context context, Patient patient, Resource resource, Measure.MeasureGroupPopulationComponent pop, MeasureReport report) {
+        if (pop == null || !pop.hasCriteria()) {
+            return null;
+        }
+
+        context.setContextValue("Patient", patient.getIdElement().getIdPart());
+
+        clearExpressionCache(context);
+
+        String observationName = pop.getCriteria();
+        ExpressionDef ed = context.resolveExpressionRef(observationName);
+        if (!(ed instanceof FunctionDef)) {
+            throw new IllegalArgumentException(String.format("Measure observation %s does not reference a function definition", observationName));
+        }
+
+        Object result = null;
+        context.pushWindow();
+        try {
+            context.push(new Variable().withName(((FunctionDef)ed).getOperand().get(0).getName()).withValue(resource));
+            result = ed.getExpression().evaluate(context);
+        }
+        finally {
+            context.popWindow();
+        }
+
+        if (result instanceof Resource) {
+            return (Resource)result;
+        }
+
+        Observation obs = new Observation();
+        obs.setStatus(Observation.ObservationStatus.FINAL);
+        obs.setId(UUID.randomUUID().toString());
+        CodeableConcept cc = new CodeableConcept();
+        cc.setText(observationName);
+        obs.setCode(cc);
+        Extension obsExtension = new Extension().setUrl("http://hl7.org/fhir/StructureDefinition/cqf-measureInfo");
+        Extension extExtMeasure = new Extension()
+                .setUrl("measure")
+                .setValue(new UriType("http://hl7.org/fhir/us/cqfmeasures/" + report.getMeasure()));
+        obsExtension.addExtension(extExtMeasure);
+        Extension extExtPop = new Extension()
+                .setUrl("populationId")
+                .setValue(new StringType(observationName));
+        obsExtension.addExtension(extExtPop);
+        obs.addExtension(obsExtension);
+        return obs;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Iterable<Resource> evaluateCriteria(Context context, Patient patient,
+            Measure.MeasureGroupPopulationComponent pop) {
+        if (pop == null || !pop.hasCriteria()) {
+            return Collections.emptyList();
+        }
+
+        context.setContextValue("Patient", patient.getIdElement().getIdPart());
+
+        clearExpressionCache(context);
 
         Object result = context.resolveExpressionRef(pop.getCriteria()).evaluate(context);
         if (result == null) {
@@ -194,7 +264,7 @@ public class MeasureEvaluation {
     }
 
     private MeasureReport evaluate(Measure measure, Context context, List<Patient> patients,
-            MeasureReport.MeasureReportType type) {
+            MeasureReport.MeasureReportType type, boolean isSingle) {
         MeasureReportBuilder reportBuilder = new MeasureReportBuilder();
         reportBuilder.buildStatus("complete");
         reportBuilder.buildType(type);
@@ -214,6 +284,8 @@ public class MeasureEvaluation {
             throw new RuntimeException("Measure scoring is required in order to calculate.");
         }
 
+        List<Measure.MeasureSupplementalDataComponent> sde = new ArrayList<>();
+        HashMap<String, HashMap<String, Integer>> sdeAccumulators = null;
         for (Measure.MeasureGroupComponent group : measure.getGroup()) {
             MeasureReport.MeasureReportGroupComponent reportGroup = new MeasureReport.MeasureReportGroupComponent();
             reportGroup.setIdentifier(group.getIdentifier());
@@ -252,6 +324,8 @@ public class MeasureEvaluation {
             HashMap<String, Patient> measurePopulationPatients = null;
             HashMap<String, Patient> measurePopulationExclusionPatients = null;
 
+            sdeAccumulators = new HashMap<>();
+            sde = measure.getSupplementalData();
             for (Measure.MeasureGroupPopulationComponent pop : group.getPopulation()) {
                 MeasurePopulationType populationType = MeasurePopulationType
                         .fromCode(pop.getCode().getCodingFirstRep().getCode());
@@ -314,6 +388,7 @@ public class MeasureEvaluation {
                             }
                             break;
                         case MEASUREOBSERVATION:
+                            measureObservationCriteria = pop;
                             measureObservation = new HashMap<>();
                             break;
                     }
@@ -373,6 +448,7 @@ public class MeasureEvaluation {
                                 }
                             }
                         }
+                        populateSDEAccumulators(measure, context, patient, sdeAccumulators, sde);
                     }
 
                     // Calculate actual measure score, Count(numerator) / Count(denominator)
@@ -402,13 +478,16 @@ public class MeasureEvaluation {
                                     measurePopulationExclusionPatients);
 
                             if (inMeasurePopulation) {
-                                // TODO: Evaluate measure observations
-                                for (Resource resource : evaluateCriteria(context, patient,
-                                        measureObservationCriteria)) {
-                                    measureObservation.put(resource.getIdElement().getIdPart(), resource);
+                                for (Resource resource : measurePopulation.values()) {
+                                    Resource observation = evaluateObservationCriteria(context, patient, resource, measureObservationCriteria, report);
+                                    measureObservation.put(resource.getIdElement().getIdPart(), observation);
+                                    report.addContained(observation);
+                                    // TODO: Add to the evaluatedResources bundle
+                                    //report.getEvaluatedResources().add(new Reference("#" + observation.getId()));
                                 }
                             }
                         }
+                        populateSDEAccumulators(measure, context, patient, sdeAccumulators,sde);
                     }
 
                     break;
@@ -422,6 +501,7 @@ public class MeasureEvaluation {
                                 null);
                         populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources,
                                 codeToResourceMap);
+                        populateSDEAccumulators(measure, context, patient, sdeAccumulators, sde);
                     }
 
                     break;
@@ -472,13 +552,134 @@ public class MeasureEvaluation {
         }
 
         if (!resources.isEmpty()) {
+            List<Reference> evaluatedResourceIds = new ArrayList<>();
+            resources.forEach((key, resource) -> {
+                evaluatedResourceIds.add(new Reference(resource.getId()));
+            });
+
+            // TODO: DSTU3 Doesn't support this..
+            // report.setEvaluatedResources(evaluatedResourceIds);
+
+            /*
             FhirMeasureBundler bundler = new FhirMeasureBundler();
             org.hl7.fhir.dstu3.model.Bundle evaluatedResources = bundler.bundle(resources.values());
             evaluatedResources.setId(UUID.randomUUID().toString());
-            report.setEvaluatedResources(new Reference('#' + evaluatedResources.getId()));
+            report.setEvaluatedResources(new Reference(evaluatedResources.getId()));
             report.addContained(evaluatedResources);
+            */
         }
 
+        if (sdeAccumulators.size() > 0) {
+            report = processAccumulators(report, sdeAccumulators, sde, isSingle, patients);
+        }
+
+        return report;
+    }
+
+    private void populateSDEAccumulators(Measure measure, Context context, Patient patient,HashMap<String, HashMap<String, Integer>> sdeAccumulators,
+                                         List<Measure.MeasureSupplementalDataComponent> sde){
+        context.setContextValue("Patient", patient.getIdElement().getIdPart());
+        List<Object> sdeList = sde.stream().map(sdeItem -> context.resolveExpressionRef(sdeItem.getCriteria()).evaluate(context)).collect(Collectors.toList());
+        if(!sdeList.isEmpty()) {
+            for (int i = 0; i < sdeList.size(); i++) {
+                Object sdeListItem = sdeList.get(i);
+                if(null != sdeListItem) {
+                    String sdeAccumulatorKey = sde.get(i).getId();
+                    if(null == sdeAccumulatorKey || sdeAccumulatorKey.length() < 1){
+                        sdeAccumulatorKey = sde.get(i).getCriteria();
+                    }
+                    HashMap<String, Integer> sdeItemMap = sdeAccumulators.get(sdeAccumulatorKey);
+                    String code = "";
+
+                    switch (sdeListItem.getClass().getSimpleName()) {
+                        case "Code":
+                            code = ((Code) sdeListItem).getCode();
+                            break;
+                        case "ArrayList":
+                            if (((ArrayList<?>) sdeListItem).size() > 0) {
+                                code  = ((Coding) ((ArrayList<?>) sdeListItem).get(0)).getCode();
+                            }else{
+                                continue;
+                            }
+                            break;
+                    }
+                    if(null == code){
+                        continue;
+                    }
+                    if (null != sdeItemMap && null != sdeItemMap.get(code)) {
+                        Integer sdeItemValue = sdeItemMap.get(code);
+                        sdeItemValue++;
+                        sdeItemMap.put(code, sdeItemValue);
+                        sdeAccumulators.get(sdeAccumulatorKey).put(code, sdeItemValue);
+                    } else {
+                        if (null == sdeAccumulators.get(sdeAccumulatorKey)) {
+                            HashMap<String, Integer> newSDEItem = new HashMap<>();
+                            newSDEItem.put(code, 1);
+                            sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
+                        } else {
+                            sdeAccumulators.get(sdeAccumulatorKey).put(code, 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private MeasureReport processAccumulators(MeasureReport report, HashMap<String, HashMap<String, Integer>> sdeAccumulators,
+                                              List<Measure.MeasureSupplementalDataComponent> sde, boolean isSingle, List<Patient> patients){
+        List<Reference> newRefList = new ArrayList<>();
+        sdeAccumulators.forEach((sdeKey, sdeAccumulator) -> {
+            sdeAccumulator.forEach((sdeAccumulatorKey, sdeAccumulatorValue)->{
+                Observation obs = new Observation();
+                obs.setStatus(Observation.ObservationStatus.FINAL);
+                obs.setId(UUID.randomUUID().toString());
+                Coding valueCoding = new Coding();
+                if(sdeKey.equalsIgnoreCase("sde-sex")){
+                    valueCoding.setCode(sdeAccumulatorKey);
+                }else {
+                    String coreCategory = sdeKey.substring(sdeKey.lastIndexOf('-'));
+                    patients.forEach((pt)-> {
+                        pt.getExtension().forEach((ptExt) -> {
+                            if (ptExt.getUrl().contains(coreCategory)) {
+                                String code = ((Coding) ptExt.getExtension().get(0).getValue()).getCode();
+                                if(code.equalsIgnoreCase(sdeAccumulatorKey)) {
+                                    valueCoding.setSystem(((Coding) ptExt.getExtension().get(0).getValue()).getSystem());
+                                    valueCoding.setCode(code);
+                                    valueCoding.setDisplay(((Coding) ptExt.getExtension().get(0).getValue()).getDisplay());
+                                }
+                            }
+                        });
+                    });
+                }
+                CodeableConcept obsCodeableConcept = new CodeableConcept();
+                Extension obsExtension = new Extension().setUrl("http://hl7.org/fhir/StructureDefinition/cqf-measureInfo");
+                Extension extExtMeasure = new Extension()
+                        .setUrl("measure")
+                        .setValue(new StringType("http://hl7.org/fhir/us/cqfmeasures/" + report.getMeasure()));
+                obsExtension.addExtension(extExtMeasure);
+                Extension extExtPop = new Extension()
+                        .setUrl("populationId")
+                        .setValue(new StringType(sdeKey));
+                obsExtension.addExtension(extExtPop);
+                obs.addExtension(obsExtension);
+                obs.setValue(new IntegerType(sdeAccumulatorValue));
+                if(!isSingle) {
+                    valueCoding.setCode(sdeAccumulatorKey);
+                    obsCodeableConcept.setCoding(Collections.singletonList(valueCoding));
+                    obs.setCode(obsCodeableConcept);
+                }else{
+                    obs.setCode(new CodeableConcept().setText(sdeKey));
+                    obsCodeableConcept.setCoding(Collections.singletonList(valueCoding));
+                    obs.setValue(obsCodeableConcept);
+                }
+                newRefList.add(new Reference("#" + obs.getId()));
+                report.addContained(obs);
+            });
+        });
+
+        // TODO: Evaluated resources
+        // newRefList.addAll(report.getEvaluatedResource());
+        // report.setEvaluatedResource(newRefList);
         return report;
     }
 

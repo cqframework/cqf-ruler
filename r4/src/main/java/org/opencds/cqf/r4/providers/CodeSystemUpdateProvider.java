@@ -17,7 +17,7 @@ import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.r4.builders.OperationOutcomeBuilder;
 import org.opencds.cqf.r4.builders.RandomIdBuilder;
 
-import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;

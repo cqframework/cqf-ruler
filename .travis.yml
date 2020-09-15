@@ -22,6 +22,13 @@ before_deploy:
 deploy:
 - provider: script
   script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true
+    && docker build . -t contentgroup/cqf-ruler:gic && docker push contentgroup/cqf-ruler:gic
+  cleanup: false
+  skip_cleanup: true
+  on:
+    branch: davinci_gic
+- provider: script
+  script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true
     && docker build . -t contentgroup/cqf-ruler:develop && docker push contentgroup/cqf-ruler:develop
   cleanup: false
   skip_cleanup: true
@@ -43,5 +50,11 @@ before_cache:
 - rm -rf $HOME/.m2/repository/org/opencds/cqf/cqf-ruler-r4
 notifications:
   slack:
-    rooms:
-      secure: UcwCk/9xDrkLXtaHPXJAsJuyZN7MIzRunndBpxMk/fwiAF56ZscPMu5IlPN72x2TqdkDPDAykGnczQ/w76txFcIzyH9/06fmXh//8XL/YWpERsfCW9q1XOn+xTTXwrxF5f6eaAMqYlNDe5tXLCOHCEnuHpdFNnFoNasZ2dTqaDNP+jjPLlSO0zhVv5zW4d75lpklg2+SQra5smgKW4eXJO6z4mXFJtkhN/lKwlgKCKbC+G8o3QO+zSJouyeCmr6xdPkTob1va8jNuR1SRIlk943btmZAUlfLh9pUMO2Hhay1BJhXpFrO5ZE3eCwU9jaoCyoTTPcVBytOKKNbGr1miRM/fDdxDYUMGQbqmkKDMqTZzkeLSbQPH92bs2lUILZf0xr2wbi8mZICdz0HZwRkaLzF6okIeQ69/b7/QNbDXAxKlT0DaShtidVbUfwNb/mUOXc3fkjn8vShPn7n9xtdLQvrGR9bJVHHBIDYS+dge2EtdPzsrmHsEhGS153uytPgF+zcYwRN83Xpyjk78+AMQFmzorErz6I+74ZQyXFzN4Z2Z1SfeGGpBp7uUK7dDD1WYVk370hf5oU19euWdSWmzBDajrLlalH25VKt140lQBMU6QyDmdraWM0f0iut034QbTUisOo+O2Km0AhZdTVTVmZSyLOJ6Ec+lusU2AHtayM=
+    - rooms:
+      - secure: UcwCk/9xDrkLXtaHPXJAsJuyZN7MIzRunndBpxMk/fwiAF56ZscPMu5IlPN72x2TqdkDPDAykGnczQ/w76txFcIzyH9/06fmXh//8XL/YWpERsfCW9q1XOn+xTTXwrxF5f6eaAMqYlNDe5tXLCOHCEnuHpdFNnFoNasZ2dTqaDNP+jjPLlSO0zhVv5zW4d75lpklg2+SQra5smgKW4eXJO6z4mXFJtkhN/lKwlgKCKbC+G8o3QO+zSJouyeCmr6xdPkTob1va8jNuR1SRIlk943btmZAUlfLh9pUMO2Hhay1BJhXpFrO5ZE3eCwU9jaoCyoTTPcVBytOKKNbGr1miRM/fDdxDYUMGQbqmkKDMqTZzkeLSbQPH92bs2lUILZf0xr2wbi8mZICdz0HZwRkaLzF6okIeQ69/b7/QNbDXAxKlT0DaShtidVbUfwNb/mUOXc3fkjn8vShPn7n9xtdLQvrGR9bJVHHBIDYS+dge2EtdPzsrmHsEhGS153uytPgF+zcYwRN83Xpyjk78+AMQFmzorErz6I+74ZQyXFzN4Z2Z1SfeGGpBp7uUK7dDD1WYVk370hf5oU19euWdSWmzBDajrLlalH25VKt140lQBMU6QyDmdraWM0f0iut034QbTUisOo+O2Km0AhZdTVTVmZSyLOJ6Ec+lusU2AHtayM=
+      on_success: always
+      on_failure: never
+    - rooms:
+      - secure: CNBq9ztma598N0CBeQNcvwvx6d+jHnI0B8iWAedqJ+oX+kYwCb4tBRTEwtflB0aQndAzn/5fba0S4tQ1gP9liRWb+RQIeBHVQgopEg7iNXYj6d4NIYBmVxpVq44szQI8T7mQJN/v1DFjXoCRbeMKiA5jN8OCrM4kowF4O15b+9RJ1bxbJULzop5K3WlZQQbsDSdxIuR3CGCmLakvf5G1cqHmHE1xWtXWFrNOSe32bp/Pdv7Vo5jaIeLG1b70G4SUUKk60+cwK9/NH4okewYgU5KlI+q51UW0Io8KEmsoFWV49dJ+1NfINM7uArVS3nNeJViMumR2ba1L1gUjGXj9FkuuIM8OS9FaxSss0IaQ8z+gNekuQLyvrE4020UNGY4/b1B8IueQcs+sucs4juCnvyTGdAEGiT23mVWdurqjT6qFTzYHSbXXd23KlmFoeLs46Iwo4mXwx6pxoUmBbNKpSXs7/irCz0GJHXjJAOb3JXxyBohyimKlfBZu1ZJhLytcsQD9SIVpX5B97SD1xD99BAN3sFgDUtZ91usLc3eSg1jaHmaSimw9PVGcoXHEkxiJYzQVPuZNQtwmRSu0zezAv9DhbkNzZAEBkC+vt1dBWzj9T9An3AwIlyANSb0P2qtC7wreHzvLq5duHA0zKGaMjtAZecnEXpIeuhuJhfximP4=
+      on_success: never
+      on_failure: always
