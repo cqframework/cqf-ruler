@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.JAXBException;
 
@@ -126,18 +128,29 @@ public class PlanDefinitionApplyProvider {
                 resolveDefinition(session, action);
                 resolveDynamicActions(session, action);
             }
-
-            RequestGroup result = session.getRequestGroupBuilder().build();
-
-            if (result.getId() == null) {
-                result.setId(UUID.randomUUID().toString());
-            }
-
-            session.getCarePlanBuilder().buildContained(result).buildActivity(
-                new CarePlanActivityBuilder().buildReference(new Reference("#" + result.getId())).build());
         }
 
+        RequestGroup result = session.getRequestGroupBuilder().build();
+
+        if (result.getId() == null) {
+            result.setId(UUID.randomUUID().toString());
+        }
+
+        session.getCarePlanBuilder().buildContained(result).buildActivity(
+            new CarePlanActivityBuilder().buildReference(new Reference("#" + result.getId())).build());
+
         return session.getCarePlan();
+    }
+
+    public List<Resource> getAllContainedResources(Resource resource) {
+        if (!(resource instanceof DomainResource)) {
+            return new ArrayList<>();
+        }
+        List<Resource> contained = ((DomainResource) resource).getContained();
+
+        return Stream
+            .concat(contained.stream(), contained.stream().flatMap(r -> getAllContainedResources(r).stream()))
+            .collect(Collectors.toList());
     }
 
     private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
@@ -159,33 +172,15 @@ public class PlanDefinitionApplyProvider {
                             session.getSetting(),
                             session.getSettingContext());
 
-                    // iterate over nested plans and get contained activities
-                    for(Resource r: plan.getContained())
-                    {
-                        // Build the RequestGroup
-                        RequestGroup requestGroup = session
-                            .getRequestGroupBuilder()
-                            .buildContained(r)
-                            .addAction(new RequestGroupActionBuilder()
-                                .buildResource(new Reference("#" + r.getId())).build())
-                            .build();
-
-                        if (requestGroup.getId() == null) {
-                            requestGroup.setId(UUID.randomUUID().toString());
-                        }
-
-                        // Add it to the CarePlan
+                    // Pull contained resources up to the CarePlan
+                    // > Contained resources SHALL NOT contain additional contained resources.
+                    // https://www.hl7.org/fhir/references.html#contained
+                    getAllContainedResources(plan).stream().forEach(r ->
                         session
                             .getCarePlanBuilder()
-                            .buildContained(requestGroup)
-                            .buildActivity(
-                                new CarePlanActivityBuilder()
-                                    .buildReference(
-                                        new Reference("#" + requestGroup.getId()))
-                                    .build()
-                            );
+                            .buildContained(r)
+                    );
 
-                    }
                     for(CanonicalType c: plan.getInstantiatesCanonical())
                     {
                         session.getCarePlanBuilder().buildInstantiatesCanonical(c.getValueAsString());
@@ -219,7 +214,13 @@ public class PlanDefinitionApplyProvider {
                         result.setId(UUID.randomUUID().toString());
                     }
 
-                    session.getRequestGroupBuilder().buildContained(result);
+                    session
+                        .getRequestGroupBuilder()
+                        .buildContained(result)
+                        .addAction(new RequestGroupActionBuilder()
+                            .buildResource(new Reference("#" + result.getId()))
+                            .build()
+                        );
 
                 } catch (Exception e) {
                     logger.error("ERROR: ActivityDefinition %s could not be applied and threw exception %s",
