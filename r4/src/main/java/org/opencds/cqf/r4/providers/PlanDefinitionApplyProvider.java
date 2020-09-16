@@ -139,7 +139,9 @@ public class PlanDefinitionApplyProvider {
         session.getCarePlanBuilder().buildContained(result).buildActivity(
             new CarePlanActivityBuilder().buildReference(new Reference("#" + result.getId())).build());
 
-        return session.getCarePlan();
+        CarePlan cp = session.getCarePlan();
+
+        return cp;
     }
 
     public List<Resource> getAllContainedResources(Resource resource) {
@@ -151,6 +153,13 @@ public class PlanDefinitionApplyProvider {
         return Stream
             .concat(contained.stream(), contained.stream().flatMap(r -> getAllContainedResources(r).stream()))
             .collect(Collectors.toList());
+    }
+
+    public void removeAllContainedResources(List<Resource> resources) {
+        resources
+            .stream()
+            .filter(r -> !(r instanceof DomainResource))
+            .forEach(r -> ((DomainResource)r).setContained(null));
     }
 
     private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
@@ -175,11 +184,26 @@ public class PlanDefinitionApplyProvider {
                     // Pull contained resources up to the CarePlan
                     // > Contained resources SHALL NOT contain additional contained resources.
                     // https://www.hl7.org/fhir/references.html#contained
-                    getAllContainedResources(plan).stream().forEach(r ->
+                    getAllContainedResources(plan).stream()
+                        .forEach(r ->
                         session
                             .getCarePlanBuilder()
                             .buildContained(r)
                     );
+
+                    if (plan.getId() == null) {
+                        plan.setId(UUID.randomUUID().toString());
+                    }
+
+                    // Add the overall carePlan to the contained as well
+                    session.getCarePlanBuilder().buildContained(plan);
+
+                    // Add an action to the request group which points to this CarePlan
+                    session.getRequestGroupBuilder()
+                        .addAction(new RequestGroupActionBuilder()
+                            .buildResource(new Reference("#" + plan.getId()))
+                            .build()
+                        );
 
                     for(CanonicalType c: plan.getInstantiatesCanonical())
                     {
