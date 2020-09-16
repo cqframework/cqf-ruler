@@ -26,6 +26,7 @@ import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.cds.providers.PriorityRetrieveProvider;
 import org.opencds.cqf.common.evaluation.LibraryLoader;
 import org.opencds.cqf.common.helpers.ClientHelperDos;
@@ -343,6 +344,8 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                         } else {
                             result.addParameter().setName("value").setResource((Resource) res);
                         }
+                    } else if (res instanceof Type) {
+                        result.addParameter().setName("value").setValue((Type) res);
                     } else {
                         result.addParameter().setName("value").setValue(new StringType(res.toString()));
                     }
