@@ -139,9 +139,7 @@ public class PlanDefinitionApplyProvider {
         session.getCarePlanBuilder().buildContained(result).buildActivity(
             new CarePlanActivityBuilder().buildReference(new Reference("#" + result.getId())).build());
 
-        CarePlan cp = session.getCarePlan();
-
-        return cp;
+        return session.getCarePlan();
     }
 
     public List<Resource> getAllContainedResources(Resource resource) {
@@ -153,13 +151,6 @@ public class PlanDefinitionApplyProvider {
         return Stream
             .concat(contained.stream(), contained.stream().flatMap(r -> getAllContainedResources(r).stream()))
             .collect(Collectors.toList());
-    }
-
-    public void removeAllContainedResources(List<Resource> resources) {
-        resources
-            .stream()
-            .filter(r -> !(r instanceof DomainResource))
-            .forEach(r -> ((DomainResource)r).setContained(null));
     }
 
     private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
