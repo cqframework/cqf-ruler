@@ -126,6 +126,15 @@ public class PlanDefinitionApplyProvider {
                 resolveDefinition(session, action);
                 resolveDynamicActions(session, action);
             }
+
+            RequestGroup result = session.getRequestGroupBuilder().build();
+
+            if (result.getId() == null) {
+                result.setId(UUID.randomUUID().toString());
+            }
+
+            session.getCarePlanBuilder().buildContained(result).buildActivity(
+                new CarePlanActivityBuilder().buildReference(new Reference("#" + result.getId())).build());
         }
 
         return session.getCarePlan();
@@ -204,17 +213,14 @@ public class PlanDefinitionApplyProvider {
                                 session.getUserTaskContext(), session.getSetting(), session.getSettingContext());
                     }
 
-                    result = session.getRequestGroupBuilder().buildContained(result).build();
-
-
                     if (result.getId() == null) {
                         logger.warn("ActivityDefinition %s returned resource with no id, setting one",
                                 action.getDefinitionCanonicalType().getId());
                         result.setId(UUID.randomUUID().toString());
                     }
 
-                    session.getCarePlanBuilder().buildContained(result).buildActivity(
-                            new CarePlanActivityBuilder().buildReference(new Reference("#" + result.getId())).build());
+                    session.getRequestGroupBuilder().buildContained(result);
+
                 } catch (Exception e) {
                     logger.error("ERROR: ActivityDefinition %s could not be applied and threw exception %s",
                             action.getDefinition(), e.toString());
