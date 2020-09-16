@@ -110,8 +110,11 @@ public class PlanDefinitionApplyProvider {
         if (userLanguage != null)
             builder.buildLanguage(userLanguage);
 
+        // Each Group of actions shares a RequestGroup
+        RequestGroupBuilder requestGroupBuilder = new RequestGroupBuilder().buildStatus().buildIntent();
+
         Session session = new Session(planDefinition, builder, patientId, encounterId, practitionerId, organizationId,
-                userType, userLanguage, userTaskContext, setting, settingContext);
+                userType, userLanguage, userTaskContext, setting, settingContext, requestGroupBuilder);
 
         return resolveActions(session);
     }
@@ -150,8 +153,29 @@ public class PlanDefinitionApplyProvider {
                     // iterate over nested plans and get contained activities
                     for(Resource r: plan.getContained())
                     {
-                        session.getCarePlanBuilder().buildContained(r).buildActivity(
-                                new CarePlanActivityBuilder().buildReference(new Reference("#" + r.getId())).build());
+                        // Build the RequestGroup
+                        RequestGroup requestGroup = session
+                            .getRequestGroupBuilder()
+                            .buildContained(r)
+                            .addAction(new RequestGroupActionBuilder()
+                                .buildResource(new Reference("#" + r.getId())).build())
+                            .build();
+
+                        if (requestGroup.getId() == null) {
+                            requestGroup.setId(UUID.randomUUID().toString());
+                        }
+
+                        // Add it to the CarePlan
+                        session
+                            .getCarePlanBuilder()
+                            .buildContained(requestGroup)
+                            .buildActivity(
+                                new CarePlanActivityBuilder()
+                                    .buildReference(
+                                        new Reference("#" + requestGroup.getId()))
+                                    .build()
+                            );
+
                     }
                     for(CanonicalType c: plan.getInstantiatesCanonical())
                     {
@@ -180,11 +204,15 @@ public class PlanDefinitionApplyProvider {
                                 session.getUserTaskContext(), session.getSetting(), session.getSettingContext());
                     }
 
+                    result = session.getRequestGroupBuilder().buildContained(result).build();
+
+
                     if (result.getId() == null) {
                         logger.warn("ActivityDefinition %s returned resource with no id, setting one",
                                 action.getDefinitionCanonicalType().getId());
                         result.setId(UUID.randomUUID().toString());
                     }
+
                     session.getCarePlanBuilder().buildContained(result).buildActivity(
                             new CarePlanActivityBuilder().buildReference(new Reference("#" + result.getId())).build());
                 } catch (Exception e) {
@@ -474,10 +502,11 @@ class Session {
     private final String settingContext;
     private CarePlanBuilder carePlanBuilder;
     private String encounterId;
+    private final RequestGroupBuilder requestGroupBuilder;
 
     public Session(PlanDefinition planDefinition, CarePlanBuilder builder, String patientId, String encounterId,
             String practitionerId, String organizationId, String userType, String userLanguage, String userTaskContext,
-            String setting, String settingContext) {
+            String setting, String settingContext, RequestGroupBuilder requestGroupBuilder) {
         this.patientId = patientId;
         this.planDefinition = planDefinition;
         this.carePlanBuilder = builder;
@@ -489,6 +518,7 @@ class Session {
         this.userTaskContext = userTaskContext;
         this.setting = setting;
         this.settingContext = settingContext;
+        this.requestGroupBuilder = requestGroupBuilder;
     }
 
     public PlanDefinition getPlanDefinition() {
@@ -541,5 +571,9 @@ class Session {
 
     public CarePlanBuilder getCarePlanBuilder() {
         return carePlanBuilder;
+    }
+
+    public RequestGroupBuilder getRequestGroupBuilder() {
+        return requestGroupBuilder;
     }
 }
