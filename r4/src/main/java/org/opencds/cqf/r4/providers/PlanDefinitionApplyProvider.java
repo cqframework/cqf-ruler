@@ -157,7 +157,7 @@ public class PlanDefinitionApplyProvider {
         if (action.hasDefinition()) {
             logger.debug("Resolving definition " + action.getDefinitionCanonicalType().getValue());
             String definition = action.getDefinitionCanonicalType().getValue();
-            if (definition.startsWith(session.getPlanDefinition().fhirType())) {
+            if (definition.contains(session.getPlanDefinition().fhirType())) {
                 IdType id = new IdType(definition);
                 CarePlan plan = null;
                 try {
