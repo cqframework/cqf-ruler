@@ -10,6 +10,7 @@ import javax.xml.bind.JAXBException;
 
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.ActivityDefinition;
+import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CarePlan;
 import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Extension;
@@ -132,9 +133,35 @@ public class PlanDefinitionApplyProvider {
             logger.debug("Resolving definition " + action.getDefinitionCanonicalType().getValue());
             String definition = action.getDefinitionCanonicalType().getValue();
             if (definition.startsWith(session.getPlanDefinition().fhirType())) {
-                logger.error("Currently cannot resolve nested PlanDefinitions");
-                throw new NotImplementedException(
-                        "Plan Definition refers to sub Plan Definition, this is not yet supported");
+                IdType id = new IdType(definition);
+                CarePlan plan = null;
+                try {
+                    plan = applyPlanDefinition(id,
+                            session.getPatientId(),
+                            session.getEncounterId(),
+                            session.getPractitionerId(),
+                            session.getOrganizationId(),
+                            session.getUserType(),
+                            session.getUserLanguage(),
+                            session.getUserTaskContext(),
+                            session.getSetting(),
+                            session.getSettingContext());
+
+                    // iterate over nested plans and get contained activities
+                    for(Resource r: plan.getContained())
+                    {
+                        session.getCarePlanBuilder().buildContained(r).buildActivity(
+                                new CarePlanActivityBuilder().buildReference(new Reference("#" + r.getId())).build());
+                    }
+                    for(CanonicalType c: plan.getInstantiatesCanonical())
+                    {
+                        session.getCarePlanBuilder().buildInstantiatesCanonical(c.getValueAsString());
+                    }
+
+                } catch (IOException | JAXBException e) {
+                    e.printStackTrace();
+                    logger.error("nested plan failed");
+                }
             }
 
             else {
@@ -247,7 +274,6 @@ public class PlanDefinitionApplyProvider {
                 }
             }
         }
-
         return true;
     }
 
