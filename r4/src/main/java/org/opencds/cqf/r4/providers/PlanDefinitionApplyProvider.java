@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
-import javax.xml.bind.JAXBException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.ActivityDefinition;
@@ -23,7 +23,6 @@ import org.hl7.fhir.r4.model.RequestGroup;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.common.config.HapiProperties;
-import org.opencds.cqf.common.exceptions.NotImplementedException;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
@@ -50,14 +49,14 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 
 public class PlanDefinitionApplyProvider {
 
-    private CqlExecutionProvider executionProvider;
-    private ModelResolver modelResolver;
-    private ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
+    private final CqlExecutionProvider executionProvider;
+    private final ModelResolver modelResolver;
+    private final ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
 
-    private IFhirResourceDao<PlanDefinition> planDefinitionDao;
-    private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
+    private final IFhirResourceDao<PlanDefinition> planDefinitionDao;
+    private final IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
 
-    private FhirContext fhirContext;
+    private final FhirContext fhirContext;
 
     private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
@@ -87,7 +86,7 @@ public class PlanDefinitionApplyProvider {
             @OperationParam(name = "userTaskContext") String userTaskContext,
             @OperationParam(name = "setting") String setting,
             @OperationParam(name = "settingContext") String settingContext)
-            throws IOException, JAXBException, FHIRException {
+            throws IOException, FHIRException {
         PlanDefinition planDefinition = this.planDefinitionDao.read(theId);
 
         if (planDefinition == null) {
@@ -110,8 +109,11 @@ public class PlanDefinitionApplyProvider {
         if (userLanguage != null)
             builder.buildLanguage(userLanguage);
 
+        // Each Group of actions shares a RequestGroup
+        RequestGroupBuilder requestGroupBuilder = new RequestGroupBuilder().buildStatus().buildIntent();
+
         Session session = new Session(planDefinition, builder, patientId, encounterId, practitionerId, organizationId,
-                userType, userLanguage, userTaskContext, setting, settingContext);
+                userType, userLanguage, userTaskContext, setting, settingContext, requestGroupBuilder);
 
         return resolveActions(session);
     }
@@ -125,16 +127,36 @@ public class PlanDefinitionApplyProvider {
             }
         }
 
+        RequestGroup result = session.getRequestGroupBuilder().build();
+
+        if (result.getId() == null) {
+            result.setId(UUID.randomUUID().toString());
+        }
+
+        session.getCarePlanBuilder().buildContained(result).buildActivity(
+            new CarePlanActivityBuilder().buildReference(new Reference("#" + result.getId())).build());
+
         return session.getCarePlan();
+    }
+
+    public List<Resource> getAllContainedResources(Resource resource) {
+        if (!(resource instanceof DomainResource)) {
+            return new ArrayList<>();
+        }
+        List<Resource> contained = ((DomainResource) resource).getContained();
+
+        return Stream
+            .concat(contained.stream(), contained.stream().flatMap(r -> getAllContainedResources(r).stream()))
+            .collect(Collectors.toList());
     }
 
     private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
         if (action.hasDefinition()) {
             logger.debug("Resolving definition " + action.getDefinitionCanonicalType().getValue());
             String definition = action.getDefinitionCanonicalType().getValue();
-            if (definition.startsWith(session.getPlanDefinition().fhirType())) {
+            if (definition.contains(session.getPlanDefinition().fhirType())) {
                 IdType id = new IdType(definition);
-                CarePlan plan = null;
+                CarePlan plan;
                 try {
                     plan = applyPlanDefinition(id,
                             session.getPatientId(),
@@ -147,18 +169,36 @@ public class PlanDefinitionApplyProvider {
                             session.getSetting(),
                             session.getSettingContext());
 
-                    // iterate over nested plans and get contained activities
-                    for(Resource r: plan.getContained())
-                    {
-                        session.getCarePlanBuilder().buildContained(r).buildActivity(
-                                new CarePlanActivityBuilder().buildReference(new Reference("#" + r.getId())).build());
+                    // Pull contained resources up to the CarePlan
+                    // > Contained resources SHALL NOT contain additional contained resources.
+                    // https://www.hl7.org/fhir/references.html#contained
+                    getAllContainedResources(plan)
+                        .forEach(r ->
+                        session
+                            .getCarePlanBuilder()
+                            .buildContained(r)
+                    );
+
+                    if (plan.getId() == null) {
+                        plan.setId(UUID.randomUUID().toString());
                     }
+
+                    // Add the overall carePlan to the contained as well
+                    session.getCarePlanBuilder().buildContained(plan);
+
+                    // Add an action to the request group which points to this CarePlan
+                    session.getRequestGroupBuilder()
+                        .addAction(new RequestGroupActionBuilder()
+                            .buildResource(new Reference("#" + plan.getId()))
+                            .build()
+                        );
+
                     for(CanonicalType c: plan.getInstantiatesCanonical())
                     {
                         session.getCarePlanBuilder().buildInstantiatesCanonical(c.getValueAsString());
                     }
 
-                } catch (IOException | JAXBException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                     logger.error("nested plan failed");
                 }
@@ -185,8 +225,15 @@ public class PlanDefinitionApplyProvider {
                                 action.getDefinitionCanonicalType().getId());
                         result.setId(UUID.randomUUID().toString());
                     }
-                    session.getCarePlanBuilder().buildContained(result).buildActivity(
-                            new CarePlanActivityBuilder().buildReference(new Reference("#" + result.getId())).build());
+
+                    session
+                        .getRequestGroupBuilder()
+                        .buildContained(result)
+                        .addAction(new RequestGroupActionBuilder()
+                            .buildResource(new Reference("#" + result.getId()))
+                            .build()
+                        );
+
                 } catch (Exception e) {
                     logger.error("ERROR: ActivityDefinition %s could not be applied and threw exception %s",
                             action.getDefinition(), e.toString());
@@ -252,7 +299,7 @@ public class PlanDefinitionApplyProvider {
                 logger.info("Evaluating action condition expression " + condition.getExpression());
                 String cql = condition.getExpression().getExpression();
                 String language = condition.getExpression().getLanguage();
-                Object result = null;
+                Object result;
                 result = (language.equals("text/cql.name"))
                         ? executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId(),
                                 true)
@@ -383,9 +430,8 @@ public class PlanDefinitionApplyProvider {
                             if (activityDefinition.hasDescription()) {
                                 actionBuilder.buildDescripition(activityDefinition.getDescription());
                             }
-                            Resource resource;
                             try {
-                                resource = this.activityDefinitionApplyProvider
+                                this.activityDefinitionApplyProvider
                                         .apply(new IdType(action.getDefinitionCanonicalType().getId()), patientId, null,
                                                 null, null, null, null, null, null, null)
                                         .setId(UUID.randomUUID().toString());
@@ -402,7 +448,7 @@ public class PlanDefinitionApplyProvider {
                                     .named("$apply").withParameters(inParams).useHttpGet().execute();
 
                             List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
-                            resource = response.get(0).getResource().setId(UUID.randomUUID().toString());
+                            Resource resource = response.get(0).getResource().setId(UUID.randomUUID().toString());
                             actionBuilder.buildResourceTarget(resource);
                             actionBuilder
                                     .buildResource(new ReferenceBuilder().buildReference(resource.getId()).build());
@@ -473,11 +519,12 @@ class Session {
     private final String setting;
     private final String settingContext;
     private CarePlanBuilder carePlanBuilder;
-    private String encounterId;
+    private final String encounterId;
+    private final RequestGroupBuilder requestGroupBuilder;
 
     public Session(PlanDefinition planDefinition, CarePlanBuilder builder, String patientId, String encounterId,
             String practitionerId, String organizationId, String userType, String userLanguage, String userTaskContext,
-            String setting, String settingContext) {
+            String setting, String settingContext, RequestGroupBuilder requestGroupBuilder) {
         this.patientId = patientId;
         this.planDefinition = planDefinition;
         this.carePlanBuilder = builder;
@@ -489,6 +536,7 @@ class Session {
         this.userTaskContext = userTaskContext;
         this.setting = setting;
         this.settingContext = settingContext;
+        this.requestGroupBuilder = requestGroupBuilder;
     }
 
     public PlanDefinition getPlanDefinition() {
@@ -541,5 +589,9 @@ class Session {
 
     public CarePlanBuilder getCarePlanBuilder() {
         return carePlanBuilder;
+    }
+
+    public RequestGroupBuilder getRequestGroupBuilder() {
+        return requestGroupBuilder;
     }
 }
