@@ -301,7 +301,7 @@ public class PlanDefinitionApplyProvider {
                 logger.info("Evaluating action condition expression " + condition.getExpression());
                 String cql = condition.getExpression().getExpression();
                 String language = condition.getExpression().getLanguage();
-                Object result = null;
+                Object result;
                 result = (language.equals("text/cql.name"))
                         ? executionProvider.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId(),
                                 true)
