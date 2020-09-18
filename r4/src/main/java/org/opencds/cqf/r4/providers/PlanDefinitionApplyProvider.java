@@ -430,9 +430,8 @@ public class PlanDefinitionApplyProvider {
                             if (activityDefinition.hasDescription()) {
                                 actionBuilder.buildDescripition(activityDefinition.getDescription());
                             }
-                            Resource resource;
                             try {
-                                resource = this.activityDefinitionApplyProvider
+                                this.activityDefinitionApplyProvider
                                         .apply(new IdType(action.getDefinitionCanonicalType().getId()), patientId, null,
                                                 null, null, null, null, null, null, null)
                                         .setId(UUID.randomUUID().toString());
@@ -449,7 +448,7 @@ public class PlanDefinitionApplyProvider {
                                     .named("$apply").withParameters(inParams).useHttpGet().execute();
 
                             List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
-                            resource = response.get(0).getResource().setId(UUID.randomUUID().toString());
+                            Resource resource = response.get(0).getResource().setId(UUID.randomUUID().toString());
                             actionBuilder.buildResourceTarget(resource);
                             actionBuilder
                                     .buildResource(new ReferenceBuilder().buildReference(resource.getId()).build());
