@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.ActivityDefinition;
@@ -37,6 +35,7 @@ import org.opencds.cqf.r4.builders.RelatedArtifactBuilder;
 import org.opencds.cqf.r4.builders.RequestGroupActionBuilder;
 import org.opencds.cqf.r4.builders.RequestGroupBuilder;
 import org.opencds.cqf.r4.helpers.CanonicalHelper;
+import org.opencds.cqf.r4.helpers.ContainedHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +114,7 @@ public class PlanDefinitionApplyProvider {
         Session session = new Session(planDefinition, builder, patientId, encounterId, practitionerId, organizationId,
                 userType, userLanguage, userTaskContext, setting, settingContext, requestGroupBuilder);
 
-        return resolveActions(session);
+        return (CarePlan) ContainedHelper.liftContainedResourcesToParent(resolveActions(session));
     }
 
     private CarePlan resolveActions(Session session) {
@@ -139,17 +138,6 @@ public class PlanDefinitionApplyProvider {
         return session.getCarePlan();
     }
 
-    public List<Resource> getAllContainedResources(Resource resource) {
-        if (!(resource instanceof DomainResource)) {
-            return new ArrayList<>();
-        }
-        List<Resource> contained = ((DomainResource) resource).getContained();
-
-        return Stream
-            .concat(contained.stream(), contained.stream().flatMap(r -> getAllContainedResources(r).stream()))
-            .collect(Collectors.toList());
-    }
-
     private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
         if (action.hasDefinition()) {
             logger.debug("Resolving definition " + action.getDefinitionCanonicalType().getValue());
@@ -169,25 +157,13 @@ public class PlanDefinitionApplyProvider {
                             session.getSetting(),
                             session.getSettingContext());
 
-                    // Pull contained resources up to the CarePlan
-                    // > Contained resources SHALL NOT contain additional contained resources.
-                    // https://www.hl7.org/fhir/references.html#contained
-                    getAllContainedResources(plan)
-                        .forEach(r ->
-                        session
-                            .getCarePlanBuilder()
-                            .buildContained(r)
-                    );
-
                     if (plan.getId() == null) {
                         plan.setId(UUID.randomUUID().toString());
                     }
 
-                    // Add the overall carePlan to the contained as well
-                    session.getCarePlanBuilder().buildContained(plan);
-
                     // Add an action to the request group which points to this CarePlan
                     session.getRequestGroupBuilder()
+                        .buildContained(plan)
                         .addAction(new RequestGroupActionBuilder()
                             .buildResource(new Reference("#" + plan.getId()))
                             .build()
