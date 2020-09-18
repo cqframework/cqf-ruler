@@ -51,14 +51,14 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 
 public class PlanDefinitionApplyProvider {
 
-    private CqlExecutionProvider executionProvider;
-    private ModelResolver modelResolver;
-    private ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
+    private final CqlExecutionProvider executionProvider;
+    private final ModelResolver modelResolver;
+    private final ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
 
-    private IFhirResourceDao<PlanDefinition> planDefinitionDao;
-    private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
+    private final IFhirResourceDao<PlanDefinition> planDefinitionDao;
+    private final IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
 
-    private FhirContext fhirContext;
+    private final FhirContext fhirContext;
 
     private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
@@ -522,7 +522,7 @@ class Session {
     private final String setting;
     private final String settingContext;
     private CarePlanBuilder carePlanBuilder;
-    private String encounterId;
+    private final String encounterId;
     private final RequestGroupBuilder requestGroupBuilder;
 
     public Session(PlanDefinition planDefinition, CarePlanBuilder builder, String patientId, String encounterId,
