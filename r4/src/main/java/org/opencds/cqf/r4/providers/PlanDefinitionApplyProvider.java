@@ -174,7 +174,7 @@ public class PlanDefinitionApplyProvider {
                     // Pull contained resources up to the CarePlan
                     // > Contained resources SHALL NOT contain additional contained resources.
                     // https://www.hl7.org/fhir/references.html#contained
-                    getAllContainedResources(plan).stream()
+                    getAllContainedResources(plan)
                         .forEach(r ->
                         session
                             .getCarePlanBuilder()
