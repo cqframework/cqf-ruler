@@ -158,7 +158,7 @@ public class PlanDefinitionApplyProvider {
             String definition = action.getDefinitionCanonicalType().getValue();
             if (definition.contains(session.getPlanDefinition().fhirType())) {
                 IdType id = new IdType(definition);
-                CarePlan plan = null;
+                CarePlan plan;
                 try {
                     plan = applyPlanDefinition(id,
                             session.getPatientId(),
