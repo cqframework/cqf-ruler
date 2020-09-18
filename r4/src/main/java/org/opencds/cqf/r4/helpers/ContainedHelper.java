@@ -63,7 +63,7 @@ public class ContainedHelper {
   }
 
   /**
-   * @see ContainedHelper#streamContainedResourcesInContainedResources(Resource)
+   * @see ContainedHelper#getContainedResourcesInContainedResources(Resource)
    */
   private static Stream<Resource> streamContainedResourcesInContainedResources(Resource resource) {
     if (!(resource instanceof DomainResource)) {
@@ -76,7 +76,7 @@ public class ContainedHelper {
   }
 
   /**
-   * @see ContainedHelper#streamAllContainedResources(Resource) 
+   * @see ContainedHelper#getAllContainedResources(Resource)
    */
   private static Stream<Resource> streamAllContainedResources(Resource resource) {
     if (!(resource instanceof DomainResource)) {
