@@ -88,7 +88,7 @@ public class PlanDefinitionApplyProvider {
             @OperationParam(name = "userTaskContext") String userTaskContext,
             @OperationParam(name = "setting") String setting,
             @OperationParam(name = "settingContext") String settingContext)
-            throws IOException, JAXBException, FHIRException {
+            throws IOException, FHIRException {
         PlanDefinition planDefinition = this.planDefinitionDao.read(theId);
 
         if (planDefinition == null) {
@@ -200,7 +200,7 @@ public class PlanDefinitionApplyProvider {
                         session.getCarePlanBuilder().buildInstantiatesCanonical(c.getValueAsString());
                     }
 
-                } catch (IOException | JAXBException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                     logger.error("nested plan failed");
                 }
