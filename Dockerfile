@@ -14,8 +14,7 @@ EXPOSE 8080
 
 ENV SERVER_ADDRESS_DSTU3="http://localhost:8080/cqf-ruler-dstu3/fhir"
 ENV SERVER_ADDRESS_R4="http://localhost:8080/cqf-ruler-r4/fhir"
-
-ENV JAVA_OPTIONS="-Dhapi.properties.DSTU3=/var/lib/jetty/webapps/config/dstu3.properties -Dhapi.properties.R4=/var/lib/jetty/webapps/config/r4.properties"
+ENV JAVA_OPTIONS=""
 
 COPY --chown=jetty:jetty ./scripts/docker-entrypoint-override.sh /docker-entrypoint-override.sh
 ENTRYPOINT [ "/docker-entrypoint-override.sh" ]
