@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  * Resources.
  *
  * The FHIR specification does not allow contained resources to contain additional resources:
- * > Contained resources SHALL NOT contain additional contained resources.
+ * &gt; Contained resources SHALL NOT contain additional contained resources.
  * https://www.hl7.org/fhir/references.html#contained
  *
  * When returning a resource from an annotated method that responds to an incoming request any
