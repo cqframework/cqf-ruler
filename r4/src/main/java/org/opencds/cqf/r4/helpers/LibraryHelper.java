@@ -3,7 +3,6 @@ package org.opencds.cqf.r4.helpers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
@@ -26,6 +25,16 @@ public class LibraryHelper {
         libraryManager.getLibrarySourceLoader().registerProvider(
                 new LibrarySourceProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment>(provider,
                         x -> x.getContent(), x -> x.getContentType(), x -> x.getData()));
+
+        return new LibraryLoader(libraryManager, modelManager);
+    }
+
+    public static LibraryLoader createLibraryLoader(org.cqframework.cql.cql2elm.LibrarySourceProvider provider) {
+        ModelManager modelManager = new ModelManager();
+        LibraryManager libraryManager = new LibraryManager(modelManager);
+        libraryManager.getLibrarySourceLoader().clearProviders();
+
+        libraryManager.getLibrarySourceLoader().registerProvider(provider);
 
         return new LibraryLoader(libraryManager, modelManager);
     }
@@ -59,6 +68,11 @@ public class LibraryHelper {
             }
         }
 
+        if (libraries.isEmpty()) {
+            throw new IllegalArgumentException(String
+                    .format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
+        }
+
         VersionedIdentifier primaryLibraryId = libraries.get(0).getIdentifier();
         org.hl7.fhir.r4.model.Library primaryLibrary = libraryResourceProvider.resolveLibraryByName(primaryLibraryId.getId(), primaryLibraryId.getVersion());
         for (RelatedArtifact artifact : primaryLibrary.getRelatedArtifact()) {
@@ -81,11 +95,6 @@ public class LibraryHelper {
             }
         }
 
-        if (libraries.isEmpty()) {
-            throw new IllegalArgumentException(String
-                    .format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
-        }
-
         return libraries;
     }
 
@@ -95,6 +104,16 @@ public class LibraryHelper {
         }
 
         if (!library.hasType()) {
+            // If no type is specified, assume it is a logic library based on whether there is a CQL content element.
+            if (library.hasContent()) {
+                for (Attachment a : library.getContent()) {
+                    if (a.hasContentType() && (a.getContentType().equals("text/cql")
+                            || a.getContentType().equals("application/elm+xml")
+                            || a.getContentType().equals("application/elm+json"))) {
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 

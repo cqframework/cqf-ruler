@@ -6,21 +6,19 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslator;
-import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
-import org.cqframework.cql.elm.tracking.TrackBack;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
@@ -28,19 +26,17 @@ import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.cds.providers.PriorityRetrieveProvider;
 import org.opencds.cqf.common.evaluation.LibraryLoader;
 import org.opencds.cqf.common.helpers.ClientHelperDos;
 import org.opencds.cqf.common.helpers.DateHelper;
-import org.opencds.cqf.common.helpers.TranslatorHelper;
-import org.opencds.cqf.common.helpers.UsingHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.providers.LibrarySourceProvider;
 import org.opencds.cqf.common.providers.R4ApelonFhirTerminologyProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
-import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
-import org.opencds.cqf.cql.engine.execution.Context;
+import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.CqlEngine;
 import org.opencds.cqf.cql.engine.execution.EvaluationResult;
 import org.opencds.cqf.cql.engine.fhir.model.FhirModelResolver;
@@ -48,16 +44,15 @@ import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.retrieve.RestFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
-import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.execution.provider.BundleRetrieveProvider;
-import org.opencds.cqf.library.r4.NarrativeProvider;
+import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 
-import ca.uhn.fhir.jpa.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -178,6 +173,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
 
     // NOTICE: This is trash code that needs to be removed. Don't fix this. It's for
     // a one-off
+    // @SuppressWarnings({"unchecked", "rawtypes" })
     @Operation(name = "$evaluate", idempotent = true, type = Library.class)
     public Bundle evaluate(@IdParam IdType theId, @OperationParam(name = "patientId") String patientId,
             @OperationParam(name = "periodStart") String periodStart,
@@ -194,7 +190,22 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             throw new IllegalArgumentException("Must specify a patientId when executing in Patient context.");
         }
 
-        Library theResource = this.libraryResourceProvider.getDao().read(theId);
+        Bundle libraryBundle = new Bundle();
+        Library theResource = null;
+        if (additionalData != null) {
+            for (BundleEntryComponent entry : additionalData.getEntry()) {
+                if (entry.getResource().fhirType().equals("Library")) {
+                    libraryBundle.addEntry(entry);
+                    if (entry.getResource().getIdElement().equals(theId)) {
+                        theResource = (Library) entry.getResource();
+                    }
+                }
+            }
+        }
+
+        if (theResource == null) {
+            theResource = this.libraryResourceProvider.getDao().read(theId);
+        }
 
         VersionedIdentifier libraryIdentifier = new VersionedIdentifier().withId(theResource.getName())
                 .withVersion(theResource.getVersion());
@@ -253,7 +264,12 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             }
         }
 
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        org.cqframework.cql.cql2elm.LibrarySourceProvider bundleLibraryProvider = new R4BundleLibrarySourceProvider(libraryBundle);
+        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(bundleLibraryProvider);
+        LibraryResolutionProvider<Library> provider = this.getLibraryResourceProvider();
+        libraryLoader.getLibraryManager().getLibrarySourceLoader().registerProvider(
+            new LibrarySourceProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment>(provider,
+                    x -> x.getContent(), x -> x.getContentType(), x -> x.getData()));
 
         CqlEngine engine = new CqlEngine(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider);
 
@@ -313,13 +329,13 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                                                 .getResourceType() + "/"
                                                 + ((Resource) ((List<?>) res).get(0)).getIdElement().getIdPart()));
                             } else {
-                                result.addParameter().setName("value").setResource(bundler.bundle((Iterable) res));
+                                result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res));
                             }
                         } else {
                             result.addParameter().setName("value").setValue(new StringType(res.toString()));
                         }
                     } else if (res instanceof Iterable) {
-                        result.addParameter().setName("value").setResource(bundler.bundle((Iterable) res));
+                        result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res));
                     } else if (res instanceof Resource) {
                         if (executionResults != null && executionResults.equals("Summary")) {
                             result.addParameter().setName("value")
@@ -328,6 +344,8 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                         } else {
                             result.addParameter().setName("value").setResource((Resource) res);
                         }
+                    } else if (res instanceof Type) {
+                        result.addParameter().setName("value").setValue((Type) res);
                     } else {
                         result.addParameter().setName("value").setValue(new StringType(res.toString()));
                     }
@@ -422,6 +440,8 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         return ret;
     }
 
+    // TODO: Merge this into the evaluator
+    @SuppressWarnings("unused")
     private Map<String, List<Integer>> getLocations(org.hl7.elm.r1.Library library) {
         Map<String, List<Integer>> locations = new HashMap<>();
 

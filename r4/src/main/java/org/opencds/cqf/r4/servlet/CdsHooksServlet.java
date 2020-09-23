@@ -76,7 +76,8 @@ public class CdsHooksServlet extends HttpServlet {
             providerConfiguration = new ProviderConfiguration(
                 HapiProperties.getCdsHooksFhirServerExpandValueSets() ,
                 HapiProperties.getCdsHooksFhirServerMaxCodesPerQuery(),
-                HapiProperties.getCdsHooksFhirServerSearchStyleEnum());
+                HapiProperties.getCdsHooksFhirServerSearchStyleEnum(),
+                HapiProperties.getCdsHooksPreFetchMaxUriLength());
         }
 
         return providerConfiguration;
@@ -137,8 +138,8 @@ public class CdsHooksServlet extends HttpServlet {
                         request.getContentType()));
             }
 
-            String baseUrl = request.getRequestURL().toString().replace(request.getPathInfo(), "")
-                    .replace(request.getServletPath(), "") + "/fhir";
+            
+            String baseUrl = HapiProperties.getServerAddress();
             String service = request.getPathInfo().replace("/", "");
 
             JsonParser parser = new JsonParser();
@@ -148,6 +149,15 @@ public class CdsHooksServlet extends HttpServlet {
             logger.info(cdsHooksRequest.getRequestJson().toString());
 
             Hook hook = HookFactory.createHook(cdsHooksRequest);
+
+            logger.info("cds-hooks hook: " + hook.getRequest().getHook());
+            logger.info("cds-hooks hook instance: " + hook.getRequest().getHookInstance());
+            logger.info("cds-hooks maxCodesPerQuery: " + this.getProviderConfiguration().getMaxCodesPerQuery());
+            logger.info("cds-hooks expandValueSets: " + this.getProviderConfiguration().getExpandValueSets());
+            logger.info("cds-hooks searchStyle: " + this.getProviderConfiguration().getSearchStyle());
+            logger.info("cds-hooks prefetch maxUriLength: " + this.getProviderConfiguration().getMaxUriLength());
+            logger.info("cds-hooks local server address: " + baseUrl);
+            logger.info("cds-hooks fhir server address: " + hook.getRequest().getFhirServerUrl());
 
             PlanDefinition planDefinition = planDefinitionProvider.getDao()
                     .read(new IdType(hook.getRequest().getServiceName()));
@@ -193,6 +203,7 @@ public class CdsHooksServlet extends HttpServlet {
             this.printMessageAndCause(e, response);
             this.handleServerResponseException(e, response);
             this.printStackTrack(e, response);
+            logger.error(e.toString());
         } catch (DataProviderException e) {
             this.setAccessControlHeaders(response);
             response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
@@ -203,6 +214,7 @@ public class CdsHooksServlet extends HttpServlet {
             }
 
             this.printStackTrack(e, response);
+            logger.error(e.toString());
         }
         catch (CqlException e) {
             this.setAccessControlHeaders(response);
@@ -214,8 +226,10 @@ public class CdsHooksServlet extends HttpServlet {
             }
 
             this.printStackTrack(e, response);
+            logger.error(e.toString());
         }
         catch (Exception e) {
+            logger.error(e.toString());
             throw new ServletException("ERROR: Exception in cds-hooks processing.", e);
         }
     }
@@ -273,8 +287,11 @@ public class CdsHooksServlet extends HttpServlet {
     }
 
     private JsonObject getServices() {
-        return new DiscoveryResolutionR4(FhirContext.forR4().newRestfulGenericClient(HapiProperties.getServerAddress()))
-                .resolve().getAsJson();
+        DiscoveryResolutionR4 discoveryResolutionR4 = new DiscoveryResolutionR4(
+                FhirContext.forR4().newRestfulGenericClient(HapiProperties.getServerAddress()));
+        discoveryResolutionR4.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
+        return discoveryResolutionR4.resolve()
+                        .getAsJson();
     }
 
     private String toJsonResponse(List<CdsCard> cards) {
