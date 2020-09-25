@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.dstu3.provider.operation;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,6 +26,8 @@ import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -33,12 +35,14 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 
+@Component
 public class ApplyCqlOperationProvider {
 
     private EvaluationProviderFactory providerFactory;
     private IFhirResourceDao<Bundle> bundleDao;
     FhirContext context;
 
+    @Autowired
     public ApplyCqlOperationProvider(EvaluationProviderFactory providerFactory, IFhirResourceDao<Bundle> bundleDao, FhirContext context) {
         this.providerFactory = providerFactory;
         this.bundleDao = bundleDao;

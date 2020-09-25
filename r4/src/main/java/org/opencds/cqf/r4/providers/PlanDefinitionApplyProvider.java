@@ -39,6 +39,7 @@ import org.opencds.cqf.r4.builders.RequestGroupBuilder;
 import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -60,6 +61,7 @@ public class PlanDefinitionApplyProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
+    @Autowired
     public PlanDefinitionApplyProvider(FhirContext fhirContext,
             ActivityDefinitionApplyProvider activityDefinitionApplyProvider,
             IFhirResourceDao<PlanDefinition> planDefinitionDao,

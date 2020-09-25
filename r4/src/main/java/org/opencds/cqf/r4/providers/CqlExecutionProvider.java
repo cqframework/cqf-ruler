@@ -37,6 +37,7 @@ import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -50,6 +51,7 @@ public class CqlExecutionProvider {
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider;
     private FhirContext context;
 
+    @Autowired
     public CqlExecutionProvider(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider,
             EvaluationProviderFactory providerFactory, FhirContext context) {
         this.providerFactory = providerFactory;

@@ -23,6 +23,7 @@ import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
@@ -48,6 +49,7 @@ public class MeasureOperationsProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
 
+    @Autowired
     public MeasureOperationsProvider(DaoRegistry registry, EvaluationProviderFactory factory,
             NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider,
             LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider,

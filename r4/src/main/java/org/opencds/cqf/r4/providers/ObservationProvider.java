@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ConceptMap;
 import org.hl7.fhir.r4.model.Observation;
 import org.opencds.cqf.common.config.HapiProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ public class ObservationProvider {
 
     private FhirContext fhirContext;
 
+    @Autowired
     public ObservationProvider(FhirContext fhirContext){
         this.fhirContext = fhirContext;
     }

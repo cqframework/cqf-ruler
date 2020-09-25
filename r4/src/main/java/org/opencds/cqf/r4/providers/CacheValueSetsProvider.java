@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.r4.helpers.Helper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
@@ -29,6 +30,7 @@ public class CacheValueSetsProvider {
     private IFhirSystemDao<Bundle, ?> systemDao;
     private IFhirResourceDao<Endpoint> endpointDao;
 
+    @Autowired
     public CacheValueSetsProvider(IFhirSystemDao<Bundle, ?> systemDao, IFhirResourceDao<Endpoint> endpointDao) {
         this.systemDao = systemDao;
         this.endpointDao = endpointDao;

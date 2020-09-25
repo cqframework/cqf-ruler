@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.dstu3.provider.operation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +16,8 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.opencds.cqf.dstu3.builders.OperationOutcomeBuilder;
 import org.opencds.cqf.dstu3.builders.RandomIdBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
@@ -24,10 +26,12 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.UriParam;
 
+@Component
 public class CodeSystemUpdateProvider {
     private IFhirResourceDao<ValueSet> valueSetDao;
     private IFhirResourceDao<CodeSystem> codeSystemDao;
 
+    @Autowired
     public CodeSystemUpdateProvider(IFhirResourceDao<ValueSet> valueSetDao,
             IFhirResourceDao<CodeSystem> codeSystemDao) {
         this.valueSetDao = valueSetDao;

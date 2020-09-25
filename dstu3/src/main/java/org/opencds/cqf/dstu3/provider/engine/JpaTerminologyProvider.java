@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.dstu3.provider.engine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,8 @@ import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.CodeSystemInfo;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.ValueSetInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
@@ -26,11 +28,13 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 /**
  * Created by Christopher Schuler on 7/17/2017.
  */
+@Component
 public class JpaTerminologyProvider implements TerminologyProvider {
 
     private ITermReadSvcDstu3 terminologySvcDstu3;
     private ValueSetResourceProvider valueSetResourceProvider;
 
+    @Autowired
     public JpaTerminologyProvider(ITermReadSvcDstu3 terminologySvcDstu3, FhirContext context,
             ValueSetResourceProvider valueSetResourceProvider) {
         this.terminologySvcDstu3 = terminologySvcDstu3;

@@ -1,4 +1,4 @@
-package org.opencds.cqf.r4.providers;
+package org.opencds.cqf.r4.translation;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

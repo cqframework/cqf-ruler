@@ -16,6 +16,7 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.r4.builders.OperationOutcomeBuilder;
 import org.opencds.cqf.r4.builders.RandomIdBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
@@ -28,6 +29,7 @@ public class CodeSystemUpdateProvider {
     private IFhirResourceDao<ValueSet> valueSetDao;
     private IFhirResourceDao<CodeSystem> codeSystemDao;
 
+    @Autowired
     public CodeSystemUpdateProvider(IFhirResourceDao<ValueSet> valueSetDao,
             IFhirResourceDao<CodeSystem> codeSystemDao) {
         this.valueSetDao = valueSetDao;

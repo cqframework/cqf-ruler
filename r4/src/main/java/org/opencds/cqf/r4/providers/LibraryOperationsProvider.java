@@ -49,8 +49,10 @@ import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.execution.provider.BundleRetrieveProvider;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
+import org.opencds.cqf.r4.translation.R4BundleLibrarySourceProvider;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
@@ -74,6 +76,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
     DaoRegistry registry;
     TerminologyProvider defaultTerminologyProvider;
 
+    @Autowired
     public LibraryOperationsProvider(LibraryResourceProvider libraryResourceProvider,
             NarrativeProvider narrativeProvider, DaoRegistry registry, TerminologyProvider defaultTerminologyProvider) {
         this.narrativeProvider = narrativeProvider;
@@ -173,7 +176,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
 
     // NOTICE: This is trash code that needs to be removed. Don't fix this. It's for
     // a one-off
-    // @SuppressWarnings({"unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes" })
     @Operation(name = "$evaluate", idempotent = true, type = Library.class)
     public Bundle evaluate(@IdParam IdType theId, @OperationParam(name = "patientId") String patientId,
             @OperationParam(name = "periodStart") String periodStart,

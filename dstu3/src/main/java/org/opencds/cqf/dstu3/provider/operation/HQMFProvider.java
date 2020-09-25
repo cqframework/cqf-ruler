@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.dstu3.provider.operation;
 
 import java.io.File;
 import java.io.FileReader;
@@ -47,11 +47,13 @@ import org.opencds.cqf.tooling.measure.stu3.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.stu3.CqfMeasure;
 import org.opencds.cqf.tooling.measure.stu3.TerminologyRef;
 import org.opencds.cqf.tooling.measure.stu3.TerminologyRef.TerminologyRefType;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 
+@Component
 public class HQMFProvider {
 
     private static Map<String, String> measureTypeValueSetMap = new HashMap<String, String>() {

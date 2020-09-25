@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Driver;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.opencds.cqf.cds.providers.ProviderConfiguration;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -123,5 +124,14 @@ public class FhirServerConfig {
     @Bean
 	public PartitionSettings partitionSettings() {
 		return new PartitionSettings();
-	}
+    }
+    
+    @Bean()
+    public ProviderConfiguration providerConfiguration() {
+        return new ProviderConfiguration(
+                HapiProperties.getCdsHooksFhirServerExpandValueSets(),
+                HapiProperties.getCdsHooksFhirServerMaxCodesPerQuery(),
+                HapiProperties.getCdsHooksFhirServerSearchStyleEnum(),
+                HapiProperties.getCdsHooksPreFetchMaxUriLength());
+    }
 }

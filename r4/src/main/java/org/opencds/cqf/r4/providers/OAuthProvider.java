@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.UriType;
 import org.opencds.cqf.common.config.HapiProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
@@ -26,6 +27,7 @@ public class OAuthProvider extends JpaConformanceProviderR4 {
      *      It should only get instantiated if hapi.properties has oauth.enabled set to true.
      */
 
+    @Autowired
     public OAuthProvider(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry) {
         super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry);
     }

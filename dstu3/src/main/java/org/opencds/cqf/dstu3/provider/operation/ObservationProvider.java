@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.dstu3.provider.operation;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -10,6 +10,8 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.ConceptMap;
 import org.hl7.fhir.dstu3.model.Observation;
 import org.opencds.cqf.common.config.HapiProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,10 +19,12 @@ import java.util.stream.Collectors;
 
 import static org.opencds.cqf.common.helpers.ClientHelper.getClient;
 
+@Component
 public class ObservationProvider {
 
     private FhirContext fhirContext;
 
+    @Autowired
     public ObservationProvider(FhirContext fhirContext){
         this.fhirContext = fhirContext;
     }

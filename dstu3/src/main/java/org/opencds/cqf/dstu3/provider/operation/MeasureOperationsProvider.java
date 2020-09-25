@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.dstu3.provider.operation;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,6 +48,8 @@ import org.opencds.cqf.tooling.library.stu3.NarrativeProvider;
 import org.opencds.cqf.tooling.measure.stu3.CqfMeasure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 
@@ -62,6 +64,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
+@Component
 public class MeasureOperationsProvider {
 
     private NarrativeProvider narrativeProvider;
@@ -75,6 +78,7 @@ public class MeasureOperationsProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
 
+    @Autowired
     public MeasureOperationsProvider(DaoRegistry registry, EvaluationProviderFactory factory,
             NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider,
             LibraryResolutionProvider<Library> libraryResolutionProvider,

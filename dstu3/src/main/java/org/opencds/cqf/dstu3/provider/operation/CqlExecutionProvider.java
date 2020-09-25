@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.dstu3.provider.operation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +37,8 @@ import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.dstu3.helpers.FhirMeasureBundler;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
@@ -44,10 +46,12 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 /**
  * Created by Bryn on 1/16/2017.
  */
+@Component
 public class CqlExecutionProvider {
     private EvaluationProviderFactory providerFactory;
     private LibraryResolutionProvider<Library> libraryResolutionProvider;
 
+    @Autowired
     public CqlExecutionProvider(LibraryResolutionProvider<Library> libraryResolutionProvider,
             EvaluationProviderFactory providerFactory) {
         this.providerFactory = providerFactory;

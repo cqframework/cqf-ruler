@@ -6,6 +6,7 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.common.config.HapiProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.Date;
@@ -15,6 +16,8 @@ import static org.opencds.cqf.common.helpers.ClientHelper.getClient;
 public class QuestionnaireProvider {
 
     private FhirContext fhirContext;
+
+    @Autowired
     public QuestionnaireProvider(FhirContext fhirContext){
         this.fhirContext = fhirContext;
     }

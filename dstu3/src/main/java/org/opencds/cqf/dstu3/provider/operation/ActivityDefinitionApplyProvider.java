@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.dstu3.provider.operation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +24,8 @@ import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.dstu3.helpers.Helper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -35,12 +37,14 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 /**
  * Created by Bryn on 1/16/2017.
  */
+@Component
 public class ActivityDefinitionApplyProvider {
 
     private CqlExecutionProvider executionProvider;
     private ModelResolver modelResolver;
     private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
 
+    @Autowired
     public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider,
             IFhirResourceDao<ActivityDefinition> activityDefinitionDao) {
         this.modelResolver = new Dstu3FhirModelResolver();

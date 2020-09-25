@@ -11,6 +11,7 @@ import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.CodeSystemInfo;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.ValueSetInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
@@ -28,6 +29,7 @@ public class JpaTerminologyProvider implements TerminologyProvider {
     private ITermReadSvcR4 terminologySvcR4;
     private ValueSetResourceProvider valueSetResourceProvider;
 
+    @Autowired
     public JpaTerminologyProvider(ITermReadSvcR4 terminologySvcR4, FhirContext context,
             ValueSetResourceProvider valueSetResourceProvider) {
         this.terminologySvcR4 = terminologySvcR4;

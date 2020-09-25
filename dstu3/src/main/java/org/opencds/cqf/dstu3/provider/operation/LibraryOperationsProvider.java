@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.dstu3.provider.operation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,8 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.providers.LibrarySourceProvider;
 import org.opencds.cqf.tooling.library.stu3.NarrativeProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
@@ -32,12 +34,14 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 
+@Component
 public class LibraryOperationsProvider implements org.opencds.cqf.common.providers.LibraryResolutionProvider<Library> {
 
     private NarrativeProvider narrativeProvider;
     private DataRequirementsProvider dataRequirementsProvider;
     private LibraryResourceProvider libraryResourceProvider;
 
+    @Autowired
     public LibraryOperationsProvider(LibraryResourceProvider libraryResourceProvider,
             NarrativeProvider narrativeProvider) {
         this.narrativeProvider = narrativeProvider;

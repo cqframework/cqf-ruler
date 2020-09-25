@@ -26,6 +26,7 @@ import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -39,6 +40,7 @@ public class ApplyCqlOperationProvider {
     private IFhirResourceDao<Bundle> bundleDao;
     private FhirContext context;
 
+    @Autowired
     public ApplyCqlOperationProvider(EvaluationProviderFactory providerFactory, IFhirResourceDao<Bundle> bundleDao, FhirContext context) {
         this.providerFactory = providerFactory;
         this.bundleDao = bundleDao;

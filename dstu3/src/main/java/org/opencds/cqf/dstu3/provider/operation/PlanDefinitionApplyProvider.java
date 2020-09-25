@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.dstu3.provider.operation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +38,8 @@ import org.opencds.cqf.dstu3.builders.RequestGroupActionBuilder;
 import org.opencds.cqf.dstu3.builders.RequestGroupBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -46,6 +48,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 
+@Component
 public class PlanDefinitionApplyProvider {
 
     private CqlExecutionProvider executionProvider;
@@ -59,6 +62,7 @@ public class PlanDefinitionApplyProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
+    @Autowired
     public PlanDefinitionApplyProvider(FhirContext fhirContext,
             ActivityDefinitionApplyProvider activityDefinitionApplyProvider,
             IFhirResourceDao<PlanDefinition> planDefinitionDao,

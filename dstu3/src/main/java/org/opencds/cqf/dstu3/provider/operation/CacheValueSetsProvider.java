@@ -1,4 +1,4 @@
-package org.opencds.cqf.dstu3.providers;
+package org.opencds.cqf.dstu3.provider.operation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +11,8 @@ import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.opencds.cqf.dstu3.helpers.Helper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
@@ -24,11 +26,13 @@ import ca.uhn.fhir.rest.param.StringAndListParam;
 import ca.uhn.fhir.rest.param.StringOrListParam;
 import ca.uhn.fhir.rest.param.StringParam;
 
+@Component
 public class CacheValueSetsProvider {
 
     private IFhirSystemDao<Bundle, ?> systemDao;
     private IFhirResourceDao<Endpoint> endpointDao;
 
+    @Autowired
     public CacheValueSetsProvider(IFhirSystemDao<Bundle, ?> systemDao, IFhirResourceDao<Endpoint> endpointDao) {
         this.systemDao = systemDao;
         this.endpointDao = endpointDao;

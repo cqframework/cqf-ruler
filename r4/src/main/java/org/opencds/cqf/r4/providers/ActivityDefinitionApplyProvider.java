@@ -24,6 +24,7 @@ import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.r4.helpers.Helper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -41,6 +42,7 @@ public class ActivityDefinitionApplyProvider {
     private ModelResolver modelResolver;
     private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
 
+    @Autowired
     public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider,
             IFhirResourceDao<ActivityDefinition> activityDefinitionDao) {
         this.modelResolver = new R4FhirModelResolver();
