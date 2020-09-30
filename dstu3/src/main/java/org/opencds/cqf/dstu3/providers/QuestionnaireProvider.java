@@ -7,6 +7,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.dstu3.model.*;
 import org.opencds.cqf.common.config.HapiProperties;
 
+import java.util.Collections;
 import java.util.Date;
 
 import static org.opencds.cqf.common.helpers.ClientHelper.getClient;
@@ -21,7 +22,7 @@ public class QuestionnaireProvider {
     @Operation(name = "$extract", idempotent = false, type = QuestionnaireResponse.class)
     public Bundle extractObservationFromQuestionnaireResponse(@OperationParam(name = "questionnaireResponse") QuestionnaireResponse questionnaireResponse) {
         if(questionnaireResponse == null) {
-                throw new IllegalArgumentException("Unable to perform operation $extract.  The QuestionnaireResponse was null");
+            throw new IllegalArgumentException("Unable to perform operation $extract.  The QuestionnaireResponse was null");
         }
         Bundle observationsFromQuestionnaireResponse = createObservationBundle(questionnaireResponse);
         Bundle returnBundle = sendObservationBundle(observationsFromQuestionnaireResponse);
@@ -38,29 +39,73 @@ public class QuestionnaireProvider {
         newBundle.setIdentifier(bundleId);
 
         questionnaireResponse.getItem().stream().forEach(item ->{
-            newBundle.addEntry(extractItem(item, authored, questionnaireResponse));
+            processItems(item, authored, questionnaireResponse, newBundle);
         });
         return newBundle;
     }
 
-    private Bundle.BundleEntryComponent extractItem(QuestionnaireResponse.QuestionnaireResponseItemComponent item, Date authored, QuestionnaireResponse questionnaireResponse){
+    private void processItems(QuestionnaireResponse.QuestionnaireResponseItemComponent item, Date authored,
+                                               QuestionnaireResponse questionnaireResponse, Bundle newBundle){
+        if(item.hasAnswer()){
+            item.getAnswer().forEach(answer ->{
+                Bundle.BundleEntryComponent newBundleEntryComponent = createObservationFromItemAnswer(answer, item.getLinkId(), authored, questionnaireResponse);
+                if(null != newBundleEntryComponent){
+                    newBundle.addEntry(newBundleEntryComponent);
+                }
+                if(answer.hasItem()){
+                    answer.getItem().forEach(answerItem->{
+                        processItems(answerItem, authored, questionnaireResponse, newBundle);
+                    });
+                }
+            });
+        }
+        if(item.hasItem()){
+            item.getItem().forEach(itemItem ->{
+                processItems(itemItem, authored, questionnaireResponse, newBundle);
+            });
+        }
+    }
+
+    private Bundle.BundleEntryComponent createObservationFromItemAnswer(QuestionnaireResponse.QuestionnaireResponseItemAnswerComponent answer,
+                                                                      String linkId, Date authored, QuestionnaireResponse questionnaireResponse){
         Observation obs = new Observation();
         obs.setEffective(new DateTimeType(authored));
         obs.setStatus(Observation.ObservationStatus.FINAL);
         obs.setSubject(questionnaireResponse.getSubject());
+        Coding qrCategoryCoding = new Coding();
+        qrCategoryCoding.setCode("survey");
+        qrCategoryCoding.setSystem("http://hl7.org/fhir/observation-category");
+        obs.setCategory(Collections.singletonList(new CodeableConcept().addCoding(qrCategoryCoding)));
         Coding qrCoding = new Coding();
+        qrCoding.setSystem("http://loinc.org");
         qrCoding.setCode("74465-6");
         qrCoding.setDisplay("Questionnaire response Document");
         obs.setCode(new CodeableConcept().addCoding(qrCoding));
-        obs.setId(questionnaireResponse.getIdElement().getIdPart() + "." + item.getLinkId());
-        switch(item.getAnswer().get(0).getValue().fhirType()){
+        obs.setId("qr" + questionnaireResponse.getIdElement().getIdPart() + "." + linkId);
+        switch(answer.getValue().fhirType()){
             case "string":
-                obs.setValue(new StringType(item.getAnswer().get(0).getValueStringType().getValue()));
+                obs.setValue(new StringType(answer.getValueStringType().getValue()));
                 break;
             case "Coding":
-                obs.setValue(new CodeableConcept().addCoding(item.getAnswer().get(0).getValueCoding()));
+                obs.setValue(new CodeableConcept().addCoding(answer.getValueCoding()));
+                break;
+            case "boolean":
+                obs.setValue(new BooleanType(answer.getValueBooleanType().booleanValue()));
                 break;
         }
+        Reference questionnaireResponseReference = new Reference();
+        questionnaireResponseReference.setReference("QuestionnaireResponse" + "/" + questionnaireResponse.getIdElement().getIdPart());
+        Observation.ObservationRelatedComponent related = new Observation.ObservationRelatedComponent()
+                .setType(Observation.ObservationRelationshipType.DERIVEDFROM)
+                .setTarget(questionnaireResponseReference);
+        obs.setRelated(Collections.singletonList(related));
+        Extension linkIdExtension = new Extension();
+        linkIdExtension.setUrl("http://hl7.org/fhir/uv/sdc/StructureDefinition/derivedFromLinkId");
+        Extension innerLinkIdExtension = new Extension();
+        innerLinkIdExtension.setUrl("text");
+        innerLinkIdExtension.setValue(new StringType(linkId));
+        linkIdExtension.setExtension(Collections.singletonList(innerLinkIdExtension));
+        obs.addExtension(linkIdExtension);
         Bundle.BundleEntryRequestComponent berc = new Bundle.BundleEntryRequestComponent();
         berc.setMethod(Bundle.HTTPVerb.PUT);
         berc.setUrl("Observation/" + obs.getId());

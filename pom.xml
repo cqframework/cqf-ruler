@@ -44,7 +44,7 @@
 
     <properties>
         <version.major>0</version.major>
-        <version.minor>3</version.minor>
+        <version.minor>4</version.minor>
         <version.patch>0</version.patch>
         <!-- NOTE: Building under the release profile automatically drops the -SNAPSHOT extension -->
         <revision>${version.major}.${version.minor}.${version.patch}-SNAPSHOT</revision>
@@ -54,11 +54,12 @@
 
         <jetty.version>9.4.28.v20200408</jetty.version>
         <jackson.version>2.10.1</jackson.version>
-        <hapi.version>4.2.0</hapi.version>
-        <cqf-tooling.version>1.1.1</cqf-tooling.version>
-        <cql-engine.version>1.4.0</cql-engine.version>
-        <cqframework.version>1.4.9</cqframework.version>
-        <cds-hooks.version>1.1.0</cds-hooks.version>
+        <hapi.version>5.0.2</hapi.version>
+        <cqf-tooling.version>1.3.0</cqf-tooling.version>
+        <cql-engine.version>1.5.0</cql-engine.version>
+        <cql-evaluator.version>1.0.0</cql-evaluator.version>
+        <cqframework.version>1.5.0</cqframework.version>
+        <cds-hooks.version>1.3.0</cds-hooks.version>
         <slf4j.version>1.7.30</slf4j.version>
 
         <!-- jetty plugin properties (used when starting server locally) -->
@@ -91,7 +92,13 @@
         </repository>
     </repositories>
 
-    <dependencies>
+    <dependencyManagement>
+        <dependencies>
+         <dependency>
+            <groupId>org.opencds.cqf.cql</groupId>
+            <artifactId>evaluator.execution</artifactId>
+            <version>${cql-evaluator.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>tooling</artifactId>
@@ -143,6 +150,63 @@
             <groupId>org.opencds.cqf</groupId>
             <artifactId>cds</artifactId>
             <version>${cds-hooks.version}</version>
+        </dependency>
+
+
+        </dependencies>
+
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.opencds.cqf.cql</groupId>
+            <artifactId>evaluator.execution</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencds.cqf</groupId>
+            <artifactId>tooling</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencds.cqf.cql</groupId>
+            <artifactId>engine</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencds.cqf.cql</groupId>
+            <artifactId>engine.fhir</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>info.cqframework</groupId>
+            <artifactId>cql-to-elm</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>info.cqframework</groupId>
+            <artifactId>cql-formatter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencds.cqf</groupId>
+            <artifactId>cds</artifactId>
         </dependency>
 
         <dependency>

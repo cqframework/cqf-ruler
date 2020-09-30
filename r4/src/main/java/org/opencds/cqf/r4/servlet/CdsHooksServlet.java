@@ -30,6 +30,7 @@ import org.opencds.cqf.cds.evaluation.R4EvaluationContext;
 import org.opencds.cqf.cds.hooks.Hook;
 import org.opencds.cqf.cds.hooks.HookFactory;
 import org.opencds.cqf.cds.hooks.R4HookEvaluator;
+import org.opencds.cqf.cds.providers.ProviderConfiguration;
 import org.opencds.cqf.cds.request.JsonHelper;
 import org.opencds.cqf.cds.request.Request;
 import org.opencds.cqf.cds.response.CdsCard;
@@ -39,6 +40,7 @@ import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
+import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
@@ -66,6 +68,20 @@ public class CdsHooksServlet extends HttpServlet {
     private static JpaFhirRetrieveProvider fhirRetrieveProvider;
 
     private static JpaTerminologyProvider jpaTerminologyProvider;
+
+    private ProviderConfiguration providerConfiguration;
+
+    public ProviderConfiguration getProviderConfiguration() {
+        if (providerConfiguration == null) {
+            providerConfiguration = new ProviderConfiguration(
+                HapiProperties.getCdsHooksFhirServerExpandValueSets() ,
+                HapiProperties.getCdsHooksFhirServerMaxCodesPerQuery(),
+                HapiProperties.getCdsHooksFhirServerSearchStyleEnum(),
+                HapiProperties.getCdsHooksPreFetchMaxUriLength());
+        }
+
+        return providerConfiguration;
+    }
 
     // TODO: There's probably a way to wire this all up using Spring
     public static void setPlanDefinitionProvider(PlanDefinitionApplyProvider planDefinitionProvider) {
@@ -122,8 +138,8 @@ public class CdsHooksServlet extends HttpServlet {
                         request.getContentType()));
             }
 
-            String baseUrl = request.getRequestURL().toString().replace(request.getPathInfo(), "")
-                    .replace(request.getServletPath(), "") + "/fhir";
+            
+            String baseUrl = HapiProperties.getServerAddress();
             String service = request.getPathInfo().replace("/", "");
 
             JsonParser parser = new JsonParser();
@@ -133,6 +149,15 @@ public class CdsHooksServlet extends HttpServlet {
             logger.info(cdsHooksRequest.getRequestJson().toString());
 
             Hook hook = HookFactory.createHook(cdsHooksRequest);
+
+            logger.info("cds-hooks hook: " + hook.getRequest().getHook());
+            logger.info("cds-hooks hook instance: " + hook.getRequest().getHookInstance());
+            logger.info("cds-hooks maxCodesPerQuery: " + this.getProviderConfiguration().getMaxCodesPerQuery());
+            logger.info("cds-hooks expandValueSets: " + this.getProviderConfiguration().getExpandValueSets());
+            logger.info("cds-hooks searchStyle: " + this.getProviderConfiguration().getSearchStyle());
+            logger.info("cds-hooks prefetch maxUriLength: " + this.getProviderConfiguration().getMaxUriLength());
+            logger.info("cds-hooks local server address: " + baseUrl);
+            logger.info("cds-hooks fhir server address: " + hook.getRequest().getFhirServerUrl());
 
             PlanDefinition planDefinition = planDefinitionProvider.getDao()
                     .read(new IdType(hook.getRequest().getServiceName()));
@@ -158,7 +183,7 @@ public class CdsHooksServlet extends HttpServlet {
 
             EvaluationContext<PlanDefinition> evaluationContext = new R4EvaluationContext(hook, version,
                     FhirContext.forR4().newRestfulGenericClient(baseUrl), jpaTerminologyProvider, context, library,
-                    planDefinition);
+                    planDefinition, this.getProviderConfiguration());
 
             this.setAccessControlHeaders(response);
 
@@ -176,8 +201,9 @@ public class CdsHooksServlet extends HttpServlet {
             response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
             response.getWriter().println("ERROR: Exception connecting to remote server.");
             this.printMessageAndCause(e, response);
-            this.handleServerResponseException((BaseServerResponseException) e.getCause(), response);
+            this.handleServerResponseException(e, response);
             this.printStackTrack(e, response);
+            logger.error(e.toString());
         } catch (DataProviderException e) {
             this.setAccessControlHeaders(response);
             response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
@@ -188,7 +214,22 @@ public class CdsHooksServlet extends HttpServlet {
             }
 
             this.printStackTrack(e, response);
-        } catch (Exception e) {
+            logger.error(e.toString());
+        }
+        catch (CqlException e) {
+            this.setAccessControlHeaders(response);
+            response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
+            response.getWriter().println("ERROR: Exception in CQL Execution.");
+            this.printMessageAndCause(e, response);
+            if (e.getCause() != null && (e.getCause() instanceof BaseServerResponseException)) {
+                this.handleServerResponseException((BaseServerResponseException) e.getCause(), response);
+            }
+
+            this.printStackTrack(e, response);
+            logger.error(e.toString());
+        }
+        catch (Exception e) {
+            logger.error(e.toString());
             throw new ServletException("ERROR: Exception in cds-hooks processing.", e);
         }
     }
@@ -246,8 +287,11 @@ public class CdsHooksServlet extends HttpServlet {
     }
 
     private JsonObject getServices() {
-        return new DiscoveryResolutionR4(FhirContext.forR4().newRestfulGenericClient(HapiProperties.getServerAddress()))
-                .resolve().getAsJson();
+        DiscoveryResolutionR4 discoveryResolutionR4 = new DiscoveryResolutionR4(
+                FhirContext.forR4().newRestfulGenericClient(HapiProperties.getServerAddress()));
+        discoveryResolutionR4.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
+        return discoveryResolutionR4.resolve()
+                        .getAsJson();
     }
 
     private String toJsonResponse(List<CdsCard> cards) {
