@@ -9,4 +9,5 @@
 
     <groupId>org.opencds.cqf</groupId>
     <artifactId>common</artifactId>
+    <name>cqf-ruler-common</name>
 </project>

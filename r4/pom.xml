@@ -9,6 +9,7 @@
 
     <groupId>org.opencds.cqf</groupId>
     <artifactId>r4</artifactId>
+    <name>r4</name>
 
     <dependencies>
         <dependency>
