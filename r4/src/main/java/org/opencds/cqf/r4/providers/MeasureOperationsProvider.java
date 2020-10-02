@@ -222,15 +222,17 @@ public class MeasureOperationsProvider {
                                      @OperationParam(name = "topic") String topic,@OperationParam(name = "practitioner") String practitioner,
                                      @OperationParam(name = "measure") String measure, @OperationParam(name="status")String status,
                                      @OperationParam(name = "organization") String organization){
-        //TODO: status - optional if null all gaps - if closed-gap code only those gaps that are closed if open-gap code only those that are open
         //TODO: topic should allow many and be a union of them
         //TODO: "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
         Parameters returnParams = new Parameters();
         if(careGapParameterValidation(periodStart, periodEnd, subject, topic, practitioner, measure, status, organization)) {
             if(subject.startsWith("Patient/")){
-                returnParams.addParameter(new Parameters.ParametersParameterComponent()
+                Parameters.ParametersParameterComponent newParameter = new Parameters.ParametersParameterComponent()
                         .setName("return")
-                        .setResource(patientCareGap(periodStart, periodEnd, subject, topic, measure, status)));
+                        .setResource(patientCareGap(periodStart, periodEnd, subject, topic, measure, status));
+                //TODO - is this supposed to be something like "id": "multiple-gaps-indv-report01"??
+                newParameter.setId(UUID.randomUUID().toString());
+                returnParams.addParameter(newParameter);
                 return returnParams;
             }else if(subject.startsWith("Group/")) {
                 returnParams.setId((status==null?"all-gaps": status) + "-" + subject.replace("/","_") + "-report");
@@ -238,9 +240,12 @@ public class MeasureOperationsProvider {
                     .forEach(groupSubject ->{
                         Bundle patientGapBundle = patientCareGap(periodStart, periodEnd, groupSubject, topic, measure, status);
                          if(null != patientGapBundle){
-                            returnParams.addParameter(new Parameters.ParametersParameterComponent()
-                                    .setName("return")
-                                    .setResource(patientGapBundle));
+                             Parameters.ParametersParameterComponent newParameter = new Parameters.ParametersParameterComponent()
+                                     .setName("return")
+                                     .setResource(patientGapBundle);
+                             //TODO - is this supposed to be something like "id": "multiple-gaps-indv-report01"??
+                             newParameter.setId(UUID.randomUUID().toString());
+                            returnParams.addParameter(newParameter);
                         }
                     });
             }
@@ -323,6 +328,9 @@ public class MeasureOperationsProvider {
         Bundle careGapReport = new Bundle();
         careGapReport.setType(Bundle.BundleType.DOCUMENT);
         careGapReport.setTimestamp(new Date());
+        careGapReport.setId(UUID.randomUUID().toString());
+        //TODO - this MIGHT be a specific string
+        careGapReport.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
 
         Composition composition = new Composition();
         composition.setStatus(Composition.CompositionStatus.FINAL)
