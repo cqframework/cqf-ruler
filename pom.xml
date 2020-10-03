@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -94,63 +94,63 @@
 
     <dependencyManagement>
         <dependencies>
-         <dependency>
-            <groupId>org.opencds.cqf.cql</groupId>
-            <artifactId>evaluator.execution</artifactId>
-            <version>${cql-evaluator.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opencds.cqf</groupId>
-            <artifactId>tooling</artifactId>
-            <version>${cqf-tooling.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+            <dependency>
+                <groupId>org.opencds.cqf.cql</groupId>
+                <artifactId>evaluator.execution</artifactId>
+                <version>${cql-evaluator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opencds.cqf</groupId>
+                <artifactId>tooling</artifactId>
+                <version>${cqf-tooling.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
-        <dependency>
-            <groupId>org.opencds.cqf.cql</groupId>
-            <artifactId>engine</artifactId>
-            <version>${cql-engine.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+            <dependency>
+                <groupId>org.opencds.cqf.cql</groupId>
+                <artifactId>engine</artifactId>
+                <version>${cql-engine.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
-        <dependency>
-            <groupId>org.opencds.cqf.cql</groupId>
-            <artifactId>engine.fhir</artifactId>
-            <version>${cql-engine.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+            <dependency>
+                <groupId>org.opencds.cqf.cql</groupId>
+                <artifactId>engine.fhir</artifactId>
+                <version>${cql-engine.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
-        <dependency>
-            <groupId>info.cqframework</groupId>
-            <artifactId>cql-to-elm</artifactId>
-            <version>${cqframework.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>info.cqframework</groupId>
+                <artifactId>cql-to-elm</artifactId>
+                <version>${cqframework.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>info.cqframework</groupId>
-            <artifactId>cql-formatter</artifactId>
-            <version>${cqframework.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opencds.cqf</groupId>
-            <artifactId>cds</artifactId>
-            <version>${cds-hooks.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>info.cqframework</groupId>
+                <artifactId>cql-formatter</artifactId>
+                <version>${cqframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opencds.cqf</groupId>
+                <artifactId>cds</artifactId>
+                <version>${cds-hooks.version}</version>
+            </dependency>
 
 
         </dependencies>
@@ -162,6 +162,13 @@
             <groupId>org.opencds.cqf.cql</groupId>
             <artifactId>evaluator.execution</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>8.0.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>tooling</artifactId>
@@ -278,9 +285,9 @@
         </dependency>
 
         <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>${slf4j.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <!-- Needed for JEE/Servlet support -->
@@ -409,6 +416,7 @@
                     <configuration>
                         <source>1.8</source>
                         <target>1.8</target>
+                        <showWarnings>true</showWarnings>
                     </configuration>
                 </plugin>
                 <plugin>

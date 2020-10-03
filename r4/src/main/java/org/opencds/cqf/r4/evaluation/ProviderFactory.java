@@ -1,5 +1,7 @@
 package org.opencds.cqf.r4.evaluation;
 
+import javax.inject.Inject;
+
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.ClientHelper;
 import org.opencds.cqf.common.providers.R4ApelonFhirTerminologyProvider;
@@ -10,6 +12,7 @@ import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
@@ -17,12 +20,14 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 // This class is a relatively dumb factory for data providers. It supports only
 // creating JPA providers for FHIR, and only basic auth for terminology
+@Component
 public class ProviderFactory implements EvaluationProviderFactory {
 
     DaoRegistry registry;
     TerminologyProvider defaultTerminologyProvider;
     FhirContext fhirContext;
 
+    @Inject
     public ProviderFactory(FhirContext fhirContext, DaoRegistry registry,
             TerminologyProvider defaultTerminologyProvider) {
         this.defaultTerminologyProvider = defaultTerminologyProvider;

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
@@ -38,6 +39,7 @@ import org.opencds.cqf.dstu3.builders.RequestGroupActionBuilder;
 import org.opencds.cqf.dstu3.builders.RequestGroupBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -46,6 +48,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 
+@Component
 public class PlanDefinitionApplyProvider {
 
     private CqlExecutionProvider executionProvider;
@@ -59,6 +62,7 @@ public class PlanDefinitionApplyProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
+    @Inject
     public PlanDefinitionApplyProvider(FhirContext fhirContext,
             ActivityDefinitionApplyProvider activityDefinitionApplyProvider,
             IFhirResourceDao<PlanDefinition> planDefinitionDao,

@@ -61,10 +61,12 @@ import org.opencds.cqf.tooling.measure.r4.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef.TerminologyRefType;
+import org.springframework.stereotype.Component;
 import org.opencds.cqf.tooling.measure.r4.VersionedTerminologyRef;
 import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 
+@Component
 public class DataRequirementsProvider {
 
     // For creating the CQF measure we need to:

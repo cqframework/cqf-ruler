@@ -1,22 +1,17 @@
 package org.opencds.cqf.dstu3.providers;
 
-import ca.uhn.fhir.jpa.api.config.DaoConfig;
-import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
-import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
-import ca.uhn.fhir.rest.annotation.Metadata;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.server.RestfulServer;
-import org.hl7.fhir.dstu3.model.*;
-import org.opencds.cqf.dstu3.servlet.BaseServlet;
-
 import javax.servlet.http.HttpServletRequest;
 
-public class CqfRulerJpaConformanceProviderDstu3 extends JpaConformanceProviderDstu3 {
+import org.hl7.fhir.dstu3.model.CapabilityStatement;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.opencds.cqf.dstu3.servlet.BaseServlet;
 
-    public CqfRulerJpaConformanceProviderDstu3(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry) {
-        super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry);
-    }
+import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
+import ca.uhn.fhir.rest.annotation.Metadata;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+
+public class CqfRulerJpaConformanceProviderDstu3 extends JpaConformanceProviderDstu3 {
 
     @Metadata
     @Override

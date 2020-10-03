@@ -50,6 +50,7 @@ import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
 import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -61,44 +62,32 @@ public class CdsHooksServlet extends HttpServlet {
     private FhirVersionEnum version = FhirVersionEnum.R4;
     private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 
-    private static PlanDefinitionApplyProvider planDefinitionProvider;
+    private org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider planDefinitionProvider;
 
-    private static LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider;
+    private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider;
 
-    private static JpaFhirRetrieveProvider fhirRetrieveProvider;
+    private JpaFhirRetrieveProvider fhirRetrieveProvider;
 
-    private static JpaTerminologyProvider jpaTerminologyProvider;
+    private org.opencds.cqf.r4.providers.JpaTerminologyProvider jpaTerminologyProvider;
 
     private ProviderConfiguration providerConfiguration;
 
-    public ProviderConfiguration getProviderConfiguration() {
-        if (providerConfiguration == null) {
-            providerConfiguration = new ProviderConfiguration(
-                HapiProperties.getCdsHooksFhirServerExpandValueSets() ,
-                HapiProperties.getCdsHooksFhirServerMaxCodesPerQuery(),
-                HapiProperties.getCdsHooksFhirServerSearchStyleEnum(),
-                HapiProperties.getCdsHooksPreFetchMaxUriLength());
-        }
+    @SuppressWarnings("unchecked")
+    @Override
+    public void init() {
+        // System level providers
+        ApplicationContext appCtx = (ApplicationContext) getServletContext()
+        .getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
 
-        return providerConfiguration;
+        this.providerConfiguration = appCtx.getBean(ProviderConfiguration.class);
+        this.planDefinitionProvider = appCtx.getBean(PlanDefinitionApplyProvider.class);
+        this.libraryResolutionProvider = (LibraryResolutionProvider<org.hl7.fhir.r4.model.Library>)appCtx.getBean(LibraryResolutionProvider.class);
+        this.fhirRetrieveProvider = appCtx.getBean(JpaFhirRetrieveProvider.class);
+        this.jpaTerminologyProvider = appCtx.getBean(JpaTerminologyProvider.class);
     }
 
-    // TODO: There's probably a way to wire this all up using Spring
-    public static void setPlanDefinitionProvider(PlanDefinitionApplyProvider planDefinitionProvider) {
-        CdsHooksServlet.planDefinitionProvider = planDefinitionProvider;
-    }
-
-    public static void setLibraryResolutionProvider(
-            LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider) {
-        CdsHooksServlet.libraryResolutionProvider = libraryResolutionProvider;
-    }
-
-    public static void setSystemRetrieveProvider(JpaFhirRetrieveProvider fhirRetrieveProvider) {
-        CdsHooksServlet.fhirRetrieveProvider = fhirRetrieveProvider;
-    }
-
-    public static void setSystemTerminologyProvider(JpaTerminologyProvider jpaTerminologyProvider) {
-        CdsHooksServlet.jpaTerminologyProvider = jpaTerminologyProvider;
+    protected ProviderConfiguration getProviderConfiguration() {
+        return this.providerConfiguration;
     }
 
     // CORS Pre-flight
