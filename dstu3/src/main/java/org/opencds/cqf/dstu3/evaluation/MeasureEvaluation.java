@@ -536,37 +536,11 @@ public class MeasureEvaluation {
             // TODO: Measure Observations...
         }
 
-        for (String key : codeToResourceMap.keySet()) {
-            org.hl7.fhir.dstu3.model.ListResource list = new org.hl7.fhir.dstu3.model.ListResource();
-            for (String element : codeToResourceMap.get(key)) {
-                org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent();
-                comp.setItem(new Reference('#' + element));
-                list.addEntry(comp);
-            }
-
-            if (!list.isEmpty()) {
-                list.setId(UUID.randomUUID().toString());
-                list.setTitle(key);
-                resources.put(list.getId(), list);
-            }
-        }
-
         if (!resources.isEmpty()) {
             List<Reference> evaluatedResourceIds = new ArrayList<>();
             resources.forEach((key, resource) -> {
                 evaluatedResourceIds.add(new Reference(resource.getId()));
             });
-
-            // TODO: DSTU3 Doesn't support this..
-            // report.setEvaluatedResources(evaluatedResourceIds);
-
-            /*
-            FhirMeasureBundler bundler = new FhirMeasureBundler();
-            org.hl7.fhir.dstu3.model.Bundle evaluatedResources = bundler.bundle(resources.values());
-            evaluatedResources.setId(UUID.randomUUID().toString());
-            report.setEvaluatedResources(new Reference(evaluatedResources.getId()));
-            report.addContained(evaluatedResources);
-            */
         }
 
         if (sdeAccumulators.size() > 0) {
