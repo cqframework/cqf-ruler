@@ -18,8 +18,9 @@ import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import org.opencds.cqf.r4.servlet.BaseServlet;
 
-public class OAuthProvider extends JpaConformanceProviderR4 {
+public class OAuthProvider extends CqfRulerJpaConformanceProviderR4 {
     /**
      *      This class is NOT designed to be a real OAuth provider.
      *      It is designed to provide a capability statement and to pass thru the path to the real oauth verification server.

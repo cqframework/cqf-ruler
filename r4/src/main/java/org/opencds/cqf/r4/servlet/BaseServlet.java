@@ -94,7 +94,7 @@ public class BaseServlet extends RestfulServer {
             this.registerProvider(oauthProvider);
             this.setServerConformanceProvider(oauthProvider);
         }else {
-            JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao,
+            JpaConformanceProviderR4 confProvider = new CqfRulerJpaConformanceProviderR4(this, systemDao,
                     appCtx.getBean(DaoConfig.class), appCtx.getBean(ISearchParamRegistry.class));
             confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
             setServerConformanceProvider(confProvider);
