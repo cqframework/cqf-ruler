@@ -3,6 +3,8 @@ package org.opencds.cqf.r4.providers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.ValueSet;
@@ -11,6 +13,7 @@ import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.CodeSystemInfo;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.ValueSetInfo;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
@@ -23,11 +26,13 @@ import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
+@Component
 public class JpaTerminologyProvider implements TerminologyProvider {
 
     private ITermReadSvcR4 terminologySvcR4;
     private ValueSetResourceProvider valueSetResourceProvider;
 
+    @Inject
     public JpaTerminologyProvider(ITermReadSvcR4 terminologySvcR4, FhirContext context,
             ValueSetResourceProvider valueSetResourceProvider) {
         this.terminologySvcR4 = terminologySvcR4;

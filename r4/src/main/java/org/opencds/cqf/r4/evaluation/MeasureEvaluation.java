@@ -113,6 +113,7 @@ public class MeasureEvaluation {
         return evaluate(measure, context, getAllPatients(), MeasureReport.MeasureReportType.SUMMARY, isSingle);
     }
 
+    @SuppressWarnings("unchecked")
     private void clearExpressionCache(Context context) {
         // Hack to clear expression cache
         // See cqf-ruler github issue #153

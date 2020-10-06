@@ -4,11 +4,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Driver;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.opencds.cqf.cds.providers.ProviderConfiguration;
+import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.model.config.PartitionSettings;
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
@@ -17,6 +21,7 @@ import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 
 @Configuration
 @EnableTransactionManagement
+@ComponentScan(basePackages = "org.opencds.cqf.common")
 public class FhirServerConfig {
 
     private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(FhirServerConfig.class);
@@ -123,5 +128,19 @@ public class FhirServerConfig {
     @Bean
 	public PartitionSettings partitionSettings() {
 		return new PartitionSettings();
-	}
+    }
+    
+    @Bean()
+    public ProviderConfiguration providerConfiguration() {
+        return new ProviderConfiguration(
+                HapiProperties.getCdsHooksFhirServerExpandValueSets(),
+                HapiProperties.getCdsHooksFhirServerMaxCodesPerQuery(),
+                HapiProperties.getCdsHooksFhirServerSearchStyleEnum(),
+                HapiProperties.getCdsHooksPreFetchMaxUriLength());
+    }
+
+    @Bean()
+    public SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
+        return new SearchParameterResolver(fhirContext);
+    }
 }
