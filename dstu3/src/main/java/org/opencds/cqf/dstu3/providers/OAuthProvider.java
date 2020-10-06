@@ -9,10 +9,11 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import org.hl7.fhir.dstu3.model.*;
 import org.opencds.cqf.common.config.HapiProperties;
+import org.opencds.cqf.dstu3.servlet.BaseServlet;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class OAuthProvider extends JpaConformanceProviderDstu3 {
+public class OAuthProvider extends CqfRulerJpaConformanceProviderDstu3 {
     public OAuthProvider(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry) {
         super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry);
     }
