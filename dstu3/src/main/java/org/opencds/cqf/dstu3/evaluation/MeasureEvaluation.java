@@ -1,13 +1,7 @@
 package org.opencds.cqf.dstu3.evaluation;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.cqframework.cql.elm.execution.ExpressionDef;
@@ -278,6 +272,7 @@ public class MeasureEvaluation {
 
         HashMap<String, Resource> resources = new HashMap<>();
         HashMap<String, HashSet<String>> codeToResourceMap = new HashMap<>();
+        Set<String> evaluatedResourcesList = new HashSet<>();
 
         MeasureScoring measureScoring = MeasureScoring.fromCode(measure.getScoring().getCodingFirstRep().getCode());
         if (measureScoring == null) {
@@ -545,16 +540,17 @@ public class MeasureEvaluation {
             }
 
             if (!list.isEmpty()) {
-                list.setId(UUID.randomUUID().toString());
+                list.setId("List/" + UUID.randomUUID().toString());
                 list.setTitle(key);
                 resources.put(list.getId(), list);
+                list.getEntry().forEach(listResource -> evaluatedResourcesList.add(listResource.getItem().getReference()));
             }
         }
 
         if (!resources.isEmpty()) {
             List<Reference> evaluatedResourceIds = new ArrayList<>();
-            resources.forEach((key, resource) -> {
-                evaluatedResourceIds.add(new Reference(resource.getId()));
+            evaluatedResourcesList.forEach((resource) -> {
+                evaluatedResourceIds.add(new Reference(resource));
             });
 
             // TODO: DSTU3 Doesn't support this..
