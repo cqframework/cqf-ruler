@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.RequestGroup;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.common.builders.BaseBuilder;
 
@@ -50,8 +51,18 @@ public class RequestGroupBuilder extends BaseBuilder<RequestGroup> {
         return this;
     }
 
+    public RequestGroupBuilder addAction(RequestGroup.RequestGroupActionComponent action) {
+        complexProperty.addAction(action);
+        return this;
+    }
+
     public RequestGroupBuilder buildExtension(List<Extension> extensions) {
         complexProperty.setExtension(extensions);
+        return this;
+    }
+
+    public RequestGroupBuilder buildContained(Resource result) {
+        complexProperty.addContained(result);
         return this;
     }
 }
