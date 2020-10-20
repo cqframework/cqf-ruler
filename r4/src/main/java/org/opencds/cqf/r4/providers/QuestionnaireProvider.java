@@ -27,9 +27,8 @@ public class QuestionnaireProvider {
             throw new IllegalArgumentException("Unable to perform operation $extract.  The QuestionnaireResponse was null");
         }
         Bundle observationsFromQuestionnaireResponse = createObservationBundle(questionnaireResponse);
-//        Bundle returnBundle = sendObservationBundle(observationsFromQuestionnaireResponse);
-        return observationsFromQuestionnaireResponse;
-//        return returnBundle;
+        Bundle returnBundle = sendObservationBundle(observationsFromQuestionnaireResponse);
+        return returnBundle;
     }
 
     private Bundle createObservationBundle(QuestionnaireResponse questionnaireResponse){
