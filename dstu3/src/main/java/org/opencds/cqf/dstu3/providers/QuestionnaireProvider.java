@@ -39,10 +39,6 @@ public class QuestionnaireProvider {
         bundleId.setValue("QuestionnaireResponse/" + questionnaireResponse.getIdElement().getIdPart());
         newBundle.setType(Bundle.BundleType.TRANSACTION);
         newBundle.setIdentifier(bundleId);
-        //dstu3 requires the questionnaire to be a reference, like below, instead of just an id like r4
-        //        "questionnaire": {
-        //            "reference":"http://localhost:8080/cqf-ruler-dstu3/fhir/Questionnaire/mypain-questionnaire"
-        //        },
         Map questionnaireCodeMap = getQuestionnaireCodeMap(questionnaireResponse.getQuestionnaire().getReference());
 
         questionnaireResponse.getItem().stream().forEach(item ->{

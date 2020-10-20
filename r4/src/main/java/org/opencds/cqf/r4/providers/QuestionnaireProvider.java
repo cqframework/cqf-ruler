@@ -133,13 +133,13 @@ public class QuestionnaireProvider {
     private Map getQuestionnaireCodeMap(String questionnaireId){
         String url = HapiProperties.getQuestionnaireResponseExtractEndpoint();
         if (null == url || url.length() < 1) {
-            throw new IllegalArgumentException("Unable to transmit observation bundle.  No observation.endpoint defined in hapi.properties.");
+            throw new IllegalArgumentException("Unable to GET Questionnaire.  No observation.endpoint defined in hapi.properties.");
         }
         String user = HapiProperties.getQuestionnaireResponseExtractUserName();
         String password = HapiProperties.getQuestionnaireResponseExtractPassword();
 
         IGenericClient client = getClient(fhirContext, url, user, password);
-        Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl (url + "/Questionnaire/" + questionnaireId).execute();
+        Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl (questionnaireId).execute();
 
         return createCodeMap(questionnaire);
     }
