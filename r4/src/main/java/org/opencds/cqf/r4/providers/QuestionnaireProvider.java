@@ -130,7 +130,7 @@ public class QuestionnaireProvider {
         return outcomeBundle;
     }
 
-    private Map getQuestionnaireCodeMap(String questionnaireId){
+    private Map getQuestionnaireCodeMap(String questionnaireUrl){
         String url = HapiProperties.getQuestionnaireResponseExtractEndpoint();
         if (null == url || url.length() < 1) {
             throw new IllegalArgumentException("Unable to GET Questionnaire.  No observation.endpoint defined in hapi.properties.");
@@ -139,7 +139,7 @@ public class QuestionnaireProvider {
         String password = HapiProperties.getQuestionnaireResponseExtractPassword();
 
         IGenericClient client = getClient(fhirContext, url, user, password);
-        Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl (questionnaireId).execute();
+        Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl (questionnaireUrl).execute();
 
         return createCodeMap(questionnaire);
     }
