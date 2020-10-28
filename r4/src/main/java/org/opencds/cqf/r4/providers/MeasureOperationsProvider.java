@@ -1,34 +1,60 @@
 package org.opencds.cqf.r4.providers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
-import ca.uhn.fhir.rest.annotation.*;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.DetectedIssue;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Group;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.ListResource;
+import org.hl7.fhir.r4.model.Measure;
+import org.hl7.fhir.r4.model.MeasureReport;
+import org.hl7.fhir.r4.model.Meta;
+import org.hl7.fhir.r4.model.Narrative;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
-import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
-import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluation;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
+import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeeder;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
+import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
+import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -145,15 +171,18 @@ public class MeasureOperationsProvider {
             @OperationParam(name = "source") String source, @OperationParam(name = "user") String user,
             @OperationParam(name = "pass") String pass) throws InternalErrorException, FHIRException {
         LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.libraryResolutionProvider);
-        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader,
-                this.libraryResolutionProvider);
+        MeasureEvaluationSeeder seeder = new MeasureEvaluationSeeder(this.factory, libraryLoader, this.libraryResolutionProvider);
+        seeder.usingDefaults();
         Measure measure = this.measureResourceProvider.getDao().read(theId);
 
         if (measure == null) {
             throw new RuntimeException("Could not find Measure/" + theId.getIdPart());
         }
 
-        seed.setup(measure, periodStart, periodEnd, productLine, source, user, pass);
+        seeder.withTerminologyProvider(source, user, pass)
+              .withProductLine(productLine)
+              .withMeasurementPeriod(periodStart, periodEnd);
+        MeasureEvaluationSeed seed = seeder.create(measure);
 
         // resolve report type
         MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), this.registry,
