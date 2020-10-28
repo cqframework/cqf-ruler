@@ -597,33 +597,36 @@ public class MeasureOperationsProvider {
     @SuppressWarnings("unchecked")
     @Operation(name = "$submit-data", idempotent = true, type = Measure.class)
     public Resource submitData(RequestDetails details, @IdParam IdType theId,
-            @OperationParam(name = "measurereport", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
+            @OperationParam(name = "measureReport", min = 1, max = 1, type = MeasureReport.class) MeasureReport report,
             @OperationParam(name = "resource") List<IAnyResource> resources) {
         Bundle transactionBundle = new Bundle().setType(Bundle.BundleType.TRANSACTION);
 
+        //TODO: measureReport should be measurereport.  Temporarily updated to work with DEQM RI
         /*
          * TODO - resource validation using $data-requirements operation (params are the
          * provided id and the measurement period from the MeasureReport)
-         *
+         * 
          * TODO - profile validation ... not sure how that would work ... (get
          * StructureDefinition from URL or must it be stored in Ruler?)
          */
 
         transactionBundle.addEntry(createTransactionEntry(report));
 
-        for (IAnyResource resource : resources) {
-            Resource res = (Resource) resource;
-            if (res instanceof Bundle) {
-                for (Bundle.BundleEntryComponent entry : createTransactionBundle((Bundle) res).getEntry()) {
-                    transactionBundle.addEntry(entry);
+        if (resources != null) {
+            for (IAnyResource resource : resources) {
+                Resource res = (Resource) resource;
+                if (res instanceof Bundle) {
+                    for (Bundle.BundleEntryComponent entry : createTransactionBundle((Bundle) res).getEntry()) {
+                        transactionBundle.addEntry(entry);
+                    }
+                } else {
+                    // Build transaction bundle
+                    transactionBundle.addEntry(createTransactionEntry(res));
                 }
-            } else {
-                // Build transaction bundle
-                transactionBundle.addEntry(createTransactionEntry(res));
             }
         }
 
-        return (Resource) ((IFhirSystemDao<Bundle,?>)this.registry.getSystemDao()).transaction(details, transactionBundle);
+        return (Resource) this.registry.getSystemDao().transaction(details, transactionBundle);
     }
 
     private Bundle createTransactionBundle(Bundle bundle) {
