@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.AbstractMap;
 import java.util.Date;
 
+import javax.inject.Inject;
+
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
@@ -26,6 +28,7 @@ import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -33,12 +36,14 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 
+@Component
 public class ApplyCqlOperationProvider {
 
     private EvaluationProviderFactory providerFactory;
     private IFhirResourceDao<Bundle> bundleDao;
     private FhirContext context;
 
+    @Inject
     public ApplyCqlOperationProvider(EvaluationProviderFactory providerFactory, IFhirResourceDao<Bundle> bundleDao, FhirContext context) {
         this.providerFactory = providerFactory;
         this.bundleDao = bundleDao;

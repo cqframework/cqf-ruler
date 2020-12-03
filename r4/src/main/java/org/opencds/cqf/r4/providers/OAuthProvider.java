@@ -2,34 +2,24 @@ package org.opencds.cqf.r4.providers;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.UriType;
 import org.opencds.cqf.common.config.HapiProperties;
+import org.springframework.stereotype.Component;
 
-import ca.uhn.fhir.jpa.api.config.DaoConfig;
-import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.provider.r4.JpaConformanceProviderR4;
-import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.server.RestfulServer;
 
-public class OAuthProvider extends JpaConformanceProviderR4 {
-    /**
-     *      This class is NOT designed to be a real OAuth provider.
-     *      It is designed to provide a capability statement and to pass thru the path to the real oauth verification server.
-     *      It should only get instantiated if hapi.properties has oauth.enabled set to true.
-     */
-
-    public OAuthProvider(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry) {
-        super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry);
-    }
-
+/**
+ *      This class is NOT designed to be a real OAuth provider.
+ *      It is designed to provide a capability statement and to pass thru the path to the real oauth verification server.
+ *      It should only get instantiated if hapi.properties has oauth.enabled set to true.
+ */
+@Component
+public class OAuthProvider extends CqfRulerJpaConformanceProviderR4 {
     @Metadata
     @Override
     public CapabilityStatement getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {

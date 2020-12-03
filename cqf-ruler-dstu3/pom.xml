@@ -10,6 +10,7 @@
 
     <groupId>org.opencds.cqf</groupId>
     <artifactId>cqf-ruler-dstu3</artifactId>
+    <name>cqf-ruler-dstu3</name>
 
     <properties>
         <p.type>war</p.type>

@@ -1,22 +1,25 @@
 package org.opencds.cqf.dstu3.providers;
 
-import ca.uhn.fhir.jpa.api.config.DaoConfig;
-import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
-import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
-import ca.uhn.fhir.rest.annotation.Metadata;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.server.RestfulServer;
-import org.hl7.fhir.dstu3.model.*;
-import org.opencds.cqf.common.config.HapiProperties;
-
 import javax.servlet.http.HttpServletRequest;
 
-public class OAuthProvider extends JpaConformanceProviderDstu3 {
-    public OAuthProvider(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry) {
-        super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry);
-    }
+import org.hl7.fhir.dstu3.model.CapabilityStatement;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.UriType;
+import org.opencds.cqf.common.config.HapiProperties;
+import org.springframework.stereotype.Component;
 
+import ca.uhn.fhir.rest.annotation.Metadata;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+
+/**
+ *      This class is NOT designed to be a real OAuth provider.
+ *      It is designed to provide a capability statement and to pass thru the path to the real oauth verification server.
+ *      It should only get instantiated if hapi.properties has oauth.enabled set to true.
+ */
+@Component
+public class OAuthProvider extends CqfRulerJpaConformanceProviderDstu3 {
     @Metadata
     @Override
     public CapabilityStatement getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {

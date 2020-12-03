@@ -9,38 +9,9 @@ cache:
   directories:
   - "$HOME/.m2/repository"
 install:
-- mvn install -U -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+- ./scripts/install.sh
 script:
-- if [[ "$TRAVIS_BRANCH" =~ master* ]]; then mvn test -B -P release; fi
-- if ! [[ "$TRAVIS_BRANCH" =~ master* ]]; then mvn test -B; fi
-before_deploy:
-- if [[ "$TRAVIS_BRANCH" =~ master* ]]; then echo $GPG_SECRET_KEYS | base64 --decode
-  | $GPG_EXECUTABLE --import; fi
-- if [[ "$TRAVIS_BRANCH" =~ master* ]]; then echo $GPG_OWNERTRUST | base64 --decode
-  | $GPG_EXECUTABLE --import-ownertrust; fi
-- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-deploy:
-- provider: script
-  script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true
-    && docker build . -t contentgroup/cqf-ruler:gic && docker push contentgroup/cqf-ruler:gic
-  cleanup: false
-  skip_cleanup: true
-  on:
-    branch: davinci_gic
-- provider: script
-  script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -DskipTests=true
-    && docker build . -t contentgroup/cqf-ruler:develop && docker push contentgroup/cqf-ruler:develop
-  cleanup: false
-  skip_cleanup: true
-  on:
-    branch: develop
-- provider: script
-  script: cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -P release
-    -DskipTests=true  && docker build . -t contentgroup/cqf-ruler && docker push contentgroup/cqf-ruler
-  cleanup: false
-  skip_cleanup: true
-  on:
-    branch: master
+- ./scripts/build.sh
 before_cache:
 - rm -rf $HOME/.m2/repository/org/opencds/cqf/parent
 - rm -rf $HOME/.m2/repository/org/opencds/cqf/common

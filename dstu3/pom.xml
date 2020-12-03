@@ -10,6 +10,7 @@
 
     <groupId>org.opencds.cqf</groupId>
     <artifactId>dstu3</artifactId>
+    <name>dstu3</name>
 
     <dependencies>
         <dependency>
@@ -17,5 +18,11 @@
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
+    
+      <dependency>
+        <groupId>javax</groupId>
+        <artifactId>javaee-api</artifactId>
+        <version>8.0.1</version>
+      </dependency>
     </dependencies>
 </project>

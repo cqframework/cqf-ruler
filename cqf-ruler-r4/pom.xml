@@ -10,6 +10,7 @@
 
     <groupId>org.opencds.cqf</groupId>
     <artifactId>cqf-ruler-r4</artifactId>
+    <name>cqf-ruler-r4</name>
 
     <properties>
         <p.type>war</p.type>

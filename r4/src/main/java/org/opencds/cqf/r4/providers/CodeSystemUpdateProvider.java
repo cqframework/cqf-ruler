@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
@@ -16,6 +18,7 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.r4.builders.OperationOutcomeBuilder;
 import org.opencds.cqf.r4.builders.RandomIdBuilder;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
@@ -24,10 +27,12 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.UriParam;
 
+@Component
 public class CodeSystemUpdateProvider {
     private IFhirResourceDao<ValueSet> valueSetDao;
     private IFhirResourceDao<CodeSystem> codeSystemDao;
 
+    @Inject
     public CodeSystemUpdateProvider(IFhirResourceDao<ValueSet> valueSetDao,
             IFhirResourceDao<CodeSystem> codeSystemDao) {
         this.valueSetDao = valueSetDao;
