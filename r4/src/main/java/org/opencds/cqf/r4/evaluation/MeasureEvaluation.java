@@ -636,7 +636,7 @@ public class MeasureEvaluation {
                 if(sdeKey.equalsIgnoreCase("sde-sex")){
                     valueCoding.setCode(sdeAccumulatorKey);
                 }else {
-                    String coreCategory = sdeKey.substring(sdeKey.lastIndexOf('-'));
+                    String coreCategory = sdeKey.substring(sdeKey.lastIndexOf('-') >= 0 ? sdeKey.lastIndexOf('-') : 0);
                     patients.forEach((pt)-> {
                         pt.getExtension().forEach((ptExt) -> {
                             if (ptExt.getUrl().contains(coreCategory)) {
