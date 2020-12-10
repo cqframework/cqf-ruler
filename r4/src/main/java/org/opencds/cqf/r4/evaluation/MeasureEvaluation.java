@@ -592,7 +592,11 @@ public class MeasureEvaluation {
                             break;
                         case "ArrayList":
                             if (((ArrayList<?>) sdeListItem).size() > 0) {
-                                code  = ((Coding) ((ArrayList<?>) sdeListItem).get(0)).getCode();
+                                if (((ArrayList<?>) sdeListItem).get(0).getClass().getSimpleName().equals("Coding")) {
+                                    code  = ((Coding) ((ArrayList<?>) sdeListItem).get(0)).getCode();
+                                } else {
+                                    continue;
+                                }
                             }else{
                                 continue;
                             }
