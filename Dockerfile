@@ -1,24 +1,18 @@
-# Build the WAR
-FROM maven as Build-WAR
-
-RUN mkdir /build
-WORKDIR /build
-COPY . .
-RUN mvn package -DskipTests
-
-# Build the image
 FROM jetty:9-jre11
 
 USER jetty:jetty
 
+# Build WAR
+RUN mvn package
+
 # Default database directory
 RUN mkdir -p /var/lib/jetty/target
 
-# Default config directory
+#Default config directory
 RUN mkdir -p /var/lib/jetty/webapps/config
 
-COPY --chown=jetty:jetty --from=Build-WAR /build/cqf-ruler-dstu3/target/cqf-ruler-dstu3.war /var/lib/jetty/webapps/cqf-ruler-dstu3.war
-COPY --chown=jetty:jetty --from=Build-WAR /build/cqf-ruler-r4/target/cqf-ruler-r4.war /var/lib/jetty/webapps/cqf-ruler-r4.war
+COPY --chown=jetty:jetty ./cqf-ruler-dstu3/target/cqf-ruler-dstu3.war /var/lib/jetty/webapps/cqf-ruler-dstu3.war
+COPY --chown=jetty:jetty ./cqf-ruler-r4/target/cqf-ruler-r4.war /var/lib/jetty/webapps/cqf-ruler-r4.war
 EXPOSE 8080
 
 ENV SERVER_ADDRESS_DSTU3="http://localhost:8080/cqf-ruler-dstu3/fhir"
