@@ -2,9 +2,6 @@ FROM jetty:9-jre11
 
 USER jetty:jetty
 
-# Build WAR
-RUN mvn package
-
 # Default database directory
 RUN mkdir -p /var/lib/jetty/target
 
