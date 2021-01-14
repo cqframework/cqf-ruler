@@ -63,6 +63,7 @@ public class BaseServlet extends RestfulServer {
         this.registry = appCtx.getBean(DaoRegistry.class);
 
         DaoConfig daoConfig = appCtx.getBean(DaoConfig.class);
+		daoConfig.setResourceClientIdStrategy(DaoConfig.ClientIdStrategyEnum.ANY);
         ISearchParamRegistry searchParamRegistry = appCtx.getBean(ISearchParamRegistry.class);
 
         // System and Resource Providers
