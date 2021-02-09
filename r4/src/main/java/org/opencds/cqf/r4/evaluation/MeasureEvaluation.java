@@ -402,7 +402,7 @@ public class MeasureEvaluation {
                         boolean inInitialPopulation = evaluatePopulationCriteria(context, patient,
                                 initialPopulationCriteria, initialPopulation, initialPopulationPatients, null, null,
                                 null);
-                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources,
+                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION.toCode(), resources,
                                 codeToResourceMap);
 
                         if (inInitialPopulation) {
@@ -410,7 +410,7 @@ public class MeasureEvaluation {
                             boolean inDenominator = evaluatePopulationCriteria(context, patient, denominatorCriteria,
                                     denominator, denominatorPatients, denominatorExclusionCriteria,
                                     denominatorExclusion, denominatorExclusionPatients);
-                            populateResourceMap(context, MeasurePopulationType.DENOMINATOR, resources,
+                            populateResourceMap(context, MeasurePopulationType.DENOMINATOR.toCode(), resources,
                                     codeToResourceMap);
 
                             if (inDenominator) {
@@ -418,7 +418,7 @@ public class MeasureEvaluation {
                                 boolean inNumerator = evaluatePopulationCriteria(context, patient, numeratorCriteria,
                                         numerator, numeratorPatients, numeratorExclusionCriteria, numeratorExclusion,
                                         numeratorExclusionPatients);
-                                populateResourceMap(context, MeasurePopulationType.NUMERATOR, resources,
+                                populateResourceMap(context, MeasurePopulationType.NUMERATOR.toCode(), resources,
                                         codeToResourceMap);
 
                                 if (!inNumerator && inDenominator && (denominatorExceptionCriteria != null)) {
@@ -429,7 +429,7 @@ public class MeasureEvaluation {
                                         inException = true;
                                         denominatorException.put(resource.getIdElement().getIdPart(), resource);
                                         denominator.remove(resource.getIdElement().getIdPart());
-                                        populateResourceMap(context, MeasurePopulationType.DENOMINATOREXCEPTION,
+                                        populateResourceMap(context, MeasurePopulationType.DENOMINATOREXCEPTION.toCode(),
                                                 resources, codeToResourceMap);
                                     }
                                     if (inException) {
@@ -444,7 +444,7 @@ public class MeasureEvaluation {
                                 }
                             }
                         }
-                        populateSDEAccumulators(measure, context, patient, sdeAccumulators, sde);
+                        populateSDEAccumulators(measure, context, patient, sdeAccumulators, sde, resources, codeToResourceMap);
                     }
 
                     // Calculate actual measure score, Count(numerator) / Count(denominator)
@@ -463,7 +463,7 @@ public class MeasureEvaluation {
                         boolean inInitialPopulation = evaluatePopulationCriteria(context, patient,
                                 initialPopulationCriteria, initialPopulation, initialPopulationPatients, null, null,
                                 null);
-                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources,
+                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION.toCode(), resources,
                                 codeToResourceMap);
 
                         if (inInitialPopulation) {
@@ -482,7 +482,7 @@ public class MeasureEvaluation {
                                 }
                             }
                         }
-                        populateSDEAccumulators(measure, context, patient, sdeAccumulators,sde);
+                        populateSDEAccumulators(measure, context, patient, sdeAccumulators, sde, resources, codeToResourceMap);
                     }
 
                     break;
@@ -494,9 +494,9 @@ public class MeasureEvaluation {
                         evaluatePopulationCriteria(context, patient,
                                 initialPopulationCriteria, initialPopulation, initialPopulationPatients, null, null,
                                 null);
-                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION, resources,
+                        populateResourceMap(context, MeasurePopulationType.INITIALPOPULATION.toCode(), resources,
                                 codeToResourceMap);
-                        populateSDEAccumulators(measure, context, patient, sdeAccumulators, sde);
+                        populateSDEAccumulators(measure, context, patient, sdeAccumulators, sde, resources, codeToResourceMap);
                     }
 
                     break;
@@ -563,10 +563,17 @@ public class MeasureEvaluation {
     }
 
     private void populateSDEAccumulators(Measure measure, Context context, Patient patient,HashMap<String, HashMap<String, Integer>> sdeAccumulators,
-                                         List<Measure.MeasureSupplementalDataComponent> sde){
+                                         List<Measure.MeasureSupplementalDataComponent> sde, HashMap<String, Resource> resources, HashMap<String, HashSet<String>> codeToResourceMap){
         context.setContextValue("Patient", patient.getIdElement().getIdPart());
-        List<Object> sdeList = sde.stream().map(sdeItem -> context.resolveExpressionRef(sdeItem.getCriteria().getExpression()).evaluate(context)).collect(Collectors.toList());
-        if(!sdeList.isEmpty()) {
+
+        List<Object> sdeList = sde.stream().map(sdeItem -> {
+            String expression = sdeItem.getCriteria().getExpression();
+            Object result = context.resolveExpressionRef(expression).evaluate(context);
+            populateResourceMap(context, expression, resources, codeToResourceMap);
+            return result;
+        }).collect(Collectors.toList());
+
+       if(!sdeList.isEmpty()) {
             for (int i = 0; i < sdeList.size(); i++) {
                 Object sdeListItem = sdeList.get(i);
                 if(null != sdeListItem) {
@@ -671,17 +678,17 @@ public class MeasureEvaluation {
         return report;
     }
 
-    private void populateResourceMap(Context context, MeasurePopulationType type, HashMap<String, Resource> resources,
+    private void populateResourceMap(Context context, String code, HashMap<String, Resource> resources,
             HashMap<String, HashSet<String>> codeToResourceMap) {
         if (context.getEvaluatedResources().isEmpty()) {
             return;
         }
 
-        if (!codeToResourceMap.containsKey(type.toCode())) {
-            codeToResourceMap.put(type.toCode(), new HashSet<>());
+        if (!codeToResourceMap.containsKey(code)) {
+            codeToResourceMap.put(code, new HashSet<>());
         }
 
-        HashSet<String> codeHashSet = codeToResourceMap.get((type.toCode()));
+        HashSet<String> codeHashSet = codeToResourceMap.get(code);
 
         for (Object o : context.getEvaluatedResources()) {
             if (o instanceof Resource) {
