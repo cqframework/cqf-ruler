@@ -1,5 +1,6 @@
 package org.opencds.cqf.r4.evaluation;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -7,21 +8,7 @@ import java.util.stream.Collectors;
 import org.cqframework.cql.elm.execution.ExpressionDef;
 import org.cqframework.cql.elm.execution.FunctionDef;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.IntegerType;
-import org.hl7.fhir.r4.model.ListResource;
-import org.hl7.fhir.r4.model.Measure;
-import org.hl7.fhir.r4.model.MeasureReport;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Quantity;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.common.evaluation.MeasurePopulationType;
 import org.opencds.cqf.common.evaluation.MeasureScoring;
 import org.opencds.cqf.cql.engine.data.DataProvider;
@@ -562,6 +549,66 @@ public class MeasureEvaluation {
         return report;
     }
 
+    private void addCodeIfNotExists(ArrayList<String> codes, String code) {
+        if (code == null || code.isEmpty()) {
+            return;
+        }
+
+        if (codes.indexOf(code) < 0) {
+            codes.add(code);
+        }
+    }
+
+    private ArrayList<String> populateSDEAccumulatorCodes(Object sdeListItem, ArrayList<String> codes) {
+        if (codes == null) {
+            codes = new ArrayList<String>();
+        }
+        if (sdeListItem == null) {
+            return codes;
+        }
+
+        switch (sdeListItem.getClass().getName()) {
+            case "org.opencds.cqf.cql.engine.runtime.Code":
+                this.addCodeIfNotExists(codes, ((Code) sdeListItem).getCode());
+                break;
+            case "org.hl7.fhir.r4.model.CodeType":
+                this.addCodeIfNotExists(codes, ((org.hl7.fhir.r4.model.CodeType) sdeListItem).getValue());
+                break;
+            case "org.hl7.fhir.r4.model.CodeableConcept":
+                CodeableConcept codeableConcept = (CodeableConcept) sdeListItem;
+
+                for (Coding coding : codeableConcept.getCoding()) {
+                    this.populateSDEAccumulatorCodes(coding, codes);
+                }
+                break;
+            case "org.hl7.fhir.r4.model.Coding":
+                Coding coding = (Coding) sdeListItem;
+                this.addCodeIfNotExists(codes, coding.getCode());
+                break;
+            case "java.lang.String":
+                String string = (String) sdeListItem;
+                this.addCodeIfNotExists(codes, string);
+                break;
+            case "org.hl7.fhir.r4.model.StringType":
+                StringType stringType = (StringType) sdeListItem;
+                this.addCodeIfNotExists(codes, stringType.getValue());
+                break;
+            case "java.util.ArrayList":
+                for (Object next : (ArrayList<?>) sdeListItem) {
+                    this.populateSDEAccumulatorCodes(next, codes);
+                }
+                break;
+            case "org.hl7.fhir.r4.model.DateType":
+                this.addCodeIfNotExists(codes, ((org.hl7.fhir.r4.model.DateType) sdeListItem).getValueAsString());
+                break;
+            default:
+                logger.info("SDE type " + sdeListItem.getClass().getName() + " is not supported. This SDE won't be counted.");
+                break;
+        }
+
+        return codes;
+    }
+
     private void populateSDEAccumulators(Measure measure, Context context, Patient patient,HashMap<String, HashMap<String, Integer>> sdeAccumulators,
                                          List<Measure.MeasureSupplementalDataComponent> sde, HashMap<String, Resource> resources, HashMap<String, HashSet<String>> codeToResourceMap){
         context.setContextValue("Patient", patient.getIdElement().getIdPart());
@@ -582,39 +629,24 @@ public class MeasureEvaluation {
                         sdeAccumulatorKey = sde.get(i).getCriteria().getExpression();
                     }
                     HashMap<String, Integer> sdeItemMap = sdeAccumulators.get(sdeAccumulatorKey);
-                    String code = "";
+                    ArrayList<String> codes = this.populateSDEAccumulatorCodes(sdeListItem, null);
 
-                    switch (sdeListItem.getClass().getSimpleName()) {
-                        case "Code":
-                            code = ((Code) sdeListItem).getCode();
-                            break;
-                        case "ArrayList":
-                            if (((ArrayList<?>) sdeListItem).size() > 0) {
-                                if (((ArrayList<?>) sdeListItem).get(0).getClass().getSimpleName().equals("Coding")) {
-                                    code  = ((Coding) ((ArrayList<?>) sdeListItem).get(0)).getCode();
+                    if (codes != null) {
+                        for (String code : codes) {
+                            if (null != sdeItemMap && null != sdeItemMap.get(code)) {
+                                Integer sdeItemValue = sdeItemMap.get(code);
+                                sdeItemValue++;
+                                sdeItemMap.put(code, sdeItemValue);
+                                sdeAccumulators.get(sdeAccumulatorKey).put(code, sdeItemValue);
+                            } else {
+                                if (null == sdeAccumulators.get(sdeAccumulatorKey)) {
+                                    HashMap<String, Integer> newSDEItem = new HashMap<>();
+                                    newSDEItem.put(code, 1);
+                                    sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
                                 } else {
-                                    continue;
+                                    sdeAccumulators.get(sdeAccumulatorKey).put(code, 1);
                                 }
-                            }else{
-                                continue;
                             }
-                            break;
-                    }
-                    if(null == code){
-                        continue;
-                    }
-                    if (null != sdeItemMap && null != sdeItemMap.get(code)) {
-                        Integer sdeItemValue = sdeItemMap.get(code);
-                        sdeItemValue++;
-                        sdeItemMap.put(code, sdeItemValue);
-                        sdeAccumulators.get(sdeAccumulatorKey).put(code, sdeItemValue);
-                    } else {
-                        if (null == sdeAccumulators.get(sdeAccumulatorKey)) {
-                            HashMap<String, Integer> newSDEItem = new HashMap<>();
-                            newSDEItem.put(code, 1);
-                            sdeAccumulators.put(sdeAccumulatorKey, newSDEItem);
-                        } else {
-                            sdeAccumulators.get(sdeAccumulatorKey).put(code, 1);
                         }
                     }
                 }
