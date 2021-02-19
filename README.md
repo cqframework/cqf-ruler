@@ -82,6 +82,8 @@ Inquires for commercial support can be directed to [info@alphora.com](info@alpho
 
 ## Related Projects
 
+[HAPI FHIR](https://github.com/hapifhir) - Provides the FHIR API and server upon which the cqf-ruler is built.
+
 [Clinical Quality Language](https://github.com/cqframework/clinical_quality_language) - Tooling in support of the CQL specification, including the CQL verifier/translator used in this project.
 
 [CQL Evaluator](https://github.com/DBCG/cql-evaluator) - Provides the CQL execution environment used by the cqf-ruler.
