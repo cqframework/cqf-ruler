@@ -3,6 +3,7 @@ package org.opencds.cqf.r4.providers;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -23,6 +24,7 @@ import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
@@ -35,6 +37,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
+@Component
 public class MeasureOperationsProvider {
 
     private NarrativeProvider narrativeProvider;
@@ -48,6 +51,7 @@ public class MeasureOperationsProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
 
+    @Inject
     public MeasureOperationsProvider(DaoRegistry registry, EvaluationProviderFactory factory,
             NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider,
             LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider,

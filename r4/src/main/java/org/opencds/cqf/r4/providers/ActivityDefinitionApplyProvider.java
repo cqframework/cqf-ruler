@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Attachment;
@@ -24,6 +26,7 @@ import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.r4.helpers.Helper;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -35,12 +38,14 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 /**
  * Created by Bryn on 1/16/2017.
  */
+@Component
 public class ActivityDefinitionApplyProvider {
 
     private CqlExecutionProvider executionProvider;
     private ModelResolver modelResolver;
     private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
 
+    @Inject
     public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider,
             IFhirResourceDao<ActivityDefinition> activityDefinitionDao) {
         this.modelResolver = new R4FhirModelResolver();

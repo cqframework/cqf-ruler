@@ -1,11 +1,26 @@
 package org.opencds.cqf.r4.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.opencds.cqf.common.config.HapiProperties;
+import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
+import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
+import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
+import org.opencds.cqf.r4.providers.CodeSystemUpdateProvider;
+import org.opencds.cqf.r4.providers.CqlExecutionProvider;
+import org.opencds.cqf.r4.providers.LibraryOperationsProvider;
+import org.opencds.cqf.r4.providers.MeasureOperationsProvider;
+import org.opencds.cqf.r4.providers.ObservationProvider;
+import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
+import org.opencds.cqf.r4.providers.QuestionnaireProvider;
+import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -17,6 +32,7 @@ import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 
 @Configuration
+@ComponentScan(basePackages = "org.opencds.cqf.r4")
 public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     protected final DataSource myDataSource;
 
@@ -70,5 +86,38 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
         JpaTransactionManager retVal = new JpaTransactionManager();
         retVal.setEntityManagerFactory(entityManagerFactory);
         return retVal;
+    }
+
+    @Bean(name= "myOperationProvidersR4")
+    public List<Class<?>> operationProviders() {
+        // TODO: Make this registry dynamic
+        // Scan an interface, create a plugin-api, etc.
+        // Basically, anything that's not included in base HAPI and implements an operation.
+        List<Class<?>> classes = new ArrayList<>();
+        classes.add(ActivityDefinitionApplyProvider.class);
+        classes.add(ApplyCqlOperationProvider.class);
+        classes.add(CacheValueSetsProvider.class);
+        classes.add(CodeSystemUpdateProvider.class);
+        classes.add(CqlExecutionProvider.class);
+        classes.add(LibraryOperationsProvider.class);
+        classes.add(MeasureOperationsProvider.class);
+        classes.add(PlanDefinitionApplyProvider.class);
+
+        // The plugin API will need to a way to determine whether a particular
+        // service should be registered
+        if(HapiProperties.getQuestionnaireResponseExtractEnabled()) { 
+            classes.add(QuestionnaireProvider.class);
+        };        
+
+        if (HapiProperties.getObservationTransformEnabled()) {
+            classes.add(ObservationProvider.class);
+        }
+
+        return classes;
+    }
+
+    @Bean() 
+    public NarrativeProvider narrativeProvider() {
+        return new NarrativeProvider();
     }
 }

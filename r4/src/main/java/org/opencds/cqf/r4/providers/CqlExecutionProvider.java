@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
@@ -37,6 +39,7 @@ import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
+import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -45,11 +48,13 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 /**
  * Created by Bryn on 1/16/2017.
  */
+@Component
 public class CqlExecutionProvider {
     private EvaluationProviderFactory providerFactory;
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider;
     private FhirContext context;
 
+    @Inject
     public CqlExecutionProvider(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider,
             EvaluationProviderFactory providerFactory, FhirContext context) {
         this.providerFactory = providerFactory;

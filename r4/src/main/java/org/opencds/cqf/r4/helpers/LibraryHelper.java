@@ -39,6 +39,19 @@ public class LibraryHelper {
         return new LibraryLoader(libraryManager, modelManager);
     }
 
+    public static org.hl7.fhir.r4.model.Library resolveLibraryReference(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider, String reference) {
+        // Raw references to Library/libraryId or libraryId
+        if (reference.startsWith("Library/") || !reference.contains("/")) {
+            return libraryResourceProvider.resolveLibraryById(reference.replace("Library/", ""));
+        }
+        // Full url (e.g. http://hl7.org/fhir/us/Library/FHIRHelpers)
+        else if (reference.contains(("/Library/"))) {
+            return libraryResourceProvider.resolveLibraryByCanonicalUrl(reference);
+        }
+
+        return null;
+    }
+
     public static List<org.cqframework.cql.elm.execution.Library> loadLibraries(Measure measure,
             org.opencds.cqf.cql.engine.execution.LibraryLoader libraryLoader,
             LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {
@@ -46,9 +59,10 @@ public class LibraryHelper {
 
         // load libraries
         //TODO: if there's a bad measure argument, this blows up for an obscure error
+        org.hl7.fhir.r4.model.Library primaryLibrary = null;
         for (CanonicalType ref : measure.getLibrary()) {
             // if library is contained in measure, load it into server
-            String id = CanonicalHelper.getId(ref);
+            String id = ref.getValue(); //CanonicalHelper.getId(ref);
             if (id.startsWith("#")) {
                 id = id.substring(1);
                 for (Resource resource : measure.getContained()) {
@@ -60,7 +74,11 @@ public class LibraryHelper {
             }
 
             // We just loaded it into the server so we can access it by Id
-            org.hl7.fhir.r4.model.Library library = libraryResourceProvider.resolveLibraryById(id);
+            org.hl7.fhir.r4.model.Library library = resolveLibraryReference(libraryResourceProvider, id);
+            if (primaryLibrary == null) {
+                primaryLibrary = library;
+            }
+
             if (library != null && isLogicLibrary(library)) {
                 libraries.add(
                         libraryLoader.load(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()))
@@ -73,19 +91,12 @@ public class LibraryHelper {
                     .format("Could not load library source for libraries referenced in Measure/%s.", measure.getId()));
         }
 
-        VersionedIdentifier primaryLibraryId = libraries.get(0).getIdentifier();
-        org.hl7.fhir.r4.model.Library primaryLibrary = libraryResourceProvider.resolveLibraryByName(primaryLibraryId.getId(), primaryLibraryId.getVersion());
+        //VersionedIdentifier primaryLibraryId = libraries.get(0).getIdentifier();
+        //org.hl7.fhir.r4.model.Library primaryLibrary = libraryResourceProvider.resolveLibraryByName(primaryLibraryId.getId(), primaryLibraryId.getVersion());
         for (RelatedArtifact artifact : primaryLibrary.getRelatedArtifact()) {
             if (artifact.hasType() && artifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON) && artifact.hasResource()) {
                 org.hl7.fhir.r4.model.Library library = null;
-                // Raw references to Library/libraryId or libraryId
-                if (artifact.getResource().startsWith("Library/") || ! artifact.getResource().contains("/")) {
-                    library = libraryResourceProvider.resolveLibraryById(artifact.getResource().replace("Library/", ""));
-                }
-                // Full url (e.g. http://hl7.org/fhir/us/Library/FHIRHelpers)
-                else if (artifact.getResource().contains(("/Library/"))) {
-                    library = libraryResourceProvider.resolveLibraryByCanonicalUrl(artifact.getResource());
-                }
+                library = resolveLibraryReference(libraryResourceProvider, artifact.getResource());
 
                 if (library != null && isLogicLibrary(library)) {
                     libraries.add(

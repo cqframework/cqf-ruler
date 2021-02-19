@@ -46,11 +46,13 @@ import org.opencds.cqf.tooling.measure.r4.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef.TerminologyRefType;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 
+@Component
 public class HQMFProvider {
 
     private static Map<String, String> measureTypeValueSetMap = new HashMap<String, String>() {

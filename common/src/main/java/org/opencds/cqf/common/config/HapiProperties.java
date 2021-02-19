@@ -310,7 +310,7 @@ public class HapiProperties {
     }
 
     public static String getServerBase() {
-        return HapiProperties.getProperty(SERVER_BASE, "/cqf-ruler/baseR4");
+        return HapiProperties.getProperty(SERVER_BASE, "/cqf-ruler-" + HapiProperties.getFhirVersion().toString().toLowerCase() + "/fhir");
     }
 
     public static String getServerName() {
