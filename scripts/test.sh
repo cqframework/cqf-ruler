@@ -4,4 +4,11 @@
 set -euxo pipefail
 bash -n "$0"
 
-mvn install -U -DskipTests=true -Dmaven.javadoc.skip=true -T 4 -B -V
+CMD="mvn test -T 4 -B -V -P ci"
+
+if [[ ! -z "$TRAVIS_TAG" ]]
+then
+    CMD="$CMD,release"
+fi
+
+eval $CMD

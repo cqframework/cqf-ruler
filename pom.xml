@@ -38,16 +38,13 @@
     <scm>
         <connection>scm:git:git://github.com/DBCG/cqf-ruler.git</connection>
         <developerConnection>scm:git:ssh://github.com:DBCG/cqf-ruler.git</developerConnection>
-        <url>http://github.com/DBCG/cqf-ruler.git/tree/master</url>
+        <url>https://github.com/DBCG/cqf-ruler/tree/master</url>
     </scm>
 
 
     <properties>
-        <version.major>0</version.major>
-        <version.minor>4</version.minor>
-        <version.patch>1</version.patch>
         <!-- NOTE: Building under the release profile automatically drops the -SNAPSHOT extension -->
-        <revision>${version.major}.${version.minor}.${version.patch}-SNAPSHOT</revision>
+        <revision>0.4.1</revision>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -416,7 +413,15 @@
                     <configuration>
                         <source>1.8</source>
                         <target>1.8</target>
-                        <showWarnings>true</showWarnings>
+                        <release>8</release>
+                        <failOnError>true</failOnError>
+                        <failOnWarning>true</failOnWarning>
+                        <compilerArgs>
+                            <arg>-Xlint:all</arg>
+                            <!-- This fixes a boostrapclass path warning which the "release" property fixes on Java 9+ -->
+                            <arg>-Xlint:-options</arg>
+                            <arg>-Werror</arg>
+                        </compilerArgs>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -546,11 +551,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.0.0</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
                     <artifactId>flatten-maven-plugin</artifactId>
                     <version>1.1.0</version>
                     <configuration>
@@ -579,18 +579,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
             <plugin>
@@ -601,10 +589,30 @@
     </build>
     <profiles>
         <profile>
+            <id>ci</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>release</id>
-            <properties>
-                <revision>${version.major}.${version.minor}.${version.patch}</revision>
-            </properties>
             <build>
                 <plugins>
                     <plugin>

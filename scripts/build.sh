@@ -24,14 +24,3 @@ if [[ "$TRAVIS_BRANCH" =~ master* ]]; then
 fi 
 
 eval $CMD
-
-# Set up for docker publish
-DOCKER_IMAGE="contentgroup/cqf-ruler"
-DOCKER_TAG=$TRAVIS_BRANCH
-if [[ "$TRAVIS_BRANCH" =~ master* ]]; then
-  DOCKER_TAG="latest"
-fi
-
-# Push image to registry
-echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-docker build . -t "$DOCKER_IMAGE:$DOCKER_TAG"  && docker push "$DOCKER_IMAGE:$DOCKER_TAG"

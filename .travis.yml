@@ -11,7 +11,7 @@ cache:
 install:
 - ./scripts/install.sh
 script:
-- ./scripts/build.sh
+- ./scripts/test.sh
 before_cache:
 - rm -rf $HOME/.m2/repository/org/opencds/cqf/parent
 - rm -rf $HOME/.m2/repository/org/opencds/cqf/common
@@ -19,6 +19,20 @@ before_cache:
 - rm -rf $HOME/.m2/repository/org/opencds/cqf/r4
 - rm -rf $HOME/.m2/repository/org/opencds/cqf/cqf-ruler-dstu3
 - rm -rf $HOME/.m2/repository/org/opencds/cqf/cqf-ruler-r4
+after_success:
+- ./scripts/deploy.sh
+deploy:
+  provider: releases
+  api_key:
+    secure: M4rVJAVsMEnKPKas8jt+Ih/VVw1kpeyYyDP7wQxklW4qNiCRPBCx+UBSEx3J4JF4BWSNUCwER/6XGo530bDwA2IFzlEzfuAqB2FJLCT2Po9KvaWChEGs9GSRxDybkT2mqOIriEm1ePO+1eNs2yjY/qpmEGgYik8cs9TMnt1io0s6IGVHS1bl0bw0urwVti7TjgMNmHrjtVoO9pwj7REs5htXNhl7QuNOfhCawMkkLvi7Q8vUQnYBffT6llDZVWkAKfHfvHGA2HDBTB48sa9EciVgy7ORKEmhba0vinn3Vbfm4RaOoMTSjJjlBC+ojeHyYgBxoQFnMrXFO21x7vlPAbbSKviOuQUxxFr8OJ9Ijb4JXWTWNBYyTA9a2E8BQw48zbqw7vZRkw+x2x1JUZ3Vb+UW13iLASwQvGC+b/ivSZHxTZj8YNoHBnzU3fbJYZzpp28NKApVBsNI1+X07fZ0eq18bzIXy6XU5hb7aVhn4XqmUEAE1+kanxSFwq7DCC4OJpdKSaV9Dq9+9ZpJvJcsOZ9uP10E6dMWKoDPF1vME/FK43riRyZ2Nax3pqq3q21TEthOWg3LfETvk4hGYfAkzsN/+nKlnwHHlxKCJW3p7KKjN6FE9IZZ3xhL7CdK+dKA9jwfgo2Cq9QlnmpJDM9vfZhawzna9JDh0wInZh4H+oc=
+  file_glob: true
+  file: "target/**/*.jar"
+  skip_cleanup: true
+  name: CQF Ruler $TRAVIS_TAG
+  overwrite: true
+  target_commitish: $TRAVIS_COMMIT
+  on:
+    tags: true
 notifications:
   slack:
     - rooms:

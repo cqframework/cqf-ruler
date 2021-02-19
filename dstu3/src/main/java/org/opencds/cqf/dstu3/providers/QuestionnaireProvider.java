@@ -33,7 +33,7 @@ public class QuestionnaireProvider {
             throw new IllegalArgumentException("Unable to perform operation $extract.  The QuestionnaireResponse was null");
         }
         Bundle observationsFromQuestionnaireResponse = createObservationBundle(questionnaireResponse);
-        Bundle returnBundle = sendObservationBundle(observationsFromQuestionnaireResponse);
+        sendObservationBundle(observationsFromQuestionnaireResponse);
         return observationsFromQuestionnaireResponse;
     }
 
@@ -45,7 +45,7 @@ public class QuestionnaireProvider {
         bundleId.setValue("QuestionnaireResponse/" + questionnaireResponse.getIdElement().getIdPart());
         newBundle.setType(Bundle.BundleType.TRANSACTION);
         newBundle.setIdentifier(bundleId);
-        Map questionnaireCodeMap = getQuestionnaireCodeMap(questionnaireResponse.getQuestionnaire().getReference());
+        Map<String, Coding> questionnaireCodeMap = getQuestionnaireCodeMap(questionnaireResponse.getQuestionnaire().getReference());
 
         questionnaireResponse.getItem().stream().forEach(item ->{
             processItems(item, authored, questionnaireResponse, newBundle, questionnaireCodeMap);
@@ -55,7 +55,7 @@ public class QuestionnaireProvider {
 
     private void processItems(QuestionnaireResponse.QuestionnaireResponseItemComponent item, Date authored,
                                                QuestionnaireResponse questionnaireResponse, Bundle newBundle,
-                                                Map questionnaireCodeMap){
+                                               Map<String, Coding> questionnaireCodeMap){
         if(item.hasAnswer()){
             item.getAnswer().forEach(answer ->{
                 Bundle.BundleEntryComponent newBundleEntryComponent = createObservationFromItemAnswer(answer, item.getLinkId(), authored, questionnaireResponse, questionnaireCodeMap);
@@ -78,7 +78,7 @@ public class QuestionnaireProvider {
 
     private Bundle.BundleEntryComponent createObservationFromItemAnswer(QuestionnaireResponse.QuestionnaireResponseItemAnswerComponent answer,
                                                                       String linkId, Date authored, QuestionnaireResponse questionnaireResponse,
-                                                                        Map questionnaireCodeMap){
+                                                                      Map<String, Coding> questionnaireCodeMap){
         Observation obs = new Observation();
         obs.setEffective(new DateTimeType(authored));
         obs.setStatus(Observation.ObservationStatus.FINAL);
@@ -138,7 +138,7 @@ public class QuestionnaireProvider {
         return outcomeBundle;
     }
 
-    private Map getQuestionnaireCodeMap(String questionnaireUrl){
+    private Map<String, Coding> getQuestionnaireCodeMap(String questionnaireUrl){
         String url = HapiProperties.getQuestionnaireResponseExtractEndpoint();
         if (null == url || url.length() < 1) {
             throw new IllegalArgumentException("Unable to transmit observation bundle.  No observation.endpoint defined in hapi.properties.");
@@ -153,15 +153,15 @@ public class QuestionnaireProvider {
     }
 
     // this is based on "if a questionnaire.item has items then this item is a header and will not have a specific code to be used with an answer"
-    private Map createCodeMap(Questionnaire questionnaire){
-        Map <String, Coding>questionnaireCodeMap = new HashMap();
+    private Map<String, Coding>  createCodeMap(Questionnaire questionnaire){
+        Map<String, Coding> questionnaireCodeMap = new HashMap<>();
         questionnaire.getItem().forEach((item) ->{
             processQuestionnaireItems(item, questionnaireCodeMap);
         });
         return questionnaireCodeMap;
     }
 
-    private void processQuestionnaireItems(Questionnaire.QuestionnaireItemComponent item, Map questionnaireCodeMap){
+    private void processQuestionnaireItems(Questionnaire.QuestionnaireItemComponent item, Map<String, Coding> questionnaireCodeMap){
         if(item.hasItem()){
             item.getItem().forEach(qItem -> {
                 processQuestionnaireItems(qItem, questionnaireCodeMap);
