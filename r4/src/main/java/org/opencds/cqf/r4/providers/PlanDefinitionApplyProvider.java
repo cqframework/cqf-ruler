@@ -101,7 +101,7 @@ public class PlanDefinitionApplyProvider {
 
         CarePlanBuilder builder = new CarePlanBuilder();
 
-        builder.buildInstantiatesCanonical(planDefinition.getIdElement().getIdPart())
+        builder.buildInstantiatesCanonical(planDefinition.getUrl())
                 .buildSubject(new Reference(patientId)).buildStatus(CarePlan.CarePlanStatus.DRAFT);
 
         if (encounterId != null)

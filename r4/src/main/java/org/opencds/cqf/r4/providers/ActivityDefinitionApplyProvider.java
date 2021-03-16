@@ -10,9 +10,11 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Communication;
 import org.hl7.fhir.r4.model.CommunicationRequest;
 import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MedicationRequest;
 import org.hl7.fhir.r4.model.Procedure;
@@ -22,10 +24,15 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.SupplyRequest;
+import org.hl7.fhir.r4.model.Task;
 import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.runtime.DateTime;
+import org.opencds.cqf.r4.builders.JavaDateBuilder;
 import org.opencds.cqf.r4.helpers.Helper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -44,6 +51,8 @@ public class ActivityDefinitionApplyProvider {
     private CqlExecutionProvider executionProvider;
     private ModelResolver modelResolver;
     private IFhirResourceDao<ActivityDefinition> activityDefinitionDao;
+
+    private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
     @Inject
     public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider,
@@ -115,26 +124,59 @@ public class ActivityDefinitionApplyProvider {
             case "CommunicationRequest":
                 result = resolveCommunicationRequest(activityDefinition, patientId);
                 break;
+
+            case "Task":
+                result = resolveTask(activityDefinition, patientId);
+                break;
         }
 
         // TODO: Apply expression extensions on any element?
 
         for (ActivityDefinition.ActivityDefinitionDynamicValueComponent dynamicValue : activityDefinition
                 .getDynamicValue()) {
-            if (dynamicValue.getExpression() != null) {
-                /*
-                 * TODO: Passing the activityDefinition as context here because that's what will
-                 * have the libraries, but perhaps the "context" here should be the result
-                 * resource?
-                 */
-                Object value = executionProvider.evaluateInContext(activityDefinition,
-                        dynamicValue.getExpression().getExpression(), patientId);
 
-                // TODO need to verify type... yay
-                if (value instanceof Boolean) {
-                    value = new BooleanType((Boolean) value);
-                }
-                this.modelResolver.setValue(result, dynamicValue.getPath(), value);
+            // Catch errors while setting each dynamicValue so that entire ActivityDefinition apply operation does not fail.
+            try {
+	        	if (dynamicValue.getExpression() != null) {
+	            	// Special case for setting a Patient reference
+	            	if ("Patient".equals(dynamicValue.getExpression().getExpression())) {
+                    	this.modelResolver.setValue(result, dynamicValue.getPath(), new Reference(patientId));
+	                    	
+	            	}
+	            	else {
+		                /*
+		                 * TODO: Passing the activityDefinition as context here because that's what will
+		                 * have the libraries, but perhaps the "context" here should be the result
+		                 * resource?
+		                 */
+		                Object value = executionProvider.evaluateInContext(activityDefinition,
+		                        dynamicValue.getExpression().getExpression(), patientId);
+		
+		                if (value != null) {
+		                	logger.debug("dynamicValue value: " + value.toString());
+			                if (value instanceof Boolean) {
+			                    value = new BooleanType((Boolean) value);
+			                }
+			                else if (value instanceof DateTime) {
+			                	value = new JavaDateBuilder().buildFromDateTime((DateTime) value).build();
+			                }
+			                else if (value instanceof String) {
+			                	value = new StringType((String) value);
+			                }
+			                
+			                this.modelResolver.setValue(result, dynamicValue.getPath(), value);
+		
+		                }
+		                else {
+		                	logger.warn("WARNING: ActivityDefinition has null value for path: " + dynamicValue.getPath());
+		                }
+	            	}
+	            }
+	        	
+            } catch (Exception e) {
+                logger.error("ERROR: ActivityDefinition dynamicValue %s could not be applied and threw exception %s",
+                		dynamicValue.getPath(), e.toString());
+                logger.error(e.toString());
             }
         }
 
@@ -341,7 +383,6 @@ public class ActivityDefinitionApplyProvider {
         return communication;
     }
 
-    // TODO - extend this to be more complete
     private CommunicationRequest resolveCommunicationRequest(ActivityDefinition activityDefinition, String patientId) {
         CommunicationRequest communicationRequest = new CommunicationRequest();
 
@@ -355,6 +396,67 @@ public class ActivityDefinitionApplyProvider {
             }
         }
 
+        if (activityDefinition.hasRelatedArtifact()) {
+            for (RelatedArtifact artifact : activityDefinition.getRelatedArtifact()) {
+                if (artifact.hasUrl()) {
+                    Attachment attachment = new Attachment().setUrl(artifact.getUrl());
+                    if (artifact.hasDisplay()) {
+                        attachment.setTitle(artifact.getDisplay());
+                    }
+
+                    CommunicationRequest.CommunicationRequestPayloadComponent payload = new CommunicationRequest.CommunicationRequestPayloadComponent();
+                    payload.setContent(artifact.hasDisplay() ? attachment.setTitle(artifact.getDisplay()) : attachment);
+                    communicationRequest.setPayload(Collections.singletonList(payload));
+                }
+
+                // TODO - other relatedArtifact types
+            }
+        }
+
         return communicationRequest;
+    }
+
+    private Task resolveTask(ActivityDefinition activityDefinition, String patientId) {
+    	Task task = new Task();
+
+    	task.setStatus(Task.TaskStatus.DRAFT);
+    	task.setIntent(Task.TaskIntent.PROPOSAL);
+    	task.setFor(new Reference(patientId));
+
+        Task.ParameterComponent input = new Task.ParameterComponent();
+        
+        if (activityDefinition.hasCode()) {
+            task.setCode(activityDefinition.getCode());
+            input.setType(activityDefinition.getCode());
+        }
+        
+        // Extension defined by CPG-on-FHIR for Questionnaire canonical URI
+        Extension collectsWith = activityDefinition.getExtensionByUrl("http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-collectWith");
+        if (collectsWith != null && collectsWith.getValueAsPrimitive().toString() != null) {
+        	CanonicalType uri = new CanonicalType(collectsWith.getValueAsPrimitive().toString());
+        	input.setValue(uri);
+        }
+
+        if (activityDefinition.hasRelatedArtifact()) {
+            for (RelatedArtifact artifact : activityDefinition.getRelatedArtifact()) {
+                if (artifact.hasUrl()) {
+                    Attachment attachment = new Attachment().setUrl(artifact.getUrl());
+                    if (artifact.hasDisplay()) {
+                        attachment.setTitle(artifact.getDisplay());
+                    }
+
+                    input.setValue(artifact.hasDisplay() ? attachment.setTitle(artifact.getDisplay()) : attachment);
+                }
+
+                // TODO - other relatedArtifact types
+            }
+        }
+        
+        // If input has been populated, then add it to the Task.
+        if (input.getType() != null || input.getValue() != null) {
+        	task.addInput(input);
+        }
+
+        return task;
     }
 }
