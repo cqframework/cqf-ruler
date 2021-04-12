@@ -8,13 +8,13 @@ echo "r4 address: " $SERVER_ADDRESS_R4
 echo server_address=$SERVER_ADDRESS_DSTU3 >> /var/lib/jetty/webapps/dstu3.properties
 if [ -e /var/lib/jetty/webapps/config/dstu3.properties ]; then 
     echo "importing dstu3 properties"
-    sed '/server_address/d' /var/lib/jetty/webapps/config/dstu3.properties >> /var/lib/jetty/webapps/dstu3.properties
+    cat /var/lib/jetty/webapps/config/dstu3.properties >> /var/lib/jetty/webapps/dstu3.properties
 fi
 
 echo server_address=$SERVER_ADDRESS_R4 >> /var/lib/jetty/webapps/r4.properties
 if [ -e /var/lib/jetty/webapps/config/r4.properties ]; then 
     echo "importing r4 properties"
-    sed '/server_address/d' /var/lib/jetty/webapps/config/r4.properties >> /var/lib/jetty/webapps/r4.properties
+    cat /var/lib/jetty/webapps/config/r4.properties >> /var/lib/jetty/webapps/r4.properties
 fi
 
 # set Java options

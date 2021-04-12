@@ -5,7 +5,7 @@ USER jetty:jetty
 # Default database directory
 RUN mkdir -p /var/lib/jetty/target
 
-#Default config directory
+# Default config directory
 RUN mkdir -p /var/lib/jetty/webapps/config
 
 COPY --chown=jetty:jetty ./cqf-ruler-dstu3/target/cqf-ruler-dstu3.war /var/lib/jetty/webapps/cqf-ruler-dstu3.war
@@ -18,7 +18,3 @@ ENV JAVA_OPTIONS=""
 
 COPY --chown=jetty:jetty ./scripts/docker-entrypoint-override.sh /docker-entrypoint-override.sh
 ENTRYPOINT [ "/docker-entrypoint-override.sh" ]
-
-
-# FROM runner as test-data
-# COPY --chown=jetty:jetty ./target/jpaserver_derby_files  /var/lib/jetty/target/jpaserver_derby_files
