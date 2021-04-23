@@ -12,10 +12,12 @@ import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseParameters;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
+import org.opencds.cqf.ruler.common.exceptions.NotImplementedException;
 import org.opencds.cqf.ruler.common.config.HapiProperties;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
+import org.opencds.cqf.cql.evaluator.activitydefinition.r4.ActivityDefinitionProcessor;
 import org.opencds.cqf.cql.evaluator.builder.ModelResolverFactory;
 import org.opencds.cqf.cql.evaluator.builder.data.FhirModelResolverFactory;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
@@ -44,36 +46,27 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 @Component
 public class PlanDefinitionApplyProvider {
 
-  private final ModelResolver modelResolver;
-  // TODO: Replace with AcitivtyDefinitionProcessor
-  private final ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
-
-  private RulerDal rulerDal;
+  private ModelResolver modelResolver;
+  private ActivityDefinitionProcessor activityDefinitionProcessor;
+  private RulerDal fhirDal;
   private LibraryProcessor libraryProcessor;
-  private ExpressionEvaluator expressionEvaluator;
-  private final FhirContext fhirContext;
-  private final IFhirResourceDao<PlanDefinition> planDefinitionDao;
+  private FhirContext fhirContext;
+  private IFhirResourceDao<PlanDefinition> planDefinitionDao;
 
   private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
   @Inject
   public PlanDefinitionApplyProvider(
       FhirContext fhirContext,
-      ActivityDefinitionApplyProvider activityDefinitionApplyProvider,
+      ActivityDefinitionProcessor activityDefinitionProcessor,
       RulerDal rulerDal,
-      LibraryProcessor libraryProcessor,
-      ExpressionEvaluator expressionEvaluator) {
-
+      LibraryProcessor libraryProcessor) {
     ModelResolverFactory modelResolverFactory = new FhirModelResolverFactory();
     this.modelResolver = modelResolverFactory.create(fhirContext.getVersion().getVersion().getFhirVersionString());
-
     this.libraryProcessor = libraryProcessor;
-    this.expressionEvaluator = expressionEvaluator;
-    this.activityDefinitionApplyProvider = activityDefinitionApplyProvider;
-    this.rulerDal = rulerDal;
+    this.activityDefinitionProcessor = activityDefinitionProcessor;
+    this.fhirDal = rulerDal;
     this.fhirContext = fhirContext;
-    // TODO: unbreak this
-    this.planDefinitionDao = null;
   }
 
   public IFhirResourceDao<PlanDefinition> getDao() {
@@ -105,15 +98,15 @@ public class PlanDefinitionApplyProvider {
       @OperationParam(name = "terminologyEndpoint") IBaseResource terminologyEndpoint)
       throws IOException, FHIRException {
 
-    IBaseResource toCheck = this.rulerDal.read(theId);
+    IBaseResource basePlanDefinition = this.fhirDal.read(theId);
     PlanDefinition planDefinition;
 
-    if (toCheck == null) {
+    if (basePlanDefinition == null) {
       throw new IllegalArgumentException("Couldn't find PlanDefinition " + theId);
     }
-    if (!(toCheck instanceof PlanDefinition)) {
+    if (!(basePlanDefinition instanceof PlanDefinition)) {
       throw new IllegalArgumentException(
-          "The planDefinition passed to RulerDal was "
+          "The planDefinition passed to FhirDal was "
               + "not a valid instance of PlanDefinition.class");
     }
 
@@ -132,7 +125,7 @@ public class PlanDefinitionApplyProvider {
           "dataEndpoint was not a proper instance of Endpoint.class");
     }
 
-    planDefinition = (PlanDefinition) toCheck;
+    planDefinition = (PlanDefinition) basePlanDefinition;
 
     logger.info("Performing $apply operation on PlanDefinition/" + theId);
 
@@ -206,109 +199,127 @@ public class PlanDefinitionApplyProvider {
     return session.carePlanBuilder.build();
   }
 
-  private void resolveDefinition(
-      Session session, PlanDefinition.PlanDefinitionActionComponent action) {
-    if (action.hasDefinition()) {
+  private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action) {
+    if (action.hasDefinitionCanonicalType()) {
       logger.debug("Resolving definition " + action.getDefinitionCanonicalType().getValue());
-      String definition = action.getDefinitionCanonicalType().getValue();
-      if (definition.contains(session.planDefinition.fhirType())) {
-        IdType id = new IdType(definition);
-        CarePlan plan;
-
-        try {
-          plan =
-              applyPlanDefinition(
-                  id,
-                  session.patientId,
-                  session.encounterId,
-                  session.practitionerId,
-                  session.organizationId,
-                  session.userType,
-                  session.userLanguage,
-                  session.userTaskContext,
-                  session.setting,
-                  session.settingContext,
-                  session.mergeNestedCarePlans,
-                  session.parameters,
-                  session.useServerData,
-                  session.bundle,
-                  session.prefetchData,
-                  session.prefetchDataKey,
-                  session.prefetchDataDescription,
-                  session.prefetchDataData,
-                  session.dataEndpoint,
-                  session.contentEndpoint,
-                  session.terminologyEndpoint);
-
-          if (plan.getId() == null) {
-            plan.setId(UUID.randomUUID().toString());
-          }
-
-          // Add an action to the request group which points to this CarePlan
-          session
-              .requestGroupBuilder
-              .buildContained(plan)
-              .addAction(
-                  new RequestGroupActionBuilder()
-                      .buildResource(new Reference("#" + plan.getId()))
-                      .build());
-
-          for (CanonicalType c : plan.getInstantiatesCanonical()) {
-            session.carePlanBuilder.buildInstantiatesCanonical(c.getValueAsString());
-          }
-
-        } catch (IOException e) {
-          e.printStackTrace();
-          logger.error("nested plan failed");
-        }
-      } else {
-        Resource result;
-        try {
-          if (action.getDefinitionCanonicalType().getValue().startsWith("#")) {
-            result =
-                this.activityDefinitionApplyProvider.resolveActivityDefinition(
-                    (ActivityDefinition)
-                        resolveContained(
-                            session.planDefinition, action.getDefinitionCanonicalType().getValue()),
-                    session.patientId,
-                    session.practitionerId,
-                    session.organizationId);
-          } else {
-            result =
-                this.activityDefinitionApplyProvider.apply(
-                    new IdType(CanonicalHelper.getId(action.getDefinitionCanonicalType())),
-                    session.patientId,
-                    session.encounterId,
-                    session.practitionerId,
-                    session.organizationId,
-                    null,
-                    session.userLanguage,
-                    session.userTaskContext,
-                    session.setting,
-                    session.settingContext);
-          }
-
-          if (result.getId() == null) {
-            logger.warn(
-                "ActivityDefinition %s returned resource with no id, setting one",
-                action.getDefinitionCanonicalType().getId());
-            result.setId(UUID.randomUUID().toString());
-          }
-
-          session
-              .requestGroupBuilder
-              .buildContained(result)
-              .addAction(
-                  new RequestGroupActionBuilder()
-                      .buildResource(new Reference("#" + result.getId()))
-                      .build());
-
-        } catch (Exception e) {
-          logger.error(
-              "ERROR: ActivityDefinition %s could not be applied and threw exception %s",
-              action.getDefinition(), e.toString());
-        }
+      CanonicalType definition = action.getDefinitionCanonicalType();
+      switch (CanonicalHelper.getResourceName(definition)) {
+        case ("PlanDefinition"): applyNestedPlanDefinition(session, new IdType(definition)); break;
+        case ("ActivityDefinition"): applyActivityDefinition(session, definition); break;
+        case ("Questionnaire"): throw new NotImplementedException("Questionnaire definition evaluation is not yet implemented.");
+        default: throw new RuntimeException(String.format("Unknown action definition: ", definition));
       }
+    } else if (action.hasDefinitionUriType()) {
+      throw new NotImplementedException("Uri definition evaluation is not yet implemented");
+    }
+  }
+
+  private void applyActivityDefinition(Session session, CanonicalType definition) {
+    IBaseResource result;
+    try {
+      boolean referenceToContained = definition.getValue().startsWith("#");
+      if (referenceToContained) {
+        ActivityDefinition activityDefinition = (ActivityDefinition)resolveContained(session.planDefinition, definition.getValue());
+        result =
+            this.activityDefinitionProcessor.resolveActivityDefinition(
+                activityDefinition,
+                session.patientId,
+                session.practitionerId,
+                session.organizationId,
+                session.parameters,
+                session.contentEndpoint,
+                session.terminologyEndpoint,
+                session.dataEndpoint
+                );
+      } else {
+        result =
+        this.activityDefinitionProcessor.apply(
+            new IdType(CanonicalHelper.getId(definition)),
+            session.patientId,
+            session.encounterId,
+            session.practitionerId,
+            session.organizationId,
+            session.userType,
+            session.userLanguage,
+            session.userTaskContext,
+            session.setting,
+            session.settingContext,
+            session.parameters,
+            session.contentEndpoint,
+            session.terminologyEndpoint,
+            session.dataEndpoint
+            );
+      }
+
+      if (result.getIdElement() == null) {
+        logger.warn(
+            "ActivityDefinition %s returned resource with no id, setting one",
+            definition.getId());
+        result.setId(new IdType(UUID.randomUUID().toString()));
+      }
+
+      session
+          .requestGroupBuilder
+          .buildContained((Resource)result)
+          .addAction(
+              new RequestGroupActionBuilder()
+                  .buildResource(new Reference("#" + result.getIdElement().getIdPart()))
+                  .build());
+
+    } catch (Exception e) {
+      logger.error(
+          "ERROR: ActivityDefinition %s could not be applied and threw exception %s",
+          definition, e.toString());
+    }
+  }
+
+  private void applyNestedPlanDefinition(Session session, IdType id) {
+    CarePlan plan;
+    try {
+      plan =
+          applyPlanDefinition(
+              id,
+              session.patientId,
+              session.encounterId,
+              session.practitionerId,
+              session.organizationId,
+              session.userType,
+              session.userLanguage,
+              session.userTaskContext,
+              session.setting,
+              session.settingContext,
+              session.mergeNestedCarePlans,
+              session.parameters,
+              session.useServerData,
+              session.bundle,
+              session.prefetchData,
+              session.prefetchDataKey,
+              session.prefetchDataDescription,
+              session.prefetchDataData,
+              session.dataEndpoint,
+              session.contentEndpoint,
+              session.terminologyEndpoint);
+
+      if (plan.getId() == null) {
+        plan.setId(UUID.randomUUID().toString());
+      }
+
+      // Add an action to the request group which points to this CarePlan
+      session
+          .requestGroupBuilder
+          .buildContained(plan)
+          .addAction(
+              new RequestGroupActionBuilder()
+                  .buildResource(new Reference("#" + plan.getId()))
+                  .build());
+
+      for (CanonicalType c : plan.getInstantiatesCanonical()) {
+        session.carePlanBuilder.buildInstantiatesCanonical(c.getValueAsString());
+      }
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      logger.error("nested plan failed");
     }
   }
 
@@ -319,53 +330,11 @@ public class PlanDefinitionApplyProvider {
       logger.info(
           "Resolving dynamic value %s %s", dynamicValue.getPath(), dynamicValue.getExpression());
 
-      if (dynamicValue.hasExpression()
-          && dynamicValue.getExpression().hasLanguage()
-          && !dynamicValue.getExpression().getLanguage().equals("text/cql")
-          && !dynamicValue.getExpression().getLanguage().equals("text/cql.name")) {
-        logger.warn(
-            "An action language other than CQL was found: "
-                + dynamicValue.getExpression().getLanguage());
-        continue;
-      }
-
-      if (!dynamicValue.hasExpression()) {
-        logger.error("Missing condition expression");
-        throw new RuntimeException("Missing condition expression");
-      }
-
+      ensureDynamicValueExpression(dynamicValue);
       if (dynamicValue.getExpression().hasLanguage()) {
 
-        if (session.planDefinition.getLibrary().size() != 1) {
-          throw new IllegalArgumentException(
-              "Session's PlanDefinition's Library must only " + "include the primary liibrary. ");
-        }
-
-        Set<String> expressions = new HashSet<>();
-        expressions.add(dynamicValue.getExpression().getExpression());
-        Object result = null;
-
-        switch (dynamicValue.getExpression().getLanguage()) {
-            //                    case "text/cql":
-            //                        expressionEvaluator.evaluate(new Task(),
-            // dynamicValue.getExpression());
-          case "text/cql.name":
-            result =
-                libraryProcessor.evaluate(
-                    session.planDefinition.getLibrary().get(0).toString(),
-                    session.patientId,
-                    session.parameters,
-                    session.contentEndpoint,
-                    session.terminologyEndpoint,
-                    session.dataEndpoint,
-                    session.bundle,
-                    expressions);
-          default:
-            logger.warn(
-                "An action language other than CQL was found: "
-                    + dynamicValue.getExpression().getLanguage());
-        }
-
+        ensurePrimaryLibrary(session);
+        Object result = evaluateConditionOrDynamicValue(dynamicValue, session);
         // TODO: Rename bundle
         if (dynamicValue.hasPath() && dynamicValue.getPath().equals("$this")) {
           session.carePlanBuilder = new CarePlanBuilder((CarePlan) result);
@@ -394,54 +363,11 @@ public class PlanDefinitionApplyProvider {
       }
     }
     for (PlanDefinition.PlanDefinitionActionConditionComponent condition : action.getCondition()) {
-      // TODO start
-      // TODO stop
-      if (condition.hasExpression()
-          && condition.getExpression().hasLanguage()
-          && !condition.getExpression().getLanguage().equals("text/cql")
-          && !condition.getExpression().getLanguage().equals("text/cql.name")) {
-        logger.warn(
-            "An action language other than CQL was found: "
-                + condition.getExpression().getLanguage());
-        continue;
-      }
-
-      if (!condition.hasExpression()) {
-        logger.error("Missing condition expression");
-        throw new RuntimeException("Missing condition expression");
-      }
-
+      ensureConditionExpression(condition);
       if (condition.getExpression().hasLanguage()) {
 
-        if (session.planDefinition.getLibrary().size() != 1) {
-          throw new IllegalArgumentException(
-              "Session's PlanDefinition's Library must only " + "include the primary liibrary. ");
-        }
-
-        Object result = null;
-        Set<String> expressions = new HashSet<>();
-        expressions.add(condition.getExpression().getExpression());
-
-        switch (condition.getExpression().getLanguage()) {
-            //                    case "text/cql":
-            //                        expressionEvaluator.evaluate(new Task(),
-            // dynamicValue.getExpression());
-          case "text/cql.name":
-            result =
-                libraryProcessor.evaluate(
-                    session.planDefinition.getLibrary().get(0).toString(),
-                    session.patientId,
-                    session.parameters,
-                    session.contentEndpoint,
-                    session.terminologyEndpoint,
-                    session.dataEndpoint,
-                    session.bundle,
-                    expressions);
-          default:
-            logger.warn(
-                "An action language other than CQL was found: "
-                    + condition.getExpression().getLanguage());
-        }
+        ensurePrimaryLibrary(session);
+        Object result = evaluateConditionOrDynamicValue(condition, session);
 
         if (result == null) {
           logger.warn("Expression Returned null");
@@ -462,8 +388,6 @@ public class PlanDefinitionApplyProvider {
     }
     return true;
   }
-
-  // For library use
 
   public CarePlan resolveCdsHooksPlanDefinition(
       PlanDefinition planDefinition,
@@ -538,7 +462,7 @@ public class PlanDefinitionApplyProvider {
       requestGroupBuilder.buildExtension(extensions);
     }
 
-    resolveEverything(session);
+    resolveCdsHooksActions(session);
 
     CarePlanActivityBuilder carePlanActivityBuilder = new CarePlanActivityBuilder();
     carePlanActivityBuilder.buildReferenceTarget(requestGroupBuilder.build());
@@ -547,62 +471,7 @@ public class PlanDefinitionApplyProvider {
     return carePlanBuilder.build();
   }
 
-  private Object transformResult(Object result) {
-    if (!(result instanceof String))
-      throw new IllegalStateRuntimeException("Result not instance of String");
-    return (String) result;
-  }
-
-  private Object resolveResult(BackboneElement backboneElement, Session session) {
-    Object result = null;
-    Set<String> expressions = new HashSet<>();
-    String language = null;
-
-    if (backboneElement instanceof PlanDefinition.PlanDefinitionActionConditionComponent) {
-      language =
-          ((PlanDefinition.PlanDefinitionActionConditionComponent) backboneElement)
-              .getExpression()
-              .getLanguage();
-      expressions.add(
-          ((PlanDefinition.PlanDefinitionActionConditionComponent) backboneElement)
-              .getExpression()
-              .getExpression());
-    } else if (backboneElement
-        instanceof PlanDefinition.PlanDefinitionActionDynamicValueComponent) {
-      language =
-          ((PlanDefinition.PlanDefinitionActionDynamicValueComponent) backboneElement)
-              .getExpression()
-              .getLanguage();
-      expressions.add(
-          ((PlanDefinition.PlanDefinitionActionDynamicValueComponent) backboneElement)
-              .getExpression()
-              .getExpression());
-    } else {
-      throw new IllegalStateRuntimeException(
-          "Could not resolve backboneElement,"
-              + " was not instance of DynamicValueComponent or ActionConditionComponent.");
-    }
-
-    // Assumption that this will evolve to contain many cases
-    switch (language) {
-      case "text/cq.name":
-        result =
-            libraryProcessor.evaluate(
-                session.planDefinition.getLibrary().get(0).toString(),
-                session.patientId,
-                session.parameters,
-                session.contentEndpoint,
-                session.terminologyEndpoint,
-                session.dataEndpoint,
-                session.prefetchDataData,
-                expressions);
-      default:
-        logger.warn("An action language other than CQL was found: " + language);
-    }
-    return result;
-  }
-
-  private void resolveEverything(Session session) {
+  private void resolveCdsHooksActions(Session session) {
     ArrayList<RequestGroup.RequestGroupActionComponent> actionConditionComponents =
         new ArrayList<>();
 
@@ -610,30 +479,11 @@ public class PlanDefinitionApplyProvider {
       boolean conditionsMet = true;
       for (PlanDefinition.PlanDefinitionActionConditionComponent condition :
           action.getCondition()) {
-        // TODO start
-        // TODO stop
-        if (condition.hasExpression()
-            && condition.getExpression().hasLanguage()
-            && !condition.getExpression().getLanguage().equals("text/cql")
-            && !condition.getExpression().getLanguage().equals("text/cql.name")) {
-          logger.warn(
-              "An action language other than CQL was found: "
-                  + condition.getExpression().getLanguage());
-          continue;
-        }
-
-        if (!condition.hasExpression()) {
-          logger.error("Missing condition expression");
-          throw new RuntimeException("Missing condition expression");
-        }
-
+        ensureConditionExpression(condition);
         if (condition.getExpression().hasLanguage()) {
 
-          if (session.planDefinition.getLibrary().size() != 1) {
-            throw new IllegalArgumentException(
-                "Session's PlanDefinition's Library must only " + "include the primary liibrary. ");
-          }
-          Object result = resolveResult(condition, session);
+          ensurePrimaryLibrary(session);
+          Object result = evaluateConditionOrDynamicValue(condition, session);
 
           if (!(result instanceof Boolean)) {
             continue;
@@ -683,7 +533,7 @@ public class PlanDefinitionApplyProvider {
             if (action.getDefinitionCanonicalType().getValue().contains("ActivityDefinition")) {
               IdType idType =
                   new IdType("ActivityDefinition", action.getDefinitionCanonicalType().getId());
-              IBaseResource toCheck = this.rulerDal.read(idType);
+              IBaseResource toCheck = this.fhirDal.read(idType);
               ActivityDefinition activityDefinition;
 
               if (toCheck == null) {
@@ -701,19 +551,12 @@ public class PlanDefinitionApplyProvider {
                 actionBuilder.buildDescripition(activityDefinition.getDescription());
               }
               try {
-                // We're going to replace this with the ActivityDefinitionProcessor module.
-                this.activityDefinitionApplyProvider
+                this.activityDefinitionProcessor
                     .apply(
                         new IdType(action.getDefinitionCanonicalType().getId()),
                         session.patientId,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null)
+                        null, null, null, null, null, null, null,
+                        null, null, null, null, null)
                     .setId(UUID.randomUUID().toString());
               } catch (FHIRException
                   | ClassNotFoundException
@@ -750,39 +593,20 @@ public class PlanDefinitionApplyProvider {
           if (action.hasDynamicValue()) {
             for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue :
                 action.getDynamicValue()) {
-              if (condition.hasExpression()
-                  && condition.getExpression().hasLanguage()
-                  && !condition.getExpression().getLanguage().equals("text/cql")
-                  && !condition.getExpression().getLanguage().equals("text/cql.name")) {
-                logger.warn(
-                    "An action language other than CQL was found: "
-                        + condition.getExpression().getLanguage());
-                continue;
-              }
-
-              if (!condition.hasExpression()) {
-                logger.error("Missing condition expression");
-                throw new RuntimeException("Missing condition expression");
-              }
-
+              ensureConditionExpression(condition);
               if (condition.getExpression().hasLanguage()) {
 
-                if (session.planDefinition.getLibrary().size() != 1) {
-                  throw new IllegalArgumentException(
-                      "Session's PlanDefinition's Library must only "
-                          + "include the primary liibrary. ");
-                }
-
+                ensurePrimaryLibrary(session);
                 if (dynamicValue.hasPath() && dynamicValue.hasExpression()) {
                   if (dynamicValue.getPath().endsWith("title")) { // summary
                     actionBuilder.buildTitle(
-                        (String) transformResult(resolveResult(condition, session)));
+                        (String) ensureStringResult(evaluateConditionOrDynamicValue(condition, session)));
                   } else if (dynamicValue.getPath().endsWith("description")) { // detail
                     actionBuilder.buildDescripition(
-                        (String) transformResult(resolveResult(condition, session)));
+                        (String) ensureStringResult(evaluateConditionOrDynamicValue(condition, session)));
                   } else if (dynamicValue.getPath().endsWith("extension")) { // indicator
                     actionBuilder.buildExtension(
-                        (String) transformResult(resolveResult(condition, session)));
+                        (String) ensureStringResult(evaluateConditionOrDynamicValue(condition, session)));
                   }
                 }
               }
@@ -793,13 +617,117 @@ public class PlanDefinitionApplyProvider {
             }
 
             if (action.hasAction()) {
-              resolveEverything(session);
+              resolveCdsHooksActions(session);
             }
           }
         }
       }
     }
     session.requestGroupBuilder.buildAction(actionConditionComponents);
+  }
+
+  private void ensurePrimaryLibrary(Session session) {
+    if (session.planDefinition.getLibrary().size() != 1) {
+      throw new IllegalArgumentException(
+          "Session's PlanDefinition's Library must only "
+              + "include the primary liibrary. ");
+    }
+  }
+
+  private void ensureConditionExpression(PlanDefinition.PlanDefinitionActionConditionComponent condition) {
+    if (!condition.hasExpression()) {
+      logger.error("Missing condition expression");
+      throw new RuntimeException("Missing condition expression");
+    }
+  }
+
+  private void ensureDynamicValueExpression(PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue) {
+    if (!dynamicValue.hasExpression()) {
+      logger.error("Missing condition expression");
+      throw new RuntimeException("Missing condition expression");
+    }
+  }
+
+  private Object ensureStringResult(Object result) {
+    if (!(result instanceof String))
+      throw new IllegalStateRuntimeException("Result not instance of String");
+    return (String) result;
+  }
+
+  private Object evaluateConditionOrDynamicValue(BackboneElement backboneElement, Session session) {
+    Object result = null;
+    Set<String> expressions = new HashSet<>();
+    String language = null;
+
+    if (backboneElement instanceof PlanDefinition.PlanDefinitionActionConditionComponent) {
+      language =
+          ((PlanDefinition.PlanDefinitionActionConditionComponent) backboneElement)
+              .getExpression()
+              .getLanguage();
+      expressions.add(
+          ((PlanDefinition.PlanDefinitionActionConditionComponent) backboneElement)
+              .getExpression()
+              .getExpression());
+    } else if (backboneElement
+        instanceof PlanDefinition.PlanDefinitionActionDynamicValueComponent) {
+      language =
+          ((PlanDefinition.PlanDefinitionActionDynamicValueComponent) backboneElement)
+              .getExpression()
+              .getLanguage();
+      expressions.add(
+          ((PlanDefinition.PlanDefinitionActionDynamicValueComponent) backboneElement)
+              .getExpression()
+              .getExpression());
+    } else {
+      throw new IllegalStateRuntimeException(
+          "Could not resolve backboneElement,"
+              + " was not instance of DynamicValueComponent or ActionConditionComponent.");
+    }
+
+    // Assumption that this will evolve to contain many cases
+    switch (language) {
+      //                    case "text/cql":
+      //                        expressionEvaluator.evaluate(new Task(),
+      // dynamicValue.getExpression());
+    case "text/cql-identifier":
+      result =
+          libraryProcessor.evaluate(
+              session.planDefinition.getLibrary().get(0).toString(),
+              session.patientId,
+              session.parameters,
+              session.contentEndpoint,
+              session.terminologyEndpoint,
+              session.dataEndpoint,
+              session.bundle,
+              expressions); break;
+    case "text/cql.identifier":
+    result =
+        libraryProcessor.evaluate(
+            session.planDefinition.getLibrary().get(0).toString(),
+            session.patientId,
+            session.parameters,
+            session.contentEndpoint,
+            session.terminologyEndpoint,
+            session.dataEndpoint,
+            session.bundle,
+            expressions); break;
+    case "text/cql.name":
+      result =
+          libraryProcessor.evaluate(
+              session.planDefinition.getLibrary().get(0).toString(),
+              session.patientId,
+              session.parameters,
+              session.contentEndpoint,
+              session.terminologyEndpoint,
+              session.dataEndpoint,
+              session.bundle,
+              expressions); break;
+    default:
+      logger.warn(
+          "An action language other than CQL was found: "
+              + language);
+  }
+    return result;
   }
 
   public Resource resolveContained(DomainResource resource, String id) {
