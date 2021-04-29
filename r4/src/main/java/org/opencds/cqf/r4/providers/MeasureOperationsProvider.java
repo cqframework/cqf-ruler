@@ -390,6 +390,7 @@ public class MeasureOperationsProvider {
         }
 
         Bundle careGapReport = new Bundle();
+        careGapReport.setMeta(new Meta().addProfile("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-bundle-deqm"));
         careGapReport.setType(Bundle.BundleType.DOCUMENT);
         careGapReport.setTimestamp(new Date());
         careGapReport.setId(UUID.randomUUID().toString());
@@ -397,6 +398,7 @@ public class MeasureOperationsProvider {
         careGapReport.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
 
         Composition composition = new Composition();
+        composition.setMeta(new Meta().addProfile("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-composition-deqm"));
         composition.setStatus(Composition.CompositionStatus.FINAL)
                 .setSubject(new Reference(subject.startsWith("Patient/") ? subject : "Patient/" + subject))
                 .setTitle("Care Gap Report for " + subject)
@@ -499,7 +501,7 @@ public class MeasureOperationsProvider {
             return null;
         }
         Parameters parameters = new Parameters();
- 
+        
         careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
         for (MeasureReport rep : reports) {
             careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
