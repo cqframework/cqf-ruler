@@ -226,7 +226,7 @@ public class MeasureOperationsProvider {
             @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "subject") String subject,
             @OperationParam(name = "topic") String topic, @OperationParam(name = "practitioner") String practitioner,
             @OperationParam(name = "measureId") List<String> measureId, @OperationParam(name = "measureIdentifier") List<String> measureIdentifier,
-            @OperationParam(name = "measureUrl") List<CanonicalType> measureUrl, @OperationParam(name="status")String status,
+            @OperationParam(name = "measureUrl") List<CanonicalType> measureUrl, @OperationParam(name="status")List<String> status,
             @OperationParam(name = "organization") String organization,  @OperationParam(name = "program") String program){
         //TODO: topic should allow many and be a union of them
         //TODO: "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
@@ -251,7 +251,7 @@ public class MeasureOperationsProvider {
     }
 
     private Boolean careGapParameterValidation(String periodStart, String periodEnd, String subject, String topic,
-            String practitioner, List<String> measureId, List<String> measureIdentifier, List<CanonicalType> measureUrl, String status, String organization, String program) {
+            String practitioner, List<String> measureId, List<String> measureIdentifier, List<CanonicalType> measureUrl, List<String> status, String organization, String program) {
         if(Strings.isNullOrEmpty(periodStart) || Strings.isNullOrEmpty(periodEnd)) {
             throw new IllegalArgumentException("periodStart and periodEnd are required.");
         }
@@ -282,8 +282,13 @@ public class MeasureOperationsProvider {
                 throw new IllegalArgumentException("Subject must follow the format of either 'Patient/ID' OR 'Group/ID'.");
             }
         }
-        if(!Strings.isNullOrEmpty(status) && (!status.equalsIgnoreCase("open-gap") && !status.equalsIgnoreCase("closed-gap"))){
-            throw new IllegalArgumentException("If status is present, it must be either 'open-gap' or 'closed-gap'.");
+        if (status == null || status.isEmpty()) {
+            throw new IllegalArgumentException("Status is required.");
+        }
+        for (String statusValue: status) {
+            if(!Strings.isNullOrEmpty(statusValue) && (!statusValue.equalsIgnoreCase("open-gap") && !statusValue.equalsIgnoreCase("closed-gap"))){
+                throw new IllegalArgumentException("Status must be either 'open-gap', 'closed-gap', or both.");
+            }
         }
         if (measureIdentifier != null && !measureIdentifier.isEmpty()) {
             throw new NotYetImplementedException("measureIdentifier Not Yet Implemented.");
@@ -343,7 +348,7 @@ public class MeasureOperationsProvider {
         return measure;
     }
 
-    private void resolvePatientGapBundleForMeasures(String periodStart, String periodEnd, String subject, String topic, String status,
+    private void resolvePatientGapBundleForMeasures(String periodStart, String periodEnd, String subject, String topic, List<String> status,
             Parameters returnParams, List<Measure> measures, String name, String organization) {
         Bundle patientGapBundle = patientCareGap(periodStart, periodEnd, subject, topic, measures, status, organization);
         if (patientGapBundle != null) {
@@ -367,7 +372,7 @@ public class MeasureOperationsProvider {
         return patientList;
     }
 
-    private Bundle patientCareGap(String periodStart, String periodEnd, String subject, String topic, List<Measure> measures, String status, String organization) {
+    private Bundle patientCareGap(String periodStart, String periodEnd, String subject, String topic, List<Measure> measures, List<String> status, String organization) {
         //TODO: this is an org hack.  Need to figure out what the right thing is.
         IFhirResourceDao<Organization> orgDao = this.registry.getResourceDao(Organization.class);
         List<IBaseResource> org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
@@ -490,6 +495,9 @@ public class MeasureOperationsProvider {
                 // TODO - add other types of improvement notation cases
             }
         }
+        if (reports.isEmpty()) {
+            return null;
+        }
         Parameters parameters = new Parameters();
  
         careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
@@ -521,9 +529,6 @@ public class MeasureOperationsProvider {
             careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue));
         }
  
-        if(careGapReport.getEntry().isEmpty()){
-            return null;
-        }
         return careGapReport;
     }
 
@@ -568,17 +573,17 @@ public class MeasureOperationsProvider {
         return proportion;
     }
 
-    private boolean notReportingOpenGaps(String status) {
-        return (status != null && status.equalsIgnoreCase("closed-gap") && !status.equalsIgnoreCase("open-gap")) || status == null;
+    private boolean notReportingOpenGaps(List<String> status) {
+        return !status.stream().anyMatch(x -> x.equalsIgnoreCase("open-gap"));
     }
 
-    private boolean notReportingClosedGaps(String status) {
-        return (status != null && status.equalsIgnoreCase("open-gap") && !status.equalsIgnoreCase("closed-gap")) || status == null;
+    private boolean notReportingClosedGaps(List<String> status) {
+        return !status.stream().anyMatch(x -> x.equalsIgnoreCase("closed-gap"));
     }
 
     private boolean closedGap(String improvementNotation, double proportion) {
-        return ((improvementNotation.equals("increase")) && (proportion < 1.0))
-                        ||  ((improvementNotation.equals("decrease")) && (proportion > 0.0));
+        return ((improvementNotation.equals("increase")) && (proportion > 0.0))
+                        ||  ((improvementNotation.equals("decrease")) && (proportion < 1.0));
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)
