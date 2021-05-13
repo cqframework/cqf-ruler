@@ -681,7 +681,6 @@ public class MeasureOperationsProvider {
             @OperationParam(name = "resource") List<IAnyResource> resources) {
         Bundle transactionBundle = new Bundle().setType(Bundle.BundleType.TRANSACTION);
 
-        //TODO: measureReport should be measurereport.  Temporarily updated to work with DEQM RI
         /*
          * TODO - resource validation using $data-requirements operation (params are the
          * provided id and the measurement period from the MeasureReport)
