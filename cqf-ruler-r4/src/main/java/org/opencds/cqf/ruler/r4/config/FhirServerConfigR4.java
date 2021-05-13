@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -33,6 +34,7 @@ import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 
 @Configuration
 @ComponentScan(basePackages = "org.opencds.cqf.r4")
+@Import(EvaluatorConfiguration.class)
 public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     protected final DataSource myDataSource;
 

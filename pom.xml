@@ -200,6 +200,17 @@
                 <artifactId>evaluator.fhir</artifactId>
                 <version>${cql-evaluator.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.opencds.cqf.cql</groupId>
+                <artifactId>evaluator.activitydefinition</artifactId>
+                <version>${cql-evaluator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opencds.cqf.cql</groupId>
+                <artifactId>evaluator.expression</artifactId>
+                <version>${cql-evaluator.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.opencds.cqf.cql</groupId>
                 <artifactId>evaluator.plandefinition</artifactId>
@@ -207,7 +218,7 @@
             </dependency>
             <dependency>
                 <groupId>org.opencds.cqf.cql</groupId>
-                <artifactId>evaluator.expression</artifactId>
+                <artifactId>evaluator.spring</artifactId>
                 <version>${cql-evaluator.version}</version>
             </dependency>
             <dependency>

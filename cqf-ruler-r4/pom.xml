@@ -22,10 +22,13 @@
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-cql</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.opencds.cqf.cql</groupId>
             <artifactId>evaluator.engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencds.cqf.cql</groupId>
+            <artifactId>evaluator.activitydefinition</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opencds.cqf.cql</groupId>
