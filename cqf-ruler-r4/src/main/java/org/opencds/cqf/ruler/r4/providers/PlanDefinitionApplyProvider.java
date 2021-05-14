@@ -87,7 +87,7 @@ public class PlanDefinitionApplyProvider {
       throws IOException, FHIRException {
         IBaseParameters resultParameters = planDefinitionProcessor.apply(theId, patientId, encounterId, practitionerId, organizationId, userType, userLanguage, userTaskContext, setting, settingContext, mergeNestedCarePlans, parameters, useServerData, bundle, prefetchData, dataEndpoint, contentEndpoint, terminologyEndpoint);
         if (resultParameters != null) {
-          IBaseResource returnResource = operationParametersParser.getResourceChild(resultParameters, "return");
+          IBaseResource returnResource = ((Parameters)resultParameters).getParameter().stream().filter(x -> x.getName().equals("return")).findFirst().get().getResource();
           if (returnResource == null || !(returnResource instanceof CarePlan)) {
             logger.debug("Return resource was not a CarePlan resource.");
             throw new RuntimeException(String.format("Return resource must be instance of CarePlan, PlanDefinitionProcessor apply did returned: %s", returnResource));
