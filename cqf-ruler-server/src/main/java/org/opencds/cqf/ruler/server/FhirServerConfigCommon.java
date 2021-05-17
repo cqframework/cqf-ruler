@@ -6,6 +6,7 @@ package org.opencds.cqf.ruler.server;
 */
 
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.binstore.DatabaseBlobBinaryStorageSvcImpl;
 import ca.uhn.fhir.jpa.binstore.IBinaryStorageSvc;
 import ca.uhn.fhir.jpa.config.HibernatePropertiesProvider;
@@ -17,6 +18,7 @@ import ca.uhn.fhir.jpa.subscription.match.deliver.email.IEmailSender;
 import ca.uhn.fhir.jpa.subscription.match.deliver.email.JavaMailEmailSender;
 import com.google.common.base.Strings;
 import org.hl7.fhir.dstu2.model.Subscription;
+import org.opencds.cqf.ruler.common.dal.RulerDal;
 import org.springframework.boot.env.YamlPropertySourceLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -223,5 +225,10 @@ public class FhirServerConfigCommon {
     }
 
     return null;
+  }
+
+  @Bean
+  RulerDal rulerDal(DaoRegistry daoRegistry) {
+    return new RulerDal(daoRegistry);
   }
 }
