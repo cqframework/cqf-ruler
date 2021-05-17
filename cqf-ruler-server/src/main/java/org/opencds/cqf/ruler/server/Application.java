@@ -75,8 +75,34 @@ public class Application extends SpringBootServletInitializer {
     ServletRegistrationBean<DispatcherServlet> registrationBean = new ServletRegistrationBean<DispatcherServlet>();
     registrationBean.setServlet(dispatcherServlet);
     registrationBean.addUrlMappings("/*");
-    registrationBean.setLoadOnStartup(1);
+    registrationBean.setLoadOnStartup(2);
     return registrationBean;
 
   }
+
+  // @Bean
+  // @SuppressWarnings("rawtypes")
+  // @Conditional(OnR4Condition.class)
+  // public ServletRegistrationBean cdsHooksR4Bean() {
+  //   ServletRegistrationBean<org.opencds.cqf.ruler.r4.servlet.CdsHooksServlet> registrationBean = new ServletRegistrationBean<org.opencds.cqf.ruler.r4.servlet.CdsHooksServlet>();
+  //   org.opencds.cqf.ruler.r4.servlet.CdsHooksServlet cdsHooks = new org.opencds.cqf.ruler.r4.servlet.CdsHooksServlet();
+  //   beanFactory.autowireBean(cdsHooks);
+  //   registrationBean.setServlet(cdsHooks);
+  //   registrationBean.addUrlMappings("/cds-services/*");
+  //   registrationBean.setLoadOnStartup(3);
+  //   return registrationBean;
+  // }
+
+  // @Bean
+  // @SuppressWarnings("rawtypes")
+  // @Conditional(OnDSTU3Condition.class)
+  // public ServletRegistrationBean cdsHooksDstu3Bean() {
+  //   ServletRegistrationBean<org.opencds.cqf.ruler.dstu3.servlet.CdsHooksServlet> registrationBean = new ServletRegistrationBean<org.opencds.cqf.ruler.dstu3.servlet.CdsHooksServlet>();
+  //   org.opencds.cqf.ruler.dstu3.servlet.CdsHooksServlet cdsHooks = new org.opencds.cqf.ruler.dstu3.servlet.CdsHooksServlet();
+  //   beanFactory.autowireBean(cdsHooks);
+  //   registrationBean.setServlet(cdsHooks);
+  //   registrationBean.addUrlMappings("/cds-services/*");
+  //   registrationBean.setLoadOnStartup(3);
+  //   return registrationBean;
+  // }
 }
