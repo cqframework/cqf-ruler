@@ -1,13 +1,17 @@
 package org.opencds.cqf.ruler.server;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.api.CacheControlDirective;
-import ca.uhn.fhir.rest.api.EncodingEnum;
-import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
-import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
-import ca.uhn.fhir.util.BundleUtil;
+import static ca.uhn.fhir.util.TestUtil.waitForSize;
+import static java.lang.Thread.sleep;
+import static java.util.Comparator.comparing;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -24,19 +28,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.net.URI;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import static ca.uhn.fhir.util.TestUtil.waitForSize;
-import static java.lang.Thread.sleep;
-import static java.util.Comparator.comparing;
-import static org.awaitility.Awaitility.await;
-import static org.awaitility.Awaitility.pollInSameThread;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.api.CacheControlDirective;
+import ca.uhn.fhir.rest.api.EncodingEnum;
+import ca.uhn.fhir.rest.api.MethodOutcome;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
+import ca.uhn.fhir.util.BundleUtil;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties =
@@ -87,6 +85,7 @@ public class ExampleServerR4IT {
 		assertNotNull(goldenRecord.getMeta().getTag("http://hapifhir.io/fhir/NamingSystem/mdm-record-status", "GOLDEN_RECORD"));
 	}
 
+	@SuppressWarnings("unused")
 	private List<Patient> getPatients() {
 		Bundle bundle = ourClient.search().forResource(Patient.class).cacheControl(new CacheControlDirective().setNoCache(true)).returnBundle(Bundle.class).execute();
 		List<Patient> retVal = BundleUtil.toListOfResourcesOfType(ourCtx, bundle, Patient.class);

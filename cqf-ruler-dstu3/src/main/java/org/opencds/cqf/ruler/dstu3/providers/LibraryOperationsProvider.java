@@ -35,7 +35,7 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 
 @Component
-public class LibraryOperationsProvider implements org.opencds.cqf.common.providers.LibraryResolutionProvider<Library> {
+public class LibraryOperationsProvider implements org.opencds.cqf.ruler.common.providers.LibraryResolutionProvider<Library> {
 
     private NarrativeProvider narrativeProvider;
     private DataRequirementsProvider dataRequirementsProvider;

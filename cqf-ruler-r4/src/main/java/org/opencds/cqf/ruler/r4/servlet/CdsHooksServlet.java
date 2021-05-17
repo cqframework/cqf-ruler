@@ -46,7 +46,6 @@ import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.ruler.r4.helpers.LibraryHelper;
-import org.opencds.cqf.ruler.r4.providers.JpaTerminologyProvider;
 import org.opencds.cqf.ruler.r4.providers.PlanDefinitionApplyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +53,7 @@ import org.springframework.context.ApplicationContext;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.cql.r4.provider.JpaTerminologyProvider;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 
 @WebServlet(name = "cds-services")
@@ -62,13 +62,13 @@ public class CdsHooksServlet extends HttpServlet {
     private FhirVersionEnum version = FhirVersionEnum.R4;
     private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 
-    private org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider planDefinitionProvider;
+    private org.opencds.cqf.ruler.r4.providers.PlanDefinitionApplyProvider planDefinitionProvider;
 
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider;
 
     private JpaFhirRetrieveProvider fhirRetrieveProvider;
 
-    private org.opencds.cqf.r4.providers.JpaTerminologyProvider jpaTerminologyProvider;
+    private JpaTerminologyProvider jpaTerminologyProvider;
 
     private ProviderConfiguration providerConfiguration;
 
@@ -131,8 +131,8 @@ public class CdsHooksServlet extends HttpServlet {
             String baseUrl = HapiProperties.getServerAddress();
             String service = request.getPathInfo().replace("/", "");
 
-            JsonParser parser = new JsonParser();
-            Request cdsHooksRequest = new Request(service, parser.parse(request.getReader()).getAsJsonObject(),
+            JsonObject requestJson = JsonParser.parseReader(request.getReader()).getAsJsonObject();
+            Request cdsHooksRequest = new Request(service, requestJson,
                     JsonHelper.getObjectRequired(getService(service), "prefetch"));
 
             logger.info(cdsHooksRequest.getRequestJson().toString());

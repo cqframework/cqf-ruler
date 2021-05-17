@@ -35,6 +35,11 @@
         <!-- cqf-ruler operation providers -->
         <dependency>
             <groupId>org.opencds.cqf.ruler</groupId>
+            <artifactId>cqf-ruler-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opencds.cqf.ruler</groupId>
             <artifactId>cqf-ruler-r4</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -114,6 +119,24 @@
             <artifactId>hapi-fhir-jpaserver-mdm</artifactId>
             <version>${hapi_version}</version>
         </dependency>
+
+        <!-- This dependnecy is used for the "JPA Starter Server" classes -->
+
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-jpaserver-starter</artifactId>
+            <version>5.3.0</version>
+            <type>war</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-jpaserver-starter</artifactId>
+            <version>5.3.0</version>
+            <type>war</type>
+        </dependency>
+
         <!-- This dependency is used for the "FHIR Tester" web app overlay -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
@@ -339,7 +362,7 @@
                             <goal>repackage</goal>
                         </goals>
                         <configuration>
-                            <mainClass>ca.uhn.fhir.jpa.starter.Application</mainClass>
+                            <mainClass>org.opencds.cqf.ruler.server.Application</mainClass>
                         </configuration>
                     </execution>
                 </executions>

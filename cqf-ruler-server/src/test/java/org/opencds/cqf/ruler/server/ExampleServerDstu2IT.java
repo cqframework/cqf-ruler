@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
   })
 public class ExampleServerDstu2IT {
 
-	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerDstu2IT.class);
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;
 

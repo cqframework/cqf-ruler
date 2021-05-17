@@ -15,7 +15,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import static org.opencds.cqf.common.helpers.ClientHelper.getClient;
+import static org.opencds.cqf.ruler.common.helpers.ClientHelper.getClient;
 
 @Component
 public class QuestionnaireProvider {

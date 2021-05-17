@@ -16,6 +16,7 @@ import java.io.InputStream;
 
 public interface  IServerSupport {
 
+  @SuppressWarnings("unchecked")
   default IBaseResource loadResource(String theLocation, FhirContext theFhirContext, DaoRegistry theDaoRegistry) throws IOException {
     String json = stringFromResource(theLocation);
     IBaseResource resource = theFhirContext.newJsonParser().parseResource(json);

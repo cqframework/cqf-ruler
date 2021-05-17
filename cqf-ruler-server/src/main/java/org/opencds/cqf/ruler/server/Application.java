@@ -1,7 +1,5 @@
 package org.opencds.cqf.ruler.server;
 
-import ca.uhn.fhir.jpa.mdm.MdmConfig;
-import org.opencds.cqf.ruler.server.annotations.OnEitherVersion;
 import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
@@ -47,6 +45,7 @@ public class Application extends SpringBootServletInitializer {
 
   @Bean
   @Conditional(OnEitherVersion.class)
+  @SuppressWarnings("rawtypes")
   public ServletRegistrationBean hapiServletRegistration() {
     ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
     JpaRestfulServer jpaRestfulServer = new JpaRestfulServer();
@@ -59,6 +58,7 @@ public class Application extends SpringBootServletInitializer {
   }
 
   @Bean
+  @SuppressWarnings("rawtypes")
   public ServletRegistrationBean overlayRegistrationBean() {
 
     AnnotationConfigWebApplicationContext annotationConfigWebApplicationContext = new AnnotationConfigWebApplicationContext();
