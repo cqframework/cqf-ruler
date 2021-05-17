@@ -1,3 +1,4 @@
+#!/bin/sh
 FROM jetty:9-jre11
 
 USER jetty:jetty
@@ -17,4 +18,4 @@ ENV SERVER_ADDRESS_R4="http://localhost:8080/cqf-ruler-r4/fhir"
 ENV JAVA_OPTIONS=""
 
 COPY --chown=jetty:jetty ./scripts/docker-entrypoint-override.sh /docker-entrypoint-override.sh
-ENTRYPOINT [ "/docker-entrypoint-override.sh" ]
+ENTRYPOINT [ "sh", "/docker-entrypoint-override.sh" ]
