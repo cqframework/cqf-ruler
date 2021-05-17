@@ -100,7 +100,7 @@ hapi:
     tester:
         home:
           name: Local Tester
-          server_address: 'http://localhost:8080/fhir'
+          server_address: 'http://localhost:8080/cqf-ruler/fhir'
           refuse_to_fetch_third_party_urls: false
           fhir_version: R4
         global:
@@ -143,3 +143,39 @@ hapi:
 #  protocol: 'http'
 #  schema_management_strategy: CREATE
 #  username: SomeUsername
+
+
+
+##################################################
+# OAuth Settings
+##################################################
+# oauth.enabled=false
+# oauth.securityCors=true
+# oauth.securityUrl=http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
+# oauth.securityExtAuthUrl=authorize
+# oauth.securityExtAuthValueUri=http://launch.smarthealthit.org/v/r4/auth/authorize
+# oauth.securityExtTokenUrl=token
+# oauth.securityExtTokenValueUri=http://launch.smarthealthit.org/v/r4/auth/token
+# oauth.serviceSystem=http://hl7.org/fhir/restful-security-service
+# oauth.serviceCode=SMART-on-FHIR
+# oauth.serviceDisplay=SMART-on-FHIR
+# oauth.serviceText=OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)
+
+# questionnaireResponseExtract.enabled=true
+# questionnaireResponseExtract.endpoint=http://localhost:8080/cqf-ruler-r4/fhir
+# #  https://cds4cpm-develop.sandbox.alphora.com/cqf-ruler-r4/fhir
+# questionnaireResponseExtract.username=
+# questionnaireResponseExtract.password=
+
+# observationTransform.enabled=true
+# observationTransform.username=
+# observationTransform.password=
+# observationTransform.replaceCode=false
+
+# ##################################################
+# # CDS-Hooks Settings
+# ##################################################
+# cds_hooks.fhirServer.maxCodesPerQuery=
+# cds_hooks.fhirServer.expandValueSets=
+# cds_hooks.fhirServer.searchStyle=
+# cds_hooks.prefetch.maxUriLength=

@@ -1315,19 +1315,25 @@
             </dependency>
 
             <dependency>
-                <groupId>com.jamesmurty.utils</groupId>
-                <artifactId>java-xmlbuilder</artifactId>
-                <version>1.3</version>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>1.28</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring_boot_version}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-maven-plugin</artifactId>
-                    <version>${jetty.version}</version>
+                    <version>${jetty_version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

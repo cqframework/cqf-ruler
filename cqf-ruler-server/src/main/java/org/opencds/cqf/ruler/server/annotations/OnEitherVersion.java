@@ -1,0 +1,40 @@
+package org.opencds.cqf.ruler.server.annotations;
+
+/* 
+*  This file created from the HAPI FHIR JPA Server Starter project
+*  https://github.com/hapifhir/hapi-fhir-jpaserver-starter 
+*/
+
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.context.annotation.Conditional;
+
+public class OnEitherVersion extends AnyNestedCondition {
+
+  OnEitherVersion() {
+    super(ConfigurationPhase.REGISTER_BEAN);
+  }
+
+  @Override
+  protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
+    ConditionOutcome result = super.getFinalMatchOutcome(memberOutcomes);
+    return result;
+  }
+
+  @Conditional(OnDSTU2Condition.class)
+  static class OnDSTU2 {
+  }
+
+  @Conditional(OnDSTU3Condition.class)
+  static class OnDSTU3 {
+  }
+
+  @Conditional(OnR4Condition.class)
+  static class OnR4 {
+  }
+
+  @Conditional(OnR5Condition.class)
+  static class OnR5 {
+  }
+
+}

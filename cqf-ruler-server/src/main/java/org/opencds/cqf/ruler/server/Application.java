@@ -4,6 +4,9 @@ import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
 import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
+
+import org.opencds.cqf.ruler.server.annotations.OnEitherVersion;
+import org.opencds.cqf.ruler.server.mdm.MdmConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
@@ -47,7 +50,7 @@ public class Application extends SpringBootServletInitializer {
   @Conditional(OnEitherVersion.class)
   @SuppressWarnings("rawtypes")
   public ServletRegistrationBean hapiServletRegistration() {
-    ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
+    ServletRegistrationBean<JpaRestfulServer> servletRegistrationBean = new ServletRegistrationBean<JpaRestfulServer>();
     JpaRestfulServer jpaRestfulServer = new JpaRestfulServer();
     beanFactory.autowireBean(jpaRestfulServer);
     servletRegistrationBean.setServlet(jpaRestfulServer);
@@ -69,7 +72,7 @@ public class Application extends SpringBootServletInitializer {
     dispatcherServlet.setContextClass(AnnotationConfigWebApplicationContext.class);
     dispatcherServlet.setContextConfigLocation(FhirTesterConfig.class.getName());
 
-    ServletRegistrationBean registrationBean = new ServletRegistrationBean();
+    ServletRegistrationBean<DispatcherServlet> registrationBean = new ServletRegistrationBean<DispatcherServlet>();
     registrationBean.setServlet(dispatcherServlet);
     registrationBean.addUrlMappings("/*");
     registrationBean.setLoadOnStartup(1);
