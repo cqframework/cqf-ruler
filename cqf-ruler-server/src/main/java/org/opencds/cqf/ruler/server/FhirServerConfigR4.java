@@ -9,6 +9,8 @@ import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.search.lastn.ElasticsearchSvcImpl;
+
+import org.opencds.cqf.ruler.r4.config.OperationsProviderLoader;
 import org.opencds.cqf.ruler.server.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.server.cql.StarterCqlR4Config;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,4 +93,8 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     }
   }
 
+  @Bean
+  OperationsProviderLoader operationsProviderLoader() {
+    return new OperationsProviderLoader();
+  }
 }

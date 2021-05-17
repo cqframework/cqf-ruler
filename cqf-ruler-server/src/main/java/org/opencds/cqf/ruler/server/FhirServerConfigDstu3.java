@@ -9,6 +9,8 @@ import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.search.lastn.ElasticsearchSvcImpl;
+
+import org.opencds.cqf.ruler.dstu3.config.OperationsProviderLoader;
 import org.opencds.cqf.ruler.server.annotations.OnDSTU3Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
@@ -81,6 +83,11 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     } else {
       return null;
     }
+  }
+
+  @Bean
+  OperationsProviderLoader operationsProviderLoader() {
+    return new OperationsProviderLoader();
   }
 
 }
