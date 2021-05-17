@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
 import org.opencds.cqf.ruler.common.config.HapiProperties;
 import org.opencds.cqf.ruler.r4.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.ruler.r4.providers.ApplyCqlOperationProvider;

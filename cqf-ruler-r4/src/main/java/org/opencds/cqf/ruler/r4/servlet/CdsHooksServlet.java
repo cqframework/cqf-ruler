@@ -68,11 +68,7 @@ public class CdsHooksServlet extends HttpServlet {
 
     private JpaFhirRetrieveProvider fhirRetrieveProvider;
 
-<<<<<<< HEAD:cqf-ruler-r4/src/main/java/org/opencds/cqf/ruler/r4/servlet/CdsHooksServlet.java
     private JpaTerminologyProvider jpaTerminologyProvider;
-=======
-    private TerminologyProvider jpaTerminologyProvider;
->>>>>>> f307a35... Updates to get things closer to working:r4/src/main/java/org/opencds/cqf/r4/servlet/CdsHooksServlet.java
 
     private ProviderConfiguration providerConfiguration;
 
@@ -87,7 +83,7 @@ public class CdsHooksServlet extends HttpServlet {
         this.planDefinitionProvider = appCtx.getBean(PlanDefinitionApplyProvider.class);
         this.libraryResolutionProvider = (LibraryResolutionProvider<org.hl7.fhir.r4.model.Library>)appCtx.getBean(LibraryResolutionProvider.class);
         this.fhirRetrieveProvider = appCtx.getBean(JpaFhirRetrieveProvider.class);
-        this.jpaTerminologyProvider = appCtx.getBean(TerminologyProvider.class);
+        this.jpaTerminologyProvider = appCtx.getBean(JpaTerminologyProvider.class);
     }
 
     protected ProviderConfiguration getProviderConfiguration() {

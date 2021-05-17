@@ -40,6 +40,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.opencds.cqf.cql</groupId>
+            <artifactId>evaluator.spring</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>cds</artifactId>
         </dependency>
