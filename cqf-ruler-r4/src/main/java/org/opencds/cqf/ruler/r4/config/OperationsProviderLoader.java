@@ -1,16 +1,7 @@
 package org.opencds.cqf.ruler.r4.config;
 
-import ca.uhn.fhir.context.ConfigurationException;
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
+import javax.annotation.PostConstruct;
 
-import org.hl7.fhir.r4.model.PlanDefinition;
-import org.opencds.cqf.cql.engine.fhir.converter.FhirTypeConverter;
-import org.opencds.cqf.cql.evaluator.activitydefinition.r4.ActivityDefinitionProcessor;
-import org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory;
-import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
-import org.opencds.cqf.ruler.common.dal.RulerDal;
 import org.opencds.cqf.ruler.r4.providers.PlanDefinitionApplyProvider;
 import org.opencds.cqf.ruler.r4.providers.QuestionnaireProvider;
 import org.slf4j.Logger;
@@ -19,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
+import ca.uhn.fhir.context.ConfigurationException;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
 
 @Service
 public class OperationsProviderLoader {

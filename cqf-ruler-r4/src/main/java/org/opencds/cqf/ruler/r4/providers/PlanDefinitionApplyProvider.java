@@ -2,13 +2,17 @@ package org.opencds.cqf.ruler.r4.providers;
 
 import javax.inject.Inject;
 
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import org.hl7.fhir.instance.model.api.IBaseParameters;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CarePlan;
+import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.PlanDefinition;
 import org.opencds.cqf.cql.engine.fhir.converter.FhirTypeConverter;
 import org.opencds.cqf.cql.evaluator.activitydefinition.r4.ActivityDefinitionProcessor;
-import org.opencds.cqf.cql.evaluator.fhir.ClientFactory;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.opencds.cqf.cql.evaluator.plandefinition.r4.OperationParametersParser;
@@ -18,10 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 @Component
 public class PlanDefinitionApplyProvider {
