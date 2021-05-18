@@ -6,11 +6,21 @@ package org.opencds.cqf.ruler.server;
 */
 
 import ca.uhn.fhir.context.ConfigurationException;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.search.lastn.ElasticsearchSvcImpl;
 
+import org.hl7.fhir.r4.model.PlanDefinition;
+import org.opencds.cqf.cql.engine.fhir.converter.FhirTypeConverter;
+import org.opencds.cqf.cql.evaluator.activitydefinition.r4.ActivityDefinitionProcessor;
+import org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory;
+import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
+import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
+import org.opencds.cqf.ruler.common.dal.RulerDal;
 import org.opencds.cqf.ruler.r4.config.OperationsProviderLoader;
+import org.opencds.cqf.ruler.r4.providers.PlanDefinitionApplyProvider;
 import org.opencds.cqf.ruler.server.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.server.cql.StarterCqlR4Config;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +34,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @Conditional(OnR4Condition.class)
-@Import(StarterCqlR4Config.class)
+@Import({StarterCqlR4Config.class, EvaluatorConfiguration.class})
 public class FhirServerConfigR4 extends BaseJavaConfigR4 {
 
   @Autowired
@@ -96,5 +106,17 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
   @Bean
   OperationsProviderLoader operationsProviderLoader() {
     return new OperationsProviderLoader();
+  }
+
+  @Bean
+  PlanDefinitionApplyProvider planDefinitionApplyProvder(RulerDal fhirDal, FhirContext fhirContext, ActivityDefinitionProcessor activityDefinitionProcessor,
+  LibraryProcessor libraryProcessor, IFhirResourceDao<PlanDefinition> planDefinitionDao, AdapterFactory adapterFactory, FhirTypeConverter fhirTypeConverter) {
+    return new PlanDefinitionApplyProvider(fhirDal, fhirContext, activityDefinitionProcessor, libraryProcessor, planDefinitionDao, adapterFactory, fhirTypeConverter);
+  }
+
+
+  @Bean
+  ActivityDefinitionProcessor activityDefinitionProcessor(FhirContext fhirContext, RulerDal fhirDal, LibraryProcessor libraryProcessor) {
+    return new ActivityDefinitionProcessor(fhirContext, fhirDal, libraryProcessor);
   }
 }

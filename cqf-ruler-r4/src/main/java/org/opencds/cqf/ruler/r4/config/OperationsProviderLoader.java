@@ -38,10 +38,7 @@ public class OperationsProviderLoader {
 			case R4:
 				myLogger.info("Registering CQF-Ruler Providers");
 				myResourceProviderFactory.addSupplier(() -> new QuestionnaireProvider(myFhirContext));
-				myResourceProviderFactory.addSupplier(() -> new PlanDefinitionApplyProvider(appCtx.getBean(RulerDal.class), appCtx.getBean(FhirContext.class),
-						new ActivityDefinitionProcessor(appCtx.getBean(FhirContext.class), appCtx.getBean(RulerDal.class), appCtx.getBean(LibraryProcessor.class)),
-						appCtx.getBean(LibraryProcessor.class), appCtx.getBean(DaoRegistry.class).getResourceDao(PlanDefinition.class),
-						appCtx.getBean(AdapterFactory.class), appCtx.getBean(FhirTypeConverter.class)));
+				myResourceProviderFactory.addSupplier(() -> appCtx.getBean(PlanDefinitionApplyProvider.class));
 				break;
 			default:
 				throw new ConfigurationException("CQL not supported for FHIR version " + myFhirContext.getVersion().getVersion());

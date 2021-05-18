@@ -1,19 +1,13 @@
 package org.opencds.cqf.ruler.r4.providers;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
-
-import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseParameters;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.cql.engine.fhir.converter.FhirTypeConverter;
 import org.opencds.cqf.cql.evaluator.activitydefinition.r4.ActivityDefinitionProcessor;
-import org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.opencds.cqf.cql.evaluator.plandefinition.r4.OperationParametersParser;
@@ -37,7 +31,7 @@ public class PlanDefinitionApplyProvider {
 
   @Inject
   public PlanDefinitionApplyProvider(FhirDal fhirDal, FhirContext fhirContext, ActivityDefinitionProcessor activityDefinitionProcessor,
-    LibraryProcessor libraryProcessor, IFhirResourceDao<PlanDefinition> planDefinitionDao, AdapterFactory adapterFactory, FhirTypeConverter fhirTypeConverter) {
+    LibraryProcessor libraryProcessor, IFhirResourceDao<PlanDefinition> planDefinitionDao, org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory adapterFactory, FhirTypeConverter fhirTypeConverter) {
     this.planDefinitionDao = planDefinitionDao;
     operationParametersParser = new OperationParametersParser(adapterFactory, fhirTypeConverter);
     this.planDefinitionProcessor = new PlanDefinitionProcessor(fhirContext, fhirDal, libraryProcessor, activityDefinitionProcessor, operationParametersParser);
@@ -59,16 +53,15 @@ public class PlanDefinitionApplyProvider {
       @OperationParam(name = "userTaskContext") String userTaskContext,
       @OperationParam(name = "setting") String setting,
       @OperationParam(name = "settingContext") String settingContext,
-      @OperationParam(name = "mergeNestedCarePlans") boolean mergeNestedCarePlans,
-      @OperationParam(name = "parameters") IBaseParameters parameters,
-      @OperationParam(name = "useServerData") boolean useServerData,
-      @OperationParam(name = "data") IBaseBundle bundle,
-      @OperationParam(name = "prefetchData") IBaseParameters prefetchData,
-      @OperationParam(name = "dataEndpoint") IBaseResource dataEndpoint,
-      @OperationParam(name = "contentEndpoint") IBaseResource contentEndpoint,
-      @OperationParam(name = "terminologyEndpoint") IBaseResource terminologyEndpoint)
-      throws IOException, FHIRException {
-        IBaseParameters resultParameters = planDefinitionProcessor.apply(theId, patientId, encounterId, practitionerId, organizationId, userType, userLanguage, userTaskContext, setting, settingContext, mergeNestedCarePlans, parameters, useServerData, bundle, prefetchData, dataEndpoint, contentEndpoint, terminologyEndpoint);
+      @OperationParam(name = "mergeNestedCarePlans") BooleanType mergeNestedCarePlans,
+      @OperationParam(name = "parameters") Parameters parameters,
+      @OperationParam(name = "useServerData") BooleanType useServerData,
+      @OperationParam(name = "data") Bundle bundle,
+      @OperationParam(name = "prefetchData") Parameters prefetchData,
+      @OperationParam(name = "dataEndpoint") Endpoint dataEndpoint,
+      @OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
+      @OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
+        IBaseParameters resultParameters = planDefinitionProcessor.apply(theId, patientId, encounterId, practitionerId, organizationId, userType, userLanguage, userTaskContext, setting, settingContext, mergeNestedCarePlans.booleanValue(), parameters, useServerData.booleanValue(), bundle, prefetchData, dataEndpoint, contentEndpoint, terminologyEndpoint);
         if (resultParameters != null) {
           IBaseResource returnResource = ((Parameters)resultParameters).getParameter().stream().filter(x -> x.getName().equals("return")).findFirst().get().getResource();
           if (returnResource == null || !(returnResource instanceof CarePlan)) {
