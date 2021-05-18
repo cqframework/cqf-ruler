@@ -32,7 +32,7 @@ import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 
 @Configuration
-@ComponentScan(basePackages = "org.opencds.cqf.dstu3")
+@ComponentScan(basePackages = "org.opencds.cqf.ruler.dstu3")
 public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     protected final DataSource myDataSource;
 

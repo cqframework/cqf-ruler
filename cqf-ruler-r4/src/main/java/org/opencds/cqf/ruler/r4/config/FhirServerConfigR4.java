@@ -34,7 +34,7 @@ import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 
 @Configuration
-@ComponentScan(basePackages = "org.opencds.cqf.r4")
+@ComponentScan(basePackages = "org.opencds.cqf.ruler.r4")
 @Import(EvaluatorConfiguration.class)
 public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     protected final DataSource myDataSource;
