@@ -8,6 +8,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.cql.engine.fhir.converter.FhirTypeConverter;
 import org.opencds.cqf.cql.evaluator.activitydefinition.r4.ActivityDefinitionProcessor;
+import org.opencds.cqf.cql.evaluator.fhir.ClientFactory;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.opencds.cqf.cql.evaluator.plandefinition.r4.OperationParametersParser;
@@ -20,12 +21,14 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 @Component
 public class PlanDefinitionApplyProvider {
   protected PlanDefinitionProcessor planDefinitionProcessor;
   protected IFhirResourceDao<PlanDefinition> planDefinitionDao;
   protected OperationParametersParser operationParametersParser;
+  private FhirContext fhirContext;
 
   protected static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
@@ -33,6 +36,7 @@ public class PlanDefinitionApplyProvider {
   public PlanDefinitionApplyProvider(FhirDal fhirDal, FhirContext fhirContext, ActivityDefinitionProcessor activityDefinitionProcessor,
     LibraryProcessor libraryProcessor, IFhirResourceDao<PlanDefinition> planDefinitionDao, org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory adapterFactory, FhirTypeConverter fhirTypeConverter) {
     this.planDefinitionDao = planDefinitionDao;
+    this.fhirContext = fhirContext;
     operationParametersParser = new OperationParametersParser(adapterFactory, fhirTypeConverter);
     this.planDefinitionProcessor = new PlanDefinitionProcessor(fhirContext, fhirDal, libraryProcessor, activityDefinitionProcessor, operationParametersParser);
   }
@@ -61,7 +65,16 @@ public class PlanDefinitionApplyProvider {
       @OperationParam(name = "dataEndpoint") Endpoint dataEndpoint,
       @OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
       @OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
-        IBaseParameters resultParameters = planDefinitionProcessor.apply(theId, patientId, encounterId, practitionerId, organizationId, userType, userLanguage, userTaskContext, setting, settingContext, mergeNestedCarePlans.booleanValue(), parameters, useServerData.booleanValue(), bundle, prefetchData, dataEndpoint, contentEndpoint, terminologyEndpoint);
+        Boolean mergeNestedCarePlansTemp = null;
+        Boolean useServerDataTemp = null;
+        if (mergeNestedCarePlans!= null && mergeNestedCarePlans.hasValue()) {
+          mergeNestedCarePlansTemp = mergeNestedCarePlans.booleanValue();
+        }
+        if (useServerData!= null && useServerData.hasValue()) {
+          useServerDataTemp = useServerData.booleanValue();
+        }
+        
+        IBaseParameters resultParameters = planDefinitionProcessor.apply(theId, patientId, encounterId, practitionerId, organizationId, userType, userLanguage, userTaskContext, setting, settingContext, mergeNestedCarePlansTemp, parameters, useServerDataTemp, bundle, prefetchData, dataEndpoint, contentEndpoint, terminologyEndpoint);
         if (resultParameters != null) {
           IBaseResource returnResource = ((Parameters)resultParameters).getParameter().stream().filter(x -> x.getName().equals("return")).findFirst().get().getResource();
           if (returnResource == null || !(returnResource instanceof CarePlan)) {
