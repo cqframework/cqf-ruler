@@ -32,7 +32,6 @@ public class PlanDefinitionApplyProvider {
   protected PlanDefinitionProcessor planDefinitionProcessor;
   protected IFhirResourceDao<PlanDefinition> planDefinitionDao;
   protected OperationParametersParser operationParametersParser;
-  private FhirContext fhirContext;
 
   protected static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
@@ -40,7 +39,6 @@ public class PlanDefinitionApplyProvider {
   public PlanDefinitionApplyProvider(FhirDal fhirDal, FhirContext fhirContext, ActivityDefinitionProcessor activityDefinitionProcessor,
     LibraryProcessor libraryProcessor, IFhirResourceDao<PlanDefinition> planDefinitionDao, org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory adapterFactory, FhirTypeConverter fhirTypeConverter) {
     this.planDefinitionDao = planDefinitionDao;
-    this.fhirContext = fhirContext;
     operationParametersParser = new OperationParametersParser(adapterFactory, fhirTypeConverter);
     this.planDefinitionProcessor = new PlanDefinitionProcessor(fhirContext, fhirDal, libraryProcessor, activityDefinitionProcessor, operationParametersParser);
   }

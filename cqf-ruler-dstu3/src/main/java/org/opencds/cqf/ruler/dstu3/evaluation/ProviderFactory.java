@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 // This class is a relatively dumb factory for data providers. It supports only
@@ -27,7 +26,6 @@ public class ProviderFactory implements EvaluationProviderFactory {
     DaoRegistry registry;
     TerminologyProvider defaultTerminologyProvider;
     FhirContext fhirContext;
-    ISearchParamRegistry searchParamRegistry;
 
     @Inject
     public ProviderFactory(FhirContext fhirContext, DaoRegistry registry,
