@@ -2,9 +2,9 @@
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-r4/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-r4) [![Build Status](https://www.travis-ci.com/DBCG/cqf-ruler.svg?branch=master)](https://www.travis-ci.com/DBCG/cqf-ruler) [![docker image](https://img.shields.io/docker/v/contentgroup/cqf-ruler/latest?style=flat&color=brightgreen&label=docker%20image)](https://hub.docker.com/r/contentgroup/cqf-ruler/tags) [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://chat.fhir.org/#narrow/stream/179220-cql)
 
-The CQF Ruler is a set of plugins for the [HAPI FHIR Server](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) that provides an implementation of FHIR's [Clinical Reasoning Module](
-http://hl7.org/fhir/clinicalreasoning-module.html) and serves as a
-knowledge artifact repository and a [cds-hooks](https://cds-hooks.org/) compatible clinical decision support service. It does this via integrating a number of other CQL-related projects, which are listed below.
+The CQF Ruler is based on the [HAPI FHIR JPA Server Starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) and adds a set of plugins that provide an implementation of FHIR's [Clinical Reasoning Module](
+http://hl7.org/fhir/clinicalreasoning-module.html), serve as a
+knowledge artifact repository, and a [cds-hooks](https://cds-hooks.org/) compatible clinical decision support service. It does this via integrating a number of other CQL-related projects, which are listed below.
 
 ## Usage
 

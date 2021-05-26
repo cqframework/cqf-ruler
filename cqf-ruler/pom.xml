@@ -14,11 +14,11 @@
     <name>cqf-ruler</name>
 
     <dependencies>
-        <!-- <dependency>
+        <dependency>
             <groupId>org.opencds.cqf.ruler</groupId>
-            <artifactId>cqf-ruler-jpaserver-starter</artifactId>
+            <artifactId>cqf-ruler-hapi-fhir-jpaserver-starter</artifactId>
             <version>0.5.0-SNAPSHOT</version>
-        </dependency> -->
+        </dependency>
         <dependency>
             <groupId>org.opencds.cqf.ruler</groupId>
             <artifactId>cqf-ruler-common</artifactId>
@@ -49,13 +49,11 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.25</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.20.jre7</version>
         </dependency>
 
         <!-- Needed for Email subscriptions -->
@@ -123,32 +121,36 @@
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-starter</artifactId>
             <version>${hapi_jpastarter_version}</version>
             <type>war</type>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>ca.uhn.hapi.fhir</groupId>
-            <artifactId>hapi-fhir-jpaserver-starter</artifactId>
-            <version>${hapi_jpastarter_version}</version>
-            <type>warpath</type>
-            <scope>runtime</scope>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
 
-
         <!-- HAPI-FHIR uses Logback for logging support. The logback library is included automatically by Maven as a part of the hapi-fhir-base dependency, but you also need to include a logging library. Logback
             is used here, but log4j would also be fine. -->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- routes apache commons logging over slf4j-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+
+        <!-- routes log4j over slf4j-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
         </dependency>
 
         <!-- Needed for JEE/Servlet support -->
@@ -194,7 +196,6 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
-            <version>5.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -291,7 +292,6 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <version>4.1.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -304,13 +304,11 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.8.0-M1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.8.0-M1</version>
             <scope>test</scope>
         </dependency>
 
@@ -320,8 +318,6 @@
             <version>${spring_boot_version}</version>
             <scope>test</scope>
         </dependency>
-
-
     </dependencies>
 
     <build>
@@ -329,18 +325,6 @@
         <finalName>ROOT</finalName>
 
         <plugins>
-            <plugin>
-                <groupId>org.appfuse.plugins</groupId>
-                <artifactId>maven-warpath-plugin</artifactId>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>add-classes</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -380,11 +364,6 @@
                         </manifestEntries>
                     </archive>
                     <overlays>
-                        <overlay>
-                            <groupId>ca.uhn.hapi.fhir</groupId>
-                            <artifactId>hapi-fhir-jpaserver-starter</artifactId>
-                            <!-- <targetPath>/</targetPath> -->
-                        </overlay>
                         <overlay>
                             <groupId>ca.uhn.hapi.fhir</groupId>
                             <artifactId>hapi-fhir-testpage-overlay</artifactId>
