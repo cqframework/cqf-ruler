@@ -19,8 +19,7 @@ fi
 
 # set Java options
 DEFAULT_OPTIONS=" -XX:+UseContainerSupport -XX:MaxRAMPercentage=80.0 -Dhapi.properties.DSTU3=/var/lib/jetty/webapps/dstu3.properties -Dhapi.properties.R4=/var/lib/jetty/webapps/r4.properties"
-if [ -z "$JAVA_OPTIONS" ]  
-then  
+if [ -z "$JAVA_OPTIONS" ]; then  
     export JAVA_OPTIONS="$DEFAULT_OPTIONS"
 else  
     export JAVA_OPTIONS="$JAVA_OPTIONS:$DEFAULT_OPTIONS"
