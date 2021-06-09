@@ -581,8 +581,8 @@ public class MeasureEvaluation {
                 Object sdeListItem = sdeList.get(i);
                 if(null != sdeListItem) {
                     String sdeAccumulatorKey = sde.get(i).getId();
-                    if(null == sdeAccumulatorKey || sdeAccumulatorKey.length() < 1){
-                        sdeAccumulatorKey = sde.get(i).getCriteria();
+                    if((null == sdeAccumulatorKey || sdeAccumulatorKey.length() < 1) && (null != sde.get(i).getCriteria())){
+                        sdeAccumulatorKey = sde.get(i).getCriteria().toLowerCase(Locale.ROOT).replace(" ", "-");
                     }
                     HashMap<String, Integer> sdeItemMap = sdeAccumulators.get(sdeAccumulatorKey);
                     String code = "";
@@ -633,7 +633,7 @@ public class MeasureEvaluation {
                 if(sdeKey.equalsIgnoreCase("sde-sex")){
                     valueCoding.setCode(sdeAccumulatorKey);
                 }else {
-                    String coreCategory = sdeKey.substring(sdeKey.lastIndexOf('-'));
+                    String coreCategory = sdeKey.substring(sdeKey.lastIndexOf('-') >= 0 ? sdeKey.lastIndexOf('-') : 0);
                     patients.forEach((pt)-> {
                         pt.getExtension().forEach((ptExt) -> {
                             if (ptExt.getUrl().contains(coreCategory)) {
