@@ -571,7 +571,7 @@ public class MeasureEvaluation {
                 Object sdeListItem = sdeList.get(i);
                 if(null != sdeListItem) {
                     String sdeAccumulatorKey = sde.get(i).getCode().getText();
-                    if(null == sdeAccumulatorKey || sdeAccumulatorKey.length() < 1){
+                    if((null == sdeAccumulatorKey || sdeAccumulatorKey.length() < 1) && (null != sde.get(i).getCriteria() && null != sde.get(i).getCriteria().getExpression())){
                         sdeAccumulatorKey = sde.get(i).getCriteria().getExpression().toLowerCase(Locale.ROOT).replace(" ", "-");
                     }
                     HashMap<String, Integer> sdeItemMap = sdeAccumulators.get(sdeAccumulatorKey);
