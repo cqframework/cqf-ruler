@@ -571,8 +571,8 @@ public class MeasureEvaluation {
                 Object sdeListItem = sdeList.get(i);
                 if(null != sdeListItem) {
                     String sdeAccumulatorKey = sde.get(i).getCode().getText();
-                    if(null == sdeAccumulatorKey || sdeAccumulatorKey.length() < 1){
-                        sdeAccumulatorKey = sde.get(i).getCriteria().getExpression();
+                    if((null == sdeAccumulatorKey || sdeAccumulatorKey.length() < 1) && (null != sde.get(i).getCriteria() && null != sde.get(i).getCriteria().getExpression())){
+                        sdeAccumulatorKey = sde.get(i).getCriteria().getExpression().toLowerCase(Locale.ROOT).replace(" ", "-");
                     }
                     HashMap<String, Integer> sdeItemMap = sdeAccumulators.get(sdeAccumulatorKey);
                     String code = "";
@@ -585,6 +585,8 @@ public class MeasureEvaluation {
                             if (((ArrayList<?>) sdeListItem).size() > 0) {
                                 if (((ArrayList<?>) sdeListItem).get(0).getClass().getSimpleName().equals("Coding")) {
                                     code  = ((Coding) ((ArrayList<?>) sdeListItem).get(0)).getCode();
+                                } else if (((ArrayList<?>) sdeListItem).get(0).getClass().getSimpleName().equals("Code")) {
+                                    code = ((Code) ((ArrayList<?>) sdeListItem).get(0)).getCode();
                                 } else {
                                     continue;
                                 }
