@@ -223,18 +223,17 @@ public class MeasureOperationsProvider {
 
     @Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
     public Parameters careGapsReport(
-            @OperationParam(name = "periodStart")       List<String>        periodStart,
-            @OperationParam(name = "periodEnd")         List<String>        periodEnd,
-            @OperationParam(name = "subject")           List<String>        subject,
-            @OperationParam(name = "topic")             String              topic, 
-            @OperationParam(name = "practitioner")      String              practitioner,
-            @OperationParam(name = "measureId")         List<String>        measureId,
-            @OperationParam(name = "measureIdentifier") List<String>        measureIdentifier,
-            @OperationParam(name = "measureUrl")        List<CanonicalType> measureUrl,
-            @OperationParam(name=  "status")            List<String>        status,
-            @OperationParam(name = "organization")      String              organization,
-            @OperationParam(name = "program")           String              program)
-    {
+        @OperationParam(name = "periodStart") List <String> periodStart,
+        @OperationParam(name = "periodEnd") List <String> periodEnd,
+        @OperationParam(name = "subject") List <String> subject,
+        @OperationParam(name = "topic") String topic,
+        @OperationParam(name = "practitioner") String practitioner,
+        @OperationParam(name = "measureId") List <String> measureId,
+        @OperationParam(name = "measureIdentifier") List <String> measureIdentifier,
+        @OperationParam(name = "measureUrl") List <CanonicalType > measureUrl,
+        @OperationParam(name = "status") List <String> status,
+        @OperationParam(name = "organization") String organization,
+        @OperationParam(name = "program") String program) {
         //TODO: topic should allow many and be a union of them
         //TODO: "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
         Parameters returnParams = new Parameters();
@@ -243,9 +242,9 @@ public class MeasureOperationsProvider {
         // This is a hack and I hate it. I don't know how to just pull the current url due to
         // the amount of abstraction going on. I didn't want to waste too much time here.
         // If there's a better way of doing this, please ping me. - Carter
-        String _periodStart    = periodStart.get( 0 );
-        String _periodEnd      =   periodEnd.get( 0 );
-        String _subject        =     subject.get( 0 );
+        String _periodStart = periodStart.get(0);
+        String _periodEnd = periodEnd.get(0);
+        String _subject = subject.get(0);
 
         if (periodStart.size() > 1)
             throw new IllegalArgumentException("Only one periodStart argument can be supplied.");
@@ -257,30 +256,26 @@ public class MeasureOperationsProvider {
             throw new IllegalArgumentException("You must supply subject argument.");
 
         if (careGapParameterValidation(
-            _periodStart,
-            _periodEnd,
-            _subject,
-            topic,
-            practitioner,
-            measureId,
-            measureIdentifier,
-            measureUrl,
-            status,
-            organization,
-            program))
-        {
+                _periodStart,
+                _periodEnd,
+                _subject,
+                topic,
+                practitioner,
+                measureId,
+                measureIdentifier,
+                measureUrl,
+                status,
+                organization,
+                program)) {
 
-            List<Measure> measures = resolveMeasures(measureId, measureIdentifier, measureUrl);
-            if (_subject.startsWith("Patient/"))
-            {
+            List < Measure > measures = resolveMeasures(measureId, measureIdentifier, measureUrl);
+            if (_subject.startsWith("Patient/")) {
                 resolvePatientGapBundleForMeasures(_periodStart, _periodEnd, _subject, topic, status, returnParams, measures, "return", organization);
-            }
-            else if (_subject.startsWith("Group/"))
-            {
-                returnParams.setId((status==null?"all-gaps": status) + "-" + _subject.replace("/","_") + "-report");
-                (getPatientListFromGroup( _subject ) )
+            } else if (_subject.startsWith("Group/")) {
+                returnParams.setId((status == null ? "all-gaps" : status) + "-" + _subject.replace("/", "_") + "-report");
+                (getPatientListFromGroup(_subject))
                 .forEach(
-                    groupSubject -> resolvePatientGapBundleForMeasures( _periodStart,
+                    groupSubject -> resolvePatientGapBundleForMeasures(_periodStart,
                         _periodEnd,
                         _subject,
                         topic,
@@ -290,9 +285,7 @@ public class MeasureOperationsProvider {
                         "return",
                         organization
                     ));
-            }
-            else if (Strings.isNullOrEmpty(practitioner))
-            {
+            } else if (Strings.isNullOrEmpty(practitioner)) {
                 String parameterName = "Gaps in Care Report - " + subject;
                 resolvePatientGapBundleForMeasures(
                     _periodStart, _periodEnd, _subject, topic, status, returnParams, measures, parameterName, organization
@@ -300,7 +293,7 @@ public class MeasureOperationsProvider {
             }
             return returnParams;
         }
-        return returnParams;  
+        return returnParams;
     }
 
     private Boolean careGapParameterValidation(String periodStart, String periodEnd, String subject, String topic,
