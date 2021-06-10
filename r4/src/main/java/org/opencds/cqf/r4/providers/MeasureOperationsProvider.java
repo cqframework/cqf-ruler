@@ -16,6 +16,7 @@ import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Measure.MeasureGroupComponent;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
@@ -25,6 +26,8 @@ import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluation;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
+import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupComponent;
+import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupPopulationComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -443,6 +446,8 @@ public class MeasureOperationsProvider {
             //section.addEntry(new Reference("MeasureReport/" + report.getId()));
 
             if (report.hasGroup() && measure.hasScoring()) {
+                // resolveProportion(r, m) always returns 0. Josh left a TODO over it.
+                // Writing this here to avoid any possible confusion in the future.
                 double proportion = resolveProportion(report, measure);
                 // TODO - this is super hacky ... change once improvementNotation is specified
                 // as a code
@@ -466,17 +471,22 @@ public class MeasureOperationsProvider {
                         continue;
                     }
                     else {
-                        detectedIssue.addModifierExtension(
-                            new Extension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-gapStatus",
-                            new CodeableConcept(
-                                new Coding("http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-status", "open-gap", null)
-                            ))
-                        );
+                        if (isPopGreaterThanZero(report, "initial-population")) {
+                            detectedIssue.addModifierExtension(
+                                new Extension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-gapStatus",
+                                new CodeableConcept(
+                                    new Coding("http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-status", "open-gap", null)
+                                ))
+                            );
+                        }
                     }
                     section.setText(new Narrative()
                             .setStatus(Narrative.NarrativeStatus.GENERATED)
                             .setDiv(new XhtmlNode().setValue("<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>No detected issues.</p></div>")));
                 }
+
+                List<MeasureReportGroupComponent> curGroups = report.getGroup();
+                Iterator<MeasureReportGroupPopulationComponent> mrgcpIterator;
 
                 detectedIssue.setId(UUID.randomUUID().toString());
                 detectedIssue.setStatus(DetectedIssue.DetectedIssueStatus.FINAL);
@@ -490,12 +500,12 @@ public class MeasureOperationsProvider {
                 detectedIssue.setCode(code);
 
                 section.addEntry(
-                     new Reference("DetectedIssue/" + detectedIssue.getIdElement().getIdPart()));
+                    new Reference("DetectedIssue/" + detectedIssue.getIdElement().getIdPart()));
                 detectedIssues.add(detectedIssue);
-                composition.addSection(section);
-                reports.add(report);
 
                 // TODO - add other types of improvement notation cases
+                composition.addSection(section);
+                reports.add(report);
             }
         }
         if (reports.isEmpty()) {
@@ -538,9 +548,9 @@ public class MeasureOperationsProvider {
     private double resolveProportion(MeasureReport report, Measure measure) {
         int numerator = 0;
         int denominator = 0;
-        for (MeasureReport.MeasureReportGroupComponent group : report.getGroup()) {
+        for (MeasureReportGroupComponent group : report.getGroup()) {
             if (group.hasPopulation()) {
-                for (MeasureReport.MeasureReportGroupPopulationComponent population : group.getPopulation()) {
+                for (MeasureReportGroupPopulationComponent population : group.getPopulation()) {
                     // TODO - currently configured for measures with only 1 numerator and 1
                     // denominator
                     if (population.hasCode()) {
@@ -741,5 +751,35 @@ public class MeasureOperationsProvider {
                     .setUrl(resource.fhirType()));
         }
         return transactionEntry;
+    }
+
+    /**
+     * Checks if count of specified code is > 0
+     * @param group
+     * @param code e.g "initial-population"
+     * @return bool if specified code has a corresponding count > 0
+     */
+    private boolean isPopGreaterThanZero(MeasureReport report, String code) {
+        for (MeasureReportGroupComponent group : report.getGroup()) {
+            if (!group.hasPopulation()) {
+                continue;
+            }
+
+            for (MeasureReportGroupPopulationComponent pop : group.getPopulation()) {
+                if (!pop.hasCode()) {
+                    continue;
+                }
+
+                if (pop.getCode().getCoding().get(0).getCode() != code) {
+                    continue;
+                }
+
+                if (pop.getCount() > 0) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
     }
 }
