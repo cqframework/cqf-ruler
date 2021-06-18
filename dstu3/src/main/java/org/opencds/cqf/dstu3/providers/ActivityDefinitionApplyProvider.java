@@ -51,6 +51,7 @@ public class ActivityDefinitionApplyProvider {
         this.modelResolver = new Dstu3FhirModelResolver();
         this.executionProvider = executionProvider;
         this.activityDefinitionDao = activityDefinitionDao;
+
     }
 
     @Operation(name = "$apply", idempotent = true, type = ActivityDefinition.class)

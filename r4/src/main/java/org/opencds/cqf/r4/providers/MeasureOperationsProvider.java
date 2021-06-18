@@ -331,8 +331,7 @@ public class MeasureOperationsProvider {
         if (urlsplit.length != 2) {
             throw new IllegalArgumentException("Invalid url, Measure.url SHALL be <CanonicalBase>/Measure/<MeasureName>");
         }
-        String canonicalBase = urlsplit[0];
-   
+
         //TODO: need to do a lookup based on Measure name in order to get the Id.
         String measureName = urlsplit[1];
         IdType measureIdType = new IdType();

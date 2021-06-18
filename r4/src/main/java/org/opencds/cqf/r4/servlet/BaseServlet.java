@@ -71,6 +71,9 @@ public class BaseServlet extends RestfulServer {
         registerProvider(systemProvider);
 
 
+        ca.uhn.fhir.context.support.IValidationSupport validationSupport = appCtx.getBean(ca.uhn.fhir.context.support.IValidationSupport.class);
+
+
         ResourceProviderFactory resourceProviders = appCtx.getBean("myResourceProvidersR4", ResourceProviderFactory.class);
         registerProviders(resourceProviders.createProviders());
 
@@ -78,12 +81,12 @@ public class BaseServlet extends RestfulServer {
         operationsProviders.forEach(x -> registerProvider(appCtx.getBean(x)));
 
         if(HapiProperties.getOAuthEnabled()) {
-                OAuthProvider oauthProvider = new OAuthProvider(this, systemDao, daoConfig, searchParamRegistry, null);
+                OAuthProvider oauthProvider = new OAuthProvider(this, systemDao, daoConfig, searchParamRegistry, validationSupport);
                 oauthProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
                 this.setServerConformanceProvider(oauthProvider);
             }else {
         
-                CqfRulerJpaConformanceProviderR4 confProvider = new CqfRulerJpaConformanceProviderR4(this, systemDao, daoConfig, searchParamRegistry, null);
+                CqfRulerJpaConformanceProviderR4 confProvider = new CqfRulerJpaConformanceProviderR4(this, systemDao, daoConfig, searchParamRegistry, validationSupport);
                 confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
                 this.setServerConformanceProvider(confProvider);
         }
