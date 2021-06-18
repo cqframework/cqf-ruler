@@ -93,7 +93,7 @@ public class LibraryLoader implements org.opencds.cqf.cql.engine.execution.Libra
             }
 
             return readLibrary(new ByteArrayInputStream(
-                    translator.convertToXml(translatedLibrary).getBytes(StandardCharsets.UTF_8)));
+                    CqlTranslator.convertToXml(translatedLibrary).getBytes(StandardCharsets.UTF_8)));
         } catch (JAXBException e) {
             throw new IllegalArgumentException(String.format("Errors occurred translating library %s%s.",
                     identifier.getId(), identifier.getVersion() != null ? ("-" + identifier.getVersion()) : ""));

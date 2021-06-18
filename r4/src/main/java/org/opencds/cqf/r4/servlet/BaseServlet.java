@@ -21,11 +21,9 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.api.rp.ResourceProviderFactory;
 import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
-import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
@@ -33,6 +31,8 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
+import ca.uhn.fhir.rest.server.provider.ResourceProviderFactory;
+import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
 public class BaseServlet extends RestfulServer {
     private static final long serialVersionUID = 1L;
@@ -71,6 +71,9 @@ public class BaseServlet extends RestfulServer {
         registerProvider(systemProvider);
 
 
+        ca.uhn.fhir.context.support.IValidationSupport validationSupport = appCtx.getBean(ca.uhn.fhir.context.support.IValidationSupport.class);
+
+
         ResourceProviderFactory resourceProviders = appCtx.getBean("myResourceProvidersR4", ResourceProviderFactory.class);
         registerProviders(resourceProviders.createProviders());
 
@@ -78,18 +81,12 @@ public class BaseServlet extends RestfulServer {
         operationsProviders.forEach(x -> registerProvider(appCtx.getBean(x)));
 
         if(HapiProperties.getOAuthEnabled()) {
-                OAuthProvider oauthProvider = new OAuthProvider();
-                oauthProvider.setDaoConfig(daoConfig);
-                oauthProvider.setSystemDao(systemDao);
-                oauthProvider.setSearchParamRegistry(searchParamRegistry);
+                OAuthProvider oauthProvider = new OAuthProvider(this, systemDao, daoConfig, searchParamRegistry, validationSupport);
                 oauthProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
                 this.setServerConformanceProvider(oauthProvider);
             }else {
         
-                CqfRulerJpaConformanceProviderR4 confProvider = new CqfRulerJpaConformanceProviderR4();
-                confProvider.setDaoConfig(daoConfig);
-                confProvider.setSystemDao(systemDao);
-                confProvider.setSearchParamRegistry(searchParamRegistry);
+                CqfRulerJpaConformanceProviderR4 confProvider = new CqfRulerJpaConformanceProviderR4(this, systemDao, daoConfig, searchParamRegistry, validationSupport);
                 confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
                 this.setServerConformanceProvider(confProvider);
         }

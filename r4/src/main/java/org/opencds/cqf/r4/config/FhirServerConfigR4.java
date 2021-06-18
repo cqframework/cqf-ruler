@@ -7,6 +7,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.opencds.cqf.common.config.HapiProperties;
+import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
@@ -22,12 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.ParserOptions;
+import ca.uhn.fhir.cql.r4.provider.JpaTerminologyProvider;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 
@@ -81,11 +84,12 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
         return retVal;
     }
 
-    @Bean()
-    public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
-        JpaTransactionManager retVal = new JpaTransactionManager();
-        retVal.setEntityManagerFactory(entityManagerFactory);
-        return retVal;
+    @Bean
+    @Primary
+    public JpaTransactionManager hapiTransactionManager(EntityManagerFactory entityManagerFactory) {
+      JpaTransactionManager retVal = new JpaTransactionManager();
+      retVal.setEntityManagerFactory(entityManagerFactory);
+      return retVal;
     }
 
     @Bean(name= "myOperationProvidersR4")
@@ -119,5 +123,10 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     @Bean() 
     public NarrativeProvider narrativeProvider() {
         return new NarrativeProvider();
+    }
+
+    @Bean
+    public TerminologyProvider terminologyProvider(ca.uhn.fhir.jpa.term.api.ITermReadSvcR4 theTerminologySvc, ca.uhn.fhir.jpa.api.dao.DaoRegistry theDaoRegistry, ca.uhn.fhir.context.support.IValidationSupport theValidationSupport) {
+        return new JpaTerminologyProvider(theTerminologySvc, theDaoRegistry, theValidationSupport);
     }
 }
