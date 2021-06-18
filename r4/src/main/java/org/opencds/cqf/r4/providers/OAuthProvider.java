@@ -10,8 +10,13 @@ import org.hl7.fhir.r4.model.UriType;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.springframework.stereotype.Component;
 
+import ca.uhn.fhir.context.support.IValidationSupport;
+import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
 /**
  *      This class is NOT designed to be a real OAuth provider.
@@ -20,11 +25,15 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
  */
 @Component
 public class OAuthProvider extends CqfRulerJpaConformanceProviderR4 {
+    public OAuthProvider(RestfulServer theRestfulServer, IFhirSystemDao<?, ?> theSystemDao, DaoConfig theDaoConfig,
+            ISearchParamRegistry theSearchParamRegistry, IValidationSupport theValidationSupport) {
+        super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry, theValidationSupport);
+    }
+
     @Metadata
     @Override
     public CapabilityStatement getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
-        CapabilityStatement retVal;
-        retVal = super.getServerConformance(theRequest, theRequestDetails);
+        CapabilityStatement retVal = (CapabilityStatement)super.getServerConformance(theRequest, theRequestDetails);
 
         retVal.getRestFirstRep().getSecurity().setCors(HapiProperties.getOauthSecurityCors());
         Extension securityExtension = retVal.getRestFirstRep().getSecurity().addExtension();

@@ -48,7 +48,7 @@ import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.evaluator.execution.provider.BundleRetrieveProvider;
+import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.springframework.stereotype.Component;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
@@ -238,7 +238,8 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             }
 
             if (additionalData != null) {
-                BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(resolver, additionalData, terminologyProvider);
+                BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(resolver.getFhirContext(), additionalData);
+                bundleProvider.setTerminologyProvider(terminologyProvider);
                 PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(bundleProvider, retriever);
                 dataProvider = new CompositeDataProvider(resolver, priorityProvider);
             }
@@ -257,8 +258,9 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                 retriever.setExpandValueSets(true);
             }
 
-            if (additionalData != null) {
-                BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(resolver, additionalData, terminologyProvider);
+            if (additionalData != null) {                
+                BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(resolver.getFhirContext(), additionalData);
+                bundleProvider.setTerminologyProvider(terminologyProvider);
                 PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(bundleProvider, retriever);
                 dataProvider = new CompositeDataProvider(resolver, priorityProvider);
             }

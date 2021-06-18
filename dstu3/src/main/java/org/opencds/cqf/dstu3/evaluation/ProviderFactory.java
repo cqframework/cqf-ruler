@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
 // This class is a relatively dumb factory for data providers. It supports only
 // creating JPA providers for FHIR and only basic auth for terminology

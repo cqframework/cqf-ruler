@@ -46,7 +46,6 @@ import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
-import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
 import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +53,7 @@ import org.springframework.context.ApplicationContext;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.cql.dstu3.provider.JpaTerminologyProvider;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 
 @WebServlet(name = "cds-services")
@@ -68,7 +68,7 @@ public class CdsHooksServlet extends HttpServlet {
 
     private JpaFhirRetrieveProvider fhirRetrieveProvider;
 
-    private org.opencds.cqf.dstu3.providers.JpaTerminologyProvider jpaTerminologyProvider;
+    private JpaTerminologyProvider jpaTerminologyProvider;
 
     private ProviderConfiguration providerConfiguration;
 
