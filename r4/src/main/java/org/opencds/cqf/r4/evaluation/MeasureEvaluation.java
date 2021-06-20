@@ -274,7 +274,6 @@ public class MeasureEvaluation {
 
         HashMap<String, Resource> resources = new HashMap<>();
         HashMap<String, HashSet<String>> codeToResourceMap = new HashMap<>();
-        Set<String> evaluatedResourcesList = new HashSet<>();
 
         MeasureScoring measureScoring = MeasureScoring.fromCode(measure.getScoring().getCodingFirstRep().getCode());
         if (measureScoring == null) {
@@ -531,29 +530,39 @@ public class MeasureEvaluation {
             // TODO: Measure Observations...
         }
 
+        List<Reference> evaluatedResourceIds = new ArrayList<>();
+        Map<String, Reference> referenceMap = new HashMap<String, Reference>();
         for (String key : codeToResourceMap.keySet()) {
             org.hl7.fhir.r4.model.ListResource list = new org.hl7.fhir.r4.model.ListResource();
             for (String element : codeToResourceMap.get(key)) {
-                org.hl7.fhir.r4.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.r4.model.ListResource.ListEntryComponent();
-                comp.setItem(new Reference('#' + element));
-                list.addEntry(comp);
+                if (referenceMap.containsKey(element)) {
+                    referenceMap.get(element).addExtension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+                        new CodeableConcept().addCoding(
+                            new Coding("http://teminology.hl7.org/CodeSystem/measure-population", key, key)
+                    ));
+                    evaluatedResourceIds.add(referenceMap.get(element));
+                } else {
+                    org.hl7.fhir.r4.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.r4.model.ListResource.ListEntryComponent();
+                    Reference reference = new Reference(element);
+                    comp.setItem(reference);
+                    list.addEntry(comp);
+                    // Do not want to add extension to ListEntryReference
+                    reference.addExtension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+                        new CodeableConcept().addCoding(
+                            new Coding("http://teminology.hl7.org/CodeSystem/measure-population", key, key)
+                    ));
+                    evaluatedResourceIds.add(reference);
+                    referenceMap.put(element, reference);
+                }
             }
 
             if (!list.isEmpty()) {
                 list.setId("List/" + UUID.randomUUID().toString());
                 list.setTitle(key);
                 resources.put(list.getId(), list);
-                list.getEntry().forEach(listResource -> evaluatedResourcesList.add(listResource.getItem().getReference()));
             }
         }
-
-        if (!evaluatedResourcesList.isEmpty()) {
-            List<Reference> evaluatedResourceIds = new ArrayList<>();
-            evaluatedResourcesList.forEach((resource) -> {
-                evaluatedResourceIds.add(new Reference(resource));
-            });
-            report.setEvaluatedResource(evaluatedResourceIds);
-        }
+        report.setEvaluatedResource(evaluatedResourceIds);
 
         if (sdeAccumulators.size() > 0) {
             report = processAccumulators(report, sdeAccumulators, sde, isSingle, patients);
