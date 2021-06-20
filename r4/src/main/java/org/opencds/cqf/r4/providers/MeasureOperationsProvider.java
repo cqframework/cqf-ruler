@@ -15,6 +15,7 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
@@ -522,6 +523,20 @@ public class MeasureOperationsProvider {
                                 evaluatedResource.add(newEvaluatedResourceItem);
                             });
                             report.setEvaluatedResource(evaluatedResource);
+                        }
+                    }
+                }
+            }
+            if (report.hasEvaluatedResource()) {
+                for (Reference evaluatedResource : report.getEvaluatedResource()) {
+                    // Assuming data is local only for now... 
+                    IIdType theId = evaluatedResource.getReferenceElement();
+                    String resourceType = theId.getResourceType();
+                    if (resourceType != null) {
+                        IBaseResource resourceBase = registry.getResourceDao(resourceType).read(theId);
+                        if (resourceBase != null && resourceBase instanceof Resource) {
+                            Resource resource = (Resource) resourceBase;
+                            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(resource));
                         }
                     }
                 }
