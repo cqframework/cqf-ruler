@@ -246,19 +246,10 @@ public class MeasureOperationsProvider {
         String _periodEnd = periodEnd.get(0);
         String _subject = subject.get(0);
 
-        if (periodStart.size() > 1)
-            throw new IllegalArgumentException("Only one periodStart argument can be supplied.");
-
-        if (periodEnd.size() > 1)
-            throw new IllegalArgumentException("Only one periodEnd argument can be supplied.");
-
-        if (subject.size() > 1 || subject.size() <= 0)
-            throw new IllegalArgumentException("You must supply subject argument.");
-
         if (careGapParameterValidation(
-                _periodStart,
-                _periodEnd,
-                _subject,
+                periodStart,
+                periodEnd,
+                subject,
                 topic,
                 practitioner,
                 measureId,
@@ -272,10 +263,11 @@ public class MeasureOperationsProvider {
             if (_subject.startsWith("Patient/")) {
                 resolvePatientGapBundleForMeasures(_periodStart, _periodEnd, _subject, topic, status, returnParams, measures, "return", organization);
             } else if (_subject.startsWith("Group/")) {
-                returnParams.setId((status == null ? "all-gaps" : status) + "-" + _subject.replace("/", "_") + "-report");
+                returnParams.setId(status + "-" + _subject.replace("/", "_") + "-report");
                 (getPatientListFromGroup(_subject))
                 .forEach(
-                    groupSubject -> resolvePatientGapBundleForMeasures(_periodStart,
+                    groupSubject -> resolvePatientGapBundleForMeasures(
+                        _periodStart,
                         _periodEnd,
                         _subject,
                         topic,
@@ -296,11 +288,22 @@ public class MeasureOperationsProvider {
         return returnParams;
     }
 
-    private Boolean careGapParameterValidation(String periodStart, String periodEnd, String subject, String topic,
+    private Boolean careGapParameterValidation(List<String> periodStart, List<String> periodEnd, List<String> subject, String topic,
             String practitioner, List<String> measureId, List<String> measureIdentifier, List<CanonicalType> measureUrl, List<String> status, String organization, String program) {
+
+        if (periodStart.size() > 1)
+            throw new IllegalArgumentException("Only one periodStart argument can be supplied.");
+
+        if (periodEnd.size() > 1)
+            throw new IllegalArgumentException("Only one periodEnd argument can be supplied.");
+
+        if (subject.size() > 1 || subject.size() <= 0)
+            throw new IllegalArgumentException("You must supply subject argument.");
+
         if(Strings.isNullOrEmpty(periodStart) || Strings.isNullOrEmpty(periodEnd)) {
             throw new IllegalArgumentException("periodStart and periodEnd are required.");
         }
+
         //TODO - remove this - covered in check of subject/practitioner/organization - left in for now 'cause we need a subject to develop
         if (Strings.isNullOrEmpty(subject)) {
             throw new IllegalArgumentException("Subject is required.");
