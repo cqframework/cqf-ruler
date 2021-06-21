@@ -453,6 +453,7 @@ public class MeasureOperationsProvider {
 
         Composition composition = new Composition();
         composition.setMeta(new Meta().addProfile("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-composition-deqm"));
+        composition.setId(UUID.randomUUID().toString());
         composition.setStatus(Composition.CompositionStatus.FINAL)
                 .setSubject(new Reference(subject.startsWith("Patient/") ? subject : "Patient/" + subject))
                 .setTitle("Care Gap Report for " + subject)
