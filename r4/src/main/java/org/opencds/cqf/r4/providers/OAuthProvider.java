@@ -8,7 +8,6 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.UriType;
 import org.opencds.cqf.common.config.HapiProperties;
-import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
@@ -23,7 +22,6 @@ import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
  *      It is designed to provide a capability statement and to pass thru the path to the real oauth verification server.
  *      It should only get instantiated if hapi.properties has oauth.enabled set to true.
  */
-@Component
 public class OAuthProvider extends CqfRulerJpaConformanceProviderR4 {
     public OAuthProvider(RestfulServer theRestfulServer, IFhirSystemDao<?, ?> theSystemDao, DaoConfig theDaoConfig,
             ISearchParamRegistry theSearchParamRegistry, IValidationSupport theValidationSupport) {
