@@ -257,7 +257,10 @@ public class MeasureOperationsProvider {
                 measureUrl,
                 status,
                 organization,
-                program)) {
+                program,
+                _periodStart,
+                _periodEnd,
+                _subject)) {
 
             List < Measure > measures = resolveMeasures(measureId, measureIdentifier, measureUrl);
             if (_subject.startsWith("Patient/")) {
@@ -289,7 +292,8 @@ public class MeasureOperationsProvider {
     }
 
     private Boolean careGapParameterValidation(List<String> periodStart, List<String> periodEnd, List<String> subject, String topic,
-            String practitioner, List<String> measureId, List<String> measureIdentifier, List<CanonicalType> measureUrl, List<String> status, String organization, String program) {
+            String practitioner, List<String> measureId, List<String> measureIdentifier, List<CanonicalType> measureUrl, List<String> status,
+            String organization, String program, String periodStartIndice, String periodEndIndice, String subjectIndice) {
 
         if (periodStart.size() > 1)
             throw new IllegalArgumentException("Only one periodStart argument can be supplied.");
@@ -298,14 +302,14 @@ public class MeasureOperationsProvider {
             throw new IllegalArgumentException("Only one periodEnd argument can be supplied.");
 
         if (subject.size() > 1 || subject.size() <= 0)
-            throw new IllegalArgumentException("You must supply subject argument.");
+            throw new IllegalArgumentException("You must supply one and only one subject argument.");
 
-        if(Strings.isNullOrEmpty(periodStart) || Strings.isNullOrEmpty(periodEnd)) {
+        if(Strings.isNullOrEmpty(periodStartIndice) || Strings.isNullOrEmpty(periodEndIndice)) {
             throw new IllegalArgumentException("periodStart and periodEnd are required.");
         }
 
         //TODO - remove this - covered in check of subject/practitioner/organization - left in for now 'cause we need a subject to develop
-        if (Strings.isNullOrEmpty(subject)) {
+        if (Strings.isNullOrEmpty(subjectIndice)) {
             throw new IllegalArgumentException("Subject is required.");
         }
         if (!Strings.isNullOrEmpty(organization)) {
@@ -323,11 +327,11 @@ public class MeasureOperationsProvider {
             //     throw new IllegalArgumentException("If practitioner and organization is specified then subject may not be specified.");
             // }
         }
-        if(Strings.isNullOrEmpty(subject) && Strings.isNullOrEmpty(practitioner) && Strings.isNullOrEmpty(organization)) {
+        if(Strings.isNullOrEmpty(subjectIndice) && Strings.isNullOrEmpty(practitioner) && Strings.isNullOrEmpty(organization)) {
             throw new IllegalArgumentException("periodStart AND periodEnd AND (subject OR organization OR (practitioner AND organization)) MUST be provided");
         }
-        if(!Strings.isNullOrEmpty(subject)) {
-            if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
+        if(!Strings.isNullOrEmpty(subjectIndice)) {
+            if (!subjectIndice.startsWith("Patient/") && !subjectIndice.startsWith("Group/")) {
                 throw new IllegalArgumentException("Subject must follow the format of either 'Patient/ID' OR 'Group/ID'.");
             }
         }
