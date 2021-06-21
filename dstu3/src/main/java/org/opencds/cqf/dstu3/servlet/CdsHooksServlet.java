@@ -116,6 +116,7 @@ public class CdsHooksServlet extends HttpServlet {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         logger.info(request.getRequestURI());
 

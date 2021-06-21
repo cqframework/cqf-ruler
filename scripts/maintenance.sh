@@ -4,4 +4,4 @@
 set -euxo pipefail
 bash -n "$0"
 
-mvn versions:update-properties versions:use-releases versions:use-latest-releases
+mvn versions:update-properties versions:use-releases versions:use-latest-releases -Dexcludes=org.slf4j:\*,ch.qos.logback
