@@ -223,41 +223,94 @@ public class MeasureOperationsProvider {
     // }
 
     @Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
-    public Parameters careGapsReport(@OperationParam(name = "periodStart") String periodStart,
-            @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "subject") String subject,
-            @OperationParam(name = "topic") String topic, @OperationParam(name = "practitioner") String practitioner,
-            @OperationParam(name = "measureId") List<String> measureId, @OperationParam(name = "measureIdentifier") List<String> measureIdentifier,
-            @OperationParam(name = "measureUrl") List<CanonicalType> measureUrl, @OperationParam(name="status")List<String> status,
-            @OperationParam(name = "organization") String organization,  @OperationParam(name = "program") String program){
+    public Parameters careGapsReport(
+        @OperationParam(name = "periodStart") List <String> periodStart,
+        @OperationParam(name = "periodEnd") List <String> periodEnd,
+        @OperationParam(name = "subject") List <String> subject,
+        @OperationParam(name = "topic") String topic,
+        @OperationParam(name = "practitioner") String practitioner,
+        @OperationParam(name = "measureId") List <String> measureId,
+        @OperationParam(name = "measureIdentifier") List <String> measureIdentifier,
+        @OperationParam(name = "measureUrl") List <CanonicalType > measureUrl,
+        @OperationParam(name = "status") List <String> status,
+        @OperationParam(name = "organization") String organization,
+        @OperationParam(name = "program") String program) {
         //TODO: topic should allow many and be a union of them
         //TODO: "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
         Parameters returnParams = new Parameters();
-        
-        if (careGapParameterValidation(periodStart, periodEnd, subject, topic, practitioner, measureId, measureIdentifier, measureUrl, status, organization, program)) {
-            List<Measure> measures = resolveMeasures(measureId, measureIdentifier, measureUrl);
-            if (subject.startsWith("Patient/")){
-                resolvePatientGapBundleForMeasures(periodStart, periodEnd, subject, topic, status, returnParams, measures, "return", organization);
-            } else if (subject.startsWith("Group/")) {
-                returnParams.setId((status==null?"all-gaps": status) + "-" + subject.replace("/","_") + "-report");
-                (getPatientListFromGroup(subject))
-                    .forEach(groupSubject -> resolvePatientGapBundleForMeasures(periodStart, periodEnd, subject, topic, status, returnParams, measures, "return", organization));
-            }
-            else if (Strings.isNullOrEmpty(practitioner)) {
+
+        // Setting periodStart, periodEnd, and subject to lists to check if multiple have been supplied.
+        // This is a hack and I hate it. I don't know how to just pull the current url due to
+        // the amount of abstraction going on. I didn't want to waste too much time here.
+        // If there's a better way of doing this, please ping me. - Carter
+        String _periodStart = periodStart.get(0);
+        String _periodEnd = periodEnd.get(0);
+        String _subject = subject.get(0);
+
+        if (careGapParameterValidation(
+                periodStart,
+                periodEnd,
+                subject,
+                topic,
+                practitioner,
+                measureId,
+                measureIdentifier,
+                measureUrl,
+                status,
+                organization,
+                program,
+                _periodStart,
+                _periodEnd,
+                _subject)) {
+
+            List < Measure > measures = resolveMeasures(measureId, measureIdentifier, measureUrl);
+            if (_subject.startsWith("Patient/")) {
+                resolvePatientGapBundleForMeasures(_periodStart, _periodEnd, _subject, topic, status, returnParams, measures, "return", organization);
+            } else if (_subject.startsWith("Group/")) {
+                returnParams.setId(status + "-" + _subject.replace("/", "_") + "-report");
+                (getPatientListFromGroup(_subject))
+                .forEach(
+                    groupSubject -> resolvePatientGapBundleForMeasures(
+                        _periodStart,
+                        _periodEnd,
+                        _subject,
+                        topic,
+                        status,
+                        returnParams,
+                        measures,
+                        "return",
+                        organization
+                    ));
+            } else if (Strings.isNullOrEmpty(practitioner)) {
                 String parameterName = "Gaps in Care Report - " + subject;
-                resolvePatientGapBundleForMeasures(periodStart, periodEnd, subject, topic, status, returnParams, measures, parameterName, organization);
+                resolvePatientGapBundleForMeasures(
+                    _periodStart, _periodEnd, _subject, topic, status, returnParams, measures, parameterName, organization
+                );
             }
             return returnParams;
         }
-        return returnParams;  
+        return returnParams;
     }
 
-    private Boolean careGapParameterValidation(String periodStart, String periodEnd, String subject, String topic,
-            String practitioner, List<String> measureId, List<String> measureIdentifier, List<CanonicalType> measureUrl, List<String> status, String organization, String program) {
-        if(Strings.isNullOrEmpty(periodStart) || Strings.isNullOrEmpty(periodEnd)) {
+    private Boolean careGapParameterValidation(List<String> periodStart, List<String> periodEnd, List<String> subject, String topic,
+            String practitioner, List<String> measureId, List<String> measureIdentifier, List<CanonicalType> measureUrl, List<String> status,
+            String organization, String program, String periodStartIndice, String periodEndIndice, String subjectIndice) {
+
+        if (periodStart.size() > 1)
+            throw new IllegalArgumentException("Only one periodStart argument can be supplied.");
+
+        if (periodEnd.size() > 1)
+            throw new IllegalArgumentException("Only one periodEnd argument can be supplied.");
+
+        if (subject.size() > 1 || subject.size() <= 0)
+            throw new IllegalArgumentException("You must supply one and only one subject argument.");
+
+        if(Strings.isNullOrEmpty(periodStartIndice) || Strings.isNullOrEmpty(periodEndIndice)) {
             throw new IllegalArgumentException("periodStart and periodEnd are required.");
         }
+
         //TODO - remove this - covered in check of subject/practitioner/organization - left in for now 'cause we need a subject to develop
-        if (Strings.isNullOrEmpty(subject)) {
+        if (Strings.isNullOrEmpty(subjectIndice)) {
             throw new IllegalArgumentException("Subject is required.");
         }
         if (!Strings.isNullOrEmpty(organization)) {
@@ -275,11 +328,11 @@ public class MeasureOperationsProvider {
             //     throw new IllegalArgumentException("If practitioner and organization is specified then subject may not be specified.");
             // }
         }
-        if(Strings.isNullOrEmpty(subject) && Strings.isNullOrEmpty(practitioner) && Strings.isNullOrEmpty(organization)) {
+        if(Strings.isNullOrEmpty(subjectIndice) && Strings.isNullOrEmpty(practitioner) && Strings.isNullOrEmpty(organization)) {
             throw new IllegalArgumentException("periodStart AND periodEnd AND (subject OR organization OR (practitioner AND organization)) MUST be provided");
         }
-        if(!Strings.isNullOrEmpty(subject)) {
-            if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
+        if(!Strings.isNullOrEmpty(subjectIndice)) {
+            if (!subjectIndice.startsWith("Patient/") && !subjectIndice.startsWith("Group/")) {
                 throw new IllegalArgumentException("Subject must follow the format of either 'Patient/ID' OR 'Group/ID'.");
             }
         }
@@ -400,6 +453,7 @@ public class MeasureOperationsProvider {
 
         Composition composition = new Composition();
         composition.setMeta(new Meta().addProfile("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-composition-deqm"));
+        composition.setId(UUID.randomUUID().toString());
         composition.setStatus(Composition.CompositionStatus.FINAL)
                 .setSubject(new Reference(subject.startsWith("Patient/") ? subject : "Patient/" + subject))
                 .setTitle("Care Gap Report for " + subject)
