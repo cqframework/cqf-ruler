@@ -85,14 +85,14 @@ public class BaseServlet extends RestfulServer {
             OAuthProvider oauthProvider = new OAuthProvider(this, systemDao, daoConfig, searchParamRegistry, validationSupport);
             oauthProvider.setDaoConfig(daoConfig);
             oauthProvider.setSystemDao(systemDao);
-            oauthProvider.setImplementationDescription("CQF Ruler FHIR DSTU3 Server");
+            oauthProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
             this.setServerConformanceProvider(oauthProvider);
         }else {
     
             JpaCapabilityStatementProvider confProvider = new CqfRulerJpaConformanceProviderR4(this, systemDao, daoConfig, searchParamRegistry, validationSupport);
             confProvider.setDaoConfig(daoConfig);
             confProvider.setSystemDao(systemDao);
-            confProvider.setImplementationDescription("CQF Ruler FHIR DSTU3 Server");
+            confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
             this.setServerConformanceProvider(confProvider);
     }
 
