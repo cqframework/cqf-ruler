@@ -21,6 +21,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.provider.JpaCapabilityStatementProvider;
 import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
@@ -81,15 +82,19 @@ public class BaseServlet extends RestfulServer {
         operationsProviders.forEach(x -> registerProvider(appCtx.getBean(x)));
 
         if(HapiProperties.getOAuthEnabled()) {
-                OAuthProvider oauthProvider = new OAuthProvider(this, systemDao, daoConfig, searchParamRegistry, validationSupport);
-                oauthProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
-                this.setServerConformanceProvider(oauthProvider);
-            }else {
-        
-                CqfRulerJpaConformanceProviderR4 confProvider = new CqfRulerJpaConformanceProviderR4(this, systemDao, daoConfig, searchParamRegistry, validationSupport);
-                confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
-                this.setServerConformanceProvider(confProvider);
-        }
+            OAuthProvider oauthProvider = new OAuthProvider(this, systemDao, daoConfig, searchParamRegistry, validationSupport);
+            oauthProvider.setDaoConfig(daoConfig);
+            oauthProvider.setSystemDao(systemDao);
+            oauthProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
+            this.setServerConformanceProvider(oauthProvider);
+        }else {
+    
+            JpaCapabilityStatementProvider confProvider = new CqfRulerJpaConformanceProviderR4(this, systemDao, daoConfig, searchParamRegistry, validationSupport);
+            confProvider.setDaoConfig(daoConfig);
+            confProvider.setSystemDao(systemDao);
+            confProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
+            this.setServerConformanceProvider(confProvider);
+    }
 
         /*
          * ETag Support

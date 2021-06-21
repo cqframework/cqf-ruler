@@ -8,7 +8,6 @@ import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.UriType;
 import org.opencds.cqf.common.config.HapiProperties;
-import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -18,7 +17,6 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
  *      It is designed to provide a capability statement and to pass thru the path to the real oauth verification server.
  *      It should only get instantiated if hapi.properties has oauth.enabled set to true.
  */
-@Component
 public class OAuthProvider extends CqfRulerJpaConformanceProviderDstu3 {
     @Metadata
     @Override
