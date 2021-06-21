@@ -332,12 +332,6 @@
             <version>3.0.12.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>8.0.1</version>
-        </dependency>
-
         <!-- You may not need this if you are deploying to an application server which provides database connection pools itself. -->
         <dependency>
             <groupId>org.apache.commons</groupId>
