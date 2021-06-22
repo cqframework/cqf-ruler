@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.elm.execution.ExpressionDef;
 import org.cqframework.cql.elm.execution.FunctionDef;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
@@ -271,8 +272,7 @@ public class MeasureEvaluation {
         MeasureReport report = reportBuilder.build();
 
         HashMap<String, Resource> resources = new HashMap<>();
-        HashMap<String, HashSet<String>> codeToResourceMap = new HashMap<>();
-        Set<String> evaluatedResourcesList = new HashSet<>();
+        HashMap<Pair<String, String>, HashSet<String>> codeToResourceMap = new HashMap<>();
 
         MeasureScoring measureScoring = MeasureScoring.fromCode(measure.getScoring().getCodingFirstRep().getCode());
         if (measureScoring == null) {
@@ -531,29 +531,39 @@ public class MeasureEvaluation {
             // TODO: Measure Observations...
         }
 
-        for (String key : codeToResourceMap.keySet()) {
+        List<Reference> evaluatedResourceIds = new ArrayList<>();
+        Map<String, Reference> referenceMap = new HashMap<String, Reference>();
+        for (Pair<String, String> key : codeToResourceMap.keySet()) {
             org.hl7.fhir.dstu3.model.ListResource list = new org.hl7.fhir.dstu3.model.ListResource();
             for (String element : codeToResourceMap.get(key)) {
-                org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent();
-                comp.setItem(new Reference('#' + element));
-                list.addEntry(comp);
+                if (referenceMap.containsKey(element)) {
+                    referenceMap.get(element).addExtension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+                        new CodeableConcept().addCoding(
+                            new Coding("http://teminology.hl7.org/CodeSystem/measure-population", key.getLeft(), key.getRight())
+                    ));
+                    evaluatedResourceIds.add(referenceMap.get(element));
+                } else {
+                    org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent();
+                    Reference reference = new Reference(element);
+                    comp.setItem(reference);
+                    list.addEntry(comp);
+                    // Do not want to add extension to ListEntryReference
+                    reference.addExtension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+                        new CodeableConcept().addCoding(
+                            new Coding("http://teminology.hl7.org/CodeSystem/measure-population", key.getLeft(), key.getRight())
+                    ));
+                    evaluatedResourceIds.add(reference);
+                    referenceMap.put(element, reference);
+                }
             }
 
             if (!list.isEmpty()) {
                 list.setId("List/" + UUID.randomUUID().toString());
-                list.setTitle(key);
+                list.setTitle(key.getRight());
                 resources.put(list.getId(), list);
-                list.getEntry().forEach(listResource -> evaluatedResourcesList.add(listResource.getItem().getReference()));
             }
         }
-
-        if (!resources.isEmpty()) {
-            List<Reference> evaluatedResourceIds = new ArrayList<>();
-            evaluatedResourcesList.forEach((resource) -> {
-                evaluatedResourceIds.add(new Reference(resource));
-            });
-
-            // TODO: DSTU3 Doesn't support this..
+        // TODO: DSTU3 Doesn't support this..
             // report.setEvaluatedResources(evaluatedResourceIds);
 
             /*
@@ -563,7 +573,6 @@ public class MeasureEvaluation {
             report.setEvaluatedResources(new Reference(evaluatedResources.getId()));
             report.addContained(evaluatedResources);
             */
-        }
 
         if (sdeAccumulators.size() > 0) {
             report = processAccumulators(report, sdeAccumulators, sde, isSingle, patients);
@@ -680,16 +689,16 @@ public class MeasureEvaluation {
     }
 
     private void populateResourceMap(Context context, MeasurePopulationType type, HashMap<String, Resource> resources,
-            HashMap<String, HashSet<String>> codeToResourceMap) {
+            HashMap<Pair<String, String>, HashSet<String>> codeToResourceMap) {
         if (context.getEvaluatedResources().isEmpty()) {
             return;
         }
 
-        if (!codeToResourceMap.containsKey(type.toCode())) {
-            codeToResourceMap.put(type.toCode(), new HashSet<>());
+        if (!codeToResourceMap.containsKey(Pair.of(type.toCode(), type.getDisplay()))) {
+            codeToResourceMap.put(Pair.of(type.toCode(), type.getDisplay()), new HashSet<>());
         }
 
-        HashSet<String> codeHashSet = codeToResourceMap.get((type.toCode()));
+        HashSet<String> codeHashSet = codeToResourceMap.get((Pair.of(type.toCode(), type.getDisplay())));
 
         for (Object o : context.getEvaluatedResources()) {
             if (o instanceof Resource) {
