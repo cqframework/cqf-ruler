@@ -34,10 +34,12 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
@@ -489,6 +491,20 @@ public class MeasureOperationsProvider {
                                 // TODO: Figure out for DSTU3
                                 //report.setEvaluatedResource(evaluatedResource);
                             }
+                        }
+                    }
+                }
+                if (report.hasEvaluatedResources()) {
+                    IBaseResource evaluatedResourcesBaseBundle = registry.getResourceDao("Bundle").read(report.getEvaluatedResources().getReferenceElement());
+                    if (evaluatedResourcesBaseBundle == null || !(evaluatedResourcesBaseBundle instanceof Bundle)) {
+                        logger.debug("evaluatedResourcesReference must be a local bundle.");
+                        throw new RuntimeException(String.format("No local Bundle found for %s: ", report.getEvaluatedResources().getReference()));
+                    }
+                    Bundle evaluatedResourcesBundle = (Bundle) evaluatedResourcesBaseBundle;
+                    for (BundleEntryComponent entry : evaluatedResourcesBundle.getEntry()) {
+                        Resource resource = entry.getResource();
+                        if (resource != null) {
+                            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(resource));
                         }
                     }
                 }
