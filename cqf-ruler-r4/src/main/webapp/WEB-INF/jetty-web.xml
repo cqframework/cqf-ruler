@@ -1,0 +1,6 @@
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- Max Form Size                                                   -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <Set name="maxFormContentSize">20000000</Set>
+</Configure>
