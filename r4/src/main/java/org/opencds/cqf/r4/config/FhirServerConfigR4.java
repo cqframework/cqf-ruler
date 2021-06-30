@@ -17,6 +17,7 @@ import org.opencds.cqf.r4.providers.LibraryOperationsProvider;
 import org.opencds.cqf.r4.providers.MeasureOperationsProvider;
 import org.opencds.cqf.r4.providers.ObservationProvider;
 import org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider;
+import org.opencds.cqf.r4.providers.ProcessMessageProvider;
 import org.opencds.cqf.r4.providers.QuestionnaireProvider;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +107,7 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
         classes.add(LibraryOperationsProvider.class);
         classes.add(MeasureOperationsProvider.class);
         classes.add(PlanDefinitionApplyProvider.class);
+        classes.add(ProcessMessageProvider.class);
 
         // The plugin API will need to a way to determine whether a particular
         // service should be registered
