@@ -79,6 +79,7 @@ public class ProcessMessageProvider {
 						Bundle innerBundle = (Bundle) entryComp.getResource();
 						for(BundleEntryComponent bundleEntryComponent:innerBundle.getEntry()) {
 							if(bundleEntryComponent.getResource().getResourceType().name().equals("Patient")) {
+								registry.getResourceDao(bundleEntryComponent.getResource().fhirType()).create(bundleEntryComponent.getResource());
 								patientId = bundleEntryComponent.getResource().getIdElement().getIdPart().toString();
 							}
 						}
