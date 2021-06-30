@@ -78,8 +78,8 @@ public class ProcessMessageProvider {
 					} else if(entryComp.getResource().getResourceType().name().equals("Bundle")) {
 						Bundle innerBundle = (Bundle) entryComp.getResource();
 						for(BundleEntryComponent bundleEntryComponent:innerBundle.getEntry()) {
+							registry.getResourceDao(bundleEntryComponent.getResource().fhirType()).create(bundleEntryComponent.getResource());
 							if(bundleEntryComponent.getResource().getResourceType().name().equals("Patient")) {
-								registry.getResourceDao(bundleEntryComponent.getResource().fhirType()).create(bundleEntryComponent.getResource());
 								patientId = bundleEntryComponent.getResource().getIdElement().getIdPart().toString();
 							}
 						}
