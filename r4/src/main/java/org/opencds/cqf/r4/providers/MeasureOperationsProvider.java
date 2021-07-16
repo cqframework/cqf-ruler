@@ -17,7 +17,9 @@ import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
+import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
@@ -51,6 +53,7 @@ public class MeasureOperationsProvider {
     private MeasureResourceProvider measureResourceProvider;
     private DaoRegistry registry;
     private EvaluationProviderFactory factory;
+    private String serverAddress = HapiProperties.getServerAddress();
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
 
@@ -427,10 +430,6 @@ public class MeasureOperationsProvider {
     }
 
     private Bundle patientCareGap(String periodStart, String periodEnd, String subject, String topic, List<Measure> measures, List<String> status, String organization) {
-        //TODO: this is an org hack.  Need to figure out what the right thing is.
-        IFhirResourceDao<Organization> orgDao = this.registry.getResourceDao(Organization.class);
-        List<IBaseResource> org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
-
         SearchParameterMap theParams = new SearchParameterMap();
 
         // if (theId != null) {
@@ -462,10 +461,18 @@ public class MeasureOperationsProvider {
                         .addCoding(new Coding()
                                 .setCode("96315-7")
                                 .setSystem("http://loinc.org")
-                                .setDisplay("Gaps in Care Report")));
+                                .setDisplay("Gaps in care report")));
 
         if (organization != null) {
             composition.setCustodian(new Reference(organization.startsWith("Organization/") ? organization : "Organization/" + organization));
+        }
+
+        Resource compositionAuthor = getCompositionAuthor();
+        try {
+            composition.setAuthor(Arrays.asList(new Reference(compositionAuthor)));
+            careGapReport.addEntry(new BundleEntryComponent().setResource(compositionAuthor).setFullUrl(String.format("%s%s/%s", serverAddress, compositionAuthor.fhirType(), compositionAuthor.getIdElement().getIdPart())));
+        } catch (Exception e) {
+            logger.error(String.format("Composition author required."));;
         }
 
         List<MeasureReport> reports = new ArrayList<>();
@@ -488,8 +495,9 @@ public class MeasureOperationsProvider {
             report.setDate(new Date());
             report.setImprovementNotation(measure.getImprovementNotation());
             //TODO: this is an org hack && requires an Organization to be in the ruler
-            if (org != null && org.size() > 0) {
-                report.setReporter(new Reference("Organization/" + org.get(0).getIdElement().getIdPart()));
+            Resource org = getReportingOrganization();
+            if (org != null) {
+                report.setReporter(new Reference(org));
             }
             report.setMeta(new Meta().addProfile("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/indv-measurereport-deqm"));
             section.setFocus(new Reference("MeasureReport/" + report.getId()));
@@ -555,32 +563,10 @@ public class MeasureOperationsProvider {
         if (reports.isEmpty()) {
             return null;
         }
-        Parameters parameters = new Parameters();
         
-        careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
+        careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition).setFullUrl(String.format("%s%s/%s", serverAddress, composition.fhirType(), composition.getIdElement().getIdPart())));
         for (MeasureReport rep : reports) {
-            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
-            if (report.hasContained()) {
-                for (Resource contained : report.getContained()) {
-                    if (contained instanceof Bundle) {
-                        addEvaluatedResourcesToParameters((Bundle) contained, parameters);
-                        if(null != parameters && !parameters.isEmpty()) {
-                            List <Reference> evaluatedResource = new ArrayList<>();
-                            parameters.getParameter().forEach(parameter -> {
-                                Reference newEvaluatedResourceItem = new Reference();
-                                newEvaluatedResourceItem.setReference(parameter.getResource().getId());
-                                List<Extension> evalResourceExt = new ArrayList<>();
-                                evalResourceExt.add(new Extension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
-                                        new CodeableConcept()
-                                                .addCoding(new Coding("http://teminology.hl7.org/CodeSystem/measure-population", "initial-population", "initial-population"))));
-                                newEvaluatedResourceItem.setExtension(evalResourceExt);
-                                evaluatedResource.add(newEvaluatedResourceItem);
-                            });
-                            report.setEvaluatedResource(evaluatedResource);
-                        }
-                    }
-                }
-            }
+            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep).setFullUrl(String.format("%s%s/%s", serverAddress, rep.fhirType(), rep.getIdElement().getIdPart())));
             if (report.hasEvaluatedResource()) {
                 for (Reference evaluatedResource : report.getEvaluatedResource()) {
                     // Assuming data is local only for now... 
@@ -590,17 +576,46 @@ public class MeasureOperationsProvider {
                         IBaseResource resourceBase = registry.getResourceDao(resourceType).read(theId);
                         if (resourceBase != null && resourceBase instanceof Resource) {
                             Resource resource = (Resource) resourceBase;
-                            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(resource));
+                            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(resource).setFullUrl(String.format("%s%s/%s", serverAddress, resource.fhirType(), resource.getIdElement().getIdPart())));
                         }
                     }
                 }
             }
         }
         for (DetectedIssue detectedIssue : detectedIssues) {
-            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue));
+            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue).setFullUrl(String.format("%s%s/%s", serverAddress, detectedIssue.fhirType(), detectedIssue.getIdElement().getIdPart())));
         }
  
         return careGapReport;
+    }
+
+    private Resource getCompositionAuthor() {
+        return getLocalOrganization();
+    }
+
+    private Resource getReportingOrganization() {
+        return getLocalOrganization();
+    }
+
+    private Organization localOrganization = null;
+    private Resource getLocalOrganization() {
+        //TODO: this is an org hack.  Need to figure out what the right thing is.
+        if (localOrganization != null) {
+            return localOrganization;
+        } else {
+            IFhirResourceDao<Organization> orgDao = this.registry.getResourceDao(Organization.class);
+            List<IBaseResource> org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
+            if (org.isEmpty()) {
+                return null;
+            }
+            IBaseResource baseOrganization = org.get(0);
+            if (baseOrganization != null && baseOrganization instanceof Organization) {
+                localOrganization = (Organization) baseOrganization;
+                return localOrganization;
+            }
+            else return null;
+        }
+        
     }
 
     private double resolveProportion(MeasureReport report, Measure measure) {

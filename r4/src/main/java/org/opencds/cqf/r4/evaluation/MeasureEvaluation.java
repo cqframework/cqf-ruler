@@ -263,8 +263,11 @@ public class MeasureEvaluation {
         MeasureReportBuilder reportBuilder = new MeasureReportBuilder();
         reportBuilder.buildStatus("complete");
         reportBuilder.buildType(type);
-        reportBuilder.buildMeasureReference(
-                measure.getIdElement().getResourceType() + "/" + measure.getIdElement().getIdPart());
+        try {
+            reportBuilder.buildMeasureReference(measure.getUrl());
+        } catch (Exception e) {
+            logger.error("Measure must have a canonical url.");
+        }
         if (type == MeasureReport.MeasureReportType.INDIVIDUAL && !patients.isEmpty()) {
             IdType patientId = patients.get(0).getIdElement();
             reportBuilder.buildPatientReference(patientId.getResourceType() + "/" + patientId.getIdPart());
@@ -538,9 +541,7 @@ public class MeasureEvaluation {
             for (String element : codeToResourceMap.get(key)) {
                 if (referenceMap.containsKey(element)) {
                     referenceMap.get(element).addExtension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
-                        new CodeableConcept().addCoding(
-                            new Coding("http://teminology.hl7.org/CodeSystem/measure-population", key.getLeft(), key.getRight())
-                    ));
+                        new StringType(key.getLeft()));
                     evaluatedResourceIds.add(referenceMap.get(element));
                 } else {
                     org.hl7.fhir.r4.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.r4.model.ListResource.ListEntryComponent();
@@ -549,9 +550,7 @@ public class MeasureEvaluation {
                     list.addEntry(comp);
                     // Do not want to add extension to ListEntryReference
                     reference.addExtension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
-                        new CodeableConcept().addCoding(
-                            new Coding("http://teminology.hl7.org/CodeSystem/measure-population", key.getLeft(), key.getRight())
-                    ));
+                            new StringType(key.getLeft()));
                     evaluatedResourceIds.add(reference);
                     referenceMap.put(element, reference);
                 }

@@ -538,9 +538,7 @@ public class MeasureEvaluation {
             for (String element : codeToResourceMap.get(key)) {
                 if (referenceMap.containsKey(element)) {
                     referenceMap.get(element).addExtension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
-                        new CodeableConcept().addCoding(
-                            new Coding("http://teminology.hl7.org/CodeSystem/measure-population", key.getLeft(), key.getRight())
-                    ));
+                        new StringType(key.getLeft()));
                     evaluatedResourceIds.add(referenceMap.get(element));
                 } else {
                     org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent();
@@ -549,9 +547,7 @@ public class MeasureEvaluation {
                     list.addEntry(comp);
                     // Do not want to add extension to ListEntryReference
                     reference.addExtension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
-                        new CodeableConcept().addCoding(
-                            new Coding("http://teminology.hl7.org/CodeSystem/measure-population", key.getLeft(), key.getRight())
-                    ));
+                        new StringType(key.getLeft()));
                     evaluatedResourceIds.add(reference);
                     referenceMap.put(element, reference);
                 }
