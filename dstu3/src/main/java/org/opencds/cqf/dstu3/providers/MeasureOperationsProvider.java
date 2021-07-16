@@ -1,6 +1,7 @@
 package org.opencds.cqf.dstu3.providers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Composition;
 import org.hl7.fhir.dstu3.model.DetectedIssue;
+import org.hl7.fhir.dstu3.model.Device;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Group;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -39,6 +41,7 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
@@ -46,6 +49,8 @@ import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.dstu3.evaluation.MeasureEvaluation;
 import org.opencds.cqf.dstu3.evaluation.MeasureEvaluationSeed;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
+import org.opencds.cqf.tooling.common.CqfmSoftwareSystem;
+import org.opencds.cqf.tooling.common.stu3.CqfmSoftwareSystemHelper;
 import org.opencds.cqf.tooling.library.stu3.NarrativeProvider;
 import org.opencds.cqf.tooling.measure.stu3.CqfMeasure;
 import org.slf4j.Logger;
@@ -76,6 +81,8 @@ public class MeasureOperationsProvider {
     private MeasureResourceProvider measureResourceProvider;
     private DaoRegistry registry;
     private EvaluationProviderFactory factory;
+    
+    private String serverAddress = HapiProperties.getServerAddress();
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
 
@@ -361,7 +368,13 @@ public class MeasureOperationsProvider {
                         .addCoding(new Coding()
                                 .setCode("gaps-doc")
                                 .setSystem("http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-doc-type")
-                                .setDisplay("Gaps in Care Report")));
+                                .setDisplay("Gaps in care report")));
+
+        CqfmSoftwareSystem cqfRulerSoftwareSystem = new CqfmSoftwareSystem("cqf-ruler", MeasureOperationsProvider.class.getPackage().getImplementationVersion());
+        CqfmSoftwareSystemHelper helper = new CqfmSoftwareSystemHelper();
+        Device device = helper.createSoftwareSystemDevice(cqfRulerSoftwareSystem);
+        composition.setAuthor(Arrays.asList(new Reference(device)));
+        careGapReport.addEntry(new BundleEntryComponent().setResource(device).setFullUrl(String.format(serverAddress, device.fhirType(), device.getIdElement().getIdPart())));
 
         List<MeasureReport> reports = new ArrayList<>();
         List<DetectedIssue> detectedIssues = new ArrayList<DetectedIssue>();
@@ -464,35 +477,12 @@ public class MeasureOperationsProvider {
                 // TODO - add other types of improvement notation cases
             }
         }
-        Parameters parameters = new Parameters();
         if((null == status || status == "")                                 //everything
                 || (hasIssue && !"closed-gap".equalsIgnoreCase(status))     //filter out closed-gap that has issues  for OPEN-GAP
                 ||(!hasIssue && !"open-gap".equalsIgnoreCase(status))){     //filet out open-gap without issues  for CLOSE-GAP
-            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition));
+            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition).setFullUrl(String.format(serverAddress, composition.fhirType(), composition.getIdElement().getIdPart())));
             for (MeasureReport rep : reports) {
-                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep));
-                if (report.hasContained()) {
-                    for (Resource contained : report.getContained()) {
-                        if (contained instanceof Bundle) {
-                            addEvaluatedResourcesToParameters((Bundle) contained, parameters);
-                            if(null != parameters && !parameters.isEmpty()) {
-                                List <Reference> evaluatedResource = new ArrayList<>();
-                                parameters.getParameter().forEach(parameter -> {
-                                    Reference newEvaluatedResourceItem = new Reference();
-                                    newEvaluatedResourceItem.setReference(parameter.getResource().getId());
-                                    List<Extension> evalResourceExt = new ArrayList<>();
-                                    evalResourceExt.add(new Extension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-ppopulationReference",
-                                            new CodeableConcept()
-                                                    .addCoding(new Coding("http://teminology.hl7.org/CodeSystem/measure-population", "initial-population", "initial-population"))));
-                                    newEvaluatedResourceItem.setExtension(evalResourceExt);
-                                    evaluatedResource.add(newEvaluatedResourceItem);
-                                });
-                                // TODO: Figure out for DSTU3
-                                //report.setEvaluatedResource(evaluatedResource);
-                            }
-                        }
-                    }
-                }
+                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep).setFullUrl(String.format(serverAddress, rep.fhirType(), rep.getIdElement().getIdPart())));
                 if (report.hasEvaluatedResources()) {
                     IBaseResource evaluatedResourcesBaseBundle = registry.getResourceDao("Bundle").read(report.getEvaluatedResources().getReferenceElement());
                     if (evaluatedResourcesBaseBundle == null || !(evaluatedResourcesBaseBundle instanceof Bundle)) {
@@ -503,13 +493,13 @@ public class MeasureOperationsProvider {
                     for (BundleEntryComponent entry : evaluatedResourcesBundle.getEntry()) {
                         Resource resource = entry.getResource();
                         if (resource != null) {
-                            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(resource));
+                            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(resource).setFullUrl(String.format(serverAddress, resource.fhirType(), resource.getIdElement().getIdPart())));
                         }
                     }
                 }
             }
             for (DetectedIssue detectedIssue : detectedIssues) {
-                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue));
+                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue).setFullUrl(String.format(serverAddress, detectedIssue.fhirType(), detectedIssue.getIdElement().getIdPart())));
             }
         }
         if(careGapReport.getEntry().isEmpty()){
