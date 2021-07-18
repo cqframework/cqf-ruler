@@ -468,7 +468,6 @@ public class MeasureOperationsProvider {
         }
 
         Resource compositionAuthor = getCompositionAuthor();
-        compositionAuthor = new Organization().setIdElement(new IdType("organization-mock"));
         try {
             composition.setAuthor(Arrays.asList(new Reference(compositionAuthor)));
         } catch (Exception e) {
