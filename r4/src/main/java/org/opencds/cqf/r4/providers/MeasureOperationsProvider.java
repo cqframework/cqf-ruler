@@ -343,8 +343,8 @@ public class MeasureOperationsProvider {
             throw new IllegalArgumentException("Status is required.");
         }
         for (String statusValue: status) {
-            if(!Strings.isNullOrEmpty(statusValue) && (!statusValue.equalsIgnoreCase("open-gap") && !statusValue.equalsIgnoreCase("closed-gap"))){
-                throw new IllegalArgumentException("Status must be either 'open-gap', 'closed-gap', or both.");
+            if(!Strings.isNullOrEmpty(statusValue) && (!statusValue.equalsIgnoreCase("open-gap") && !statusValue.equalsIgnoreCase("closed-gap") && !statusValue.equalsIgnoreCase("not-in-ip") )){
+                throw new IllegalArgumentException("Status must be one or more of 'open-gap', 'closed-gap', or 'not-in-ip'.");
             }
         }
         if (measureIdentifier != null && !measureIdentifier.isEmpty()) {
@@ -470,9 +470,8 @@ public class MeasureOperationsProvider {
         Resource compositionAuthor = getCompositionAuthor();
         try {
             composition.setAuthor(Arrays.asList(new Reference(compositionAuthor)));
-            careGapReport.addEntry(new BundleEntryComponent().setResource(compositionAuthor).setFullUrl(String.format("%s%s/%s", serverAddress, compositionAuthor.fhirType(), compositionAuthor.getIdElement().getIdPart())));
         } catch (Exception e) {
-            logger.error(String.format("Composition author required."));;
+            logger.error(String.format("Composition author required."));
         }
 
         List<MeasureReport> reports = new ArrayList<>();
@@ -565,6 +564,7 @@ public class MeasureOperationsProvider {
         }
         
         careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition).setFullUrl(String.format("%s%s/%s", serverAddress, composition.fhirType(), composition.getIdElement().getIdPart())));
+        careGapReport.addEntry(new BundleEntryComponent().setResource(compositionAuthor).setFullUrl(String.format("%s%s/%s", serverAddress, compositionAuthor.fhirType(), compositionAuthor.getIdElement().getIdPart())));
         for (MeasureReport rep : reports) {
             careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep).setFullUrl(String.format("%s%s/%s", serverAddress, rep.fhirType(), rep.getIdElement().getIdPart())));
             if (report.hasEvaluatedResource()) {
