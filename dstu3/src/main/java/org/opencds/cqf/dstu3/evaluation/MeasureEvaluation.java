@@ -160,7 +160,7 @@ public class MeasureEvaluation {
         Extension obsExtension = new Extension().setUrl("http://hl7.org/fhir/StructureDefinition/cqf-measureInfo");
         Extension extExtMeasure = new Extension()
                 .setUrl("measure")
-                .setValue(new UriType(report.getMeasure().toString().startsWith("http://") ? report.getMeasure().toString() : "http://hl7.org/fhir/us/cqfmeasures/" + report.getMeasure()));
+                .setValue(new UriType(report.getMeasure().toString().startsWith("http://") ? report.getMeasure().toString() : ("http://hl7.org/fhir/us/cqfmeasures/" + report.getMeasure())));
         obsExtension.addExtension(extExtMeasure);
         Extension extExtPop = new Extension()
                 .setUrl("populationId")
