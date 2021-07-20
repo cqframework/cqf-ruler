@@ -161,7 +161,7 @@ public class MeasureEvaluation {
         Extension obsExtension = new Extension().setUrl("http://hl7.org/fhir/StructureDefinition/cqf-measureInfo");
         Extension extExtMeasure = new Extension()
                 .setUrl("measure")
-                .setValue(new CanonicalType("http://hl7.org/fhir/us/cqfmeasures/" + report.getMeasure()));
+                .setValue(new CanonicalType(report.getMeasure()));
         obsExtension.addExtension(extExtMeasure);
         Extension extExtPop = new Extension()
                 .setUrl("populationId")
@@ -656,7 +656,7 @@ public class MeasureEvaluation {
                 Extension obsExtension = new Extension().setUrl("http://hl7.org/fhir/StructureDefinition/cqf-measureInfo");
                 Extension extExtMeasure = new Extension()
                         .setUrl("measure")
-                        .setValue(new CanonicalType("http://hl7.org/fhir/us/cqfmeasures/" + report.getMeasure()));
+                        .setValue(new CanonicalType(report.getMeasure()));
                 obsExtension.addExtension(extExtMeasure);
                 Extension extExtPop = new Extension()
                         .setUrl("populationId")
