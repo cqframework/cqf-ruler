@@ -241,6 +241,7 @@ public class MeasureOperationsProvider {
         //TODO: topic should allow many and be a union of them
         //TODO: "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
         Parameters returnParams = new Parameters();
+        returnParams.setId((UUID.randomUUID().toString()));
 
         // Setting periodStart, periodEnd, and subject to lists to check if multiple have been supplied.
         // This is a hack and I hate it. I don't know how to just pull the current url due to
@@ -563,10 +564,10 @@ public class MeasureOperationsProvider {
             return null;
         }
         
-        careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition).setFullUrl(String.format("%s%s/%s", serverAddress, composition.fhirType(), composition.getIdElement().getIdPart())));
-        careGapReport.addEntry(new BundleEntryComponent().setResource(compositionAuthor).setFullUrl(String.format("%s%s/%s", serverAddress, compositionAuthor.fhirType(), compositionAuthor.getIdElement().getIdPart())));
+        careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition).setFullUrl(getFullUrl(composition.fhirType(), composition.getIdElement().getIdPart())));
+        careGapReport.addEntry(new BundleEntryComponent().setResource(compositionAuthor).setFullUrl(getFullUrl(compositionAuthor.fhirType(), compositionAuthor.getIdElement().getIdPart())));
         for (MeasureReport rep : reports) {
-            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep).setFullUrl(String.format("%s%s/%s", serverAddress, rep.fhirType(), rep.getIdElement().getIdPart())));
+            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep).setFullUrl(getFullUrl(rep.fhirType(), rep.getIdElement().getIdPart())));
             if (report.hasEvaluatedResource()) {
                 for (Reference evaluatedResource : report.getEvaluatedResource()) {
                     // Assuming data is local only for now... 
@@ -576,17 +577,22 @@ public class MeasureOperationsProvider {
                         IBaseResource resourceBase = registry.getResourceDao(resourceType).read(theId);
                         if (resourceBase != null && resourceBase instanceof Resource) {
                             Resource resource = (Resource) resourceBase;
-                            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(resource).setFullUrl(String.format("%s%s/%s", serverAddress, resource.fhirType(), resource.getIdElement().getIdPart())));
+                            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(resource).setFullUrl(getFullUrl(resource.fhirType(), resource.getIdElement().getIdPart())));
                         }
                     }
                 }
             }
         }
         for (DetectedIssue detectedIssue : detectedIssues) {
-            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue).setFullUrl(String.format("%s%s/%s", serverAddress, detectedIssue.fhirType(), detectedIssue.getIdElement().getIdPart())));
+            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue).setFullUrl(getFullUrl(detectedIssue.fhirType(), detectedIssue.getIdElement().getIdPart())));
         }
  
         return careGapReport;
+    }
+
+    private String getFullUrl(String fhirType, String elementId) {
+        String fullUrl = String.format("%s%s/%s", serverAddress, fhirType, elementId);
+        return fullUrl;
     }
 
     private Resource getCompositionAuthor() {
@@ -603,6 +609,7 @@ public class MeasureOperationsProvider {
         if (localOrganization != null) {
             return localOrganization;
         } else {
+            //getting weird behavior where the organization isn't updating.  I think this grabs the first version so if you update you don't see it.
             IFhirResourceDao<Organization> orgDao = this.registry.getResourceDao(Organization.class);
             List<IBaseResource> org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
             if (org.isEmpty()) {

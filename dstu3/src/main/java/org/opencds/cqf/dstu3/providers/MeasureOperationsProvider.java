@@ -265,6 +265,7 @@ public class MeasureOperationsProvider {
         //TODO: topic should allow many and be a union of them
         //TODO: "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
         Parameters returnParams = new Parameters();
+        returnParams.setId((UUID.randomUUID().toString()));
         if(careGapParameterValidation(periodStart, periodEnd, subject, topic, practitioner, measure, status, organization)) {
             if(subject.startsWith("Patient/")){
                 returnParams.addParameter(new Parameters.ParametersParameterComponent()
@@ -374,7 +375,7 @@ public class MeasureOperationsProvider {
         CqfmSoftwareSystemHelper helper = new CqfmSoftwareSystemHelper();
         Device device = helper.createSoftwareSystemDevice(cqfRulerSoftwareSystem);
         composition.setAuthor(Arrays.asList(new Reference(device)));
-        careGapReport.addEntry(new BundleEntryComponent().setResource(device).setFullUrl(String.format(serverAddress, device.fhirType(), device.getIdElement().getIdPart())));
+        careGapReport.addEntry(new BundleEntryComponent().setResource(device).setFullUrl(getFullUrl(device.fhirType(), device.getIdElement().getIdPart())));
 
         List<MeasureReport> reports = new ArrayList<>();
         List<DetectedIssue> detectedIssues = new ArrayList<DetectedIssue>();
@@ -480,9 +481,9 @@ public class MeasureOperationsProvider {
         if((null == status || status == "")                                 //everything
                 || (hasIssue && !"closed-gap".equalsIgnoreCase(status))     //filter out closed-gap that has issues  for OPEN-GAP
                 ||(!hasIssue && !"open-gap".equalsIgnoreCase(status))){     //filet out open-gap without issues  for CLOSE-GAP
-            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition).setFullUrl(String.format(serverAddress, composition.fhirType(), composition.getIdElement().getIdPart())));
+            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(composition).setFullUrl(getFullUrl(composition.fhirType(), composition.getIdElement().getIdPart())));
             for (MeasureReport rep : reports) {
-                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep).setFullUrl(String.format(serverAddress, rep.fhirType(), rep.getIdElement().getIdPart())));
+                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(rep).setFullUrl(getFullUrl(rep.fhirType(), rep.getIdElement().getIdPart())));
                 if (report.hasEvaluatedResources()) {
                     IBaseResource evaluatedResourcesBaseBundle = registry.getResourceDao("Bundle").read(report.getEvaluatedResources().getReferenceElement());
                     if (evaluatedResourcesBaseBundle == null || !(evaluatedResourcesBaseBundle instanceof Bundle)) {
@@ -493,19 +494,24 @@ public class MeasureOperationsProvider {
                     for (BundleEntryComponent entry : evaluatedResourcesBundle.getEntry()) {
                         Resource resource = entry.getResource();
                         if (resource != null) {
-                            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(resource).setFullUrl(String.format(serverAddress, resource.fhirType(), resource.getIdElement().getIdPart())));
+                            careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(resource).setFullUrl(getFullUrl(resource.fhirType(), resource.getIdElement().getIdPart())));
                         }
                     }
                 }
             }
             for (DetectedIssue detectedIssue : detectedIssues) {
-                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue).setFullUrl(String.format(serverAddress, detectedIssue.fhirType(), detectedIssue.getIdElement().getIdPart())));
+                careGapReport.addEntry(new Bundle.BundleEntryComponent().setResource(detectedIssue).setFullUrl(getFullUrl(detectedIssue.fhirType(), detectedIssue.getIdElement().getIdPart())));
             }
         }
         if(careGapReport.getEntry().isEmpty()){
             return null;
         }
         return careGapReport;
+    }
+
+    private String getFullUrl(String fhirType, String elementId) {
+        String fullUrl = String.format("%s%s/%s", serverAddress, fhirType, elementId);
+        return fullUrl;
     }
 
     private List<IBaseResource> getMeasureList(SearchParameterMap theParams, String measure){
