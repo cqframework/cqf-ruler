@@ -1,5 +1,6 @@
 package org.opencds.cqf.dstu3.providers;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -147,7 +148,15 @@ public class ActivityDefinitionApplyProvider {
         ProcedureRequest procedureRequest = new ProcedureRequest();
         procedureRequest.setStatus(ProcedureRequest.ProcedureRequestStatus.DRAFT);
         procedureRequest.setIntent(ProcedureRequest.ProcedureRequestIntent.ORDER);
-        procedureRequest.setSubject(new Reference(patientId));
+        String patientReferenceString = patientId;
+        URI patientIdAsUri = URI.create(patientReferenceString);
+
+        if (!patientIdAsUri.isAbsolute()
+                && patientIdAsUri.getFragment() == null
+                && !patientReferenceString.startsWith("Patient/")) {
+            patientReferenceString = "Patient/" + patientId;
+        }
+        procedureRequest.setSubject(new Reference(patientReferenceString));
 
         if (practitionerId != null) {
             procedureRequest.setRequester(
