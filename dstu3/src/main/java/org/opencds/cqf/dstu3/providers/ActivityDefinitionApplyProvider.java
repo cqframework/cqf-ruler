@@ -147,7 +147,11 @@ public class ActivityDefinitionApplyProvider {
         ProcedureRequest procedureRequest = new ProcedureRequest();
         procedureRequest.setStatus(ProcedureRequest.ProcedureRequestStatus.DRAFT);
         procedureRequest.setIntent(ProcedureRequest.ProcedureRequestIntent.ORDER);
-        procedureRequest.setSubject(new Reference(patientId));
+        String patientReferenceString = patientId;
+        if (!patientId.startsWith("Patient/")) {
+            patientReferenceString = "Patient/" + patientId;
+        }
+        procedureRequest.setSubject(new Reference(patientReferenceString));
 
         if (practitionerId != null) {
             procedureRequest.setRequester(
