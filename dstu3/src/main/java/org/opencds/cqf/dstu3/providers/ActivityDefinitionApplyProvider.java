@@ -149,9 +149,11 @@ public class ActivityDefinitionApplyProvider {
         procedureRequest.setStatus(ProcedureRequest.ProcedureRequestStatus.DRAFT);
         procedureRequest.setIntent(ProcedureRequest.ProcedureRequestIntent.ORDER);
         String patientReferenceString = patientId;
-        URI patientIdAsUri = URI.create(patientId);
+        URI patientIdAsUri = URI.create(patientReferenceString);
 
-        if (!patientIdAsUri.isAbsolute() && patientIdAsUri.getFragment() == null) {
+        if (!patientIdAsUri.isAbsolute()
+                && patientIdAsUri.getFragment() == null
+                && !patientReferenceString.startsWith("Patient/")) {
             patientReferenceString = "Patient/" + patientId;
         }
         procedureRequest.setSubject(new Reference(patientReferenceString));
