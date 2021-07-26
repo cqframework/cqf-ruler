@@ -189,7 +189,7 @@ public class ActivityDefinitionApplyProvider {
         // status, intent, code, and subject are required
         ServiceRequest serviceRequest = new ServiceRequest();
         serviceRequest.setStatus(ServiceRequest.ServiceRequestStatus.DRAFT);
-        serviceRequest.setIntent(ServiceRequest.ServiceRequestIntent.ORDER);
+        serviceRequest.setIntent(ServiceRequest.ServiceRequestIntent.PROPOSAL);
         String patientReferenceString = patientId;
         URI patientIdAsUri = URI.create(patientReferenceString);
 

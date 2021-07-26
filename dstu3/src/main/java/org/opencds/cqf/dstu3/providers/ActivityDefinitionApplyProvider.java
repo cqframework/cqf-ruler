@@ -147,7 +147,7 @@ public class ActivityDefinitionApplyProvider {
         // status, intent, code, and subject are required
         ProcedureRequest procedureRequest = new ProcedureRequest();
         procedureRequest.setStatus(ProcedureRequest.ProcedureRequestStatus.DRAFT);
-        procedureRequest.setIntent(ProcedureRequest.ProcedureRequestIntent.ORDER);
+        procedureRequest.setIntent(ProcedureRequest.ProcedureRequestIntent.PROPOSAL);
         String patientReferenceString = patientId;
         URI patientIdAsUri = URI.create(patientReferenceString);
 
