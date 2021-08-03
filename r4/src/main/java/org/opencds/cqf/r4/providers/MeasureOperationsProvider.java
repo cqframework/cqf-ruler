@@ -1,6 +1,9 @@
 package org.opencds.cqf.r4.providers;
 
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +21,8 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupComponent;
+import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupPopulationComponent;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
@@ -36,9 +41,13 @@ import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.model.api.IQueryParameterType;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
+import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.ReferenceParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
@@ -277,7 +286,7 @@ public class MeasureOperationsProvider {
                     groupSubject -> resolvePatientGapBundleForMeasures(
                         _periodStart,
                         _periodEnd,
-                        _subject,
+                        groupSubject.getReference(),
                         topic,
                         status,
                         returnParams,
@@ -419,14 +428,22 @@ public class MeasureOperationsProvider {
         }
     }
 
-    private List<String> getPatientListFromGroup(String subjectGroupRef){
-        List<String> patientList = new ArrayList<>();
+    private List<Reference> getPatientListFromGroup(String subjectGroupRef){
+        List<Reference> patientList = new ArrayList<>();
         IBaseResource baseGroup = registry.getResourceDao("Group").read(new IdType(subjectGroupRef));
         if (baseGroup == null) {
             throw new RuntimeException("Could not find Group/" + subjectGroupRef);
         }
         Group group = (Group) baseGroup;
-        group.getMember().forEach(member -> patientList.add(member.getEntity().getReference()));
+        group.getMember().forEach(member -> {
+            if (member.getEntity().fhirType().equals("Group")) {
+                patientList.addAll(getPatientListFromGroup(member.getEntity().getReference()));
+            } else if (member.getEntity().fhirType().equals("Patient")) {
+                patientList.add(member.getEntity());
+            } else {
+                logger.info(String.format("Group member was not a patient, so skipping. \n%s", member.getEntity().getReference()));
+            }
+        });
         return patientList;
     }
 
@@ -831,5 +848,111 @@ public class MeasureOperationsProvider {
                     .setUrl(resource.fhirType()));
         }
         return transactionEntry;
+    }
+
+    
+    @Operation(name = "$extract-line-list-data", idempotent = false)
+    public Bundle extractLineListData(RequestDetails details,
+        @OperationParam(name = "measureReport", min = 0, max = 1, type = MeasureReport.class) MeasureReport report,
+        @OperationParam(name = "subjectList") List<String> subjectList) {
+            IVersionSpecificBundleFactory bundleFactory = measureResourceProvider.getContext().newBundleFactory();
+            Map<String, Reference> populationSubjectListReferenceMap = new HashMap<String, Reference>();
+            gatherSubjectList(report, subjectList, populationSubjectListReferenceMap);
+            gatherEicrs(bundleFactory, populationSubjectListReferenceMap);
+        Bundle bundle = (Bundle) bundleFactory.getResourceBundle();
+        if (bundle != null) {
+            if (bundle.getEntry().size() == 1 && bundle.getEntry().get(0).getResource() instanceof Bundle) {
+                return (Bundle) bundle.getEntry().get(0).getResource();
+            }
+        }
+        return bundle;
+    }
+
+    private void gatherEicrs(IVersionSpecificBundleFactory bundleFactory, Map<String, Reference> populationSubjectListReferenceMap) {
+        Map<String, Bundle> eicrs = new HashMap<String, Bundle>();
+        for (Entry<String, Reference> entry : populationSubjectListReferenceMap.entrySet()) {
+            // IQueryParameterType compositionReferenceParam = new ReferenceParam("subject", entry.getKey());
+            SearchParameterMap map = new SearchParameterMap();//.add("composition", compositionReferenceParam);
+            logger.warn(map.toNormalizedQueryString(measureResourceProvider.getContext()));
+            List<IBaseResource> bundles = registry.getResourceDao(Bundle.class).search(map).getAllResources();
+            for (IBaseResource baseBundle : bundles) {
+                if (baseBundle instanceof Bundle) {
+                    Bundle bundle = (Bundle) baseBundle;
+                    if (bundle.hasEntry() && !bundle.getEntry().isEmpty() && bundle.hasType() && bundle.getType().equals(Bundle.BundleType.DOCUMENT)) {
+                        IBaseResource firstEntry = bundle.getEntry().get(0).getResource();
+                        if (!(firstEntry instanceof Composition)) {
+                            logger.debug(String.format("Any bundle of type document must have the first entry of type Composition, but found: %s", firstEntry.fhirType()));
+                        } else {
+                            Composition composition = (Composition) firstEntry;
+                            String[] referenceSplit = composition.getSubject().getReference().split("/");
+                            if (composition.getSubject().equals(entry.getValue()) || composition.getSubject().getReference().equals(entry.getKey())) {
+                                eicrs.putIfAbsent(entry.getKey(), bundle);
+                            } else if (referenceSplit.length > 1 && referenceSplit[1].equals(entry.getKey())) {
+                                eicrs.putIfAbsent(entry.getKey(), bundle);
+                            }
+                        }
+                    }
+                }
+            }
+            // if (bundles != null && !bundles.isEmpty() && bundles.size() == 1) {
+            //     bundleFactory.addResourcesToBundle(Arrays.asList(bundles.get(0)), BundleTypeEnum.COLLECTION, null, null, null);
+            // }
+        }
+        bundleFactory.addResourcesToBundle(eicrs.values().stream().collect(Collectors.toList()), BundleTypeEnum.COLLECTION, null, null, null);
+    }
+
+    private void gatherSubjectList(MeasureReport report, List<String> subjectList, Map<String, Reference> populationSubjectListReferenceMap) {
+        if (subjectList != null && !subjectList.isEmpty()) {
+            for (String subject : subjectList) {
+                populationSubjectListReferenceMap.putIfAbsent(subject, new Reference(subject));
+            }
+        } else if (report != null) {
+            gatherPatientsFromReport(report, populationSubjectListReferenceMap);
+        } else {
+            throw new RuntimeException("Must have either a measureReport or a subjectList or both.");
+        }
+    }
+
+    private void gatherPatientsFromReport(MeasureReport report, Map<String, Reference> populationSubjectListReferenceMap) {
+        if (report.getSubject() != null) {
+            populationSubjectListReferenceMap.putIfAbsent(report.getSubject().getReference(), report.getSubject());
+        }
+        for (MeasureReportGroupComponent group : report.getGroup()) {
+            for (MeasureReportGroupPopulationComponent population : group.getPopulation()) {
+                for (Reference subject : getSubjectResultsFromList(population.getSubjectResults())) {
+                    if (subject.fhirType().equals("Patient")) {
+                        populationSubjectListReferenceMap.putIfAbsent(subject.getReference(), subject);
+                    }
+                    if (subject.fhirType().equals("Group")) {
+                        getPatientListFromGroup(subject.getReference()).forEach(patient -> {
+                            populationSubjectListReferenceMap.putIfAbsent(patient.getReference(), patient);
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    private List<Reference> getSubjectResultsFromList(Reference subjectResults) {
+        List<Reference> results = new ArrayList<Reference>();
+        if (subjectResults.getReference() == null) {
+            logger.debug("No subject results found.");
+            return results;
+        }
+        IBaseResource baseList = registry.getResourceDao(subjectResults.getReferenceElement().getResourceType()).read(subjectResults.getReferenceElement());
+        if (baseList == null) {
+            logger.debug(String.format("No subject results found for: %s", subjectResults.getReference()));
+            return results;
+        }
+        if (!(baseList instanceof ListResource)) {
+            throw new RuntimeException(String.format("Population subject reference was not a List, found: %s", baseList.fhirType()));
+        }
+        ListResource list = (ListResource) baseList;
+        list.getEntry().forEach(entry -> {
+            if (entry.getItemTarget().fhirType().equals("Patient") || entry.getItemTarget().fhirType().equals("Group")) {
+                results.add(entry.getItem());
+            }
+        });
+        return results;
     }
 }
