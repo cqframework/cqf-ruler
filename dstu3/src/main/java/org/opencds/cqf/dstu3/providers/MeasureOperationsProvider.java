@@ -340,9 +340,9 @@ public class MeasureOperationsProvider {
     private Bundle patientCareGap(String periodStart, String periodEnd, String subject, String topic, String measure, String status) {
         //TODO: this is an org hack.  Need to figure out what the right thing is.
         IFhirResourceDao<Organization> orgDao = this.registry.getResourceDao(Organization.class);
-        List<IBaseResource> org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
+        List<IBaseResource> org = orgDao.search(SearchParameterMap.newSynchronous()).getResources(0, 1);
 
-        SearchParameterMap theParams = new SearchParameterMap();
+        SearchParameterMap theParams = SearchParameterMap.newSynchronous();
 
         // if (theId != null) {
         //     var measureParam = new StringParam(theId.getIdPart());

@@ -48,9 +48,9 @@ public class CodeSystemUpdateProvider {
      */
     @Operation(name = "$updateCodeSystems", idempotent = true)
     public OperationOutcome updateCodeSystems() {
-        IBundleProvider valuesets = this.valueSetDao.search(new SearchParameterMap());
+        IBundleProvider valuesets = this.valueSetDao.search(SearchParameterMap.newSynchronous());
 
-        List<ValueSet> valueSets =  valuesets.getResources(0, valuesets.size()).stream().map(x -> (ValueSet)x).collect(Collectors.toList());
+        List<ValueSet> valueSets =  valuesets.getAllResources().stream().map(x -> (ValueSet)x).collect(Collectors.toList());
 
         OperationOutcome outcome = this.performCodeSystemUpdate(valueSets);
 
@@ -143,7 +143,7 @@ public class CodeSystemUpdateProvider {
      */
     private CodeSystem getCodeSystemByUrl(String url) {
         IBundleProvider bundleProvider = this.codeSystemDao
-                .search(new SearchParameterMap().add(CodeSystem.SP_URL, new UriParam(url)));
+                .search(SearchParameterMap.newSynchronous().add(CodeSystem.SP_URL, new UriParam(url)));
 
         if (bundleProvider.size() >= 1) {
             return (CodeSystem) bundleProvider.getResources(0, 1).get(0);
