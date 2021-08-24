@@ -75,7 +75,7 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
 
         IBundleProvider bundleProvider = dao.search(hapiMap);
         if (bundleProvider.size() == null) {
-            return resolveResourceList(bundleProvider.getResources(0, 10000));
+            return resolveResourceList(bundleProvider.getAllResources());
         }
         if (bundleProvider.size() == 0) {
             return new ArrayList<>();

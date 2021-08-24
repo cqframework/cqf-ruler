@@ -520,7 +520,7 @@ public class MeasureOperationsProvider {
             List<IBaseResource> allMeasures = this.measureResourceProvider
                     .getDao()
                     .search(theParams)
-                    .getResources(0, 1000);
+                    .getAllResources();
             for(String singleName: measure.split(",")){
                 if (singleName.equals("")) {
                     continue;
@@ -537,7 +537,7 @@ public class MeasureOperationsProvider {
         }else {
             return 
             //TODO: this needs to be restricted to only the current measure.  It seems to be returning all versions in history.
-                this.measureResourceProvider.getDao().search(theParams).getResources(0, 1000)
+                this.measureResourceProvider.getDao().search(theParams).getAllResources()
                     .stream()
                     .filter(resource -> ((Measure)resource).getUrl() != null && !((Measure)resource).getUrl().equals(""))
                     .collect(Collectors.toList());
