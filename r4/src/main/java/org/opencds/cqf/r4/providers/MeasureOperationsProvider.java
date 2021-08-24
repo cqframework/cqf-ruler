@@ -448,7 +448,7 @@ public class MeasureOperationsProvider {
     }
 
     private Bundle patientCareGap(String periodStart, String periodEnd, String subject, String topic, List<Measure> measures, List<String> status, String organization) {
-        SearchParameterMap theParams = new SearchParameterMap();
+        SearchParameterMap theParams = SearchParameterMap.newSynchronous();
 
         // if (theId != null) {
         //     var measureParam = new StringParam(theId.getIdPart());
@@ -628,7 +628,7 @@ public class MeasureOperationsProvider {
         } else {
             //getting weird behavior where the organization isn't updating.  I think this grabs the first version so if you update you don't see it.
             IFhirResourceDao<Organization> orgDao = this.registry.getResourceDao(Organization.class);
-            List<IBaseResource> org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
+            List<IBaseResource> org = orgDao.search(SearchParameterMap.newSynchronous()).getResources(0, 1);
             if (org.isEmpty()) {
                 return null;
             }
@@ -872,7 +872,7 @@ public class MeasureOperationsProvider {
         Map<String, Bundle> eicrs = new HashMap<String, Bundle>();
         for (Entry<String, Reference> entry : populationSubjectListReferenceMap.entrySet()) {
             // IQueryParameterType compositionReferenceParam = new ReferenceParam("subject", entry.getKey());
-            SearchParameterMap map = new SearchParameterMap();//.add("composition", compositionReferenceParam);
+            SearchParameterMap map = SearchParameterMap.newSynchronous();//.add("composition", compositionReferenceParam);
             logger.warn(map.toNormalizedQueryString(measureResourceProvider.getContext()));
             List<IBaseResource> bundles = registry.getResourceDao(Bundle.class).search(map).getAllResources();
             for (IBaseResource baseBundle : bundles) {

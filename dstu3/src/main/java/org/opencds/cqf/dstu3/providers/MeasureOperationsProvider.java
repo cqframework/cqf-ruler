@@ -340,9 +340,9 @@ public class MeasureOperationsProvider {
     private Bundle patientCareGap(String periodStart, String periodEnd, String subject, String topic, String measure, String status) {
         //TODO: this is an org hack.  Need to figure out what the right thing is.
         IFhirResourceDao<Organization> orgDao = this.registry.getResourceDao(Organization.class);
-        List<IBaseResource> org = orgDao.search(new SearchParameterMap()).getResources(0, 1);
+        List<IBaseResource> org = orgDao.search(SearchParameterMap.newSynchronous()).getResources(0, 1);
 
-        SearchParameterMap theParams = new SearchParameterMap();
+        SearchParameterMap theParams = SearchParameterMap.newSynchronous();
 
         // if (theId != null) {
         //     var measureParam = new StringParam(theId.getIdPart());
@@ -520,7 +520,7 @@ public class MeasureOperationsProvider {
             List<IBaseResource> allMeasures = this.measureResourceProvider
                     .getDao()
                     .search(theParams)
-                    .getResources(0, 1000);
+                    .getAllResources();
             for(String singleName: measure.split(",")){
                 if (singleName.equals("")) {
                     continue;
@@ -537,7 +537,7 @@ public class MeasureOperationsProvider {
         }else {
             return 
             //TODO: this needs to be restricted to only the current measure.  It seems to be returning all versions in history.
-                this.measureResourceProvider.getDao().search(theParams).getResources(0, 1000)
+                this.measureResourceProvider.getDao().search(theParams).getAllResources()
                     .stream()
                     .filter(resource -> ((Measure)resource).getUrl() != null && !((Measure)resource).getUrl().equals(""))
                     .collect(Collectors.toList());
