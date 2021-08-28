@@ -346,6 +346,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.23</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-schematron</artifactId>
             <version>5.6.5</version>
