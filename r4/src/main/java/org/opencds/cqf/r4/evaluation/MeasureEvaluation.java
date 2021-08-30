@@ -542,7 +542,9 @@ public class MeasureEvaluation {
                 if (referenceMap.containsKey(element)) {
                     referenceMap.get(element).addExtension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
                         new StringType(key.getLeft()));
-                    evaluatedResourceIds.add(referenceMap.get(element));
+                    if (!evaluatedResourceIds.contains(referenceMap.get(element))) {
+                        evaluatedResourceIds.add(referenceMap.get(element));
+                    }
                 } else {
                     org.hl7.fhir.r4.model.ListResource.ListEntryComponent comp = new org.hl7.fhir.r4.model.ListResource.ListEntryComponent();
                     Reference reference = new Reference(element);
@@ -551,7 +553,9 @@ public class MeasureEvaluation {
                     // Do not want to add extension to ListEntryReference
                     reference.addExtension("http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
                             new StringType(key.getLeft()));
-                    evaluatedResourceIds.add(reference);
+                    if (!evaluatedResourceIds.contains(reference)) {
+                        evaluatedResourceIds.add(reference);
+                    }
                     referenceMap.put(element, reference);
                 }
             }
