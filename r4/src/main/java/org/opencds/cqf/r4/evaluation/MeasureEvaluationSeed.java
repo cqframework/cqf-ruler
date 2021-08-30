@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.r4.model.Measure;
+import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.helpers.UsingHelper;
@@ -105,7 +106,7 @@ public class MeasureEvaluationSeed {
         context.setExpressionCaching(true);
 
         DebugMap debugMap = new DebugMap();
-        debugMap.setIsLoggingEnabled(true);
+        debugMap.setIsLoggingEnabled(HapiProperties.getCQLEnableDebugLogging());
         context.setDebugMap(debugMap);
     }
 }

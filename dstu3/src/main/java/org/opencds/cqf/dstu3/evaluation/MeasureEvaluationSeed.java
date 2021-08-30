@@ -6,11 +6,13 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.dstu3.model.Measure;
+import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.helpers.UsingHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
+import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
@@ -102,5 +104,9 @@ public class MeasureEvaluationSeed {
         }
 
         context.setExpressionCaching(true);
+
+        DebugMap debugMap = new DebugMap();
+        debugMap.setIsLoggingEnabled(HapiProperties.getCQLEnableDebugLogging());
+        context.setDebugMap(debugMap);
     }
 }

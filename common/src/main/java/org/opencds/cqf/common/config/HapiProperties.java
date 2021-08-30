@@ -77,6 +77,8 @@ public class HapiProperties {
     static final String CDSHOOKS_FHIRSERVER_SEARCHSTYLE= "cds_hooks.fhirServer.searchStyle";
     static final String CDSHOOKS_PREFETCH_MAXURILENGTH= "cds_hooks.prefetch.maxUriLength";
 
+    static final String CQL_ENABLE_DEBUG_LOGGING = "cql.enable_debug_logging";
+
     private static Properties properties;
 
     /*
@@ -254,6 +256,10 @@ public class HapiProperties {
 
     public static Boolean getLoggerLogExceptions() {
         return HapiProperties.getBooleanProperty(LOGGER_LOG_EXCEPTIONS, true);
+    }
+
+    public static Boolean getCQLEnableDebugLogging() {
+        return HapiProperties.getBooleanProperty(CQL_ENABLE_DEBUG_LOGGING, false);
     }
 
     public static String getDataSourceDriver() {
