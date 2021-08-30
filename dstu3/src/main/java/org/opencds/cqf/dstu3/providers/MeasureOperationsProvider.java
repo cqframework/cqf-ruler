@@ -371,7 +371,7 @@ public class MeasureOperationsProvider {
                                 .setSystem("http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-doc-type")
                                 .setDisplay("Gaps in care report")));
 
-        CqfmSoftwareSystem cqfRulerSoftwareSystem = new CqfmSoftwareSystem("cqf-ruler", MeasureOperationsProvider.class.getPackage().getImplementationVersion());
+        CqfmSoftwareSystem cqfRulerSoftwareSystem = new CqfmSoftwareSystem("cqf-ruler", MeasureOperationsProvider.class.getPackage().getImplementationVersion(), MeasureOperationsProvider.class.getPackage().getImplementationVersion());
         CqfmSoftwareSystemHelper helper = new CqfmSoftwareSystemHelper();
         Device device = helper.createSoftwareSystemDevice(cqfRulerSoftwareSystem);
         composition.setAuthor(Arrays.asList(new Reference(device)));
