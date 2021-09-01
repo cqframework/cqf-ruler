@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -138,7 +139,8 @@ public class CdsHooksServlet extends HttpServlet {
 
             Hook hook = HookFactory.createHook(cdsHooksRequest);
 
-            logger.info("cds-hooks hook: " + hook.getRequest().getHook());
+            String hookName = hook.getRequest().getHook();
+            logger.info("cds-hooks hook: " + hookName);
             logger.info("cds-hooks hook instance: " + hook.getRequest().getHookInstance());
             logger.info("cds-hooks maxCodesPerQuery: " + this.getProviderConfiguration().getMaxCodesPerQuery());
             logger.info("cds-hooks expandValueSets: " + this.getProviderConfiguration().getExpandValueSets());
@@ -148,6 +150,22 @@ public class CdsHooksServlet extends HttpServlet {
             logger.info("cds-hooks fhir server address: " + hook.getRequest().getFhirServerUrl());
 
             PlanDefinition planDefinition = planDefinitionProvider.getDao().read(new IdType(hook.getRequest().getServiceName()));
+            AtomicBoolean planDefinitionHookMatchesRequestHook = new AtomicBoolean(false);
+
+            planDefinition.getAction().forEach(action -> {
+                action.getTriggerDefinition().forEach(triggerDefn -> {
+                    if(hookName.equals(triggerDefn.getEventName())){
+                        planDefinitionHookMatchesRequestHook.set(true);
+                        return;
+                    }
+                });
+                if(planDefinitionHookMatchesRequestHook.get()){
+                    return;
+                }
+            });
+            if(!planDefinitionHookMatchesRequestHook.get()){
+                throw new ServletException("ERROR: Request hook does not match the service called.");
+            }
             LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResolutionProvider);
             Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider);
 
