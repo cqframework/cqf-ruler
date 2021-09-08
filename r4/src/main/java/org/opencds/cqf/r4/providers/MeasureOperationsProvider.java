@@ -1,8 +1,13 @@
 package org.opencds.cqf.r4.providers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collector;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -10,39 +15,60 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.base.Strings;
 
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
-import ca.uhn.fhir.rest.annotation.*;
-
 import org.hibernate.cfg.NotYetImplementedException;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.DetectedIssue;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Group;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.ListResource;
+import org.hl7.fhir.r4.model.Measure;
+import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupComponent;
 import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupPopulationComponent;
+import org.hl7.fhir.r4.model.Meta;
+import org.hl7.fhir.r4.model.Narrative;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
-import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
-import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluation;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
 import org.opencds.cqf.r4.helpers.LibraryHelper;
+import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
+import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
-import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
@@ -256,6 +282,9 @@ public class MeasureOperationsProvider {
         // This is a hack and I hate it. I don't know how to just pull the current url due to
         // the amount of abstraction going on. I didn't want to waste too much time here.
         // If there's a better way of doing this, please ping me. - Carter
+
+        // Carter, this can be done with OperationParam args.  See the $report implementation.  - Rob
+
         String _periodStart = periodStart.get(0);
         String _periodEnd = periodEnd.get(0);
         String _subject = subject.get(0);
@@ -694,6 +723,75 @@ public class MeasureOperationsProvider {
     private boolean closedGap(String improvementNotation, double proportion) {
         return ((improvementNotation.equals("increase")) && (proportion > 0.0))
                         ||  ((improvementNotation.equals("decrease")) && (proportion < 1.0));
+    }
+
+    @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
+    public Parameters report(@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
+                                     @OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
+                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {      
+        Date periodStartDate = DateHelper.resolveRequestDate(periodStart, true);
+        Date periodEndDate = DateHelper.resolveRequestDate(periodEnd, false);
+
+        if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
+            throw new IllegalArgumentException("Parameter 'subject' must be in the format 'Patient/[id]' or 'Group/[id]'.");
+        }
+
+        Parameters returnParams = new Parameters();
+        returnParams.setId(subject.replace("/", "_") + "-report");
+        
+        SearchParameterMap theParams = SearchParameterMap.newSynchronous();       
+        (getPatientListFromSubject(subject))
+            .forEach(
+                groupSubject -> {
+                    Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, groupSubject.getReference(), theParams);
+                    returnParams.addParameter(patientParameter);
+                }
+            );        
+
+        return returnParams;
+    }
+
+    private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject, SearchParameterMap theParams ) {
+        ReferenceParam subjectParam = new ReferenceParam(subject);
+        theParams.add("subject", subjectParam);
+
+        Bundle patientReportBundle =  new Bundle();
+            patientReportBundle.setType(Bundle.BundleType.COLLECTION);
+            patientReportBundle.setTimestamp(new Date());
+            patientReportBundle.setId(UUID.randomUUID().toString());
+            patientReportBundle.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
+            
+        IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
+        measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
+            MeasureReport measureReport = (MeasureReport)baseResource;        
+            if (measureReport.getDate().before(periodStart) || measureReport.getDate().after(periodEnd)) {
+                return;
+            }           
+            
+            patientReportBundle.addEntry(
+                new Bundle.BundleEntryComponent()
+                    .setResource(measureReport)
+                    .setFullUrl(getFullUrl(measureReport.fhirType(), measureReport.getIdElement().getIdPart()))
+            );
+        });
+
+        Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
+            patientParameter.setResource(patientReportBundle);
+            patientParameter.setId(UUID.randomUUID().toString());
+            patientParameter.setName("return");
+        return patientParameter;
+    }
+
+    private List<Reference> getPatientListFromSubject(String subject) {
+        List<Reference> patientList = null;
+        if (subject.startsWith("Patient/")) {
+            Reference patientReference = new Reference(subject);
+            patientList = new ArrayList<Reference>();
+            patientList.add(patientReference);
+        } else if (subject.startsWith("Group/")) {
+            patientList = getPatientListFromGroup(subject);
+        }
+        return patientList;
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)

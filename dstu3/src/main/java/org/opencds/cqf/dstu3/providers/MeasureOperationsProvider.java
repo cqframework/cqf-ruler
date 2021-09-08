@@ -12,10 +12,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
-import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Composition;
@@ -24,6 +22,7 @@ import org.hl7.fhir.dstu3.model.Device;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Group;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.ListResource;
 import org.hl7.fhir.dstu3.model.Measure;
@@ -36,13 +35,13 @@ import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
@@ -58,7 +57,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
-
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -67,6 +68,7 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
@@ -542,6 +544,75 @@ public class MeasureOperationsProvider {
                     .filter(resource -> ((Measure)resource).getUrl() != null && !((Measure)resource).getUrl().equals(""))
                     .collect(Collectors.toList());
         }
+    }
+
+    @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
+    public Parameters report(@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
+                                     @OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
+                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {      
+        Date periodStartDate = DateHelper.resolveRequestDate(periodStart, true);
+        Date periodEndDate = DateHelper.resolveRequestDate(periodEnd, false);
+      
+        if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
+            throw new IllegalArgumentException("Parameter 'subject' must be in the format 'Patient/[id]' or 'Group/[id]'.");
+        }
+
+        Parameters returnParams = new Parameters();
+        returnParams.setId(subject.replace("/", "_") + "-report");
+        
+        SearchParameterMap theParams = SearchParameterMap.newSynchronous();       
+        (getPatientListFromSubject(subject))
+            .forEach(
+                groupSubject -> {
+                    Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, groupSubject, theParams);
+                    returnParams.addParameter(patientParameter);
+                }
+            );        
+
+        return returnParams;
+    }
+
+    private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject, SearchParameterMap theParams ) {
+        StringParam subjectParam = new StringParam(subject);
+        theParams.add("subject", subjectParam);
+
+        Bundle patientReportBundle = new Bundle();
+            patientReportBundle.setType(Bundle.BundleType.COLLECTION);
+            // no timestamp in DSTU3
+            //patientReportBundle.setTimestamp(new Date());
+            patientReportBundle.setId(UUID.randomUUID().toString());
+            patientReportBundle.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
+            
+        IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
+        measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
+            MeasureReport measureReport = (MeasureReport)baseResource;        
+            if (measureReport.getDate().before(periodStart) || measureReport.getDate().after(periodEnd)) {
+                return;
+            }           
+            
+            patientReportBundle.addEntry(
+                new Bundle.BundleEntryComponent()
+                    .setResource(measureReport)
+                    .setFullUrl(getFullUrl(measureReport.fhirType(), measureReport.getIdElement().getIdPart()))
+            );
+        });
+
+        Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
+            patientParameter.setResource(patientReportBundle);
+            patientParameter.setId(UUID.randomUUID().toString());
+            patientParameter.setName("return");
+        return patientParameter;
+    }
+
+    private List<String> getPatientListFromSubject(String subject) {
+        List<String> patientList = null;
+        if (subject.startsWith("Patient/")) {        
+            patientList = new ArrayList<String>();
+            patientList.add(subject);
+        } else if (subject.startsWith("Group/")) {
+            patientList = getPatientListFromGroup(subject);
+        }
+        return patientList;
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)
