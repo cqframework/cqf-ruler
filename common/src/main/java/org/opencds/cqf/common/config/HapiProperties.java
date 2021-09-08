@@ -439,11 +439,11 @@ public class HapiProperties {
 
     public static String getQuestionnaireResponseExtractUserName() {
         return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_USERNAME);
-    };
+    }
 
     public static String getQuestionnaireResponseExtractPassword() {
         return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_PASSWORD);
-    };
+    }
 
     public static Boolean getObservationTransformEnabled() {
         return HapiProperties.getBooleanProperty(OBSERVATION_TRANSFORM_ENABLED, false);
