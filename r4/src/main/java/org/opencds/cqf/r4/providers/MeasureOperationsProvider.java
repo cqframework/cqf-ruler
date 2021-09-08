@@ -1,10 +1,12 @@
 package org.opencds.cqf.r4.providers;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
@@ -694,6 +696,46 @@ public class MeasureOperationsProvider {
     private boolean closedGap(String improvementNotation, double proportion) {
         return ((improvementNotation.equals("increase")) && (proportion > 0.0))
                         ||  ((improvementNotation.equals("decrease")) && (proportion < 1.0));
+    }
+
+    @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
+    public Parameters careGapsReport(@OperationParam(name = "periodStart") String periodStart,
+                                     @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "subject") String subject) throws FHIRException {
+                                        
+        Parameters returnParams = new Parameters();
+        returnParams.setId((UUID.randomUUID().toString()));
+
+        IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
+        SearchParameterMap theParams = SearchParameterMap.newSynchronous();
+
+        ReferenceParam subjectParam = new ReferenceParam(subject);
+        theParams.add("subject", subjectParam);
+
+        measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
+            MeasureReport measureReport = (MeasureReport)baseResource;
+            try {
+                if (measureReport.getDate().before(new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodStart)) || measureReport.getDate().after(new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodEnd))) {
+                    return;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return;
+            }
+            Bundle patientReportBundle =  new Bundle();
+            patientReportBundle.setType(Bundle.BundleType.COLLECTION);
+            patientReportBundle.setTimestamp(new Date());
+            patientReportBundle.setId(UUID.randomUUID().toString());
+            patientReportBundle.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
+            patientReportBundle.addEntry(new Bundle.BundleEntryComponent().setResource(measureReport).setFullUrl(getFullUrl(measureReport.fhirType(), measureReport.getIdElement().getIdPart())));
+
+            Parameters.ParametersParameterComponent newParameter = new Parameters.ParametersParameterComponent();
+            newParameter.setResource(patientReportBundle);
+            newParameter.setId(UUID.randomUUID().toString());
+            
+            returnParams.addParameter(newParameter);
+        });
+
+        return returnParams;
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)

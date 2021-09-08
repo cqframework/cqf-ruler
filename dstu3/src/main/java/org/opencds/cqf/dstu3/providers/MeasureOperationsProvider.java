@@ -544,6 +544,18 @@ public class MeasureOperationsProvider {
         }
     }
 
+    @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
+    public Parameters careGapsReport(@OperationParam(name = "periodStart") String periodStart,
+                                     @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "subject") String subject) throws FHIRException {
+                                        
+        //List<IBaseResource> measures = getMeasureList(theParams, measure);
+
+        Parameters returnParams = new Parameters();
+        returnParams.setId((UUID.randomUUID().toString()));
+
+        return returnParams;
+    }
+
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)
     public Parameters collectData(@IdParam IdType theId, @OperationParam(name = "periodStart") String periodStart,
             @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "patient") String patientRef,
