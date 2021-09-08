@@ -25,6 +25,7 @@ import org.hl7.fhir.r4.model.Property;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.helpers.LoggingHelper;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
@@ -88,6 +89,7 @@ public class ApplyCqlOperationProvider {
                         library = TranslatorHelper.translateLibrary(cql, new LibraryManager(new ModelManager()),
                                 new ModelManager());
                         context = new Context(library);
+                        context.setDebugMap(LoggingHelper.getDebugMap());
                         context.registerDataProvider("http://hl7.org/fhir",
                                 this.providerFactory.createDataProvider("FHIR", fhirVersion));
                         Object result = context.resolveExpressionRef("x").getExpression().evaluate(context);

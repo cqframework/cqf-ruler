@@ -37,6 +37,7 @@ import org.opencds.cqf.cds.request.Request;
 import org.opencds.cqf.cds.response.CdsCard;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.exceptions.InvalidRequestException;
+import org.opencds.cqf.common.helpers.LoggingHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
@@ -178,9 +179,7 @@ public class CdsHooksServlet extends HttpServlet {
 
             Context context = new Context(library);
 
-            DebugMap debugMap = new DebugMap();
-            debugMap.setIsLoggingEnabled(true);
-            context.setDebugMap(debugMap);
+            context.setDebugMap(LoggingHelper.getDebugMap());
 
             context.registerDataProvider("http://hl7.org/fhir", provider); // TODO make sure tooling handles remote
                                                                            // provider case

@@ -28,6 +28,7 @@ import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.evaluation.LibraryLoader;
 import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.common.helpers.LoggingHelper;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.helpers.UsingHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
@@ -219,6 +220,7 @@ public class CqlExecutionProvider {
         // This enables expressions to access the resource by root, as well as through
         // the %context attribute
         Context context = new Context(library);
+        context.setDebugMap(LoggingHelper.getDebugMap());
         context.setParameter(null, instance.fhirType(), instance);
         context.setParameter(null, "%context", instance);
         context.setExpressionCaching(true);
@@ -285,6 +287,7 @@ public class CqlExecutionProvider {
 
         org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(translator);
         Context context = new Context(library);
+        context.setDebugMap(LoggingHelper.getDebugMap());
         context.registerLibraryLoader(libraryLoader);
 
         List<Triple<String, String, String>> usingDefs = UsingHelper.getUsingUrlAndVersion(library.getUsings());

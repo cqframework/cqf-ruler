@@ -32,6 +32,7 @@ import org.opencds.cqf.cds.providers.PriorityRetrieveProvider;
 import org.opencds.cqf.common.evaluation.LibraryLoader;
 import org.opencds.cqf.common.helpers.ClientHelperDos;
 import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.common.helpers.LoggingHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.providers.LibrarySourceProvider;
 import org.opencds.cqf.common.providers.R4ApelonFhirTerminologyProvider;
@@ -301,9 +302,9 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             resolvedParameters.put("Product Line", productLine);
         }
 
-        EvaluationResult evalResult = engine.evaluate(libraryIdentifier,
+        EvaluationResult evalResult = engine.evaluate(libraryIdentifier, null,
                 Pair.of(contextParam != null ? contextParam : "Unspecified", patientId == null ? "null" : patientId),
-                resolvedParameters);
+                resolvedParameters, LoggingHelper.getDebugMap());
 
         List<Resource> results = new ArrayList<>();
         FhirMeasureBundler bundler = new FhirMeasureBundler();

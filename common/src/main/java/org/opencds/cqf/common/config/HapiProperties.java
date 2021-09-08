@@ -76,6 +76,7 @@ public class HapiProperties {
     static final String CDSHOOKS_FHIRSERVER_EXPANDVALUESETS = "cds_hooks.fhirServer.expandValueSets";
     static final String CDSHOOKS_FHIRSERVER_SEARCHSTYLE= "cds_hooks.fhirServer.searchStyle";
     static final String CDSHOOKS_PREFETCH_MAXURILENGTH= "cds_hooks.prefetch.maxUriLength";
+    static final String CQL_LOGGING_ENABLED = "hapi.fhir.cql_logging_enabled";
 
     private static Properties properties;
 
@@ -438,11 +439,11 @@ public class HapiProperties {
 
     public static String getQuestionnaireResponseExtractUserName() {
         return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_USERNAME);
-    };
+    }
 
     public static String getQuestionnaireResponseExtractPassword() {
         return HapiProperties.getProperty(QUESTIONNAIRE_RESPONSE_PASSWORD);
-    };
+    }
 
     public static Boolean getObservationTransformEnabled() {
         return HapiProperties.getBooleanProperty(OBSERVATION_TRANSFORM_ENABLED, false);
@@ -479,4 +480,9 @@ public class HapiProperties {
         return SearchStyleEnum.GET;
     }
     public static Integer getCdsHooksPreFetchMaxUriLength() { return HapiProperties.getIntegerProperty(CDSHOOKS_PREFETCH_MAXURILENGTH, 8000);}
+
+    public static Boolean getCqlLoggingEnabled() {
+        return HapiProperties.getBooleanProperty(CQL_LOGGING_ENABLED, true);
+    }
+
 }
