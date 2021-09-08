@@ -2,10 +2,18 @@ package org.opencds.cqf.common.config;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Driver;
+import java.time.Duration;
+import java.util.Collection;
+import java.util.Map;
+
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.cds.providers.ProviderConfiguration;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
+import org.opencds.cqf.cql.engine.runtime.Code;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,8 +22,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.cache.IResourceChangeEvent;
+import ca.uhn.fhir.jpa.cache.IResourceChangeListener;
+import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.model.config.PartitionSettings;
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 
@@ -142,5 +154,33 @@ public class FhirServerConfig {
     @Bean()
     public SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
         return new SearchParameterResolver(fhirContext);
+    }
+
+    @Bean
+    public IResourceChangeListener valueSetChangeListener(IResourceChangeListenerRegistry resourceChangeListenerRegistry, Map<String, Iterable<Code>> terminologyCache) {
+        IResourceChangeListener listener = new IResourceChangeListener(){
+
+            @Override
+            public void handleInit(Collection<IIdType> theResourceIds) {
+                // Intentionally empty
+            }
+
+            // TODO: Selectively clear by url. Requires a lookup on the resource
+            @Override
+            public void handleChange(IResourceChangeEvent theResourceChangeEvent) {
+                terminologyCache.clear();
+            }
+            
+        };
+
+        resourceChangeListenerRegistry.registerResourceResourceChangeListener("ValueSet", SearchParameterMap.newSynchronous(), listener, 1000);
+
+        return listener;
+    }
+
+    @Bean
+    public Map<String, Iterable<Code>> terminologyCache() {
+        Cache<String, Iterable<Code>> cache = Caffeine.newBuilder().maximumSize(100).expireAfterAccess(Duration.ofMinutes(60)).build();
+        return cache.asMap();
     }
 }

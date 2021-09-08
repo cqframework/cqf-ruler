@@ -41,12 +41,12 @@ import org.opencds.cqf.common.helpers.LoggingHelper;
 import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
-import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
-import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
 import org.slf4j.Logger;
@@ -55,7 +55,6 @@ import org.springframework.context.ApplicationContext;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.cql.dstu3.provider.JpaTerminologyProvider;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 
 @WebServlet(name = "cds-services")
@@ -70,9 +69,11 @@ public class CdsHooksServlet extends HttpServlet {
 
     private JpaFhirRetrieveProvider fhirRetrieveProvider;
 
-    private JpaTerminologyProvider jpaTerminologyProvider;
+    private TerminologyProvider serverTerminologyProvider;
 
     private ProviderConfiguration providerConfiguration;
+
+    private ModelResolver modelResolver;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -85,7 +86,8 @@ public class CdsHooksServlet extends HttpServlet {
         this.planDefinitionProvider = appCtx.getBean(PlanDefinitionApplyProvider.class);
         this.libraryResolutionProvider = (LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library>)appCtx.getBean(LibraryResolutionProvider.class);
         this.fhirRetrieveProvider = appCtx.getBean(JpaFhirRetrieveProvider.class);
-        this.jpaTerminologyProvider = appCtx.getBean(JpaTerminologyProvider.class);
+        this.serverTerminologyProvider = appCtx.getBean(TerminologyProvider.class);
+        this.modelResolver = appCtx.getBean(ModelResolver.class);
     }
 
     protected ProviderConfiguration getProviderConfiguration() {
@@ -170,8 +172,7 @@ public class CdsHooksServlet extends HttpServlet {
             LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResolutionProvider);
             Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider);
 
-            Dstu3FhirModelResolver resolver = new Dstu3FhirModelResolver();
-            CompositeDataProvider provider = new CompositeDataProvider(resolver, fhirRetrieveProvider);
+            CompositeDataProvider provider = new CompositeDataProvider(this.modelResolver, fhirRetrieveProvider);
 
             Context context = new Context(library);
 
@@ -179,13 +180,13 @@ public class CdsHooksServlet extends HttpServlet {
 
             context.registerDataProvider("http://hl7.org/fhir", provider); // TODO make sure tooling handles remote
                                                                            // provider case
-            context.registerTerminologyProvider(jpaTerminologyProvider);
+            context.registerTerminologyProvider(serverTerminologyProvider);
             context.registerLibraryLoader(libraryLoader);
             context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
             context.setExpressionCaching(true);
 
             EvaluationContext<PlanDefinition> evaluationContext = new Stu3EvaluationContext(hook, version, FhirContext.forDstu3().newRestfulGenericClient(baseUrl),
-                jpaTerminologyProvider, context, library,
+                serverTerminologyProvider, context, library,
                 planDefinition, this.getProviderConfiguration());
 
             this.setAccessControlHeaders(response);
@@ -289,7 +290,7 @@ public class CdsHooksServlet extends HttpServlet {
 
     private JsonObject getServices() {
         DiscoveryResolutionStu3 discoveryResolutionStu3 = new DiscoveryResolutionStu3(
-                FhirContext.forDstu3().newRestfulGenericClient(HapiProperties.getServerAddress()));
+                FhirContext.forCached(FhirVersionEnum.DSTU3).newRestfulGenericClient(HapiProperties.getServerAddress()));
         discoveryResolutionStu3.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
         return discoveryResolutionStu3.resolve()
                         .getAsJson();

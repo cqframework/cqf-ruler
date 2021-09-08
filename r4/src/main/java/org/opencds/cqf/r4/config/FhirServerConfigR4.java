@@ -2,12 +2,18 @@ package org.opencds.cqf.r4.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.opencds.cqf.common.config.HapiProperties;
+import org.opencds.cqf.common.providers.CacheAwareTerminologyProvider;
+import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
 import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
@@ -30,6 +36,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.ParserOptions;
 import ca.uhn.fhir.cql.r4.provider.JpaTerminologyProvider;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigR4;
@@ -47,7 +54,7 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
 
     @Override
     public FhirContext fhirContextR4() {
-        FhirContext retVal = FhirContext.forR4();
+        FhirContext retVal = FhirContext.forCached(FhirVersionEnum.R4);
 
         // Don't strip versions in some places
         ParserOptions parserOptions = retVal.getParserOptions();
@@ -128,7 +135,18 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     }
 
     @Bean
-    public TerminologyProvider terminologyProvider(ca.uhn.fhir.jpa.term.api.ITermReadSvcR4 theTerminologySvc, ca.uhn.fhir.jpa.api.dao.DaoRegistry theDaoRegistry, ca.uhn.fhir.context.support.IValidationSupport theValidationSupport) {
+    public JpaTerminologyProvider jpaTerminologyProvider(ca.uhn.fhir.jpa.term.api.ITermReadSvcR4 theTerminologySvc, ca.uhn.fhir.jpa.api.dao.DaoRegistry theDaoRegistry, ca.uhn.fhir.context.support.IValidationSupport theValidationSupport) {
         return new JpaTerminologyProvider(theTerminologySvc, theDaoRegistry, theValidationSupport);
+    }
+
+    @Bean
+    @Primary
+    public TerminologyProvider terminologyProvider(Map<String, Iterable<Code>> terminologyCache, JpaTerminologyProvider jpaTerminologyProvider) {
+        return new CacheAwareTerminologyProvider(terminologyCache, jpaTerminologyProvider);
+    }
+
+    @Bean
+    public ModelResolver modelResolver() {
+        return new CachingModelResolverDecorator(new R4FhirModelResolver());
     }
 }

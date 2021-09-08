@@ -50,6 +50,7 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.parser.IParser;
 
 @Component
@@ -673,7 +674,7 @@ public class HQMFProvider {
             NarrativeProvider narrativeProvider = new NarrativeProvider(pathToProp.toUri().toString());
             ;
 
-            FhirContext context = FhirContext.forDstu3();
+            FhirContext context = FhirContext.forCached(FhirVersionEnum.DSTU3);
 
             // IParser parser = pathToMeasure.toString().endsWith("json") ?
             // context.newJsonParser() : context.newXmlParser();

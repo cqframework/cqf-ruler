@@ -2,12 +2,18 @@ package org.opencds.cqf.dstu3.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.opencds.cqf.common.config.HapiProperties;
+import org.opencds.cqf.common.providers.CacheAwareTerminologyProvider;
+import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
 import org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.dstu3.providers.CacheValueSetsProvider;
@@ -29,6 +35,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.ParserOptions;
 import ca.uhn.fhir.cql.dstu3.provider.JpaTerminologyProvider;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
@@ -46,7 +53,7 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
 
     @Override
     public FhirContext fhirContextDstu3() {
-        FhirContext retVal = FhirContext.forDstu3();
+        FhirContext retVal = FhirContext.forCached(FhirVersionEnum.DSTU3);
 
         // Don't strip versions in some places
         ParserOptions parserOptions = retVal.getParserOptions();
@@ -126,7 +133,18 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     }
 
     @Bean
-    public TerminologyProvider terminologyProvider(ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3 theTerminologySvc, ca.uhn.fhir.jpa.api.dao.DaoRegistry theDaoRegistry, ca.uhn.fhir.context.support.IValidationSupport theValidationSupport) {
+    public JpaTerminologyProvider terminologyProvider(ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3 theTerminologySvc, ca.uhn.fhir.jpa.api.dao.DaoRegistry theDaoRegistry, ca.uhn.fhir.context.support.IValidationSupport theValidationSupport) {
         return new JpaTerminologyProvider(theTerminologySvc, theDaoRegistry, theValidationSupport);
+    }
+
+    @Bean
+    @Primary
+    public TerminologyProvider terminologyProvider(Map<String, Iterable<Code>> terminologyCache, JpaTerminologyProvider jpaTerminologyProvider) {
+        return new CacheAwareTerminologyProvider(terminologyCache, jpaTerminologyProvider);
+    }
+
+    @Bean
+    public ModelResolver modelResolver() {
+        return new CachingModelResolverDecorator(new Dstu3FhirModelResolver());
     }
 }
