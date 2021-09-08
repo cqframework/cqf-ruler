@@ -1,10 +1,13 @@
 package org.opencds.cqf.dstu3.providers;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,6 +27,7 @@ import org.hl7.fhir.dstu3.model.Device;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Group;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.ListResource;
 import org.hl7.fhir.dstu3.model.Measure;
@@ -67,6 +71,7 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
@@ -545,15 +550,81 @@ public class MeasureOperationsProvider {
     }
 
     @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
-    public Parameters careGapsReport(@OperationParam(name = "periodStart") String periodStart,
-                                     @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "subject") String subject) throws FHIRException {
-                                        
-        //List<IBaseResource> measures = getMeasureList(theParams, measure);
+    public Parameters report(@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
+                                     @OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
+                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {
+      
+        Date periodStartDate;
+        Date periodEndDate;
+        try {
+            periodStartDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodStart);          
+        } catch (ParseException e) {          
+            e.printStackTrace();
+            throw new IllegalArgumentException("periodStart must be in the format yyyy-MM-dd.");
+        }
+        try {
+            periodEndDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodEnd);            
+        } catch (ParseException e) {          
+            e.printStackTrace();
+            throw new IllegalArgumentException("periodEnd must be in the format yyyy-MM-dd.");
+        }
 
         Parameters returnParams = new Parameters();
-        returnParams.setId((UUID.randomUUID().toString()));
+        returnParams.setId(subject.replace("/", "_") + "-report");
+        
+        SearchParameterMap theParams = SearchParameterMap.newSynchronous();       
+        (getPatientListFromSubject(subject))
+        .forEach(
+            groupSubject -> {
+                Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, groupSubject, theParams);
+                returnParams.addParameter(patientParameter);
+            }
+        );        
 
         return returnParams;
+    }
+
+    private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject, SearchParameterMap theParams ) {
+        StringParam subjectParam = new StringParam(subject);
+        theParams.add("subject", subjectParam);
+
+        Bundle patientReportBundle = new Bundle();
+            patientReportBundle.setType(Bundle.BundleType.COLLECTION);
+            // no timestamp in DSTU3
+            //patientReportBundle.setTimestamp(new Date());
+            patientReportBundle.setId(UUID.randomUUID().toString());
+            patientReportBundle.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
+            
+        IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
+        measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
+            MeasureReport measureReport = (MeasureReport)baseResource;        
+            if (measureReport.getDate().before(periodStart) || measureReport.getDate().after(periodEnd)) {
+                return;
+            }           
+            
+            patientReportBundle.addEntry(
+                new Bundle.BundleEntryComponent()
+                    .setResource(measureReport)
+                    .setFullUrl(getFullUrl(measureReport.fhirType(), measureReport.getIdElement().getIdPart()))
+            );
+        });
+
+        Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
+            patientParameter.setResource(patientReportBundle);
+            patientParameter.setId(UUID.randomUUID().toString());
+            patientParameter.setName("return");
+        return patientParameter;
+    }
+
+    private List<String> getPatientListFromSubject(String subject) {
+        List<String> patientList = null;
+        if (subject.startsWith("Patient/")) {        
+            patientList = new ArrayList<String>();
+            patientList.add(subject);
+        } else if (subject.startsWith("Group/")) {
+            patientList = getPatientListFromGroup(subject);
+        }
+        return patientList;
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)

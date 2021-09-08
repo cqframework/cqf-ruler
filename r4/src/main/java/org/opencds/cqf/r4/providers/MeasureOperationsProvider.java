@@ -2,10 +2,8 @@ package org.opencds.cqf.r4.providers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -258,6 +256,9 @@ public class MeasureOperationsProvider {
         // This is a hack and I hate it. I don't know how to just pull the current url due to
         // the amount of abstraction going on. I didn't want to waste too much time here.
         // If there's a better way of doing this, please ping me. - Carter
+
+        // Carter, this can be done with OperationParam args.  See the $report implementation.  - Rob
+
         String _periodStart = periodStart.get(0);
         String _periodEnd = periodEnd.get(0);
         String _subject = subject.get(0);
@@ -428,6 +429,18 @@ public class MeasureOperationsProvider {
             newParameter.setId(UUID.randomUUID().toString());
             returnParams.addParameter(newParameter);
         }
+    }
+
+    private List<Reference> getPatientListFromSubject(String subject) {
+        List<Reference> patientList = null;
+        if (subject.startsWith("Patient/")) {
+            Reference patientReference = new Reference(subject);
+            patientList = new ArrayList<Reference>();
+            patientList.add(patientReference);
+        } else if (subject.startsWith("Group/")) {
+            patientList = getPatientListFromGroup(subject);
+        }
+        return patientList;
     }
 
     private List<Reference> getPatientListFromGroup(String subjectGroupRef){
@@ -699,43 +712,69 @@ public class MeasureOperationsProvider {
     }
 
     @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
-    public Parameters careGapsReport(@OperationParam(name = "periodStart") String periodStart,
-                                     @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "subject") String subject) throws FHIRException {
-                                        
+    public Parameters report(@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
+                                     @OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
+                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {
+      
+        Date periodStartDate;
+        Date periodEndDate;
+        try {
+            periodStartDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodStart);          
+        } catch (ParseException e) {          
+            e.printStackTrace();
+            throw new IllegalArgumentException("periodStart must be in the format yyyy-MM-dd.");
+        }
+        try {
+            periodEndDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodEnd);            
+        } catch (ParseException e) {          
+            e.printStackTrace();
+            throw new IllegalArgumentException("periodEnd must be in the format yyyy-MM-dd.");
+        }
+
         Parameters returnParams = new Parameters();
-        returnParams.setId((UUID.randomUUID().toString()));
+        returnParams.setId(subject.replace("/", "_") + "-report");
+        
+        SearchParameterMap theParams = SearchParameterMap.newSynchronous();       
+        (getPatientListFromSubject(subject))
+        .forEach(
+            groupSubject -> {
+                Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, groupSubject.getReference(), theParams);
+                returnParams.addParameter(patientParameter);
+            }
+        );        
 
-        IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
-        SearchParameterMap theParams = SearchParameterMap.newSynchronous();
+        return returnParams;
+    }
 
+    private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject, SearchParameterMap theParams ) {
         ReferenceParam subjectParam = new ReferenceParam(subject);
         theParams.add("subject", subjectParam);
 
-        measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
-            MeasureReport measureReport = (MeasureReport)baseResource;
-            try {
-                if (measureReport.getDate().before(new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodStart)) || measureReport.getDate().after(new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodEnd))) {
-                    return;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-                return;
-            }
-            Bundle patientReportBundle =  new Bundle();
+        Bundle patientReportBundle =  new Bundle();
             patientReportBundle.setType(Bundle.BundleType.COLLECTION);
             patientReportBundle.setTimestamp(new Date());
             patientReportBundle.setId(UUID.randomUUID().toString());
             patientReportBundle.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
-            patientReportBundle.addEntry(new Bundle.BundleEntryComponent().setResource(measureReport).setFullUrl(getFullUrl(measureReport.fhirType(), measureReport.getIdElement().getIdPart())));
-
-            Parameters.ParametersParameterComponent newParameter = new Parameters.ParametersParameterComponent();
-            newParameter.setResource(patientReportBundle);
-            newParameter.setId(UUID.randomUUID().toString());
             
-            returnParams.addParameter(newParameter);
+        IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
+        measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
+            MeasureReport measureReport = (MeasureReport)baseResource;        
+            if (measureReport.getDate().before(periodStart) || measureReport.getDate().after(periodEnd)) {
+                return;
+            }           
+            
+            patientReportBundle.addEntry(
+                new Bundle.BundleEntryComponent()
+                    .setResource(measureReport)
+                    .setFullUrl(getFullUrl(measureReport.fhirType(), measureReport.getIdElement().getIdPart()))
+            );
         });
 
-        return returnParams;
+        Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
+            patientParameter.setResource(patientReportBundle);
+            patientParameter.setId(UUID.randomUUID().toString());
+            patientParameter.setName("return");
+        return patientParameter;
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)
