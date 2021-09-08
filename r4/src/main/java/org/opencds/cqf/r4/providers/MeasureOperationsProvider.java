@@ -431,18 +431,6 @@ public class MeasureOperationsProvider {
         }
     }
 
-    private List<Reference> getPatientListFromSubject(String subject) {
-        List<Reference> patientList = null;
-        if (subject.startsWith("Patient/")) {
-            Reference patientReference = new Reference(subject);
-            patientList = new ArrayList<Reference>();
-            patientList.add(patientReference);
-        } else if (subject.startsWith("Group/")) {
-            patientList = getPatientListFromGroup(subject);
-        }
-        return patientList;
-    }
-
     private List<Reference> getPatientListFromGroup(String subjectGroupRef){
         List<Reference> patientList = new ArrayList<>();
         IBaseResource baseGroup = registry.getResourceDao("Group").read(new IdType(subjectGroupRef));
@@ -714,21 +702,22 @@ public class MeasureOperationsProvider {
     @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
     public Parameters report(@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
                                      @OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
-                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {
-      
+                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {      
         Date periodStartDate;
         Date periodEndDate;
         try {
             periodStartDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodStart);          
         } catch (ParseException e) {          
-            e.printStackTrace();
-            throw new IllegalArgumentException("periodStart must be in the format yyyy-MM-dd.");
+            throw new IllegalArgumentException("Parameter 'periodStart' must be in the format yyyy-MM-dd.");
         }
         try {
             periodEndDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodEnd);            
         } catch (ParseException e) {          
-            e.printStackTrace();
-            throw new IllegalArgumentException("periodEnd must be in the format yyyy-MM-dd.");
+            throw new IllegalArgumentException("Parameter 'periodEnd' must be in the format yyyy-MM-dd.");
+        }
+
+        if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
+            throw new IllegalArgumentException("Parameter 'subject' must be in the format 'Patient/[id]' or 'Group/[id]'.");
         }
 
         Parameters returnParams = new Parameters();
@@ -736,12 +725,12 @@ public class MeasureOperationsProvider {
         
         SearchParameterMap theParams = SearchParameterMap.newSynchronous();       
         (getPatientListFromSubject(subject))
-        .forEach(
-            groupSubject -> {
-                Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, groupSubject.getReference(), theParams);
-                returnParams.addParameter(patientParameter);
-            }
-        );        
+            .forEach(
+                groupSubject -> {
+                    Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, groupSubject.getReference(), theParams);
+                    returnParams.addParameter(patientParameter);
+                }
+            );        
 
         return returnParams;
     }
@@ -775,6 +764,18 @@ public class MeasureOperationsProvider {
             patientParameter.setId(UUID.randomUUID().toString());
             patientParameter.setName("return");
         return patientParameter;
+    }
+
+    private List<Reference> getPatientListFromSubject(String subject) {
+        List<Reference> patientList = null;
+        if (subject.startsWith("Patient/")) {
+            Reference patientReference = new Reference(subject);
+            patientList = new ArrayList<Reference>();
+            patientList.add(patientReference);
+        } else if (subject.startsWith("Group/")) {
+            patientList = getPatientListFromGroup(subject);
+        }
+        return patientList;
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)

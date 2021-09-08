@@ -552,21 +552,22 @@ public class MeasureOperationsProvider {
     @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
     public Parameters report(@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
                                      @OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
-                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {
-      
+                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {      
         Date periodStartDate;
         Date periodEndDate;
         try {
             periodStartDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodStart);          
         } catch (ParseException e) {          
-            e.printStackTrace();
-            throw new IllegalArgumentException("periodStart must be in the format yyyy-MM-dd.");
+            throw new IllegalArgumentException("Parameter 'periodStart' must be in the format yyyy-MM-dd.");
         }
         try {
             periodEndDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(periodEnd);            
         } catch (ParseException e) {          
-            e.printStackTrace();
-            throw new IllegalArgumentException("periodEnd must be in the format yyyy-MM-dd.");
+            throw new IllegalArgumentException("Parameter 'periodEnd' must be in the format yyyy-MM-dd.");
+        }
+
+        if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
+            throw new IllegalArgumentException("Parameter 'subject' must be in the format 'Patient/[id]' or 'Group/[id]'.");
         }
 
         Parameters returnParams = new Parameters();
@@ -574,12 +575,12 @@ public class MeasureOperationsProvider {
         
         SearchParameterMap theParams = SearchParameterMap.newSynchronous();       
         (getPatientListFromSubject(subject))
-        .forEach(
-            groupSubject -> {
-                Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, groupSubject, theParams);
-                returnParams.addParameter(patientParameter);
-            }
-        );        
+            .forEach(
+                groupSubject -> {
+                    Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, groupSubject, theParams);
+                    returnParams.addParameter(patientParameter);
+                }
+            );        
 
         return returnParams;
     }
