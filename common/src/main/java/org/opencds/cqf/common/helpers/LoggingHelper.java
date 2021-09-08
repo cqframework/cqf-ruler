@@ -7,7 +7,7 @@ public class LoggingHelper {
 
     public static DebugMap getDebugMap() {
         DebugMap debugMap = new DebugMap();
-        if (HapiProperties.getLogEnabled()) {
+        if (HapiProperties.getCqlLoggingEnabled()) {
             debugMap.setIsLoggingEnabled(true);
         }
         return debugMap;

@@ -76,7 +76,7 @@ public class HapiProperties {
     static final String CDSHOOKS_FHIRSERVER_EXPANDVALUESETS = "cds_hooks.fhirServer.expandValueSets";
     static final String CDSHOOKS_FHIRSERVER_SEARCHSTYLE= "cds_hooks.fhirServer.searchStyle";
     static final String CDSHOOKS_PREFETCH_MAXURILENGTH= "cds_hooks.prefetch.maxUriLength";
-    static final String LOG_ENABLED= "log.enabled";
+    static final String CQL_LOGGING_ENABLED = "hapi.fhir.cql_logging_enabled";
 
     private static Properties properties;
 
@@ -481,8 +481,8 @@ public class HapiProperties {
     }
     public static Integer getCdsHooksPreFetchMaxUriLength() { return HapiProperties.getIntegerProperty(CDSHOOKS_PREFETCH_MAXURILENGTH, 8000);}
 
-    public static Boolean getLogEnabled() {
-        return HapiProperties.getBooleanProperty(LOG_ENABLED, true);
+    public static Boolean getCqlLoggingEnabled() {
+        return HapiProperties.getBooleanProperty(CQL_LOGGING_ENABLED, true);
     }
 
 }
