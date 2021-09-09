@@ -17,7 +17,7 @@ import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.common.providers.LibrarySourceProvider;
+import org.opencds.cqf.common.providers.LibraryContentProvider;
 import org.opencds.cqf.tooling.library.stu3.NarrativeProvider;
 import org.springframework.stereotype.Component;
 
@@ -61,11 +61,11 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<Libr
         return libraryManager;
     }
 
-    private LibrarySourceProvider<Library, Attachment> librarySourceProvider;
+    private LibraryContentProvider<Library, Attachment> librarySourceProvider;
 
-    private LibrarySourceProvider<Library, Attachment> getLibrarySourceProvider() {
+    private LibraryContentProvider<Library, Attachment> getLibrarySourceProvider() {
         if (librarySourceProvider == null) {
-            librarySourceProvider = new LibrarySourceProvider<Library, Attachment>(this.getLibraryResolutionProvider(),
+            librarySourceProvider = new LibraryContentProvider<Library, Attachment>(this.getLibraryResolutionProvider(),
                     x -> x.getContent(), x -> x.getContentType(), x -> x.getData());
         }
         return librarySourceProvider;
