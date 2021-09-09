@@ -259,7 +259,7 @@ public class HapiProperties {
     }
 
     public static Boolean getCQLDebugLoggingEnabled() {
-        return HapiProperties.getBooleanProperty(CQL_DEBUG_LOGGING_ENABLED, true);
+        return HapiProperties.getBooleanProperty(CQL_DEBUG_LOGGING_ENABLED, false);
     }
 
     public static String getDataSourceDriver() {
