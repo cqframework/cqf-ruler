@@ -37,4 +37,8 @@
         <!-- <appender-ref ref="htmlAppender" /> -->
     </root>
 
+    <!-- added DebugUtilities logger to facilitate CQL debug logging without turning on debug logging for everything -->
+    <!-- to enable CQL debug logging, set 'cql.debugLogging.enabled=true' in hapi.properties -->
+    <logger name="org.opencds.cqf.cql.engine.debug.DebugUtilities" level="DEBUG" />
+
 </configuration>

@@ -161,7 +161,7 @@ public class CdsHooksServlet extends HttpServlet {
             Context context = new Context(library);
 
             DebugMap debugMap = new DebugMap();
-            debugMap.setIsLoggingEnabled(true);
+            debugMap.setIsLoggingEnabled(HapiProperties.getCQLDebugLoggingEnabled());
             context.setDebugMap(debugMap);
 
             context.registerDataProvider("http://hl7.org/fhir", provider); // TODO make sure tooling handles remote

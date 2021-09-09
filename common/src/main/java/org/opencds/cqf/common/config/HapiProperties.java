@@ -11,6 +11,8 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.SearchStyleEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HapiProperties {
     static final String ALLOW_EXTERNAL_REFERENCES = "allow_external_references";
@@ -77,7 +79,7 @@ public class HapiProperties {
     static final String CDSHOOKS_FHIRSERVER_SEARCHSTYLE= "cds_hooks.fhirServer.searchStyle";
     static final String CDSHOOKS_PREFETCH_MAXURILENGTH= "cds_hooks.prefetch.maxUriLength";
 
-    static final String CQL_ENABLE_DEBUG_LOGGING = "cql.enable_debug_logging";
+    static final String CQL_DEBUG_LOGGING_ENABLED = "cql.debugLogging.enabled";
 
     private static Properties properties;
 
@@ -258,8 +260,8 @@ public class HapiProperties {
         return HapiProperties.getBooleanProperty(LOGGER_LOG_EXCEPTIONS, true);
     }
 
-    public static Boolean getCQLEnableDebugLogging() {
-        return HapiProperties.getBooleanProperty(CQL_ENABLE_DEBUG_LOGGING, false);
+    public static Boolean getCQLDebugLoggingEnabled() {
+        return HapiProperties.getBooleanProperty(CQL_DEBUG_LOGGING_ENABLED, true);
     }
 
     public static String getDataSourceDriver() {
