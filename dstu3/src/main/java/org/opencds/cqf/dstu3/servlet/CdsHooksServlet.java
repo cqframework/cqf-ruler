@@ -38,7 +38,6 @@ import org.opencds.cqf.cds.response.CdsCard;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.exceptions.InvalidRequestException;
 import org.opencds.cqf.common.helpers.LoggingHelper;
-import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.exception.CqlException;
@@ -47,7 +46,6 @@ import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +53,7 @@ import org.springframework.context.ApplicationContext;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 
 @WebServlet(name = "cds-services")
@@ -75,6 +74,8 @@ public class CdsHooksServlet extends HttpServlet {
 
     private ModelResolver modelResolver;
 
+    private org.opencds.cqf.dstu3.helpers.LibraryHelper libraryHelper;
+
     @SuppressWarnings("unchecked")
     @Override
     public void init() {
@@ -88,6 +89,7 @@ public class CdsHooksServlet extends HttpServlet {
         this.fhirRetrieveProvider = appCtx.getBean(JpaFhirRetrieveProvider.class);
         this.serverTerminologyProvider = appCtx.getBean(TerminologyProvider.class);
         this.modelResolver = appCtx.getBean(ModelResolver.class);
+        this.libraryHelper = appCtx.getBean(org.opencds.cqf.dstu3.helpers.LibraryHelper.class);
     }
 
     protected ProviderConfiguration getProviderConfiguration() {
@@ -169,8 +171,8 @@ public class CdsHooksServlet extends HttpServlet {
             if(!planDefinitionHookMatchesRequestHook.get()){
                 throw new ServletException("ERROR: Request hook does not match the service called.");
             }
-            LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResolutionProvider);
-            Library library = LibraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider);
+            LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(libraryResolutionProvider);
+            Library library = this.libraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider);
 
             CompositeDataProvider provider = new CompositeDataProvider(this.modelResolver, fhirRetrieveProvider);
 

@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import com.google.common.base.Strings;
 import com.vladsch.flexmark.ext.autolink.AutolinkExtension;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
@@ -60,18 +62,27 @@ import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
-import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
-import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 import org.opencds.cqf.tooling.measure.stu3.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.stu3.CqfMeasure;
 import org.opencds.cqf.tooling.measure.stu3.TerminologyRef;
 import org.opencds.cqf.tooling.measure.stu3.TerminologyRef.TerminologyRefType;
 import org.springframework.stereotype.Component;
+
+import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
+import ca.uhn.fhir.cql.dstu3.helper.LibraryHelper;
+
 import org.opencds.cqf.tooling.measure.stu3.VersionedTerminologyRef;
 
 @Component
 public class DataRequirementsProvider {
+
+    private LibraryHelper libraryHelper;
+
+    @Inject
+    public DataRequirementsProvider(LibraryHelper libraryHelper) {
+        this.libraryHelper = libraryHelper;
+    }
 
     // For creating the CQF measure we need to:
     // 1. Find the Primary Library Resource
@@ -91,8 +102,8 @@ public class DataRequirementsProvider {
 
     private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> createLibraryMap(Measure measure,
             LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(libraryResourceProvider);
-        List<Library> libraries = LibraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
+        LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(libraryResourceProvider);
+        List<Library> libraries = this.libraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = new HashMap<>();
 
         for (Library library : libraries) {

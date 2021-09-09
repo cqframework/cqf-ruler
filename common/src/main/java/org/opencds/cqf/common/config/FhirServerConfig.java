@@ -5,11 +5,15 @@ import java.sql.Driver;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.cqframework.cql.cql2elm.model.Model;
+import org.cqframework.cql.elm.execution.Library;
+import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.cds.providers.ProviderConfiguration;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
@@ -183,4 +187,15 @@ public class FhirServerConfig {
         Cache<String, Iterable<Code>> cache = Caffeine.newBuilder().maximumSize(100).expireAfterAccess(Duration.ofMinutes(60)).build();
         return cache.asMap();
     }
+
+
+    @Bean(name="globalModelCache")
+	Map<VersionedIdentifier, Model> globalModelCache() {
+		return new ConcurrentHashMap<VersionedIdentifier, Model>();
+	}
+
+	@Bean(name="globalLibraryCache") 
+	Map<org.cqframework.cql.elm.execution.VersionedIdentifier, Library> globalLibraryCache() {
+		return new ConcurrentHashMap<org.cqframework.cql.elm.execution.VersionedIdentifier, Library>();
+	} 
 }

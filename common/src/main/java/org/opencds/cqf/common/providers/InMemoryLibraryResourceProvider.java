@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
+
 public class InMemoryLibraryResourceProvider<LibraryType> implements LibraryResolutionProvider<LibraryType> {
 
     private Map<String, LibraryType> libraries = new HashMap<>();

@@ -10,14 +10,15 @@ import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.helpers.LoggingHelper;
 import org.opencds.cqf.common.helpers.UsingHelper;
-import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.dstu3.helpers.LibraryHelper;
+
+import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
+import ca.uhn.fhir.cql.dstu3.helper.LibraryHelper;
 
 public class MeasureEvaluationSeed {
     private Measure measure;
@@ -27,12 +28,14 @@ public class MeasureEvaluationSeed {
     private LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider;
     private EvaluationProviderFactory providerFactory;
     private DataProvider dataProvider;
+    private LibraryHelper libraryHelper;
 
     public MeasureEvaluationSeed(EvaluationProviderFactory providerFactory, LibraryLoader libraryLoader,
-            LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
+            LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider, LibraryHelper libraryHelper) {
         this.providerFactory = providerFactory;
         this.libraryLoader = libraryLoader;
         this.libraryResourceProvider = libraryResourceProvider;
+        this.libraryHelper = libraryHelper;
     }
 
     public Measure getMeasure() {
@@ -55,13 +58,14 @@ public class MeasureEvaluationSeed {
             String user, String pass) {
         this.measure = measure;
 
-        LibraryHelper.loadLibraries(measure, this.libraryLoader, this.libraryResourceProvider);
+        this.libraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
 
         // resolve primary library
-        Library library = LibraryHelper.resolvePrimaryLibrary(measure, libraryLoader, this.libraryResourceProvider);
+        Library library = this.libraryHelper.resolvePrimaryLibrary(measure, libraryLoader, this.libraryResourceProvider);
 
         // resolve execution context
         context = new Context(library);
+        context.setExpressionCaching(true);
         context.setDebugMap(LoggingHelper.getDebugMap());
         context.registerLibraryLoader(libraryLoader);
 
@@ -102,7 +106,5 @@ public class MeasureEvaluationSeed {
         if (productLine != null) {
             context.setParameter(null, "Product Line", productLine);
         }
-
-        context.setExpressionCaching(true);
     }
 }

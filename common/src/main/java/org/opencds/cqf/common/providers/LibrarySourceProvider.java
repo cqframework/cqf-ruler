@@ -7,6 +7,8 @@ import java.util.function.Function;
 import org.cqframework.cql.cql2elm.FhirLibrarySourceProvider;
 import org.hl7.elm.r1.VersionedIdentifier;
 
+import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
+
 /**
  * Created by Christopher on 1/12/2017.
  */
