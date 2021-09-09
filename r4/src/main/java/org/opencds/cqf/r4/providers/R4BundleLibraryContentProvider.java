@@ -7,11 +7,14 @@ import java.util.Objects;
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentType;
 
-public class R4BundleLibrarySourceProvider extends VersionComparingLibrarySourceProvider  {
+
+// TODO: Add support for ELM
+public class R4BundleLibraryContentProvider extends VersionComparingLibrarySourceProvider implements org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider  {
 
     Bundle bundle;
-    public R4BundleLibrarySourceProvider(Bundle bundle) {
+    public R4BundleLibraryContentProvider(Bundle bundle) {
         this.bundle = bundle;
     }
 
@@ -51,6 +54,15 @@ public class R4BundleLibrarySourceProvider extends VersionComparingLibrarySource
                 }
                 // TODO: Decompile ELM if no CQL is available?
             }
+        }
+
+        return null;
+    }
+
+    @Override
+    public InputStream getLibraryContent(VersionedIdentifier libraryIdentifier, LibraryContentType libraryContentType) {
+        if (libraryContentType == LibraryContentType.CQL) {
+            return this.getLibrarySource(libraryIdentifier);
         }
 
         return null;
