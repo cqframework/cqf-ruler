@@ -11,8 +11,6 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.api.SearchStyleEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HapiProperties {
     static final String ALLOW_EXTERNAL_REFERENCES = "allow_external_references";

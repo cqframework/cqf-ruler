@@ -19,12 +19,8 @@ import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.dstu3.helpers.LibraryHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MeasureEvaluationSeed {
-    private static final Logger logger = LoggerFactory.getLogger(MeasureEvaluationSeed.class);
-
     private Measure measure;
     private Context context;
     private Interval measurementPeriod;
