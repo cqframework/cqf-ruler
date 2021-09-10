@@ -84,6 +84,8 @@ public class FhirServerConfig {
         retVal.setEnforceReferentialIntegrityOnWrite(this.enforceReferentialIntegrityOnWrite);
         retVal.setMaximumExpansionSize(100000);
 
+        retVal.setMaximumExpansionSize(100000);
+
         Integer maxFetchSize = HapiProperties.getMaximumFetchSize();
         retVal.setFetchSizeDefaultMaximum(maxFetchSize);
         ourLog.info("Server configured to have a maximum fetch size of "

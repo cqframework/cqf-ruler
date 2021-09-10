@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent;
 import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
@@ -50,7 +51,8 @@ public class CodeSystemUpdateProvider {
     public OperationOutcome updateCodeSystems() {
         IBundleProvider valuesets = this.valueSetDao.search(SearchParameterMap.newSynchronous());
 
-        List<ValueSet> valueSets =  valuesets.getAllResources().stream().map(x -> (ValueSet)x).collect(Collectors.toList());
+        List<ValueSet> valueSets = valuesets.getAllResources().stream().map(x -> (ValueSet) x)
+                .collect(Collectors.toList());
 
         OperationOutcome outcome = this.performCodeSystemUpdate(valueSets);
 
@@ -91,31 +93,42 @@ public class CodeSystemUpdateProvider {
 
         List<String> codeSystems = new ArrayList<>();
 
-        // Possible for this to run out of memory with really large ValueSets and CodeSystems.
+        // Possible for this to run out of memory with really large ValueSets and
+        // CodeSystems.
         Map<String, Set<String>> codesBySystem = new HashMap<>();
-        for (ValueSet vs : valueSets){
+        for (ValueSet vs : valueSets) {
+            if (vs.hasCompose() && vs.getCompose().hasInclude()) {
+                for (ValueSet.ConceptSetComponent csc : vs.getCompose().getInclude()) {
+                    if (!csc.hasSystem() || !csc.hasConcept()) {
+                        continue;
+                    }
 
-        if (vs.hasCompose() && vs.getCompose().hasInclude()) {
-            for (ValueSet.ConceptSetComponent csc : vs.getCompose().getInclude()) {
-                if (!csc.hasSystem() || !csc.hasConcept()){
-                    continue;
+                    String system = csc.getSystem();
+                    if (!codesBySystem.containsKey(system)) {
+                        codesBySystem.put(system, new HashSet<>());
+                    }
+
+                    Set<String> codes = codesBySystem.get(system);
+
+                    codes.addAll(csc.getConcept().stream().map(ValueSet.ConceptReferenceComponent::getCode)
+                            .collect(Collectors.toList()));
                 }
+            }
 
-                String system = csc.getSystem();
-                if (!codesBySystem.containsKey(system)){
-                    codesBySystem.put(system, new HashSet<>());
+            if (vs.hasExpansion()) {
+                for (ValueSetExpansionContainsComponent vsecc : vs.getExpansion().getContains()) {
+                    if (!codesBySystem.containsKey(vsecc.getSystem())) {
+                        codesBySystem.put(vsecc.getSystem(), new HashSet<>());
+                    }
+
+                    Set<String> codes = codesBySystem.get(vsecc.getSystem());
+
+                    codes.add(vsecc.getCode());
                 }
-
-                Set<String> codes = codesBySystem.get(system);
-                
-                codes.addAll(csc.getConcept().stream().map(ValueSet.ConceptReferenceComponent::getCode)
-                .collect(Collectors.toList()));
             }
         }
 
-        }
-
-        for(Map.Entry<String, Set<String>> entry : codesBySystem.entrySet()) {
+        for (Map.Entry<String, Set<String>> entry : codesBySystem.entrySet()) {
             String system = entry.getKey();
             CodeSystem codeSystem = getCodeSystemByUrl(system);
             updateCodeSystem(codeSystem.setUrl(system), getUnionDistinctCodes(entry.getValue(), codeSystem));
@@ -125,12 +138,12 @@ public class CodeSystemUpdateProvider {
         }
 
         if (codeSystems.size() > 0) {
-            return responseBuilder.buildIssue("information", "informational",
-            "Successfully updated the following CodeSystems: " + String.join(", ", codeSystems)).build();
-        }
-        else {
-            return responseBuilder.buildIssue("information", "informational",
-            "No code systems were updated").build();
+            return responseBuilder
+                    .buildIssue("information", "informational",
+                            "Successfully updated the following CodeSystems: " + String.join(", ", codeSystems))
+                    .build();
+        } else {
+            return responseBuilder.buildIssue("information", "informational", "No code systems were updated").build();
         }
     }
 
@@ -165,7 +178,7 @@ public class CodeSystemUpdateProvider {
         }
 
         valueSetCodes.addAll(codeSystem.getConcept().stream().map(CodeSystem.ConceptDefinitionComponent::getCode)
-            .collect(Collectors.toSet()));
+                .collect(Collectors.toSet()));
 
         return valueSetCodes;
     }

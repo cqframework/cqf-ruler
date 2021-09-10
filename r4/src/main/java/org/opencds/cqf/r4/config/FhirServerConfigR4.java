@@ -21,7 +21,11 @@ import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
+import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
+import org.opencds.cqf.r4.evaluation.RulerFhirDal;
+import org.opencds.cqf.r4.evaluation.RulerLibraryContentProvider;
 import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
@@ -171,7 +175,6 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
 		resourceChangeListenerRegistry.registerResourceResourceChangeListener("Library", SearchParameterMap.newSynchronous(), listener, 1000);
 		return listener;
 	}
-    
     @Bean SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
         return new SearchParameterResolver(fhirContext);
     }
@@ -183,5 +186,15 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
         retrieveProvider.setTerminologyProvider(terminologyProvider);
         retrieveProvider.setExpandValueSets(true);
         return new CompositeDataProvider(modelResolver, retrieveProvider);
+    }
+    
+    @Bean
+    public LibraryContentProvider libraryContentProvider(DaoRegistry daoRegistry) {
+        return new RulerLibraryContentProvider(daoRegistry);
+    }
+
+    @Bean
+    public FhirDal fhirDal(DaoRegistry daoRegistry) {
+        return new RulerFhirDal(daoRegistry);
     }
 }

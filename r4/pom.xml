@@ -18,5 +18,14 @@
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
+            <dependency>
+                <groupId>org.opencds.cqf.cql</groupId>
+                <artifactId>evaluator.measure</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>org.opencds.cqf.cql</groupId>
+                <artifactId>evaluator.measure-hapi</artifactId>
+            </dependency>
     </dependencies>
 </project>

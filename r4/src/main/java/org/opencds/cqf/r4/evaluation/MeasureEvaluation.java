@@ -238,7 +238,7 @@ public class MeasureEvaluation {
         if (populationCriteria != null) {
             MeasureReport.MeasureReportGroupPopulationComponent populationReport = new MeasureReport.MeasureReportGroupPopulationComponent();
             populationReport.setCode(populationCriteria.getCode());
-            if (report.getType() == MeasureReport.MeasureReportType.SUBJECTLIST && patientPopulation != null) {
+            if (report.getType() == MeasureReport.MeasureReportType.SUBJECTLIST && patientPopulation != null && populationCount > 0) {
                 ListResource SUBJECTLIST = new ListResource();
                 SUBJECTLIST.setId(UUID.randomUUID().toString());
                 populationReport.setSubjectResults(new Reference().setReference("#" + SUBJECTLIST.getId()));

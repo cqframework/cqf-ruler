@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.base.Strings;
 
+import org.cqframework.cql.elm.execution.Library;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
@@ -33,6 +34,7 @@ import org.hl7.fhir.r4.model.Group;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.ListResource;
+import org.hl7.fhir.r4.model.ListResource.ListEntryComponent;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupComponent;
@@ -49,9 +51,9 @@ import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.DateHelper;
-import org.opencds.cqf.cql.engine.execution.LibraryLoader;
-import org.opencds.cqf.r4.evaluation.MeasureEvaluation;
-import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
+import org.opencds.cqf.cql.engine.data.DataProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.slf4j.Logger;
@@ -60,7 +62,7 @@ import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
-import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
+import ca.uhn.fhir.cql.r4.provider.JpaTerminologyProvider;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
@@ -87,26 +89,38 @@ public class MeasureOperationsProvider {
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider;
     private MeasureResourceProvider measureResourceProvider;
     private DaoRegistry registry;
-    private EvaluationProviderFactory factory;
     private String serverAddress = HapiProperties.getServerAddress();
 
-    private LibraryHelper libraryHelper;
-
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
+
+    private JpaTerminologyProvider jpaTerminologyProvider;
+    private DataProvider dataProvider;
+    private LibraryContentProvider libraryContentProvider;
+    private FhirDal fhirDal;
+    private Map<org.cqframework.cql.elm.execution.VersionedIdentifier, Library> globalLibraryCache;
+    
     @Inject
     public MeasureOperationsProvider(DaoRegistry registry, EvaluationProviderFactory factory,
             NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider,
             LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider,
-            MeasureResourceProvider measureResourceProvider, DataRequirementsProvider dataRequirementsProvider, LibraryHelper libraryHelper) {
+            MeasureResourceProvider measureResourceProvider, DataRequirementsProvider dataRequirementsProvider,
+            JpaTerminologyProvider jpaTerminologyProvider,
+            DataProvider dataProvider,
+            LibraryContentProvider libraryContentProvider,
+            FhirDal fhirDal,
+            Map<org.cqframework.cql.elm.execution.VersionedIdentifier, Library> globalLibraryCache) {
         this.registry = registry;
-        this.factory = factory;
-
         this.libraryResolutionProvider = libraryResolutionProvider;
         this.narrativeProvider = narrativeProvider;
         this.hqmfProvider = hqmfProvider;
         this.dataRequirementsProvider = dataRequirementsProvider;
         this.measureResourceProvider = measureResourceProvider;
-        this.libraryHelper = libraryHelper;
+
+        this.jpaTerminologyProvider = jpaTerminologyProvider;
+        this.dataProvider = dataProvider;
+        this.libraryContentProvider = libraryContentProvider;
+        this.fhirDal = fhirDal;
+        this.globalLibraryCache = globalLibraryCache;
     }
 
     @Operation(name = "$hqmf", idempotent = true, type = Measure.class)
@@ -191,35 +205,10 @@ public class MeasureOperationsProvider {
             @OperationParam(name = "lastReceivedOn") String lastReceivedOn,
             @OperationParam(name = "source") String source, @OperationParam(name = "user") String user,
             @OperationParam(name = "pass") String pass) throws InternalErrorException, FHIRException {
-        LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(this.libraryResolutionProvider);
-        MeasureEvaluationSeed seed = new MeasureEvaluationSeed(this.factory, libraryLoader,
-                this.libraryResolutionProvider, this.libraryHelper);
-        Measure measure = this.measureResourceProvider.getDao().read(theId);
+        org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor(null, null, null, null, null, jpaTerminologyProvider, libraryContentProvider, dataProvider, fhirDal, null, this.globalLibraryCache);
+        Measure measure = this.registry.getResourceDao(Measure.class).read(theId);
+        MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType, patientRef, null, lastReceivedOn, null, null, null, null);
 
-        if (measure == null) {
-            throw new RuntimeException("Could not find Measure/" + theId.getIdPart());
-        }
-
-        seed.setup(measure, periodStart, periodEnd, productLine, source, user, pass);
-
-        // resolve report type
-        MeasureEvaluation evaluator = new MeasureEvaluation(seed.getDataProvider(), this.registry,
-                seed.getMeasurementPeriod());
-        if (reportType != null) {
-            switch (reportType) {
-                case "patient":
-                    return evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
-                case "patient-list":
-                    return evaluator.evaluateSubjectListMeasure(seed.getMeasure(), seed.getContext(), practitionerRef);
-                case "population":
-                    return evaluator.evaluatePopulationMeasure(seed.getMeasure(), seed.getContext());
-                default:
-                    throw new IllegalArgumentException("Invalid report type: " + reportType);
-            }
-        }
-
-        // default report type is patient
-        MeasureReport report = evaluator.evaluatePatientMeasure(seed.getMeasure(), seed.getContext(), patientRef);
         if (productLine != null) {
             Extension ext = new Extension();
             ext.setUrl("http://hl7.org/fhir/us/cqframework/cqfmeasures/StructureDefinition/cqfm-productLine");
@@ -994,10 +983,10 @@ public class MeasureOperationsProvider {
                             logger.debug(String.format("Any bundle of type document must have the first entry of type Composition, but found: %s", firstEntry.fhirType()));
                         } else {
                             Composition composition = (Composition) firstEntry;
-                            String[] referenceSplit = composition.getSubject().getReference().split("/");
+                            String referenceId = String.format("%s/%s", composition.getSubject().getReferenceElement().getResourceType(), composition.getSubject().getReferenceElement().getIdPart());
                             if (composition.getSubject().equals(entry.getValue()) || composition.getSubject().getReference().equals(entry.getKey())) {
                                 eicrs.putIfAbsent(entry.getKey(), bundle);
-                            } else if (referenceSplit.length > 1 && referenceSplit[1].equals(entry.getKey())) {
+                            } else if (referenceId != null && referenceId.equals(entry.getKey())) {
                                 eicrs.putIfAbsent(entry.getKey(), bundle);
                             }
                         }
@@ -1024,16 +1013,16 @@ public class MeasureOperationsProvider {
     }
 
     private void gatherPatientsFromReport(MeasureReport report, Map<String, Reference> populationSubjectListReferenceMap) {
-        if (report.getSubject() != null) {
+        if (report.getSubject() != null && report.getSubject().hasReference()) {
             populationSubjectListReferenceMap.putIfAbsent(report.getSubject().getReference(), report.getSubject());
         }
         for (MeasureReportGroupComponent group : report.getGroup()) {
             for (MeasureReportGroupPopulationComponent population : group.getPopulation()) {
-                for (Reference subject : getSubjectResultsFromList(population.getSubjectResults())) {
-                    if (subject.fhirType().equals("Patient")) {
+                for (Reference subject : getSubjectResultsFromList(report, population.getSubjectResults())) {
+                    if (subject.getReferenceElement().hasResourceType() && subject.getReferenceElement().getResourceType().equals("Patient")) {
                         populationSubjectListReferenceMap.putIfAbsent(subject.getReference(), subject);
                     }
-                    if (subject.fhirType().equals("Group")) {
+                    if (subject.getReferenceElement().hasResourceType() && subject.getReferenceElement().getResourceType().equals("Group")) {
                         getPatientListFromGroup(subject.getReference()).forEach(patient -> {
                             populationSubjectListReferenceMap.putIfAbsent(patient.getReference(), patient);
                         });
@@ -1043,26 +1032,41 @@ public class MeasureOperationsProvider {
         }
     }
 
-    private List<Reference> getSubjectResultsFromList(Reference subjectResults) {
+    private List<Reference> getSubjectResultsFromList(MeasureReport report, Reference subjectResults) {
         List<Reference> results = new ArrayList<Reference>();
         if (subjectResults.getReference() == null) {
             logger.debug("No subject results found.");
             return results;
         }
-        IBaseResource baseList = registry.getResourceDao(subjectResults.getReferenceElement().getResourceType()).read(subjectResults.getReferenceElement());
-        if (baseList == null) {
-            logger.debug(String.format("No subject results found for: %s", subjectResults.getReference()));
+        ListResource list = null;
+        if (subjectResults.getReference().startsWith("#") && report.hasContained()) {
+            for(Resource contained : report.getContained()) {
+                if (contained instanceof ListResource) {
+                    if (contained.getIdElement().getIdPart().equals(subjectResults.getReference())) {
+                        list = (ListResource)contained; continue;
+                    }
+                }
+            }
+        } else {
+            IBaseResource baseList = registry.getResourceDao(subjectResults.getReferenceElement().getResourceType()).read(subjectResults.getReferenceElement());
+            if (baseList == null) {
+                logger.debug(String.format("No subject results found for: %s", subjectResults.getReference()));
+                return results;
+            }
+            if (!(baseList instanceof ListResource)) {
+                throw new RuntimeException(String.format("Population subject reference was not a List, found: %s", baseList.fhirType()));
+            }
+            list = (ListResource) baseList;
+        }
+        if (list == null) {
+            logger.debug("No subject results found.");
             return results;
         }
-        if (!(baseList instanceof ListResource)) {
-            throw new RuntimeException(String.format("Population subject reference was not a List, found: %s", baseList.fhirType()));
-        }
-        ListResource list = (ListResource) baseList;
-        list.getEntry().forEach(entry -> {
-            if (entry.getItemTarget().fhirType().equals("Patient") || entry.getItemTarget().fhirType().equals("Group")) {
+        for(ListEntryComponent entry: list.getEntry()) {
+            if (entry.getItem().getReferenceElement().getResourceType().equals("Patient") || entry.getItem().getReferenceElement().getResourceType().equals("Group")) {
                 results.add(entry.getItem());
             }
-        });
+        }
         return results;
     }
 }

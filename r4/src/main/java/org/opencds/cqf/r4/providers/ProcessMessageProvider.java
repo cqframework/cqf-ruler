@@ -15,22 +15,28 @@ import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.api.server.storage.TransactionDetails;
 import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 // import ca.uhn.fhir.validation.FhirValidator;
 // import ca.uhn.fhir.validation.IValidatorModule;
 // import ca.uhn.fhir.validation.ValidationResult;
+import ca.uhn.fhir.util.BundleUtil;
 
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Communication;
 import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 // import org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity;
 // import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
@@ -67,24 +73,40 @@ public class ProcessMessageProvider {
 				MessageHeader messageHeader = null;
 				String patientId = null;
 				String commId =null;
-				for(BundleEntryComponent entryComp: bundle.getEntry()) {
-					registry.getResourceDao(entryComp.getResource().fhirType()).create(entryComp.getResource());
-					if(entryComp.getResource().getResourceType().name().equals("MessageHeader")) {
-						messageHeader = (MessageHeader) entryComp.getResource();
-						messageHeader.setId(getUUID());
-						Meta meta = messageHeader.getMeta();
-						meta.setLastUpdated(new Date());
-						messageHeader.setMeta(meta);
-					} else if(entryComp.getResource().getResourceType().name().equals("Bundle")) {
-						Bundle innerBundle = (Bundle) entryComp.getResource();
-						for(BundleEntryComponent bundleEntryComponent:innerBundle.getEntry()) {
-							registry.getResourceDao(bundleEntryComponent.getResource().fhirType()).create(bundleEntryComponent.getResource());
-							if(bundleEntryComponent.getResource().getResourceType().name().equals("Patient")) {
-								patientId = bundleEntryComponent.getResource().getIdElement().getIdPart().toString();
-							}
-						}
-					}
+				List<MessageHeader> headers = BundleUtil.toListOfResourcesOfType(fhirContext, bundle, MessageHeader.class);
+				for (MessageHeader mh : headers) {
+					messageHeader = mh;
+					messageHeader.setId(getUUID());
+					Meta meta = messageHeader.getMeta();
+					meta.setLastUpdated(new Date());
+					messageHeader.setMeta(meta);
 				}
+
+				List<Patient> patients = BundleUtil.toListOfResourcesOfType(fhirContext, bundle, Patient.class);
+				for (Patient p : patients) {
+					patientId = p.getId();
+					this.createOrUpdate(p, theRequestDetails);
+				}
+
+				List<Bundle> bundles = BundleUtil.toListOfResourcesOfType(fhirContext, bundle, Bundle.class);
+				for (Bundle b : bundles) {
+					patientId = this.processBundle(b,theRequestDetails);
+					this.createOrUpdate(b, theRequestDetails);
+				}
+
+				for(BundleEntryComponent e : bundle.getEntry()) {
+					Resource r = e.getResource();
+					if (r == null) {
+						continue;
+					}
+
+					if (r.fhirType().equals("Bundle") || r.fhirType().equals("MessageHeader") || r.fhirType().equals("Patient")) {
+						continue;
+					}
+
+					this.createOrUpdate(r, theRequestDetails);
+				}
+
 				if(patientId!= null) {
 					commId = constructAndSaveCommunication(patientId);	
 				}
@@ -109,8 +131,52 @@ public class ProcessMessageProvider {
 				return bundle;
 			}
 		} catch (Exception e) {
-			throw new UnprocessableEntityException("Error in Processing the Bundle");
+			logger.error("Error in Processing the Bundle:" + e.getMessage(), e);
+			throw new UnprocessableEntityException("Error in Processing the Bundle", e);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void createOrUpdate(Resource r, RequestDetails requestDetails) {
+		IFhirResourceDao<IBaseResource> resourceDao = (IFhirResourceDao<IBaseResource>)registry.getResourceDao(r.fhirType());
+		try {
+			if(!r.hasId()) {
+				r.setId(getUUID());
+			}
+			resourceDao.create(r);
+		}
+		catch (Exception e) {
+			try {
+				resourceDao.update(r, null, true, true, requestDetails, new TransactionDetails());
+			}
+			catch (Exception ex) {
+				logger.error("error creating or updating resource", ex);
+			}
+		}
+	}
+
+	private String processBundle(Bundle bundle, RequestDetails requestDetails) {
+		String patientId = null;
+		List<Patient> patients = BundleUtil.toListOfResourcesOfType(fhirContext, bundle, Patient.class);
+		for (Patient p : patients) {
+			patientId = p.getId();
+			this.createOrUpdate(p, requestDetails);
+		}
+
+		for(BundleEntryComponent e : bundle.getEntry()) {
+			Resource r = e.getResource();
+			if (r == null) {
+				continue;
+			}
+
+			if (r.fhirType().equals("Patient")) {
+				continue;
+			}
+
+			this.createOrUpdate(r, requestDetails);
+		}
+
+		return patientId;
 	}
 
 	private OperationOutcome validateBundle(boolean errorExists, Bundle bundle) {
@@ -147,7 +213,7 @@ public class ProcessMessageProvider {
 		Meta meta = comm.getMeta();
 		meta.setLastUpdated(new Date());
 		comm.setMeta(meta);
-		comm.setSubject(new Reference("Patient/"+patientId));
+		comm.setSubject(new Reference(patientId));
 		comm.setReceived(new Date());
         registry.getResourceDao(Communication.class).create(comm);
 		return commId;
