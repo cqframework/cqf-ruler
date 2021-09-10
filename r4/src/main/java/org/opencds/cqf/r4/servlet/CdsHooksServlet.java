@@ -54,8 +54,9 @@ import org.springframework.context.ApplicationContext;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
-import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+
+import org.opencds.cqf.r4.helpers.LibraryHelper;
 
 @WebServlet(name = "cds-services")
 public class CdsHooksServlet extends HttpServlet {
@@ -194,13 +195,13 @@ public class CdsHooksServlet extends HttpServlet {
 
             EvaluationContext<PlanDefinition> evaluationContext = new R4EvaluationContext(hook, version,
                     FhirContext.forCached(FhirVersionEnum.R4).newRestfulGenericClient(baseUrl), serverTerminologyProvider, context, library,
-                    planDefinition, this.getProviderConfiguration());
+                    planDefinition, this.getProviderConfiguration(), this.modelResolver);
 
             this.setAccessControlHeaders(response);
 
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
 
-            R4HookEvaluator evaluator = new R4HookEvaluator();
+            R4HookEvaluator evaluator = new R4HookEvaluator(this.modelResolver);
 
             String jsonResponse = toJsonResponse(evaluator.evaluate(evaluationContext));
 

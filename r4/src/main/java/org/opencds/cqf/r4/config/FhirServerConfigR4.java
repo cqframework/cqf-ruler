@@ -40,9 +40,6 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import ca.uhn.fhir.context.ConfigurationException;
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.context.ParserOptions;
 import ca.uhn.fhir.cql.r4.listener.ElmCacheResourceChangeListener;
 import ca.uhn.fhir.cql.r4.provider.JpaTerminologyProvider;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -59,17 +56,6 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     @Autowired
     public FhirServerConfigR4(DataSource myDataSource) {
         this.myDataSource = myDataSource;
-    }
-
-    @Override
-    public FhirContext fhirContextR4() {
-        FhirContext retVal = FhirContext.forCached(FhirVersionEnum.R4);
-
-        // Don't strip versions in some places
-        ParserOptions parserOptions = retVal.getParserOptions();
-        parserOptions.setDontStripVersionsFromReferencesAtPaths("AuditEvent.entity.what");
-
-        return retVal;
     }
 
     /**

@@ -39,9 +39,6 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import ca.uhn.fhir.context.ConfigurationException;
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.context.ParserOptions;
 import ca.uhn.fhir.cql.dstu3.listener.ElmCacheResourceChangeListener;
 import ca.uhn.fhir.cql.dstu3.provider.JpaTerminologyProvider;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -58,17 +55,6 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     @Autowired
     public FhirServerConfigDstu3(DataSource myDataSource) {
         this.myDataSource = myDataSource;
-    }
-
-    @Override
-    public FhirContext fhirContextDstu3() {
-        FhirContext retVal = FhirContext.forCached(FhirVersionEnum.DSTU3);
-
-        // Don't strip versions in some places
-        ParserOptions parserOptions = retVal.getParserOptions();
-        parserOptions.setDontStripVersionsFromReferencesAtPaths("AuditEvent.entity.reference");
-
-        return retVal;
     }
 
     /**
@@ -167,7 +153,7 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
 
 	@Bean
 	public CqlTranslatorOptions cqlTranslatorOptions() {
-		return CqlTranslatorOptions.defaultOptions().withCompatibilityLevel("1.3");
+		return CqlTranslatorOptions.defaultOptions(); //.withCompatibilityLevel("1.3");
 	}
 
 	@Bean

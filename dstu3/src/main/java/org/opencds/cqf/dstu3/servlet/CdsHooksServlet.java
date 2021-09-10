@@ -56,6 +56,8 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 
+import org.opencds.cqf.dstu3.helpers.LibraryHelper;
+
 @WebServlet(name = "cds-services")
 public class CdsHooksServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -74,7 +76,7 @@ public class CdsHooksServlet extends HttpServlet {
 
     private ModelResolver modelResolver;
 
-    private org.opencds.cqf.dstu3.helpers.LibraryHelper libraryHelper;
+    private LibraryHelper libraryHelper;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -89,7 +91,7 @@ public class CdsHooksServlet extends HttpServlet {
         this.fhirRetrieveProvider = appCtx.getBean(JpaFhirRetrieveProvider.class);
         this.serverTerminologyProvider = appCtx.getBean(TerminologyProvider.class);
         this.modelResolver = appCtx.getBean(ModelResolver.class);
-        this.libraryHelper = appCtx.getBean(org.opencds.cqf.dstu3.helpers.LibraryHelper.class);
+        this.libraryHelper = appCtx.getBean(LibraryHelper.class);
     }
 
     protected ProviderConfiguration getProviderConfiguration() {
@@ -187,15 +189,15 @@ public class CdsHooksServlet extends HttpServlet {
             context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
             context.setExpressionCaching(true);
 
-            EvaluationContext<PlanDefinition> evaluationContext = new Stu3EvaluationContext(hook, version, FhirContext.forDstu3().newRestfulGenericClient(baseUrl),
+            EvaluationContext<PlanDefinition> evaluationContext = new Stu3EvaluationContext(hook, version, FhirContext.forCached(FhirVersionEnum.DSTU3).newRestfulGenericClient(baseUrl),
                 serverTerminologyProvider, context, library,
-                planDefinition, this.getProviderConfiguration());
+                planDefinition, this.getProviderConfiguration(), this.modelResolver);
 
             this.setAccessControlHeaders(response);
 
             response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
 
-            Stu3HookEvaluator evaluator = new Stu3HookEvaluator();
+            Stu3HookEvaluator evaluator = new Stu3HookEvaluator(this.modelResolver);
 
             String jsonResponse = toJsonResponse(evaluator.evaluate(evaluationContext));
 

@@ -24,7 +24,6 @@ import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.SupplyRequest;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
-import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.dstu3.helpers.Helper;
 import org.springframework.stereotype.Component;
@@ -48,8 +47,8 @@ public class ActivityDefinitionApplyProvider {
 
     @Inject
     public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider,
-            IFhirResourceDao<ActivityDefinition> activityDefinitionDao) {
-        this.modelResolver = new Dstu3FhirModelResolver();
+            IFhirResourceDao<ActivityDefinition> activityDefinitionDao, ModelResolver modelResolver) {
+        this.modelResolver = modelResolver;
         this.executionProvider = executionProvider;
         this.activityDefinitionDao = activityDefinitionDao;
 

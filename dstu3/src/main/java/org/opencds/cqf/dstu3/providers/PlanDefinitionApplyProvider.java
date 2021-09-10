@@ -23,7 +23,6 @@ import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.cql.engine.execution.Context;
-import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.dstu3.builders.AttachmentBuilder;
@@ -65,9 +64,9 @@ public class PlanDefinitionApplyProvider {
     public PlanDefinitionApplyProvider(FhirContext fhirContext,
             ActivityDefinitionApplyProvider activityDefinitionApplyProvider,
             IFhirResourceDao<PlanDefinition> planDefinitionDao,
-            IFhirResourceDao<ActivityDefinition> activityDefinitionDao, CqlExecutionProvider executionProvider) {
+            IFhirResourceDao<ActivityDefinition> activityDefinitionDao, CqlExecutionProvider executionProvider, ModelResolver modelResolver) {
         this.executionProvider = executionProvider;
-        this.modelResolver = new Dstu3FhirModelResolver();
+        this.modelResolver = modelResolver;
         this.activityDefinitionApplyProvider = activityDefinitionApplyProvider;
         this.planDefinitionDao = planDefinitionDao;
         this.activityDefinitionDao = activityDefinitionDao;
