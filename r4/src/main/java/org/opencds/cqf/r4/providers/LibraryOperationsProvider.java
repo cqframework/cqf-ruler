@@ -29,18 +29,17 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.cds.providers.PriorityRetrieveProvider;
-import org.opencds.cqf.common.evaluation.LibraryLoader;
 import org.opencds.cqf.common.helpers.ClientHelperDos;
 import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.helpers.LoggingHelper;
-import org.opencds.cqf.common.providers.LibraryResolutionProvider;
-import org.opencds.cqf.common.providers.LibrarySourceProvider;
+import org.opencds.cqf.common.providers.LibraryContentProvider;
 import org.opencds.cqf.common.providers.R4ApelonFhirTerminologyProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.CqlEngine;
 import org.opencds.cqf.cql.engine.execution.EvaluationResult;
+import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.fhir.model.FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.retrieve.RestFhirRetrieveProvider;
@@ -49,12 +48,15 @@ import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDecorator;
+import org.opencds.cqf.cql.evaluator.engine.execution.TranslatingLibraryLoader;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.springframework.stereotype.Component;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
-import org.opencds.cqf.r4.helpers.LibraryHelper;
 
+import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
+import org.opencds.cqf.r4.helpers.LibraryHelper;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
@@ -77,15 +79,17 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
     private LibraryResourceProvider libraryResourceProvider;
     DaoRegistry registry;
     TerminologyProvider defaultTerminologyProvider;
+    private LibraryHelper libraryHelper;
 
     @Inject
     public LibraryOperationsProvider(LibraryResourceProvider libraryResourceProvider,
-            NarrativeProvider narrativeProvider, DaoRegistry registry, TerminologyProvider defaultTerminologyProvider) {
+            NarrativeProvider narrativeProvider, DaoRegistry registry, TerminologyProvider defaultTerminologyProvider, DataRequirementsProvider dataRequirementsProvider, LibraryHelper libraryHelper) {
         this.narrativeProvider = narrativeProvider;
-        this.dataRequirementsProvider = new DataRequirementsProvider();
+        this.dataRequirementsProvider = dataRequirementsProvider;
         this.libraryResourceProvider = libraryResourceProvider;
         this.registry = registry;
         this.defaultTerminologyProvider = defaultTerminologyProvider;
+        this.libraryHelper = libraryHelper;
     }
 
     private ModelManager getModelManager() {
@@ -100,11 +104,11 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         return libraryManager;
     }
 
-    private LibrarySourceProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment> librarySourceProvider;
+    private LibraryContentProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment> librarySourceProvider;
 
-    private LibrarySourceProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment> getLibrarySourceProvider() {
+    private LibraryContentProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment> getLibrarySourceProvider() {
         if (librarySourceProvider == null) {
-            librarySourceProvider = new LibrarySourceProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment>(
+            librarySourceProvider = new LibraryContentProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment>(
                     getLibraryResourceProvider(), x -> x.getContent(), x -> x.getContentType(), x -> x.getData());
         }
         return librarySourceProvider;
@@ -271,12 +275,15 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             }
         }
 
-        org.cqframework.cql.cql2elm.LibrarySourceProvider bundleLibraryProvider = new R4BundleLibrarySourceProvider(libraryBundle);
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(bundleLibraryProvider);
-        LibraryResolutionProvider<Library> provider = this.getLibraryResourceProvider();
-        libraryLoader.getLibraryManager().getLibrarySourceLoader().registerProvider(
-            new LibrarySourceProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment>(provider,
-                    x -> x.getContent(), x -> x.getContentType(), x -> x.getData()));
+
+        ModelManager modelManager = this.libraryHelper.getModelManager();
+        org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider bundleLibraryProvider = new R4BundleLibraryContentProvider(libraryBundle);
+        org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider sourceProvider =  new LibraryContentProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment>(this.getLibraryResourceProvider(),
+        x -> x.getContent(), x -> x.getContentType(), x -> x.getData());
+
+        List<org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider> sourceProviders = Arrays.asList(bundleLibraryProvider, sourceProvider);
+       
+        LibraryLoader libraryLoader = new CacheAwareLibraryLoaderDecorator(new TranslatingLibraryLoader(modelManager, sourceProviders, this.libraryHelper.getTranslatorOptions()));
 
         CqlEngine engine = new CqlEngine(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider);
 

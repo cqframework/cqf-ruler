@@ -26,23 +26,23 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
-import org.opencds.cqf.common.evaluation.LibraryLoader;
 import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.helpers.LoggingHelper;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.helpers.UsingHelper;
-import org.opencds.cqf.common.providers.LibraryResolutionProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.Context;
+import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
-import org.opencds.cqf.r4.helpers.LibraryHelper;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
+import org.opencds.cqf.r4.helpers.LibraryHelper;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 
@@ -54,13 +54,15 @@ public class CqlExecutionProvider {
     private EvaluationProviderFactory providerFactory;
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider;
     private FhirContext context;
+    private LibraryHelper libraryHelper;
 
     @Inject
     public CqlExecutionProvider(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider,
-            EvaluationProviderFactory providerFactory, FhirContext context) {
+            EvaluationProviderFactory providerFactory, FhirContext context, LibraryHelper libraryHelper) {
         this.providerFactory = providerFactory;
         this.libraryResourceProvider = libraryResourceProvider;
         this.context = context;
+        this.libraryHelper = libraryHelper;
     }
 
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> getLibraryResourceProvider() {
@@ -176,10 +178,10 @@ public class CqlExecutionProvider {
                 "library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"+ fhirVersion +"' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
                 buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
 
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
 
         org.cqframework.cql.elm.execution.Library library = TranslatorHelper.translateLibrary(source,
-                libraryLoader.getLibraryManager(), libraryLoader.getModelManager());
+                this.libraryHelper.getLibraryManager(this.getLibraryResourceProvider()), this.libraryHelper.getModelManager());
 
         // resolve execution context
         Context context = setupContext(instance, patientId, libraryLoader, library);
@@ -195,9 +197,9 @@ public class CqlExecutionProvider {
                 if (lib == null) {
                     throw new RuntimeException("Library with id " + reference.getIdBase() + "not found");
                 }
-                LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+                LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
                 // resolve primary library
-                org.cqframework.cql.elm.execution.Library library = LibraryHelper.resolveLibraryById(lib.getId(),
+                org.cqframework.cql.elm.execution.Library library = this.libraryHelper.resolveLibraryById(lib.getId(),
                         libraryLoader, this.libraryResourceProvider);
 
                 // resolve execution context
@@ -251,13 +253,13 @@ public class CqlExecutionProvider {
         CqlTranslator translator;
         FhirMeasureBundler bundler = new FhirMeasureBundler();
 
-        LibraryLoader libraryLoader = LibraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
+        LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
 
         List<Resource> results = new ArrayList<>();
 
         try {
-            translator = TranslatorHelper.getTranslator(code, libraryLoader.getLibraryManager(),
-                    libraryLoader.getModelManager());
+            translator = TranslatorHelper.getTranslator(code, this.libraryHelper.getLibraryManager(this.getLibraryResourceProvider()),
+                    this.libraryHelper.getModelManager());
 
             if (translator.getErrors().size() > 0) {
                 for (CqlTranslatorException cte : translator.getErrors()) {

@@ -27,7 +27,6 @@ import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.SupplyRequest;
 import org.hl7.fhir.r4.model.Task;
 import org.opencds.cqf.common.exceptions.ActivityDefinitionApplyException;
-import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.r4.builders.JavaDateBuilder;
@@ -57,8 +56,8 @@ public class ActivityDefinitionApplyProvider {
 
     @Inject
     public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider,
-            IFhirResourceDao<ActivityDefinition> activityDefinitionDao) {
-        this.modelResolver = new R4FhirModelResolver();
+            IFhirResourceDao<ActivityDefinition> activityDefinitionDao, ModelResolver modelResolver) {
+        this.modelResolver = modelResolver;
         this.executionProvider = executionProvider;
         this.activityDefinitionDao = activityDefinitionDao;
     }

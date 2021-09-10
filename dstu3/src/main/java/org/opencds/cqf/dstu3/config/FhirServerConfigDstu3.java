@@ -2,12 +2,22 @@ package org.opencds.cqf.dstu3.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
+import org.cqframework.cql.cql2elm.model.Model;
+import org.cqframework.cql.elm.execution.Library;
+import org.hl7.elm.r1.VersionedIdentifier;
 import org.opencds.cqf.common.config.HapiProperties;
+import org.opencds.cqf.common.providers.CacheAwareTerminologyProvider;
+import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
 import org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.dstu3.providers.CacheValueSetsProvider;
@@ -23,16 +33,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import ca.uhn.fhir.context.ConfigurationException;
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.ParserOptions;
+import ca.uhn.fhir.cql.dstu3.listener.ElmCacheResourceChangeListener;
 import ca.uhn.fhir.cql.dstu3.provider.JpaTerminologyProvider;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
 @Configuration
 @ComponentScan(basePackages = "org.opencds.cqf.dstu3")
@@ -42,17 +55,6 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     @Autowired
     public FhirServerConfigDstu3(DataSource myDataSource) {
         this.myDataSource = myDataSource;
-    }
-
-    @Override
-    public FhirContext fhirContextDstu3() {
-        FhirContext retVal = FhirContext.forDstu3();
-
-        // Don't strip versions in some places
-        ParserOptions parserOptions = retVal.getParserOptions();
-        parserOptions.setDontStripVersionsFromReferencesAtPaths("AuditEvent.entity.reference");
-
-        return retVal;
     }
 
     /**
@@ -126,7 +128,38 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     }
 
     @Bean
-    public TerminologyProvider terminologyProvider(ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3 theTerminologySvc, ca.uhn.fhir.jpa.api.dao.DaoRegistry theDaoRegistry, ca.uhn.fhir.context.support.IValidationSupport theValidationSupport) {
+    public JpaTerminologyProvider terminologyProvider(ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3 theTerminologySvc, ca.uhn.fhir.jpa.api.dao.DaoRegistry theDaoRegistry, ca.uhn.fhir.context.support.IValidationSupport theValidationSupport) {
         return new JpaTerminologyProvider(theTerminologySvc, theDaoRegistry, theValidationSupport);
     }
+
+    @Bean
+    @Primary
+    public TerminologyProvider terminologyProvider(Map<String, Iterable<Code>> terminologyCache, JpaTerminologyProvider jpaTerminologyProvider) {
+        return new CacheAwareTerminologyProvider(terminologyCache, jpaTerminologyProvider);
+    }
+
+    @Bean
+    public ModelResolver modelResolver() {
+        return new CachingModelResolverDecorator(new Dstu3FhirModelResolver());
+    }
+
+
+	@Lazy
+	@Bean
+	public org.opencds.cqf.dstu3.helpers.LibraryHelper libraryHelper(Map<VersionedIdentifier, Model> globalModelCache, Map<org.cqframework.cql.elm.execution.VersionedIdentifier, Library> globalLibraryCache, CqlTranslatorOptions cqlTranslatorOptions) {
+		return new org.opencds.cqf.dstu3.helpers.LibraryHelper(globalModelCache, globalLibraryCache, cqlTranslatorOptions);
+	}
+
+
+	@Bean
+	public CqlTranslatorOptions cqlTranslatorOptions() {
+		return CqlTranslatorOptions.defaultOptions(); //.withCompatibilityLevel("1.3");
+	}
+
+	@Bean
+	public ElmCacheResourceChangeListener elmCacheResourceChangeListener(IResourceChangeListenerRegistry resourceChangeListenerRegistry, IFhirResourceDao<org.hl7.fhir.dstu3.model.Library> libraryDao,  Map<org.cqframework.cql.elm.execution.VersionedIdentifier, Library> globalLibraryCache) {
+		ElmCacheResourceChangeListener listener = new ElmCacheResourceChangeListener(libraryDao, globalLibraryCache);
+		resourceChangeListenerRegistry.registerResourceResourceChangeListener("Library", SearchParameterMap.newSynchronous(), listener, 1000);
+		return listener;
+	}
 }

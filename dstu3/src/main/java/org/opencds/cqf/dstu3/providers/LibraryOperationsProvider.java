@@ -17,11 +17,11 @@ import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.common.providers.LibraryResolutionProvider;
-import org.opencds.cqf.common.providers.LibrarySourceProvider;
+import org.opencds.cqf.common.providers.LibraryContentProvider;
 import org.opencds.cqf.tooling.library.stu3.NarrativeProvider;
 import org.springframework.stereotype.Component;
 
+import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
 import ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -35,7 +35,7 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
 
 @Component
-public class LibraryOperationsProvider implements org.opencds.cqf.common.providers.LibraryResolutionProvider<Library> {
+public class LibraryOperationsProvider implements LibraryResolutionProvider<Library> {
 
     private NarrativeProvider narrativeProvider;
     private DataRequirementsProvider dataRequirementsProvider;
@@ -43,9 +43,9 @@ public class LibraryOperationsProvider implements org.opencds.cqf.common.provide
 
     @Inject
     public LibraryOperationsProvider(LibraryResourceProvider libraryResourceProvider,
-            NarrativeProvider narrativeProvider) {
+            NarrativeProvider narrativeProvider, DataRequirementsProvider dataRequirementsProvider) {
         this.narrativeProvider = narrativeProvider;
-        this.dataRequirementsProvider = new DataRequirementsProvider();
+        this.dataRequirementsProvider = dataRequirementsProvider;
         this.libraryResourceProvider = libraryResourceProvider;
     }
 
@@ -61,11 +61,11 @@ public class LibraryOperationsProvider implements org.opencds.cqf.common.provide
         return libraryManager;
     }
 
-    private LibrarySourceProvider<Library, Attachment> librarySourceProvider;
+    private LibraryContentProvider<Library, Attachment> librarySourceProvider;
 
-    private LibrarySourceProvider<Library, Attachment> getLibrarySourceProvider() {
+    private LibraryContentProvider<Library, Attachment> getLibrarySourceProvider() {
         if (librarySourceProvider == null) {
-            librarySourceProvider = new LibrarySourceProvider<Library, Attachment>(this.getLibraryResolutionProvider(),
+            librarySourceProvider = new LibraryContentProvider<Library, Attachment>(this.getLibraryResolutionProvider(),
                     x -> x.getContent(), x -> x.getContentType(), x -> x.getData());
         }
         return librarySourceProvider;

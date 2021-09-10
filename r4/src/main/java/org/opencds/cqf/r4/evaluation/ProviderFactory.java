@@ -8,13 +8,14 @@ import org.opencds.cqf.common.providers.R4ApelonFhirTerminologyProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
-import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
@@ -26,13 +27,15 @@ public class ProviderFactory implements EvaluationProviderFactory {
     DaoRegistry registry;
     TerminologyProvider defaultTerminologyProvider;
     FhirContext fhirContext;
+    ModelResolver modelResolver;
 
     @Inject
     public ProviderFactory(FhirContext fhirContext, DaoRegistry registry,
-            TerminologyProvider defaultTerminologyProvider) {
+            TerminologyProvider defaultTerminologyProvider, ModelResolver modelResolver) {
         this.defaultTerminologyProvider = defaultTerminologyProvider;
         this.registry = registry;
         this.fhirContext = fhirContext;
+        this.modelResolver = modelResolver;
     }
 
     public DataProvider createDataProvider(String model, String version) {
@@ -46,7 +49,6 @@ public class ProviderFactory implements EvaluationProviderFactory {
 
     public DataProvider createDataProvider(String model, String version, TerminologyProvider terminologyProvider) {
         if (model.equals("FHIR") && version.startsWith("4")) {
-            R4FhirModelResolver modelResolver = new R4FhirModelResolver();
             JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(this.registry,
                     new SearchParameterResolver(this.fhirContext));
             retrieveProvider.setTerminologyProvider(terminologyProvider);
@@ -62,7 +64,7 @@ public class ProviderFactory implements EvaluationProviderFactory {
     public TerminologyProvider createTerminologyProvider(String model, String version, String url, String user,
             String pass) {
         if (url != null && !url.isEmpty()) {
-            IGenericClient client = ClientHelper.getClient(FhirContext.forR4(), url, user, pass);
+            IGenericClient client = ClientHelper.getClient(FhirContext.forCached(FhirVersionEnum.R4), url, user, pass);
             if (url.contains("apelon.com")) {
                 return new R4ApelonFhirTerminologyProvider(client);
             }

@@ -6,12 +6,15 @@ import java.util.function.Function;
 
 import org.cqframework.cql.cql2elm.FhirLibrarySourceProvider;
 import org.hl7.elm.r1.VersionedIdentifier;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentType;
+
+import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
 
 /**
  * Created by Christopher on 1/12/2017.
  */
-public class LibrarySourceProvider<LibraryType, AttachmentType>
-        implements org.cqframework.cql.cql2elm.LibrarySourceProvider {
+public class LibraryContentProvider<LibraryType, AttachmentType>
+        implements org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider {
 
     private FhirLibrarySourceProvider innerProvider;
     private LibraryResolutionProvider<LibraryType> provider;
@@ -19,7 +22,7 @@ public class LibrarySourceProvider<LibraryType, AttachmentType>
     private Function<AttachmentType, String> getContentType;
     private Function<AttachmentType, byte[]> getContent;
 
-    public LibrarySourceProvider(LibraryResolutionProvider<LibraryType> provider,
+    public LibraryContentProvider(LibraryResolutionProvider<LibraryType> provider,
             Function<LibraryType, Iterable<AttachmentType>> getAttachments,
             Function<AttachmentType, String> getContentType, Function<AttachmentType, byte[]> getContent) {
 
@@ -45,5 +48,15 @@ public class LibrarySourceProvider<LibraryType, AttachmentType>
         }
 
         return this.innerProvider.getLibrarySource(versionedIdentifier);
+    }
+
+    @Override
+    public InputStream getLibraryContent(VersionedIdentifier libraryIdentifier, LibraryContentType libraryContentType) {
+ 
+        if (libraryContentType == LibraryContentType.CQL) {
+            return this.getLibrarySource(libraryIdentifier);
+        }
+
+        return null;
     }
 }

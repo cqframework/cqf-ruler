@@ -1,20 +1,11 @@
 package org.opencds.cqf.r4.providers;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.io.Reader;
 import java.io.StringWriter;
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -24,33 +15,23 @@ import javax.xml.transform.stream.StreamResult;
 
 import com.jamesmurty.utils.XMLBuilder2;
 
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactDetail;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MarkdownType;
-import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Measure.MeasureGroupComponent;
 import org.hl7.fhir.r4.model.Measure.MeasureGroupPopulationComponent;
 import org.hl7.fhir.r4.model.Measure.MeasureSupplementalDataComponent;
-import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.RelatedArtifact.RelatedArtifactType;
-import org.jsoup.Jsoup;
-import org.opencds.cqf.common.providers.InMemoryLibraryResourceProvider;
-import org.opencds.cqf.common.providers.LibraryResolutionProvider;
-import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.opencds.cqf.tooling.measure.r4.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef.TerminologyRefType;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
-
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.parser.IParser;
 
 @Component
 public class HQMFProvider {
@@ -601,136 +582,6 @@ public class HQMFProvider {
 
             return writer.toString();
         } catch (Exception e) {
-            return null;
-        }
-    }
-
-    // private boolean validateHQMF(String xml) {
-    //     try {
-    //         return this.validateXML(this.loadHQMFSchema(), xml);
-    //     } catch (SAXException e) {
-    //         return false;
-    //     }
-    // }
-
-    // private boolean validateXML(Schema schema, String xml) {
-    //     try {
-    //         Validator validator = schema.newValidator();
-    //         validator.validate(new StreamSource(new StringReader(xml)));
-    //     } catch (IOException | SAXException e) {
-    //         System.out.println("Exception: " + e.getMessage());
-    //         return false;
-    //     }
-    //     return true;
-    // }
-
-    // private Schema loadHQMFSchema() throws SAXException {
-    //     SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-    //     URL hqmfSchema = ClassLoader.getSystemClassLoader().getResource("hqmf/schemas/EMeasure_N1.xsd");
-    //     return factory.newSchema(hqmfSchema);
-    // }
-
-    // args[0] == relative path to json measure -> i.e. measure/measure-demo.json
-    // (optional)
-    // args[1] == path to resource output -> i.e.
-    // library/library-demo.json(optional)
-    // args[2] == path to hqmf output -> i.e. hqmf.xml(optional)
-    // args[3] == path to narrative output -> i.e. output.html(optional)
-    public static void main(String[] args) {
-
-        try {
-            List<String> strings = Arrays.asList("hqmf/examples/input/measure-ann.json",
-                    "hqmf/examples/input/library-common.json", "hqmf/examples/input/library-ann.json");
-
-            List<Path> paths = strings.stream().map(x -> Paths.get(toUri(x))).collect(Collectors.toList());
-
-            // Path pathToLibrary =
-            // Paths.get(HQMFProvider.class.getClassLoader().getResource("narratives/examples/library/CMS146.json").toURI());
-            Path pathToOutput = Paths.get("src/main/resources/hqmf/hqmf.xml").toAbsolutePath();
-            Path pathToNarrativeOutput = Paths.get("src/main/resources/narratives/output.html").toAbsolutePath();
-
-            Path pathToProp = Paths.get(
-                    NarrativeProvider.class.getClassLoader().getResource("narratives/narrative.properties").toURI());
-
-            if (args.length >= 4) {
-                pathToNarrativeOutput = Paths.get(new URI(args[3]));
-            }
-
-            if (args.length >= 3) {
-                pathToOutput = Paths.get(new URI(args[2]));
-            }
-
-            // if (args.length >= 2) {
-            // pathToLibrary = Paths.get(new URI(args[1]));
-            // }
-
-            // if (args.length >= 1) {
-            // pathToMeasure = Paths.get(new URI(args[0]));
-            // }
-
-            HQMFProvider provider = new HQMFProvider();
-            DataRequirementsProvider dataRequirementsProvider = new DataRequirementsProvider();
-            NarrativeProvider narrativeProvider = new NarrativeProvider(pathToProp.toUri().toString());
-            ;
-
-            FhirContext context = FhirContext.forDstu3();
-
-            // IParser parser = pathToMeasure.toString().endsWith("json") ?
-            // context.newJsonParser() : context.newXmlParser();
-
-            IParser parser = context.newJsonParser();
-
-            List<IBaseResource> resources = paths.stream().map(x -> toReader(x)).filter(x -> x != null)
-                    .map(x -> parser.parseResource(x)).collect(Collectors.toList());
-
-            Measure measure = (Measure) resources.stream().filter(x -> (x instanceof Measure)).findFirst().get();
-            List<Library> libraries = resources.stream().filter(x -> (x instanceof Library)).map(x -> (Library) x)
-                    .collect(Collectors.toList());
-
-            LibraryResolutionProvider<Library> lrp = new InMemoryLibraryResourceProvider<Library>(libraries,
-                    x -> x.getIdElement().getIdPart(), x -> x.getName(), x -> x.getVersion());
-
-            CqfMeasure cqfMeasure = dataRequirementsProvider.createCqfMeasure(measure, lrp);
-
-            String result = provider.generateHQMF(cqfMeasure);
-
-            PrintWriter writer = new PrintWriter(new File(pathToOutput.toString()), "UTF-8");
-            writer.println(result);
-            writer.println();
-            writer.close();
-
-            Narrative narrative = narrativeProvider.getNarrative(context, cqfMeasure);
-            String narrativeContent = narrative.getDivAsString();
-
-            Path pathToHTML = Paths.get(toUri("narratives/templates/hqmf.html"));
-            org.jsoup.nodes.Document htmlDoc = Jsoup.parse(pathToHTML.toFile(), "UTF-8");
-
-            htmlDoc.title(measure.getName());
-            htmlDoc.body().html(narrativeContent);
-
-            writer = new PrintWriter(new File(pathToNarrativeOutput.toString()), "UTF-8");
-            writer.write(htmlDoc.outerHtml());
-            writer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-    }
-
-    public static Reader toReader(Path p) {
-        try {
-            return new FileReader(p.toFile());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static URI toUri(String s) {
-        try {
-            return HQMFProvider.class.getClassLoader().getResource(s).toURI();
-        } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
