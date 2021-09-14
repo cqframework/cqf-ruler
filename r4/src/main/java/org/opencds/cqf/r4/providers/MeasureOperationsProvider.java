@@ -472,7 +472,9 @@ public class MeasureOperationsProvider {
                 patientList.addAll(getPatientListFromGroup(member.getEntity().getReference()));
             } else if (member.getEntity().fhirType().equals("Patient")) {
                 patientList.add(member.getEntity());
-            } else {
+            } else if (member.getEntity().fhirType().equals("Reference")) {
+                patientList.add(member.getEntity());
+            }else {
                 logger.info(String.format("Group member was not a patient, so skipping. \n%s", member.getEntity().getReference()));
             }
         });
