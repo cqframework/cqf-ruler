@@ -9,10 +9,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import  java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -32,8 +35,10 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
 import org.cqframework.cql.elm.execution.CodeDef;
 import org.cqframework.cql.elm.execution.CodeSystemDef;
 import org.cqframework.cql.elm.execution.ExpressionDef;
@@ -42,9 +47,11 @@ import org.cqframework.cql.elm.execution.IncludeDef;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.ValueSetDef;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
+import org.cqframework.cql.elm.requirements.fhir.DataRequirementsProcessor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.hl7.elm.r1.ValueSetRef;
+import org.hl7.fhir.convertors.VersionConvertor_40_50;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Base64BinaryType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -56,12 +63,17 @@ import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.ParameterDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r5.model.CanonicalType;
+import org.hl7.fhir.r5.model.Extension;
+import org.hl7.fhir.r5.model.Meta;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.tooling.measure.r4.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef.TerminologyRefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
@@ -72,14 +84,44 @@ import org.opencds.cqf.r4.helpers.CanonicalHelper;
 
 @Component
 public class DataRequirementsProvider {
+    private static final Logger logger = LoggerFactory.getLogger(DataRequirementsProvider.class);
 
     private LibraryHelper libraryHelper;
 
     @Inject
     public DataRequirementsProvider(LibraryHelper libraryHelper) {
         this.libraryHelper = libraryHelper;
-
     }
+
+    public org.hl7.fhir.r4.model.Library getModuleDefinitionLibrary(Measure r4Measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options){
+
+        org.hl7.fhir.r5.model.Measure measureToUse = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(r4Measure);
+
+        Set<String> expressionList = getExpressions(measureToUse);
+        DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
+
+        org.hl7.fhir.r5.model.Library libraryR5 = dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, expressionList, true);
+        org.hl7.fhir.r4.model.Library library = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(libraryR5);
+
+        return library;
+    }
+
+    private Set<String> getExpressions(org.hl7.fhir.r5.model.Measure measureToUse) {
+        Set<String> expressionSet = new HashSet<>();
+        measureToUse.getSupplementalData().forEach(supData->{
+            expressionSet.add(supData.getCriteria().getExpression());
+        });
+        measureToUse.getGroup().forEach(groupMember->{
+            groupMember.getPopulation().forEach(population->{
+                expressionSet.add(population.getCriteria().getExpression());
+            });
+            groupMember.getStratifier().forEach(stratifier->{
+                expressionSet.add(stratifier.getCriteria().getExpression());
+            });
+        });
+        return expressionSet;
+    }
+
     // For creating the CQF measure we need to:
     // 1. Find the Primary Library Resource
     // 2. Load the Primary Library as ELM. This will recursively load the dependent
@@ -94,6 +136,23 @@ public class DataRequirementsProvider {
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> libraryMap = this
                 .createLibraryMap(measure, libraryResourceProvider);
         return this.createCqfMeasure(measure, libraryMap);
+    }
+
+    public org.hl7.fhir.r4.model.Library getLibraryFromMeasure(Measure measure,
+               LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {
+
+        org.hl7.fhir.r4.model.Library primaryLibrary = null;
+        Iterator var6 = measure.getLibrary().iterator();
+
+        String library= null;
+        while(var6.hasNext()) {
+            org.hl7.fhir.r4.model.CanonicalType ref = (org.hl7.fhir.r4.model.CanonicalType) var6.next();
+            library = (String) ref.getValue();
+
+        }
+        primaryLibrary = libraryHelper.resolveLibraryReference(libraryResourceProvider, library);
+
+        return primaryLibrary;
     }
 
     private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> createLibraryMap(Measure measure,

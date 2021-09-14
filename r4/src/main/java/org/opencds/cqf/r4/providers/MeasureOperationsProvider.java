@@ -1,7 +1,10 @@
 package org.opencds.cqf.r4.providers;
 
+import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,14 +16,20 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
 import com.google.common.base.Strings;
 
+import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
+import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
+import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -32,6 +41,7 @@ import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Group;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.ListResource;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
@@ -49,6 +59,8 @@ import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.common.helpers.TranslatorHelper;
+import org.opencds.cqf.common.providers.LibraryContentProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluation;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
@@ -95,7 +107,7 @@ public class MeasureOperationsProvider {
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
 
     @Inject
-    public MeasureOperationsProvider(DaoRegistry registry, EvaluationProviderFactory factory,
+    public MeasureOperationsProvider(DaoRegistry registry, EvaluationProviderFactory factory, LibraryResourceProvider libraryResourceProvider,
             NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider,
             LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider,
             MeasureResourceProvider measureResourceProvider, DataRequirementsProvider dataRequirementsProvider, LibraryHelper libraryHelper) {
@@ -108,6 +120,28 @@ public class MeasureOperationsProvider {
         this.dataRequirementsProvider = dataRequirementsProvider;
         this.measureResourceProvider = measureResourceProvider;
         this.libraryHelper = libraryHelper;
+    }
+
+    private ModelManager getModelManager() {
+        return new ModelManager();
+    }
+
+    private LibraryManager getLibraryManager(ModelManager modelManager) {
+        LibraryManager libraryManager = new LibraryManager(modelManager);
+        libraryManager.getLibrarySourceLoader().clearProviders();
+        libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
+
+        return libraryManager;
+    }
+
+    private LibraryContentProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment> librarySourceProvider;
+
+    private LibraryContentProvider<Library, Attachment> getLibrarySourceProvider() {
+        if (librarySourceProvider == null) {
+            librarySourceProvider = new LibraryContentProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment>(
+                    this.libraryResolutionProvider, x -> x.getContent(), x -> x.getContentType(), x -> x.getData());
+        }
+        return librarySourceProvider;
     }
 
     @Operation(name = "$hqmf", idempotent = true, type = Measure.class)
@@ -880,7 +914,49 @@ public class MeasureOperationsProvider {
             @OperationParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
 
         Measure measure = this.measureResourceProvider.getDao().read(theId);
-        return this.dataRequirementsProvider.getDataRequirements(measure, this.libraryResolutionProvider);
+
+        ModelManager modelManager = this.getModelManager();
+        LibraryManager libraryManager = this.getLibraryManager(modelManager);
+
+        Library library = dataRequirementsProvider.getLibraryFromMeasure(measure, libraryResolutionProvider);
+
+        if (library == null) {
+            throw new RuntimeException("Could not load measure library.");
+        }
+
+        CqlTranslator translator = TranslatorHelper.getTranslator(getContentStream(library), libraryManager, modelManager);
+
+        if (translator.getErrors().size() > 0) {
+            throw new RuntimeException("Errors during library compilation.");
+        }
+
+        return this.dataRequirementsProvider.getModuleDefinitionLibrary(measure, libraryManager, translator.getTranslatedLibrary(), getTranslatorOptions());
+    }
+
+
+    private CqlTranslatorOptions getTranslatorOptions() {
+        CqlTranslatorOptions cqlTranslatorOptions = new CqlTranslatorOptions();
+        cqlTranslatorOptions.getFormats().add(CqlTranslator.Format.JSON);
+        cqlTranslatorOptions.getOptions().add(CqlTranslator.Options.EnableAnnotations);
+        cqlTranslatorOptions.setAnalyzeDataRequirements(true);
+        cqlTranslatorOptions.setCollapseDataRequirements(true);
+        return cqlTranslatorOptions;
+    }
+
+    private InputStream getContentStream(org.hl7.fhir.r4.model.Library library) {
+        Attachment cql = null;
+        for (Attachment a : library.getContent()) {
+            if (a.getContentType().equals("text/cql")) {
+                cql = a;
+                break;
+            }
+        }
+
+        if (cql == null) {
+            return null;
+        }
+
+        return new ByteArrayInputStream(Base64.getDecoder().decode(cql.getDataElement().getValueAsString()));
     }
 
     @SuppressWarnings("unchecked")
