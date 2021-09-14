@@ -8,6 +8,7 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -93,6 +94,28 @@ public class DataRequirementsProvider {
         this.libraryHelper = libraryHelper;
     }
 
+    /*
+    public org.hl7.fhir.r5.model.Measure createMeasure(Measure r4Measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+
+        org.hl7.fhir.r5.model.Measure measureToUse = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(r4Measure);
+
+        org.hl7.fhir.r5.model.Library moduleDefinitionLibrary = getModuleDefinitionLibrary(measureToUse, libraryManager, translatedLibrary, options);
+        measureToUse.setDate(new Date());
+        setMeta(measureToUse, moduleDefinitionLibrary);
+        clearMeasureExtensions(measureToUse, "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-parameter");
+        clearMeasureExtensions(measureToUse, "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement");
+        clearMeasureExtensions(measureToUse, "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-directReferenceCode");
+        clearMeasureExtensions(measureToUse, "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition");
+        clearRelatedArtifacts(measureToUse);
+        setParameters(measureToUse, moduleDefinitionLibrary);
+        setDataRequirements(measureToUse, moduleDefinitionLibrary);
+        setDirectReferenceCode(measureToUse, moduleDefinitionLibrary);
+        setLogicDefinition(measureToUse, moduleDefinitionLibrary);
+        measureToUse.setRelatedArtifact(moduleDefinitionLibrary.getRelatedArtifact());
+
+        return measureToUse;
+    }
+*/
     public org.hl7.fhir.r4.model.Library getModuleDefinitionLibrary(Measure r4Measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options){
 
         org.hl7.fhir.r5.model.Measure measureToUse = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(r4Measure);
@@ -120,6 +143,68 @@ public class DataRequirementsProvider {
             });
         });
         return expressionSet;
+    }
+
+    private void clearMeasureExtensions(org.hl7.fhir.r5.model.Measure measure, String extensionUrl) {
+        List<Extension> extensionsToRemove = measure.getExtensionsByUrl(extensionUrl);
+        measure.getExtension().removeAll(extensionsToRemove);
+    }
+
+    private void clearRelatedArtifacts(org.hl7.fhir.r5.model.Measure measure) {
+        measure.getRelatedArtifact().removeIf(r -> r.getType() == org.hl7.fhir.r5.model.RelatedArtifact.RelatedArtifactType.DEPENDSON);
+    }
+
+    private void setLogicDefinition(org.hl7.fhir.r5.model.Measure measureToUse, org.hl7.fhir.r5.model.Library moduleDefinitionLibrary) {
+        moduleDefinitionLibrary.getExtension().forEach(extension -> {
+            if (extension.getUrl().equalsIgnoreCase("http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition")) {
+                measureToUse.addExtension(extension);
+            }
+        });
+    }
+
+    private void setDirectReferenceCode(org.hl7.fhir.r5.model.Measure measureToUse, org.hl7.fhir.r5.model.Library moduleDefinitionLibrary) {
+        moduleDefinitionLibrary.getExtension().forEach(extension -> {
+            if(extension.getUrl().equalsIgnoreCase("http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-directReferenceCode")) {
+                measureToUse.addExtension(extension);
+            }
+        });
+    }
+
+    private void setDataRequirements(org.hl7.fhir.r5.model.Measure measureToUse, org.hl7.fhir.r5.model.Library moduleDefinitionLibrary) {
+        moduleDefinitionLibrary.getDataRequirement().forEach(dataRequirement -> {
+            Extension dataReqExtension = new Extension();
+            dataReqExtension.setUrl("http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement");
+            dataReqExtension.setValue(dataRequirement);
+            measureToUse.addExtension(dataReqExtension);
+        });
+    }
+
+    private void setParameters(org.hl7.fhir.r5.model.Measure measureToUse, org.hl7.fhir.r5.model.Library moduleDefinitionLibrary) {
+        Set<String> parameterName = new HashSet<>();
+        moduleDefinitionLibrary.getParameter().forEach(parameter->{
+            if(!parameterName.contains(parameter.getName())) {
+                Extension parameterExtension = new Extension();
+                parameterExtension.setUrl("http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-parameter");
+                parameterExtension.setValue(parameter);
+                measureToUse.addExtension(parameterExtension);
+                parameterName.add(parameter.getName());
+            }
+        });
+    }
+
+    private void setMeta(org.hl7.fhir.r5.model.Measure measureToUse, org.hl7.fhir.r5.model.Library moduleDefinitionLibrary){
+        if (measureToUse.getMeta() == null) {
+            measureToUse.setMeta(new Meta());
+        }
+        boolean hasProfileMarker = false;
+        for (CanonicalType canonical : measureToUse.getMeta().getProfile()) {
+            if ("http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/computable-measure-cqfm".equals(canonical.getValue())) {
+                hasProfileMarker = true;
+            }
+        }
+        if (!hasProfileMarker) {
+            measureToUse.getMeta().addProfile("http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/computable-measure-cqfm");
+        }
     }
 
     // For creating the CQF measure we need to:
