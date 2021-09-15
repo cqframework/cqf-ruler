@@ -732,10 +732,19 @@ public class MeasureOperationsProvider {
     @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
     public Parameters report(@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
                                      @OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
-                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {      
+                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException { 
+        if (periodStart == null) {
+            throw new IllegalArgumentException("Parameter 'periodStart' is required.");
+        }    
+        if (periodEnd == null) {
+            throw new IllegalArgumentException("Parameter 'periodEnd' is required.");
+        }    
         Date periodStartDate = DateHelper.resolveRequestDate(periodStart, true);
         Date periodEndDate = DateHelper.resolveRequestDate(periodEnd, false);
-
+        if (periodStartDate.after(periodEndDate)) {
+            throw new IllegalArgumentException("Parameter 'periodStart' must be before 'periodEnd'.");
+        }
+ 
         if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
             throw new IllegalArgumentException("Parameter 'subject' must be in the format 'Patient/[id]' or 'Group/[id]'.");
         }
