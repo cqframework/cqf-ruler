@@ -555,6 +555,10 @@ public class MeasureOperationsProvider {
         Date periodStartDate = DateHelper.resolveRequestDate(periodStart, true);
         Date periodEndDate = DateHelper.resolveRequestDate(periodEnd, false);
       
+        if (periodStartDate.after(periodEndDate)) {
+            throw new IllegalArgumentException("Parameter 'periodStart' must be before 'periodEnd'.");
+        }
+
         if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
             throw new IllegalArgumentException("Parameter 'subject' must be in the format 'Patient/[id]' or 'Group/[id]'.");
         }
