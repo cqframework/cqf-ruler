@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.ActivityDefinition;
@@ -56,7 +57,7 @@ public class ActivityDefinitionApplyProvider {
 
     @Inject
     public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider,
-            IFhirResourceDao<ActivityDefinition> activityDefinitionDao, ModelResolver modelResolver) {
+            IFhirResourceDao<ActivityDefinition> activityDefinitionDao, @Named("r4ModelResolver") ModelResolver modelResolver) {
         this.modelResolver = modelResolver;
         this.executionProvider = executionProvider;
         this.activityDefinitionDao = activityDefinitionDao;

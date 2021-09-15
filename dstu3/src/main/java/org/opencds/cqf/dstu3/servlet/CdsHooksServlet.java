@@ -90,7 +90,7 @@ public class CdsHooksServlet extends HttpServlet {
         this.libraryResolutionProvider = (LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library>)appCtx.getBean(LibraryResolutionProvider.class);
         this.fhirRetrieveProvider = appCtx.getBean(JpaFhirRetrieveProvider.class);
         this.serverTerminologyProvider = appCtx.getBean(TerminologyProvider.class);
-        this.modelResolver = appCtx.getBean(ModelResolver.class);
+        this.modelResolver = appCtx.getBean("dstu3ModelResolver", ModelResolver.class);
         this.libraryHelper = appCtx.getBean(LibraryHelper.class);
     }
 

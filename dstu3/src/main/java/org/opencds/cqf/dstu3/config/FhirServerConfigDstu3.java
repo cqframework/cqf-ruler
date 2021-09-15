@@ -138,7 +138,7 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
         return new CacheAwareTerminologyProvider(terminologyCache, jpaTerminologyProvider);
     }
 
-    @Bean
+    @Bean(name = "dstu3ModelResolver")
     public ModelResolver modelResolver() {
         return new CachingModelResolverDecorator(new Dstu3FhirModelResolver());
     }

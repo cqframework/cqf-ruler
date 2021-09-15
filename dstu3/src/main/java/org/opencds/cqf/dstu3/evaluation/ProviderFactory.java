@@ -1,7 +1,9 @@
 package org.opencds.cqf.dstu3.evaluation;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.apache.lucene.search.BooleanQuery;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.ClientHelper;
 import org.opencds.cqf.common.providers.Dstu3ApelonFhirTerminologyProvider;
@@ -34,7 +36,8 @@ public class ProviderFactory implements EvaluationProviderFactory {
 
     @Inject
     public ProviderFactory(FhirContext fhirContext, DaoRegistry registry,
-            TerminologyProvider defaultTerminologyProvider, ModelResolver modelResolver) {
+            TerminologyProvider defaultTerminologyProvider, @Named("dstu3ModelResolver") ModelResolver modelResolver) {
+        BooleanQuery.setMaxClauseCount(10000000);
         this.defaultTerminologyProvider = defaultTerminologyProvider;
         this.registry = registry;
         this.fhirContext = fhirContext;

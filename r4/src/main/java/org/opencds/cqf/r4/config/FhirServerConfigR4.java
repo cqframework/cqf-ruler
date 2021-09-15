@@ -140,7 +140,7 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
         return new CacheAwareTerminologyProvider(terminologyCache, jpaTerminologyProvider);
     }
 
-    @Bean
+    @Bean(name = "r4ModelResolver")
     public ModelResolver modelResolver() {
         return new CachingModelResolverDecorator(new R4FhirModelResolver());
     }
