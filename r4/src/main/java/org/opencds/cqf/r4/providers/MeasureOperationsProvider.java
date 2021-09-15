@@ -466,16 +466,16 @@ public class MeasureOperationsProvider {
         if (baseGroup == null) {
             throw new RuntimeException("Could not find Group/" + subjectGroupRef);
         }
-        Group group = (Group) baseGroup;
-        group.getMember().forEach(member -> {
-            if (member.getEntity().fhirType().equals("Group")) {
-                patientList.addAll(getPatientListFromGroup(member.getEntity().getReference()));
-            } else if (member.getEntity().fhirType().equals("Patient")) {
-                patientList.add(member.getEntity());
-            } else if (member.getEntity().fhirType().equals("Reference")) {
-                patientList.add(member.getEntity());
-            }else {
-                logger.info(String.format("Group member was not a patient, so skipping. \n%s", member.getEntity().getReference()));
+        Group group = (Group)baseGroup;       
+        group.getMember().forEach(member -> {     
+            Reference reference = member.getEntity();
+            if (reference.getReferenceElement().getResourceType().equals("Patient")) {
+                patientList.add(reference);
+            } else if (reference.getReferenceElement().getResourceType().equals("Group")) {
+                patientList.addAll(getPatientListFromGroup(reference.getReference()));
+            }  
+            else {
+                logger.info(String.format("Group member was not a Patient or a Group, so skipping. \n%s", reference.getReference()));
             }
         });
         return patientList;
