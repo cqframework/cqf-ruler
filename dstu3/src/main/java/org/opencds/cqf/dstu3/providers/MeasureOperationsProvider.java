@@ -552,7 +552,12 @@ public class MeasureOperationsProvider {
     public Parameters report(@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
                                      @OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
                                      @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {      
-        Date periodStartDate = DateHelper.resolveRequestDate(periodStart, true);
+        if (periodStart == null) {
+            throw new IllegalArgumentException("Parameter 'periodStart' is required.");
+        }    
+        if (periodEnd == null) {
+            throw new IllegalArgumentException("Parameter 'periodEnd' is required.");
+        }    Date periodStartDate = DateHelper.resolveRequestDate(periodStart, true);
         Date periodEndDate = DateHelper.resolveRequestDate(periodEnd, false);
       
         if (periodStartDate.after(periodEndDate)) {
