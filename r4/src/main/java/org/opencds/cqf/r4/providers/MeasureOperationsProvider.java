@@ -312,7 +312,7 @@ public class MeasureOperationsProvider {
             if (_subject.startsWith("Patient/")) {
                 resolvePatientGapBundleForMeasures(_periodStart, _periodEnd, _subject, topic, status, returnParams, measures, "return", organization);
             } else if (_subject.startsWith("Group/")) {
-                returnParams.setId(status + "-" + _subject.replace("/", "_") + "-report");
+                returnParams.setId(status + "-" + _subject.replace("/", "-") + "-report");
                 (getPatientListFromGroup(_subject))
                 .forEach(
                     groupSubject -> resolvePatientGapBundleForMeasures(
@@ -750,7 +750,7 @@ public class MeasureOperationsProvider {
         }
 
         Parameters returnParams = new Parameters();
-        returnParams.setId(subject.replace("/", "_") + "-report");
+        returnParams.setId(subject.replace("/", "-") + "-report");
         
         SearchParameterMap theParams = SearchParameterMap.newSynchronous();       
         (getPatientListFromSubject(subject))
