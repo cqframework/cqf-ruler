@@ -10,6 +10,7 @@ import javax.xml.bind.JAXBException;
 
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.Library;
@@ -80,5 +81,14 @@ public class TranslatorHelper {
 
     public static Library translateLibrary(CqlTranslator translator) {
         return readLibrary(new ByteArrayInputStream(translator.toXml().getBytes(StandardCharsets.UTF_8)));
+    }
+
+    public static CqlTranslatorOptions getTranslatorOptions() {
+        CqlTranslatorOptions cqlTranslatorOptions = new CqlTranslatorOptions();
+        cqlTranslatorOptions.getFormats().add(CqlTranslator.Format.JSON);
+        cqlTranslatorOptions.getOptions().add(CqlTranslator.Options.EnableAnnotations);
+        cqlTranslatorOptions.setAnalyzeDataRequirements(true);
+        cqlTranslatorOptions.setCollapseDataRequirements(true);
+        return cqlTranslatorOptions;
     }
 }

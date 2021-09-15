@@ -1,5 +1,8 @@
 package org.opencds.cqf.r4.helpers;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -98,5 +101,20 @@ public class LibraryHelper extends ca.uhn.fhir.cql.r4.helper.LibraryHelper {
                 return true;
             }
         };
+    }
+
+    public static InputStream extractContentStream(org.hl7.fhir.r4.model.Library library) {
+        Attachment cql = null;
+        for (Attachment a : library.getContent()) {
+            if (a.getContentType().equals("text/cql")) {
+                cql = a;
+                break;
+            }
+        }
+
+        if (cql == null) {
+            return null;
+        }
+        return new ByteArrayInputStream(Base64.getDecoder().decode(cql.getDataElement().getValueAsString()));
     }
 }

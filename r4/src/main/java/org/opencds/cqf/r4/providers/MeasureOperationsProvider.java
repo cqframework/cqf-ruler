@@ -1,10 +1,7 @@
 package org.opencds.cqf.r4.providers;
 
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,11 +13,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
 import com.google.common.base.Strings;
 
 import org.cqframework.cql.cql2elm.CqlTranslator;
-import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.hibernate.cfg.NotYetImplementedException;
@@ -107,7 +102,7 @@ public class MeasureOperationsProvider {
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
 
     @Inject
-    public MeasureOperationsProvider(DaoRegistry registry, EvaluationProviderFactory factory, LibraryResourceProvider libraryResourceProvider,
+    public MeasureOperationsProvider(DaoRegistry registry, EvaluationProviderFactory factory,
             NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider,
             LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResolutionProvider,
             MeasureResourceProvider measureResourceProvider, DataRequirementsProvider dataRequirementsProvider, LibraryHelper libraryHelper) {
@@ -909,7 +904,7 @@ public class MeasureOperationsProvider {
 
     // TODO - this needs a lot of work
     @Operation(name = "$data-requirements", idempotent = true, type = Measure.class)
-    public org.hl7.fhir.r4.model.Library dataRequirements(@IdParam IdType theId,
+    public Library dataRequirements(@IdParam IdType theId,
             @OperationParam(name = "startPeriod") String startPeriod,
             @OperationParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
 
@@ -919,45 +914,20 @@ public class MeasureOperationsProvider {
         LibraryManager libraryManager = this.getLibraryManager(modelManager);
 
         Library library = dataRequirementsProvider.getLibraryFromMeasure(measure, libraryResolutionProvider);
-
         if (library == null) {
             throw new RuntimeException("Could not load measure library.");
         }
 
-        CqlTranslator translator = TranslatorHelper.getTranslator(getContentStream(library), libraryManager, modelManager);
-
+        CqlTranslator translator = TranslatorHelper.getTranslator(
+                org.opencds.cqf.r4.helpers.LibraryHelper.extractContentStream(library), libraryManager, modelManager);
         if (translator.getErrors().size() > 0) {
             throw new RuntimeException("Errors during library compilation.");
         }
 
-        return this.dataRequirementsProvider.getModuleDefinitionLibrary(measure, libraryManager, translator.getTranslatedLibrary(), getTranslatorOptions());
+        return this.dataRequirementsProvider.getModuleDefinitionLibrary(measure, libraryManager,
+                translator.getTranslatedLibrary(), TranslatorHelper.getTranslatorOptions());
     }
 
-
-    private CqlTranslatorOptions getTranslatorOptions() {
-        CqlTranslatorOptions cqlTranslatorOptions = new CqlTranslatorOptions();
-        cqlTranslatorOptions.getFormats().add(CqlTranslator.Format.JSON);
-        cqlTranslatorOptions.getOptions().add(CqlTranslator.Options.EnableAnnotations);
-        cqlTranslatorOptions.setAnalyzeDataRequirements(true);
-        cqlTranslatorOptions.setCollapseDataRequirements(true);
-        return cqlTranslatorOptions;
-    }
-
-    private InputStream getContentStream(org.hl7.fhir.r4.model.Library library) {
-        Attachment cql = null;
-        for (Attachment a : library.getContent()) {
-            if (a.getContentType().equals("text/cql")) {
-                cql = a;
-                break;
-            }
-        }
-
-        if (cql == null) {
-            return null;
-        }
-
-        return new ByteArrayInputStream(Base64.getDecoder().decode(cql.getDataElement().getValueAsString()));
-    }
 
     @SuppressWarnings("unchecked")
     @Operation(name = "$submit-data", idempotent = true, type = Measure.class)
