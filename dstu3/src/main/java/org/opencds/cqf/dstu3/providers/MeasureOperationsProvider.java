@@ -305,11 +305,22 @@ public class MeasureOperationsProvider {
         DataProvider dataProvider = this.factory.createDataProvider("FHIR", "3");
         Iterable<Object> groupRetrieve = dataProvider.retrieve("Group", "id", subjectGroupRef, "Group", null, null, null,
                 null, null, null, null, null);
-        Group group;
-        if (groupRetrieve.iterator().hasNext()) {
-            group = (Group) groupRetrieve.iterator().next();
-            group.getMember().forEach(member -> patientList.add(member.getEntity().getReference()));
+        if (!groupRetrieve.iterator().hasNext()) {
+            throw new RuntimeException("Could not find Group/" + subjectGroupRef);
         }
+  
+        Group group = (Group) groupRetrieve.iterator().next();           
+        group.getMember().forEach(member -> { 
+            Reference reference = member.getEntity();
+            if (reference.getReferenceElement().getResourceType().equals("Patient")) {
+                patientList.add(reference.getReference());
+            } else if (reference.getReferenceElement().getResourceType().equals("Group")) {
+                patientList.addAll(getPatientListFromGroup(reference.getReference()));
+            } else {
+                logger.info(String.format("Group member was not a Patient or a Group, so skipping. \n%s", reference.getReference()));
+            }
+        });
+     
         return patientList;
     }
 
