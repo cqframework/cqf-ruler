@@ -316,8 +316,7 @@ public class MeasureOperationsProvider {
                 patientList.add(reference.getReference());
             } else if (reference.getReferenceElement().getResourceType().equals("Group")) {
                 patientList.addAll(getPatientListFromGroup(reference.getReference()));
-            }  
-            else {
+            } else {
                 logger.info(String.format("Group member was not a Patient or a Group, so skipping. \n%s", reference.getReference()));
             }
         });
