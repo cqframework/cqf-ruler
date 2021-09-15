@@ -583,11 +583,10 @@ public class MeasureOperationsProvider {
         Parameters returnParams = new Parameters();
         returnParams.setId(subject.replace("/", "-") + "-report");
         
-        SearchParameterMap theParams = SearchParameterMap.newSynchronous();       
         (getPatientListFromSubject(subject))
             .forEach(
-                groupSubject -> {
-                    Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, groupSubject, theParams);
+                patientSubject -> {
+                    Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, patientSubject);
                     returnParams.addParameter(patientParameter);
                 }
             );        
@@ -595,7 +594,8 @@ public class MeasureOperationsProvider {
         return returnParams;
     }
 
-    private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject, SearchParameterMap theParams ) {
+    private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject) {
+        SearchParameterMap theParams = SearchParameterMap.newSynchronous();
         StringParam subjectParam = new StringParam(subject);
         theParams.add("subject", subjectParam);
 
@@ -603,13 +603,13 @@ public class MeasureOperationsProvider {
             patientReportBundle.setType(Bundle.BundleType.COLLECTION);
             // no timestamp in DSTU3
             //patientReportBundle.setTimestamp(new Date());
-            patientReportBundle.setId(UUID.randomUUID().toString());
+            patientReportBundle.setId(subject.replace("/", "-") + "-report");
             patientReportBundle.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
             
         IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
         measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
             MeasureReport measureReport = (MeasureReport)baseResource;        
-            if (measureReport.getDate().before(periodStart) || measureReport.getDate().after(periodEnd)) {
+            if (measureReport.getPeriod().getStart().before(periodStart) || measureReport.getPeriod().getEnd().after(periodEnd)) {
                 return;
             }           
             
@@ -622,7 +622,7 @@ public class MeasureOperationsProvider {
 
         Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
             patientParameter.setResource(patientReportBundle);
-            patientParameter.setId(UUID.randomUUID().toString());
+            patientParameter.setId(subject.replace("/", "-") + "-report");
             patientParameter.setName("return");
         return patientParameter;
     }
