@@ -277,7 +277,7 @@ public class MeasureOperationsProvider {
                         .setResource(patientCareGap(periodStart, periodEnd, subject, topic, measure, status)));
                 return returnParams;
             }else if(subject.startsWith("Group/")) {
-                returnParams.setId((status==null?"all-gaps": status) + "-" + subject.replace("/","_") + "-report");
+                returnParams.setId((status==null?"all-gaps": status) + "-" + subject.replace("/","-") + "-report");
                 (getPatientListFromGroup(subject))
                     .forEach(groupSubject ->{
                         Bundle patientGapBundle = patientCareGap(periodStart, periodEnd, groupSubject, topic, measure, status);
@@ -568,7 +568,8 @@ public class MeasureOperationsProvider {
         }    
         if (periodEnd == null) {
             throw new IllegalArgumentException("Parameter 'periodEnd' is required.");
-        }    Date periodStartDate = DateHelper.resolveRequestDate(periodStart, true);
+        }    
+        Date periodStartDate = DateHelper.resolveRequestDate(periodStart, true);
         Date periodEndDate = DateHelper.resolveRequestDate(periodEnd, false);
       
         if (periodStartDate.after(periodEndDate)) {
@@ -580,7 +581,7 @@ public class MeasureOperationsProvider {
         }
 
         Parameters returnParams = new Parameters();
-        returnParams.setId(subject.replace("/", "_") + "-report");
+        returnParams.setId(subject.replace("/", "-") + "-report");
         
         SearchParameterMap theParams = SearchParameterMap.newSynchronous();       
         (getPatientListFromSubject(subject))
