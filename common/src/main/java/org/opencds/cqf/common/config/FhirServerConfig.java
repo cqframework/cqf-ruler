@@ -82,6 +82,7 @@ public class FhirServerConfig {
         retVal.setEmailFromAddress(this.emailFrom);
         retVal.setEnforceReferentialIntegrityOnDelete(this.enforceReferentialIntegrityOnDelete);
         retVal.setEnforceReferentialIntegrityOnWrite(this.enforceReferentialIntegrityOnWrite);
+        retVal.setMaximumExpansionSize(100000);
 
         Integer maxFetchSize = HapiProperties.getMaximumFetchSize();
         retVal.setFetchSizeDefaultMaximum(maxFetchSize);
@@ -197,5 +198,5 @@ public class FhirServerConfig {
 	@Bean(name="globalLibraryCache") 
 	Map<org.cqframework.cql.elm.execution.VersionedIdentifier, Library> globalLibraryCache() {
 		return new ConcurrentHashMap<org.cqframework.cql.elm.execution.VersionedIdentifier, Library>();
-	} 
+	}
 }

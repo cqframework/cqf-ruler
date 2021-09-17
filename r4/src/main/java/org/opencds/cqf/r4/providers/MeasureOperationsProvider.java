@@ -93,7 +93,6 @@ public class MeasureOperationsProvider {
     private LibraryHelper libraryHelper;
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
-
     @Inject
     public MeasureOperationsProvider(DaoRegistry registry, EvaluationProviderFactory factory,
             NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider,

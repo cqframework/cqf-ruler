@@ -13,7 +13,11 @@ import org.cqframework.cql.elm.execution.Library;
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.providers.CacheAwareTerminologyProvider;
+import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
+import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
+import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
+import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
@@ -39,8 +43,10 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import ca.uhn.fhir.context.ConfigurationException;
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.cql.dstu3.listener.ElmCacheResourceChangeListener;
 import ca.uhn.fhir.cql.dstu3.provider.JpaTerminologyProvider;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
@@ -137,6 +143,20 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     public TerminologyProvider terminologyProvider(Map<String, Iterable<Code>> terminologyCache, JpaTerminologyProvider jpaTerminologyProvider) {
         return new CacheAwareTerminologyProvider(terminologyCache, jpaTerminologyProvider);
     }
+
+    @Bean SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
+        return new SearchParameterResolver(fhirContext);
+    }
+
+    // TODO: Respect config options
+    @Bean
+    public DataProvider dataProvider(ModelResolver modelResolver, DaoRegistry daoRegistry, SearchParameterResolver searchParameterResolver, TerminologyProvider terminologyProvider) {
+        JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver);
+        retrieveProvider.setTerminologyProvider(terminologyProvider);
+        retrieveProvider.setExpandValueSets(true);
+        return new CompositeDataProvider(modelResolver, retrieveProvider);
+    }
+    
 
     @Bean(name = "dstu3ModelResolver")
     public ModelResolver modelResolver() {
