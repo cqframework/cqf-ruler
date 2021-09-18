@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -78,6 +79,8 @@ public class CdsHooksServlet extends HttpServlet {
 
     private LibraryHelper libraryHelper;
 
+    private AtomicReference<JsonArray> services;
+
     @SuppressWarnings("unchecked")
     @Override
     public void init() {
@@ -92,6 +95,7 @@ public class CdsHooksServlet extends HttpServlet {
         this.serverTerminologyProvider = appCtx.getBean(TerminologyProvider.class);
         this.modelResolver = appCtx.getBean("dstu3ModelResolver", ModelResolver.class);
         this.libraryHelper = appCtx.getBean(LibraryHelper.class);
+        this.services = appCtx.getBean("globalCdsServiceCache", AtomicReference.class);
     }
 
     protected ProviderConfiguration getProviderConfiguration() {
@@ -277,8 +281,18 @@ public class CdsHooksServlet extends HttpServlet {
         response.getWriter().println(exceptionAsString);
     }
 
+    private JsonArray getServicesArray() {
+        JsonArray cachedServices = this.services.get();
+        if (cachedServices == null) {
+            cachedServices = getServices().get("services").getAsJsonArray();
+            services.set(cachedServices);
+        }
+
+        return cachedServices;
+    }
+
     private JsonObject getService(String service) {
-        JsonArray services = getServices().get("services").getAsJsonArray();
+        JsonArray services =  getServicesArray();
         List<String> ids = new ArrayList<>();
         for (JsonElement element : services) {
             if (element.isJsonObject() && element.getAsJsonObject().has("id")) {
