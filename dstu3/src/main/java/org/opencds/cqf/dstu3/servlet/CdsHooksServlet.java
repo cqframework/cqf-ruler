@@ -283,7 +283,7 @@ public class CdsHooksServlet extends HttpServlet {
 
     private JsonArray getServicesArray() {
         JsonArray cachedServices = this.services.get();
-        if (cachedServices == null) {
+        if (cachedServices == null || cachedServices.size() == 0) {
             cachedServices = getServices().get("services").getAsJsonArray();
             services.set(cachedServices);
         }
