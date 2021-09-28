@@ -72,31 +72,6 @@ public class LibraryHelper extends ca.uhn.fhir.cql.r4.helper.LibraryHelper {
         TranslatingLibraryLoader translatingLibraryLoader = new TranslatingLibraryLoader(modelManager, contentProviders,
                 translatorOptions);
 
-        return new CacheAwareLibraryLoaderDecorator(translatingLibraryLoader, libraryCache) {
-            @Override
-            protected Boolean translatorOptionsMatch(Library library) {
-                return true;
-            }
-        };
-    }
-
-    @Override
-    public org.opencds.cqf.cql.engine.execution.LibraryLoader createLibraryLoader(
-            org.cqframework.cql.cql2elm.LibrarySourceProvider provider) {
-        ModelManager modelManager = new CacheAwareModelManager(this.modelCache);
-        LibraryManager libraryManager = new LibraryManager(modelManager);
-        libraryManager.getLibrarySourceLoader().clearProviders();
-
-        libraryManager.getLibrarySourceLoader().registerProvider(provider);
-
-        TranslatingLibraryLoader translatingLibraryLoader = new TranslatingLibraryLoader(modelManager, null,
-                translatorOptions);
-
-        return new CacheAwareLibraryLoaderDecorator(translatingLibraryLoader, libraryCache) {
-            @Override
-            protected Boolean translatorOptionsMatch(Library library) {
-                return true;
-            }
-        };
+        return new CacheAwareLibraryLoaderDecorator(translatingLibraryLoader, libraryCache);
     }
 }

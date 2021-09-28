@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -78,6 +79,8 @@ public class CdsHooksServlet extends HttpServlet {
 
     private LibraryHelper libraryHelper;
 
+    private AtomicReference<JsonArray> services;
+
     @SuppressWarnings("unchecked")
     @Override
     public void init() {
@@ -92,6 +95,7 @@ public class CdsHooksServlet extends HttpServlet {
         this.serverTerminologyProvider = appCtx.getBean(TerminologyProvider.class);
         this.modelResolver = appCtx.getBean("r4ModelResolver", ModelResolver.class);
         this.libraryHelper = appCtx.getBean(LibraryHelper.class);
+        this.services = appCtx.getBean("globalCdsServiceCache", AtomicReference.class);
     }
 
     protected ProviderConfiguration getProviderConfiguration() {
@@ -284,7 +288,7 @@ public class CdsHooksServlet extends HttpServlet {
     }
 
     private JsonObject getService(String service) {
-        JsonArray services = getServices().get("services").getAsJsonArray();
+        JsonArray services = getServicesArray();
         List<String> ids = new ArrayList<>();
         for (JsonElement element : services) {
             if (element.isJsonObject() && element.getAsJsonObject().has("id")) {
@@ -296,6 +300,16 @@ public class CdsHooksServlet extends HttpServlet {
         }
         throw new InvalidRequestException(
                 "Cannot resolve service: " + service + "\nAvailable services: " + ids.toString());
+    }
+
+    private JsonArray getServicesArray() {
+        JsonArray cachedServices = this.services.get();
+        if (cachedServices == null || cachedServices.size() == 0) {
+            cachedServices = getServices().get("services").getAsJsonArray();
+            services.set(cachedServices);
+        }
+
+        return cachedServices;
     }
 
     private JsonObject getServices() {
