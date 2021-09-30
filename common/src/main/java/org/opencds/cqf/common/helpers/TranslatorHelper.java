@@ -55,6 +55,7 @@ public class TranslatorHelper {
         options.add(CqlTranslator.Options.EnableLocators);
         options.add(CqlTranslator.Options.DisableListDemotion);
         options.add(CqlTranslator.Options.DisableListPromotion);
+        options.add(CqlTranslator.Options.DisableMethodInvocation);
         return options;
     }
 
