@@ -8,15 +8,12 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import  java.util.Set;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -48,7 +45,6 @@ import org.cqframework.cql.elm.execution.IncludeDef;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.ValueSetDef;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
-import org.cqframework.cql.elm.requirements.fhir.DataRequirementsProcessor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.hl7.elm.r1.ValueSetRef;
@@ -64,10 +60,8 @@ import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.ParameterDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.StringType;
-import org.hl7.fhir.r5.model.CanonicalType;
-import org.hl7.fhir.r5.model.Extension;
-import org.hl7.fhir.r5.model.Meta;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
+import org.opencds.cqf.common.providers.CommonDataRequirementsProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.tooling.measure.r4.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
@@ -87,133 +81,49 @@ import org.opencds.cqf.r4.helpers.CanonicalHelper;
 public class DataRequirementsProvider {
     private static final Logger logger = LoggerFactory.getLogger(DataRequirementsProvider.class);
 
-    private static String EXTENSION_URL_PARAMETER = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-parameter";
-    private static String EXTENSION_URL_DATA_REQUIREMENT = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-dataRequirement";
-    private static String EXTENSION_URL_REFERENCE_CODE = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-directReferenceCode";
-    private static String EXTENSION_URL_LOGIC_DEFINITION = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition";
-    private static String EXTENSION_URL_COMPUTABLE_MEASURE = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/computable-measure-cqfm";
-
     private LibraryHelper libraryHelper;
+    private CommonDataRequirementsProvider dataRequirementsProvider;
 
     @Inject
-    public DataRequirementsProvider(LibraryHelper libraryHelper) {
+    public DataRequirementsProvider(CommonDataRequirementsProvider dataRequirementsProvider,
+                                    LibraryHelper libraryHelper) {
+        this.dataRequirementsProvider = dataRequirementsProvider;
         this.libraryHelper = libraryHelper;
     }
 
+    public Measure createMeasure(Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(measure);
+        org.hl7.fhir.r5.model.Measure convertedMeasure = dataRequirementsProvider.createMeasure(measureR5, libraryManager, translatedLibrary, options);
+        org.hl7.fhir.r4.model.Measure measureR4 = (org.hl7.fhir.r4.model.Measure) VersionConvertor_40_50.convertResource(convertedMeasure);
 
-    public Measure createMeasure(Measure r4Measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-
-        org.hl7.fhir.r5.model.Measure measureToUse = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(r4Measure);
-        org.hl7.fhir.r4.model.Library moduleDefinitionLibrary = getModuleDefinitionLibrary(r4Measure, libraryManager, translatedLibrary, options);
-
-        org.hl7.fhir.r5.model.Library moduleDefinitionLibraryR5 = (org.hl7.fhir.r5.model.Library) VersionConvertor_40_50.convertResource(moduleDefinitionLibrary);
-
-        measureToUse.setDate(new Date());
-        setMeta(measureToUse, moduleDefinitionLibraryR5);
-        clearMeasureExtensions(measureToUse, EXTENSION_URL_PARAMETER);
-        clearMeasureExtensions(measureToUse, EXTENSION_URL_DATA_REQUIREMENT);
-        clearMeasureExtensions(measureToUse, EXTENSION_URL_REFERENCE_CODE);
-        clearMeasureExtensions(measureToUse, EXTENSION_URL_LOGIC_DEFINITION);
-        clearRelatedArtifacts(measureToUse);
-        setParameters(measureToUse, moduleDefinitionLibraryR5);
-        setDataRequirements(measureToUse, moduleDefinitionLibraryR5);
-        setDirectReferenceCode(measureToUse, moduleDefinitionLibraryR5);
-        setLogicDefinition(measureToUse, moduleDefinitionLibraryR5);
-        measureToUse.setRelatedArtifact(moduleDefinitionLibraryR5.getRelatedArtifact());
-
-        org.hl7.fhir.r4.model.Measure measureR4 = (org.hl7.fhir.r4.model.Measure) VersionConvertor_40_50.convertResource(measureToUse);
         return measureR4;
     }
 
-    public org.hl7.fhir.r4.model.Library getModuleDefinitionLibrary(Measure r4Measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options){
+    public org.hl7.fhir.r4.model.Library getModuleDefinitionLibrary(Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(measure);
 
-        org.hl7.fhir.r5.model.Measure measureToUse = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(r4Measure);
-
-        Set<String> expressionList = getExpressions(measureToUse);
-        DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
-
-        org.hl7.fhir.r5.model.Library libraryR5 = dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, expressionList, true);
-        org.hl7.fhir.r4.model.Library library = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(libraryR5);
-
-        return library;
+        org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(measureR5, libraryManager, translatedLibrary, options);
+        org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(libraryR5);
+        return libraryR4;
     }
 
-    private Set<String> getExpressions(org.hl7.fhir.r5.model.Measure measureToUse) {
-        Set<String> expressionSet = new HashSet<>();
-        measureToUse.getSupplementalData().forEach(supData->{
-            expressionSet.add(supData.getCriteria().getExpression());
-        });
-        measureToUse.getGroup().forEach(groupMember->{
-            groupMember.getPopulation().forEach(population->{
-                expressionSet.add(population.getCriteria().getExpression());
-            });
-            groupMember.getStratifier().forEach(stratifier->{
-                expressionSet.add(stratifier.getCriteria().getExpression());
-            });
-        });
-        return expressionSet;
-    }
+    public org.hl7.fhir.r4.model.Library getLibraryFromMeasure(Measure measure,
+                                                               LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {
+        org.hl7.fhir.r4.model.Library primaryLibrary = null;
+        Iterator var6 = measure.getLibrary().iterator();
 
-    private void clearMeasureExtensions(org.hl7.fhir.r5.model.Measure measure, String extensionUrl) {
-        List<Extension> extensionsToRemove = measure.getExtensionsByUrl(extensionUrl);
-        measure.getExtension().removeAll(extensionsToRemove);
-    }
+        String library = null;
+        //use the first library
+        while (var6.hasNext() && library == null) {
+            org.hl7.fhir.r4.model.CanonicalType ref = (org.hl7.fhir.r4.model.CanonicalType) var6.next();
 
-    private void clearRelatedArtifacts(org.hl7.fhir.r5.model.Measure measure) {
-        measure.getRelatedArtifact().removeIf(r -> r.getType() == org.hl7.fhir.r5.model.RelatedArtifact.RelatedArtifactType.DEPENDSON);
-    }
-
-    private void setLogicDefinition(org.hl7.fhir.r5.model.Measure measureToUse, org.hl7.fhir.r5.model.Library moduleDefinitionLibrary) {
-        moduleDefinitionLibrary.getExtension().forEach(extension -> {
-            if (extension.getUrl().equalsIgnoreCase(EXTENSION_URL_LOGIC_DEFINITION)) {
-                measureToUse.addExtension(extension);
-            }
-        });
-    }
-
-    private void setDirectReferenceCode(org.hl7.fhir.r5.model.Measure measureToUse, org.hl7.fhir.r5.model.Library moduleDefinitionLibrary) {
-        moduleDefinitionLibrary.getExtension().forEach(extension -> {
-            if(extension.getUrl().equalsIgnoreCase(EXTENSION_URL_REFERENCE_CODE)) {
-                measureToUse.addExtension(extension);
-            }
-        });
-    }
-
-    private void setDataRequirements(org.hl7.fhir.r5.model.Measure measureToUse, org.hl7.fhir.r5.model.Library moduleDefinitionLibrary) {
-        moduleDefinitionLibrary.getDataRequirement().forEach(dataRequirement -> {
-            Extension dataReqExtension = new Extension();
-            dataReqExtension.setUrl(EXTENSION_URL_DATA_REQUIREMENT);
-            dataReqExtension.setValue(dataRequirement);
-            measureToUse.addExtension(dataReqExtension);
-        });
-    }
-
-    private void setParameters(org.hl7.fhir.r5.model.Measure measureToUse, org.hl7.fhir.r5.model.Library moduleDefinitionLibrary) {
-        Set<String> parameterName = new HashSet<>();
-        moduleDefinitionLibrary.getParameter().forEach(parameter->{
-            if(!parameterName.contains(parameter.getName())) {
-                Extension parameterExtension = new Extension();
-                parameterExtension.setUrl(EXTENSION_URL_PARAMETER);
-                parameterExtension.setValue(parameter);
-                measureToUse.addExtension(parameterExtension);
-                parameterName.add(parameter.getName());
-            }
-        });
-    }
-
-    private void setMeta(org.hl7.fhir.r5.model.Measure measureToUse, org.hl7.fhir.r5.model.Library moduleDefinitionLibrary){
-        if (measureToUse.getMeta() == null) {
-            measureToUse.setMeta(new Meta());
-        }
-        boolean hasProfileMarker = false;
-        for (CanonicalType canonical : measureToUse.getMeta().getProfile()) {
-            if (EXTENSION_URL_COMPUTABLE_MEASURE.equals(canonical.getValue())) {
-                hasProfileMarker = true;
+            if(ref != null) {
+                library = (String) ref.getValue();
             }
         }
-        if (!hasProfileMarker) {
-            measureToUse.getMeta().addProfile(EXTENSION_URL_COMPUTABLE_MEASURE);
-        }
+        primaryLibrary = libraryHelper.resolveLibraryReference(libraryResourceProvider, library);
+
+        return primaryLibrary;
     }
 
     // For creating the CQF measure we need to:
@@ -230,23 +140,6 @@ public class DataRequirementsProvider {
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> libraryMap = this
                 .createLibraryMap(measure, libraryResourceProvider);
         return this.createCqfMeasure(measure, libraryMap);
-    }
-
-    public org.hl7.fhir.r4.model.Library getLibraryFromMeasure(Measure measure,
-               LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {
-
-        org.hl7.fhir.r4.model.Library primaryLibrary = null;
-        Iterator var6 = measure.getLibrary().iterator();
-
-        String library= null;
-        while(var6.hasNext()) {
-            org.hl7.fhir.r4.model.CanonicalType ref = (org.hl7.fhir.r4.model.CanonicalType) var6.next();
-            library = (String) ref.getValue();
-
-        }
-        primaryLibrary = libraryHelper.resolveLibraryReference(libraryResourceProvider, library);
-
-        return primaryLibrary;
     }
 
     private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> createLibraryMap(Measure measure,

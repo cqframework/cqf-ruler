@@ -24,7 +24,6 @@ import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -55,10 +54,10 @@ import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
-import org.opencds.cqf.common.providers.LibraryContentProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluation;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
+import org.opencds.cqf.r4.helpers.LibraryHelper;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.slf4j.Logger;
@@ -67,7 +66,6 @@ import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
-import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
@@ -115,28 +113,6 @@ public class MeasureOperationsProvider {
         this.dataRequirementsProvider = dataRequirementsProvider;
         this.measureResourceProvider = measureResourceProvider;
         this.libraryHelper = libraryHelper;
-    }
-
-    private ModelManager getModelManager() {
-        return new ModelManager();
-    }
-
-    private LibraryManager getLibraryManager(ModelManager modelManager) {
-        LibraryManager libraryManager = new LibraryManager(modelManager);
-        libraryManager.getLibrarySourceLoader().clearProviders();
-        libraryManager.getLibrarySourceLoader().registerProvider(getLibrarySourceProvider());
-
-        return libraryManager;
-    }
-
-    private LibraryContentProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment> librarySourceProvider;
-
-    private LibraryContentProvider<Library, Attachment> getLibrarySourceProvider() {
-        if (librarySourceProvider == null) {
-            librarySourceProvider = new LibraryContentProvider<org.hl7.fhir.r4.model.Library, org.hl7.fhir.r4.model.Attachment>(
-                    this.libraryResolutionProvider, x -> x.getContent(), x -> x.getContentType(), x -> x.getData());
-        }
-        return librarySourceProvider;
     }
 
     @Operation(name = "$hqmf", idempotent = true, type = Measure.class)
@@ -910,8 +886,8 @@ public class MeasureOperationsProvider {
 
         Measure measure = this.measureResourceProvider.getDao().read(theId);
 
-        ModelManager modelManager = this.getModelManager();
-        LibraryManager libraryManager = this.getLibraryManager(modelManager);
+        ModelManager modelManager = libraryHelper.getModelManager();
+        LibraryManager libraryManager = libraryHelper.getLibraryManager(libraryResolutionProvider);
 
         Library library = dataRequirementsProvider.getLibraryFromMeasure(measure, libraryResolutionProvider);
         if (library == null) {
@@ -919,7 +895,7 @@ public class MeasureOperationsProvider {
         }
 
         CqlTranslator translator = TranslatorHelper.getTranslator(
-                org.opencds.cqf.r4.helpers.LibraryHelper.extractContentStream(library), libraryManager, modelManager);
+                LibraryHelper.extractContentStream(library), libraryManager, modelManager);
         if (translator.getErrors().size() > 0) {
             throw new RuntimeException("Errors during library compilation.");
         }
