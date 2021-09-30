@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
 import org.hl7.fhir.dstu3.model.Attachment;
@@ -47,7 +48,7 @@ public class ActivityDefinitionApplyProvider {
 
     @Inject
     public ActivityDefinitionApplyProvider(FhirContext fhirContext, CqlExecutionProvider executionProvider,
-            IFhirResourceDao<ActivityDefinition> activityDefinitionDao, ModelResolver modelResolver) {
+            IFhirResourceDao<ActivityDefinition> activityDefinitionDao, @Named("dstu3ModelResolver") ModelResolver modelResolver) {
         this.modelResolver = modelResolver;
         this.executionProvider = executionProvider;
         this.activityDefinitionDao = activityDefinitionDao;

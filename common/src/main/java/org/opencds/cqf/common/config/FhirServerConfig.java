@@ -6,9 +6,11 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.google.gson.JsonArray;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.cqframework.cql.cql2elm.model.Model;
@@ -82,6 +84,7 @@ public class FhirServerConfig {
         retVal.setEmailFromAddress(this.emailFrom);
         retVal.setEnforceReferentialIntegrityOnDelete(this.enforceReferentialIntegrityOnDelete);
         retVal.setEnforceReferentialIntegrityOnWrite(this.enforceReferentialIntegrityOnWrite);
+        retVal.setMaximumExpansionSize(100000);
 
         Integer maxFetchSize = HapiProperties.getMaximumFetchSize();
         retVal.setFetchSizeDefaultMaximum(maxFetchSize);
@@ -197,5 +200,32 @@ public class FhirServerConfig {
 	@Bean(name="globalLibraryCache") 
 	Map<org.cqframework.cql.elm.execution.VersionedIdentifier, Library> globalLibraryCache() {
 		return new ConcurrentHashMap<org.cqframework.cql.elm.execution.VersionedIdentifier, Library>();
-	} 
+	}
+
+    @Bean(name="globalCdsServiceCache")
+    AtomicReference<JsonArray> cdsServiceCache(){
+        return new AtomicReference<>();
+    }
+
+    @Bean
+    public IResourceChangeListener PlanDefinitionChangeListener(IResourceChangeListenerRegistry resourceChangeListenerRegistry,  AtomicReference<JsonArray> cdsServiceCache) {
+        IResourceChangeListener listener = new IResourceChangeListener(){
+
+            @Override
+            public void handleInit(Collection<IIdType> theResourceIds) {
+                // Intentionally empty
+            }
+
+            // TODO: Selectively clear by url. Requires a lookup on the resource
+            @Override
+            public void handleChange(IResourceChangeEvent theResourceChangeEvent) {
+                cdsServiceCache.set(null);
+            }
+        };
+
+        resourceChangeListenerRegistry.registerResourceResourceChangeListener("PlanDefinition", SearchParameterMap.newSynchronous(), listener, 1000);
+
+        return listener;
+    }
+
 }

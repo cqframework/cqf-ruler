@@ -98,7 +98,6 @@ public class MeasureOperationsProvider {
     private LibraryHelper libraryHelper;
 
     private static final Logger logger = LoggerFactory.getLogger(MeasureOperationsProvider.class);
-
     @Inject
     public MeasureOperationsProvider(DaoRegistry registry, EvaluationProviderFactory factory,
             NarrativeProvider narrativeProvider, HQMFProvider hqmfProvider,
@@ -317,7 +316,7 @@ public class MeasureOperationsProvider {
             if (_subject.startsWith("Patient/")) {
                 resolvePatientGapBundleForMeasures(_periodStart, _periodEnd, _subject, topic, status, returnParams, measures, "return", organization);
             } else if (_subject.startsWith("Group/")) {
-                returnParams.setId(status + "-" + _subject.replace("/", "_") + "-report");
+                returnParams.setId(status + "-" + _subject.replace("/", "-") + "-report");
                 (getPatientListFromGroup(_subject))
                 .forEach(
                     groupSubject -> resolvePatientGapBundleForMeasures(
@@ -471,14 +470,15 @@ public class MeasureOperationsProvider {
         if (baseGroup == null) {
             throw new RuntimeException("Could not find Group/" + subjectGroupRef);
         }
-        Group group = (Group) baseGroup;
-        group.getMember().forEach(member -> {
-            if (member.getEntity().fhirType().equals("Group")) {
-                patientList.addAll(getPatientListFromGroup(member.getEntity().getReference()));
-            } else if (member.getEntity().fhirType().equals("Patient")) {
-                patientList.add(member.getEntity());
+        Group group = (Group)baseGroup;       
+        group.getMember().forEach(member -> {     
+            Reference reference = member.getEntity();
+            if (reference.getReferenceElement().getResourceType().equals("Patient")) {
+                patientList.add(reference);
+            } else if (reference.getReferenceElement().getResourceType().equals("Group")) {
+                patientList.addAll(getPatientListFromGroup(reference.getReference()));
             } else {
-                logger.info(String.format("Group member was not a patient, so skipping. \n%s", member.getEntity().getReference()));
+                logger.info(String.format("Group member was not a Patient or a Group, so skipping. \n%s", reference.getReference()));
             }
         });
         return patientList;
@@ -736,22 +736,30 @@ public class MeasureOperationsProvider {
     @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
     public Parameters report(@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
                                      @OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
-                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {      
+                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException { 
+        if (periodStart == null) {
+            throw new IllegalArgumentException("Parameter 'periodStart' is required.");
+        }    
+        if (periodEnd == null) {
+            throw new IllegalArgumentException("Parameter 'periodEnd' is required.");
+        }    
         Date periodStartDate = DateHelper.resolveRequestDate(periodStart, true);
         Date periodEndDate = DateHelper.resolveRequestDate(periodEnd, false);
-
+        if (periodStartDate.after(periodEndDate)) {
+            throw new IllegalArgumentException("Parameter 'periodStart' must be before 'periodEnd'.");
+        }
+ 
         if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
             throw new IllegalArgumentException("Parameter 'subject' must be in the format 'Patient/[id]' or 'Group/[id]'.");
         }
 
         Parameters returnParams = new Parameters();
-        returnParams.setId(subject.replace("/", "_") + "-report");
-        
-        SearchParameterMap theParams = SearchParameterMap.newSynchronous();       
+        returnParams.setId(subject.replace("/", "-") + "-report");
+               
         (getPatientListFromSubject(subject))
             .forEach(
-                groupSubject -> {
-                    Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, groupSubject.getReference(), theParams);
+                patientSubject -> {
+                    Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, patientSubject.getReference());
                     returnParams.addParameter(patientParameter);
                 }
             );        
@@ -759,20 +767,21 @@ public class MeasureOperationsProvider {
         return returnParams;
     }
 
-    private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject, SearchParameterMap theParams ) {
+    private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject) {
+        SearchParameterMap theParams = SearchParameterMap.newSynchronous();
         ReferenceParam subjectParam = new ReferenceParam(subject);
         theParams.add("subject", subjectParam);
 
-        Bundle patientReportBundle =  new Bundle();
+        Bundle patientReportBundle = new Bundle();
             patientReportBundle.setType(Bundle.BundleType.COLLECTION);
             patientReportBundle.setTimestamp(new Date());
-            patientReportBundle.setId(UUID.randomUUID().toString());
+            patientReportBundle.setId(subject.replace("/", "-") + "-report");
             patientReportBundle.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
             
         IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
         measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
             MeasureReport measureReport = (MeasureReport)baseResource;        
-            if (measureReport.getDate().before(periodStart) || measureReport.getDate().after(periodEnd)) {
+            if (measureReport.getPeriod().getStart().before(periodStart) || measureReport.getPeriod().getEnd().after(periodEnd)) {
                 return;
             }           
             
@@ -785,7 +794,7 @@ public class MeasureOperationsProvider {
 
         Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
             patientParameter.setResource(patientReportBundle);
-            patientParameter.setId(UUID.randomUUID().toString());
+            patientParameter.setId(subject.replace("/", "-") + "-report");
             patientParameter.setName("return");
         return patientParameter;
     }
