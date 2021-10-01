@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
@@ -42,6 +45,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.dstu3.evaluation.MeasureEvaluation;
@@ -721,7 +725,23 @@ public class MeasureOperationsProvider {
             @OperationParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
 
         Measure measure = this.measureResourceProvider.getDao().read(theId);
-        return this.dataRequirementsProvider.getDataRequirements(measure, this.libraryResolutionProvider);
+
+        ModelManager modelManager = libraryHelper.getModelManager();
+        LibraryManager libraryManager = libraryHelper.getLibraryManager(libraryResolutionProvider);
+
+        Library library = this.dataRequirementsProvider.getLibraryFromMeasure(measure, libraryResolutionProvider);
+        if (library == null) {
+            throw new RuntimeException("Could not load measure library.");
+        }
+
+        CqlTranslator translator = TranslatorHelper.getTranslator(
+                LibraryHelper.extractContentStream(library), libraryManager, modelManager);
+        if (translator.getErrors().size() > 0) {
+            throw new RuntimeException("Errors during library compilation.");
+        }
+
+        return this.dataRequirementsProvider.getModuleDefinitionLibrary(measure, libraryManager,
+                translator.getTranslatedLibrary(), TranslatorHelper.getTranslatorOptions());
     }
 
     @SuppressWarnings("unchecked")

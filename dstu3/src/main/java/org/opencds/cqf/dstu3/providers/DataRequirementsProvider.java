@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,8 +32,10 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
 import org.cqframework.cql.elm.execution.CodeDef;
 import org.cqframework.cql.elm.execution.CodeSystemDef;
 import org.cqframework.cql.elm.execution.ExpressionDef;
@@ -44,6 +47,7 @@ import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.hl7.elm.r1.ValueSetRef;
+import org.hl7.fhir.convertors.VersionConvertor_30_50;
 import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.Base64BinaryType;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
@@ -62,6 +66,7 @@ import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
+import org.opencds.cqf.common.providers.CommonDataRequirementsProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.tooling.measure.stu3.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.stu3.CqfMeasure;
@@ -78,10 +83,41 @@ import org.opencds.cqf.tooling.measure.stu3.VersionedTerminologyRef;
 public class DataRequirementsProvider {
 
     private LibraryHelper libraryHelper;
+    private CommonDataRequirementsProvider dataRequirementsProvider;
 
     @Inject
-    public DataRequirementsProvider(LibraryHelper libraryHelper) {
+    public DataRequirementsProvider(CommonDataRequirementsProvider dataRequirementsProvider,
+                                    LibraryHelper libraryHelper) {
+        this.dataRequirementsProvider = dataRequirementsProvider;
         this.libraryHelper = libraryHelper;
+    }
+
+
+    public org.hl7.fhir.dstu3.model.Library getModuleDefinitionLibrary(org.hl7.fhir.dstu3.model.Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_30_50.convertResource(measure);
+
+        org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(measureR5, libraryManager, translatedLibrary, options);
+        org.hl7.fhir.dstu3.model.Library libraryDstu3 = (org.hl7.fhir.dstu3.model.Library) VersionConvertor_30_50.convertResource(libraryR5);
+        return libraryDstu3;
+    }
+
+    public org.hl7.fhir.dstu3.model.Library getLibraryFromMeasure(org.hl7.fhir.dstu3.model.Measure measure,
+                                                               LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
+        org.hl7.fhir.dstu3.model.Library primaryLibrary = null;
+        Iterator var6 = measure.getLibrary().iterator();
+
+        String id = null;
+        //use the first library
+        while (var6.hasNext() && id == null) {
+            Reference ref = (Reference)var6.next();
+            id = ref.getReferenceElement().getIdPart();
+            if (id.startsWith("#")) {
+                id = id.substring(1);
+            }
+        }
+        primaryLibrary = (org.hl7.fhir.dstu3.model.Library)libraryResourceProvider.resolveLibraryById(id);
+
+        return primaryLibrary;
     }
 
     // For creating the CQF measure we need to:
