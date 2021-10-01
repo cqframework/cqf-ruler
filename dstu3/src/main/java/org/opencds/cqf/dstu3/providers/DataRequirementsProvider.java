@@ -534,13 +534,6 @@ public class DataRequirementsProvider {
         return renderer.render(document);
     }
 
-    public org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure,
-            LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
-        Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = this
-                .createLibraryMap(measure, libraryResourceProvider);
-        return this.getDataRequirements(measure, libraryMap.values().stream().map(x -> x.getRight())
-                .filter(x -> x != null).collect(Collectors.toList()));
-    }
 
     private org.hl7.fhir.dstu3.model.Library getDataRequirements(Measure measure,
             Collection<org.hl7.fhir.dstu3.model.Library> libraries) {
