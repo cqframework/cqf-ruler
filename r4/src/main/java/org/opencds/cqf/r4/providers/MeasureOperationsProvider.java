@@ -21,30 +21,10 @@ import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Composition;
-import org.hl7.fhir.r4.model.DetectedIssue;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.Group;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.ListResource;
-import org.hl7.fhir.r4.model.Measure;
-import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupComponent;
 import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupPopulationComponent;
-import org.hl7.fhir.r4.model.Meta;
-import org.hl7.fhir.r4.model.Narrative;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
@@ -811,72 +791,29 @@ public class MeasureOperationsProvider {
             @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "patient") String patientRef,
             @OperationParam(name = "practitioner") String practitionerRef,
             @OperationParam(name = "lastReceivedOn") String lastReceivedOn) throws FHIRException {
-        // TODO: Spec says that the periods are not required, but I am not sure what to
-        // do when they aren't supplied so I made them required
+
         MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, patientRef, null,
-                practitionerRef, lastReceivedOn, null, null, null);
-        report.setGroup(null);
+            practitionerRef, lastReceivedOn, null, null, null);
 
         Parameters parameters = new Parameters();
+        parameters.addParameter(new Parameters.ParametersParameterComponent().setName("measureReport").setResource(report));
 
-        parameters.addParameter(
-                new Parameters.ParametersParameterComponent().setName("measurereport").setResource(report));
-
-        if (report.hasContained()) {
-            for (Resource contained : report.getContained()) {
-                if (contained instanceof Bundle) {
-                    addEvaluatedResourcesToParameters((Bundle) contained, parameters);
-                }
-            }
-        }
-
-        // TODO: need a way to resolve referenced resources within the evaluated
-        // resources
-        // Should be able to use _include search with * wildcard, but HAPI doesn't
-        // support that
+        addEvaluatedResourcesToParameters(report, parameters);
 
         return parameters;
     }
 
-    private void addEvaluatedResourcesToParameters(Bundle contained, Parameters parameters) {
-        Map<String, Resource> resourceMap = new HashMap<>();
-        if (contained.hasEntry()) {
-            for (Bundle.BundleEntryComponent entry : contained.getEntry()) {
-                if (entry.hasResource() && !(entry.getResource() instanceof ListResource)) {
-                    if (!resourceMap.containsKey(entry.getResource().getIdElement().getValue())) {
-                        parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource")
-                                .setResource(entry.getResource()));
-
-                        resourceMap.put(entry.getResource().getIdElement().getValue(), entry.getResource());
-
-                        resolveReferences(entry.getResource(), parameters, resourceMap);
+    private void addEvaluatedResourcesToParameters(MeasureReport report, Parameters parameters) {
+        if (report.hasEvaluatedResource()) {
+            for (Reference evaluatedResource : report.getEvaluatedResource()) {
+                IIdType theEvaluatedId = evaluatedResource.getReferenceElement();
+                String resourceType = theEvaluatedId.getResourceType();
+                if (resourceType != null) {
+                    IBaseResource resourceBase = registry.getResourceDao(resourceType).read(theEvaluatedId);
+                    if (resourceBase != null && resourceBase instanceof Resource) {
+                        Resource resource = (Resource) resourceBase;
+                        parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource").setResource(resource));
                     }
-                }
-            }
-        }
-    }
-
-    private void resolveReferences(Resource resource, Parameters parameters, Map<String, Resource> resourceMap) {
-        List<IBase> values;
-        for (BaseRuntimeChildDefinition child : this.measureResourceProvider.getContext()
-                .getResourceDefinition(resource).getChildren()) {
-            values = child.getAccessor().getValues(resource);
-            if (values == null || values.isEmpty()) {
-                continue;
-            }
-
-            else if (values.get(0) instanceof Reference
-                    && ((Reference) values.get(0)).getReferenceElement().hasResourceType()
-                    && ((Reference) values.get(0)).getReferenceElement().hasIdPart()) {
-                Resource fetchedResource = (Resource) registry
-                        .getResourceDao(((Reference) values.get(0)).getReferenceElement().getResourceType())
-                        .read(new IdType(((Reference) values.get(0)).getReferenceElement().getIdPart()));
-
-                if (!resourceMap.containsKey(fetchedResource.getIdElement().getValue())) {
-                    parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource")
-                            .setResource(fetchedResource));
-
-                    resourceMap.put(fetchedResource.getIdElement().getValue(), fetchedResource);
                 }
             }
         }
