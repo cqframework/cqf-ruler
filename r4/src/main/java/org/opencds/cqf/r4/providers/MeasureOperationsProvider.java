@@ -1,13 +1,7 @@
 package org.opencds.cqf.r4.providers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -737,7 +731,7 @@ public class MeasureOperationsProvider {
                     Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, patientSubject.getReference());
                     returnParams.addParameter(patientParameter);
                 }
-            );        
+            );
 
         return returnParams;
     }
@@ -746,13 +740,14 @@ public class MeasureOperationsProvider {
         SearchParameterMap theParams = SearchParameterMap.newSynchronous();
         ReferenceParam subjectParam = new ReferenceParam(subject);
         theParams.add("subject", subjectParam);
+        final Map<IIdType, IAnyResource> patientResources = new HashMap<>();
 
         Bundle patientReportBundle = new Bundle();
             patientReportBundle.setType(Bundle.BundleType.COLLECTION);
             patientReportBundle.setTimestamp(new Date());
             patientReportBundle.setId(subject.replace("/", "-") + "-report");
             patientReportBundle.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
-            
+
         IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
         measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
             MeasureReport measureReport = (MeasureReport)baseResource;        
@@ -764,6 +759,20 @@ public class MeasureOperationsProvider {
                 new Bundle.BundleEntryComponent()
                     .setResource(measureReport)
                     .setFullUrl(getFullUrl(measureReport.fhirType(), measureReport.getIdElement().getIdPart()))
+            );
+
+            List<IAnyResource> resources;
+            resources = addEvaluatedResources(measureReport);
+            resources.forEach(resource -> {
+                patientResources.putIfAbsent(resource.getIdElement(), resource);
+            });
+        });
+
+        patientResources.entrySet().forEach(resource -> {
+            patientReportBundle.addEntry(
+                new Bundle.BundleEntryComponent()
+                    .setResource((Resource) resource.getValue())
+                    .setFullUrl(getFullUrl(resource.getValue().fhirType(), resource.getValue().getIdElement().getIdPart()))
             );
         });
 
@@ -803,7 +812,8 @@ public class MeasureOperationsProvider {
         return parameters;
     }
 
-    private void addEvaluatedResourcesToParameters(MeasureReport report, Parameters parameters) {
+    private List<IAnyResource> addEvaluatedResources(MeasureReport report){
+        List<IAnyResource> resources = new ArrayList<>();
         if (report.hasEvaluatedResource()) {
             for (Reference evaluatedResource : report.getEvaluatedResource()) {
                 IIdType theEvaluatedId = evaluatedResource.getReferenceElement();
@@ -812,11 +822,21 @@ public class MeasureOperationsProvider {
                     IBaseResource resourceBase = registry.getResourceDao(resourceType).read(theEvaluatedId);
                     if (resourceBase != null && resourceBase instanceof Resource) {
                         Resource resource = (Resource) resourceBase;
-                        parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource").setResource(resource));
+                        resources.add(resource);
                     }
                 }
             }
         }
+        return resources;
+    }
+
+    private void addEvaluatedResourcesToParameters(MeasureReport report, Parameters parameters) {
+        List<IAnyResource> resources;
+        resources = addEvaluatedResources(report);
+        resources.forEach(resource -> {
+            parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource").setResource((Resource) resource));
+            }
+        );
     }
 
     // TODO - this needs a lot of work
