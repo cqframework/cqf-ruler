@@ -803,6 +803,8 @@ public class MeasureOperationsProvider {
 
         MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, patientRef, null,
             practitionerRef, lastReceivedOn, null, null, null);
+        report.setType(MeasureReport.MeasureReportType.DATACOLLECTION);
+        report.setGroup(null);
 
         Parameters parameters = new Parameters();
         parameters.addParameter(new Parameters.ParametersParameterComponent().setName("measureReport").setResource(report));
@@ -814,16 +816,14 @@ public class MeasureOperationsProvider {
 
     private List<IAnyResource> addEvaluatedResources(MeasureReport report){
         List<IAnyResource> resources = new ArrayList<>();
-        if (report.hasEvaluatedResource()) {
-            for (Reference evaluatedResource : report.getEvaluatedResource()) {
-                IIdType theEvaluatedId = evaluatedResource.getReferenceElement();
-                String resourceType = theEvaluatedId.getResourceType();
-                if (resourceType != null) {
-                    IBaseResource resourceBase = registry.getResourceDao(resourceType).read(theEvaluatedId);
-                    if (resourceBase != null && resourceBase instanceof Resource) {
-                        Resource resource = (Resource) resourceBase;
-                        resources.add(resource);
-                    }
+        for (Reference evaluatedResource : report.getEvaluatedResource()) {
+            IIdType theEvaluatedId = evaluatedResource.getReferenceElement();
+            String resourceType = theEvaluatedId.getResourceType();
+            if (resourceType != null) {
+                IBaseResource resourceBase = registry.getResourceDao(resourceType).read(theEvaluatedId);
+                if (resourceBase != null && resourceBase instanceof Resource) {
+                    Resource resource = (Resource) resourceBase;
+                    resources.add(resource);
                 }
             }
         }
