@@ -22,7 +22,6 @@ import org.hl7.fhir.dstu3.model.Device;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Group;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.ListResource;
 import org.hl7.fhir.dstu3.model.Measure;
@@ -41,7 +40,6 @@ import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
-import org.opencds.cqf.common.helpers.DateHelper;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.dstu3.evaluation.MeasureEvaluation;
@@ -68,7 +66,6 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
@@ -557,17 +554,6 @@ public class MeasureOperationsProvider {
                     .filter(resource -> ((Measure)resource).getUrl() != null && !((Measure)resource).getUrl().equals(""))
                     .collect(Collectors.toList());
         }
-    }
-
-    private List<String> getPatientListFromSubject(String subject) {
-        List<String> patientList = null;
-        if (subject.startsWith("Patient/")) {        
-            patientList = new ArrayList<String>();
-            patientList.add(subject);
-        } else if (subject.startsWith("Group/")) {
-            patientList = getPatientListFromGroup(subject);
-        }
-        return patientList;
     }
 
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)
