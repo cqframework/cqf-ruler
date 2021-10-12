@@ -12,7 +12,6 @@ import com.google.common.base.Strings;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
-import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.*;
@@ -32,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
 import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
