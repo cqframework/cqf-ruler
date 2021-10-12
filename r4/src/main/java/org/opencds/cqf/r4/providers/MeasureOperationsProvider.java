@@ -1,13 +1,7 @@
 package org.opencds.cqf.r4.providers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -18,33 +12,12 @@ import com.google.common.base.Strings;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
-import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Composition;
-import org.hl7.fhir.r4.model.DetectedIssue;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.Group;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.ListResource;
-import org.hl7.fhir.r4.model.Measure;
-import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupComponent;
 import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupPopulationComponent;
-import org.hl7.fhir.r4.model.Meta;
-import org.hl7.fhir.r4.model.Narrative;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
@@ -58,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import ca.uhn.fhir.context.BaseRuntimeChildDefinition;
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
 import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
@@ -757,7 +729,7 @@ public class MeasureOperationsProvider {
                     Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, patientSubject.getReference());
                     returnParams.addParameter(patientParameter);
                 }
-            );        
+            );
 
         return returnParams;
     }
@@ -766,13 +738,14 @@ public class MeasureOperationsProvider {
         SearchParameterMap theParams = SearchParameterMap.newSynchronous();
         ReferenceParam subjectParam = new ReferenceParam(subject);
         theParams.add("subject", subjectParam);
+        final Map<IIdType, IAnyResource> patientResources = new HashMap<>();
 
         Bundle patientReportBundle = new Bundle();
             patientReportBundle.setType(Bundle.BundleType.COLLECTION);
             patientReportBundle.setTimestamp(new Date());
             patientReportBundle.setId(subject.replace("/", "-") + "-report");
             patientReportBundle.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
-            
+
         IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
         measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
             MeasureReport measureReport = (MeasureReport)baseResource;        
@@ -784,6 +757,20 @@ public class MeasureOperationsProvider {
                 new Bundle.BundleEntryComponent()
                     .setResource(measureReport)
                     .setFullUrl(getFullUrl(measureReport.fhirType(), measureReport.getIdElement().getIdPart()))
+            );
+
+            List<IAnyResource> resources;
+            resources = addEvaluatedResources(measureReport);
+            resources.forEach(resource -> {
+                patientResources.putIfAbsent(resource.getIdElement(), resource);
+            });
+        });
+
+        patientResources.entrySet().forEach(resource -> {
+            patientReportBundle.addEntry(
+                new Bundle.BundleEntryComponent()
+                    .setResource((Resource) resource.getValue())
+                    .setFullUrl(getFullUrl(resource.getValue().fhirType(), resource.getValue().getIdElement().getIdPart()))
             );
         });
 
@@ -811,75 +798,43 @@ public class MeasureOperationsProvider {
             @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "patient") String patientRef,
             @OperationParam(name = "practitioner") String practitionerRef,
             @OperationParam(name = "lastReceivedOn") String lastReceivedOn) throws FHIRException {
-        // TODO: Spec says that the periods are not required, but I am not sure what to
-        // do when they aren't supplied so I made them required
+
         MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, patientRef, null,
-                practitionerRef, lastReceivedOn, null, null, null);
+            practitionerRef, lastReceivedOn, null, null, null);
+        report.setType(MeasureReport.MeasureReportType.DATACOLLECTION);
         report.setGroup(null);
 
         Parameters parameters = new Parameters();
+        parameters.addParameter(new Parameters.ParametersParameterComponent().setName("measureReport").setResource(report));
 
-        parameters.addParameter(
-                new Parameters.ParametersParameterComponent().setName("measurereport").setResource(report));
-
-        if (report.hasContained()) {
-            for (Resource contained : report.getContained()) {
-                if (contained instanceof Bundle) {
-                    addEvaluatedResourcesToParameters((Bundle) contained, parameters);
-                }
-            }
-        }
-
-        // TODO: need a way to resolve referenced resources within the evaluated
-        // resources
-        // Should be able to use _include search with * wildcard, but HAPI doesn't
-        // support that
+        addEvaluatedResourcesToParameters(report, parameters);
 
         return parameters;
     }
 
-    private void addEvaluatedResourcesToParameters(Bundle contained, Parameters parameters) {
-        Map<String, Resource> resourceMap = new HashMap<>();
-        if (contained.hasEntry()) {
-            for (Bundle.BundleEntryComponent entry : contained.getEntry()) {
-                if (entry.hasResource() && !(entry.getResource() instanceof ListResource)) {
-                    if (!resourceMap.containsKey(entry.getResource().getIdElement().getValue())) {
-                        parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource")
-                                .setResource(entry.getResource()));
-
-                        resourceMap.put(entry.getResource().getIdElement().getValue(), entry.getResource());
-
-                        resolveReferences(entry.getResource(), parameters, resourceMap);
-                    }
+    private List<IAnyResource> addEvaluatedResources(MeasureReport report){
+        List<IAnyResource> resources = new ArrayList<>();
+        for (Reference evaluatedResource : report.getEvaluatedResource()) {
+            IIdType theEvaluatedId = evaluatedResource.getReferenceElement();
+            String resourceType = theEvaluatedId.getResourceType();
+            if (resourceType != null) {
+                IBaseResource resourceBase = registry.getResourceDao(resourceType).read(theEvaluatedId);
+                if (resourceBase != null && resourceBase instanceof Resource) {
+                    Resource resource = (Resource) resourceBase;
+                    resources.add(resource);
                 }
             }
         }
+        return resources;
     }
 
-    private void resolveReferences(Resource resource, Parameters parameters, Map<String, Resource> resourceMap) {
-        List<IBase> values;
-        for (BaseRuntimeChildDefinition child : this.measureResourceProvider.getContext()
-                .getResourceDefinition(resource).getChildren()) {
-            values = child.getAccessor().getValues(resource);
-            if (values == null || values.isEmpty()) {
-                continue;
+    private void addEvaluatedResourcesToParameters(MeasureReport report, Parameters parameters) {
+        List<IAnyResource> resources;
+        resources = addEvaluatedResources(report);
+        resources.forEach(resource -> {
+            parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource").setResource((Resource) resource));
             }
-
-            else if (values.get(0) instanceof Reference
-                    && ((Reference) values.get(0)).getReferenceElement().hasResourceType()
-                    && ((Reference) values.get(0)).getReferenceElement().hasIdPart()) {
-                Resource fetchedResource = (Resource) registry
-                        .getResourceDao(((Reference) values.get(0)).getReferenceElement().getResourceType())
-                        .read(new IdType(((Reference) values.get(0)).getReferenceElement().getIdPart()));
-
-                if (!resourceMap.containsKey(fetchedResource.getIdElement().getValue())) {
-                    parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource")
-                            .setResource(fetchedResource));
-
-                    resourceMap.put(fetchedResource.getIdElement().getValue(), fetchedResource);
-                }
-            }
-        }
+        );
     }
 
     // TODO - this needs a lot of work
