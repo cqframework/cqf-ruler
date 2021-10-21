@@ -155,7 +155,8 @@ public class FhirServerConfig {
                 HapiProperties.getCdsHooksFhirServerExpandValueSets(),
                 HapiProperties.getCdsHooksFhirServerMaxCodesPerQuery(),
                 HapiProperties.getCdsHooksFhirServerSearchStyleEnum(),
-                HapiProperties.getCdsHooksPreFetchMaxUriLength());
+                HapiProperties.getCdsHooksPreFetchMaxUriLength(),
+                HapiProperties.getCqlLoggingEnabled());
     }
 
     @Bean()
