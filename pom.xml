@@ -117,6 +117,16 @@
                 <version>${cql-evaluator.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.opencds.cqf.cql</groupId>
+                <artifactId>evaluator.library</artifactId>
+                <version>${cql-evaluator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opencds.cqf.cql</groupId>
+                <artifactId>evaluator.spring</artifactId>
+                <version>${cql-evaluator.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.opencds.cqf</groupId>
                 <artifactId>tooling</artifactId>
                 <version>${cqf-tooling.version}</version>
@@ -175,6 +185,13 @@
                 <version>${fhir.core.version}</version>
             </dependency>
 
+            <!-- test dependencies -->
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>7.4.0</version>
+                <scope>test</scope>
+            </dependency>
 
         </dependencies>
 
@@ -182,8 +199,22 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opencds.cqf.cql</groupId>
             <artifactId>evaluator.engine</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencds.cqf.cql</groupId>
+            <artifactId>evaluator.library</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencds.cqf.cql</groupId>
+            <artifactId>evaluator.spring</artifactId>
         </dependency>
 
         <dependency>
@@ -441,7 +472,6 @@
             <artifactId>popper.js</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-all</artifactId>
@@ -464,12 +494,12 @@
                         <source>1.8</source>
                         <target>1.8</target>
                         <failOnError>true</failOnError>
-                        <failOnWarning>true</failOnWarning>
+                        <failOnWarning>false</failOnWarning>
                         <compilerArgs>
                             <arg>-Xlint:all</arg>
                             <!-- This fixes a boostrapclass path warning which the "release" property fixes on Java 9+ -->
                             <arg>-Xlint:-options</arg>
-                            <arg>-Werror</arg>
+<!--                            <arg>-Werror</arg>-->
                         </compilerArgs>
                     </configuration>
                 </plugin>

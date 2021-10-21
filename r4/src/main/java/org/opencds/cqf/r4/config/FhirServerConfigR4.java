@@ -1,31 +1,43 @@
 package org.opencds.cqf.r4.config;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.Date;
+import java.util.function.Supplier;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import ca.uhn.fhir.context.FhirVersionEnum;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.model.Model;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.elm.r1.VersionedIdentifier;
+import org.hl7.fhir.instance.model.api.*;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.providers.CacheAwareTerminologyProvider;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
+import org.opencds.cqf.cql.engine.fhir.converter.FhirTypeConverter;
+import org.opencds.cqf.cql.engine.fhir.converter.FhirTypeConverterFactory;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
-import org.opencds.cqf.cql.engine.runtime.Code;
+import org.opencds.cqf.cql.engine.runtime.*;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.builder.data.TypedRetrieveProviderFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
+import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
+import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
 import org.opencds.cqf.r4.evaluation.RulerFhirDal;
 import org.opencds.cqf.r4.evaluation.RulerLibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.builder.*;
+import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
+import org.opencds.cqf.cql.evaluator.library.CqlFhirParametersConverter;
+import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.r4.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.r4.providers.CacheValueSetsProvider;
@@ -39,11 +51,7 @@ import org.opencds.cqf.r4.providers.ProcessMessageProvider;
 import org.opencds.cqf.r4.providers.QuestionnaireProvider;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -60,6 +68,7 @@ import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
 @Configuration
 @ComponentScan(basePackages = "org.opencds.cqf.r4")
+@Import(EvaluatorConfiguration.class)
 public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     protected final DataSource myDataSource;
 
@@ -196,5 +205,16 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     @Bean
     public FhirDal fhirDal(DaoRegistry daoRegistry) {
         return new RulerFhirDal(daoRegistry);
+    }
+
+    @Bean
+    public LibraryProcessor libraryProcessor(FhirContext fhirContext, CqlFhirParametersConverter cqlFhirParametersConverter,
+                                             LibraryContentProviderFactory libraryLoaderFactory, DataProviderFactory dataProviderFactory,
+                                             TerminologyProviderFactory terminologyProviderFactory, EndpointConverter endpointConverter,
+                                             Supplier< CqlEvaluatorBuilder > cqlEvaluatorBuilderSupplier) {
+
+        return new LibraryProcessor(fhirContext, cqlFhirParametersConverter, libraryLoaderFactory, dataProviderFactory,
+                terminologyProviderFactory, endpointConverter, cqlEvaluatorBuilderSupplier);
+
     }
 }

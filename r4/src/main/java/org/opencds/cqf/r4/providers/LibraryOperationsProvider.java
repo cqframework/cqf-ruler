@@ -1,33 +1,23 @@
 package org.opencds.cqf.r4.providers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import ca.uhn.fhir.rest.annotation.ResourceParam;
 import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.instance.model.api.IBaseParameters;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.Endpoint;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Library;
-import org.hl7.fhir.r4.model.Narrative;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.StringType;
-import org.hl7.fhir.r4.model.Type;
+import org.hl7.fhir.r4.model.codesystems.EndpointConnectionType;
 import org.opencds.cqf.cds.providers.PriorityRetrieveProvider;
 import org.opencds.cqf.common.helpers.ClientHelperDos;
 import org.opencds.cqf.common.helpers.DateHelper;
@@ -51,6 +41,9 @@ import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDecorator;
 import org.opencds.cqf.cql.evaluator.engine.execution.TranslatingLibraryLoader;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
+import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
+import org.opencds.cqf.r4.helpers.CanonicalHelper;
+import org.opencds.cqf.r4.helpers.ParametersHelper;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.springframework.stereotype.Component;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
@@ -80,16 +73,19 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
     DaoRegistry registry;
     TerminologyProvider defaultTerminologyProvider;
     private LibraryHelper libraryHelper;
+    private LibraryProcessor libraryProcessor;
 
     @Inject
-    public LibraryOperationsProvider(LibraryResourceProvider libraryResourceProvider,
-            NarrativeProvider narrativeProvider, DaoRegistry registry, TerminologyProvider defaultTerminologyProvider, DataRequirementsProvider dataRequirementsProvider, LibraryHelper libraryHelper) {
+    public LibraryOperationsProvider(LibraryResourceProvider libraryResourceProvider, NarrativeProvider narrativeProvider,
+            DaoRegistry registry, TerminologyProvider defaultTerminologyProvider, DataRequirementsProvider dataRequirementsProvider,
+            LibraryHelper libraryHelper, LibraryProcessor libraryProcessor) {
         this.narrativeProvider = narrativeProvider;
         this.dataRequirementsProvider = dataRequirementsProvider;
         this.libraryResourceProvider = libraryResourceProvider;
         this.registry = registry;
         this.defaultTerminologyProvider = defaultTerminologyProvider;
         this.libraryHelper = libraryHelper;
+        this.libraryProcessor = libraryProcessor;
     }
 
     private ModelManager getModelManager() {
@@ -182,9 +178,11 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
 
     // NOTICE: This is trash code that needs to be removed. Don't fix this. It's for
     // a one-off
-    @SuppressWarnings({"unchecked", "rawtypes" })
-    @Operation(name = "$evaluate", idempotent = true, type = Library.class)
-    public Bundle evaluate(@IdParam IdType theId, @OperationParam(name = "patientId") String patientId,
+//    @SuppressWarnings({"unchecked", "rawtypes" })
+//    @Operation(name = "$evaluate", idempotent = true, type = Library.class)
+    public Bundle evaluateOLD(
+            @IdParam IdType theId,
+            @OperationParam(name = "patientId") String patientId,
             @OperationParam(name = "periodStart") String periodStart,
             @OperationParam(name = "periodEnd") String periodEnd,
             @OperationParam(name = "productLine") String productLine,
@@ -232,7 +230,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         } else {
             terminologyProvider = this.defaultTerminologyProvider;
         }
-        
+
         DataProvider dataProvider;
         if (dataEndpoint != null) {
             IGenericClient client = ClientHelperDos.getClient(resolver.getFhirContext(), dataEndpoint);
@@ -253,7 +251,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                 dataProvider = new CompositeDataProvider(resolver, retriever);
             }
 
-            
+
         } else {
             JpaFhirRetrieveProvider retriever = new JpaFhirRetrieveProvider(this.registry,
                     new SearchParameterResolver(resolver.getFhirContext()));
@@ -263,7 +261,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                 retriever.setExpandValueSets(true);
             }
 
-            if (additionalData != null) {                
+            if (additionalData != null) {
                 BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(resolver.getFhirContext(), additionalData);
                 bundleProvider.setTerminologyProvider(terminologyProvider);
                 PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(bundleProvider, retriever);
@@ -282,7 +280,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         x -> x.getContent(), x -> x.getContentType(), x -> x.getData());
 
         List<org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider> sourceProviders = Arrays.asList(bundleLibraryProvider, sourceProvider);
-       
+
         LibraryLoader libraryLoader = new CacheAwareLibraryLoaderDecorator(new TranslatingLibraryLoader(modelManager, sourceProviders, this.libraryHelper.getTranslatorOptions()));
 
         CqlEngine engine = new CqlEngine(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider);
@@ -376,6 +374,84 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         }
 
         return bundler.bundle(results);
+    }
+
+    // NOTICE: vNext of this operation
+    @SuppressWarnings({"unchecked", "rawtypes" })
+    @Operation(name = "$evaluate", idempotent = true, type = Library.class)
+    public Parameters evaluate(@IdParam IdType theId, @ResourceParam Parameters parameters) {
+        Parameters response = new Parameters();
+
+        CanonicalType library = (CanonicalType) parameters.getParameter("library");
+        CanonicalType subject = (CanonicalType) parameters.getParameter("subject");
+        Set<String> expression = parameters.hasParameter("expression") ?
+            parameters.getParameters("expression").stream().map(e -> (String)e.toString()).collect(Collectors.toSet())
+            : null;
+        Parameters parametersParameters = parameters.hasParameter("parameters") ?
+            (Parameters) ParametersHelper.getParameter(parameters, "parameters").getResource()
+            : null;
+
+        BooleanType useServerData = (BooleanType) parameters.getParameter("useServerData");
+        Bundle data = parameters.hasParameter("data") ?
+            (Bundle) ParametersHelper.getParameter(parameters, "data").getResource()
+            : null;
+
+        /* prefetchData */
+        StringType prefetchDataKey = (StringType) parameters.getParameter("prefetchData.key");
+
+        DataRequirement prefetchDataDescription = (DataRequirement) parameters.getParameter("prefetchData.description");
+
+        Bundle prefetchDataData = parameters.hasParameter("prefetchData.data") ?
+            (Bundle) ParametersHelper.getParameter(parameters, "prefetchData.data").getResource()
+            : null;
+
+        Endpoint dataEndpoint = parameters.hasParameter("dataEndpoint") ?
+            (Endpoint) ParametersHelper.getParameter(parameters, "dataEndpoint").getResource()
+            : null;
+
+        Endpoint contentEndpoint = parameters.hasParameter("contentEndpoint") ?
+            (Endpoint) ParametersHelper.getParameter(parameters, "contentEndpoint").getResource()
+            : null;
+
+        Endpoint terminologyEndpoint = parameters.hasParameter("terminologyEndpoint") ?
+            (Endpoint) ParametersHelper.getParameter(parameters, "terminologyEndpoint").getResource()
+            : null;
+
+        String contextParam = CanonicalHelper.getResourceName(subject);
+        String contextValue = CanonicalHelper.getId(subject);
+        if (subject != null && contextParam.equals("Patient") && contextValue == null) {
+            throw new IllegalArgumentException("Must specify a patientId when executing in Patient context.");
+        }
+
+        Bundle libraryBundle = new Bundle();
+        Library theResource = null;
+        if (data != null) {
+            for (BundleEntryComponent entry : data.getEntry()) {
+                if (entry.getResource().fhirType().equals("Library")) {
+                    libraryBundle.addEntry(entry);
+                    if (entry.getResource().getIdElement().equals(theId)) {
+                        theResource = (Library) entry.getResource();
+                    }
+                }
+            }
+        }
+
+        if (theResource == null) {
+            theResource = this.libraryResourceProvider.getDao().read(theId);
+        }
+
+        VersionedIdentifier libraryIdentifier = new VersionedIdentifier().withId(theResource.getName())
+                .withVersion(theResource.getVersion());
+
+        //TODO: These are both probably too naive and basically even incorrect
+        Bundle evaluationData = data != null ? data : prefetchDataData;
+        Endpoint libraryEndpoint = library != null ? new Endpoint().setAddress(library.toString()) : null;
+//        libraryEndpoint = new Endpoint().setAddress("http://localhost:8080/cqf-ruler-r4/fhir/");
+
+        response = (Parameters)libraryProcessor.evaluate(libraryIdentifier, contextValue, parametersParameters, libraryEndpoint,
+                terminologyEndpoint, dataEndpoint, evaluationData, expression);
+
+        return response;
     }
 
     // TODO: Figure out if we should throw an exception or something here.
