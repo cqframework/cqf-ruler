@@ -134,7 +134,9 @@ public class CdsHooksServlet extends HttpServlet {
                 throw new ServletException(String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
             }
 
-            
+            if (request.getPathInfo() == null) {
+                throw new ServletException(String.format("Invalid request. No CDS service specified."));
+            }
             String baseUrl = HapiProperties.getServerAddress();
             String service = request.getPathInfo().replace("/", "");
 
@@ -153,6 +155,7 @@ public class CdsHooksServlet extends HttpServlet {
             logger.info("cds-hooks expandValueSets: " + this.getProviderConfiguration().getExpandValueSets());
             logger.info("cds-hooks searchStyle: " + this.getProviderConfiguration().getSearchStyle());
             logger.info("cds-hooks prefetch maxUriLength: " + this.getProviderConfiguration().getMaxUriLength());
+            logger.info("hapi.fhir.cql_logging_enabled:" + this.getProviderConfiguration().getCqlLoggingEnabled());
             logger.info("cds-hooks local server address: " + baseUrl);
             logger.info("cds-hooks fhir server address: " + hook.getRequest().getFhirServerUrl());
 
