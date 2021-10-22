@@ -716,6 +716,9 @@ public class MeasureOperationsProvider {
             throw new IllegalArgumentException("Parameter 'periodStart' must be before 'periodEnd'.");
         }
  
+        if (subject == null) {
+            throw new IllegalArgumentException("Parameter 'subject' is required.");
+        }  
         if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
             throw new IllegalArgumentException("Parameter 'subject' must be in the format 'Patient/[id]' or 'Group/[id]'.");
         }
@@ -749,7 +752,7 @@ public class MeasureOperationsProvider {
         IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
         measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
             MeasureReport measureReport = (MeasureReport)baseResource;        
-            if (measureReport.getPeriod().getStart().before(periodStart) || measureReport.getPeriod().getEnd().after(periodEnd)) {
+            if (measureReport.getPeriod().getStart().before(periodStart) || measureReport.getPeriod().getStart().after(periodEnd)) {
                 return;
             }           
             
