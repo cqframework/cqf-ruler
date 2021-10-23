@@ -737,7 +737,20 @@ public class MeasureOperationsProvider {
         return returnParams;
     }
 
+    private void ensurePatient(String patient) {
+        String patientId = patient.replace("Patient/", "");
+        SearchParameterMap theParams = SearchParameterMap.newSynchronous();
+        ReferenceParam patientParam = new ReferenceParam(patientId);
+        theParams.add("_id", patientParam);
+        IFhirResourceDao<Patient> patientDao = this.registry.getResourceDao(Patient.class);
+        if (patientDao.search(theParams).getAllResources().isEmpty()) {
+            throw new RuntimeException("Could not find Patient: " + patientId);
+        }
+    }
+    
     private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject) {
+        ensurePatient(subject);            
+ 
         SearchParameterMap theParams = SearchParameterMap.newSynchronous();
         ReferenceParam subjectParam = new ReferenceParam(subject);
         theParams.add("subject", subjectParam);
