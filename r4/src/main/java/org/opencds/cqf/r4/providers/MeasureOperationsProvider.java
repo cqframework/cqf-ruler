@@ -757,6 +757,7 @@ public class MeasureOperationsProvider {
         theParams.add("subject", subjectParam);
         
         Bundle patientReportBundle = new Bundle();
+            patientReportBundle.setMeta(new Meta().addProfile("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle"));
             patientReportBundle.setType(Bundle.BundleType.COLLECTION);
             patientReportBundle.setTimestamp(new Date());
             patientReportBundle.setId(subject.replace("/", "-") + "-report");
