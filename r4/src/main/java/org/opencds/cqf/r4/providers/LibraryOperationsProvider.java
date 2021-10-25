@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.ResourceParam;
 import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.CqlTranslator;
@@ -45,6 +46,8 @@ import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.ParametersHelper;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.opencds.cqf.r4.helpers.FhirMeasureBundler;
 
@@ -435,18 +438,24 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                 }
             }
         }
+        Bundle evaluationData = data != null ? data : prefetchDataData;
+
+        if(theResource != null) {
+            this.update(theResource);
+        }
 
         if (theResource == null) {
             theResource = this.libraryResourceProvider.getDao().read(theId);
+            if (evaluationData != null) {
+                evaluationData.getEntry().add(new BundleEntryComponent().setResource(theResource));
+            }
         }
 
         VersionedIdentifier libraryIdentifier = new VersionedIdentifier().withId(theResource.getName())
                 .withVersion(theResource.getVersion());
 
         //TODO: These are both probably too naive and basically even incorrect
-        Bundle evaluationData = data != null ? data : prefetchDataData;
         Endpoint libraryEndpoint = library != null ? new Endpoint().setAddress(library.toString()) : null;
-//        libraryEndpoint = new Endpoint().setAddress("http://localhost:8080/cqf-ruler-r4/fhir/");
 
         response = (Parameters)libraryProcessor.evaluate(libraryIdentifier, contextValue, parametersParameters, libraryEndpoint,
                 terminologyEndpoint, dataEndpoint, evaluationData, expression);
