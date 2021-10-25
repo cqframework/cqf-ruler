@@ -746,7 +746,9 @@ public class MeasureOperationsProvider {
         }
         return patientResource;
     }
-    
+
+    private static String PATIENT_REPORT_PROFILE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle";
+
     private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject) {
         final Map<IIdType, IAnyResource> patientResources = new HashMap<>();
         Patient patient = ensurePatient(subject);
@@ -757,7 +759,7 @@ public class MeasureOperationsProvider {
         theParams.add("subject", subjectParam);
         
         Bundle patientReportBundle = new Bundle();
-            patientReportBundle.setMeta(new Meta().addProfile("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle"));
+            patientReportBundle.setMeta(new Meta().addProfile(PATIENT_REPORT_PROFILE_URL));
             patientReportBundle.setType(Bundle.BundleType.COLLECTION);
             patientReportBundle.setTimestamp(new Date());
             patientReportBundle.setId(subject.replace("/", "-") + "-report");
