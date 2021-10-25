@@ -748,8 +748,8 @@ public class MeasureOperationsProvider {
     }
     
     private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject) {
-        final Map<IIdType, IAnyResource> patientResources = new HashMap<>();
         Patient patient = ensurePatient(subject);
+        final Map<IIdType, IAnyResource> patientResources = new HashMap<>();
         patientResources.put(patient.getIdElement(), patient);            
  
         SearchParameterMap theParams = SearchParameterMap.newSynchronous();
