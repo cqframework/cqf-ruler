@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
@@ -22,7 +25,6 @@ import org.hl7.fhir.dstu3.model.Device;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.Group;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Identifier;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.ListResource;
 import org.hl7.fhir.dstu3.model.Measure;
@@ -41,7 +43,7 @@ import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
-import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.dstu3.evaluation.MeasureEvaluation;
@@ -68,7 +70,6 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
@@ -308,9 +309,9 @@ public class MeasureOperationsProvider {
         if (!groupRetrieve.iterator().hasNext()) {
             throw new RuntimeException("Could not find Group/" + subjectGroupRef);
         }
-  
-        Group group = (Group) groupRetrieve.iterator().next();           
-        group.getMember().forEach(member -> { 
+
+        Group group = (Group) groupRetrieve.iterator().next();
+        group.getMember().forEach(member -> {
             Reference reference = member.getEntity();
             if (reference.getReferenceElement().getResourceType().equals("Patient")) {
                 patientList.add(reference.getReference());
@@ -320,7 +321,7 @@ public class MeasureOperationsProvider {
                 logger.info(String.format("Group member was not a Patient or a Group, so skipping. \n%s", reference.getReference()));
             }
         });
-     
+
         return patientList;
     }
 
@@ -559,136 +560,45 @@ public class MeasureOperationsProvider {
         }
     }
 
-    @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
-    public Parameters report(@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
-                                     @OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
-                                     @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {      
-        if (periodStart == null) {
-            throw new IllegalArgumentException("Parameter 'periodStart' is required.");
-        }    
-        if (periodEnd == null) {
-            throw new IllegalArgumentException("Parameter 'periodEnd' is required.");
-        }    
-        Date periodStartDate = DateHelper.resolveRequestDate(periodStart, true);
-        Date periodEndDate = DateHelper.resolveRequestDate(periodEnd, false);
-      
-        if (periodStartDate.after(periodEndDate)) {
-            throw new IllegalArgumentException("Parameter 'periodStart' must be before 'periodEnd'.");
-        }
-
-        if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
-            throw new IllegalArgumentException("Parameter 'subject' must be in the format 'Patient/[id]' or 'Group/[id]'.");
-        }
-
-        Parameters returnParams = new Parameters();
-        returnParams.setId(subject.replace("/", "-") + "-report");
-        
-        (getPatientListFromSubject(subject))
-            .forEach(
-                patientSubject -> {
-                    Parameters.ParametersParameterComponent patientParameter = patientReport(periodStartDate, periodEndDate, patientSubject);
-                    returnParams.addParameter(patientParameter);
-                }
-            );        
-
-        return returnParams;
-    }
-
-    private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject) {
-        SearchParameterMap theParams = SearchParameterMap.newSynchronous();
-        StringParam subjectParam = new StringParam(subject);
-        theParams.add("subject", subjectParam);
-
-        Bundle patientReportBundle = new Bundle();
-            patientReportBundle.setType(Bundle.BundleType.COLLECTION);
-            // no timestamp in DSTU3
-            //patientReportBundle.setTimestamp(new Date());
-            patientReportBundle.setId(subject.replace("/", "-") + "-report");
-            patientReportBundle.setIdentifier(new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
-            
-        IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
-        measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
-            MeasureReport measureReport = (MeasureReport)baseResource;        
-            if (measureReport.getPeriod().getStart().before(periodStart) || measureReport.getPeriod().getEnd().after(periodEnd)) {
-                return;
-            }           
-            
-            patientReportBundle.addEntry(
-                new Bundle.BundleEntryComponent()
-                    .setResource(measureReport)
-                    .setFullUrl(getFullUrl(measureReport.fhirType(), measureReport.getIdElement().getIdPart()))
-            );
-        });
-
-        Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
-            patientParameter.setResource(patientReportBundle);
-            patientParameter.setId(subject.replace("/", "-") + "-report");
-            patientParameter.setName("return");
-        return patientParameter;
-    }
-
-    private List<String> getPatientListFromSubject(String subject) {
-        List<String> patientList = null;
-        if (subject.startsWith("Patient/")) {        
-            patientList = new ArrayList<String>();
-            patientList.add(subject);
-        } else if (subject.startsWith("Group/")) {
-            patientList = getPatientListFromGroup(subject);
-        }
-        return patientList;
-    }
-
     @Operation(name = "$collect-data", idempotent = true, type = Measure.class)
     public Parameters collectData(@IdParam IdType theId, @OperationParam(name = "periodStart") String periodStart,
             @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "patient") String patientRef,
             @OperationParam(name = "practitioner") String practitionerRef,
             @OperationParam(name = "lastReceivedOn") String lastReceivedOn) throws FHIRException {
-        // TODO: Spec says that the periods are not required, but I am not sure what to
-        // do when they aren't supplied so I made them required
         MeasureReport report = evaluateMeasure(theId, periodStart, periodEnd, null, null, patientRef, null,
                 practitionerRef, lastReceivedOn, null, null, null);
+        // NOTE: Measure Report Type data-collection does not exists in dstu3:
+            // 	individual | patient-list | summary -- http://hl7.org/fhir/measure-report-type
+        //report.setType(MeasureReport.MeasureReportType.DATACOLLECTION);
         report.setGroup(null);
 
         Parameters parameters = new Parameters();
+        parameters.addParameter(new Parameters.ParametersParameterComponent().setName("measureReport").setResource(report));
 
-        parameters.addParameter(
-                new Parameters.ParametersParameterComponent().setName("measurereport").setResource(report));
-
-        if (report.hasContained()) {
-            for (Resource contained : report.getContained()) {
-                if (contained instanceof Bundle) {
-                    addEvaluatedResourcesToParameters((Bundle) contained, parameters);
-                }
-            }
-        }
-
-        // TODO: need a way to resolve referenced resources within the evaluated
-        // resources
-        // Should be able to use _include search with * wildcard, but HAPI doesn't
-        // support that
+        addEvaluatedResourcesToParameters(report, parameters);
 
         return parameters;
     }
 
-    private void addEvaluatedResourcesToParameters(Bundle contained, Parameters parameters) {
-        Map<String, Resource> resourceMap = new HashMap<>();
-        if (contained.hasEntry()) {
-            for (Bundle.BundleEntryComponent entry : contained.getEntry()) {
-                if (entry.hasResource() && !(entry.getResource() instanceof ListResource)) {
-                    if (!resourceMap.containsKey(entry.getResource().getIdElement().getValue())) {
-                        parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource")
-                                .setResource(entry.getResource()));
+    private Map<String, Resource> addEvaluatedResources(MeasureReport report) {
+        Map<String, Resource> resources = new HashMap<>();
 
-                        resourceMap.put(entry.getResource().getIdElement().getValue(), entry.getResource());
-
-                        resolveReferences(entry.getResource(), parameters, resourceMap);
+        for (Resource contained : report.getContained()) {
+            if (contained instanceof Bundle) {
+                for (Bundle.BundleEntryComponent entry: ((Bundle) contained).getEntry()) {
+                    if (entry.hasResource() && !(entry.getResource() instanceof ListResource)) {
+                        if (!resources.containsKey(entry.getResource().getIdElement().getValue())) {
+                            resources.put(entry.getResource().getIdElement().getValue(), entry.getResource());
+                            resolveReferences(entry.getResource(), resources);
+                        }
                     }
                 }
             }
         }
+        return resources;
     }
 
-    private void resolveReferences(Resource resource, Parameters parameters, Map<String, Resource> resourceMap) {
+    private void resolveReferences(Resource resource, Map<String, Resource> resourceMap) {
         List<IBase> values;
         for (BaseRuntimeChildDefinition child : this.measureResourceProvider.getContext()
                 .getResourceDefinition(resource).getChildren()) {
@@ -705,13 +615,20 @@ public class MeasureOperationsProvider {
                         .read(new IdType(((Reference) values.get(0)).getReferenceElement().getIdPart()));
 
                 if (!resourceMap.containsKey(fetchedResource.getIdElement().getValue())) {
-                    parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource")
-                            .setResource(fetchedResource));
-
                     resourceMap.put(fetchedResource.getIdElement().getValue(), fetchedResource);
                 }
             }
         }
+    }
+
+    private void addEvaluatedResourcesToParameters(MeasureReport report, Parameters parameters) {
+        Map<String, Resource> resources;
+        resources = addEvaluatedResources(report);
+
+        resources.entrySet().forEach(resource -> {
+            parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource")
+                .setResource(resource.getValue()));
+        });
     }
 
     // TODO - this needs a lot of work
@@ -721,7 +638,23 @@ public class MeasureOperationsProvider {
             @OperationParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
 
         Measure measure = this.measureResourceProvider.getDao().read(theId);
-        return this.dataRequirementsProvider.getDataRequirements(measure, this.libraryResolutionProvider);
+
+        ModelManager modelManager = libraryHelper.getModelManager();
+        LibraryManager libraryManager = libraryHelper.getLibraryManager(libraryResolutionProvider);
+
+        Library library = this.dataRequirementsProvider.getLibraryFromMeasure(measure, libraryResolutionProvider);
+        if (library == null) {
+            throw new RuntimeException("Could not load measure library.");
+        }
+
+        CqlTranslator translator = TranslatorHelper.getTranslator(
+                LibraryHelper.extractContentStream(library), libraryManager, modelManager);
+        if (translator.getErrors().size() > 0) {
+            throw new RuntimeException("Errors during library compilation.");
+        }
+
+        return this.dataRequirementsProvider.getModuleDefinitionLibrary(measure, libraryManager,
+                translator.getTranslatedLibrary(), TranslatorHelper.getTranslatorOptions());
     }
 
     @SuppressWarnings("unchecked")

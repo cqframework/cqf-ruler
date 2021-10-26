@@ -1,5 +1,8 @@
 package org.opencds.cqf.r4.helpers;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -72,31 +75,21 @@ public class LibraryHelper extends ca.uhn.fhir.cql.r4.helper.LibraryHelper {
         TranslatingLibraryLoader translatingLibraryLoader = new TranslatingLibraryLoader(modelManager, contentProviders,
                 translatorOptions);
 
-        return new CacheAwareLibraryLoaderDecorator(translatingLibraryLoader, libraryCache) {
-            @Override
-            protected Boolean translatorOptionsMatch(Library library) {
-                return true;
-            }
-        };
+        return new CacheAwareLibraryLoaderDecorator(translatingLibraryLoader, libraryCache);
     }
 
-    @Override
-    public org.opencds.cqf.cql.engine.execution.LibraryLoader createLibraryLoader(
-            org.cqframework.cql.cql2elm.LibrarySourceProvider provider) {
-        ModelManager modelManager = new CacheAwareModelManager(this.modelCache);
-        LibraryManager libraryManager = new LibraryManager(modelManager);
-        libraryManager.getLibrarySourceLoader().clearProviders();
-
-        libraryManager.getLibrarySourceLoader().registerProvider(provider);
-
-        TranslatingLibraryLoader translatingLibraryLoader = new TranslatingLibraryLoader(modelManager, null,
-                translatorOptions);
-
-        return new CacheAwareLibraryLoaderDecorator(translatingLibraryLoader, libraryCache) {
-            @Override
-            protected Boolean translatorOptionsMatch(Library library) {
-                return true;
+    public static InputStream extractContentStream(org.hl7.fhir.r4.model.Library library) {
+        Attachment cql = null;
+        for (Attachment a : library.getContent()) {
+            if (a.getContentType().equals("text/cql")) {
+                cql = a;
+                break;
             }
-        };
+        }
+
+        if (cql == null) {
+            return null;
+        }
+        return new ByteArrayInputStream(Base64.getDecoder().decode(cql.getDataElement().getValueAsString()));
     }
 }

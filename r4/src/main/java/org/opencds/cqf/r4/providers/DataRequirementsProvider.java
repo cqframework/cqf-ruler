@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,8 +33,10 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
 import org.cqframework.cql.elm.execution.CodeDef;
 import org.cqframework.cql.elm.execution.CodeSystemDef;
 import org.cqframework.cql.elm.execution.ExpressionDef;
@@ -45,6 +48,7 @@ import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.hl7.elm.r1.ValueSetRef;
+import org.hl7.fhir.convertors.VersionConvertor_40_50;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Base64BinaryType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -57,11 +61,14 @@ import org.hl7.fhir.r4.model.ParameterDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
+import org.opencds.cqf.common.providers.CommonDataRequirementsProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.tooling.measure.r4.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef.TerminologyRefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
@@ -72,14 +79,53 @@ import org.opencds.cqf.r4.helpers.CanonicalHelper;
 
 @Component
 public class DataRequirementsProvider {
+    private static final Logger logger = LoggerFactory.getLogger(DataRequirementsProvider.class);
 
     private LibraryHelper libraryHelper;
+    private CommonDataRequirementsProvider dataRequirementsProvider;
 
     @Inject
-    public DataRequirementsProvider(LibraryHelper libraryHelper) {
+    public DataRequirementsProvider(CommonDataRequirementsProvider dataRequirementsProvider,
+                                    LibraryHelper libraryHelper) {
+        this.dataRequirementsProvider = dataRequirementsProvider;
         this.libraryHelper = libraryHelper;
-
     }
+
+    public Measure createMeasure(Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(measure);
+        org.hl7.fhir.r5.model.Measure convertedMeasure = dataRequirementsProvider.createMeasure(measureR5, libraryManager, translatedLibrary, options);
+        org.hl7.fhir.r4.model.Measure measureR4 = (org.hl7.fhir.r4.model.Measure) VersionConvertor_40_50.convertResource(convertedMeasure);
+
+        return measureR4;
+    }
+
+    public org.hl7.fhir.r4.model.Library getModuleDefinitionLibrary(Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(measure);
+
+        org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(measureR5, libraryManager, translatedLibrary, options);
+        org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(libraryR5);
+        return libraryR4;
+    }
+
+    public org.hl7.fhir.r4.model.Library getLibraryFromMeasure(Measure measure,
+                                                               LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {
+        org.hl7.fhir.r4.model.Library primaryLibrary = null;
+        Iterator var6 = measure.getLibrary().iterator();
+
+        String library = null;
+        //use the first library
+        while (var6.hasNext() && library == null) {
+            org.hl7.fhir.r4.model.CanonicalType ref = (org.hl7.fhir.r4.model.CanonicalType) var6.next();
+
+            if(ref != null) {
+                library = (String) ref.getValue();
+            }
+        }
+        primaryLibrary = libraryHelper.resolveLibraryReference(libraryResourceProvider, library);
+
+        return primaryLibrary;
+    }
+
     // For creating the CQF measure we need to:
     // 1. Find the Primary Library Resource
     // 2. Load the Primary Library as ELM. This will recursively load the dependent
