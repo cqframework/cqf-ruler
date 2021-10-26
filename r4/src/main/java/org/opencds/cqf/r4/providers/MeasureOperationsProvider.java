@@ -2,6 +2,7 @@ package org.opencds.cqf.r4.providers;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -9,6 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.base.Strings;
 
+import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
@@ -16,15 +20,38 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.DetectedIssue;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.Group;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.ListResource;
+import org.hl7.fhir.r4.model.Measure;
+import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupComponent;
 import org.hl7.fhir.r4.model.MeasureReport.MeasureReportGroupPopulationComponent;
+import org.hl7.fhir.r4.model.Meta;
+import org.hl7.fhir.r4.model.Narrative;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.helpers.DateHelper;
+import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluation;
 import org.opencds.cqf.r4.evaluation.MeasureEvaluationSeed;
+import org.opencds.cqf.r4.helpers.LibraryHelper;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.slf4j.Logger;
@@ -32,7 +59,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
-import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
@@ -718,7 +744,7 @@ public class MeasureOperationsProvider {
  
         if (subject == null) {
             throw new IllegalArgumentException("Parameter 'subject' is required.");
-        }  
+        }
         if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
             throw new IllegalArgumentException("Parameter 'subject' must be in the format 'Patient/[id]' or 'Group/[id]'.");
         }
@@ -738,7 +764,7 @@ public class MeasureOperationsProvider {
     }
 
     private Patient ensurePatient(String patient) {
-        String patientId = patient.replace("Patient/", "");    
+        String patientId = patient.replace("Patient/", "");
         IFhirResourceDao<Patient> patientDao = this.registry.getResourceDao(Patient.class);
         Patient patientResource = patientDao.read(new IdType(patientId));
         if (patientResource == null) {
@@ -752,12 +778,12 @@ public class MeasureOperationsProvider {
     private Parameters.ParametersParameterComponent patientReport(Date periodStart, Date periodEnd, String subject) {
         Patient patient = ensurePatient(subject);
         final Map<IIdType, IAnyResource> patientResources = new HashMap<>();
-        patientResources.put(patient.getIdElement(), patient);            
- 
+        patientResources.put(patient.getIdElement(), patient);
+
         SearchParameterMap theParams = SearchParameterMap.newSynchronous();
         ReferenceParam subjectParam = new ReferenceParam(subject);
         theParams.add("subject", subjectParam);
-        
+
         Bundle patientReportBundle = new Bundle();
             patientReportBundle.setMeta(new Meta().addProfile(PATIENT_REPORT_PROFILE_URL));
             patientReportBundle.setType(Bundle.BundleType.COLLECTION);
@@ -858,13 +884,30 @@ public class MeasureOperationsProvider {
 
     // TODO - this needs a lot of work
     @Operation(name = "$data-requirements", idempotent = true, type = Measure.class)
-    public org.hl7.fhir.r4.model.Library dataRequirements(@IdParam IdType theId,
+    public Library dataRequirements(@IdParam IdType theId,
             @OperationParam(name = "startPeriod") String startPeriod,
             @OperationParam(name = "endPeriod") String endPeriod) throws InternalErrorException, FHIRException {
 
         Measure measure = this.measureResourceProvider.getDao().read(theId);
-        return this.dataRequirementsProvider.getDataRequirements(measure, this.libraryResolutionProvider);
+
+        ModelManager modelManager = libraryHelper.getModelManager();
+        LibraryManager libraryManager = libraryHelper.getLibraryManager(libraryResolutionProvider);
+
+        Library library = dataRequirementsProvider.getLibraryFromMeasure(measure, libraryResolutionProvider);
+        if (library == null) {
+            throw new RuntimeException("Could not load measure library.");
+        }
+
+        CqlTranslator translator = TranslatorHelper.getTranslator(
+                LibraryHelper.extractContentStream(library), libraryManager, modelManager);
+        if (translator.getErrors().size() > 0) {
+            throw new RuntimeException("Errors during library compilation.");
+        }
+
+        return this.dataRequirementsProvider.getModuleDefinitionLibrary(measure, libraryManager,
+                translator.getTranslatedLibrary(), TranslatorHelper.getTranslatorOptions());
     }
+
 
     @SuppressWarnings("unchecked")
     @Operation(name = "$submit-data", idempotent = true, type = Measure.class)
