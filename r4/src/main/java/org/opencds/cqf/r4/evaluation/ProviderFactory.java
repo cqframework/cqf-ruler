@@ -55,7 +55,7 @@ public class ProviderFactory implements EvaluationProviderFactory {
             JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(this.registry,
                     new SearchParameterResolver(this.fhirContext));
             retrieveProvider.setTerminologyProvider(terminologyProvider);
-            retrieveProvider.setExpandValueSets(true);
+            retrieveProvider.getR4FhirQueryGenerator().setExpandValueSets(true);
 
             return new CompositeDataProvider(modelResolver, retrieveProvider);
         }

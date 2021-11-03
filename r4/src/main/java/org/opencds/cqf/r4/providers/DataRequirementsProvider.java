@@ -99,6 +99,12 @@ public class DataRequirementsProvider {
         return measureR4;
     }
 
+    public org.hl7.fhir.r4.model.Library getModuleDefinitionLibrary(LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+        org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(libraryManager, translatedLibrary, options);
+        org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(libraryR5);
+        return libraryR4;
+    }
+
     public org.hl7.fhir.r4.model.Library getModuleDefinitionLibrary(Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
         org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(measure);
 

@@ -193,7 +193,7 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     public DataProvider dataProvider(ModelResolver modelResolver, DaoRegistry daoRegistry, SearchParameterResolver searchParameterResolver, TerminologyProvider terminologyProvider) {
         JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver);
         retrieveProvider.setTerminologyProvider(terminologyProvider);
-        retrieveProvider.setExpandValueSets(true);
+        retrieveProvider.getR4FhirQueryGenerator().setExpandValueSets(true);
         return new CompositeDataProvider(modelResolver, retrieveProvider);
     }
     
@@ -213,8 +213,9 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
                                              TerminologyProviderFactory terminologyProviderFactory, EndpointConverter endpointConverter,
                                              Supplier< CqlEvaluatorBuilder > cqlEvaluatorBuilderSupplier) {
 
-        return new LibraryProcessor(fhirContext, cqlFhirParametersConverter, libraryLoaderFactory, dataProviderFactory,
+        LibraryProcessor libraryProcessor = new LibraryProcessor(fhirContext, cqlFhirParametersConverter, libraryLoaderFactory, dataProviderFactory,
                 terminologyProviderFactory, endpointConverter, cqlEvaluatorBuilderSupplier);
+        return libraryProcessor;
 
     }
 }
