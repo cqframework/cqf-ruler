@@ -56,27 +56,27 @@ public class CommonDataRequirementsProvider {
         return measureToUse;
     }
 
-    public Library getModuleDefinitionLibrary(org.hl7.fhir.r5.model.Measure measureToUse, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+    public Library getModuleDefinitionLibrary(org.hl7.fhir.r5.model.Measure measureToUse, LibraryManager libraryManager,
+                                              TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
 
         Set<String> expressionList = getExpressions(measureToUse);
-        Library library = this.internalGetModuleDefinitionLibrary(libraryManager, translatedLibrary, options, expressionList);
+        Library library = this.internalGetModuleDefinitionLibrary(libraryManager, translatedLibrary, options, expressionList, false);
 
         return library;
     }
 
     public Library getModuleDefinitionLibrary(LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-        Library library = this.internalGetModuleDefinitionLibrary(libraryManager, translatedLibrary, options, null);
+        Library library = this.internalGetModuleDefinitionLibrary(libraryManager, translatedLibrary, options, null, true);
 
         return library;
     }
 
-    public Library internalGetModuleDefinitionLibrary(LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options, Set<String> expressionList) {
+    public Library internalGetModuleDefinitionLibrary(LibraryManager libraryManager, TranslatedLibrary translatedLibrary,
+                                                      CqlTranslatorOptions options, Set<String> expressionList, boolean recursive) {
         DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
 
-        boolean shouldGetDataRequirementsRecursively = false;
         Library library = dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, expressionList,
-                true, shouldGetDataRequirementsRecursively);
-
+                true, recursive);
 
         org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(library);
 

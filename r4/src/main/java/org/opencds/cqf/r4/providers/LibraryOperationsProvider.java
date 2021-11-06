@@ -128,17 +128,10 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         ModelManager modelManager = libraryHelper.getModelManager();
         LibraryManager libraryManager = libraryHelper.getLibraryManager(this);
 
-//        CqlTranslator translator = CqlTranslator.fromFile(namespaceInfo, translationTestFile, getModelManager(), getLibraryManager(), getUcumService(), options);
-
         Library library = this.libraryResourceProvider.getDao().read(theId);
         if (library == null) {
             throw new RuntimeException("Could not load library.");
         }
-
-//        for (RelatedArtifact relatedArtifact : library.getRelatedArtifact()) {
-//            Library relatedLibrary = this.resolveLibraryByCanonicalUrl(relatedArtifact.getUrl());
-//
-//        }
 
         CqlTranslator translator = TranslatorHelper.getTranslator(LibraryHelper.extractContentStream(library), libraryManager, modelManager);
         if (translator.getErrors().size() > 0) {
