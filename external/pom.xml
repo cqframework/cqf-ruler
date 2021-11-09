@@ -5,14 +5,18 @@
         <groupId>org.opencds.cqf.ruler</groupId>
         <artifactId>cqf-ruler</artifactId>
         <version>0.5.0-SNAPSHOT</version>
-        <relativePath>../..</relativePath>
     </parent>
 
-    <artifactId>cqf-ruler-jpaserver-starter</artifactId>
+    <artifactId>cqf-ruler-external</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
         <!-- This dependency includes the core HAPI-FHIR classes -->
@@ -90,7 +94,7 @@
                         <configuration>
                             <target>
                                 <copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter">
-                                    <fileset dir="${project.build.directory}/../../hapi-fhir-jpaserver-starter/src/main">
+                                    <fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main">
                                         <include name="**/*.*"/>
                                     </fileset>
                                 </copy>
@@ -136,6 +140,38 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>maven-replacer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <?m2e execute onConfiguration,onIncremental?>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>target/generated-sources/**/*.java</include>
+                    </includes>
+
+                    <regex>true</regex>
+                    <regexFlags>
+                        <regexFlag>MULTILINE</regexFlag>
+                    </regexFlags>
+
+                    <replacements>
+                        <replacement>
+                            <token>^(@SuppressWarnings\(.*?\)\s+)?public class</token>
+                            <value>@SuppressWarnings("all") public class</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
             </plugin>
 
             <plugin>

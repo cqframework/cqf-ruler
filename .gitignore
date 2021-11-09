@@ -142,12 +142,9 @@ local.properties
 *.txt
 
 target
-.project
-.settings
 .classpath
 .flattened-pom.xml
 .factorypath
-org.eclipse.m2e.core.prefs
 !/src/main/resources/hapi.properties
 
 .vscode
