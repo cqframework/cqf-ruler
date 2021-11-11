@@ -8,7 +8,7 @@
         <relativePath>../..</relativePath>
     </parent>
 
-    <artifactId>cqf-ruler-plugin-hello-world</artifactId>
+    <artifactId>cqf-ruler-plugin-sdc</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.opencds.cqf.ruler</groupId>

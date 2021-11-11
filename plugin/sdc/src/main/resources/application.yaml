@@ -1,0 +1,10 @@
+hapi:
+  fhir:
+    sdc:
+      enabled: true
+      extract:
+        endpoint: ''
+        username: ''
+        password: ''
+
+        
