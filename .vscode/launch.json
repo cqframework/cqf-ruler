@@ -1,0 +1,60 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Server",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "5005",
+            "stepFilters": {
+                "classNameFilters": [
+                    "java.*",
+                    "javax.*",
+                    "com.sun.*",
+                    "sun.*",
+                    "sunw.*",
+                    "org.omg.*"
+                ]
+            },
+            "preLaunchTask": "run-maven",
+            "postDebugTask": "stop-maven",
+        },
+        {
+            "type": "java",
+            "name": "Attach",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "5005",
+            "stepFilters": {
+                "classNameFilters": [
+                    "java.*",
+                    "javax.*",
+                    "com.sun.*",
+                    "sun.*",
+                    "sunw.*",
+                    "org.omg.*"
+                ]
+            }
+        },
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}",
+            "stepFilters": {
+                "classNameFilters": [
+                    "java.*",
+                    "javax.*",
+                    "com.sun.*",
+                    "sun.*",
+                    "sunw.*",
+                    "org.omg.*"
+                ]
+            }
+        }
+    ]
+}

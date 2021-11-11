@@ -101,6 +101,7 @@ hapi:
 #    max_page_size: 200
 #    retain_cached_searches_mins: 60
 #    reuse_cached_search_results_millis: 60000
+    tester_enabled: true
     tester:
         home:
           name: Local Tester
@@ -183,3 +184,7 @@ hapi:
 # cds_hooks.fhirServer.expandValueSets=
 # cds_hooks.fhirServer.searchStyle=
 # cds_hooks.prefetch.maxUriLength=
+
+hello:
+  world:  
+    message: Hello

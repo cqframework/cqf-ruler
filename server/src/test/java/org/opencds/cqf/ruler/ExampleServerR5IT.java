@@ -1,35 +1,24 @@
 package org.opencds.cqf.ruler;
 
-import static ca.uhn.fhir.util.TestUtil.waitForSize;
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.api.CacheControlDirective;
-import ca.uhn.fhir.rest.api.EncodingEnum;
-import ca.uhn.fhir.rest.api.MethodOutcome;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
-import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
-import java.net.URI;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
+
+import org.awaitility.Awaitility;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.hl7.fhir.r5.model.Bundle;
-import org.hl7.fhir.r5.model.Enumerations;
-import org.hl7.fhir.r5.model.Observation;
 import org.hl7.fhir.r5.model.Patient;
-import org.hl7.fhir.r5.model.Subscription;
-import org.hl7.fhir.r5.model.SubscriptionTopic;
+import org.junit.BeforeClass;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
+import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties =
@@ -42,7 +31,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
   })
 public class ExampleServerR5IT {
 
-  private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerDstu2IT.class);
+  // private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerR5IT.class);
   private IGenericClient ourClient;
   private FhirContext ourCtx;
 
@@ -63,65 +52,68 @@ public class ExampleServerR5IT {
     assertEquals(methodName, pt2.getName().get(0).getFamily());
   }
 
-  @Test
-  public void testWebsocketSubscription() throws Exception {
+  // @Ignore("not yet ready")
+  // @Test
+  // public void testWebsocketSubscription() throws Exception {
 
-    /*
-     * Create topic
-     */
-    SubscriptionTopic topic = new SubscriptionTopic();
-    topic.getResourceTrigger().get(0).getQueryCriteria().setCurrent("Observation?status=final");
+  //   /*
+  //    * Create topic
+  //    */
+  //   SubscriptionTopic topic = new SubscriptionTopic();
+  //   topic.addResourceTrigger().getQueryCriteria().setCurrent("Observation?status=final");
 
-    /*
-     * Create subscription
-     */
-    Subscription subscription = new Subscription();
-    subscription.setReason("Monitor new neonatal function (note, age will be determined by the monitor)");
-    subscription.setStatus(Enumerations.SubscriptionState.REQUESTED);
-    subscription.getChannelType()
-      .setSystem("http://terminology.hl7.org/CodeSystem/subscription-channel-type")
-      .setCode("websocket");
-    subscription.setContentType("application/json");
+  //   /*
+  //    * Create subscription
+  //    */
+  //   Subscription subscription = new Subscription();
+  //   subscription.addFilterBy().setValue("Observation?status=final");
+  //   subscription.setTopic("Observation?status=final");
+  //   subscription.setReason("Monitor new neonatal function (note, age will be determined by the monitor)");
+  //   subscription.setStatus(Enumerations.SubscriptionState.REQUESTED);
+  //   subscription.getChannelType()
+  //     .setSystem("http://terminology.hl7.org/CodeSystem/subscription-channel-type")
+  //     .setCode("websocket");
+  //   subscription.setContentType("application/json");
 
-    MethodOutcome methodOutcome = ourClient.create().resource(subscription).execute();
-    IIdType mySubscriptionId = methodOutcome.getId();
+  //   MethodOutcome methodOutcome = ourClient.create().resource(subscription).execute();
+  //   IIdType mySubscriptionId = methodOutcome.getId();
 
-    // Wait for the subscription to be activated
-    waitForSize(1, () -> ourClient.search().forResource(Subscription.class).where(Subscription.STATUS.exactly().code("active")).cacheControl(new CacheControlDirective().setNoCache(true)).returnBundle(Bundle.class).execute().getEntry().size());
+  //   // Wait for the subscription to be activated
+  //   waitForSize(1, () -> ourClient.search().forResource(Subscription.class).where(Subscription.STATUS.exactly().code("active")).cacheControl(new CacheControlDirective().setNoCache(true)).returnBundle(Bundle.class).execute().getEntry().size());
 
-    /*
-     * Attach websocket
-     */
+  //   /*
+  //    * Attach websocket
+  //    */
 
-    WebSocketClient myWebSocketClient = new WebSocketClient();
-    SocketImplementation mySocketImplementation = new SocketImplementation(mySubscriptionId.getIdPart(), EncodingEnum.JSON);
+  //   WebSocketClient myWebSocketClient = new WebSocketClient();
+  //   SocketImplementation mySocketImplementation = new SocketImplementation(mySubscriptionId.getIdPart(), EncodingEnum.JSON);
 
-    myWebSocketClient.start();
-    URI echoUri = new URI("ws://localhost:" + port + "/websocket");
-    ClientUpgradeRequest request = new ClientUpgradeRequest();
-    ourLog.info("Connecting to : {}", echoUri);
-    Future<Session> connection = myWebSocketClient.connect(mySocketImplementation, echoUri, request);
-    Session session = connection.get(2, TimeUnit.SECONDS);
+  //   myWebSocketClient.start();
+  //   URI echoUri = new URI("ws://localhost:" + port + "/websocket");
+  //   ClientUpgradeRequest request = new ClientUpgradeRequest();
+  //   ourLog.info("Connecting to : {}", echoUri);
+  //   Future<Session> connection = myWebSocketClient.connect(mySocketImplementation, echoUri, request);
+  //   Session session = connection.get(2, TimeUnit.SECONDS);
 
-    ourLog.info("Connected to WS: {}", session.isOpen());
+  //   ourLog.info("Connected to WS: {}", session.isOpen());
 
-    /*
-     * Create a matching resource
-     */
-    Observation obs = new Observation();
-    obs.setStatus(Enumerations.ObservationStatus.FINAL);
-    ourClient.create().resource(obs).execute();
+  //   /*
+  //    * Create a matching resource
+  //    */
+  //   Observation obs = new Observation();
+  //   obs.setStatus(Enumerations.ObservationStatus.FINAL);
+  //   ourClient.create().resource(obs).execute();
 
-    /*
-     * Ensure that we receive a ping on the websocket
-     */
-    await().until(() -> mySocketImplementation.myPingCount > 0);
+  //   /*
+  //    * Ensure that we receive a ping on the websocket
+  //    */
+  //   await().until(() -> mySocketImplementation.myPingCount > 0);
 
-    /*
-     * Clean up
-     */
-    ourClient.delete().resourceById(mySubscriptionId).execute();
-  }
+  //   /*
+  //    * Clean up
+  //    */
+  //   ourClient.delete().resourceById(mySubscriptionId).execute();
+  // }
 
   @BeforeEach
   void beforeEach() {
@@ -133,4 +125,9 @@ public class ExampleServerR5IT {
     ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
     ourClient.registerInterceptor(new LoggingInterceptor(true));
   }
+
+  @BeforeClass
+	public static void setup() {
+		Awaitility.setDefaultTimeout(30, TimeUnit.SECONDS);
+	}
 }

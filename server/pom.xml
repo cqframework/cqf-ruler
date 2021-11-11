@@ -150,6 +150,12 @@
             <artifactId>spring-web</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+
+
         <!-- You may not need this if you are deploying to an application server which provides database connection pools itself. -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -360,23 +366,6 @@
                     <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
-            <!-- This is to run the integration tests -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>org.basepom.maven</groupId>
                 <artifactId>duplicate-finder-maven-plugin</artifactId>

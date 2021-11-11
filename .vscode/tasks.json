@@ -1,0 +1,39 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "run-maven",
+            "type": "shell",
+            "command": "mvn clean package -DskipTests=true && java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005 -cp server/target/cqf-ruler-server-*.war -Dloader.debug=true -Dloader.path=WEB-INF/classes,WEB-INF/lib,WEB-INF/lib-provided$(for i in plugin/**/target/cqf-ruler-plugin*.jar ; do echo -n ,$i ; done) org.springframework.boot.loader.PropertiesLauncher",
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": [{
+                "pattern": [{
+                    "regexp": "\\b\\B",
+                    "file": 1,
+                    "location": 2,
+                    "message": 3
+                }],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^.*Listening for",
+                    "endsPattern": "^.*transport dt_socket at address.*"
+                }
+            }]
+        },
+        {
+            "label": "stop-maven",
+            "type": "shell",
+            "command": "echo ${input:terminate}}",
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "terminate",
+            "type": "command",
+            "command": "workbench.action.tasks.terminate",
+            "args": "run-maven"
+        }
+    ]
+}

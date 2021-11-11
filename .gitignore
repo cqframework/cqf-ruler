@@ -145,10 +145,6 @@ target
 .classpath
 .flattened-pom.xml
 .factorypath
-!/src/main/resources/hapi.properties
-
-.vscode
-
 
 LogMessages.html
 
