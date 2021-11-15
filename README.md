@@ -17,13 +17,19 @@ docker pull contentgroup/cqf-ruler
 docker run -p 8080:8080 contentgroup/cqf-ruler
 ```
 
-This will make the cqf-ruler available on `http://localhost:8080/cqf-ruler-r4`
+This will make the cqf-ruler available on `http://localhost:8080`
 
 Other options for deployment are listed on the [wiki](https://github.com/DBCG/cqf-ruler/wiki) for more documentation.
 
 ## Development
 
 ### Dependencies
+
+#### Git Submodules
+
+This project includes the `hapi-fhir-jpaserver-starter` project as a submodule and includes the compiled classes as a jar called `cqf-ruler-external`. Be sure to use the following command when cloning this repository to ensure the submodules are initialized correctly:
+
+`git clone --recurse-submodules https://github.com/DBCG/cqf-ruler.git`
 
 #### Java
 
@@ -42,25 +48,53 @@ binary "mvn" is now in your path.
 
 `mvn package`
 
-Builds the project war file (cqf-ruler-dstu3.war and cqf-ruler-r4.war in the projects' target directory)
-
 Visit the [wiki](https://github.com/DBCG/cqf-ruler/wiki) for more documentation.
 
 ### Run
 
 To run the cqf-ruler directory from this project use:
 
-#### DSTU3
+`java -jar server/target/cqf-ruler-server-*.jar`
 
-`mvn jetty:run -am --projects cqf-ruler-dstu3`
+### Plugins
 
-The cqf-ruler will be available at `http://localhost:8080/cqf-ruler-dstu3/`
+Plugins use Spring Boot [autoconfiguration](https://docs.spring.io/spring-boot/docs/2.0.0.M3/reference/html/boot-features-developing-auto-configuration.html) to be loaded at runtime. Spring searches for a `spring.factories` file in the meta-data of the jars on the classpath, and the `spring.factories` file points to the root Spring config for the plugin. For example, the content of the `resources/META-INF/spring.factories` file might be:
 
-#### R4
+```ini
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.opencds.cqf.ruler.plugin.example.ExampleConfig
+```
 
-`mvn jetty:run -am --projects cqf-ruler-r4`
+Any Beans defined in that root plugin config that implement one the cqf-ruler plugin apis will be loaded by the cqf-ruler on startup. There's full plugin example [here](plugin/hello-world).
 
-The cqf-ruler will be available at `http://localhost:8080/cqf-ruler-r4/`
+Plugins should reference the `cqf-ruler-server` project using the `provided` scope. This tells Maven that the `cqf-ruler-server` classes will be available at runtime, and not to include those dependencies in the plugin jar.
+
+```xml
+<dependency>
+    <groupId>org.opencds.cqf.ruler</groupId>
+    <artifactId>cqf-ruler-server</artifactId>
+    <version>0.5.0-SNAPSHOT</version>
+    <classifier>classes</classifier>
+    <scope>provided</scope>
+</dependency>
+```
+
+Any other dependencies also required by the base `cqf-ruler-server` may also be listed in `provided` scope
+
+#### Plugin API
+
+Currently the cqf-ruler recognizes three types of plugin contributions:
+
+* Operation Providers
+  * Provide implementation of some FHIR operation
+* Metadata Extenders
+  * Mutates the conformance/capability statements
+* Interceptors
+  * Modify requests/responses
+
+#### Plugin Limitations
+
+The plugin system is very simple and naive. Plugins are expected to be well-behaved, and not contribute any beans that may be invalid for the current server's configuration. This includes but is not limited to, multiple versions of plugins, mismatched FHIR versions, operation overrides, etc.
 
 ## Commit Policy
 
