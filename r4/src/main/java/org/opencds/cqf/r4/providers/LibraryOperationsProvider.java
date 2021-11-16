@@ -422,7 +422,10 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             (Parameters) ParametersHelper.getParameter(parameters, "parameters").getResource()
             : null;
 
-        BooleanType useServerData = (BooleanType) parameters.getParameter("useServerData");
+        boolean useServerData = parameters.hasParameter("useServerData") ?
+                ((BooleanType) parameters.getParameter("useServerData")).booleanValue()
+                : true;
+
         Bundle data = parameters.hasParameter("data") ?
             (Bundle) ParametersHelper.getParameter(parameters, "data").getResource()
             : null;
@@ -454,41 +457,46 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             throw new IllegalArgumentException("Must specify a patientId when executing in Patient context.");
         }
 
-        Bundle libraryBundle = new Bundle();
-        Library theResource = null;
-        if (data != null) {
-            for (BundleEntryComponent entry : data.getEntry()) {
-                if (entry.getResource().fhirType().equals("Library")) {
-                    libraryBundle.addEntry(entry);
-                    if (entry.getResource().getIdElement().equals(theId)) {
-                        theResource = (Library) entry.getResource();
-                    }
-                }
-            }
-        }
         Bundle evaluationData = data != null ? data : prefetchDataData;
 
-//        if(theResource != null) {
-//            this.update(theResource);
-//        }
-//
-        if (theResource == null) {
-            theResource = this.libraryResourceProvider.getDao().read(theId);
-//            if (evaluationData != null) {
-//                evaluationData.getEntry().add(new BundleEntryComponent().setResource(theResource));
-//            }
+        Library libraryResource = fetchLibraryFromBundle(evaluationData, theId);
+
+        if(libraryResource != null && useServerData) {
+            this.update(libraryResource);
         }
 
-        VersionedIdentifier libraryIdentifier = new VersionedIdentifier().withId(theResource.getName())
-                .withVersion(theResource.getVersion());
+        if (libraryResource == null && useServerData) {
+            libraryResource = this.libraryResourceProvider.getDao().read(theId);
+            if (libraryResource == null) {
+                throw new IllegalArgumentException("Library is not provided or not found in the server");
+            }
+            if (evaluationData != null) {
+                evaluationData.addEntry((new BundleEntryComponent().setResource(libraryResource)));
+            }
+        }
+
+        VersionedIdentifier libraryIdentifier = new VersionedIdentifier().withId(libraryResource.getName())
+                .withVersion(libraryResource.getVersion());
 
         //TODO: These are both probably too naive and basically even incorrect
-        Endpoint libraryEndpoint = library != null ? new Endpoint().setAddress(library.toString()) : null;
+        Endpoint libraryEndpoint = null;
 
         response = (Parameters)libraryProcessor.evaluate(libraryIdentifier, contextValue, parametersParameters, libraryEndpoint,
                 terminologyEndpoint, dataEndpoint, evaluationData, expression);
 
         return response;
+    }
+
+    private Library fetchLibraryFromBundle(Bundle evaluationData, IdType theId) {
+        if (evaluationData != null) {
+            for (BundleEntryComponent entry : evaluationData.getEntry()) {
+                if (entry.hasResource() && entry.getResource().fhirType().equals("Library") &&
+                        entry.getResource().hasIdElement() && entry.getResource().getIdElement().equals(theId)) {
+                    return (Library) entry.getResource();
+                }
+            }
+        }
+        return null;
     }
 
     // TODO: Figure out if we should throw an exception or something here.
