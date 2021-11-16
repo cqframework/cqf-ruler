@@ -150,7 +150,7 @@ public class ExampleServerDstu3IT implements IServerSupport {
   private Bundle loadBundle(String theLocation, FhirContext theCtx, IGenericClient theClient) throws IOException {
     String json = stringFromResource(theLocation);
     Bundle bundle = (Bundle) theCtx.newJsonParser().parseResource(json);
-    Bundle result = (Bundle) theClient.transaction().withBundle(bundle).execute();
+    Bundle result = theClient.transaction().withBundle(bundle).execute();
     return result;
   }
 

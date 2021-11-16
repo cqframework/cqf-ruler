@@ -103,7 +103,7 @@ public class ExtractProvider implements OperationProvider {
         qrCategoryCoding.setCode("survey");
         qrCategoryCoding.setSystem("http://hl7.org/fhir/observation-category");
         obs.setCategory(Collections.singletonList(new CodeableConcept().addCoding(qrCategoryCoding)));
-        obs.setCode(new CodeableConcept().addCoding((Coding) questionnaireCodeMap.get(linkId)));
+        obs.setCode(new CodeableConcept().addCoding(questionnaireCodeMap.get(linkId)));
         obs.setId("qr" + questionnaireResponse.getIdElement().getIdPart() + "." + linkId);
         switch (answer.getValue().fhirType()) {
             case "string":
