@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r5.model.Patient;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -127,7 +127,7 @@ public class ExampleServerR5IT {
     ourClient.registerInterceptor(new LoggingInterceptor(true));
   }
 
-  @BeforeClass
+  @BeforeAll
 	public static void setup() {
 		Awaitility.setDefaultTimeout(30, TimeUnit.SECONDS);
 	}

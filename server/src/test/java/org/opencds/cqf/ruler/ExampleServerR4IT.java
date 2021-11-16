@@ -10,7 +10,7 @@ import org.awaitility.Awaitility;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Patient;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -169,7 +169,7 @@ public class ExampleServerR4IT {
 //		ourClient.registerInterceptor(new LoggingInterceptor(false));
 	}
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() {
 		Awaitility.setDefaultTimeout(30, TimeUnit.SECONDS);
 	}

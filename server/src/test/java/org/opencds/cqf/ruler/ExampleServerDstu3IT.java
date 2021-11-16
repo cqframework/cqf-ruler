@@ -16,7 +16,7 @@ import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -114,11 +114,11 @@ public class ExampleServerDstu3IT implements IServerSupport {
       .execute();
 
     List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
-    Assert.assertTrue(!response.isEmpty());
+    Assertions.assertTrue(!response.isEmpty());
     Parameters.ParametersParameterComponent component = response.get(0);
-    Assert.assertTrue(component.getResource() instanceof MeasureReport);
+    Assertions.assertTrue(component.getResource() instanceof MeasureReport);
     MeasureReport report = (MeasureReport) component.getResource();
-    Assert.assertEquals("Measure/"+measureId, report.getMeasure());
+    Assertions.assertEquals("Measure/"+measureId, report.getMeasure());
   }
 
   private int loadDataFromDirectory(String theDirectoryName) throws IOException {

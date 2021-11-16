@@ -1,9 +1,7 @@
 package org.opencds.cqf.ruler.plugin.sdc;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
 @ConfigurationProperties(prefix = "hapi.fhir.sdc")
 public class SDCProperties {
 
