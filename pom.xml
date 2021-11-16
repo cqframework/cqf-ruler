@@ -12,6 +12,7 @@
         <module>server</module>
         <module>plugin/hello-world</module>
         <module>plugin/sdc</module>
+        <module>plugin/ra</module>
         <!-- <module>cqf-ruler-common</module>
         <module>cqf-ruler-dstu3</module>
         <module>cqf-ruler-r4</module> -->
