@@ -14,10 +14,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public interface  IServerSupport {
+public interface IServerSupport {
 
   @SuppressWarnings("unchecked")
-  default IBaseResource loadResource(String theLocation, FhirContext theFhirContext, DaoRegistry theDaoRegistry) throws IOException {
+  default IBaseResource loadResource(String theLocation, FhirContext theFhirContext, DaoRegistry theDaoRegistry)
+      throws IOException {
     String json = stringFromResource(theLocation);
     IBaseResource resource = theFhirContext.newJsonParser().parseResource(json);
     IFhirResourceDao<IBaseResource> dao = theDaoRegistry.getResourceDao(resource.getIdElement().getResourceType());

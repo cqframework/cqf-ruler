@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
@@ -46,7 +47,7 @@ public class ExampleServerDstu2IT {
 	@BeforeEach
 	void beforeEach() {
 
-    ourCtx = FhirContext.forDstu2();
+    ourCtx = FhirContext.forCached(FhirVersionEnum.DSTU2);
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";

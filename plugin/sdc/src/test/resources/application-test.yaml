@@ -5,13 +5,10 @@ spring:
     allow-bean-definition-overriding: true
   batch:
     job:
-      enabled: false"
+      enabled: false
   datasource:
     url: jdbc:h2:mem:dbr4-mt
 
 hapi:
   fhir:
-    tester_enabled: false;
-    sdc:
-      extract:
-        endpoint: http://localhost:${server.port}/fhir
+    tester_enabled: false

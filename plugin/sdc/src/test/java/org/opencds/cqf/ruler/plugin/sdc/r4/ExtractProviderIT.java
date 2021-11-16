@@ -3,17 +3,20 @@ package org.opencds.cqf.ruler.plugin.sdc.r4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.QuestionnaireResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.sdc.SDCConfig;
 import org.opencds.cqf.ruler.plugin.sdc.SDCProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -21,7 +24,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -31,11 +36,16 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
         SDCConfig.class }, properties ="hapi.fhir.fhir_version=r4")
 public class ExtractProviderIT implements IServerSupport {
+    private Logger log = LoggerFactory.getLogger(ExtractProviderIT.class);
+
     private IGenericClient ourClient;
     private FhirContext ourCtx;
     
     @Autowired
     private DaoRegistry ourRegistry;
+
+    @Autowired
+    private SDCProperties mySdcProperties;
 
     @LocalServerPort
     private int port;
@@ -43,19 +53,13 @@ public class ExtractProviderIT implements IServerSupport {
     @BeforeEach
 	void beforeEach() {
 
-		ourCtx = FhirContext.forR4();
+		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";
 		ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
 
-
-        System.setProperty("hapi.fhir.sdc.extract.url", ourServerBase);
-
-        // mySdcProperties.getExtract().setEndpoint(ourServerBase);
-
-
-//		ourClient.registerInterceptor(new LoggingInterceptor(false));
+        mySdcProperties.getExtract().setEndpoint(ourServerBase);
 	}
 
     @Test
@@ -75,7 +79,16 @@ public class ExtractProviderIT implements IServerSupport {
             .execute();
 
         assertNotNull(actual);
-        // TODO: Bundle Validation
+
+        // Expecting one observation per item
+        assertEquals(5, actual.getEntry().size());
+
+        // Ensure the Observations were saved to the local server
+        Observation obs = ourClient.read().resource(Observation.class).withId("IdFromBundle").execute();
+
+        assertNotNull(obs);
+
+        // Check other observation properties
     }
 
     @Test
