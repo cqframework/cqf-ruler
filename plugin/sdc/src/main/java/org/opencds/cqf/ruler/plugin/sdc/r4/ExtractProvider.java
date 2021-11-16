@@ -84,6 +84,7 @@ public class ExtractProvider implements OperationProvider {
                 }
             });
         }
+
         if (item.hasItem()) {
             item.getItem().forEach(itemItem -> {
                 processItems(itemItem, authored, questionnaireResponse, newBundle, questionnaireCodeMap);

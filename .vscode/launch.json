@@ -6,6 +6,29 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch Server (Live Reload)",
+            "request": "launch",
+            "mainClass": "org.opencds.cqf.ruler.Application",
+            "projectName": "cqf-ruler-server",
+            "vmArgs": ["-XX:TieredStopAtLevel=1", "-Xverify:none", "-Dspring.main.lazy-initialization=true"],
+            "stepFilters": {
+                "classNameFilters": [
+                    "java.*",
+                    "javax.*",
+                    "com.sun.*",
+                    "sun.*",
+                    "sunw.*",
+                    "org.omg.*"
+                ]
+            },
+            "classPaths": [
+                "$Auto",
+                "${workspaceFolder}/plugin/hello-world/target/classes",
+                "${workspaceFolder}/plugin/sdc/target/classes"
+            ]
+        },
+        {
+            "type": "java",
             "name": "Launch Server",
             "request": "attach",
             "hostName": "localhost",
@@ -21,7 +44,7 @@
                 ]
             },
             "preLaunchTask": "run-maven",
-            "postDebugTask": "stop-maven",
+            "postDebugTask": "stop-maven"
         },
         {
             "type": "java",

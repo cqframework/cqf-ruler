@@ -81,10 +81,9 @@
             <artifactId>spring-web</artifactId>
         </dependency>
 
-         <dependency>
+        <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-server-openapi</artifactId>
-            <version>${hapi_version}</version>
         </dependency>
     </dependencies>
 
@@ -95,7 +94,6 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <?m2e execute onConfiguration,onIncremental?>
                         <phase>generate-sources</phase>
                         <configuration>
                             <target>
@@ -117,7 +115,6 @@
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <?m2e execute onConfiguration,onIncremental?>
                         <id>add-source</id>
                         <phase>generate-sources</phase>
                         <goals>
@@ -130,7 +127,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <?m2e execute onConfiguration,onIncremental?>
                         <id>add-resources</id>
                         <phase>generate-sources</phase>
                         <goals>
@@ -154,7 +150,6 @@
                 <version>1.4.1</version>
                 <executions>
                     <execution>
-                        <?m2e execute onConfiguration,onIncremental?>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>replace</goal>
