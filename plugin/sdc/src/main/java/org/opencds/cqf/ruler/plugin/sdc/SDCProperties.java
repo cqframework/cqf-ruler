@@ -1,12 +1,10 @@
 package org.opencds.cqf.ruler.plugin.sdc;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-@ConfigurationProperties(prefix = "hapi.fhir.sdc")
 @Configuration
-@EnableConfigurationProperties
+@ConfigurationProperties(prefix = "hapi.fhir.sdc")
 public class SDCProperties {
 
     private Boolean enabled = true;

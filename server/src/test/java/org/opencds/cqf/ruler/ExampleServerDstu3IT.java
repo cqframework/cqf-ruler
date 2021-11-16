@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.api.CacheControlDirective;
@@ -63,7 +64,7 @@ public class ExampleServerDstu3IT implements IServerSupport {
 
   @BeforeEach
   void beforeEach() {
-    ourCtx = FhirContext.forDstu3();
+    ourCtx = FhirContext.forCached(FhirVersionEnum.DSTU3);
     ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
     ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
     String ourServerBase = "http://localhost:" + port + "/fhir/";

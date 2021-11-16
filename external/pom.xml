@@ -80,6 +80,12 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
+
+         <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-server-openapi</artifactId>
+            <version>${hapi_version}</version>
+        </dependency>
     </dependencies>
 
     <build>
