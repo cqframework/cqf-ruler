@@ -3,6 +3,9 @@ package org.opencds.cqf.ruler.plugin.sdc.r4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
 
 import org.hl7.fhir.r4.model.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -26,9 +30,12 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
         SDCConfig.class }, properties ="hapi.fhir.fhir_version=r4")
-public class ExtractProviderIT {
+public class ExtractProviderIT implements IServerSupport {
     private IGenericClient ourClient;
     private FhirContext ourCtx;
+    
+    @Autowired
+    private DaoRegistry ourRegistry;
 
     @LocalServerPort
     private int port;
@@ -42,6 +49,9 @@ public class ExtractProviderIT {
 		String ourServerBase = "http://localhost:" + port + "/fhir/";
 		ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
 
+
+        System.setProperty("hapi.fhir.sdc.extract.url", ourServerBase);
+
         // mySdcProperties.getExtract().setEndpoint(ourServerBase);
 
 
@@ -49,18 +59,33 @@ public class ExtractProviderIT {
 	}
 
     @Test
-    public void testExtract() {
+    public void testExtract() throws IOException {
 
-        // TODO: Need to load a questionnaire url and set it for this
-        QuestionnaireResponse response = new QuestionnaireResponse();
-        response.setId("1");
+        loadResource("mypain-questionnaire.json", ourCtx, ourRegistry);
+
+
+        QuestionnaireResponse test = (QuestionnaireResponse)ourCtx.newJsonParser().parseResource(stringFromResource("mypain-questionnaire-response.json"));
 
         Parameters params = new Parameters();
-        params.addParameter().setName("questionnaireResponse").setResource(response);
+        params.addParameter().setName("questionnaireResponse").setResource(test);
 
+        Bundle actual = ourClient.operation().onType(QuestionnaireResponse.class).named("$extract")
+            .withParameters(params)
+            .returnResourceType(Bundle.class)
+            .execute();
 
-        // TODO: Need to validate that the bundle is returned and also submitted
-        Exception e = assertThrows(InternalErrorException.class, () -> {
+        assertNotNull(actual);
+        // TODO: Bundle Validation
+    }
+
+    @Test
+    public void testExtract_noQuestionnaireReference_throwsException() throws IOException {
+        QuestionnaireResponse test = (QuestionnaireResponse)ourCtx.newJsonParser().parseResource(stringFromResource("mypain-questionnaire-response-no-url.json"));
+
+        Parameters params = new Parameters();
+        params.addParameter().setName("questionnaireResponse").setResource(test);
+
+        assertThrows(InternalErrorException.class, () -> {
             ourClient.operation().onType(QuestionnaireResponse.class).named("$extract")
             .withParameters(params)
             .returnResourceType(Bundle.class)

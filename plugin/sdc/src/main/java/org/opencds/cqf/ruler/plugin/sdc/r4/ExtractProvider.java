@@ -55,7 +55,12 @@ public class ExtractProvider implements OperationProvider {
         bundleId.setValue("QuestionnaireResponse/" + questionnaireResponse.getIdElement().getIdPart());
         newBundle.setType(Bundle.BundleType.TRANSACTION);
         newBundle.setIdentifier(bundleId);
-        Map<String, Coding> questionnaireCodeMap = getQuestionnaireCodeMap(questionnaireResponse.getQuestionnaire());
+
+        String questionnaireCanonical = questionnaireResponse.getQuestionnaire();
+        if (questionnaireCanonical == null || questionnaireCanonical.isEmpty()) {
+            throw new IllegalArgumentException("The QuestionnaireResponse must have the source Questionnaire specified to do extraction");
+        }
+        Map<String, Coding> questionnaireCodeMap = getQuestionnaireCodeMap(questionnaireCanonical);
 
         questionnaireResponse.getItem().stream().forEach(item -> {
             processItems(item, authored, questionnaireResponse, newBundle, questionnaireCodeMap);
@@ -157,7 +162,9 @@ public class ExtractProvider implements OperationProvider {
 
         IGenericClient client = myFhirContext.newRestfulGenericClient(url);
         client.registerInterceptor(new BasicAuthInterceptor(user, password));
-        Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl(questionnaireUrl).execute();
+        Bundle results = (Bundle)client.search().forResource(Questionnaire.class).where(Questionnaire.URL.matches().value(questionnaireUrl)).execute();
+        
+        Questionnaire questionnaire = (Questionnaire)results.getEntry().get(0).getResource();
 
         return createCodeMap(questionnaire);
     }
