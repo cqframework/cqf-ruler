@@ -109,7 +109,6 @@ public class Server extends BaseJpaRestfulServer {
         for (OperationProvider o : providers.values()) {
             log.info("Registering {}", o.getClass().getName());
             this.registerProvider(o);
-
         }
 
         log.info("Loading interceptors from plugins");
@@ -117,7 +116,6 @@ public class Server extends BaseJpaRestfulServer {
         for (Interceptor o : interceptors.values()) {
             log.info("Registering {} interceptor", o.getClass().getName());
             this.registerInterceptor(o);
-
         }
     }
 }

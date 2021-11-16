@@ -8,6 +8,14 @@ The `hapi-fhir-jpaserver-starter` project is added as a git sub-module. It's pin
 
 The `resources` content is embedded into the jar, while the `webapp` content is not.
 
+## Setting up
+
+If you've already cloned the repository use the following command to update the submodules
+
+```bash
+git submodule update --init --recursive
+```
+
 ## Updating
 
 First, check out the version of the `hapi-fhir-jpaserver-starter` project you want:
