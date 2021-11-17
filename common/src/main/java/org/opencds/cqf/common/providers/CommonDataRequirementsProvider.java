@@ -76,7 +76,7 @@ public class CommonDataRequirementsProvider {
         DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
 
         Library library = dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, expressionList,
-                true, recursive);
+                true);
 
         org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(library);
 
