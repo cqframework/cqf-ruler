@@ -2,7 +2,6 @@ package org.opencds.cqf.common.providers;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.dao.ISearchBuilder;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
@@ -60,23 +59,22 @@ public class CommonDataRequirementsProvider {
                                               TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
 
         Set<String> expressionList = getExpressions(measureToUse);
-        Library library = this.internalGetModuleDefinitionLibrary(libraryManager, translatedLibrary, options, expressionList, false);
+        Library library = this.internalGetModuleDefinitionLibrary(libraryManager, translatedLibrary, options, expressionList);
 
         return library;
     }
 
     public Library getModuleDefinitionLibrary(LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-        Library library = this.internalGetModuleDefinitionLibrary(libraryManager, translatedLibrary, options, null, true);
+        Library library = this.internalGetModuleDefinitionLibrary(libraryManager, translatedLibrary, options, null);
 
         return library;
     }
 
     public Library internalGetModuleDefinitionLibrary(LibraryManager libraryManager, TranslatedLibrary translatedLibrary,
-                                                      CqlTranslatorOptions options, Set<String> expressionList, boolean recursive) {
+                                                      CqlTranslatorOptions options, Set<String> expressionList) {
         DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
 
-        Library library = dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, expressionList,
-                true);
+        Library library = dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, expressionList, true);
 
         org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(library);
 
