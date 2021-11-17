@@ -235,10 +235,13 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
 
         Bundle evaluationData = data != null ? data : prefetchDataData;
 
-        Library libraryResource = fetchLibraryFromBundle(evaluationData, theId);
+        Bundle libraryBundle = new Bundle();
+        Library libraryResource = fetchLibraryFromBundle(evaluationData, libraryBundle, theId);
 
-        if(libraryResource != null && useServerData) {
-            this.update(libraryResource);
+        if (libraryResource != null && useServerData) {
+            for (BundleEntryComponent entry : libraryBundle.getEntry()) {
+                this.update((Library) entry.getResource());
+            }
         }
 
         if (libraryResource == null && useServerData) {
@@ -263,12 +266,15 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         return response;
     }
 
-    private Library fetchLibraryFromBundle(Bundle evaluationData, IdType theId) {
+    private Library fetchLibraryFromBundle(Bundle evaluationData, Bundle libraryBundle, IdType theId) {
         if (evaluationData != null) {
             for (BundleEntryComponent entry : evaluationData.getEntry()) {
-                if (entry.hasResource() && entry.getResource().fhirType().equals("Library") &&
-                        entry.getResource().hasIdElement() && entry.getResource().getIdElement().equals(theId)) {
-                    return (Library) entry.getResource();
+                if (entry.hasResource() && entry.getResource().fhirType().equals("Library")) {
+                    Bundle.BundleEntryComponent newItem = new Bundle.BundleEntryComponent().setResource(entry.getResource());
+                    libraryBundle.addEntry(newItem);
+                    if (entry.getResource().hasIdElement() && entry.getResource().getIdElement().equals(theId)) {
+                        return (Library) entry.getResource();
+                    }
                 }
             }
         }
