@@ -101,13 +101,13 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
+            <!-- <dependency>
                 <groupId>ca.uhn.hapi.fhir</groupId>
                 <artifactId>hapi-fhir</artifactId>
                 <type>pom</type>
                 <scope>import</scope>
                 <version>${hapi_version}</version>
-            </dependency>
+            </dependency> -->
 
             <dependency>
                 <groupId>ca.uhn.hapi.fhir</groupId>
@@ -116,6 +116,15 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>5.8.1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
 
             <dependency>
                 <groupId>ca.uhn.hapi.fhir</groupId>
@@ -343,33 +352,8 @@
                 <version>${spring_boot_version}</version>
                 <scope>test</scope>
             </dependency>
-
-
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>5.7.2</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.7.2</version>
-                <scope>test</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-        </dependency>
-    </dependencies>
     <build>
         <pluginManagement>
             <plugins>
