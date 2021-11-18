@@ -24,6 +24,7 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Narrative;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
@@ -249,9 +250,11 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             if (libraryResource == null) {
                 throw new IllegalArgumentException("Library is not provided or not found in the server");
             }
+            Set<Library> dependentLibraries = fetchDependentLibraries(libraryResource);
             if (evaluationData != null) {
                 evaluationData.addEntry((new BundleEntryComponent().setResource(libraryResource)));
             }
+            dependentLibraries.forEach(item ->  evaluationData.addEntry((new BundleEntryComponent().setResource(item))));
         }
 
         VersionedIdentifier libraryIdentifier = new VersionedIdentifier().withId(libraryResource.getName())
@@ -279,6 +282,22 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             }
         }
         return null;
+    }
+
+    // to do make it recursive; it now covers 1 level
+    private Set<Library> fetchDependentLibraries(Library library) {
+        Set<Library> resources = new HashSet<>();
+        for (RelatedArtifact relatedArtifact : library.getRelatedArtifact()) {
+            if (relatedArtifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON)) {
+                if (relatedArtifact.hasResource()) {
+                    String resourceString = relatedArtifact.getResource();
+                    if (resourceString.startsWith("Library/")) {
+                        resources.add(resolveLibraryById(resourceString.substring(resourceString.indexOf('/') + 1)));
+                    }
+                }
+            }
+        }
+        return resources;
     }
 
     // TODO: Figure out if we should throw an exception or something here.
