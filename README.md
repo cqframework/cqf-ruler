@@ -70,6 +70,22 @@ Changes to the `master` branch must be done through an approved PR. Delete branc
 
 Merges to `master` trigger a deployment to the Maven Snapshots repositories. Once ready for a release, the `master` branch is updated with the correct version number and is tagged. Tags trigger a full release to Maven Central and a corresponding release to Github. Releases SHALL NOT have a SNAPSHOT version, nor any SNAPSHOT dependencies.
 
+## Release Process
+To release a new version of CQF Ruler:
+- [ ] Update master to be a release version (and all the reviews, bug fixes, etc. that that requires)
+   - [ ] Regression test each of the operations of all the plugins
+- [ ] Passed Travis Build = ready for release
+- [ ] Create a Github Release (which creates a tag at the current commit of master)
+   - [ ] Choose the "Auto-generate release notes" option
+- Travis does the release to Maven, ensure binaries are published to the binaries repository:
+   - [ ]  r4: (https://oss.sonatype.org/#view-repositories;public~browsestorage~org/opencds/cqf/cqf-ruler-r4)
+   - [ ] stu3: (https://oss.sonatype.org/#view-repositories;public~browsestorage~org/opencds/cqf/cqf-ruler-dstu3)
+- Travis does the release of the image to DockerHub
+   - [ ] Ensure the image is published to DockerHub (https://hub.docker.com/r/contentgroup/cqf-ruler)
+- [ ] Update master to vNext-SNAPSHOT
+- [ ] Ensure all issues included in the release are Closed
+
+
 ## Getting Help
 
 Additional documentation is on the [wiki](https://github.com/DBCG/cqf-ruler/wiki).
