@@ -62,7 +62,7 @@ The cqf-ruler will be available at `http://localhost:8080/cqf-ruler-dstu3/`
 
 The cqf-ruler will be available at `http://localhost:8080/cqf-ruler-r4/`
 
-## coding Conventions
+## Coding Conventions
 
 The CQF Ruler project has adopted the HAPI FHIR Server Coding Conventions: https://github.com/hapifhir/hapi-fhir/wiki/Contributing.
 
