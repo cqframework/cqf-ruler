@@ -76,7 +76,7 @@ Merges to `master` trigger a deployment to the Maven Snapshots repositories. Onc
 
 ## Release Process
 To release a new version of CQF Ruler:
-- Identify target versions for:
+- Ensure target versions/releases of:
    - [ ] HAPI
    - [ ] CQFTooling
    - [ ] CDSHooks
