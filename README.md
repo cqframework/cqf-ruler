@@ -62,6 +62,10 @@ The cqf-ruler will be available at `http://localhost:8080/cqf-ruler-dstu3/`
 
 The cqf-ruler will be available at `http://localhost:8080/cqf-ruler-r4/`
 
+## coding Conventions
+
+The CQF Ruler project has adopted the HAPI FHIR Server Coding Conventions: https://github.com/hapifhir/hapi-fhir/wiki/Contributing.
+
 ## Commit Policy
 
 All new development takes place on `<feature>` branches off `master`. Once feature development on the branch is complete, the feature branch is submitted to `master` as a PR. The PR is reviewed by maintainers and regression testing by the CI build occurs.
