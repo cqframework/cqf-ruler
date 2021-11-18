@@ -67,7 +67,7 @@ The cqf-ruler will be available at `http://localhost:8080/cqf-ruler-r4/`
 The CQF Project has adopted an over-arching goal to contribute back to HAPI.
 To this end:
 -   The CQF Ruler project has adopted the HAPI Coding Conventions: https://github.com/hapifhir/hapi-fhir/wiki/Contributing
--   Plugins should generally use the "hapi.fhir" prefix
+-   Plugins should generally use the "hapi.fhir" prefix for configuration properties
 
 ## Commit Policy
 
