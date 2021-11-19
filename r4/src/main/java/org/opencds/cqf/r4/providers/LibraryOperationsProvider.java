@@ -1,6 +1,12 @@
 package org.opencds.cqf.r4.providers;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -241,25 +247,10 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
 
         Bundle evaluationData = data != null ? data : prefetchDataData;
 
-        Bundle libraryBundle = new Bundle();
-        Library libraryResource = fetchLibraryFromBundle(evaluationData, libraryBundle, theId);
-
-        if (libraryResource != null && useServerData) {
-            for (BundleEntryComponent entry : libraryBundle.getEntry()) {
-                this.update((Library) entry.getResource());
-            }
-        }
+        Library libraryResource = fetchLibraryAndUpdate(evaluationData, theId, useServerData);
 
         if (libraryResource == null && useServerData) {
-            libraryResource = this.libraryResourceProvider.getDao().read(theId);
-            if (libraryResource == null) {
-                throw new IllegalArgumentException("Library is not provided or not found in the server");
-            }
-            Set<Library> dependentLibraries = fetchDependentLibraries(libraryResource);
-            if (evaluationData != null) {
-                evaluationData.addEntry((new BundleEntryComponent().setResource(libraryResource)));
-            }
-            dependentLibraries.forEach(item ->  evaluationData.addEntry((new BundleEntryComponent().setResource(item))));
+            libraryResource = fetchStoredData(theId, evaluationData);
         }
 
         VersionedIdentifier libraryIdentifier = new VersionedIdentifier().withId(libraryResource.getName())
@@ -274,40 +265,82 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
         return response;
     }
 
-    private Library fetchLibraryFromBundle(Bundle evaluationData, Bundle libraryBundle, IdType theId) {
+    private Library fetchLibraryAndUpdate(Bundle evaluationData, IdType theId, boolean useServerData) {
+        Library libraryResource = null;
+        Bundle libraryBundle =  new Bundle();
+
         if (evaluationData != null) {
             for (BundleEntryComponent entry : evaluationData.getEntry()) {
                 if (entry.hasResource() && entry.getResource().fhirType().equals("Library")) {
                     Bundle.BundleEntryComponent newItem = new Bundle.BundleEntryComponent().setResource(entry.getResource());
                     libraryBundle.addEntry(newItem);
                     if (entry.getResource().hasIdElement() && entry.getResource().getIdElement().equals(theId)) {
-                        return (Library) entry.getResource();
+                        libraryResource = (Library) entry.getResource();
                     }
                 }
             }
         }
+
+        if (libraryResource != null && useServerData) {
+            for (BundleEntryComponent entry : libraryBundle.getEntry()) {
+                this.update((Library) entry.getResource());
+            }
+        }
+
         return null;
     }
 
-    // to do make it recursive; it now covers 1 level
-    private Set<Library> fetchDependentLibraries(Library library) {
-        Set<Library> resources = new HashSet<>();
+    private Library fetchStoredData(IdType theId, Bundle evaluationData) {
+        Library  libraryResource = null;
+        libraryResource = this.libraryResourceProvider.getDao().read(theId);
+        if (libraryResource == null) {
+            throw new IllegalArgumentException("Library is not provided or not found in the server");
+        }
+
+        List<Library> fetchDependencyLibraries = fetchDependencyLibraries(libraryResource);
+
+        if (evaluationData != null) {
+            evaluationData.addEntry((new BundleEntryComponent().setResource(libraryResource)));
+        }
+        fetchDependencyLibraries.forEach(item ->  evaluationData.addEntry((new BundleEntryComponent().setResource(item))));
+
+        return libraryResource;
+    }
+
+    private List<Library> fetchDependencyLibraries( Library library) {
+        Map<String, Library> resources = new HashMap<>();
+        List<Library> queue = new ArrayList<>();
+        queue.add(library);
+
+        while(!queue.isEmpty()) {
+            Library current = queue.get(0);
+            queue.remove(0);
+            visitLibrary(current, queue, resources);
+        }
+        return new ArrayList<Library>(resources.values());
+    }
+
+    private void visitLibrary(Library library, List<Library> queue, Map<String, Library> resources) {
         for (RelatedArtifact relatedArtifact : library.getRelatedArtifact()) {
             if (relatedArtifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON)) {
                 if (relatedArtifact.hasResource()) {
                     String resourceString = relatedArtifact.getResource();
                     if (resourceString.startsWith("Library/") || resourceString.contains("/Library/")) {
                         try {
-                            resources.add(resolveLibraryById(CanonicalUtils.getId(resourceString)));
+                            Library lib = resolveLibraryById(CanonicalUtils.getId(resourceString));
+                            if (!resources.containsKey(lib.getId())) {
+                                resources.put(lib.getId(), lib);
+                                queue.add(lib);
+                            }
                         } catch (Exception e) {
-                            logger.error("Exception:"+ e.getMessage());
+                            logger.error("Exception:" + e.getMessage());
                         }
                     }
                 }
             }
         }
-        return resources;
     }
+
 
     // TODO: Figure out if we should throw an exception or something here.
     @Override
