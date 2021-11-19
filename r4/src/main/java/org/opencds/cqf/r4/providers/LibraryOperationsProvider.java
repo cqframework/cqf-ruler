@@ -34,6 +34,7 @@ import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
 import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.ParametersHelper;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
+import org.opencds.cqf.tooling.utilities.CanonicalUtils;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
@@ -291,8 +292,8 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
             if (relatedArtifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON)) {
                 if (relatedArtifact.hasResource()) {
                     String resourceString = relatedArtifact.getResource();
-                    if (resourceString.startsWith("Library/")) {
-                        resources.add(resolveLibraryById(resourceString.substring(resourceString.indexOf('/') + 1)));
+                    if (resourceString.startsWith("Library/") || resourceString.contains("/Library/")) {
+                        resources.add(resolveLibraryById(CanonicalUtils.getId(resourceString)));
                     }
                 }
             }
