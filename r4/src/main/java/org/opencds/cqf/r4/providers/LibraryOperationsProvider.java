@@ -35,6 +35,8 @@ import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.r4.helpers.ParametersHelper;
 import org.opencds.cqf.tooling.library.r4.NarrativeProvider;
 import org.opencds.cqf.tooling.utilities.CanonicalUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
@@ -54,6 +56,8 @@ import ca.uhn.fhir.rest.param.UriParam;
 
 @Component
 public class LibraryOperationsProvider implements LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> {
+
+    private static final Logger logger = LoggerFactory.getLogger(LibraryOperationsProvider.class);
 
     private NarrativeProvider narrativeProvider;
     private DataRequirementsProvider dataRequirementsProvider;
@@ -293,7 +297,11 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                 if (relatedArtifact.hasResource()) {
                     String resourceString = relatedArtifact.getResource();
                     if (resourceString.startsWith("Library/") || resourceString.contains("/Library/")) {
-                        resources.add(resolveLibraryById(CanonicalUtils.getId(resourceString)));
+                        try {
+                            resources.add(resolveLibraryById(CanonicalUtils.getId(resourceString)));
+                        } catch (Exception e) {
+                            logger.error("Exception:"+ e.getMessage());
+                        }
                     }
                 }
             }
