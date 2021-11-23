@@ -19,15 +19,14 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.plugin.sdc.SDCProperties;
+import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.interceptor.BasicAuthInterceptor;
-
-public class ExtractProvider implements OperationProvider {
+public class ExtractProvider implements OperationProvider, ClientUtilities {
 
     @Autowired
     private FhirContext myFhirContext;
@@ -146,8 +145,8 @@ public class ExtractProvider implements OperationProvider {
         String user = mySdcProperties.getExtract().getUsername();
         String password = mySdcProperties.getExtract().getPassword();
 
-        IGenericClient client = myFhirContext.newRestfulGenericClient(url);
-        client.registerInterceptor(new BasicAuthInterceptor(user, password));
+        IGenericClient client = this.createClient(myFhirContext, url);
+        this.registerBasicAuth(client, user, password);
         Bundle outcomeBundle = client.transaction().withBundle(observationsBundle).execute();
         return outcomeBundle;
     }
@@ -161,8 +160,8 @@ public class ExtractProvider implements OperationProvider {
         String user = mySdcProperties.getExtract().getUsername();
         String password = mySdcProperties.getExtract().getPassword();
 
-        IGenericClient client = myFhirContext.newRestfulGenericClient(url);
-        client.registerInterceptor(new BasicAuthInterceptor(user, password));
+        IGenericClient client = this.createClient(myFhirContext, url);
+        this.registerBasicAuth(client, user, password);
         Bundle results = (Bundle)client.search().forResource(Questionnaire.class).where(Questionnaire.URL.matches().value(questionnaireUrl)).execute();
         
         Questionnaire questionnaire = (Questionnaire)results.getEntry().get(0).getResource();

@@ -8,7 +8,7 @@
         <relativePath>../..</relativePath>
     </parent>
 
-    <artifactId>cqf-ruler-plugin-sdc</artifactId>
+    <artifactId>cqf-ruler-plugin-utility</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.opencds.cqf.ruler</groupId>
@@ -21,12 +21,6 @@
             <artifactId>cqf-ruler-server</artifactId>
             <version>0.5.0-SNAPSHOT</version>
             <classifier>classes</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opencds.cqf.ruler</groupId>
-            <artifactId>cqf-ruler-plugin-utility</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -44,7 +38,6 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

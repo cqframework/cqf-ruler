@@ -24,7 +24,8 @@
             "classPaths": [
                 "$Auto",
                 "${workspaceFolder}/plugin/hello-world/target/classes",
-                "${workspaceFolder}/plugin/sdc/target/classes"
+                "${workspaceFolder}/plugin/sdc/target/classes",
+                "${workspaceFolder}/plugin/utility/target/classes"
             ]
         },
         {
