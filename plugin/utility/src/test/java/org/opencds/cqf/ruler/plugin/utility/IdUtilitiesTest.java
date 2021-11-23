@@ -19,16 +19,24 @@ public class IdUtilitiesTest implements IdUtilities {
 
     @Test
     public void testContextSupported() {
-        IIdType type = this.createId(FhirContext.forDstu3Cached(), "Patient/123");
-        assertTrue(type instanceof org.hl7.fhir.dstu3.model.IdType);
+        IIdType id = this.createId(FhirContext.forDstu3Cached(), "Patient/123");
+        assertTrue(id instanceof org.hl7.fhir.dstu3.model.IdType);
     }
 
     @Test
     public void testPartsSupported() {
-        IIdType type = this.createId(FhirVersionEnum.DSTU3, "Patient","123");
-        assertTrue(type instanceof org.hl7.fhir.dstu3.model.IdType);
+        IIdType id = this.createId(FhirVersionEnum.DSTU3, "Patient","123");
+        assertTrue(id instanceof org.hl7.fhir.dstu3.model.IdType);
 
-        assertEquals("Patient", type.getResourceType());
-        assertEquals("123", type.getIdPart());
+        assertEquals("Patient", id.getResourceType());
+        assertEquals("123", id.getIdPart());
     }
+
+    @Test
+    public void testClassSupported() {
+        IIdType id = this.createId(org.hl7.fhir.dstu3.model.Library.class, "123");
+        assertTrue(id instanceof org.hl7.fhir.dstu3.model.IdType);
+        assertEquals("Library", id.getResourceType());
+        assertEquals("123", id.getIdPart());
+    }   
 }

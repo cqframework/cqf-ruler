@@ -1,18 +1,32 @@
 package org.opencds.cqf.ruler.plugin.utility;
 
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 
-public interface IdUtilities {
+public interface IdUtilities extends ReflectionUtilities {
+
+    /**
+     * Creates the appropriate IIdType for a given ResourceTypeClass
+     * 
+     * @param <ResourceType> an IBaseResource type
+     * @param theResourceTypeClass the type of the Resource to create an Id for
+     * @param theId the String representation of the Id to generate
+     * @return the id
+     */
+    public default <ResourceType extends IBaseResource> IIdType createId(Class<ResourceType> theResourceTypeClass, String theId) {
+        FhirVersionEnum versionEnum = this.getFhirVersionForResourceType(theResourceTypeClass);
+        return createId(versionEnum, theResourceTypeClass.getSimpleName(), theId);
+    }
 
     /**
      * Creates the appropriate IIdType for a given FhirContext
      * 
-     * @param theFhirContext
-     * @param theResourceType
-     * @param theId
+     * @param theFhirContext the FhirContext to use for Id generation
+     * @param theResourceType the type of the Resource to create an Id for
+     * @param theId the String representation of the Id to generate
      * @return the id
      */
     public default IIdType createId(FhirContext theFhirContext, String theResourceType, String theId) {
@@ -22,9 +36,9 @@ public interface IdUtilities {
     /**
      * Creates the appropriate IIdType for a given FhirVersionEnum
      * 
-     * @param theFhirVersionEnum
-     * @param theResourceType
-     * @param theId
+     * @param theFhirVersionEnum the FHIR version to generate an Id for
+     * @param theResourceType the type of the Resource to create an Id for
+     * @param theId the String representation of the Id to generate
      * @return the id
      */
     public default IIdType createId(FhirVersionEnum theFhirVersionEnum, String theResourceType, String theId) {
@@ -34,8 +48,8 @@ public interface IdUtilities {
     /**
      * Creates the appropriate IIdType for a given FhirContext
      * 
-     * @param theFhirContext
-     * @param theId
+     * @param theFhirContext the FhirContext to use for Id generation
+     * @param theId the String representation of the Id to generate
      * @return the id
      */
     public default IIdType createId(FhirContext theFhirContext, String theId) {
@@ -45,8 +59,8 @@ public interface IdUtilities {
     /**
      * Creates the appropriate IIdType for a given FhirVersionEnum
      * 
-     * @param theFhirVersionEnum
-     * @param theId
+     * @param theFhirVersionEnum the FHIR version to generate an Id for
+     * @param theId the String representation of the Id to generate
      * @return the id
      */
     public default IIdType createId(FhirVersionEnum theFhirVersionEnum, String theId) {

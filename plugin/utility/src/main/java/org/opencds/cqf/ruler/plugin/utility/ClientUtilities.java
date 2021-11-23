@@ -21,8 +21,11 @@ import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 public interface ClientUtilities {
 
     /**
-     * @param theFhirVersionEnum
-     * @param theUrl
+     * Creates an IGenericClient for the given url. Defaults to NEVER
+     * ServerValidationMode
+     * 
+     * @param theFhirVersionEnum the FHIR version to create a client for
+     * @param theUrl             the server base url to connect to
      * @return IGenericClient for the given url
      */
     public default IGenericClient createClient(FhirVersionEnum theFhirVersionEnum, String theUrl) {
@@ -30,8 +33,11 @@ public interface ClientUtilities {
     }
 
     /**
-     * @param theFhirContext
-     * @param theUrl
+     * Creates an IGenericClient for the given url. Defaults to NEVER
+     * ServerValidationMode
+     * 
+     * @param theFhirContext the FhirContext to use to create the client
+     * @param theUrl         the server base url to connect to
      * @return IGenericClient for the given url
      */
     public default IGenericClient createClient(FhirContext theFhirContext, String theUrl) {
@@ -39,9 +45,11 @@ public interface ClientUtilities {
     }
 
     /**
-     * @param theFhirVersionEnum
-     * @param theUrl
-     * @param theServerValidationModeEnum
+     * Creates an IGenericClient for the given url.
+     * 
+     * @param theFhirVersionEnum          the FHIR version to create a client for
+     * @param theUrl                      the server base url to connect to
+     * @param theServerValidationModeEnum the ServerValidationMode to use
      * @return IGenericClient for the given url, with the server validation mode set
      */
     public default IGenericClient createClient(FhirVersionEnum theFhirVersionEnum, String theUrl,
@@ -50,10 +58,12 @@ public interface ClientUtilities {
     }
 
     /**
+     * Creates an IGenericClient for the given url.
      * 
-     * @param theFhirContext
-     * @param theUrl
-     * @param theServerValidationModeEnum
+     * @param theFhirContext              the FhirContext to use to create the
+     *                                    client
+     * @param theUrl the server base url to connect to
+     * @param theServerValidationModeEnum the ServerValidationMode to use
      * @return IGenericClient for the given url, with the server validation mode set
      */
     public default IGenericClient createClient(FhirContext theFhirContext, String theUrl,
@@ -63,7 +73,9 @@ public interface ClientUtilities {
     }
 
     /**
-     * @param theEndpoint
+     * Creates an IGenericClient for the given Endpoint.
+     * 
+     * @param theEndpoint the Endpoint to connect to
      * @return IGenericClient for the given Endpoint, with appropriate header
      *         interceptors set up
      */
@@ -72,12 +84,15 @@ public interface ClientUtilities {
     }
 
     /**
-     * @param theFhirContext
-     * @param theEndpoint
+     * Creates an IGenericClient for the given Endpoint.
+     * 
+     * @param theFhirContext the FhirContext to use to create the client
+     * @param theEndpoint    the Endpoint to connect to
      * @return IGenericClient for the given Endpoint, with appropriate header
      *         interceptors set up
      */
-    public default IGenericClient createClient(FhirContext theFhirContext, org.hl7.fhir.dstu3.model.Endpoint theEndpoint) {
+    public default IGenericClient createClient(FhirContext theFhirContext,
+            org.hl7.fhir.dstu3.model.Endpoint theEndpoint) {
         IGenericClient client = createClient(theFhirContext, theEndpoint.getAddress());
         if (theEndpoint.hasHeader()) {
             List<String> headerList = theEndpoint.getHeader().stream().map(headerString -> headerString.asStringValue())
@@ -88,7 +103,9 @@ public interface ClientUtilities {
     }
 
     /**
-     * @param theEndpoint
+     * Creates an IGenericClient for the given Endpoint.
+     * 
+     * @param theEndpoint the Endpoint to connect to
      * @return IGenericClient for the given Endpoint, with appropriate header
      *         interceptors set up
      */
@@ -97,8 +114,10 @@ public interface ClientUtilities {
     }
 
     /**
-     * @param theFhirContext
-     * @param theEndpoint
+     * Creates an IGenericClient for the given Endpoint.
+     * 
+     * @param theFhirContext the FhirContext to use to create the client
+     * @param theEndpoint    the Endpoint to connect to
      * @return IGenericClient for the given Endpoint, with appropriate header
      *         interceptors set up
      */
@@ -113,7 +132,9 @@ public interface ClientUtilities {
     }
 
     /**
-     * @param theEndpoint
+     * Creates an IGenericClient for the given Endpoint.
+     * 
+     * @param theEndpoint the Endpoint to connect to
      * @return IGenericClient for the given Endpoint, with appropriate header
      *         interceptors set up
      */
@@ -122,8 +143,10 @@ public interface ClientUtilities {
     }
 
     /**
-     * @param theFhirContext
-     * @param theEndpoint
+     * Creates an IGenericClient for the given Endpoint.
+     * 
+     * @param theFhirContext the FhirContext to use to create the client
+     * @param theEndpoint    the Endpoint to connect to
      * @return IGenericClient for the given Endpoint, with appropriate header
      *         interceptors set up
      */
@@ -140,8 +163,8 @@ public interface ClientUtilities {
     /**
      * Registers HeaderInjectionInterceptors on a client.
      * 
-     * @param theClient
-     * @param theHeaders
+     * @param theClient  the client to add headers to
+     * @param theHeaders an Array of Strings representing headers to add
      */
     public default void registerHeaders(IGenericClient theClient, String... theHeaders) {
         this.registerHeaders(theClient, Arrays.asList(theHeaders));
@@ -150,8 +173,8 @@ public interface ClientUtilities {
     /**
      * Registers HeaderInjectionInterceptors on a client
      * 
-     * @param theClient
-     * @param theHeaderList
+     * @param theClient     the client to add headers to
+     * @param theHeaderList a List of Strings representing headers to add
      */
     public default void registerHeaders(IGenericClient theClient, List<String> theHeaderList) {
         Map<String, String> headerMap = setupHeaderMap(theHeaderList);
@@ -162,24 +185,26 @@ public interface ClientUtilities {
     }
 
     /**
-     * Registers BasicAuthInterceptors on a client. This is useful when you have a username and password.
+     * Registers BasicAuthInterceptors on a client. This is useful when you have a
+     * username and password.
      * 
-     * @param theClient
-     * @param theUserId
-     * @param thePassword
+     * @param theClient   the client to register basic auth on
+     * @param theUsername the username
+     * @param thePassword the password
      */
-    public default void registerBasicAuth(IGenericClient theClient, String theUserId, String thePassword) {
-        if (theUserId != null) {
-            BasicAuthInterceptor authInterceptor = new BasicAuthInterceptor(theUserId, thePassword);
+    public default void registerBasicAuth(IGenericClient theClient, String theUsername, String thePassword) {
+        if (theUsername != null) {
+            BasicAuthInterceptor authInterceptor = new BasicAuthInterceptor(theUsername, thePassword);
             theClient.registerInterceptor(authInterceptor);
         }
     }
 
     /**
-     * Registers BearerAuthInterceptors on a client. This is useful when you have a bearer token.
+     * Registers BearerAuthInterceptors on a client. This is useful when you have a
+     * bearer token.
      * 
-     * @param theClient
-     * @param theToken
+     * @param theClient the client to register BearerToken authentication on
+     * @param theToken  the bearer token to register
      */
     public default void registerBearerTokenAuth(IGenericClient theClient, String theToken) {
         if (theToken != null) {
@@ -192,8 +217,8 @@ public interface ClientUtilities {
      * Parses a list of headers into their constituent parts. Used to prep the
      * headers for registration with HeaderInjectionInterceptors
      * 
-     * @param theHeaderList
-     * @return ket-value pairs of headers
+     * @param theHeaderList a List of Strings representing headers to create
+     * @return key-value pairs of headers
      */
     public default Map<String, String> setupHeaderMap(List<String> theHeaderList) {
         Map<String, String> headerMap = new HashMap<String, String>();
