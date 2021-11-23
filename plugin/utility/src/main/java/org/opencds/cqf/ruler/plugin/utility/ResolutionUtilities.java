@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
+import org.hl7.fhir.instance.model.api.IPrimitiveType;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
@@ -224,7 +225,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 * @param <ResourceType>  an IBaseResource type
 	 * @param theDaoRegistry  the DaoRegistry to use for resolution
 	 * @param theResourceType the class of the Resource
-	 * @param theUrl the url of the Resource to resolve
+	 * @param theUrl          the url of the Resource to resolve
 	 * @return the Resource matching the criteria
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(DaoRegistry theDaoRegistry,
@@ -241,7 +242,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 * @param <ResourceType>    an IBaseResource type
 	 * @param theDaoRegistry    the DaoRegistry to use for resolution
 	 * @param theResourceType   the class of the Resource
-	 * @param theUrl the url of the Resource to resolve
+	 * @param theUrl            the url of the Resource to resolve
 	 * @param theRequestDetails the RequestDetails to use for resolution. Use this
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
@@ -259,7 +260,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 * 
 	 * @param <ResourceType> an IBaseResource type
 	 * @param theResourceDao the IFhirResourceDao to use for resolution
-	 * @param theUrl the url of the Resource to resolve
+	 * @param theUrl         the url of the Resource to resolve
 	 * @return the Resource matching the criteria
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
@@ -273,9 +274,9 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 * does not contain a version, or if no matching version is found, the highest
 	 * version is returned. Tenant aware.
 	 * 
-	 * @param <ResourceType> an IBaseResource type
-	 * @param theResourceDao the IFhirResourceDao to use for resolution
-	 * @param theUrl the url of the Resource to resolve
+	 * @param <ResourceType>    an IBaseResource type
+	 * @param theResourceDao    the IFhirResourceDao to use for resolution
+	 * @param theUrl            the url of the Resource to resolve
 	 * @param theRequestDetails the RequestDetails to use for resolution. Use this
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
@@ -295,5 +296,77 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 
 		return this.selectFromList(resources, version,
 				this.getVersionFunction(theResourceDao.getContext(), theResourceDao.getResourceType()));
+	}
+
+	/**
+	 * Returns a Resource with a matching canonical url. If the canonical url
+	 * contains a version the matching version is returned. If the canonical url
+	 * does not contain a version, or if no matching version is found, the highest
+	 * version is returned.
+	 * 
+	 * @param <ResourceType>  an IBaseResource type
+	 * @param theDaoRegistry  the DaoRegistry to use for resolution
+	 * @param theResourceType the class of the Resource
+	 * @param theUrl          the url of the Resource to resolve
+	 * @return the Resource matching the criteria
+	 */
+	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(DaoRegistry theDaoRegistry,
+			Class<ResourceType> theResourceType, IPrimitiveType<String> theUrl) {
+		return this.resolveByCanonicalUrl(theDaoRegistry.getResourceDao(theResourceType), theUrl.getValue(), null);
+	}
+
+	/**
+	 * Returns a Resource with a matching canonical url. If the canonical url
+	 * contains a version the matching version is returned. If the canonical url
+	 * does not contain a version, or if no matching version is found, the highest
+	 * version is returned. Tenant aware.
+	 * 
+	 * @param <ResourceType>    an IBaseResource type
+	 * @param theDaoRegistry    the DaoRegistry to use for resolution
+	 * @param theResourceType   the class of the Resource
+	 * @param theUrl            the url of the Resource to resolve
+	 * @param theRequestDetails the RequestDetails to use for resolution. Use this
+	 *                          parameter to select a tenant.
+	 * @return the Resource matching the criteria
+	 */
+	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(DaoRegistry theDaoRegistry,
+			Class<ResourceType> theResourceType, IPrimitiveType<String> theUrl, RequestDetails theRequestDetails) {
+		return this.resolveByCanonicalUrl(theDaoRegistry.getResourceDao(theResourceType), theUrl.getValue(),
+				theRequestDetails);
+	}
+
+	/**
+	 * Returns a Resource with a matching canonical url. If the canonical url
+	 * contains a version the matching version is returned. If the canonical url
+	 * does not contain a version, or if no matching version is found, the highest
+	 * version is returned.
+	 * 
+	 * @param <ResourceType> an IBaseResource type
+	 * @param theResourceDao the IFhirResourceDao to use for resolution
+	 * @param theUrl         the url of the Resource to resolve
+	 * @return the Resource matching the criteria
+	 */
+	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
+			IFhirResourceDao<ResourceType> theResourceDao, IPrimitiveType<String> theUrl) {
+		return this.resolveByCanonicalUrl(theResourceDao, theUrl.getValue(), null);
+	}
+
+	/**
+	 * Returns a Resource with a matching canonical url. If the canonical url
+	 * contains a version the matching version is returned. If the canonical url
+	 * does not contain a version, or if no matching version is found, the highest
+	 * version is returned. Tenant aware.
+	 * 
+	 * @param <ResourceType>    an IBaseResource type
+	 * @param theResourceDao    the IFhirResourceDao to use for resolution
+	 * @param theUrl            the url of the Resource to resolve
+	 * @param theRequestDetails the RequestDetails to use for resolution. Use this
+	 *                          parameter to select a tenant.
+	 * @return the Resource matching the criteria
+	 */
+	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
+			IFhirResourceDao<ResourceType> theResourceDao, IPrimitiveType<String> theUrl,
+			RequestDetails theRequestDetails) {
+		return this.resolveByCanonicalUrl(theResourceDao, theUrl.getValue(), theRequestDetails);
 	}
 }
