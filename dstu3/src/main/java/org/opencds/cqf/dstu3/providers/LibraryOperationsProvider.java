@@ -7,6 +7,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -16,8 +17,11 @@ import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.Narrative;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.providers.LibraryContentProvider;
+import org.opencds.cqf.dstu3.helpers.LibraryHelper;
 import org.opencds.cqf.tooling.library.stu3.NarrativeProvider;
 import org.springframework.stereotype.Component;
 
@@ -40,13 +44,15 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<Libr
     private NarrativeProvider narrativeProvider;
     private DataRequirementsProvider dataRequirementsProvider;
     private LibraryResourceProvider libraryResourceProvider;
+    private LibraryHelper libraryHelper;
 
     @Inject
     public LibraryOperationsProvider(LibraryResourceProvider libraryResourceProvider,
-            NarrativeProvider narrativeProvider, DataRequirementsProvider dataRequirementsProvider) {
+            NarrativeProvider narrativeProvider, DataRequirementsProvider dataRequirementsProvider, LibraryHelper libraryHelper) {
         this.narrativeProvider = narrativeProvider;
         this.dataRequirementsProvider = dataRequirementsProvider;
         this.libraryResourceProvider = libraryResourceProvider;
+        this.libraryHelper = libraryHelper;
     }
 
     private ModelManager getModelManager() {
@@ -73,6 +79,28 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<Libr
 
     private LibraryResolutionProvider<Library> getLibraryResolutionProvider() {
         return this;
+    }
+
+    @Operation(name = "$data-requirements", idempotent = true, type = Library.class)
+    public Library dataRequirements(@IdParam IdType theId, @OperationParam(name = "target") String target) throws InternalErrorException, FHIRException {
+        ModelManager modelManager = libraryHelper.getModelManager();
+        LibraryManager libraryManager = libraryHelper.getLibraryManager(this);
+
+        Library library = this.libraryResourceProvider.getDao().read(theId);
+        if (library == null) {
+            throw new RuntimeException("Could not load library.");
+        }
+
+        CqlTranslator translator = TranslatorHelper.getTranslator(LibraryHelper.extractContentStream(library), libraryManager, modelManager);
+        if (translator.getErrors().size() > 0) {
+            throw new RuntimeException("Errors during library compilation.");
+        }
+
+        Library resultLibrary =
+                this.dataRequirementsProvider.getModuleDefinitionLibrary(libraryManager,
+                        translator.getTranslatedLibrary(), TranslatorHelper.getTranslatorOptions());
+
+        return resultLibrary;
     }
 
     @Operation(name = "$refresh-generated-content", type = Library.class)

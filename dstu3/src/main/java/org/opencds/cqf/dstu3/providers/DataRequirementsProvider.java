@@ -48,6 +48,7 @@ import org.cqframework.cql.tools.formatter.CqlFormatterVisitor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.hl7.elm.r1.ValueSetRef;
 import org.hl7.fhir.convertors.VersionConvertor_30_50;
+import org.hl7.fhir.convertors.VersionConvertor_40_50;
 import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.Base64BinaryType;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
@@ -92,6 +93,11 @@ public class DataRequirementsProvider {
         this.libraryHelper = libraryHelper;
     }
 
+    public org.hl7.fhir.dstu3.model.Library getModuleDefinitionLibrary(LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+        org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(libraryManager, translatedLibrary, options);
+        org.hl7.fhir.dstu3.model.Library libraryDstu3 = (org.hl7.fhir.dstu3.model.Library) VersionConvertor_30_50.convertResource(libraryR5);
+        return libraryDstu3;
+    }
 
     public org.hl7.fhir.dstu3.model.Library getModuleDefinitionLibrary(org.hl7.fhir.dstu3.model.Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
         org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_30_50.convertResource(measure);
