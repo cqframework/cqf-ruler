@@ -24,6 +24,53 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	/**
 	 * Returns the Resource with a matching Id
 	 * 
+	 * @param <ResourceType>    an IBaseResource type
+	 * @param theDaoRegistry    the DaoRegistry to use for resolution
+	 * @param theId             the Id of the Resource to resolve
+	 * @param theRequestDetails the RequestDetails to use for resolution. Use this
+	 *                          parameter to select a tenant.
+	 * @return the Resource matching the criteria
+	 */
+	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
+			IIdType theId) {
+		return this.resolveById(theDaoRegistry, theId, null);
+	}
+
+	/**
+	 * Returns the Resource with a matching Id
+	 * 
+	 * @param <ResourceType> an IBaseResource type
+	 * @param theDaoRegistry the DaoRegistry to use for resolution
+	 * @param theId          the Id of the Resource to resolve
+	 * @return the Resource matching the criteria
+	 */
+	@SuppressWarnings("unchecked")
+	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
+			IIdType theId, RequestDetails requestDetails) {
+		if (theId.getResourceType() == null) {
+			throw new IllegalArgumentException("theId does not have a resourceType set.");
+		}
+		return (ResourceType) this.resolveById(theDaoRegistry.getResourceDao(theId.getResourceType()), theId,
+				requestDetails);
+	}
+
+	/**
+	 * Returns the Resource with a matching Id
+	 * 
+	 * @param <ResourceType>  an IBaseResource type
+	 * @param theDaoRegistry  the DaoRegistry to use for resolution
+	 * @param theResourceType the class of the Resource
+	 * @param theId           the Id of the Resource to resolve
+	 * @return the Resource matching the criteria
+	 */
+	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
+			Class<ResourceType> theResourceType, IIdType theId) {
+		return this.resolveById(theDaoRegistry.getResourceDao(theResourceType), theId, null);
+	}
+
+	/**
+	 * Returns the Resource with a matching Id
+	 * 
 	 * @param <ResourceType>  an IBaseResource type
 	 * @param theDaoRegistry  the DaoRegistry to use for resolution
 	 * @param theResourceType the class of the Resource
@@ -47,8 +94,37 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 * @return the Resource matching the criteria
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
+			Class<ResourceType> theResourceType, IIdType theId, RequestDetails theRequestDetails) {
+		return this.resolveById(theDaoRegistry.getResourceDao(theResourceType), theId, theRequestDetails);
+	}
+
+	/**
+	 * Returns the Resource with a matching Id. Tenant aware.
+	 * 
+	 * @param <ResourceType>    an IBaseResource type
+	 * @param theDaoRegistry    the DaoRegistry to use for resolution
+	 * @param theResourceType   the class of the Resource
+	 * @param theId             the Id of the Resource to resolve
+	 * @param theRequestDetails the RequestDetails to use for resolution. Use this
+	 *                          parameter to select a tenant.
+	 * @return the Resource matching the criteria
+	 */
+	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theId, RequestDetails theRequestDetails) {
 		return this.resolveById(theDaoRegistry.getResourceDao(theResourceType), theId, theRequestDetails);
+	}
+
+	/**
+	 * Returns the Resource with a matching Id
+	 * 
+	 * @param <ResourceType> an IBaseResource type
+	 * @param theResourceDao the IFhirResourceDao to use for resolution
+	 * @param theId          the Id of the Resource to resolve.
+	 * @return the Resource matching the criteria
+	 */
+	public default <ResourceType extends IBaseResource> ResourceType resolveById(
+			IFhirResourceDao<ResourceType> theResourceDao, IIdType theId) {
+		return this.resolveById(theResourceDao, theId, null);
 	}
 
 	/**
@@ -77,7 +153,22 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	public default <ResourceType extends IBaseResource> ResourceType resolveById(
 			IFhirResourceDao<ResourceType> theResourceDao, String theId, RequestDetails theRequestDetails) {
 		IIdType id = this.createId(theResourceDao.getContext(), theId);
-		return theResourceDao.read(id, theRequestDetails);
+		return this.resolveById(theResourceDao, id, theRequestDetails);
+	}
+
+	/**
+	 * Returns the Resource with a matching Id, tenant aware
+	 * 
+	 * @param <ResourceType>    an IBaseResource type
+	 * @param theResourceDao    the IFhirResourceDao to use for resolution
+	 * @param theId             the Id of the Resource to resolve.
+	 * @param theRequestDetails the RequestDetails to use for resolution. Use this
+	 *                          parameter to select a tenant.
+	 * @return the Resource matching the criteria
+	 */
+	public default <ResourceType extends IBaseResource> ResourceType resolveById(
+			IFhirResourceDao<ResourceType> theResourceDao, IIdType theId, RequestDetails theRequestDetails) {
+		return theResourceDao.read(theId, theRequestDetails);
 	}
 
 	/**
