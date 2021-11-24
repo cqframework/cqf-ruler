@@ -9,11 +9,11 @@ import ca.uhn.fhir.rest.annotation.Operation;
 
 /**
  * This is an example OperationProvider that returns a simple greeting. This is meant to be a demonstration of how to implement an OperationProvider,
- * and not an actual implementation of anything. It also shows hows to use the  <a href="#{@link}">{@link Description}</a> and  <a href="#{@link}">{@link Operation}</a>
+ * and not an actual implementation of anything. It also shows hows to use the {@link Description} and {@link Operation}
  * annotations.
  * <p>
  * When implementing the operations it's important to capture the specific IG the operation is defined in. Additional, release versions should be used whenever possible.
- * Please add both the appropriate Javadoc comments so that implementors have documentation when writing Java code, and also use the <a href="#{@link}">{@link Description}</a>
+ * Please add both the appropriate Javadoc comments so that implementors have documentation when writing Java code, and also use the {@link Description}
  * annotation so that the relevant information is surfaced via the Tester UI and Swagger UI.
  */
 public class HelloWorldProvider implements OperationProvider {
