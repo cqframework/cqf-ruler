@@ -15,7 +15,7 @@ public class SDCProperties {
         this.enabled = enabled;
     }
 
-    private Extract extract;
+    private Extract extract = new Extract();
 
     public Extract getExtract() {
         return extract;

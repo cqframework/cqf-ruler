@@ -19,7 +19,6 @@ import ca.uhn.fhir.context.BaseRuntimeChildDefinition.IAccessor;
  * versions)
  */
 public interface ReflectionUtilities {
-
     /**
      * Returns a FhirVersionEnum for a given ResourceType
      * 
@@ -27,7 +26,7 @@ public interface ReflectionUtilities {
      * @param theResourceTypeClass the class of the resource to get the version for
      * @return the FhirVersionEnum corresponding to the theResourceTypeClass
      */
-    public default <ResourceType extends IBaseResource> FhirVersionEnum getFhirVersionForResourceType(
+    public default <ResourceType extends IBaseResource> FhirVersionEnum getFhirVersion(
             Class<ResourceType> theResourceTypeClass) {
         String packageName = theResourceTypeClass.getPackage().getName();
         if (packageName.contains("r5")) {
@@ -52,15 +51,14 @@ public interface ReflectionUtilities {
      * Gets the IAccessor for the given ResourceType and child
      * 
      * @param <ResourceType>       an IBaseResource type
-     * @param theFhirContext       the FhirContext to use to create the IAccessor
      * @param theResourceTypeClass the class of a the IBaseResource type
      * @param theChildName         the name of the child property of the
      *                             ResourceType to generate an accessor for
      * @return an IAccessor for the given child and the ResourceType
      */
-    public default <ResourceType extends IBaseResource> IAccessor getAccessor(FhirContext theFhirContext,
-            Class<ResourceType> theResourceTypeClass, String theChildName) {
-        RuntimeResourceDefinition resourceDefinition = theFhirContext.getResourceDefinition(theResourceTypeClass);
+    public default <ResourceType extends IBaseResource> IAccessor getAccessor(Class<ResourceType> theResourceTypeClass, String theChildName) {
+        FhirContext fhirContext = FhirContext.forCached(this.getFhirVersion(theResourceTypeClass));
+        RuntimeResourceDefinition resourceDefinition = fhirContext.getResourceDefinition(theResourceTypeClass);
         return resourceDefinition.getChildByName(theChildName).getAccessor();
     }
 
@@ -70,16 +68,14 @@ public interface ReflectionUtilities {
      * 
      * @param <ResourceType>       an IBaseResource type
      * @param <ReturnType>         a return type for the Functions
-     * @param theFhirContext       the FhirContext to use to create the IAccessor
      * @param theResourceTypeClass the class of a the IBaseResource type
      * @param theChildName         to create a function for
      * @return a function for accessing the "theChildName" property of the
      *         ResourceType
      */
     @SuppressWarnings("unchecked")
-    public default <ResourceType extends IBaseResource, ReturnType> Function<ResourceType, ReturnType> getFunction(
-            FhirContext theFhirContext, Class<ResourceType> theResourceTypeClass, String theChildName) {
-        IAccessor accessor = this.getAccessor(theFhirContext, theResourceTypeClass, theChildName);
+    public default <ResourceType extends IBaseResource, ReturnType> Function<ResourceType, ReturnType> getFunction(Class<ResourceType> theResourceTypeClass, String theChildName) {
+        IAccessor accessor = this.getAccessor(theResourceTypeClass, theChildName);
         return r -> {
             Optional<IBase> value = accessor.getFirstValueOrNull(r);
             if (!value.isPresent()) {
@@ -95,38 +91,32 @@ public interface ReflectionUtilities {
      * ResourceType.
      * 
      * @param <ResourceType>       an IBaseResource type
-     * @param theFhirContext       the FhirContext to use to create the IAccessor
      * @param theResourceTypeClass the class of a the IBaseResource type
      * @return a function for accessing the "version" property of the ResourceType
      */
-    public default <ResourceType extends IBaseResource> Function<ResourceType, String> getVersionFunction(
-            FhirContext theFhirContext, Class<ResourceType> theResourceTypeClass) {
-        return this.getFunction(theFhirContext, theResourceTypeClass, "version");
+    public default <ResourceType extends IBaseResource> Function<ResourceType, String> getVersionFunction(Class<ResourceType> theResourceTypeClass) {
+        return this.getFunction(theResourceTypeClass, "version");
     }
 
     /**
      * Generates a function to access the "url" property of the given ResourceType.
      * 
      * @param <ResourceType>       an IBaseResource type
-     * @param theFhirContext       the FhirContext to use to create the IAccessor
      * @param theResourceTypeClass the class of a the IBaseResource type
      * @return a function for accessing the "url" property of the ResourceType
      */
-    public default <ResourceType extends IBaseResource> Function<ResourceType, String> getUrlFunction(
-            FhirContext theFhirContext, Class<ResourceType> theResourceTypeClass) {
-        return this.getFunction(theFhirContext, theResourceTypeClass, "url");
+    public default <ResourceType extends IBaseResource> Function<ResourceType, String> getUrlFunction(Class<ResourceType> theResourceTypeClass) {
+        return this.getFunction(theResourceTypeClass, "url");
     }
 
     /**
      * Generates a function to access the "name" property of the given ResourceType.
      * 
      * @param <ResourceType>       an IBaseResource type
-     * @param theFhirContext       the FhirContext to use to create the IAccessor
      * @param theResourceTypeClass the class of a the IBaseResource type
      * @return a function for accessing the "name" property of the ResourceType
      */
-    public default <ResourceType extends IBaseResource> Function<ResourceType, String> getNameFunction(
-            FhirContext theFhirContext, Class<ResourceType> theResourceTypeClass) {
-        return this.getFunction(theFhirContext, theResourceTypeClass, "name");
+    public default <ResourceType extends IBaseResource> Function<ResourceType, String> getNameFunction(Class<ResourceType> theResourceTypeClass) {
+        return this.getFunction(theResourceTypeClass, "name");
     }
 }

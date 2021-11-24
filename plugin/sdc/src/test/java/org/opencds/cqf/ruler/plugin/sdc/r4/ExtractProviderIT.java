@@ -34,7 +34,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-        SDCConfig.class }, properties ="hapi.fhir.fhir_version=r4")
+        SDCConfig.class }, properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.sdc.enabled=true" })
 public class ExtractProviderIT implements IServerSupport {
     private Logger log = LoggerFactory.getLogger(ExtractProviderIT.class);
 

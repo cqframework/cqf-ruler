@@ -8,14 +8,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.sdc", name ="enabled", havingValue = "true")
 public class SDCConfig {
 
     @Bean
-    @Lazy
     public SDCProperties sdcProperties() {
         return new SDCProperties();
     }

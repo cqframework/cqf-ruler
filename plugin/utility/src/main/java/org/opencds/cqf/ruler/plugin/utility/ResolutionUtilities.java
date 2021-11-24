@@ -27,8 +27,6 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 * @param <ResourceType>    an IBaseResource type
 	 * @param theDaoRegistry    the DaoRegistry to use for resolution
 	 * @param theId             the Id of the Resource to resolve
-	 * @param theRequestDetails the RequestDetails to use for resolution. Use this
-	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
@@ -39,19 +37,21 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	/**
 	 * Returns the Resource with a matching Id
 	 * 
-	 * @param <ResourceType> an IBaseResource type
-	 * @param theDaoRegistry the DaoRegistry to use for resolution
-	 * @param theId          the Id of the Resource to resolve
+	 * @param <ResourceType>    an IBaseResource type
+	 * @param theDaoRegistry    the DaoRegistry to use for resolution
+	 * @param theId             the Id of the Resource to resolve
+	 * @param theRequestDetails the RequestDetails to use for resolution. Use this
+	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
 	@SuppressWarnings("unchecked")
 	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
-			IIdType theId, RequestDetails requestDetails) {
+			IIdType theId, RequestDetails theRequestDetails) {
 		if (theId.getResourceType() == null) {
 			throw new IllegalArgumentException("theId does not have a resourceType set.");
 		}
 		return (ResourceType) this.resolveById(theDaoRegistry.getResourceDao(theId.getResourceType()), theId,
-				requestDetails);
+				theRequestDetails);
 	}
 
 	/**
@@ -303,8 +303,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 		List<ResourceType> resources = (List<ResourceType>) theResourceDao
 				.search(SearchParameterMap.newSynchronous().add("name", new TokenParam(theName))).getAllResources();
 
-		return this.selectFromList(resources, theVersion,
-				this.getVersionFunction(theResourceDao.getContext(), theResourceDao.getResourceType()));
+		return this.selectFromList(resources, theVersion, this.getVersionFunction(theResourceDao.getResourceType()));
 	}
 
 	/**
@@ -385,8 +384,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 		List<ResourceType> resources = (List<ResourceType>) theResourceDao
 				.search(SearchParameterMap.newSynchronous().add("url", new UriParam(url))).getAllResources();
 
-		return this.selectFromList(resources, version,
-				this.getVersionFunction(theResourceDao.getContext(), theResourceDao.getResourceType()));
+		return this.selectFromList(resources, version, this.getVersionFunction(theResourceDao.getResourceType()));
 	}
 
 	/**

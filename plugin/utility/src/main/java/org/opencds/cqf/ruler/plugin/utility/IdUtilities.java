@@ -17,7 +17,7 @@ public interface IdUtilities extends ReflectionUtilities {
      * @return the id
      */
     public default <ResourceType extends IBaseResource> IIdType createId(Class<ResourceType> theResourceTypeClass, String theId) {
-        FhirVersionEnum versionEnum = this.getFhirVersionForResourceType(theResourceTypeClass);
+        FhirVersionEnum versionEnum = this.getFhirVersion(theResourceTypeClass);
         return createId(versionEnum, theResourceTypeClass.getSimpleName(), theId);
     }
 

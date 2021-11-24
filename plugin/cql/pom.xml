@@ -8,25 +8,31 @@
         <relativePath>../..</relativePath>
     </parent>
 
-    <artifactId>cqf-ruler-plugin-utility</artifactId>
+    <artifactId>cqf-ruler-plugin-cql</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.opencds.cqf.ruler</groupId>
             <artifactId>cqf-ruler-external</artifactId>
             <version>0.5.0-SNAPSHOT</version>
-            <!-- <scope>provided</scope> -->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.opencds.cqf.ruler</groupId>
             <artifactId>cqf-ruler-server</artifactId>
             <version>0.5.0-SNAPSHOT</version>
             <classifier>classes</classifier>
-            <!-- <scope>provided</scope> -->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opencds.cqf.ruler</groupId>
+            <artifactId>cqf-ruler-plugin-utility</artifactId>
+            <version>0.5.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
-            <!-- <scope>provided</scope> -->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

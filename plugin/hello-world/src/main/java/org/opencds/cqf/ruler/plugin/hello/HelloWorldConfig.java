@@ -6,12 +6,10 @@ import org.opencds.cqf.ruler.api.OperationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 
 @Configuration
 public class HelloWorldConfig {
     
-    @Lazy
     @Bean
     public HelloWorldProperties helloWorldProperties() {
         return new HelloWorldProperties();
