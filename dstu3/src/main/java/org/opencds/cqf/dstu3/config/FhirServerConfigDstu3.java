@@ -22,6 +22,7 @@ import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
+import org.opencds.cqf.cql.evaluator.spring.EvaluatorConfiguration;
 import org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider;
 import org.opencds.cqf.dstu3.providers.CacheValueSetsProvider;
@@ -34,11 +35,7 @@ import org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider;
 import org.opencds.cqf.dstu3.providers.QuestionnaireProvider;
 import org.opencds.cqf.tooling.library.stu3.NarrativeProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
@@ -55,6 +52,7 @@ import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
 @Configuration
 @ComponentScan(basePackages = "org.opencds.cqf.dstu3")
+@Import(EvaluatorConfiguration.class)
 public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     protected final DataSource myDataSource;
 
@@ -151,9 +149,9 @@ public class FhirServerConfigDstu3 extends BaseJavaConfigDstu3 {
     // TODO: Respect config options
     @Bean
     public DataProvider dataProvider(ModelResolver modelResolver, DaoRegistry daoRegistry, SearchParameterResolver searchParameterResolver, TerminologyProvider terminologyProvider) {
-        JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver);
+        JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, fhirContext());
         retrieveProvider.setTerminologyProvider(terminologyProvider);
-        retrieveProvider.getR4FhirQueryGenerator().setExpandValueSets(true);
+        retrieveProvider.setExpandValueSets(true);
         return new CompositeDataProvider(modelResolver, retrieveProvider);
     }
     

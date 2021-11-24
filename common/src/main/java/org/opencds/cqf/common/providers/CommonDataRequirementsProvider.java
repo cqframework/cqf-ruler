@@ -1,18 +1,10 @@
 package org.opencds.cqf.common.providers;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
 import org.cqframework.cql.elm.requirements.fhir.DataRequirementsProcessor;
-import org.hl7.fhir.convertors.VersionConvertor_40_50;
 import org.hl7.fhir.r5.model.*;
-import org.opencds.cqf.common.config.HapiProperties;
-import org.opencds.cqf.cql.engine.fhir.retrieve.R4FhirQueryGenerator;
-import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
-import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
-import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -32,13 +24,8 @@ public class CommonDataRequirementsProvider {
     private static String EXTENSION_URL_REFERENCE_CODE = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-directReferenceCode";
     private static String EXTENSION_URL_LOGIC_DEFINITION = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition";
     private static String EXTENSION_URL_COMPUTABLE_MEASURE = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/computable-measure-cqfm";
-    private static String EXTENSION_URL_FHIR_QUERY_PATTERN = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern";
 
-
-    public Measure createMeasure(Measure measureToUse, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-
-        Library moduleDefinitionLibrary = getModuleDefinitionLibrary(measureToUse, libraryManager, translatedLibrary, options);
-
+    public Measure createMeasure(Measure measureToUse, Library moduleDefinitionLibrary) {
         measureToUse.setDate(new Date());
         setMeta(measureToUse, moduleDefinitionLibrary);
         clearMeasureExtensions(measureToUse, EXTENSION_URL_PARAMETER);
@@ -57,46 +44,18 @@ public class CommonDataRequirementsProvider {
 
     public Library getModuleDefinitionLibrary(org.hl7.fhir.r5.model.Measure measureToUse, LibraryManager libraryManager,
                                               TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-
         Set<String> expressionList = getExpressions(measureToUse);
-        Library library = this.internalGetModuleDefinitionLibrary(libraryManager, translatedLibrary, options, expressionList);
+        DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
+        Library library = dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, expressionList, true);
 
         return library;
     }
 
     public Library getModuleDefinitionLibrary(LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-        Library library = this.internalGetModuleDefinitionLibrary(libraryManager, translatedLibrary, options, null);
+        DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
+        Library library = dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, null, true);
 
         return library;
-    }
-
-    public Library internalGetModuleDefinitionLibrary(LibraryManager libraryManager, TranslatedLibrary translatedLibrary,
-                                                      CqlTranslatorOptions options, Set<String> expressionList) {
-        DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
-
-        Library library = dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, expressionList, true);
-
-        org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(library);
-
-        List<org.hl7.fhir.r4.model.DataRequirement> dataReqs = libraryR4.getDataRequirement();
-
-        SearchParameterResolver searchParameterResolver = new SearchParameterResolver(FhirContext.forR4());
-        TerminologyProvider terminologyProvider = new R4FhirTerminologyProvider(FhirContext.forCached(FhirVersionEnum.R4)
-                .newRestfulGenericClient(HapiProperties.getServerAddress()));
-        R4FhirQueryGenerator queryGenerator = new R4FhirQueryGenerator(searchParameterResolver, terminologyProvider);
-        for (org.hl7.fhir.r4.model.DataRequirement drq : dataReqs) {
-            List<String> queries = queryGenerator.generateFhirQueries(drq, null);
-            for (String query : queries) {
-                org.hl7.fhir.r4.model.Extension ext = new org.hl7.fhir.r4.model.Extension();
-                ext.setUrl(EXTENSION_URL_FHIR_QUERY_PATTERN);
-                ext.setValue(new org.hl7.fhir.r4.model.StringType(query));
-                drq.getExtension().add(ext);
-            }
-        }
-
-        org.hl7.fhir.r5.model.Library libraryR5 = (org.hl7.fhir.r5.model.Library) VersionConvertor_40_50.convertResource(libraryR4);
-
-        return libraryR5;
     }
 
     private Set<String> getExpressions(Measure measureToUse) {

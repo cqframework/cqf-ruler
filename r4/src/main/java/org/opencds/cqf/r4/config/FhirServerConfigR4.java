@@ -172,9 +172,9 @@ public class FhirServerConfigR4 extends BaseJavaConfigR4 {
     // TODO: Respect config options
     @Bean
     public DataProvider dataProvider(ModelResolver modelResolver, DaoRegistry daoRegistry, SearchParameterResolver searchParameterResolver, TerminologyProvider terminologyProvider) {
-        JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver);
+        JpaFhirRetrieveProvider retrieveProvider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, fhirContext());
         retrieveProvider.setTerminologyProvider(terminologyProvider);
-        retrieveProvider.getR4FhirQueryGenerator().setExpandValueSets(true);
+        retrieveProvider.setExpandValueSets(true);
         return new CompositeDataProvider(modelResolver, retrieveProvider);
     }
     

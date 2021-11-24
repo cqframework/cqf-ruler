@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import com.google.common.base.Strings;
 import com.vladsch.flexmark.ext.autolink.AutolinkExtension;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
@@ -60,9 +62,15 @@ import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.ParameterDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.StringType;
+import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.providers.CommonDataRequirementsProvider;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
+import org.opencds.cqf.cql.engine.fhir.retrieve.BaseFhirQueryGenerator;
+import org.opencds.cqf.cql.engine.fhir.retrieve.FhirQueryGeneratorFactory;
+import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
+import org.opencds.cqf.cql.engine.fhir.terminology.FhirTerminologyProviderFactory;
+import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.tooling.measure.r4.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef;
@@ -81,6 +89,8 @@ import org.opencds.cqf.r4.helpers.CanonicalHelper;
 public class DataRequirementsProvider {
     private static final Logger logger = LoggerFactory.getLogger(DataRequirementsProvider.class);
 
+    private static String EXTENSION_URL_FHIR_QUERY_PATTERN = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern";
+
     private LibraryHelper libraryHelper;
     private CommonDataRequirementsProvider dataRequirementsProvider;
 
@@ -92,8 +102,11 @@ public class DataRequirementsProvider {
     }
 
     public Measure createMeasure(Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+        org.hl7.fhir.r4.model.Library libraryR4 = getModuleDefinitionLibrary(measure, libraryManager, translatedLibrary, options);
+        libraryR4 = this.addDataRequirementFhirQueries(libraryR4);
+        org.hl7.fhir.r5.model.Library libraryR5 = (org.hl7.fhir.r5.model.Library) VersionConvertor_40_50.convertResource(libraryR4);
         org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(measure);
-        org.hl7.fhir.r5.model.Measure convertedMeasure = dataRequirementsProvider.createMeasure(measureR5, libraryManager, translatedLibrary, options);
+        org.hl7.fhir.r5.model.Measure convertedMeasure = dataRequirementsProvider.createMeasure(measureR5, libraryR5);
         org.hl7.fhir.r4.model.Measure measureR4 = (org.hl7.fhir.r4.model.Measure) VersionConvertor_40_50.convertResource(convertedMeasure);
 
         return measureR4;
@@ -102,15 +115,37 @@ public class DataRequirementsProvider {
     public org.hl7.fhir.r4.model.Library getModuleDefinitionLibrary(LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
         org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(libraryManager, translatedLibrary, options);
         org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(libraryR5);
+        libraryR4 = this.addDataRequirementFhirQueries(libraryR4);
         return libraryR4;
     }
 
     public org.hl7.fhir.r4.model.Library getModuleDefinitionLibrary(Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
         org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(measure);
-
         org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(measureR5, libraryManager, translatedLibrary, options);
         org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(libraryR5);
+        libraryR4 = this.addDataRequirementFhirQueries(libraryR4);
         return libraryR4;
+    }
+
+    public org.hl7.fhir.r4.model.Library addDataRequirementFhirQueries(org.hl7.fhir.r4.model.Library library) {
+        List<org.hl7.fhir.r4.model.DataRequirement> dataReqs = library.getDataRequirement();
+        SearchParameterResolver searchParameterResolver = new SearchParameterResolver(FhirContext.forCached(FhirVersionEnum.R4));
+
+        TerminologyProvider terminologyProvider = new FhirTerminologyProviderFactory().create(FhirVersionEnum.R4, FhirContext.forCached(FhirVersionEnum.R4)
+                .newRestfulGenericClient(HapiProperties.getServerAddress()));
+
+        BaseFhirQueryGenerator fhirQueryGenerator = new FhirQueryGeneratorFactory().create(FhirVersionEnum.R4, searchParameterResolver, terminologyProvider);
+
+        for (org.hl7.fhir.r4.model.DataRequirement drq : dataReqs) {
+            List<String> queries = fhirQueryGenerator.generateFhirQueries(drq, null);
+            for (String query : queries) {
+                org.hl7.fhir.r4.model.Extension ext = new org.hl7.fhir.r4.model.Extension();
+                ext.setUrl(EXTENSION_URL_FHIR_QUERY_PATTERN);
+                ext.setValue(new org.hl7.fhir.r4.model.StringType(query));
+                drq.getExtension().add(ext);
+            }
+        }
+        return library;
     }
 
     public org.hl7.fhir.r4.model.Library getLibraryFromMeasure(Measure measure,

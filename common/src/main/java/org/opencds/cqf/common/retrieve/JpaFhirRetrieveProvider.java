@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import ca.uhn.fhir.context.FhirContext;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.engine.fhir.retrieve.SearchParamFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterMap;
@@ -32,8 +33,8 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
     DaoRegistry registry;
 
     @Inject
-    public JpaFhirRetrieveProvider(DaoRegistry registry, SearchParameterResolver searchParameterResolver) {
-        super(searchParameterResolver);
+    public JpaFhirRetrieveProvider(DaoRegistry registry, SearchParameterResolver searchParameterResolver, FhirContext fhirContext) {
+        super(searchParameterResolver, fhirContext);
         this.registry = registry;
     }
 
