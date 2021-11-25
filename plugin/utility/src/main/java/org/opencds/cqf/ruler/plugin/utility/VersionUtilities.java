@@ -70,17 +70,17 @@ public interface VersionUtilities {
         ResourceType maxVersion = null;
         for (ResourceType l : theResources) {
             String currentVersion = theGetVersion.apply(l);
-            if ((theVersion != null && currentVersion.equals(theVersion)) || (theVersion == null && currentVersion == null)) {
+            if ((theVersion == null && currentVersion == null) || (theVersion != null &&  currentVersion != null && currentVersion.equals(theVersion))) {
                 library = l;
             }
 
-            if (maxVersion == null || compareVersions(theGetVersion.apply(maxVersion), theGetVersion.apply(l)) < 0) {
+            if (maxVersion == null || compareVersions(currentVersion, theGetVersion.apply(maxVersion)) >= 0) {
                 maxVersion = l;
             }
         }
 
         // If we were not given a version, return the highest found
-        if (theVersion == null && maxVersion != null) {
+        if ((theVersion == null || library == null) && maxVersion != null) {
             return maxVersion;
         }
 
