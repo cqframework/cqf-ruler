@@ -3,6 +3,8 @@ package org.opencds.cqf.dstu3.evaluation;
 import java.util.Date;
 import java.util.List;
 
+import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.dstu3.model.Measure;
@@ -58,10 +60,11 @@ public class MeasureEvaluationSeed {
             String user, String pass) {
         this.measure = measure;
 
-        this.libraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
+        RequestDetails requestDetails = new SystemRequestDetails();
+        this.libraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider, requestDetails);
 
         // resolve primary library
-        Library library = this.libraryHelper.resolvePrimaryLibrary(measure, libraryLoader, this.libraryResourceProvider);
+        Library library = this.libraryHelper.resolvePrimaryLibrary(measure, libraryLoader, this.libraryResourceProvider, requestDetails);
 
         // resolve execution context
         context = new Context(library);

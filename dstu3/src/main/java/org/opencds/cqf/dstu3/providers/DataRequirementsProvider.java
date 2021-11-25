@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import com.google.common.base.Strings;
 import com.vladsch.flexmark.ext.autolink.AutolinkExtension;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
@@ -47,7 +48,8 @@ import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.hl7.elm.r1.ValueSetRef;
-import org.hl7.fhir.convertors.VersionConvertor_30_50;
+import org.hl7.fhir.convertors.advisors.impl.BaseAdvisor_30_50;
+import org.hl7.fhir.convertors.conv30_50.VersionConvertor_30_50;
 import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.Base64BinaryType;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
@@ -94,10 +96,11 @@ public class DataRequirementsProvider {
 
 
     public org.hl7.fhir.dstu3.model.Library getModuleDefinitionLibrary(org.hl7.fhir.dstu3.model.Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_30_50.convertResource(measure);
+        VersionConvertor_30_50 versionConvertor_30_50 = new VersionConvertor_30_50(new BaseAdvisor_30_50());
+        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) versionConvertor_30_50.convertResource(measure);
 
         org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(measureR5, libraryManager, translatedLibrary, options);
-        org.hl7.fhir.dstu3.model.Library libraryDstu3 = (org.hl7.fhir.dstu3.model.Library) VersionConvertor_30_50.convertResource(libraryR5);
+        org.hl7.fhir.dstu3.model.Library libraryDstu3 = (org.hl7.fhir.dstu3.model.Library) versionConvertor_30_50.convertResource(libraryR5);
         return libraryDstu3;
     }
 
@@ -115,7 +118,7 @@ public class DataRequirementsProvider {
                 id = id.substring(1);
             }
         }
-        primaryLibrary = (org.hl7.fhir.dstu3.model.Library)libraryResourceProvider.resolveLibraryById(id);
+        primaryLibrary = (org.hl7.fhir.dstu3.model.Library)libraryResourceProvider.resolveLibraryById(id, null);
 
         return primaryLibrary;
     }
@@ -139,7 +142,7 @@ public class DataRequirementsProvider {
     private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> createLibraryMap(Measure measure,
             LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
         LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(libraryResourceProvider);
-        List<Library> libraries = this.libraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
+        List<Library> libraries = this.libraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider,null);
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.dstu3.model.Library>> libraryMap = new HashMap<>();
 
         for (Library library : libraries) {

@@ -9,6 +9,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
@@ -134,6 +136,7 @@ public class CqlExecutionProvider {
 
     private String buildIncludes(Iterable<CanonicalType> references) {
         StringBuilder builder = new StringBuilder();
+        RequestDetails requestDetails =  new SystemRequestDetails();
         for (CanonicalType reference : references) {
 
             if (builder.length() > 0) {
@@ -144,7 +147,7 @@ public class CqlExecutionProvider {
 
             // TODO: This assumes the libraries resource id is the same as the library name,
             // need to work this out better
-            Library lib = this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference));
+            Library lib = this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference), requestDetails);
             if (lib.hasName()) {
                 builder.append(lib.getName());
             } else {
@@ -190,17 +193,18 @@ public class CqlExecutionProvider {
 
     public Object evaluateInContext(DomainResource instance, String cql, String patientId, Boolean aliasedExpression) {
         Iterable<CanonicalType> libraries = getLibraryReferences(instance);
+        RequestDetails requestDetails = new SystemRequestDetails();
         if (aliasedExpression) {
             Object result = null;
             for (CanonicalType reference : libraries) {
-                Library lib = this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference));
+                Library lib = this.libraryResourceProvider.resolveLibraryById(CanonicalHelper.getId(reference), requestDetails);
                 if (lib == null) {
                     throw new RuntimeException("Library with id " + reference.getIdBase() + "not found");
                 }
                 LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(this.getLibraryResourceProvider());
                 // resolve primary library
                 org.cqframework.cql.elm.execution.Library library = this.libraryHelper.resolveLibraryById(lib.getId(),
-                        libraryLoader, this.libraryResourceProvider);
+                        libraryLoader, this.libraryResourceProvider, requestDetails);
 
                 // resolve execution context
                 Context context = setupContext(instance, patientId, libraryLoader, library);

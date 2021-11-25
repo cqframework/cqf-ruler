@@ -140,16 +140,16 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<Libr
     }
 
     @Override
-    public Library resolveLibraryById(String libraryId) {
+    public Library resolveLibraryById(String libraryId, RequestDetails requestDetails) {
         try {
-            return this.libraryResourceProvider.getDao().read(new IdType(libraryId));
+            return this.libraryResourceProvider.getDao().read(new IdType(libraryId), requestDetails);
         } catch (Exception e) {
             throw new IllegalArgumentException(String.format("Could not resolve library id %s", libraryId));
         }
     }
 
     @Override 
-    public Library resolveLibraryByCanonicalUrl(String url) {
+    public Library resolveLibraryByCanonicalUrl(String url, RequestDetails requestDetails) {
         Objects.requireNonNull(url, "url must not be null");
 
         String[] parts = url.split("\\|");
