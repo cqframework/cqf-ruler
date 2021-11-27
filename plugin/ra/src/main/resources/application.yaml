@@ -2,3 +2,5 @@ hapi:
   fhir:
     ra:
       enabled: true
+      report:
+        endpoint: ''

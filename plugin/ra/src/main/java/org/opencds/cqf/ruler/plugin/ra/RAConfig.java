@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class RAConfig {
 
     @Bean
-    public RAProperties raProperties() {
+    public RAProperties RAProperties() {
         return new RAProperties();
     }
 

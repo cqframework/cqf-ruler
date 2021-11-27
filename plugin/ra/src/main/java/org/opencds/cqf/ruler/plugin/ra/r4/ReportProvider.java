@@ -36,7 +36,7 @@ public class ReportProvider implements OperationProvider {
         @OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
         @OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
         @OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException { 
-      return null;
+      return new Parameters();
     }
 
     // @Operation(name = "$report", idempotent = true, type = MeasureReport.class)
