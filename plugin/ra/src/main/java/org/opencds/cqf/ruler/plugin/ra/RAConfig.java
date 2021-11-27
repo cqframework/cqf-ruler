@@ -10,9 +10,13 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableAutoConfiguration
 @ConditionalOnProperty(prefix = "hapi.fhir.ra", name ="enabled", havingValue = "true")
 public class RAConfig {
+
+    @Bean
+    public RAProperties raProperties() {
+        return new RAProperties();
+    }
 
     @Bean
     @Conditional(OnR4Condition.class)

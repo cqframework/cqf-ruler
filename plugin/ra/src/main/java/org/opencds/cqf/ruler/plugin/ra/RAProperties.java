@@ -19,7 +19,7 @@ public class RAProperties {
         this.enabled = enabled;
     }
 
-    private Report report;
+    private Report report = new Report();
 
     public Report getReport() {
         return report;
@@ -31,14 +31,5 @@ public class RAProperties {
 
     public static class Report {
 
-        private String endpoint;
-
-        public String getEndpoint() {
-            return endpoint;
-        }
-
-        public void setEndpoint(String endpoint) {
-            this.endpoint = endpoint;
-        }      
     }
 }
