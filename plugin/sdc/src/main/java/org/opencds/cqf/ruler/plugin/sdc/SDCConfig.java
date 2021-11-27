@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 public class SDCConfig {
 
     @Bean
-    public SDCProperties sdcProperties() {
+    public SDCProperties SDCProperties() {
         return new SDCProperties();
     }
 
