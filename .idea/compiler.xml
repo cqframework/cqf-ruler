@@ -9,7 +9,8 @@
         <module name="cqf-ruler-server" />
         <module name="cqf-ruler-plugin-hello-world" />
         <module name="cqf-ruler-external" />
-        <module name="cqf-ruler-plugin-sdc" />
+        <module name="cqf-ruler-plugin-ra" />
+        <module name="cqf-ruler-plugin-sdc" />        
       </profile>
     </annotationProcessing>
   </component>
@@ -17,6 +18,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="cqf-ruler-external" options="-Xlint:none" />
       <module name="cqf-ruler-plugin-hello-world" options="-Xlint:all -Xlint:-options -Xlint:-processing -Werror" />
+      <module name="cqf-ruler-plugin-ra" options="-Xlint:all -Xlint:-options -Xlint:-processing -Werror" />
       <module name="cqf-ruler-plugin-sdc" options="-Xlint:all -Xlint:-options -Xlint:-processing -Werror" />
       <module name="cqf-ruler-server" options="-Xlint:all -Xlint:-options -Xlint:-processing -Werror" />
     </option>

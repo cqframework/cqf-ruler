@@ -12,6 +12,3 @@ spring:
 hapi:
   fhir:
     tester_enabled: false;
-    ra:
-      report:
-        endpoint: http://localhost:${server.port}/fhir

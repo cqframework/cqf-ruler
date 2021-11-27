@@ -54,7 +54,7 @@ Visit the [wiki](https://github.com/DBCG/cqf-ruler/wiki) for more documentation.
 
 To run the cqf-ruler directory from this project use:
 
-`java -jar server/target/cqf-ruler-server-*.jar`
+`java -jar server/target/cqf-ruler-server-*.war`
 
 ### Plugins
 

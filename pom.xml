@@ -12,8 +12,8 @@
         <module>server</module>
         <module>plugin/utility</module>
         <module>plugin/hello-world</module>
-        <module>plugin/sdc</module>
         <module>plugin/ra</module>
+        <module>plugin/sdc</module>        
         <!-- <module>plugin/cql</module> -->
         <!-- <module>cqf-ruler-common</module>
         <module>cqf-ruler-dstu3</module>
