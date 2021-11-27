@@ -4,11 +4,11 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.interceptor.BasicAuthInterceptor;
 
 import org.hl7.fhir.dstu3.model.*;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.plugin.sdc.SDCProperties;
+import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExtractProvider implements OperationProvider {
+public class ExtractProvider implements OperationProvider, ClientUtilities {
 
     @Autowired
     private FhirContext myFhirContext;
@@ -84,7 +84,7 @@ public class ExtractProvider implements OperationProvider {
         qrCategoryCoding.setCode("survey");
         qrCategoryCoding.setSystem("http://hl7.org/fhir/observation-category");
         obs.setCategory(Collections.singletonList(new CodeableConcept().addCoding(qrCategoryCoding)));
-        obs.setCode(new CodeableConcept().addCoding((Coding) questionnaireCodeMap.get(linkId)));
+        obs.setCode(new CodeableConcept().addCoding(questionnaireCodeMap.get(linkId)));
         obs.setId("qr" + questionnaireResponse.getIdElement().getIdPart() + "." + linkId);
         switch(answer.getValue().fhirType()){
             case "string":
@@ -128,8 +128,8 @@ public class ExtractProvider implements OperationProvider {
         String user = mySdcProperties.getExtract().getUsername();
         String password = mySdcProperties.getExtract().getPassword();
 
-        IGenericClient client = myFhirContext.newRestfulGenericClient(url);
-        client.registerInterceptor(new BasicAuthInterceptor(user, password));
+        IGenericClient client = this.createClient(myFhirContext, url);
+        this.registerBasicAuth(client, user, password);
         Bundle outcomeBundle = client.transaction()
                 .withBundle(observationsBundle)
                 .execute();
@@ -144,8 +144,8 @@ public class ExtractProvider implements OperationProvider {
         String user = mySdcProperties.getExtract().getUsername();
         String password =  mySdcProperties.getExtract().getPassword();
 
-        IGenericClient client = myFhirContext.newRestfulGenericClient(url);
-        client.registerInterceptor(new BasicAuthInterceptor(user, password));
+        IGenericClient client = this.createClient(myFhirContext, url);
+        this.registerBasicAuth(client, user, password);
         Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl (questionnaireUrl).execute();
 
         return createCodeMap(questionnaire);

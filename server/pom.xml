@@ -245,23 +245,6 @@
             <artifactId>jetty-webapp</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>testcontainers</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-
         <!--
         For some reason JavaDoc crashed during site generation unless we have this dependency
         -->
@@ -288,11 +271,11 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
 
-        <!-- <dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
-        </dependency> -->
+        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>

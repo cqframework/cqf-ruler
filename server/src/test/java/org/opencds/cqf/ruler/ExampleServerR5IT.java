@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r5.model.Patient;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +16,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
@@ -118,7 +119,7 @@ public class ExampleServerR5IT {
   @BeforeEach
   void beforeEach() {
 
-    ourCtx = FhirContext.forR5();
+    ourCtx = FhirContext.forCached(FhirVersionEnum.R5);
     ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
     ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
     String ourServerBase = "http://localhost:" + port + "/fhir/";
@@ -126,7 +127,7 @@ public class ExampleServerR5IT {
     ourClient.registerInterceptor(new LoggingInterceptor(true));
   }
 
-  @BeforeClass
+  @BeforeAll
 	public static void setup() {
 		Awaitility.setDefaultTimeout(30, TimeUnit.SECONDS);
 	}

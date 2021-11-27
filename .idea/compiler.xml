@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="cqf-ruler-server" />
+        <module name="cqf-ruler-plugin-hello-world" />
+        <module name="cqf-ruler-external" />
+        <module name="cqf-ruler-plugin-sdc" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="cqf-ruler-external" options="-Xlint:none" />
+      <module name="cqf-ruler-plugin-hello-world" options="-Xlint:all -Xlint:-options -Xlint:-processing -Werror" />
+      <module name="cqf-ruler-plugin-sdc" options="-Xlint:all -Xlint:-options -Xlint:-processing -Werror" />
+      <module name="cqf-ruler-server" options="-Xlint:all -Xlint:-options -Xlint:-processing -Werror" />
+    </option>
+  </component>
+</project>

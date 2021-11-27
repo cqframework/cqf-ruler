@@ -80,6 +80,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-server-openapi</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -89,7 +94,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <?m2e execute onConfiguration,onIncremental?>
+                        <!-- <?m2e execute onIncremental?> -->
                         <phase>generate-sources</phase>
                         <configuration>
                             <target>
@@ -107,11 +112,19 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                    <additionalOptions>-Xdoclint:none</additionalOptions>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <?m2e execute onConfiguration,onIncremental?>
                         <id>add-source</id>
                         <phase>generate-sources</phase>
                         <goals>
@@ -124,7 +137,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <?m2e execute onConfiguration,onIncremental?>
                         <id>add-resources</id>
                         <phase>generate-sources</phase>
                         <goals>
@@ -148,7 +160,7 @@
                 <version>1.4.1</version>
                 <executions>
                     <execution>
-                        <?m2e execute onConfiguration,onIncremental?>
+                        <!-- <?m2e execute onIncremental?> -->
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>replace</goal>

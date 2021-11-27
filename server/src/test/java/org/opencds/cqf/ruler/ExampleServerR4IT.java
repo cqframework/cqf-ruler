@@ -10,7 +10,7 @@ import org.awaitility.Awaitility;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Patient;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.rest.api.CacheControlDirective;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
@@ -160,7 +161,7 @@ public class ExampleServerR4IT {
 	@BeforeEach
 	void beforeEach() {
 
-		ourCtx = FhirContext.forR4();
+		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";
@@ -168,7 +169,7 @@ public class ExampleServerR4IT {
 //		ourClient.registerInterceptor(new LoggingInterceptor(false));
 	}
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() {
 		Awaitility.setDefaultTimeout(30, TimeUnit.SECONDS);
 	}

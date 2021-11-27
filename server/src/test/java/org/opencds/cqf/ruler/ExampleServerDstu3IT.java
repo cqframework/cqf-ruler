@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.api.CacheControlDirective;
@@ -15,7 +16,7 @@ import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,7 +64,7 @@ public class ExampleServerDstu3IT implements IServerSupport {
 
   @BeforeEach
   void beforeEach() {
-    ourCtx = FhirContext.forDstu3();
+    ourCtx = FhirContext.forCached(FhirVersionEnum.DSTU3);
     ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
     ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
     String ourServerBase = "http://localhost:" + port + "/fhir/";
@@ -113,11 +114,11 @@ public class ExampleServerDstu3IT implements IServerSupport {
       .execute();
 
     List<Parameters.ParametersParameterComponent> response = outParams.getParameter();
-    Assert.assertTrue(!response.isEmpty());
+    Assertions.assertTrue(!response.isEmpty());
     Parameters.ParametersParameterComponent component = response.get(0);
-    Assert.assertTrue(component.getResource() instanceof MeasureReport);
+    Assertions.assertTrue(component.getResource() instanceof MeasureReport);
     MeasureReport report = (MeasureReport) component.getResource();
-    Assert.assertEquals("Measure/"+measureId, report.getMeasure());
+    Assertions.assertEquals("Measure/"+measureId, report.getMeasure());
   }
 
   private int loadDataFromDirectory(String theDirectoryName) throws IOException {
@@ -149,7 +150,7 @@ public class ExampleServerDstu3IT implements IServerSupport {
   private Bundle loadBundle(String theLocation, FhirContext theCtx, IGenericClient theClient) throws IOException {
     String json = stringFromResource(theLocation);
     Bundle bundle = (Bundle) theCtx.newJsonParser().parseResource(json);
-    Bundle result = (Bundle) theClient.transaction().withBundle(bundle).execute();
+    Bundle result = theClient.transaction().withBundle(bundle).execute();
     return result;
   }
 

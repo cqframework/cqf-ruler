@@ -1,5 +1,16 @@
 {
     "java.configuration.updateBuildConfiguration": "automatic",
+    "java.test.config": [
+        {
+            "name": "test-config",
+            "classPaths": [
+                "${workspaceFolder}/server/target/classes",
+                "${workspaceFolder}/external/target/classes"
+            ],
+            "vmArgs": ["-XX:TieredStopAtLevel=1", "-Xverify:none", "-Dspring.main.lazy-initialization=true"]
+        },
+    ],
+    "java.test.defaultConfig": "test-config",
     "cSpell.words": [
         "autoconfigure",
         "jpaserver",

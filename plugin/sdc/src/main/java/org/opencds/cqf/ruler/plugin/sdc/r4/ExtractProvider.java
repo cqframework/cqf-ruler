@@ -19,15 +19,14 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.plugin.sdc.SDCProperties;
+import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.interceptor.BasicAuthInterceptor;
-
-public class ExtractProvider implements OperationProvider {
+public class ExtractProvider implements OperationProvider, ClientUtilities {
 
     @Autowired
     private FhirContext myFhirContext;
@@ -55,7 +54,12 @@ public class ExtractProvider implements OperationProvider {
         bundleId.setValue("QuestionnaireResponse/" + questionnaireResponse.getIdElement().getIdPart());
         newBundle.setType(Bundle.BundleType.TRANSACTION);
         newBundle.setIdentifier(bundleId);
-        Map<String, Coding> questionnaireCodeMap = getQuestionnaireCodeMap(questionnaireResponse.getQuestionnaire());
+
+        String questionnaireCanonical = questionnaireResponse.getQuestionnaire();
+        if (questionnaireCanonical == null || questionnaireCanonical.isEmpty()) {
+            throw new IllegalArgumentException("The QuestionnaireResponse must have the source Questionnaire specified to do extraction");
+        }
+        Map<String, Coding> questionnaireCodeMap = getQuestionnaireCodeMap(questionnaireCanonical);
 
         questionnaireResponse.getItem().stream().forEach(item -> {
             processItems(item, authored, questionnaireResponse, newBundle, questionnaireCodeMap);
@@ -79,6 +83,7 @@ public class ExtractProvider implements OperationProvider {
                 }
             });
         }
+
         if (item.hasItem()) {
             item.getItem().forEach(itemItem -> {
                 processItems(itemItem, authored, questionnaireResponse, newBundle, questionnaireCodeMap);
@@ -97,7 +102,7 @@ public class ExtractProvider implements OperationProvider {
         qrCategoryCoding.setCode("survey");
         qrCategoryCoding.setSystem("http://hl7.org/fhir/observation-category");
         obs.setCategory(Collections.singletonList(new CodeableConcept().addCoding(qrCategoryCoding)));
-        obs.setCode(new CodeableConcept().addCoding((Coding) questionnaireCodeMap.get(linkId)));
+        obs.setCode(new CodeableConcept().addCoding(questionnaireCodeMap.get(linkId)));
         obs.setId("qr" + questionnaireResponse.getIdElement().getIdPart() + "." + linkId);
         switch (answer.getValue().fhirType()) {
             case "string":
@@ -140,8 +145,8 @@ public class ExtractProvider implements OperationProvider {
         String user = mySdcProperties.getExtract().getUsername();
         String password = mySdcProperties.getExtract().getPassword();
 
-        IGenericClient client = myFhirContext.newRestfulGenericClient(url);
-        client.registerInterceptor(new BasicAuthInterceptor(user, password));
+        IGenericClient client = this.createClient(myFhirContext, url);
+        this.registerBasicAuth(client, user, password);
         Bundle outcomeBundle = client.transaction().withBundle(observationsBundle).execute();
         return outcomeBundle;
     }
@@ -155,9 +160,11 @@ public class ExtractProvider implements OperationProvider {
         String user = mySdcProperties.getExtract().getUsername();
         String password = mySdcProperties.getExtract().getPassword();
 
-        IGenericClient client = myFhirContext.newRestfulGenericClient(url);
-        client.registerInterceptor(new BasicAuthInterceptor(user, password));
-        Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl(questionnaireUrl).execute();
+        IGenericClient client = this.createClient(myFhirContext, url);
+        this.registerBasicAuth(client, user, password);
+        Bundle results = (Bundle)client.search().forResource(Questionnaire.class).where(Questionnaire.URL.matches().value(questionnaireUrl)).execute();
+        
+        Questionnaire questionnaire = (Questionnaire)results.getEntry().get(0).getResource();
 
         return createCodeMap(questionnaire);
     }
