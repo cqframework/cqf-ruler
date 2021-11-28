@@ -12,6 +12,7 @@ spring:
 hapi:
   fhir:
     tester_enabled: false;
+    enforce_referential_integrity_on_write: false
     ra:
       report:
         endpoint: http://localhost:%d/fhir

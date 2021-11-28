@@ -7,9 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.IOException;
 
+import org.hl7.fhir.r4.model.Group;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,43 +59,17 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
 	void beforeEach() {
 
 		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
-		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);        
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = getClientUrl(myRaProperties.getReport().getEndpoint(), port);
 	    ourClient = createClient(ourCtx, ourServerBase);
         myRaProperties.getReport().setEndpoint(ourServerBase);
     }
 
-    @Test
-    public void testReport() throws IOException {
-
-        //loadResource("mypain-questionnaire.json", ourCtx, ourRegistry);
-
-
-        //QuestionnaireResponse test = (QuestionnaireResponse)ourCtx.newJsonParser().parseResource(stringFromResource("mypain-questionnaire-response.json"));
-
-        Parameters params = new Parameters();
-        params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
-        params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        params.addParameter().setName("subject").setValue(new StringType("Patient/ra-patient01"));
-        resolveByLocation(ourRegistry, "ra-patient01.json", ourCtx);
-    
-        Parameters actual = ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
-
-            assertNotNull(actual);
-
-        // Expecting one observation per item
-        //assertEquals(5, actual.getEntry().size());
-
-        // Ensure the Observations were saved to the local server
-        //Observation obs = ourClient.read().resource(Observation.class).withId("IdFromBundle").execute();
-
-        //assertNotNull(obs);
-
-        // Check other observation properties
+    @AfterEach
+    void afterEach() {
+        ourClient.delete().resourceConditionalByUrl("Group?type=person").execute();
+        ourClient.delete().resourceConditionalByUrl("Patient?active=true").execute();
     }
 
     @Test
@@ -156,43 +132,54 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
         });
     }
 
+    //TODO: add the count of patients returned
     @Test
-    public void testSubjectIsPatientOrGroupd() throws IOException {
+    public void testSubjectPatient() throws IOException {
 
-        Parameters patientSubjectParams = new Parameters();
-        patientSubjectParams.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
-        patientSubjectParams.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        patientSubjectParams.addParameter().setName("subject").setValue(new StringType("Patient/ra-patient01"));
+        Parameters params = new Parameters();
+        params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
+        params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
+        params.addParameter().setName("subject").setValue(new StringType("Patient/ra-patient01"));
         resolveByLocation(ourRegistry, "ra-patient01.json", ourCtx);
 
         assertDoesNotThrow(() -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(patientSubjectParams)
+            .withParameters(params)
             .returnResourceType(Parameters.class)
             .execute();
         });
- 
-        Parameters groupSubjectParams = new Parameters();
-        groupSubjectParams.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
-        groupSubjectParams.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        groupSubjectParams.addParameter().setName("subject").setValue(new StringType("Group/ra-group01")); 
-        resolveByLocation(ourRegistry, "ra-group01.json", ourCtx);
+    }
 
+    //TODO: add the count of patients returned
+    @Test
+    public void testSubjectGroup() throws IOException {
+
+        Parameters params = new Parameters();
+        params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
+        params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
+        params.addParameter().setName("subject").setValue(new StringType("Group/ra-group01"));
+        resolveByLocation(ourRegistry, "ra-patient01.json", ourCtx); 
+        resolveByLocation(ourRegistry, "ra-group01.json", ourCtx);
+        
         assertDoesNotThrow(() -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(groupSubjectParams)
+            .withParameters(params)
             .returnResourceType(Parameters.class)
             .execute();
         });
+    }
 
-        Parameters badSubjectParams = new Parameters();
-        badSubjectParams.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
-        badSubjectParams.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        badSubjectParams.addParameter().setName("subject").setValue(new StringType("ra-patient01")); 
+    @Test
+    public void testSubjectIsNotPatientOrGroup() throws IOException {     
+
+        Parameters params = new Parameters();
+        params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
+        params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
+        params.addParameter().setName("subject").setValue(new StringType("ra-patient01")); 
 
         assertThrows(InternalErrorException.class, () -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(badSubjectParams)
+            .withParameters(params)
             .returnResourceType(Parameters.class)
             .execute();
         });
@@ -228,5 +215,66 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
             .returnResourceType(Parameters.class)
             .execute();
         });
+    }
+
+    //This test requires the following application setting:
+    //enforce_referential_integrity_on_write: false
+    @Test
+    public void testSubjectPatientNotFoundInGroup() throws IOException {
+
+        Parameters params = new Parameters();
+        params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
+        params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
+        params.addParameter().setName("subject").setValue(new StringType("Group/ra-group01")); 
+        resolveByLocation(ourRegistry, "ra-group01.json", ourCtx);
+        Group group = ourClient.read().resource(Group.class).withId("ra-group01").execute();
+        assertNotNull(group);
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            ourClient.operation().onType(MeasureReport.class).named("$report")
+            .withParameters(params)
+            .returnResourceType(Parameters.class)
+            .execute();
+        });
+    }
+ 
+    //TODO: add the count of patients returned
+    @Test
+    public void testSubjectMultiplePatientGroup() throws IOException {
+
+        Parameters params = new Parameters();
+        params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
+        params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
+        params.addParameter().setName("subject").setValue(new StringType("Group/ra-group02"));
+        resolveByLocation(ourRegistry, "ra-patient02.json", ourCtx);
+        resolveByLocation(ourRegistry, "ra-patient03.json", ourCtx);
+        resolveByLocation(ourRegistry, "ra-group02.json", ourCtx);
+
+        assertDoesNotThrow(() -> {
+            ourClient.operation().onType(MeasureReport.class).named("$report")
+            .withParameters(params)
+            .returnResourceType(Parameters.class)
+            .execute();
+        });      
+    }
+
+    @Test
+    public void testReport() throws IOException {
+
+        //QuestionnaireResponse test = (QuestionnaireResponse)ourCtx.newJsonParser().parseResource(stringFromResource("mypain-questionnaire-response.json"));
+
+        Parameters params = new Parameters();
+        params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
+        params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
+        params.addParameter().setName("subject").setValue(new StringType("Patient/ra-patient01"));
+        resolveByLocation(ourRegistry, "ra-patient01.json", ourCtx);
+    
+        Parameters actual = ourClient.operation().onType(MeasureReport.class).named("$report")
+            .withParameters(params)
+            .returnResourceType(Parameters.class)
+            .execute();
+
+        assertNotNull(actual);
+        
     }
 }

@@ -1,0 +1,27 @@
+{
+    "resourceType": "Group",
+    "id": "ra-group02",
+    "meta": {
+      "profile": [
+        "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-patient-group"
+      ]
+    },
+    "text": {
+      "status": "generated",
+      "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"ra-group02\" </p><p style=\"margin-bottom: 0px\">Profile: <a href=\"StructureDefinition-ra-patient-group.html\">Patient Group Profile</a></p></div><p><b>type</b>: person</p><p><b>actual</b>: true</p><blockquote><p><b>member</b></p><p><b>entity</b>: <a href=\"Patient-ra-patient02.html\">Patient/ra-patient02</a> \" EVERYMAN\"</p></blockquote><blockquote><p><b>member</b></p><p><b>entity</b>: <a href=\"Patient-ra-patient03.html\">Patient/ra-patient03</a> \" NUCLEAR\"</p></blockquote></div>"
+    },
+    "type": "person",
+    "actual": true,
+    "member": [
+      {
+        "entity": {
+          "reference": "Patient/ra-patient02"
+        }
+      },
+      {
+        "entity": {
+          "reference": "Patient/ra-patient03"
+        }
+      }
+    ]
+  }
