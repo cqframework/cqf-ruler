@@ -9,6 +9,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Group;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Reference;
 import org.opencds.cqf.ruler.api.OperationProvider;
@@ -107,14 +108,22 @@ public class ReportProvider implements OperationProvider, TypeUtilities, Resolut
     return returnParams;
   }
 
+  private void ensurePatient(String patientRef) {
+    IBaseResource patient = resolveById(ourRegistry, Patient.class, patientRef);
+    if (patient == null) {      
+      throw new RuntimeException("Could not find Patient: " + patientRef);
+    }
+  }
+
   //TODO: replace this with version from base structures
   private List<Reference> getPatientListFromSubject(String subject) {
     List<Reference> patientList = null;
 
     if (subject.startsWith("Patient/")) {
-        Reference patientReference = new Reference(subject);
-        patientList = new ArrayList<Reference>();
-        patientList.add(patientReference);
+      ensurePatient(subject);
+      Reference patientReference = new Reference(subject);
+      patientList = new ArrayList<Reference>();
+      patientList.add(patientReference);
     } else if (subject.startsWith("Group/")) {
         patientList = getPatientListFromGroup(subject);
     } else {
@@ -130,13 +139,14 @@ public class ReportProvider implements OperationProvider, TypeUtilities, Resolut
 
     IBaseResource baseGroup = resolveById(ourRegistry, Group.class, subjectGroupId);
     if (baseGroup == null) {
-        throw new RuntimeException("Could not find Group/" + subjectGroupId);
+        throw new RuntimeException("Could not find Group: " + subjectGroupId);
     }
 
     Group group = (Group)baseGroup;       
     group.getMember().forEach(member -> {     
         Reference reference = member.getEntity();
         if (reference.getReferenceElement().getResourceType().equals("Patient")) {
+            ensurePatient(reference.getReference());
             patientList.add(reference);
         } else if (reference.getReferenceElement().getResourceType().equals("Group")) {
             patientList.addAll(getPatientListFromGroup(reference.getReference()));

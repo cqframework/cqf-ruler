@@ -17,6 +17,7 @@ import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.ra.RAConfig;
 import org.opencds.cqf.ruler.plugin.ra.RAProperties;
 import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
+import org.opencds.cqf.ruler.plugin.utility.ResolutionUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
         RAConfig.class }, properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.ra.enabled=true" })
-public class ReportProviderIT implements ClientUtilities {
+public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
     private Logger ourLog = LoggerFactory.getLogger(ReportProviderIT.class);
 
     private IGenericClient ourClient;
@@ -74,7 +75,8 @@ public class ReportProviderIT implements ClientUtilities {
         Parameters params = new Parameters();
         params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        params.addParameter().setName("subject").setValue(new StringType("Patient/testReport01"));
+        params.addParameter().setName("subject").setValue(new StringType("Patient/ra-patient01"));
+        resolveByLocation(ourRegistry, "ra-patient01.json", ourCtx);
     
         Parameters actual = ourClient.operation().onType(MeasureReport.class).named("$report")
             .withParameters(params)
@@ -161,7 +163,7 @@ public class ReportProviderIT implements ClientUtilities {
         patientSubjectParams.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         patientSubjectParams.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
         patientSubjectParams.addParameter().setName("subject").setValue(new StringType("Patient/ra-patient01"));
-        //loadResource("ra-patient01.json", ourCtx, ourRegistry);
+        resolveByLocation(ourRegistry, "ra-patient01.json", ourCtx);
 
         assertDoesNotThrow(() -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
@@ -174,7 +176,7 @@ public class ReportProviderIT implements ClientUtilities {
         groupSubjectParams.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         groupSubjectParams.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
         groupSubjectParams.addParameter().setName("subject").setValue(new StringType("Group/ra-group01")); 
-        //loadResource("ra-group01.json", ourCtx, ourRegistry);
+        resolveByLocation(ourRegistry, "ra-group01.json", ourCtx);
 
         assertDoesNotThrow(() -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
