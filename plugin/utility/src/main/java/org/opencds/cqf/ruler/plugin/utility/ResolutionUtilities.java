@@ -33,9 +33,9 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	/**
 	 * Returns the Resource with a matching Id
 	 * 
-	 * @param <ResourceType>    an IBaseResource type
-	 * @param theDaoRegistry    the DaoRegistry to use for resolution
-	 * @param theId             the Id of the Resource to resolve
+	 * @param <ResourceType> an IBaseResource type
+	 * @param theDaoRegistry the DaoRegistry to use for resolution
+	 * @param theId          the Id of the Resource to resolve
 	 * @return the Resource matching the criteria
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
@@ -470,42 +470,44 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 
 	/**
 	 * Returns the Resource at the specified location.
-	 * @param <ResourceType>    an IBaseResource type
-	 * @param theResourceDao    the DaoRegistry to use for resolution
-	 * @param theLocation       the location of the Resource to resolve
-	 * @param theFhirContext	the FhirContext to use to parse the resource
+	 * 
+	 * @param <ResourceType> an IBaseResource type
+	 * @param theResourceDao the DaoRegistry to use for resolution
+	 * @param theLocation    the location of the Resource to resolve
+	 * @param theFhirContext the FhirContext to use to parse the resource
 	 * @return the Resource at the specified location
 	 */
 	@SuppressWarnings("unchecked")
 	public default <ResourceType extends IBaseResource> ResourceType resolveByLocation(
-		DaoRegistry theResourceDao, String theLocation, FhirContext theFhirContext)
-		throws IOException {
-	  String json = stringFromResource(theLocation);
-	  IBaseResource resource = theFhirContext.newJsonParser().parseResource(json);
-	  IFhirResourceDao<IBaseResource> dao = theResourceDao.getResourceDao(resource.getIdElement().getResourceType());
-	  if (dao == null) {
-		return null;
-	  } else {
-		dao.update(resource);
-		return (ResourceType) resource;
-	  }
+			DaoRegistry theResourceDao, String theLocation, FhirContext theFhirContext)
+			throws IOException {
+		String json = stringFromResource(theLocation);
+		IBaseResource resource = theFhirContext.newJsonParser().parseResource(json);
+		IFhirResourceDao<IBaseResource> dao = theResourceDao.getResourceDao(resource.getIdElement().getResourceType());
+		if (dao == null) {
+			return null;
+		} else {
+			dao.update(resource);
+			return (ResourceType) resource;
+		}
 	}
-  
+
 	/**
 	 * Returns a String representation of the Resource
 	 * at the specified location.
-	 * @param theLocation	the location of the Resource to resolve
+	 * 
+	 * @param theLocation the location of the Resource to resolve
 	 * @return the string representation of the Resource
 	 */
 	public default String stringFromResource(String theLocation) throws IOException {
-	  InputStream is = null;
-	  if (theLocation.startsWith(File.separator)) {
-		is = new FileInputStream(theLocation);
-	  } else {
-		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-		Resource resource = resourceLoader.getResource(theLocation);
-		is = resource.getInputStream();
-	  }
-	  return IOUtils.toString(is, Charsets.UTF_8);
+		InputStream is = null;
+		if (theLocation.startsWith(File.separator)) {
+			is = new FileInputStream(theLocation);
+		} else {
+			DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+			Resource resource = resourceLoader.getResource(theLocation);
+			is = resource.getInputStream();
+		}
+		return IOUtils.toString(is, Charsets.UTF_8);
 	}
 }

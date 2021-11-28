@@ -39,13 +39,13 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-        RAConfig.class }, properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.ra.enabled=true" })
+        RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.ra.enabled=true" })
 public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
     private Logger ourLog = LoggerFactory.getLogger(ReportProviderIT.class);
 
     private IGenericClient ourClient;
     private FhirContext ourCtx;
-    
+
     @Autowired
     private DaoRegistry ourRegistry;
 
@@ -56,13 +56,13 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
     private int port;
 
     @BeforeEach
-	void beforeEach() {
+    void beforeEach() {
 
-		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
-		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);        
-		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
-		String ourServerBase = getClientUrl(myRaProperties.getReport().getEndpoint(), port);
-	    ourClient = createClient(ourCtx, ourServerBase);
+        ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
+        ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+        ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
+        String ourServerBase = getClientUrl(myRaProperties.getReport().getEndpoint(), port);
+        ourClient = createClient(ourCtx, ourServerBase);
         myRaProperties.getReport().setEndpoint(ourServerBase);
     }
 
@@ -77,13 +77,13 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
 
         Parameters params = new Parameters();
         params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        params.addParameter().setName("subject").setValue(new StringType("Patient/testReport01"));    
+        params.addParameter().setName("subject").setValue(new StringType("Patient/testReport01"));
 
         assertThrows(InternalErrorException.class, () -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
+                    .withParameters(params)
+                    .returnResourceType(Parameters.class)
+                    .execute();
         });
     }
 
@@ -92,13 +92,13 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
 
         Parameters params = new Parameters();
         params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
-        params.addParameter().setName("subject").setValue(new StringType("Patient/testReport01"));    
+        params.addParameter().setName("subject").setValue(new StringType("Patient/testReport01"));
 
         assertThrows(InternalErrorException.class, () -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
+                    .withParameters(params)
+                    .returnResourceType(Parameters.class)
+                    .execute();
         });
     }
 
@@ -111,9 +111,9 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
 
         assertThrows(InternalErrorException.class, () -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
+                    .withParameters(params)
+                    .returnResourceType(Parameters.class)
+                    .execute();
         });
     }
 
@@ -126,13 +126,13 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
 
         assertThrows(InternalErrorException.class, () -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
+                    .withParameters(params)
+                    .returnResourceType(Parameters.class)
+                    .execute();
         });
     }
 
-    //TODO: add the count of patients returned
+    // TODO: add the count of patients returned
     @Test
     public void testSubjectPatient() throws IOException {
 
@@ -144,13 +144,13 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
 
         assertDoesNotThrow(() -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
+                    .withParameters(params)
+                    .returnResourceType(Parameters.class)
+                    .execute();
         });
     }
 
-    //TODO: add the count of patients returned
+    // TODO: add the count of patients returned
     @Test
     public void testSubjectGroup() throws IOException {
 
@@ -158,30 +158,30 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
         params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
         params.addParameter().setName("subject").setValue(new StringType("Group/ra-group01"));
-        resolveByLocation(ourRegistry, "ra-patient01.json", ourCtx); 
+        resolveByLocation(ourRegistry, "ra-patient01.json", ourCtx);
         resolveByLocation(ourRegistry, "ra-group01.json", ourCtx);
-        
+
         assertDoesNotThrow(() -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
+                    .withParameters(params)
+                    .returnResourceType(Parameters.class)
+                    .execute();
         });
     }
 
     @Test
-    public void testSubjectIsNotPatientOrGroup() throws IOException {     
+    public void testSubjectIsNotPatientOrGroup() throws IOException {
 
         Parameters params = new Parameters();
         params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        params.addParameter().setName("subject").setValue(new StringType("ra-patient01")); 
+        params.addParameter().setName("subject").setValue(new StringType("ra-patient01"));
 
         assertThrows(InternalErrorException.class, () -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
+                    .withParameters(params)
+                    .returnResourceType(Parameters.class)
+                    .execute();
         });
     }
 
@@ -191,13 +191,13 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
         Parameters params = new Parameters();
         params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        params.addParameter().setName("subject").setValue(new StringType("Patient/bad-patient")); 
+        params.addParameter().setName("subject").setValue(new StringType("Patient/bad-patient"));
 
         assertThrows(ResourceNotFoundException.class, () -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
+                    .withParameters(params)
+                    .returnResourceType(Parameters.class)
+                    .execute();
         });
     }
 
@@ -207,38 +207,38 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
         Parameters params = new Parameters();
         params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        params.addParameter().setName("subject").setValue(new StringType("Group/bad-group")); 
+        params.addParameter().setName("subject").setValue(new StringType("Group/bad-group"));
 
         assertThrows(ResourceNotFoundException.class, () -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
+                    .withParameters(params)
+                    .returnResourceType(Parameters.class)
+                    .execute();
         });
     }
 
-    //This test requires the following application setting:
-    //enforce_referential_integrity_on_write: false
+    // This test requires the following application setting:
+    // enforce_referential_integrity_on_write: false
     @Test
     public void testSubjectPatientNotFoundInGroup() throws IOException {
 
         Parameters params = new Parameters();
         params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        params.addParameter().setName("subject").setValue(new StringType("Group/ra-group01")); 
+        params.addParameter().setName("subject").setValue(new StringType("Group/ra-group01"));
         resolveByLocation(ourRegistry, "ra-group01.json", ourCtx);
         Group group = ourClient.read().resource(Group.class).withId("ra-group01").execute();
         assertNotNull(group);
 
         assertThrows(ResourceNotFoundException.class, () -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
+                    .withParameters(params)
+                    .returnResourceType(Parameters.class)
+                    .execute();
         });
     }
- 
-    //TODO: add the count of patients returned
+
+    // TODO: add the count of patients returned
     @Test
     public void testSubjectMultiplePatientGroup() throws IOException {
 
@@ -252,29 +252,30 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
 
         assertDoesNotThrow(() -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
-        });      
+                    .withParameters(params)
+                    .returnResourceType(Parameters.class)
+                    .execute();
+        });
     }
 
     @Test
     public void testReport() throws IOException {
 
-        //QuestionnaireResponse test = (QuestionnaireResponse)ourCtx.newJsonParser().parseResource(stringFromResource("mypain-questionnaire-response.json"));
+        // QuestionnaireResponse test =
+        // (QuestionnaireResponse)ourCtx.newJsonParser().parseResource(stringFromResource("mypain-questionnaire-response.json"));
 
         Parameters params = new Parameters();
         params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
         params.addParameter().setName("subject").setValue(new StringType("Patient/ra-patient01"));
         resolveByLocation(ourRegistry, "ra-patient01.json", ourCtx);
-    
+
         Parameters actual = ourClient.operation().onType(MeasureReport.class).named("$report")
-            .withParameters(params)
-            .returnResourceType(Parameters.class)
-            .execute();
+                .withParameters(params)
+                .returnResourceType(Parameters.class)
+                .execute();
 
         assertNotNull(actual);
-        
+
     }
 }
