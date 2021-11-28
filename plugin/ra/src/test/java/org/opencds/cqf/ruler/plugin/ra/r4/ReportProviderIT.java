@@ -31,6 +31,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -59,6 +60,7 @@ public class ReportProviderIT implements ClientUtilities {
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = getClientUrl(myRaProperties.getReport().getEndpoint(), port);
 	    ourClient = createClient(ourCtx, ourServerBase);
+        myRaProperties.getReport().setEndpoint(ourServerBase);
     }
 
     @Test
@@ -158,7 +160,8 @@ public class ReportProviderIT implements ClientUtilities {
         Parameters patientSubjectParams = new Parameters();
         patientSubjectParams.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         patientSubjectParams.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        patientSubjectParams.addParameter().setName("subject").setValue(new StringType("Patient/testReport01")); 
+        patientSubjectParams.addParameter().setName("subject").setValue(new StringType("Patient/ra-patient01"));
+        //loadResource("ra-patient01.json", ourCtx, ourRegistry);
 
         assertDoesNotThrow(() -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
@@ -166,11 +169,12 @@ public class ReportProviderIT implements ClientUtilities {
             .returnResourceType(Parameters.class)
             .execute();
         });
-
+ 
         Parameters groupSubjectParams = new Parameters();
         groupSubjectParams.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         groupSubjectParams.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        groupSubjectParams.addParameter().setName("subject").setValue(new StringType("Group/testReport01")); 
+        groupSubjectParams.addParameter().setName("subject").setValue(new StringType("Group/ra-group01")); 
+        //loadResource("ra-group01.json", ourCtx, ourRegistry);
 
         assertDoesNotThrow(() -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
@@ -182,11 +186,43 @@ public class ReportProviderIT implements ClientUtilities {
         Parameters badSubjectParams = new Parameters();
         badSubjectParams.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
         badSubjectParams.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
-        badSubjectParams.addParameter().setName("subject").setValue(new StringType("testReport01")); 
+        badSubjectParams.addParameter().setName("subject").setValue(new StringType("ra-patient01")); 
 
         assertThrows(InternalErrorException.class, () -> {
             ourClient.operation().onType(MeasureReport.class).named("$report")
             .withParameters(badSubjectParams)
+            .returnResourceType(Parameters.class)
+            .execute();
+        });
+    }
+
+    @Test
+    public void testPatientSubjectNotFound() throws IOException {
+
+        Parameters params = new Parameters();
+        params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
+        params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
+        params.addParameter().setName("subject").setValue(new StringType("Patient/bad-patient")); 
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            ourClient.operation().onType(MeasureReport.class).named("$report")
+            .withParameters(params)
+            .returnResourceType(Parameters.class)
+            .execute();
+        });
+    }
+
+    @Test
+    public void testGroupSubjectNotFound() throws IOException {
+
+        Parameters params = new Parameters();
+        params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
+        params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
+        params.addParameter().setName("subject").setValue(new StringType("Group/bad-group")); 
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            ourClient.operation().onType(MeasureReport.class).named("$report")
+            .withParameters(params)
             .returnResourceType(Parameters.class)
             .execute();
         });
