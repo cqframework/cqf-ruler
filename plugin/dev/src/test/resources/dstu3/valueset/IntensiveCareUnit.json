@@ -1,0 +1,62 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1110.23",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1110.23",
+  "title": "Intensive Care Unit",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "309904001",
+            "display": "Intensive care unit (environment)"
+          },
+          {
+            "code": "309905000",
+            "display": "Adult intensive care unit (environment)"
+          },
+          {
+            "code": "309907008",
+            "display": "Cardiac intensive care unit (environment)"
+          },
+          {
+            "code": "309908003",
+            "display": "Metabolic intensive care unit (environment)"
+          },
+          {
+            "code": "309909006",
+            "display": "Neurological intensive care unit (environment)"
+          },
+          {
+            "code": "309910001",
+            "display": "Pediatric intensive care unit (environment)"
+          },
+          {
+            "code": "309911002",
+            "display": "Respiratory intensive care unit (environment)"
+          },
+          {
+            "code": "418433008",
+            "display": "Surgical intensive care unit (environment)"
+          },
+          {
+            "code": "426439001",
+            "display": "Burns intensive care unit (environment)"
+          },
+          {
+            "code": "441994008",
+            "display": "Medical intensive care unit (environment)"
+          },
+          {
+            "code": "448391000124102",
+            "display": "Trauma intensive care unit (environment)"
+          }
+        ]
+      }
+    ]
+  }
+}

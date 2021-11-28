@@ -1,0 +1,46 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1045.41",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1045.41",
+  "title": "Glycoprotein IIbIIIa Inhibitors",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2019-08",
+        "concept": [
+          {
+            "code": "1736470",
+            "display": "10 ML eptifibatide 2 MG/ML Injection"
+          },
+          {
+            "code": "1736477",
+            "display": "100 ML eptifibatide 2 MG/ML Injection"
+          },
+          {
+            "code": "1737466",
+            "display": "100 ML tirofiban 0.05 MG/ML Injection"
+          },
+          {
+            "code": "1737471",
+            "display": "250 ML tirofiban 0.05 MG/ML Injection"
+          },
+          {
+            "code": "1813035",
+            "display": "15 ML tirofiban 0.25 MG/ML Injection"
+          },
+          {
+            "code": "200349",
+            "display": "100 ML eptifibatide 0.75 MG/ML Injection"
+          },
+          {
+            "code": "241162",
+            "display": "5 ML abciximab 2 MG/ML Injection"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.423",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.423",
+  "title": "Statin Allergen",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2019-12",
+        "concept": [
+          {
+            "code": "301542",
+            "display": "rosuvastatin"
+          },
+          {
+            "code": "36567",
+            "display": "Simvastatin"
+          },
+          {
+            "code": "41127",
+            "display": "fluvastatin"
+          },
+          {
+            "code": "42463",
+            "display": "Pravastatin"
+          },
+          {
+            "code": "6472",
+            "display": "Lovastatin"
+          },
+          {
+            "code": "83367",
+            "display": "atorvastatin"
+          },
+          {
+            "code": "861634",
+            "display": "pitavastatin"
+          }
+        ]
+      }
+    ]
+  }
+}

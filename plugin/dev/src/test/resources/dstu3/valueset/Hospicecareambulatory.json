@@ -1,0 +1,34 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1108.15",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1108.15",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113762.1.4.1108.15"
+    }
+  ],
+  "version": "20170504",
+  "name": "Hospicecareambulatory",
+  "title": "Hospice care ambulatory",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2018-03",
+        "concept": [
+          {
+            "code": "385763009",
+            "display": "Hospice care (regime/therapy)"
+          },
+          {
+            "code": "385765002",
+            "display": "Hospice care management (procedure)"
+          }
+        ]
+      }
+    ]
+  }
+}

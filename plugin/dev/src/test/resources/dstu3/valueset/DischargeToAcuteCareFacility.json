@@ -1,0 +1,38 @@
+{
+    "resourceType": "ValueSet",
+    "id": "2.16.840.1.113883.3.117.1.7.1.87",
+    "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.87",
+    "identifier": [
+      {
+        "system": "urn:ietf:rfc:3986",
+        "value": "2.16.840.1.113883.3.117.1.7.1.87"
+      }
+    ],
+    "version": "20170725",
+    "name": "DischargeToAcuteCareFacility",
+    "title": "Discharge To Acute Care Facility",
+    "status": "active",
+    "publisher": "NLM",
+    "compose": {
+      "include": [
+        {
+          "system": "http://snomed.info/sct",
+          "version": "2018-03",
+          "concept": [
+            {
+              "code": "306701001",
+              "display": "Discharge to community hospital (procedure)"
+            },
+            {
+              "code": "306703003",
+              "display": "Discharge to tertiary referral hospital (procedure)"
+            },
+            {
+              "code": "434781000124105",
+              "display": "Discharge to acute care hospital (procedure)"
+            }
+          ]
+        }
+      ]
+    }
+  }

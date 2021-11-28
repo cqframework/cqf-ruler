@@ -1,0 +1,134 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.196.12.1510",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.196.12.1510",
+  "title": "Dementia Medications",
+  "status": "active",
+  "publisher": "National Committee for Quality Assurance",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2019-08",
+        "concept": [
+          {
+            "code": "1100184",
+            "display": "Donepezil hydrochloride 23 MG Oral Tablet"
+          },
+          {
+            "code": "1308569",
+            "display": "24 HR rivastigmine 0.554 MG/HR Transdermal System"
+          },
+          {
+            "code": "1858970",
+            "display": "{7 (24 HR Donepezil hydrochloride 10 MG / Memantine hydrochloride 14 MG Extended Release Oral Capsule) / 7 (24 HR Donepezil hydrochloride 10 MG / Memantine hydrochloride 21 MG Extended Release Oral Capsule) / 7 (24 HR Donepezil hydrochloride 10 MG / Memantine hydrochloride 28 MG Extended Release Oral Capsule) / 7 (24 HR Donepezil hydrochloride 10 MG / Memantine hydrochloride 7 MG Extended Release Oral Capsule) } Pack"
+          },
+          {
+            "code": "310436",
+            "display": "Galantamine 4 MG Oral Tablet"
+          },
+          {
+            "code": "310437",
+            "display": "Galantamine 8 MG Oral Tablet"
+          },
+          {
+            "code": "312835",
+            "display": "rivastigmine 3 MG Oral Capsule"
+          },
+          {
+            "code": "312836",
+            "display": "rivastigmine 6 MG Oral Capsule"
+          },
+          {
+            "code": "314214",
+            "display": "rivastigmine 1.5 MG Oral Capsule"
+          },
+          {
+            "code": "314215",
+            "display": "rivastigmine 4.5 MG Oral Capsule"
+          },
+          {
+            "code": "579148",
+            "display": "Galantamine 12 MG Oral Tablet"
+          },
+          {
+            "code": "725021",
+            "display": "24 HR rivastigmine 0.192 MG/HR Transdermal System"
+          },
+          {
+            "code": "725023",
+            "display": "24 HR rivastigmine 0.396 MG/HR Transdermal System"
+          },
+          {
+            "code": "860695",
+            "display": "24 HR galantamine hydrobromide 16 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "860707",
+            "display": "24 HR galantamine hydrobromide 24 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "860715",
+            "display": "24 HR galantamine hydrobromide 8 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "860901",
+            "display": "galantamine hydrobromide 4 MG/ML Oral Solution"
+          },
+          {
+            "code": "996561",
+            "display": "Memantine hydrochloride 10 MG Oral Tablet"
+          },
+          {
+            "code": "996571",
+            "display": "Memantine hydrochloride 5 MG Oral Tablet"
+          },
+          {
+            "code": "996572",
+            "display": "{21 (Memantine hydrochloride 10 MG Oral Tablet) / 28 (Memantine hydrochloride 5 MG Oral Tablet) } Pack"
+          },
+          {
+            "code": "996594",
+            "display": "24 HR Memantine hydrochloride 14 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "996603",
+            "display": "24 HR Memantine hydrochloride 21 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "996609",
+            "display": "24 HR Memantine hydrochloride 28 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "996615",
+            "display": "24 HR Memantine hydrochloride 7 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "996624",
+            "display": "{7 (24 HR Memantine hydrochloride 14 MG Extended Release Oral Capsule) / 7 (24 HR Memantine hydrochloride 21 MG Extended Release Oral Capsule) / 7 (24 HR Memantine hydrochloride 28 MG Extended Release Oral Capsule) / 7 (24 HR Memantine hydrochloride 7 MG Extended Release Oral Capsule) } Pack"
+          },
+          {
+            "code": "996740",
+            "display": "Memantine hydrochloride 2 MG/ML Oral Solution"
+          },
+          {
+            "code": "997220",
+            "display": "Donepezil hydrochloride 10 MG Disintegrating Oral Tablet"
+          },
+          {
+            "code": "997223",
+            "display": "Donepezil hydrochloride 10 MG Oral Tablet"
+          },
+          {
+            "code": "997226",
+            "display": "Donepezil hydrochloride 5 MG Disintegrating Oral Tablet"
+          },
+          {
+            "code": "997229",
+            "display": "Donepezil hydrochloride 5 MG Oral Tablet"
+          }
+        ]
+      }
+    ]
+  }
+}

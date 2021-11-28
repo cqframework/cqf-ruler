@@ -1,0 +1,868 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.113.12.1075",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.113.12.1075",
+  "title": "Frailty Symptom",
+  "status": "active",
+  "publisher": "National Committee for Quality Assurance",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "102492002",
+            "display": "Failure to maintain weight (finding)"
+          },
+          {
+            "code": "102568007",
+            "display": "Paresis of lower extremity (finding)"
+          },
+          {
+            "code": "102891000",
+            "display": "Age-related cognitive decline (finding)"
+          },
+          {
+            "code": "102992006",
+            "display": "Scissors gait on eyes closed straight line walking test (finding)"
+          },
+          {
+            "code": "105501005",
+            "display": "Dependence on enabling machine or device (finding)"
+          },
+          {
+            "code": "105503008",
+            "display": "Dependence on wheelchair (finding)"
+          },
+          {
+            "code": "105504002",
+            "display": "Dependence on walking stick (finding)"
+          },
+          {
+            "code": "11172006",
+            "display": "Double step gait (finding)"
+          },
+          {
+            "code": "11237000",
+            "display": "4 point gait (finding)"
+          },
+          {
+            "code": "126013009",
+            "display": "Subjective muscle weakness (finding)"
+          },
+          {
+            "code": "127378008",
+            "display": "Bilateral paresis (finding)"
+          },
+          {
+            "code": "129567005",
+            "display": "Pharyngeal paresis (finding)"
+          },
+          {
+            "code": "129568000",
+            "display": "Laryngeal paresis (finding)"
+          },
+          {
+            "code": "129584004",
+            "display": "Palatal paresis (finding)"
+          },
+          {
+            "code": "135834002",
+            "display": "Pseudoparalysis (finding)"
+          },
+          {
+            "code": "13791008",
+            "display": "Asthenia (finding)"
+          },
+          {
+            "code": "152921000119101",
+            "display": "Dependence on respiratory device (finding)"
+          },
+          {
+            "code": "15929301000119104",
+            "display": "Problem related to living in residential institution (finding)"
+          },
+          {
+            "code": "160681005",
+            "display": "Mobile outside with aid (finding)"
+          },
+          {
+            "code": "160683008",
+            "display": "Needs walking aid in home (finding)"
+          },
+          {
+            "code": "160684002",
+            "display": "Confined to chair (finding)"
+          },
+          {
+            "code": "160685001",
+            "display": "Bed-ridden (finding)"
+          },
+          {
+            "code": "160692006",
+            "display": "Mobility very poor (finding)"
+          },
+          {
+            "code": "160693001",
+            "display": "Mobility poor (finding)"
+          },
+          {
+            "code": "160734000",
+            "display": "Lives in a nursing home (finding)"
+          },
+          {
+            "code": "160737007",
+            "display": "Lives in an old peoples home (finding)"
+          },
+          {
+            "code": "161832001",
+            "display": "Weight decreasing (finding)"
+          },
+          {
+            "code": "161873000",
+            "display": "Heavy legs (finding)"
+          },
+          {
+            "code": "161874006",
+            "display": "Heavy feeling (finding)"
+          },
+          {
+            "code": "162236007",
+            "display": "Weakness present (finding)"
+          },
+          {
+            "code": "162239000",
+            "display": "Abdominal weakness (finding)"
+          },
+          {
+            "code": "163600007",
+            "display": "On examination - paresis (weakness) (finding)"
+          },
+          {
+            "code": "163685000",
+            "display": "On examination - gait spastic (finding)"
+          },
+          {
+            "code": "163686004",
+            "display": "On examination - gait ataxic (finding)"
+          },
+          {
+            "code": "163688003",
+            "display": "On examination - waddling gait (finding)"
+          },
+          {
+            "code": "163689006",
+            "display": "On examination - steppage gait (finding)"
+          },
+          {
+            "code": "163690002",
+            "display": "On examination - hysterical gait (finding)"
+          },
+          {
+            "code": "163691003",
+            "display": "On examination - limping gait (finding)"
+          },
+          {
+            "code": "163695007",
+            "display": "On examination - muscle power reduced (finding)"
+          },
+          {
+            "code": "16419651000119103",
+            "display": "Dependence on biphasic positive airway pressure ventilation co-occurrent and due to central sleep apnea syndrome (finding)"
+          },
+          {
+            "code": "165243005",
+            "display": "Independent in wheelchair (finding)"
+          },
+          {
+            "code": "165244004",
+            "display": "Minimal help in wheelchair (finding)"
+          },
+          {
+            "code": "16973004",
+            "display": "Limping (finding)"
+          },
+          {
+            "code": "18726006",
+            "display": "Senile asthenia (finding)"
+          },
+          {
+            "code": "20940004",
+            "display": "Spinal hemiparesis (finding)"
+          },
+          {
+            "code": "22090007",
+            "display": "Scissoring gait (finding)"
+          },
+          {
+            "code": "22325002",
+            "display": "Abnormal gait (finding)"
+          },
+          {
+            "code": "224960004",
+            "display": "Tired (finding)"
+          },
+          {
+            "code": "225612007",
+            "display": "Wheelchair bound (finding)"
+          },
+          {
+            "code": "22631008",
+            "display": "Unsteady when walking (finding)"
+          },
+          {
+            "code": "23042008",
+            "display": "Spinal paraparesis (finding)"
+          },
+          {
+            "code": "238108007",
+            "display": "Cachexia (finding)"
+          },
+          {
+            "code": "248269005",
+            "display": "Tired on least exertion (finding)"
+          },
+          {
+            "code": "248278004",
+            "display": "Attacks of weakness (finding)"
+          },
+          {
+            "code": "248279007",
+            "display": "Frailty (finding)"
+          },
+          {
+            "code": "249888000",
+            "display": "Weakness of sternomastoid (finding)"
+          },
+          {
+            "code": "249937002",
+            "display": "Truncal muscle weakness (finding)"
+          },
+          {
+            "code": "249938007",
+            "display": "Weakness of back (finding)"
+          },
+          {
+            "code": "249939004",
+            "display": "Proximal muscle weakness (finding)"
+          },
+          {
+            "code": "249940002",
+            "display": "Shoulder girdle weakness (finding)"
+          },
+          {
+            "code": "249941003",
+            "display": "Pelvic girdle weakness (finding)"
+          },
+          {
+            "code": "249942005",
+            "display": "Distal muscle weakness (finding)"
+          },
+          {
+            "code": "249943000",
+            "display": "Weakness of distal arms and legs (finding)"
+          },
+          {
+            "code": "249946008",
+            "display": "Pyramidal type muscle weakness (finding)"
+          },
+          {
+            "code": "250002000",
+            "display": "Rapid fatigue of gait (finding)"
+          },
+          {
+            "code": "250003005",
+            "display": "Low level sensorimotor gait disorder (finding)"
+          },
+          {
+            "code": "250004004",
+            "display": "Peripheral skeletomuscular gait disorder (finding)"
+          },
+          {
+            "code": "250005003",
+            "display": "Interrupted gait (finding)"
+          },
+          {
+            "code": "250006002",
+            "display": "Overcomes interrupted gait spontaneously (finding)"
+          },
+          {
+            "code": "250008001",
+            "display": "Amputee gait (finding)"
+          },
+          {
+            "code": "250009009",
+            "display": "Prosthetic limb gait (finding)"
+          },
+          {
+            "code": "250011000",
+            "display": "3 point swing through gait (finding)"
+          },
+          {
+            "code": "250012007",
+            "display": "3 point swing to gait (finding)"
+          },
+          {
+            "code": "250013002",
+            "display": "Stiff legged gait (finding)"
+          },
+          {
+            "code": "250014008",
+            "display": "Stiff knee gait (finding)"
+          },
+          {
+            "code": "250015009",
+            "display": "Arthritic gait (finding)"
+          },
+          {
+            "code": "250016005",
+            "display": "Crouch gait (finding)"
+          },
+          {
+            "code": "250018006",
+            "display": "Toe-walking gait (finding)"
+          },
+          {
+            "code": "250019003",
+            "display": "In-toeing gait (finding)"
+          },
+          {
+            "code": "250020009",
+            "display": "Myopathic gait (finding)"
+          },
+          {
+            "code": "250021008",
+            "display": "Bouncy gait (finding)"
+          },
+          {
+            "code": "250023006",
+            "display": "Lurching gait (finding)"
+          },
+          {
+            "code": "250024000",
+            "display": "Peripheral neuropathic gait (finding)"
+          },
+          {
+            "code": "250027007",
+            "display": "Peripheral sensory gait disorder (finding)"
+          },
+          {
+            "code": "250028002",
+            "display": "Spinning gait (finding)"
+          },
+          {
+            "code": "250029005",
+            "display": "Sensory ataxic gait (finding)"
+          },
+          {
+            "code": "250032008",
+            "display": "Vestibular ataxic gait (finding)"
+          },
+          {
+            "code": "250033003",
+            "display": "Visual ataxic gait (finding)"
+          },
+          {
+            "code": "250034009",
+            "display": "Middle level sensorimotor gait disorder (finding)"
+          },
+          {
+            "code": "250035005",
+            "display": "Paraplegic gait (finding)"
+          },
+          {
+            "code": "250036006",
+            "display": "Extrapyramidal gait (finding)"
+          },
+          {
+            "code": "250038007",
+            "display": "Retropulsion when walking (finding)"
+          },
+          {
+            "code": "250040002",
+            "display": "Choreic gait (finding)"
+          },
+          {
+            "code": "250042005",
+            "display": "Dystonic gait (finding)"
+          },
+          {
+            "code": "250043000",
+            "display": "High level sensorimotor gait disorder (finding)"
+          },
+          {
+            "code": "250044006",
+            "display": "Cautious gait (finding)"
+          },
+          {
+            "code": "250045007",
+            "display": "Tottering gait (finding)"
+          },
+          {
+            "code": "250047004",
+            "display": "Thalamic astasia (finding)"
+          },
+          {
+            "code": "250048009",
+            "display": "Frontal ataxia (finding)"
+          },
+          {
+            "code": "250049001",
+            "display": "Marche a petits pas (finding)"
+          },
+          {
+            "code": "250050001",
+            "display": "Magnetic gait (finding)"
+          },
+          {
+            "code": "250051002",
+            "display": "Slipping clutch gait (finding)"
+          },
+          {
+            "code": "250052009",
+            "display": "Petren's gait (finding)"
+          },
+          {
+            "code": "250055006",
+            "display": "Incongruous gait (finding)"
+          },
+          {
+            "code": "250056007",
+            "display": "Bizarre gait (finding)"
+          },
+          {
+            "code": "250057003",
+            "display": "Pretended abnormality of gait (finding)"
+          },
+          {
+            "code": "250991000119100",
+            "display": "Stumbling gait (finding)"
+          },
+          {
+            "code": "25136009",
+            "display": "Ataxic gait (finding)"
+          },
+          {
+            "code": "262285001",
+            "display": "Weight decreased (finding)"
+          },
+          {
+            "code": "26544005",
+            "display": "Muscle weakness (finding)"
+          },
+          {
+            "code": "267024001",
+            "display": "Abnormal weight loss (finding)"
+          },
+          {
+            "code": "267031002",
+            "display": "Tiredness symptom (finding)"
+          },
+          {
+            "code": "267032009",
+            "display": "Tired all the time (finding)"
+          },
+          {
+            "code": "268964003",
+            "display": "On examination - festination-Parkinson gait (finding)"
+          },
+          {
+            "code": "271706000",
+            "display": "Waddling gait (finding)"
+          },
+          {
+            "code": "271707009",
+            "display": "Hysterical gait (finding)"
+          },
+          {
+            "code": "271795006",
+            "display": "Malaise and fatigue (finding)"
+          },
+          {
+            "code": "271875007",
+            "display": "Senile debility (finding)"
+          },
+          {
+            "code": "272036004",
+            "display": "Complaining of debility and malaise (finding)"
+          },
+          {
+            "code": "272060000",
+            "display": "Fatigue - symptom (finding)"
+          },
+          {
+            "code": "272062008",
+            "display": "Complaining of \"tired all the time\" (finding)"
+          },
+          {
+            "code": "27253007",
+            "display": "Foot-drop gait (finding)"
+          },
+          {
+            "code": "275313006",
+            "display": "Dragging leg (finding)"
+          },
+          {
+            "code": "284529003",
+            "display": "Cardiac cachexia (finding)"
+          },
+          {
+            "code": "298283006",
+            "display": "Hand muscle weakness (finding)"
+          },
+          {
+            "code": "300948004",
+            "display": "Quadriceps weakness (finding)"
+          },
+          {
+            "code": "30767006",
+            "display": "Gait apraxia (finding)"
+          },
+          {
+            "code": "309249007",
+            "display": "Calf muscle weakness (finding)"
+          },
+          {
+            "code": "309257005",
+            "display": "Excessive weight loss (finding)"
+          },
+          {
+            "code": "312444006",
+            "display": "Spastic paraparesis (finding)"
+          },
+          {
+            "code": "314109004",
+            "display": "Feeling tired (finding)"
+          },
+          {
+            "code": "31464009",
+            "display": "Calcaneal gait (finding)"
+          },
+          {
+            "code": "35136003",
+            "display": "Retropulsion (finding)"
+          },
+          {
+            "code": "365884000",
+            "display": "Cerebellar ataxic gait (finding)"
+          },
+          {
+            "code": "367391008",
+            "display": "Malaise (finding)"
+          },
+          {
+            "code": "371028005",
+            "display": "Spastic paresis (finding)"
+          },
+          {
+            "code": "373931001",
+            "display": "Sensation of heaviness in limbs (finding)"
+          },
+          {
+            "code": "394616008",
+            "display": "Unsteady gait (finding)"
+          },
+          {
+            "code": "397776000",
+            "display": "Festinating gait (finding)"
+          },
+          {
+            "code": "398218008",
+            "display": "Accelerating gait (finding)"
+          },
+          {
+            "code": "401211005",
+            "display": "Tandem gait test - abnormal (finding)"
+          },
+          {
+            "code": "40192003",
+            "display": "Buttocks prominent when walking (finding)"
+          },
+          {
+            "code": "404904002",
+            "display": "Frail elderly (finding)"
+          },
+          {
+            "code": "413121008",
+            "display": "Dependent on helper pushing wheelchair (finding)"
+          },
+          {
+            "code": "414562003",
+            "display": "Knuckling over (finding)"
+          },
+          {
+            "code": "41786007",
+            "display": "Neurological muscle weakness (finding)"
+          },
+          {
+            "code": "418073009",
+            "display": "Pseudoparalysis due to generalized arthritis (finding)"
+          },
+          {
+            "code": "422868009",
+            "display": "Unexplained weight loss (finding)"
+          },
+          {
+            "code": "424429009",
+            "display": "Gait dyspraxia (finding)"
+          },
+          {
+            "code": "426977000",
+            "display": "Recent weight loss (finding)"
+          },
+          {
+            "code": "428116008",
+            "display": "Multifactorial gait problem (finding)"
+          },
+          {
+            "code": "428264009",
+            "display": "Painful gait (finding)"
+          },
+          {
+            "code": "429091008",
+            "display": "Dependence on biphasic positive airway pressure ventilation (finding)"
+          },
+          {
+            "code": "429487005",
+            "display": "Dependence on continuous positive airway pressure ventilation (finding)"
+          },
+          {
+            "code": "43005009",
+            "display": "Shuffling gait (finding)"
+          },
+          {
+            "code": "431524008",
+            "display": "Abnormal gait due to impairment of balance (finding)"
+          },
+          {
+            "code": "432559006",
+            "display": "Abnormal gait due to muscle weakness (finding)"
+          },
+          {
+            "code": "442099003",
+            "display": "Psychogenic fatigue (finding)"
+          },
+          {
+            "code": "44227003",
+            "display": "Intermittent double-step gait (finding)"
+          },
+          {
+            "code": "443544006",
+            "display": "Freezing of gait (finding)"
+          },
+          {
+            "code": "444042007",
+            "display": "Excessive postexertional fatigue (finding)"
+          },
+          {
+            "code": "444932008",
+            "display": "Dependence on ventilator (finding)"
+          },
+          {
+            "code": "4468000",
+            "display": "Oppenheim's gait (finding)"
+          },
+          {
+            "code": "448765001",
+            "display": "Unintentional weight loss (finding)"
+          },
+          {
+            "code": "48304002",
+            "display": "Gluteus maximus gait (finding)"
+          },
+          {
+            "code": "50314001",
+            "display": "Partial bilateral paresis (finding)"
+          },
+          {
+            "code": "52751000",
+            "display": "Hemiplegic gait (finding)"
+          },
+          {
+            "code": "53626000",
+            "display": "Drag-to gait (finding)"
+          },
+          {
+            "code": "55791005",
+            "display": "Charcot's gait (finding)"
+          },
+          {
+            "code": "60631000119109",
+            "display": "Dependence on home ventilator (finding)"
+          },
+          {
+            "code": "60651000119103",
+            "display": "Dependence on continuous supplemental oxygen (finding)"
+          },
+          {
+            "code": "62334008",
+            "display": "Athetotic gait (finding)"
+          },
+          {
+            "code": "67141003",
+            "display": "Antalgic gait (finding)"
+          },
+          {
+            "code": "69021004",
+            "display": "Cerebellar gait (finding)"
+          },
+          {
+            "code": "69161000119103",
+            "display": "Functional gait abnormality (finding)"
+          },
+          {
+            "code": "713512009",
+            "display": "Muscle weakness of upper limb (finding)"
+          },
+          {
+            "code": "713514005",
+            "display": "Muscle weakness of limb (finding)"
+          },
+          {
+            "code": "713568000",
+            "display": "Occasionally tired (finding)"
+          },
+          {
+            "code": "713655003",
+            "display": "Dependence on non-invasive ventilation (finding)"
+          },
+          {
+            "code": "73514000",
+            "display": "Circling gait (finding)"
+          },
+          {
+            "code": "75742003",
+            "display": "Swing-through gait (finding)"
+          },
+          {
+            "code": "78119002",
+            "display": "Complete bilateral paresis (finding)"
+          },
+          {
+            "code": "78691002",
+            "display": "Staggering gait (finding)"
+          },
+          {
+            "code": "79021000119104",
+            "display": "Dependence on aspirator (finding)"
+          },
+          {
+            "code": "79031000119101",
+            "display": "Dependence on respirator (finding)"
+          },
+          {
+            "code": "84153003",
+            "display": "Short-leg limp (finding)"
+          },
+          {
+            "code": "84229001",
+            "display": "Fatigue (finding)"
+          },
+          {
+            "code": "8461001",
+            "display": "Heel toe gait (finding)"
+          },
+          {
+            "code": "8510008",
+            "display": "Reduced mobility (finding)"
+          },
+          {
+            "code": "85711000119103",
+            "display": "Stumbling due to lack of coordination (finding)"
+          },
+          {
+            "code": "87242005",
+            "display": "Extensor thrust pattern (finding)"
+          },
+          {
+            "code": "88471006",
+            "display": "Three-point gait (finding)"
+          },
+          {
+            "code": "89201000119106",
+            "display": "Dependence on supplemental oxygen when ambulating (finding)"
+          },
+          {
+            "code": "89362005",
+            "display": "Weight loss (finding)"
+          },
+          {
+            "code": "931000119107",
+            "display": "Dependence on supplemental oxygen (finding)"
+          },
+          {
+            "code": "9447003",
+            "display": "Spastic gait (finding)"
+          },
+          {
+            "code": "95438009",
+            "display": "Diaphragmatic paresis (finding)"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "R26.0",
+            "display": "Ataxic gait"
+          },
+          {
+            "code": "R26.1",
+            "display": "Paralytic gait"
+          },
+          {
+            "code": "R26.2",
+            "display": "Difficulty in walking, not elsewhere classified"
+          },
+          {
+            "code": "R26.89",
+            "display": "Other abnormalities of gait and mobility"
+          },
+          {
+            "code": "R26.9",
+            "display": "Unspecified abnormalities of gait and mobility"
+          },
+          {
+            "code": "R41.81",
+            "display": "Age-related cognitive decline"
+          },
+          {
+            "code": "R53.1",
+            "display": "Weakness"
+          },
+          {
+            "code": "R53.81",
+            "display": "Other malaise"
+          },
+          {
+            "code": "R53.83",
+            "display": "Other fatigue"
+          },
+          {
+            "code": "R54",
+            "display": "Age-related physical debility"
+          },
+          {
+            "code": "R62.7",
+            "display": "Adult failure to thrive"
+          },
+          {
+            "code": "R63.4",
+            "display": "Abnormal weight loss"
+          },
+          {
+            "code": "R63.6",
+            "display": "Underweight"
+          },
+          {
+            "code": "R64",
+            "display": "Cachexia"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.108.12.1039",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1039",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.464.1003.108.12.1039"
+    }
+  ],
+  "version": "20171219",
+  "name": "FITDNA",
+  "title": "FIT DNA",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://loinc.org",
+        "version": "2.64",
+        "concept": [
+          {
+            "code": "77353-1",
+            "display": "Noninvasive colorectal cancer DNA and occult blood screening [Interpretation] in Stool Narrative"
+          },
+          {
+            "code": "77354-9",
+            "display": "Noninvasive colorectal cancer DNA and occult blood screening [Presence] in Stool"
+          }
+        ]
+      }
+    ]
+  }
+}

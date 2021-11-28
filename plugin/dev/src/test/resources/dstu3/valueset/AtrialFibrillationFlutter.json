@@ -1,0 +1,142 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.202",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.202",
+  "title": "Atrial FibrillationFlutter",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "120041000119109",
+            "display": "Atrial fibrillation with rapid ventricular response (disorder)"
+          },
+          {
+            "code": "15964901000119107",
+            "display": "Atypical atrial flutter (disorder)"
+          },
+          {
+            "code": "195080001",
+            "display": "Atrial fibrillation and flutter (disorder)"
+          },
+          {
+            "code": "233910005",
+            "display": "Lone atrial fibrillation (disorder)"
+          },
+          {
+            "code": "233911009",
+            "display": "Non-rheumatic atrial fibrillation (disorder)"
+          },
+          {
+            "code": "282825002",
+            "display": "Paroxysmal atrial fibrillation (disorder)"
+          },
+          {
+            "code": "300996004",
+            "display": "Controlled atrial fibrillation (disorder)"
+          },
+          {
+            "code": "314208002",
+            "display": "Rapid atrial fibrillation (disorder)"
+          },
+          {
+            "code": "425615007",
+            "display": "Chronic atrial flutter (disorder)"
+          },
+          {
+            "code": "426749004",
+            "display": "Chronic atrial fibrillation (disorder)"
+          },
+          {
+            "code": "426814001",
+            "display": "Transient cerebral ischemia due to atrial fibrillation (disorder)"
+          },
+          {
+            "code": "427665004",
+            "display": "Paroxysmal atrial flutter (disorder)"
+          },
+          {
+            "code": "440028005",
+            "display": "Permanent atrial fibrillation (disorder)"
+          },
+          {
+            "code": "440059007",
+            "display": "Persistent atrial fibrillation (disorder)"
+          },
+          {
+            "code": "49436004",
+            "display": "Atrial fibrillation (disorder)"
+          },
+          {
+            "code": "5370000",
+            "display": "Atrial flutter (disorder)"
+          },
+          {
+            "code": "706923002",
+            "display": "Longstanding persistent atrial fibrillation (disorder)"
+          },
+          {
+            "code": "715395008",
+            "display": "Familial atrial fibrillation (disorder)"
+          },
+          {
+            "code": "720448006",
+            "display": "Typical atrial flutter (disorder)"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-9-cm",
+        "version": "2013",
+        "concept": [
+          {
+            "code": "427.31",
+            "display": "Atrial fibrillation"
+          },
+          {
+            "code": "427.32",
+            "display": "Atrial flutter"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "I48.0",
+            "display": "Paroxysmal atrial fibrillation"
+          },
+          {
+            "code": "I48.1",
+            "display": "Persistent atrial fibrillation"
+          },
+          {
+            "code": "I48.2",
+            "display": "Chronic atrial fibrillation"
+          },
+          {
+            "code": "I48.3",
+            "display": "Typical atrial flutter"
+          },
+          {
+            "code": "I48.4",
+            "display": "Atypical atrial flutter"
+          },
+          {
+            "code": "I48.91",
+            "display": "Unspecified atrial fibrillation"
+          },
+          {
+            "code": "I48.92",
+            "display": "Unspecified atrial flutter"
+          }
+        ]
+      }
+    ]
+  }
+}

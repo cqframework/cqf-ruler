@@ -1,0 +1,232 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.109.12.1011",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.109.12.1011",
+  "title": "Vascular Access for Dialysis",
+  "status": "active",
+  "publisher": "National Committee for Quality Assurance",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "180272001",
+            "display": "Insertion of chronic ambulatory peritoneal dialysis catheter (procedure)"
+          },
+          {
+            "code": "180277007",
+            "display": "Insertion of temporary peritoneal dialysis catheter (procedure)"
+          },
+          {
+            "code": "225892009",
+            "display": "Revision of arteriovenous shunt for renal dialysis (procedure)"
+          },
+          {
+            "code": "22800003",
+            "display": "Removal of thrombus from arteriovenous shunt or cannula (procedure)"
+          },
+          {
+            "code": "233468004",
+            "display": "Creation of Cimino fistula (procedure)"
+          },
+          {
+            "code": "233471007",
+            "display": "Creation of external arteriovenous shunt (procedure)"
+          },
+          {
+            "code": "233472000",
+            "display": "Creation of Scribner shunt (procedure)"
+          },
+          {
+            "code": "233547003",
+            "display": "Cannulation of arteriovenous dialysis fistula (procedure)"
+          },
+          {
+            "code": "238314006",
+            "display": "Renewal of chronic ambulatory peritoneal dialysis catheter (procedure)"
+          },
+          {
+            "code": "238315007",
+            "display": "Adjustment of chronic ambulatory peritoneal dialysis catheter (procedure)"
+          },
+          {
+            "code": "271418008",
+            "display": "Chronic ambulatory peritoneal dialysis catheter procedure (procedure)"
+          },
+          {
+            "code": "34163007",
+            "display": "Revision of arteriovenous fistula with thrombectomy with nonautogenous graft (procedure)"
+          },
+          {
+            "code": "426340003",
+            "display": "Creation of graft fistula for dialysis (procedure)"
+          },
+          {
+            "code": "427992007",
+            "display": "Removal of thrombus of arteriovenous fistula (procedure)"
+          },
+          {
+            "code": "428118009",
+            "display": "Procedure involving peritoneal dialysis catheter (procedure)"
+          },
+          {
+            "code": "431418000",
+            "display": "Fluoroscopic percutaneous angiography of dialysis fistula with insertion of drug eluting stent (procedure)"
+          },
+          {
+            "code": "431440009",
+            "display": "Fluoroscopic angiography of dialysis fistula using contrast with insertion of stent (procedure)"
+          },
+          {
+            "code": "431781000",
+            "display": "Insertion of tunneled dialysis catheter using fluoroscopic guidance (procedure)"
+          },
+          {
+            "code": "432509002",
+            "display": "Insertion of dialysis catheter using doppler ultrasound guidance (procedure)"
+          },
+          {
+            "code": "432654009",
+            "display": "Insertion of peritoneal dialysis catheter using fluoroscopy guidance (procedure)"
+          },
+          {
+            "code": "434435000",
+            "display": "Fluoroscopic angiography of dialysis fistula using contrast with insertion of stent graft (procedure)"
+          },
+          {
+            "code": "438341004",
+            "display": "Laparoscopic insertion of peritoneal dialysis catheter (procedure)"
+          },
+          {
+            "code": "438342006",
+            "display": "Replacement of peritoneal dialysis catheter (procedure)"
+          },
+          {
+            "code": "439241008",
+            "display": "Open arteriovenous anastomosis by transposition of forearm vein (procedure)"
+          },
+          {
+            "code": "439322008",
+            "display": "Open arteriovenous anastomosis by transposition of basilic vein of upper arm (procedure)"
+          },
+          {
+            "code": "439349008",
+            "display": "Open arteriovenous anastomosis by transposition of cephalic vein of upper arm (procedure)"
+          },
+          {
+            "code": "439534001",
+            "display": "Shaving of peritoneal dialysis catheter cuff (procedure)"
+          },
+          {
+            "code": "443683004",
+            "display": "Open revision of arteriovenous fistula using graft with removal of thrombus (procedure)"
+          },
+          {
+            "code": "448591002",
+            "display": "Repositioning of Tenckhoff catheter (procedure)"
+          },
+          {
+            "code": "449400003",
+            "display": "Removal of blood clot from arteriovenous fistula (procedure)"
+          },
+          {
+            "code": "450865002",
+            "display": "Insertion of nontunneled hemodialysis catheter (procedure)"
+          },
+          {
+            "code": "54817007",
+            "display": "Arteriovenous shunt for renal dialysis by external cannula (procedure)"
+          },
+          {
+            "code": "61160002",
+            "display": "Direct arteriovenous anastomosis (procedure)"
+          },
+          {
+            "code": "61740001",
+            "display": "Insertion of cannula for hemodialysis, vein to vein (procedure)"
+          },
+          {
+            "code": "63421002",
+            "display": "Insertion of cannula for hemodialysis (procedure)"
+          },
+          {
+            "code": "676002",
+            "display": "Peritoneal dialysis including cannulation (procedure)"
+          },
+          {
+            "code": "69380006",
+            "display": "Venous catheterization for renal dialysis (procedure)"
+          },
+          {
+            "code": "736919006",
+            "display": "Insertion of hemodialysis catheter (procedure)"
+          },
+          {
+            "code": "736922008",
+            "display": "Insertion of tunneled hemodialysis catheter (procedure)"
+          },
+          {
+            "code": "7459007",
+            "display": "Revision of arteriovenous fistula with thrombectomy with autogenous graft (procedure)"
+          },
+          {
+            "code": "79827002",
+            "display": "Arteriovenous anastomosis for renal dialysis (procedure)"
+          },
+          {
+            "code": "80634002",
+            "display": "Revision of vessel-to-vessel arteriovenous cannula (procedure)"
+          }
+        ]
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "2019",
+        "concept": [
+          {
+            "code": "36800",
+            "display": "Insertion of cannula for hemodialysis, other purpose (separate procedure); vein to vein"
+          },
+          {
+            "code": "36810",
+            "display": "Insertion of cannula for hemodialysis, other purpose (separate procedure); arteriovenous, external (Scribner type)"
+          },
+          {
+            "code": "36815",
+            "display": "Insertion of cannula for hemodialysis, other purpose (separate procedure); arteriovenous, external revision, or closure"
+          },
+          {
+            "code": "36818",
+            "display": "Arteriovenous anastomosis, open; by upper arm cephalic vein transposition"
+          },
+          {
+            "code": "36819",
+            "display": "Arteriovenous anastomosis, open; by upper arm basilic vein transposition"
+          },
+          {
+            "code": "36820",
+            "display": "Arteriovenous anastomosis, open; by forearm vein transposition"
+          },
+          {
+            "code": "36821",
+            "display": "Arteriovenous anastomosis, open; direct, any site (eg, Cimino type) (separate procedure)"
+          },
+          {
+            "code": "36831",
+            "display": "Thrombectomy, open, arteriovenous fistula without revision, autogenous or nonautogenous dialysis graft (separate procedure)"
+          },
+          {
+            "code": "36832",
+            "display": "Revision, open, arteriovenous fistula; without thrombectomy, autogenous or nonautogenous dialysis graft (separate procedure)"
+          },
+          {
+            "code": "36833",
+            "display": "Revision, open, arteriovenous fistula; with thrombectomy, autogenous or nonautogenous dialysis graft (separate procedure)"
+          }
+        ]
+      }
+    ]
+  }
+}

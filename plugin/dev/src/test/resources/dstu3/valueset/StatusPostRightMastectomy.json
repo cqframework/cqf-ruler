@@ -1,0 +1,44 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.198.12.1070",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1070",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.464.1003.198.12.1070"
+    }
+  ],
+  "version": "20171216",
+  "name": "StatusPostRightMastectomy",
+  "title": "Status Post Right Mastectomy",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "version": "2019",
+        "concept": [
+          {
+            "code": "Z90.11",
+            "display": "Acquired absence of right breast and nipple"
+          }
+        ]
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2018-03",
+        "concept": [
+          {
+            "code": "137681000119108",
+            "display": "History of prophylactic mastectomy of right breast (situation)"
+          },
+          {
+            "code": "429242008",
+            "display": "History of right mastectomy (situation)"
+          }
+        ]
+      }
+    ]
+  }
+}

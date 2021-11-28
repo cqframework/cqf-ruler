@@ -1,0 +1,42 @@
+{
+    "resourceType": "ValueSet",
+    "id": "1.3.6.1.4.1.33895.1.3.0.45",
+    "url": "http://cts.nlm.nih.gov/fhir/ValueSet/1.3.6.1.4.1.33895.1.3.0.45",
+    "identifier": [
+      {
+        "system": "urn:ietf:rfc:3986",
+        "value": "1.3.6.1.4.1.33895.1.3.0.45"
+      }
+    ],
+    "version": "20160331",
+    "name": "ComfortMeasures",
+    "title": "Comfort Measures",
+    "status": "active",
+    "publisher": "TJC EH Steward",
+    "compose": {
+      "include": [
+        {
+          "system": "http://snomed.info/sct",
+          "version": "2018-03",
+          "concept": [
+            {
+              "code": "133918004",
+              "display": "Comfort measures (regime/therapy)"
+            },
+            {
+              "code": "182964004",
+              "display": "Terminal care (regime/therapy)"
+            },
+            {
+              "code": "385736008",
+              "display": "Dying care (regime/therapy)"
+            },
+            {
+              "code": "385763009",
+              "display": "Hospice care (regime/therapy)"
+            }
+          ]
+        }
+      ]
+    }
+  }

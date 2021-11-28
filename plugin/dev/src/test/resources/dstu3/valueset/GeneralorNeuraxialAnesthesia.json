@@ -1,0 +1,224 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.666.5.1743",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.1743",
+  "title": "General or Neuraxial Anesthesia",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "112943005",
+            "display": "Epidural injection of anesthetic substance, diagnostic, caudal, continuous (procedure)"
+          },
+          {
+            "code": "112987001",
+            "display": "Inhalation anesthesia, machine system, closed, rebreathing of primary agent (procedure)"
+          },
+          {
+            "code": "180878007",
+            "display": "Inhalation anesthetic using muscle relaxant (procedure)"
+          },
+          {
+            "code": "180885006",
+            "display": "Local anesthetic lumbar epidural block (procedure)"
+          },
+          {
+            "code": "180886007",
+            "display": "Local anesthetic sacral epidural block (procedure)"
+          },
+          {
+            "code": "18946005",
+            "display": "Epidural anesthesia (procedure)"
+          },
+          {
+            "code": "231249005",
+            "display": "Local anesthetic intrathecal block (procedure)"
+          },
+          {
+            "code": "231251009",
+            "display": "Local anesthetic cervical intrathecal block (procedure)"
+          },
+          {
+            "code": "231252002",
+            "display": "Local anesthetic thoracic intrathecal block (procedure)"
+          },
+          {
+            "code": "231253007",
+            "display": "Local anesthetic lumbar intrathecal block (procedure)"
+          },
+          {
+            "code": "231255000",
+            "display": "Spinal subdural local anesthetic block (procedure)"
+          },
+          {
+            "code": "231256004",
+            "display": "Cervical subdural block (procedure)"
+          },
+          {
+            "code": "231257008",
+            "display": "Thoracic subdural block (procedure)"
+          },
+          {
+            "code": "231258003",
+            "display": "Lumbar subdural block (procedure)"
+          },
+          {
+            "code": "231261002",
+            "display": "Combined spinal/epidural local anesthetic block (procedure)"
+          },
+          {
+            "code": "231262009",
+            "display": "Combined spinal/epidural technique with needles at separate spaces (procedure)"
+          },
+          {
+            "code": "231263004",
+            "display": "Combined spinal/epidural technique - spinal needle through Tuohy needle (procedure)"
+          },
+          {
+            "code": "241696005",
+            "display": "Total intravenous anesthesia (procedure)"
+          },
+          {
+            "code": "241717009",
+            "display": "Inhalational analgesia (procedure)"
+          },
+          {
+            "code": "24277005",
+            "display": "Inhalation anesthesia, machine system, closed, circulation of primary agent (procedure)"
+          },
+          {
+            "code": "266802007",
+            "display": "Endotracheal anesthesia (procedure)"
+          },
+          {
+            "code": "27653002",
+            "display": "Inhalation anesthesia, machine system, semi-closed, rebreathing of primary agent (procedure)"
+          },
+          {
+            "code": "288185006",
+            "display": "Inhalation general anesthesia (procedure)"
+          },
+          {
+            "code": "30050007",
+            "display": "Inhalation anesthesia, machine system, semi-closed, no rebreathing of primary agent (procedure)"
+          },
+          {
+            "code": "302335002",
+            "display": "Local anesthetic thoracic epidural block (procedure)"
+          },
+          {
+            "code": "302336001",
+            "display": "Local anesthetic cervical epidural block (procedure)"
+          },
+          {
+            "code": "303356007",
+            "display": "Local anesthetic nerve block around spinal cord meninges (procedure)"
+          },
+          {
+            "code": "303358008",
+            "display": "Neurolytic nerve block around spinal cord meninges (procedure)"
+          },
+          {
+            "code": "35597003",
+            "display": "Epidural injection of anesthetic substance, diagnostic, lumbar, continuous (procedure)"
+          },
+          {
+            "code": "398044000",
+            "display": "Low dose epidural (procedure)"
+          },
+          {
+            "code": "405650006",
+            "display": "Neuraxial nerve block (procedure)"
+          },
+          {
+            "code": "426309005",
+            "display": "Epidural injection of anesthetic substance, therapeutic, continuous, cervical (procedure)"
+          },
+          {
+            "code": "427060008",
+            "display": "Epidural injection of anesthetic substance, therapeutic, thoracic, continuous (procedure)"
+          },
+          {
+            "code": "44812007",
+            "display": "Inhalation anesthesia, machine system, closed, no rebreathing of primary agent (procedure)"
+          },
+          {
+            "code": "448585004",
+            "display": "Target controlled total intravenous anesthesia (procedure)"
+          },
+          {
+            "code": "449126000",
+            "display": "Administration of inhalation anesthetic using endotracheal tube (procedure)"
+          },
+          {
+            "code": "50697003",
+            "display": "General anesthesia (procedure)"
+          },
+          {
+            "code": "58611004",
+            "display": "Epidural injection of anesthetic substance, therapeutic, lumbar, continuous (procedure)"
+          },
+          {
+            "code": "64287005",
+            "display": "Inhalation anesthesia, machine system, semi-closed, circulation of primary agent and gases (procedure)"
+          },
+          {
+            "code": "67716003",
+            "display": "Epidural injection of anesthetic substance, therapeutic, caudal, continuous (procedure)"
+          },
+          {
+            "code": "74527005",
+            "display": "Injection of anesthetic substance, therapeutic, subdural, differential (procedure)"
+          },
+          {
+            "code": "82776005",
+            "display": "Injection of anesthetic substance, therapeutic, subdural, continuous (procedure)"
+          }
+        ]
+      },
+      {
+        "system": "http://www.icd10data.com/icd10pcs",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "3E030FZ",
+            "display": "Introduction of Intracirculatory Anesthetic into Peripheral Vein, Open Approach"
+          },
+          {
+            "code": "3E033FZ",
+            "display": "Introduction of Intracirculatory Anesthetic into Peripheral Vein, Percutaneous Approach"
+          },
+          {
+            "code": "3E040FZ",
+            "display": "Introduction of Intracirculatory Anesthetic into Central Vein, Open Approach"
+          },
+          {
+            "code": "3E043FZ",
+            "display": "Introduction of Intracirculatory Anesthetic into Central Vein, Percutaneous Approach"
+          },
+          {
+            "code": "3E050FZ",
+            "display": "Introduction of Intracirculatory Anesthetic into Peripheral Artery, Open Approach"
+          },
+          {
+            "code": "3E053FZ",
+            "display": "Introduction of Intracirculatory Anesthetic into Peripheral Artery, Percutaneous Approach"
+          },
+          {
+            "code": "3E060FZ",
+            "display": "Introduction of Intracirculatory Anesthetic into Central Artery, Open Approach"
+          },
+          {
+            "code": "3E063FZ",
+            "display": "Introduction of Intracirculatory Anesthetic into Central Artery, Percutaneous Approach"
+          }
+        ]
+      }
+    ]
+  }
+}

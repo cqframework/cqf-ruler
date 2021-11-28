@@ -1,0 +1,2580 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.114222.4.11.837",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.837",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.114222.4.11.837"
+          }
+        ],
+        "version": "20121025",
+        "name": "Ethnicity",
+        "title": "Ethnicity",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.cdc.gov/phin/resources/vocabulary/index.html",
+              "version": "1.2",
+              "concept": [
+                {
+                  "code": "2135-2",
+                  "display": "Hispanic or Latino"
+                },
+                {
+                  "code": "2186-5",
+                  "display": "Not Hispanic or Latino"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.114222.4.11.837"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.114222.4.11.3591",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.3591",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.114222.4.11.3591"
+          }
+        ],
+        "version": "20180718",
+        "name": "Payer",
+        "title": "Payer",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.phdsc.org/standards/pdfs/SourceofPaymentTypologyVersion6FINALSeptember2015.pdf",
+              "version": "8.0",
+              "concept": [
+                {
+                  "code": "1",
+                  "display": "MEDICARE"
+                },
+                {
+                  "code": "11",
+                  "display": "Medicare (Managed Care)"
+                },
+                {
+                  "code": "111",
+                  "display": "Medicare HMO"
+                },
+                {
+                  "code": "112",
+                  "display": "Medicare PPO"
+                },
+                {
+                  "code": "113",
+                  "display": "Medicare POS"
+                },
+                {
+                  "code": "119",
+                  "display": "Medicare Managed Care Other"
+                },
+                {
+                  "code": "12",
+                  "display": "Medicare (Non-managed Care)"
+                },
+                {
+                  "code": "121",
+                  "display": "Medicare FFS"
+                },
+                {
+                  "code": "122",
+                  "display": "Medicare Drug Benefit"
+                },
+                {
+                  "code": "123",
+                  "display": "Medicare Medical Savings Account (MSA)"
+                },
+                {
+                  "code": "129",
+                  "display": "Medicare Non-managed Care Other"
+                },
+                {
+                  "code": "13",
+                  "display": "Medicare Hospice"
+                },
+                {
+                  "code": "14",
+                  "display": "Dual Eligibility Medicare/Medicaid Organization"
+                },
+                {
+                  "code": "19",
+                  "display": "Medicare Other"
+                },
+                {
+                  "code": "191",
+                  "display": "Medicare Pharmacy Benefit Manager"
+                },
+                {
+                  "code": "2",
+                  "display": "MEDICAID"
+                },
+                {
+                  "code": "21",
+                  "display": "Medicaid (Managed Care)"
+                },
+                {
+                  "code": "211",
+                  "display": "Medicaid HMO"
+                },
+                {
+                  "code": "212",
+                  "display": "Medicaid PPO"
+                },
+                {
+                  "code": "213",
+                  "display": "Medicaid PCCM (Primary Care Case Management)"
+                },
+                {
+                  "code": "219",
+                  "display": "Medicaid Managed Care Other"
+                },
+                {
+                  "code": "22",
+                  "display": "Medicaid (Non-managed Care Plan)"
+                },
+                {
+                  "code": "23",
+                  "display": "Medicaid/SCHIP"
+                },
+                {
+                  "code": "25",
+                  "display": "Medicaid - Out of State"
+                },
+                {
+                  "code": "26",
+                  "display": "Medicaid -- Long Term Care"
+                },
+                {
+                  "code": "29",
+                  "display": "Medicaid Other"
+                },
+                {
+                  "code": "291",
+                  "display": "Medicaid Pharmacy Benefit Manager"
+                },
+                {
+                  "code": "299",
+                  "display": "Medicaid - Dental"
+                },
+                {
+                  "code": "3",
+                  "display": "OTHER GOVERNMENT (Federal/State/Local) (excluding Department of Corrections)"
+                },
+                {
+                  "code": "31",
+                  "display": "Department of Defense"
+                },
+                {
+                  "code": "311",
+                  "display": "TRICARE (CHAMPUS)"
+                },
+                {
+                  "code": "3111",
+                  "display": "TRICARE Prime--HMO"
+                },
+                {
+                  "code": "3112",
+                  "display": "TRICARE Extra--PPO"
+                },
+                {
+                  "code": "3113",
+                  "display": "TRICARE Standard - Fee For Service"
+                },
+                {
+                  "code": "3114",
+                  "display": "TRICARE For Life--Medicare Supplement"
+                },
+                {
+                  "code": "3115",
+                  "display": "TRICARE Reserve Select"
+                },
+                {
+                  "code": "3116",
+                  "display": "Uniformed Services Family Health Plan (USFHP) -- HMO"
+                },
+                {
+                  "code": "3119",
+                  "display": "Department of Defense - (other)"
+                },
+                {
+                  "code": "312",
+                  "display": "Military Treatment Facility"
+                },
+                {
+                  "code": "3121",
+                  "display": "Enrolled Prime--HMO"
+                },
+                {
+                  "code": "3122",
+                  "display": "Non-enrolled Space Available"
+                },
+                {
+                  "code": "3123",
+                  "display": "TRICARE For Life (TFL)"
+                },
+                {
+                  "code": "313",
+                  "display": "Dental --Stand Alone"
+                },
+                {
+                  "code": "32",
+                  "display": "Department of Veterans Affairs"
+                },
+                {
+                  "code": "321",
+                  "display": "Veteran care--Care provided to Veterans"
+                },
+                {
+                  "code": "3211",
+                  "display": "Direct Care--Care provided in VA facilities"
+                },
+                {
+                  "code": "3212",
+                  "display": "Indirect Care--Care provided outside VA facilities"
+                },
+                {
+                  "code": "32121",
+                  "display": "Fee Basis"
+                },
+                {
+                  "code": "32122",
+                  "display": "Foreign Fee/Foreign Medical Program (FMP)"
+                },
+                {
+                  "code": "32123",
+                  "display": "Contract Nursing Home/Community Nursing Home"
+                },
+                {
+                  "code": "32124",
+                  "display": "State Veterans Home"
+                },
+                {
+                  "code": "32125",
+                  "display": "Sharing Agreements"
+                },
+                {
+                  "code": "32126",
+                  "display": "Other Federal Agency"
+                },
+                {
+                  "code": "32127",
+                  "display": "Dental Care"
+                },
+                {
+                  "code": "32128",
+                  "display": "Vision Care"
+                },
+                {
+                  "code": "322",
+                  "display": "Non-veteran care"
+                },
+                {
+                  "code": "3221",
+                  "display": "Civilian Health and Medical Program for the VA (CHAMPVA)"
+                },
+                {
+                  "code": "3222",
+                  "display": "Spina Bifida Health Care Program (SB)"
+                },
+                {
+                  "code": "3223",
+                  "display": "Children of Women Vietnam Veterans (CWVV)"
+                },
+                {
+                  "code": "3229",
+                  "display": "Other non-veteran care"
+                },
+                {
+                  "code": "33",
+                  "display": "Indian Health Service or Tribe"
+                },
+                {
+                  "code": "331",
+                  "display": "Indian Health Service -- Regular"
+                },
+                {
+                  "code": "332",
+                  "display": "Indian Health Service -- Contract"
+                },
+                {
+                  "code": "333",
+                  "display": "Indian Health Service - Managed Care"
+                },
+                {
+                  "code": "334",
+                  "display": "Indian Tribe - Sponsored Coverage"
+                },
+                {
+                  "code": "34",
+                  "display": "HRSA Program"
+                },
+                {
+                  "code": "341",
+                  "display": "Title V (MCH Block Grant)"
+                },
+                {
+                  "code": "342",
+                  "display": "Migrant Health Program"
+                },
+                {
+                  "code": "343",
+                  "display": "Ryan White Act"
+                },
+                {
+                  "code": "349",
+                  "display": "Other"
+                },
+                {
+                  "code": "35",
+                  "display": "Black Lung"
+                },
+                {
+                  "code": "36",
+                  "display": "State Government"
+                },
+                {
+                  "code": "361",
+                  "display": "State SCHIP program (codes for individual states)"
+                },
+                {
+                  "code": "362",
+                  "display": "Specific state programs (list/ local code)"
+                },
+                {
+                  "code": "369",
+                  "display": "State, not otherwise specified (other state)"
+                },
+                {
+                  "code": "37",
+                  "display": "Local Government"
+                },
+                {
+                  "code": "371",
+                  "display": "Local - Managed care"
+                },
+                {
+                  "code": "3711",
+                  "display": "HMO"
+                },
+                {
+                  "code": "3712",
+                  "display": "PPO"
+                },
+                {
+                  "code": "3713",
+                  "display": "POS"
+                },
+                {
+                  "code": "372",
+                  "display": "FFS/Indemnity"
+                },
+                {
+                  "code": "379",
+                  "display": "Local, not otherwise specified (other local, county)"
+                },
+                {
+                  "code": "38",
+                  "display": "Other Government (Federal, State, Local not specified)"
+                },
+                {
+                  "code": "381",
+                  "display": "Federal, State, Local not specified managed care"
+                },
+                {
+                  "code": "3811",
+                  "display": "Federal, State, Local not specified - HMO"
+                },
+                {
+                  "code": "3812",
+                  "display": "Federal, State, Local not specified - PPO"
+                },
+                {
+                  "code": "3813",
+                  "display": "Federal, State, Local not specified - POS"
+                },
+                {
+                  "code": "3819",
+                  "display": "Federal, State, Local not specified - not specified managed care"
+                },
+                {
+                  "code": "382",
+                  "display": "Federal, State, Local not specified - FFS"
+                },
+                {
+                  "code": "389",
+                  "display": "Federal, State, Local not specified - Other"
+                },
+                {
+                  "code": "39",
+                  "display": "Other Federal"
+                },
+                {
+                  "code": "391",
+                  "display": "Federal Employee Health Plan - Use when known"
+                },
+                {
+                  "code": "4",
+                  "display": "DEPARTMENTS OF CORRECTIONS"
+                },
+                {
+                  "code": "41",
+                  "display": "Corrections Federal"
+                },
+                {
+                  "code": "42",
+                  "display": "Corrections State"
+                },
+                {
+                  "code": "43",
+                  "display": "Corrections Local"
+                },
+                {
+                  "code": "44",
+                  "display": "Corrections Unknown Level"
+                },
+                {
+                  "code": "5",
+                  "display": "PRIVATE HEALTH INSURANCE"
+                },
+                {
+                  "code": "51",
+                  "display": "Managed Care (Private)"
+                },
+                {
+                  "code": "511",
+                  "display": "Commercial Managed Care - HMO"
+                },
+                {
+                  "code": "512",
+                  "display": "Commercial Managed Care - PPO"
+                },
+                {
+                  "code": "513",
+                  "display": "Commercial Managed Care - POS"
+                },
+                {
+                  "code": "514",
+                  "display": "Exclusive Provider Organization"
+                },
+                {
+                  "code": "515",
+                  "display": "Gatekeeper PPO (GPPO)"
+                },
+                {
+                  "code": "516",
+                  "display": "Commercial Managed Care - Pharmacy Benefit Manager"
+                },
+                {
+                  "code": "517",
+                  "display": "Commercial Managed Care - Dental"
+                },
+                {
+                  "code": "519",
+                  "display": "Managed Care, Other (non HMO)"
+                },
+                {
+                  "code": "52",
+                  "display": "Private Health Insurance - Indemnity"
+                },
+                {
+                  "code": "521",
+                  "display": "Commercial Indemnity"
+                },
+                {
+                  "code": "522",
+                  "display": "Self-insured (ERISA) Administrative Services Only (ASO) plan"
+                },
+                {
+                  "code": "523",
+                  "display": "Medicare supplemental policy (as second payer)"
+                },
+                {
+                  "code": "524",
+                  "display": "Indemnity Insurance - Dental"
+                },
+                {
+                  "code": "529",
+                  "display": "Private health insurance--other commercial Indemnity"
+                },
+                {
+                  "code": "53",
+                  "display": "Managed Care (private) or private health insurance (indemnity), not otherwise specified"
+                },
+                {
+                  "code": "54",
+                  "display": "Organized Delivery System"
+                },
+                {
+                  "code": "55",
+                  "display": "Small Employer Purchasing Group"
+                },
+                {
+                  "code": "56",
+                  "display": "Specialized Stand Alone Plan"
+                },
+                {
+                  "code": "561",
+                  "display": "Dental"
+                },
+                {
+                  "code": "562",
+                  "display": "Vision"
+                },
+                {
+                  "code": "59",
+                  "display": "Other Private Insurance"
+                },
+                {
+                  "code": "6",
+                  "display": "BLUE CROSS/BLUE SHIELD"
+                },
+                {
+                  "code": "61",
+                  "display": "BC Managed Care"
+                },
+                {
+                  "code": "611",
+                  "display": "BC Managed Care -- HMO"
+                },
+                {
+                  "code": "612",
+                  "display": "BC Managed Care -- PPO"
+                },
+                {
+                  "code": "613",
+                  "display": "BC Managed Care -- POS"
+                },
+                {
+                  "code": "614",
+                  "display": "BC Managed Care - Dental"
+                },
+                {
+                  "code": "619",
+                  "display": "BC Managed Care -- Other"
+                },
+                {
+                  "code": "62",
+                  "display": "BC Insurance Indemnity"
+                },
+                {
+                  "code": "621",
+                  "display": "BC Indemnity"
+                },
+                {
+                  "code": "622",
+                  "display": "BC Self-insured (ERISA) Administrative Services Only (ASO)Plan"
+                },
+                {
+                  "code": "623",
+                  "display": "BC Medicare Supplemental Plan"
+                },
+                {
+                  "code": "629",
+                  "display": "BC Indemnity - Dental"
+                },
+                {
+                  "code": "7",
+                  "display": "MANAGED CARE, UNSPECIFIED (to be used only if one can't distinguish public from private)"
+                },
+                {
+                  "code": "71",
+                  "display": "HMO"
+                },
+                {
+                  "code": "72",
+                  "display": "PPO"
+                },
+                {
+                  "code": "73",
+                  "display": "POS"
+                },
+                {
+                  "code": "79",
+                  "display": "Other Managed Care"
+                },
+                {
+                  "code": "8",
+                  "display": "NO PAYMENT from an Organization/Agency/Program/Private Payer Listed"
+                },
+                {
+                  "code": "81",
+                  "display": "Self-pay (Includes applicants for insurance and Medicaid applicants)"
+                },
+                {
+                  "code": "82",
+                  "display": "No Charge"
+                },
+                {
+                  "code": "821",
+                  "display": "Charity"
+                },
+                {
+                  "code": "822",
+                  "display": "Professional Courtesy"
+                },
+                {
+                  "code": "823",
+                  "display": "Research/Clinical Trial"
+                },
+                {
+                  "code": "83",
+                  "display": "Refusal to Pay/Bad Debt"
+                },
+                {
+                  "code": "84",
+                  "display": "Hill Burton Free Care"
+                },
+                {
+                  "code": "85",
+                  "display": "Research/Donor"
+                },
+                {
+                  "code": "89",
+                  "display": "No Payment, Other"
+                },
+                {
+                  "code": "9",
+                  "display": "MISCELLANEOUS/OTHER"
+                },
+                {
+                  "code": "91",
+                  "display": "Foreign National"
+                },
+                {
+                  "code": "92",
+                  "display": "Other (Non-government)"
+                },
+                {
+                  "code": "93",
+                  "display": "Disability Insurance"
+                },
+                {
+                  "code": "94",
+                  "display": "Long-term Care Insurance"
+                },
+                {
+                  "code": "95",
+                  "display": "Worker's Compensation"
+                },
+                {
+                  "code": "951",
+                  "display": "Worker's Comp HMO"
+                },
+                {
+                  "code": "953",
+                  "display": "Worker's Comp Fee-for-Service"
+                },
+                {
+                  "code": "954",
+                  "display": "Worker's Comp Other Managed Care"
+                },
+                {
+                  "code": "959",
+                  "display": "Worker's Comp, Other unspecified"
+                },
+                {
+                  "code": "96",
+                  "display": "Auto Insurance (includes no fault)"
+                },
+                {
+                  "code": "97",
+                  "display": "Legal Liability / Liability Insurance"
+                },
+                {
+                  "code": "98",
+                  "display": "Other specified but not otherwise classifiable (includes Hospice - Unspecified plan)"
+                },
+                {
+                  "code": "99",
+                  "display": "No Typology Code available for payment source"
+                },
+                {
+                  "code": "9999",
+                  "display": "Unavailable / No Payer Specified / Blank"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.114222.4.11.3591"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.101.12.1001",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.101.12.1001"
+          }
+        ],
+        "version": "20180310",
+        "name": "OfficeVisit",
+        "title": "Office Visit",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "99201",
+                  "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A problem focused history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 10 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99202",
+                  "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 20 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99203",
+                  "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A detailed history; A detailed examination; Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99204",
+                  "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 45 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99205",
+                  "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99212",
+                  "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A problem focused history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 10 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99213",
+                  "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: An expanded problem focused history; An expanded problem focused examination; Medical decision making of low complexity. Counseling and coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 15 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99214",
+                  "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A detailed history; A detailed examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 25 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99215",
+                  "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2018-03",
+              "concept": [
+                {
+                  "code": "185463005",
+                  "display": "Visit out of hours (procedure)"
+                },
+                {
+                  "code": "185464004",
+                  "display": "Out of hours visit - not night visit (procedure)"
+                },
+                {
+                  "code": "185465003",
+                  "display": "Weekend visit (procedure)"
+                },
+                {
+                  "code": "30346009",
+                  "display": "Evaluation and management of established outpatient in office or other outpatient facility (procedure)"
+                },
+                {
+                  "code": "3391000175108",
+                  "display": "Office visit for pediatric care and assessment (procedure)"
+                },
+                {
+                  "code": "37894004",
+                  "display": "Evaluation and management of new outpatient in office or other outpatient facility (procedure)"
+                },
+                {
+                  "code": "439740005",
+                  "display": "Postoperative follow-up visit (procedure)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.101.12.1023",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1023",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.101.12.1023"
+          }
+        ],
+        "version": "20170504",
+        "name": "PreventiveCareServices-InitialOfficeVisit,18andUp",
+        "title": "Preventive Care Services-Initial Office Visit, 18 and Up",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "99385",
+                  "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 18-39 years"
+                },
+                {
+                  "code": "99386",
+                  "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 40-64 years"
+                },
+                {
+                  "code": "99387",
+                  "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 65 years and older"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.101.12.1023"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.101.12.1024",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1024",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.101.12.1024"
+          }
+        ],
+        "version": "20170504",
+        "name": "PreventiveCare,EstablishedOfficeVisit,0to17",
+        "title": "Preventive Care, Established Office Visit, 0 to 17",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "99391",
+                  "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; infant (age younger than 1 year)"
+                },
+                {
+                  "code": "99392",
+                  "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; early childhood (age 1 through 4 years)"
+                },
+                {
+                  "code": "99393",
+                  "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; late childhood (age 5 through 11 years)"
+                },
+                {
+                  "code": "99394",
+                  "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; adolescent (age 12 through 17 years)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.101.12.1024"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.101.12.1022",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1022",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.101.12.1022"
+          }
+        ],
+        "version": "20170504",
+        "name": "PreventiveCareServices,InitialOfficeVisit,0to17",
+        "title": "Preventive Care Services, Initial Office Visit, 0 to 17",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "99381",
+                  "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; infant (age younger than 1 year)"
+                },
+                {
+                  "code": "99382",
+                  "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; early childhood (age 1 through 4 years)"
+                },
+                {
+                  "code": "99383",
+                  "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; late childhood (age 5 through 11 years)"
+                },
+                {
+                  "code": "99384",
+                  "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; adolescent (age 12 through 17 years)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.101.12.1022"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.114222.4.11.836",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.836",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.114222.4.11.836"
+          }
+        ],
+        "version": "20121025",
+        "name": "Race",
+        "title": "Race",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.cdc.gov/phin/resources/vocabulary/index.html",
+              "version": "1.2",
+              "concept": [
+                {
+                  "code": "1002-5",
+                  "display": "American Indian or Alaska Native"
+                },
+                {
+                  "code": "2028-9",
+                  "display": "Asian"
+                },
+                {
+                  "code": "2054-5",
+                  "display": "Black or African American"
+                },
+                {
+                  "code": "2076-8",
+                  "display": "Native Hawaiian or Other Pacific Islander"
+                },
+                {
+                  "code": "2106-3",
+                  "display": "White"
+                },
+                {
+                  "code": "2131-1",
+                  "display": "Other Race"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.114222.4.11.836"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113762.1.4.1",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113762.1.4.1"
+          }
+        ],
+        "version": "20150331",
+        "name": "ONCAdministrativeSex",
+        "title": "ONC Administrative Sex",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://hl7.org/fhir/v3/AdministrativeGender",
+              "version": "HL7V3.0_2017-07",
+              "concept": [
+                {
+                  "code": "F",
+                  "display": "Female"
+                },
+                {
+                  "code": "M",
+                  "display": "Male"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113762.1.4.1"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113762.1.4.1056.54",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1056.54",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113762.1.4.1056.54"
+          }
+        ],
+        "version": "20180309",
+        "name": "ConditionsDueToHumanImmunodeficiencyVirus(HIV)",
+        "title": "Conditions Due To Human Immunodeficiency Virus (HIV)",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10",
+              "version": "2019",
+              "concept": [
+                {
+                  "code": "B20",
+                  "display": "Human immunodeficiency virus [HIV] disease"
+                },
+                {
+                  "code": "B20-B20",
+                  "display": "Human immunodeficiency virus [HIV] disease (B20)"
+                },
+                {
+                  "code": "B97.35",
+                  "display": "Human immunodeficiency virus, type 2 [HIV 2] as the cause of diseases classified elsewhere"
+                },
+                {
+                  "code": "O98.7",
+                  "display": "Human immunodeficiency virus [HIV] disease complicating pregnancy, childbirth and the puerperium"
+                },
+                {
+                  "code": "O98.71",
+                  "display": "Human immunodeficiency virus [HIV] disease complicating pregnancy"
+                },
+                {
+                  "code": "O98.711",
+                  "display": "Human immunodeficiency virus [HIV] disease complicating pregnancy, first trimester"
+                },
+                {
+                  "code": "O98.712",
+                  "display": "Human immunodeficiency virus [HIV] disease complicating pregnancy, second trimester"
+                },
+                {
+                  "code": "O98.713",
+                  "display": "Human immunodeficiency virus [HIV] disease complicating pregnancy, third trimester"
+                },
+                {
+                  "code": "O98.719",
+                  "display": "Human immunodeficiency virus [HIV] disease complicating pregnancy, unspecified trimester"
+                },
+                {
+                  "code": "O98.72",
+                  "display": "Human immunodeficiency virus [HIV] disease complicating childbirth"
+                },
+                {
+                  "code": "O98.73",
+                  "display": "Human immunodeficiency virus [HIV] disease complicating the puerperium"
+                },
+                {
+                  "code": "Z21",
+                  "display": "Asymptomatic human immunodeficiency virus [HIV] infection status"
+                }
+              ]
+            },
+            {
+              "system": "http://hl7.org/fhir/sid/icd-9-cm",
+              "version": "2013",
+              "concept": [
+                {
+                  "code": "042",
+                  "display": "Human immunodeficiency virus [HIV] disease"
+                },
+                {
+                  "code": "042-042.99",
+                  "display": "HUMAN IMMUNODEFICIENCY VIRUS [HIV] INFECTION"
+                },
+                {
+                  "code": "079.53",
+                  "display": "Human immunodeficiency virus, type 2 [HIV-2]"
+                },
+                {
+                  "code": "795.71",
+                  "display": "Nonspecific serologic evidence of human immunodeficiency virus [HIV]"
+                },
+                {
+                  "code": "V08",
+                  "display": "Asymptomatic human immunodeficiency virus [HIV] infection status"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2013-09",
+              "concept": [
+                {
+                  "code": "421184005",
+                  "display": "Septicemia associated with AIDS (disorder)"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2014-09",
+              "concept": [
+                {
+                  "code": "431347008",
+                  "display": "Lipodystrophy associated with Human immunodeficiency virus infection (disorder)"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015-03",
+              "concept": [
+                {
+                  "code": "402916007",
+                  "display": "Human immunodeficiency virus seropositivity (disorder)"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2015-09",
+              "concept": [
+                {
+                  "code": "186709004",
+                  "display": "Human immunodeficiency virus with secondary cancers (disorder)"
+                },
+                {
+                  "code": "186717007",
+                  "display": "Human immunodeficiency virus disease resulting in mycobacterial infection (disorder)"
+                },
+                {
+                  "code": "186718002",
+                  "display": "Human immunodeficiency virus disease resulting in cytomegaloviral disease (disorder)"
+                },
+                {
+                  "code": "186719005",
+                  "display": "Human immunodeficiency virus disease resulting in candidiasis (disorder)"
+                },
+                {
+                  "code": "186721000",
+                  "display": "Human immunodeficiency virus disease resulting in multiple infections (disorder)"
+                },
+                {
+                  "code": "186723002",
+                  "display": "Human immunodeficiency virus disease resulting in Burkitt's lymphoma (disorder)"
+                },
+                {
+                  "code": "186725009",
+                  "display": "Human immunodeficiency virus disease resulting in multiple malignant neoplasms (disorder)"
+                },
+                {
+                  "code": "186726005",
+                  "display": "Human immunodeficiency virus disease resulting in lymphoid interstitial pneumonitis (disorder)"
+                },
+                {
+                  "code": "230201009",
+                  "display": "Human immunodeficiency virus myelitis (disorder)"
+                },
+                {
+                  "code": "240611008",
+                  "display": "Acquired immune deficiency syndrome-related complex (disorder)"
+                },
+                {
+                  "code": "281390005",
+                  "display": "Human immunodeficiency virus-related gut disease - cause unknown (disorder)"
+                },
+                {
+                  "code": "359791000",
+                  "display": "Acquired immunodeficiency syndrome with dermatomycosis (disorder)"
+                },
+                {
+                  "code": "402915006",
+                  "display": "Human immunodeficiency virus seroconversion exanthem (disorder)"
+                },
+                {
+                  "code": "420749009",
+                  "display": "Hypersplenism associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421009000",
+                  "display": "Prion disease associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421473007",
+                  "display": "Hypovolemia associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421792005",
+                  "display": "Cryptosporidiosis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421835000",
+                  "display": "Immunoblastic lymphoma associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "422031005",
+                  "display": "Opportunistic mycosis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "422052002",
+                  "display": "Burkitt's lymphoma associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "5810003",
+                  "display": "Human immunodeficiency virus infection with infection by another virus (disorder)"
+                },
+                {
+                  "code": "62246005",
+                  "display": "Acquired immunodeficiency syndrome-like syndrome (disorder)"
+                },
+                {
+                  "code": "77070006",
+                  "display": "Acquired immunodeficiency syndrome with Salmonella infection (disorder)"
+                },
+                {
+                  "code": "78466009",
+                  "display": "Positive serological AND/OR viral culture findings for human immunodeficiency virus (disorder)"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2018-03",
+              "concept": [
+                {
+                  "code": "103408004",
+                  "display": "Human immunodeficiency virus Centers for Disease Control and Prevention category A3 (acquired immunodeficiency syndrome) (finding)"
+                },
+                {
+                  "code": "103411003",
+                  "display": "Human immunodeficiency virus Centers for Disease Control and Prevention category B3 (acquired immunodeficiency syndrome) (finding)"
+                },
+                {
+                  "code": "103412005",
+                  "display": "Human immunodeficiency virus Centers for Disease Control and Prevention category C1 (acquired immunodeficiency syndrome) (finding)"
+                },
+                {
+                  "code": "103413000",
+                  "display": "Human immunodeficiency virus Centers for Disease Control and Prevention category C2 (acquired immunodeficiency syndrome) (finding)"
+                },
+                {
+                  "code": "103414006",
+                  "display": "Human immunodeficiency virus Centers for Disease Control and Prevention category C3 (acquired immunodeficiency syndrome) (finding)"
+                },
+                {
+                  "code": "111880001",
+                  "display": "Acute human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "165816005",
+                  "display": "Human immunodeficiency virus positive (finding)"
+                },
+                {
+                  "code": "186706006",
+                  "display": "Human immunodeficiency virus infection constitutional disease (disorder)"
+                },
+                {
+                  "code": "186707002",
+                  "display": "Human immunodeficiency virus infection with neurological disease (disorder)"
+                },
+                {
+                  "code": "186708007",
+                  "display": "Human immunodeficiency virus infection with secondary clinical infectious disease (disorder)"
+                },
+                {
+                  "code": "230180003",
+                  "display": "Human immunodeficiency virus leukoencephalopathy (disorder)"
+                },
+                {
+                  "code": "230598008",
+                  "display": "Neuropathy caused by human immunodeficiency virus (disorder)"
+                },
+                {
+                  "code": "235009000",
+                  "display": "Human immunodeficiency virus-associated periodontitis (disorder)"
+                },
+                {
+                  "code": "235726002",
+                  "display": "Human immunodeficiency virus enteropathy (disorder)"
+                },
+                {
+                  "code": "236406007",
+                  "display": "Acquired immune deficiency syndrome-related nephropathy (disorder)"
+                },
+                {
+                  "code": "240103002",
+                  "display": "Human immunodeficiency virus myopathy (disorder)"
+                },
+                {
+                  "code": "281388009",
+                  "display": "Human immunodeficiency virus-related sclerosing cholangitis (disorder)"
+                },
+                {
+                  "code": "315019000",
+                  "display": "Human immunodeficiency virus infection with aseptic meningitis (disorder)"
+                },
+                {
+                  "code": "397763006",
+                  "display": "Human immunodeficiency virus encephalopathy (disorder)"
+                },
+                {
+                  "code": "398329009",
+                  "display": "Human immunodeficiency virus encephalitis (disorder)"
+                },
+                {
+                  "code": "402901009",
+                  "display": "Oral hairy leukoplakia associated with human immunodeficiency virus disease (disorder)"
+                },
+                {
+                  "code": "405631006",
+                  "display": "Pediatric human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "40780007",
+                  "display": "Human immunodeficiency virus I infection (disorder)"
+                },
+                {
+                  "code": "414376003",
+                  "display": "Hairy leukoplakia of tongue associated with human immunodeficiency virus disease (disorder)"
+                },
+                {
+                  "code": "414604009",
+                  "display": "Leukoplakia of tongue associated with human immunodeficiency virus disease (disorder)"
+                },
+                {
+                  "code": "416729007",
+                  "display": "Neutropenia associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420302007",
+                  "display": "Reticulosarcoma associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420395004",
+                  "display": "Acute endocarditis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420403001",
+                  "display": "Pneumocystosis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420524008",
+                  "display": "Kaposi's sarcoma associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420544002",
+                  "display": "Bacterial pneumonia associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420554003",
+                  "display": "Progressive multifocal leukoencephalopathy associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420614009",
+                  "display": "Organic dementia associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420687005",
+                  "display": "Ill-defined intestinal infection associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420721002",
+                  "display": "Acquired immunodeficiency syndrome-associated disorder (disorder)"
+                },
+                {
+                  "code": "420774007",
+                  "display": "Organic brain syndrome associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420787001",
+                  "display": "Pneumococcal pneumonia associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420801006",
+                  "display": "Malaise associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "420938005",
+                  "display": "Subacute endocarditis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421023003",
+                  "display": "Presenile dementia associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421047005",
+                  "display": "Candidiasis of lung associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421077004",
+                  "display": "Disseminated candidiasis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421230000",
+                  "display": "Hepatomegaly associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421283008",
+                  "display": "Primary lymphoma of brain associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421312009",
+                  "display": "Agranulocytosis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421415007",
+                  "display": "Subacute adenoviral encephalitis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421454008",
+                  "display": "Infectious gastroenteritis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421508002",
+                  "display": "Viral pneumonia associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421510000",
+                  "display": "Isosporiasis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421529006",
+                  "display": "Dementia associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421597001",
+                  "display": "Polyneuropathy associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421671002",
+                  "display": "Pneumonia associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "421695000",
+                  "display": "Abnormal weight loss associated with acquired immunodeficiency syndrome (finding)"
+                },
+                {
+                  "code": "421983003",
+                  "display": "Noninfectious gastroenteritis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "422003001",
+                  "display": "Cachexia associated with acquired immunodeficiency syndrome (finding)"
+                },
+                {
+                  "code": "422127002",
+                  "display": "Herpes zoster associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "422282000",
+                  "display": "Malignant neoplasm associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "442134007",
+                  "display": "Hepatitis B associated with Human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "442537007",
+                  "display": "Non-Hodgkin lymphoma associated with Human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "445945000",
+                  "display": "Infectious disease associated with acquired immune deficiency syndrome (disorder)"
+                },
+                {
+                  "code": "48794007",
+                  "display": "Human immunodeficiency virus infection with infectious mononucleosis-like syndrome (disorder)"
+                },
+                {
+                  "code": "52079000",
+                  "display": "Congenital human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "62479008",
+                  "display": "Acquired immune deficiency syndrome (disorder)"
+                },
+                {
+                  "code": "700053002",
+                  "display": "Sepsis associated with acquired immunodeficiency syndrome (disorder)"
+                },
+                {
+                  "code": "713260006",
+                  "display": "Subacute adenoviral encephalitis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713275003",
+                  "display": "Splenomegaly co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713278001",
+                  "display": "Neuralgia co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713297001",
+                  "display": "Candidiasis of esophagus co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713298006",
+                  "display": "Heart disease co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713299003",
+                  "display": "Disorder of eye proper co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713300006",
+                  "display": "Disorder of gastrointestinal tract co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713316008",
+                  "display": "Eruption of skin co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713318009",
+                  "display": "Myocarditis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713320007",
+                  "display": "Radiculitis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713325002",
+                  "display": "Primary cerebral lymphoma co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713339002",
+                  "display": "Infection caused by Strongyloides co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713340000",
+                  "display": "Disorder of skin co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713341001",
+                  "display": "Myelitis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713342008",
+                  "display": "Infection caused by Salmonella co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713349004",
+                  "display": "Anemia co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713444005",
+                  "display": "Hemophagocytic syndrome co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713445006",
+                  "display": "Disseminated infection caused by Strongyloides co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713446007",
+                  "display": "Chronic infection caused by herpes simplex virus co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713483007",
+                  "display": "Reticulosarcoma co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713484001",
+                  "display": "Disorder of respiratory system co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713487008",
+                  "display": "Progressive multifocal leukoencephalopathy co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713488003",
+                  "display": "Presenile dementia co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713489006",
+                  "display": "Polyneuropathy co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713490002",
+                  "display": "Infection caused by Pneumocystis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713491003",
+                  "display": "Organic brain syndrome co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713497004",
+                  "display": "Candidiasis of mouth co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713503007",
+                  "display": "Disorder of spinal cord co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713504001",
+                  "display": "Disorder of kidney co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713505000",
+                  "display": "Gastrointestinal malabsorption syndrome co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713506004",
+                  "display": "Neuritis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713507008",
+                  "display": "Lymphadenopathy co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713508003",
+                  "display": "Aplastic anemia co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713510001",
+                  "display": "Enlargement of liver co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713511002",
+                  "display": "Acute endocarditis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713523008",
+                  "display": "Cardiomyopathy co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713526000",
+                  "display": "Recurrent bacterial pneumonia co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713527009",
+                  "display": "Disorder of peripheral nervous system co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713530002",
+                  "display": "Agranulocytosis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713531003",
+                  "display": "Visual impairment co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713532005",
+                  "display": "Infective arthritis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713533000",
+                  "display": "Acquired hemolytic anemia co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713543002",
+                  "display": "Demyelinating disease of central nervous system co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713544008",
+                  "display": "Bacterial pneumonia co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713545009",
+                  "display": "Infection caused by Nocardia co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713546005",
+                  "display": "Isosporiasis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713570009",
+                  "display": "Infectious gastroenteritis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713571008",
+                  "display": "Disorder of central nervous system co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713572001",
+                  "display": "Malignant neoplastic disease co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713695001",
+                  "display": "Nephrotic syndrome co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713696000",
+                  "display": "Renal failure syndrome co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713718006",
+                  "display": "Diffuse non-Hodgkin immunoblastic lymphoma co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713722001",
+                  "display": "Infection caused by Cytomegalovirus co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713729005",
+                  "display": "Infection caused by Coccidia co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713730000",
+                  "display": "Infection caused by herpes simplex virus co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713731001",
+                  "display": "Pyrexia of unknown origin co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713732008",
+                  "display": "Infection caused by Aspergillus co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713733003",
+                  "display": "Infection caused by herpes zoster virus co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713734009",
+                  "display": "Infection caused by Dermatophyte co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713844000",
+                  "display": "Dementia co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713845004",
+                  "display": "Infection caused by Cryptosporidium co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713880000",
+                  "display": "Opportunistic mycosis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713881001",
+                  "display": "Infection caused by Microsporidia co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713887002",
+                  "display": "Focal segmental glomerulosclerosis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713897006",
+                  "display": "Burkitt lymphoma co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713964006",
+                  "display": "Multidermatomal infection caused by Herpes zoster co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "713967004",
+                  "display": "Disseminated atypical infection caused by Mycobacterium co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "714083007",
+                  "display": "Recurrent salmonella sepsis co-occurrent with human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "714464009",
+                  "display": "Immune reconstitution inflammatory syndrome caused by human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "72621000119104",
+                  "display": "Human immunodeficiency virus (HIV) II infection category B1 (disorder)"
+                },
+                {
+                  "code": "79019005",
+                  "display": "Human immunodeficiency virus II infection (disorder)"
+                },
+                {
+                  "code": "81000119104",
+                  "display": "Symptomatic human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "86406008",
+                  "display": "Human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "87117006",
+                  "display": "Human immunodeficiency virus infection with acute lymphadenitis (disorder)"
+                },
+                {
+                  "code": "91923005",
+                  "display": "Acquired immunodeficiency syndrome virus infection associated with pregnancy (disorder)"
+                },
+                {
+                  "code": "91947003",
+                  "display": "Asymptomatic human immunodeficiency virus infection (disorder)"
+                },
+                {
+                  "code": "91948008",
+                  "display": "Asymptomatic human immunodeficiency virus infection in pregnancy (disorder)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113762.1.4.1056.54"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.101.12.1025",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1025",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.101.12.1025"
+          }
+        ],
+        "version": "20170504",
+        "name": "PreventiveCareServices-EstablishedOfficeVisit,18andUp",
+        "title": "Preventive Care Services - Established Office Visit, 18 and Up",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "99395",
+                  "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 18-39 years"
+                },
+                {
+                  "code": "99396",
+                  "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 40-64 years"
+                },
+                {
+                  "code": "99397",
+                  "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 65 years and older"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.101.12.1025"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113762.1.4.1056.50",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1056.50",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113762.1.4.1056.50"
+          }
+        ],
+        "version": "20180309",
+        "name": "HumanImmunodeficiencyVirus(HIV)LaboratoryTestCodes(AbandAg)",
+        "title": "Human Immunodeficiency Virus (HIV) Laboratory Test Codes (Ab and Ag)",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://loinc.org",
+              "version": "2.64",
+              "concept": [
+                {
+                  "code": "10901-7",
+                  "display": "HIV 2 gp125 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "10902-5",
+                  "display": "HIV 2 gp36 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "11078-3",
+                  "display": "HIV 2 gp80 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "11079-1",
+                  "display": "HIV 2 p26 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "11080-9",
+                  "display": "HIV 2 p53 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "11081-7",
+                  "display": "HIV 2 p56 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "11082-5",
+                  "display": "HIV 2 p68 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12855-3",
+                  "display": "HIV 1 p23 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12856-1",
+                  "display": "HIV 1 p65 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12857-9",
+                  "display": "HIV 1 p28 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12858-7",
+                  "display": "HIV 1 p32 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12859-5",
+                  "display": "HIV 1 p18 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12870-2",
+                  "display": "HIV 1 gp34 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12871-0",
+                  "display": "HIV 1 p26 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12872-8",
+                  "display": "HIV 1 p15 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12875-1",
+                  "display": "HIV 1 p64 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12876-9",
+                  "display": "HIV 1 p53 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12893-4",
+                  "display": "HIV 1 gp105 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12894-2",
+                  "display": "HIV 1 p68 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "12895-9",
+                  "display": "HIV 1 p58 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "13499-9",
+                  "display": "HIV 1 Ab band pattern [Interpretation] in Serum by Immunoblot"
+                },
+                {
+                  "code": "13920-4",
+                  "display": "HIV 2 p41 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "14092-1",
+                  "display": "HIV 1 Ab [Presence] in Serum by Immunofluorescence"
+                },
+                {
+                  "code": "14126-7",
+                  "display": "HIV 1 gp120+gp160 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "16132-3",
+                  "display": "HIV 1 p15+p18 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "16974-8",
+                  "display": "HIV 1 Ab [Presence] in Cerebral spinal fluid"
+                },
+                {
+                  "code": "16975-5",
+                  "display": "HIV 1 IgG Ab [Presence] in Serum"
+                },
+                {
+                  "code": "16976-3",
+                  "display": "HIV 1 Ag [Units/volume] in Serum"
+                },
+                {
+                  "code": "16977-1",
+                  "display": "HIV 1 Ag [Presence] in Cerebral spinal fluid"
+                },
+                {
+                  "code": "16978-9",
+                  "display": "HIV 1 p24 Ab [Units/volume] in Serum"
+                },
+                {
+                  "code": "16979-7",
+                  "display": "HIV 1 p24 Ag [Units/volume] in Cerebral spinal fluid"
+                },
+                {
+                  "code": "18396-2",
+                  "display": "HIV 1 p24 Ag [Presence] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "19110-6",
+                  "display": "HIV 1 gp41+gp43 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "21007-0",
+                  "display": "HIV 1 Ab [Presence] in Serum from Donor"
+                },
+                {
+                  "code": "21331-4",
+                  "display": "HIV 1 p24 Ab [Titer] in Serum by Immunoblot"
+                },
+                {
+                  "code": "21332-2",
+                  "display": "HIV 1 p41 Ab [Titer] in Serum by Immunoblot"
+                },
+                {
+                  "code": "21334-8",
+                  "display": "HIV 2 gp105 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "21335-5",
+                  "display": "HIV 2 gp120 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "21336-3",
+                  "display": "HIV 2 gp15 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "21337-1",
+                  "display": "HIV 2 gp34 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "21338-9",
+                  "display": "HIV 2 p31 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "21339-7",
+                  "display": "HIV 2 p55 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "21340-5",
+                  "display": "HIV 2 p58 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "22356-0",
+                  "display": "HIV 1 Ab [Units/volume] in Serum"
+                },
+                {
+                  "code": "22357-8",
+                  "display": "HIV 1+2 Ab [Units/volume] in Serum"
+                },
+                {
+                  "code": "22358-6",
+                  "display": "HIV 2 Ab [Units/volume] in Serum"
+                },
+                {
+                  "code": "24012-7",
+                  "display": "HIV 1 Ag [Presence] in Serum"
+                },
+                {
+                  "code": "28004-0",
+                  "display": "HIV 1 IgG Ab [Presence] in Cerebral spinal fluid by Immunoblot"
+                },
+                {
+                  "code": "28052-9",
+                  "display": "HIV 1 Ab.IgG band pattern [Interpretation] in Cerebral spinal fluid by Immunoblot"
+                },
+                {
+                  "code": "29327-4",
+                  "display": "HIV 1 Ab [Presence] in Body fluid"
+                },
+                {
+                  "code": "29893-5",
+                  "display": "HIV 1 Ab [Presence] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "30361-0",
+                  "display": "HIV 2 Ab [Presence] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "31072-2",
+                  "display": "HIV 1 p41 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "31073-0",
+                  "display": "HIV 2 Ab band pattern [Interpretation] in Serum by Immunoblot"
+                },
+                {
+                  "code": "31201-7",
+                  "display": "HIV 1+2 Ab [Presence] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "31430-2",
+                  "display": "HIV 1 IgG Ab [Presence] in Cerebral spinal fluid"
+                },
+                {
+                  "code": "32571-2",
+                  "display": "HIV 1 Ab [Presence] in Urine by Immunoblot"
+                },
+                {
+                  "code": "32602-5",
+                  "display": "HIV 1+2 Ab [Presence] in Cerebral spinal fluid"
+                },
+                {
+                  "code": "32827-8",
+                  "display": "HIV 1 p17+p18 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "32842-7",
+                  "display": "HIV 1 p17+p18 Ab [Presence] in Serum"
+                },
+                {
+                  "code": "33508-3",
+                  "display": "HIV 1 p65+p66 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "33660-2",
+                  "display": "HIV 1 p24 Ag [Presence] in Serum or Plasma by Neutralization test"
+                },
+                {
+                  "code": "33806-1",
+                  "display": "HIV 2 IgG Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "33807-9",
+                  "display": "HIV 2 IgG Ab [Presence] in Serum"
+                },
+                {
+                  "code": "33866-5",
+                  "display": "HIV 1 Ab [Presence] in Capillary blood by Immunoassay"
+                },
+                {
+                  "code": "34591-8",
+                  "display": "HIV 1 Ab [Presence] in Body fluid by Immunoassay"
+                },
+                {
+                  "code": "34592-6",
+                  "display": "HIV 1 Ab [Presence] in Body fluid by Immunoblot"
+                },
+                {
+                  "code": "35437-3",
+                  "display": "HIV 1 Ab [Presence] in Saliva (oral fluid) by Immunoassay"
+                },
+                {
+                  "code": "35438-1",
+                  "display": "HIV 1 Ab [Units/volume] in Saliva (oral fluid) by Immunoassay"
+                },
+                {
+                  "code": "35439-9",
+                  "display": "HIV 1 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35440-7",
+                  "display": "HIV 1 gp160 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35441-5",
+                  "display": "HIV 1 gp120 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35442-3",
+                  "display": "HIV 1 p66 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35443-1",
+                  "display": "HIV 1 p65 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35444-9",
+                  "display": "HIV 1 p55 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35445-6",
+                  "display": "HIV 1 p51 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35446-4",
+                  "display": "HIV 1 gp41 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35447-2",
+                  "display": "HIV 1 p31 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35448-0",
+                  "display": "HIV 1 p24 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35449-8",
+                  "display": "HIV 1 p17 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35450-6",
+                  "display": "HIV 1 p18 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+                },
+                {
+                  "code": "35452-2",
+                  "display": "HIV 1 gp40 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "35564-4",
+                  "display": "HIV 1 p31+p32 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "35565-1",
+                  "display": "HIV 1 p40 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "40437-6",
+                  "display": "HIV 1 p24 Ab [Presence] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "40438-4",
+                  "display": "HIV 1 gp41 Ab [Presence] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "40439-2",
+                  "display": "HIV 1 gp120+gp160 Ab [Presence] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "40732-0",
+                  "display": "HIV 1 IgG Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "40733-8",
+                  "display": "HIV 1+2 IgG Ab [Presence] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "41143-9",
+                  "display": "HIV 1 Ab [Units/volume] in Saliva (oral fluid)"
+                },
+                {
+                  "code": "41144-7",
+                  "display": "HIV 1 Ab [Presence] in Saliva (oral fluid)"
+                },
+                {
+                  "code": "41145-4",
+                  "display": "HIV 1 Ab [Presence] in Capillary blood"
+                },
+                {
+                  "code": "41290-8",
+                  "display": "HIV 1+2 IgM Ab [Units/volume] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "42339-2",
+                  "display": "HIV 1 p24 Ag [Mass/volume] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "42600-7",
+                  "display": "HIV 1+2 Ab [Presence] in Unspecified specimen by Immunoassay"
+                },
+                {
+                  "code": "42627-0",
+                  "display": "HIV 1 Ab [Presence] in Cerebral spinal fluid by Immunofluorescence"
+                },
+                {
+                  "code": "42768-2",
+                  "display": "HIV 1 and 2 Ab [Interpretation] in Serum Narrative"
+                },
+                {
+                  "code": "43008-2",
+                  "display": "HIV 1+2 IgM Ab [Units/volume] in Serum"
+                },
+                {
+                  "code": "43009-0",
+                  "display": "HIV 1+2 IgG Ab [Presence] in Serum"
+                },
+                {
+                  "code": "43010-8",
+                  "display": "HIV 1+2 Ab [Presence] in Unspecified specimen"
+                },
+                {
+                  "code": "43011-6",
+                  "display": "HIV 1 p24 Ab [Presence] in Serum"
+                },
+                {
+                  "code": "43012-4",
+                  "display": "HIV 1 gp41 Ab [Presence] in Serum"
+                },
+                {
+                  "code": "43013-2",
+                  "display": "HIV 1 gp120+gp160 Ab [Presence] in Serum"
+                },
+                {
+                  "code": "43185-8",
+                  "display": "HIV 1 and 2 Ab band pattern [Interpretation] in Serum by Immunoblot"
+                },
+                {
+                  "code": "43599-0",
+                  "display": "HIV 1 Ab [Units/volume] in Serum by Immunofluorescence"
+                },
+                {
+                  "code": "44531-2",
+                  "display": "HIV 1 Ag [Presence] in Serum from Donor"
+                },
+                {
+                  "code": "44532-0",
+                  "display": "HIV 1 gp120 Ab [Presence] in Serum"
+                },
+                {
+                  "code": "44533-8",
+                  "display": "HIV 1+2 Ab [Presence] in Serum from Donor"
+                },
+                {
+                  "code": "44607-0",
+                  "display": "HIV 1 [Interpretation] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "44872-0",
+                  "display": "HIV 1 p24 Ag [Presence] in Serum or Plasma from Donor by Immunoassay"
+                },
+                {
+                  "code": "44873-8",
+                  "display": "HIV 1+2 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "45212-8",
+                  "display": "HIV 2 p31+p34 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "47029-4",
+                  "display": "HIV 2 Ab [Presence] in Cerebral spinal fluid by Immunoblot"
+                },
+                {
+                  "code": "48345-3",
+                  "display": "HIV 1+O+2 Ab [Presence] in Serum or Plasma"
+                },
+                {
+                  "code": "48346-1",
+                  "display": "HIV 1+O+2 Ab [Units/volume] in Serum or Plasma"
+                },
+                {
+                  "code": "49483-1",
+                  "display": "HIV 1 [Interpretation] in Serum or Plasma by Immunoassay Narrative"
+                },
+                {
+                  "code": "49580-4",
+                  "display": "HIV 1+2 Ab [Presence] in Unspecified specimen by Rapid immunoassay"
+                },
+                {
+                  "code": "49718-0",
+                  "display": "HIV 1 p24 Ag [Presence] in Cerebral spinal fluid"
+                },
+                {
+                  "code": "49905-3",
+                  "display": "HIV 1 Ab [Presence] in Unspecified specimen by Rapid immunoassay"
+                },
+                {
+                  "code": "51786-2",
+                  "display": "HIV 2 Ab Signal/Cutoff in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "5220-9",
+                  "display": "HIV 1 Ab [Units/volume] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "5221-7",
+                  "display": "HIV 1 Ab [Presence] in Serum or Plasma by Immunoblot"
+                },
+                {
+                  "code": "5222-5",
+                  "display": "HIV 1 Ag [Presence] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "5223-3",
+                  "display": "HIV 1+2 Ab [Units/volume] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "5224-1",
+                  "display": "HIV 2 Ab [Units/volume] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "5225-8",
+                  "display": "HIV 2 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "53379-4",
+                  "display": "HIV 1 Ab [Presence] in Unspecified specimen"
+                },
+                {
+                  "code": "53601-1",
+                  "display": "HIV 1 p24 Ag [Units/volume] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "54086-4",
+                  "display": "HIV 1+2 IgG Ab [Presence] in DBS"
+                },
+                {
+                  "code": "56888-1",
+                  "display": "HIV 1+2 Ab+HIV1 p24 Ag [Presence] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "57974-8",
+                  "display": "HIV 1 Ab [Presence] in Cerebral spinal fluid by Immunoblot"
+                },
+                {
+                  "code": "57975-5",
+                  "display": "HIV 1+O+2 Ab [Presence] in Body fluid"
+                },
+                {
+                  "code": "57976-3",
+                  "display": "HIV 2 gp140 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "57977-1",
+                  "display": "HIV 2 p16 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "57978-9",
+                  "display": "HIV 2 p34 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "58900-2",
+                  "display": "HIV 1+2 Ab+HIV1 p24 Ag [Units/volume] in Serum or Plasma by Immunoassay"
+                },
+                {
+                  "code": "62456-9",
+                  "display": "HIV 2 p15 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "6429-5",
+                  "display": "HIV identified in Blood by Organism specific culture"
+                },
+                {
+                  "code": "6430-3",
+                  "display": "HIV identified in Semen by Organism specific culture"
+                },
+                {
+                  "code": "6431-1",
+                  "display": "HIV identified in Unspecified specimen by Organism specific culture"
+                },
+                {
+                  "code": "68961-2",
+                  "display": "HIV 1 Ab [Presence] in Serum, Plasma or Blood by Rapid immunoassay"
+                },
+                {
+                  "code": "69668-2",
+                  "display": "HIV 1 and 2 Ab [Identifier] in Serum or Plasma by Rapid immunoassay"
+                },
+                {
+                  "code": "73905-2",
+                  "display": "HIV 1+2 IgG Ab [Presence] in Serum or Plasma by Rapid immunoassay"
+                },
+                {
+                  "code": "73906-0",
+                  "display": "HIV 1+2 IgG Ab [Presence] in Blood by Rapid immunoassay"
+                },
+                {
+                  "code": "7917-8",
+                  "display": "HIV 1 Ab [Presence] in Serum"
+                },
+                {
+                  "code": "7918-6",
+                  "display": "HIV 1+2 Ab [Presence] in Serum"
+                },
+                {
+                  "code": "7919-4",
+                  "display": "HIV 2 Ab [Presence] in Serum"
+                },
+                {
+                  "code": "9660-2",
+                  "display": "HIV 1 gp160 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "9661-0",
+                  "display": "HIV 1 gp120 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "9662-8",
+                  "display": "HIV 1 gp41 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "9663-6",
+                  "display": "HIV 1 p17 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "9664-4",
+                  "display": "HIV 1 p24 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "9665-1",
+                  "display": "HIV 1 p24 Ag [Units/volume] in Serum"
+                },
+                {
+                  "code": "9666-9",
+                  "display": "HIV 1 p31 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "9667-7",
+                  "display": "HIV 1 p51 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "9668-5",
+                  "display": "HIV 1 p55 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "9669-3",
+                  "display": "HIV 1 p66 Ab [Presence] in Serum by Immunoblot"
+                },
+                {
+                  "code": "9821-0",
+                  "display": "HIV 1 p24 Ag [Presence] in Serum"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113762.1.4.1056.50"
+      }
+    }
+  ]
+}

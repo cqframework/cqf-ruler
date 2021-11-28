@@ -1,0 +1,126 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.101.12.1088",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1088",
+  "title": "Frailty Encounter",
+  "status": "active",
+  "publisher": "National Committee for Quality Assurance",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "413467001",
+            "display": "Aftercare (regime/therapy)"
+          }
+        ]
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "2019",
+        "concept": [
+          {
+            "code": "99504",
+            "display": "Home visit for mechanical ventilation care"
+          },
+          {
+            "code": "99509",
+            "display": "Home visit for assistance with activities of daily living and personal care"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+        "version": "2019",
+        "concept": [
+          {
+            "code": "G0162",
+            "display": "Skilled services by a registered nurse (rn) for management and evaluation of the plan of care; each 15 minutes (the patient's underlying condition or complication requires an rn to ensure that essential non-skilled care achieves its purpose in the home health or hospice setting)"
+          },
+          {
+            "code": "G0299",
+            "display": "Direct skilled nursing services of a registered nurse (rn) in the home health or hospice setting, each 15 minutes"
+          },
+          {
+            "code": "G0300",
+            "display": "Direct skilled nursing services of a licensed practical nurse (lpn) in the home health or hospice setting, each 15 minutes"
+          },
+          {
+            "code": "G0493",
+            "display": "Skilled services of a registered nurse (rn) for the observation and assessment of the patient's condition, each 15 minutes (the change in the patient's condition requires skilled nursing personnel to identify and evaluate the patient's need for possible modification of treatment in the home health or hospice setting)"
+          },
+          {
+            "code": "G0494",
+            "display": "Skilled services of a licensed practical nurse (lpn) for the observation and assessment of the patient's condition, each 15 minutes (the change in the patient's condition requires skilled nursing personnel to identify and evaluate the patient's need for possible modification of treatment in the home health or hospice setting)"
+          },
+          {
+            "code": "S0271",
+            "display": "Physician management of patient home care, hospice monthly case rate (per 30 days)"
+          },
+          {
+            "code": "S0311",
+            "display": "Comprehensive management and care coordination for advanced illness, per calendar month"
+          },
+          {
+            "code": "S9123",
+            "display": "Nursing care, in the home; by registered nurse, per hour (use for general nursing care only, not to be used when cpt codes 99500-99602 can be used)"
+          },
+          {
+            "code": "S9124",
+            "display": "Nursing care, in the home; by licensed practical nurse, per hour"
+          },
+          {
+            "code": "T1000",
+            "display": "Private duty / independent nursing service(s) - licensed, up to 15 minutes"
+          },
+          {
+            "code": "T1001",
+            "display": "Nursing assessment / evaluation"
+          },
+          {
+            "code": "T1002",
+            "display": "Rn services, up to 15 minutes"
+          },
+          {
+            "code": "T1003",
+            "display": "Lpn/lvn services, up to 15 minutes"
+          },
+          {
+            "code": "T1004",
+            "display": "Services of a qualified nursing aide, up to 15 minutes"
+          },
+          {
+            "code": "T1005",
+            "display": "Respite care services, up to 15 minutes"
+          },
+          {
+            "code": "T1019",
+            "display": "Personal care services, per 15 minutes, not for an inpatient or resident of a hospital, nursing facility, icf/mr or imd, part of the individualized plan of treatment (code may not be used to identify services provided by home health aide or certified nurse assistant)"
+          },
+          {
+            "code": "T1020",
+            "display": "Personal care services, per diem, not for an inpatient or resident of a hospital, nursing facility, icf/mr or imd, part of the individualized plan of treatment (code may not be used to identify services provided by home health aide or certified nurse assistant)"
+          },
+          {
+            "code": "T1021",
+            "display": "Home health aide or certified nurse assistant, per visit"
+          },
+          {
+            "code": "T1022",
+            "display": "Contracted home health agency services, all services provided under contract, per day"
+          },
+          {
+            "code": "T1030",
+            "display": "Nursing care, in the home, by registered nurse, per diem"
+          },
+          {
+            "code": "T1031",
+            "display": "Nursing care, in the home, by licensed practical nurse, per diem"
+          }
+        ]
+      }
+    ]
+  }
+}

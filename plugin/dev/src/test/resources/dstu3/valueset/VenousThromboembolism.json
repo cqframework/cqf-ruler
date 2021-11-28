@@ -1,0 +1,464 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.279",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.279",
+  "title": "Venous Thromboembolism",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "1001000119102",
+            "display": "Pulmonary embolism with pulmonary infarction (disorder)"
+          },
+          {
+            "code": "11029002",
+            "display": "Pulmonary apoplexy (disorder)"
+          },
+          {
+            "code": "128053003",
+            "display": "Deep venous thrombosis (disorder)"
+          },
+          {
+            "code": "128055005",
+            "display": "Deep venous thrombosis of pelvic vein (disorder)"
+          },
+          {
+            "code": "132251000119101",
+            "display": "Acute deep venous thrombosis of popliteal vein (disorder)"
+          },
+          {
+            "code": "132291000119106",
+            "display": "Acute deep venous thrombosis of femoral vein (disorder)"
+          },
+          {
+            "code": "132301000119107",
+            "display": "Acute deep venous thrombosis of iliofemoral vein (disorder)"
+          },
+          {
+            "code": "134399007",
+            "display": "Deep vein thrombosis of leg related to air travel (disorder)"
+          },
+          {
+            "code": "16750002",
+            "display": "Deep thrombophlebitis (disorder)"
+          },
+          {
+            "code": "1748006",
+            "display": "Thrombophlebitis of deep femoral vein (disorder)"
+          },
+          {
+            "code": "194883006",
+            "display": "Postoperative pulmonary embolus (disorder)"
+          },
+          {
+            "code": "195394007",
+            "display": "Phlebitis and thrombophlebitis (disorder)"
+          },
+          {
+            "code": "195405004",
+            "display": "Phlebitis of popliteal vein (disorder)"
+          },
+          {
+            "code": "195408002",
+            "display": "Phlebitis of the posterior tibial vein (disorder)"
+          },
+          {
+            "code": "195410000",
+            "display": "Thrombophlebitis of the femoral vein (disorder)"
+          },
+          {
+            "code": "195411001",
+            "display": "Thrombophlebitis of the popliteal vein (disorder)"
+          },
+          {
+            "code": "195421009",
+            "display": "Phlebitis of the common iliac vein (disorder)"
+          },
+          {
+            "code": "195422002",
+            "display": "Phlebitis of the internal iliac vein (disorder)"
+          },
+          {
+            "code": "195423007",
+            "display": "Phlebitis of the external iliac vein (disorder)"
+          },
+          {
+            "code": "195425000",
+            "display": "Thrombophlebitis of the common iliac vein (disorder)"
+          },
+          {
+            "code": "195426004",
+            "display": "Thrombophlebitis of the internal iliac vein (disorder)"
+          },
+          {
+            "code": "195427008",
+            "display": "Thrombophlebitis of the external iliac vein (disorder)"
+          },
+          {
+            "code": "195437003",
+            "display": "Embolism and thrombosis of the vena cava (disorder)"
+          },
+          {
+            "code": "213220000",
+            "display": "Postoperative deep vein thrombosis (disorder)"
+          },
+          {
+            "code": "233935004",
+            "display": "Pulmonary thromboembolism (disorder)"
+          },
+          {
+            "code": "233936003",
+            "display": "Acute massive pulmonary embolism (disorder)"
+          },
+          {
+            "code": "234044007",
+            "display": "Iliofemoral deep vein thrombosis (disorder)"
+          },
+          {
+            "code": "234049002",
+            "display": "Venous embolism (disorder)"
+          },
+          {
+            "code": "25114006",
+            "display": "Phlebitis of deep veins of lower extremity (disorder)"
+          },
+          {
+            "code": "266267005",
+            "display": "Deep vein phlebitis and thrombophlebitis of the leg (disorder)"
+          },
+          {
+            "code": "276494008",
+            "display": "Phlebitis and/or thrombophlebitis of iliac vein (disorder)"
+          },
+          {
+            "code": "281595001",
+            "display": "Thrombosis of inferior vena cava (disorder)"
+          },
+          {
+            "code": "312584000",
+            "display": "Thrombosis of vein of trunk (disorder)"
+          },
+          {
+            "code": "312588002",
+            "display": "Phlebitis of lower limb vein (disorder)"
+          },
+          {
+            "code": "31295000",
+            "display": "Phlebitis of iliac vein (disorder)"
+          },
+          {
+            "code": "35979000",
+            "display": "Phlebitis of femoropopliteal vein (disorder)"
+          },
+          {
+            "code": "40198004",
+            "display": "Thrombophlebitis of deep veins of lower extremity (disorder)"
+          },
+          {
+            "code": "404223003",
+            "display": "Deep venous thrombosis of lower extremity (disorder)"
+          },
+          {
+            "code": "413956008",
+            "display": "Deep vein thrombosis of leg related to intravenous drug use (disorder)"
+          },
+          {
+            "code": "427775006",
+            "display": "Deep venous thrombosis of profunda femoris vein (disorder)"
+          },
+          {
+            "code": "427776007",
+            "display": "Thrombosis of the popliteal vein (disorder)"
+          },
+          {
+            "code": "42861008",
+            "display": "Thrombophlebitis of iliac vein (disorder)"
+          },
+          {
+            "code": "429098002",
+            "display": "Thromboembolism of vein (disorder)"
+          },
+          {
+            "code": "441746000",
+            "display": "Infarction of lung due to iatrogenic pulmonary embolism (disorder)"
+          },
+          {
+            "code": "444325005",
+            "display": "Deep vein thrombosis of bilateral lower extremities (disorder)"
+          },
+          {
+            "code": "46253008",
+            "display": "Thrombophlebitis of lower extremities (disorder)"
+          },
+          {
+            "code": "50817002",
+            "display": "Embolism of vena cava (disorder)"
+          },
+          {
+            "code": "52496006",
+            "display": "Thrombophlebitis of femoropopliteal vein (disorder)"
+          },
+          {
+            "code": "57834008",
+            "display": "Pulmonary artery thrombosis (disorder)"
+          },
+          {
+            "code": "58309001",
+            "display": "Phlebitis of tibial vein (disorder)"
+          },
+          {
+            "code": "59282003",
+            "display": "Pulmonary embolism (disorder)"
+          },
+          {
+            "code": "64662007",
+            "display": "Pulmonary infarction (disorder)"
+          },
+          {
+            "code": "69357003",
+            "display": "Pulmonary thrombosis (disorder)"
+          },
+          {
+            "code": "7387004",
+            "display": "Thrombophlebitis of tibial vein (disorder)"
+          },
+          {
+            "code": "74315008",
+            "display": "Pulmonary microemboli (disorder)"
+          },
+          {
+            "code": "77892009",
+            "display": "Pulmonary venous thrombosis (disorder)"
+          },
+          {
+            "code": "83727005",
+            "display": "Hemorrhagic pulmonary infarction (disorder)"
+          },
+          {
+            "code": "83938003",
+            "display": "Thrombosis of vena cava (disorder)"
+          },
+          {
+            "code": "95448006",
+            "display": "Thrombosis of pelvic vein (disorder)"
+          },
+          {
+            "code": "95449003",
+            "display": "Thrombophlebitis of pelvic vein (disorder)"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "I26.02",
+            "display": "Saddle embolus of pulmonary artery with acute cor pulmonale"
+          },
+          {
+            "code": "I26.09",
+            "display": "Other pulmonary embolism with acute cor pulmonale"
+          },
+          {
+            "code": "I26.92",
+            "display": "Saddle embolus of pulmonary artery without acute cor pulmonale"
+          },
+          {
+            "code": "I26.99",
+            "display": "Other pulmonary embolism without acute cor pulmonale"
+          },
+          {
+            "code": "I80.10",
+            "display": "Phlebitis and thrombophlebitis of unspecified femoral vein"
+          },
+          {
+            "code": "I80.11",
+            "display": "Phlebitis and thrombophlebitis of right femoral vein"
+          },
+          {
+            "code": "I80.12",
+            "display": "Phlebitis and thrombophlebitis of left femoral vein"
+          },
+          {
+            "code": "I80.13",
+            "display": "Phlebitis and thrombophlebitis of femoral vein, bilateral"
+          },
+          {
+            "code": "I80.201",
+            "display": "Phlebitis and thrombophlebitis of unspecified deep vessels of right lower extremity"
+          },
+          {
+            "code": "I80.202",
+            "display": "Phlebitis and thrombophlebitis of unspecified deep vessels of left lower extremity"
+          },
+          {
+            "code": "I80.203",
+            "display": "Phlebitis and thrombophlebitis of unspecified deep vessels of lower extremities, bilateral"
+          },
+          {
+            "code": "I80.209",
+            "display": "Phlebitis and thrombophlebitis of unspecified deep vessels of unspecified lower extremity"
+          },
+          {
+            "code": "I80.211",
+            "display": "Phlebitis and thrombophlebitis of right iliac vein"
+          },
+          {
+            "code": "I80.212",
+            "display": "Phlebitis and thrombophlebitis of left iliac vein"
+          },
+          {
+            "code": "I80.213",
+            "display": "Phlebitis and thrombophlebitis of iliac vein, bilateral"
+          },
+          {
+            "code": "I80.219",
+            "display": "Phlebitis and thrombophlebitis of unspecified iliac vein"
+          },
+          {
+            "code": "I80.221",
+            "display": "Phlebitis and thrombophlebitis of right popliteal vein"
+          },
+          {
+            "code": "I80.222",
+            "display": "Phlebitis and thrombophlebitis of left popliteal vein"
+          },
+          {
+            "code": "I80.223",
+            "display": "Phlebitis and thrombophlebitis of popliteal vein, bilateral"
+          },
+          {
+            "code": "I80.229",
+            "display": "Phlebitis and thrombophlebitis of unspecified popliteal vein"
+          },
+          {
+            "code": "I80.291",
+            "display": "Phlebitis and thrombophlebitis of other deep vessels of right lower extremity"
+          },
+          {
+            "code": "I80.292",
+            "display": "Phlebitis and thrombophlebitis of other deep vessels of left lower extremity"
+          },
+          {
+            "code": "I80.293",
+            "display": "Phlebitis and thrombophlebitis of other deep vessels of lower extremity, bilateral"
+          },
+          {
+            "code": "I80.299",
+            "display": "Phlebitis and thrombophlebitis of other deep vessels of unspecified lower extremity"
+          },
+          {
+            "code": "I80.3",
+            "display": "Phlebitis and thrombophlebitis of lower extremities, unspecified"
+          },
+          {
+            "code": "I80.9",
+            "display": "Phlebitis and thrombophlebitis of unspecified site"
+          },
+          {
+            "code": "I82.220",
+            "display": "Acute embolism and thrombosis of inferior vena cava"
+          },
+          {
+            "code": "I82.290",
+            "display": "Acute embolism and thrombosis of other thoracic veins"
+          },
+          {
+            "code": "I82.401",
+            "display": "Acute embolism and thrombosis of unspecified deep veins of right lower extremity"
+          },
+          {
+            "code": "I82.402",
+            "display": "Acute embolism and thrombosis of unspecified deep veins of left lower extremity"
+          },
+          {
+            "code": "I82.403",
+            "display": "Acute embolism and thrombosis of unspecified deep veins of lower extremity, bilateral"
+          },
+          {
+            "code": "I82.409",
+            "display": "Acute embolism and thrombosis of unspecified deep veins of unspecified lower extremity"
+          },
+          {
+            "code": "I82.411",
+            "display": "Acute embolism and thrombosis of right femoral vein"
+          },
+          {
+            "code": "I82.412",
+            "display": "Acute embolism and thrombosis of left femoral vein"
+          },
+          {
+            "code": "I82.413",
+            "display": "Acute embolism and thrombosis of femoral vein, bilateral"
+          },
+          {
+            "code": "I82.419",
+            "display": "Acute embolism and thrombosis of unspecified femoral vein"
+          },
+          {
+            "code": "I82.421",
+            "display": "Acute embolism and thrombosis of right iliac vein"
+          },
+          {
+            "code": "I82.422",
+            "display": "Acute embolism and thrombosis of left iliac vein"
+          },
+          {
+            "code": "I82.423",
+            "display": "Acute embolism and thrombosis of iliac vein, bilateral"
+          },
+          {
+            "code": "I82.429",
+            "display": "Acute embolism and thrombosis of unspecified iliac vein"
+          },
+          {
+            "code": "I82.431",
+            "display": "Acute embolism and thrombosis of right popliteal vein"
+          },
+          {
+            "code": "I82.432",
+            "display": "Acute embolism and thrombosis of left popliteal vein"
+          },
+          {
+            "code": "I82.433",
+            "display": "Acute embolism and thrombosis of popliteal vein, bilateral"
+          },
+          {
+            "code": "I82.439",
+            "display": "Acute embolism and thrombosis of unspecified popliteal vein"
+          },
+          {
+            "code": "I82.4Y1",
+            "display": "Acute embolism and thrombosis of unspecified deep veins of right proximal lower extremity"
+          },
+          {
+            "code": "I82.4Y2",
+            "display": "Acute embolism and thrombosis of unspecified deep veins of left proximal lower extremity"
+          },
+          {
+            "code": "I82.4Y3",
+            "display": "Acute embolism and thrombosis of unspecified deep veins of proximal lower extremity, bilateral"
+          },
+          {
+            "code": "I82.4Y9",
+            "display": "Acute embolism and thrombosis of unspecified deep veins of unspecified proximal lower extremity"
+          },
+          {
+            "code": "I82.890",
+            "display": "Acute embolism and thrombosis of other specified veins"
+          },
+          {
+            "code": "I82.90",
+            "display": "Acute embolism and thrombosis of unspecified vein"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,280 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.212",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.212",
+  "title": "Hemorrhagic Stroke",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "195155004",
+            "display": "Subarachnoid hemorrhage from carotid siphon and bifurcation (disorder)"
+          },
+          {
+            "code": "195160000",
+            "display": "Intracranial subarachnoid hemorrhage from vertebral artery (disorder)"
+          },
+          {
+            "code": "195165005",
+            "display": "Basal ganglia hemorrhage (disorder)"
+          },
+          {
+            "code": "195167002",
+            "display": "External capsule hemorrhage (disorder)"
+          },
+          {
+            "code": "195168007",
+            "display": "Intracerebral hemorrhage with intraventricular hemorrhage (disorder)"
+          },
+          {
+            "code": "195169004",
+            "display": "Intracerebral hemorrhage, multiple localized (disorder)"
+          },
+          {
+            "code": "20908003",
+            "display": "Subcortical cerebral hemorrhage (disorder)"
+          },
+          {
+            "code": "230706003",
+            "display": "Hemorrhagic cerebral infarction (disorder)"
+          },
+          {
+            "code": "230707007",
+            "display": "Anterior cerebral circulation hemorrhagic infarction (disorder)"
+          },
+          {
+            "code": "230708002",
+            "display": "Posterior cerebral circulation hemorrhagic infarction (disorder)"
+          },
+          {
+            "code": "230709005",
+            "display": "Massive supratentorial cerebral hemorrhage (disorder)"
+          },
+          {
+            "code": "230710000",
+            "display": "Lobar cerebral hemorrhage (disorder)"
+          },
+          {
+            "code": "230711001",
+            "display": "Thalamic hemorrhage (disorder)"
+          },
+          {
+            "code": "230712008",
+            "display": "Lacunar hemorrhage (disorder)"
+          },
+          {
+            "code": "23276006",
+            "display": "Ventricular hemorrhage (disorder)"
+          },
+          {
+            "code": "270907008",
+            "display": "Spontaneous intracranial subarachnoid hemorrhage (disorder)"
+          },
+          {
+            "code": "274100004",
+            "display": "Cerebral hemorrhage (disorder)"
+          },
+          {
+            "code": "276277008",
+            "display": "Subarachnoid hemorrhage from multiple aneurysms (disorder)"
+          },
+          {
+            "code": "276278003",
+            "display": "Subarachnoid hemorrhage from anterior cerebral artery aneurysm (disorder)"
+          },
+          {
+            "code": "276280009",
+            "display": "Subarachnoid hemorrhage from middle cerebral artery aneurysm (disorder)"
+          },
+          {
+            "code": "276281008",
+            "display": "Subarachnoid hemorrhage from posterior cerebral artery aneurysm (disorder)"
+          },
+          {
+            "code": "276282001",
+            "display": "Subarachnoid hemorrhage from anterior communicating artery aneurysm (disorder)"
+          },
+          {
+            "code": "276283006",
+            "display": "Subarachnoid hemorrhage from posterior communicating artery aneurysm (disorder)"
+          },
+          {
+            "code": "276284000",
+            "display": "Subarachnoid hemorrhage from basilar artery aneurysm (disorder)"
+          },
+          {
+            "code": "276285004",
+            "display": "Subarachnoid hemorrhage from posterior inferior cerebellar artery aneurysm (disorder)"
+          },
+          {
+            "code": "276286003",
+            "display": "Subarachnoid hemorrhage from carotid artery aneurysm (disorder)"
+          },
+          {
+            "code": "276722003",
+            "display": "Intracerebellar and posterior fossa hemorrhage (disorder)"
+          },
+          {
+            "code": "28318001",
+            "display": "Basilar hemorrhage (disorder)"
+          },
+          {
+            "code": "42429001",
+            "display": "Cerebromeningeal hemorrhage (disorder)"
+          },
+          {
+            "code": "425957003",
+            "display": "Non-traumatic intracerebral ventricular hemorrhage (disorder)"
+          },
+          {
+            "code": "449020009",
+            "display": "Intraparenchymal hemorrhage of brain (disorder)"
+          },
+          {
+            "code": "49422009",
+            "display": "Cortical hemorrhage (disorder)"
+          },
+          {
+            "code": "52201006",
+            "display": "Internal capsule hemorrhage (disorder)"
+          },
+          {
+            "code": "73020009",
+            "display": "Cerebral hemisphere hemorrhage (disorder)"
+          },
+          {
+            "code": "75038005",
+            "display": "Cerebellar hemorrhage (disorder)"
+          },
+          {
+            "code": "7713009",
+            "display": "Intrapontine hemorrhage (disorder)"
+          },
+          {
+            "code": "95454007",
+            "display": "Brain stem hemorrhage (disorder)"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "I60.00",
+            "display": "Nontraumatic subarachnoid hemorrhage from unspecified carotid siphon and bifurcation"
+          },
+          {
+            "code": "I60.01",
+            "display": "Nontraumatic subarachnoid hemorrhage from right carotid siphon and bifurcation"
+          },
+          {
+            "code": "I60.02",
+            "display": "Nontraumatic subarachnoid hemorrhage from left carotid siphon and bifurcation"
+          },
+          {
+            "code": "I60.10",
+            "display": "Nontraumatic subarachnoid hemorrhage from unspecified middle cerebral artery"
+          },
+          {
+            "code": "I60.11",
+            "display": "Nontraumatic subarachnoid hemorrhage from right middle cerebral artery"
+          },
+          {
+            "code": "I60.12",
+            "display": "Nontraumatic subarachnoid hemorrhage from left middle cerebral artery"
+          },
+          {
+            "code": "I60.2",
+            "display": "Nontraumatic subarachnoid hemorrhage from anterior communicating artery"
+          },
+          {
+            "code": "I60.30",
+            "display": "Nontraumatic subarachnoid hemorrhage from unspecified posterior communicating artery"
+          },
+          {
+            "code": "I60.31",
+            "display": "Nontraumatic subarachnoid hemorrhage from right posterior communicating artery"
+          },
+          {
+            "code": "I60.32",
+            "display": "Nontraumatic subarachnoid hemorrhage from left posterior communicating artery"
+          },
+          {
+            "code": "I60.4",
+            "display": "Nontraumatic subarachnoid hemorrhage from basilar artery"
+          },
+          {
+            "code": "I60.50",
+            "display": "Nontraumatic subarachnoid hemorrhage from unspecified vertebral artery"
+          },
+          {
+            "code": "I60.51",
+            "display": "Nontraumatic subarachnoid hemorrhage from right vertebral artery"
+          },
+          {
+            "code": "I60.52",
+            "display": "Nontraumatic subarachnoid hemorrhage from left vertebral artery"
+          },
+          {
+            "code": "I60.6",
+            "display": "Nontraumatic subarachnoid hemorrhage from other intracranial arteries"
+          },
+          {
+            "code": "I60.7",
+            "display": "Nontraumatic subarachnoid hemorrhage from unspecified intracranial artery"
+          },
+          {
+            "code": "I60.8",
+            "display": "Other nontraumatic subarachnoid hemorrhage"
+          },
+          {
+            "code": "I60.9",
+            "display": "Nontraumatic subarachnoid hemorrhage, unspecified"
+          },
+          {
+            "code": "I61.0",
+            "display": "Nontraumatic intracerebral hemorrhage in hemisphere, subcortical"
+          },
+          {
+            "code": "I61.1",
+            "display": "Nontraumatic intracerebral hemorrhage in hemisphere, cortical"
+          },
+          {
+            "code": "I61.2",
+            "display": "Nontraumatic intracerebral hemorrhage in hemisphere, unspecified"
+          },
+          {
+            "code": "I61.3",
+            "display": "Nontraumatic intracerebral hemorrhage in brain stem"
+          },
+          {
+            "code": "I61.4",
+            "display": "Nontraumatic intracerebral hemorrhage in cerebellum"
+          },
+          {
+            "code": "I61.5",
+            "display": "Nontraumatic intracerebral hemorrhage, intraventricular"
+          },
+          {
+            "code": "I61.6",
+            "display": "Nontraumatic intracerebral hemorrhage, multiple localized"
+          },
+          {
+            "code": "I61.8",
+            "display": "Other nontraumatic intracerebral hemorrhage"
+          },
+          {
+            "code": "I61.9",
+            "display": "Nontraumatic intracerebral hemorrhage, unspecified"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,1849 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.666.5.307",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.666.5.307"
+          }
+        ],
+        "version": "20170504",
+        "name": "EncounterInpatient",
+        "title": "Encounter Inpatient",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2018-03",
+              "concept": [
+                {
+                  "code": "183452005",
+                  "display": "Emergency hospital admission (procedure)"
+                },
+                {
+                  "code": "32485007",
+                  "display": "Hospital admission (procedure)"
+                },
+                {
+                  "code": "8715000",
+                  "display": "Hospital admission, elective (procedure)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.666.5.307"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.837",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.114222.4.11.837",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.837",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.114222.4.11.837"
+          }
+        ],
+        "version": "20121025",
+        "name": "Ethnicity",
+        "title": "Ethnicity",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.cdc.gov/phin/resources/vocabulary/index.html",
+              "version": "1.2",
+              "concept": [
+                {
+                  "code": "2135-2",
+                  "display": "Hispanic or Latino"
+                },
+                {
+                  "code": "2186-5",
+                  "display": "Not Hispanic or Latino"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.114222.4.11.837"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.560.100.2",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.560.100.2",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.560.100.2",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.560.100.2"
+          }
+        ],
+        "version": "20160331",
+        "name": "Female",
+        "title": "Female",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://hl7.org/fhir/v3/AdministrativeGender",
+              "version": "HL7V3.0_2017-07",
+              "concept": [
+                {
+                  "code": "F",
+                  "display": "Female"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.560.100.2"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1016",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.101.12.1016",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1016",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.101.12.1016"
+          }
+        ],
+        "version": "20180310",
+        "name": "HomeHealthcareServices",
+        "title": "Home Healthcare Services",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "99341",
+                  "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A problem focused history; A problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low severity. Typically, 20 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99342",
+                  "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; and Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99343",
+                  "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A detailed history; A detailed examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 45 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99344",
+                  "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99345",
+                  "display": "Home visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the patient is unstable or has developed a significant new problem requiring immediate physician attention. Typically, 75 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99347",
+                  "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A problem focused interval history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 15 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99348",
+                  "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: An expanded problem focused interval history; An expanded problem focused examination; Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 25 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99349",
+                  "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A detailed interval history; A detailed examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are moderate to high severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99350",
+                  "display": "Home visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A comprehensive interval history; A comprehensive examination; Medical decision making of moderate to high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. The patient may be unstable or may have developed a significant new problem requiring immediate physician attention. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2018-03",
+              "concept": [
+                {
+                  "code": "185460008",
+                  "display": "Home visit request by patient (procedure)"
+                },
+                {
+                  "code": "185462000",
+                  "display": "Home visit request by relative (procedure)"
+                },
+                {
+                  "code": "185466002",
+                  "display": "Home visit for urgent condition (procedure)"
+                },
+                {
+                  "code": "185467006",
+                  "display": "Home visit for acute condition (procedure)"
+                },
+                {
+                  "code": "185468001",
+                  "display": "Home visit for chronic condition (procedure)"
+                },
+                {
+                  "code": "185470005",
+                  "display": "Home visit elderly assessment (procedure)"
+                },
+                {
+                  "code": "225929007",
+                  "display": "Joint home visit (procedure)"
+                },
+                {
+                  "code": "315205008",
+                  "display": "Bank holiday home visit (procedure)"
+                },
+                {
+                  "code": "439708006",
+                  "display": "Home visit (procedure)"
+                },
+                {
+                  "code": "698704008",
+                  "display": "Home visit for rheumatology service (procedure)"
+                },
+                {
+                  "code": "704126008",
+                  "display": "Home visit for anticoagulant drug monitoring (procedure)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.101.12.1016"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1108.15",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113762.1.4.1108.15",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1108.15",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113762.1.4.1108.15"
+          }
+        ],
+        "version": "20170504",
+        "name": "Hospicecareambulatory",
+        "title": "Hospice care ambulatory",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2018-03",
+              "concept": [
+                {
+                  "code": "385763009",
+                  "display": "Hospice care (regime/therapy)"
+                },
+                {
+                  "code": "385765002",
+                  "display": "Hospice care management (procedure)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113762.1.4.1108.15"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.110.12.1059",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.110.12.1059",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.110.12.1059",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.110.12.1059"
+          }
+        ],
+        "version": "20170504",
+        "name": "HPVTest",
+        "title": "HPV Test",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://loinc.org",
+              "version": "2.56",
+              "concept": [
+                {
+                  "code": "75406-9",
+                  "display": "Human papilloma virus 16 and 18+45 E6+E7 mRNA [Presence] in Cervix by Probe with amplification"
+                }
+              ]
+            },
+            {
+              "system": "http://loinc.org",
+              "version": "2.64",
+              "concept": [
+                {
+                  "code": "21440-3",
+                  "display": "Human papilloma virus 16+18+31+33+35+45+51+52+56 DNA [Presence] in Cervix by Probe"
+                },
+                {
+                  "code": "30167-1",
+                  "display": "Human papilloma virus 16+18+31+33+35+39+45+51+52+56+58+59+68 DNA [Presence] in Cervix by Probe with signal amplification"
+                },
+                {
+                  "code": "38372-9",
+                  "display": "Human papilloma virus 6+11+16+18+31+33+35+39+42+43+44+45+51+52+56+58+59+68 DNA [Presence] in Cervix by Probe with signal amplification"
+                },
+                {
+                  "code": "59263-4",
+                  "display": "Human papilloma virus 16 DNA [Presence] in Cervix by Probe with signal amplification"
+                },
+                {
+                  "code": "59264-2",
+                  "display": "Human papilloma virus 18 DNA [Presence] in Cervix by Probe with signal amplification"
+                },
+                {
+                  "code": "59420-0",
+                  "display": "Human papilloma virus 16+18+31+33+35+39+45+51+52+56+58+59+66+68 DNA [Presence] in Cervix by Probe with signal amplification"
+                },
+                {
+                  "code": "69002-4",
+                  "display": "Human papilloma virus E6+E7 mRNA [Presence] in Cervix by NAA with probe detection"
+                },
+                {
+                  "code": "71431-1",
+                  "display": "Human papilloma virus 31+33+35+39+45+51+52+56+58+59+66+68 DNA [Presence] in Cervix by NAA with probe detection"
+                },
+                {
+                  "code": "75694-0",
+                  "display": "Human papilloma virus 18+45 E6+E7 mRNA [Presence] in Cervix by NAA with probe detection"
+                },
+                {
+                  "code": "77379-6",
+                  "display": "Human papilloma virus 16 and 18 and 31+33+35+39+45+51+52+56+58+59+66+68 DNA [Interpretation] in Cervix"
+                },
+                {
+                  "code": "77399-4",
+                  "display": "Human papilloma virus 16 DNA [Presence] in Cervix by NAA with probe detection"
+                },
+                {
+                  "code": "77400-0",
+                  "display": "Human papilloma virus 18 DNA [Presence] in Cervix by NAA with probe detection"
+                },
+                {
+                  "code": "82354-2",
+                  "display": "Human papilloma virus 16 and 18+45 E6+E7 mRNA [Identifier] in Cervix by NAA with probe detection"
+                },
+                {
+                  "code": "82456-5",
+                  "display": "Human papilloma virus 16 E6+E7 mRNA [Presence] in Cervix by NAA with probe detection"
+                },
+                {
+                  "code": "82675-0",
+                  "display": "Human papilloma virus 16+18+31+33+35+39+45+51+52+56+58+59+66+68 DNA [Presence] in Cervix by NAA with probe detection"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.110.12.1059"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1014",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.198.12.1014",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1014",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.198.12.1014"
+          }
+        ],
+        "version": "20170504",
+        "name": "HysterectomywithNoResidualCervix",
+        "title": "Hysterectomy with No Residual Cervix",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "1998",
+              "concept": [
+                {
+                  "code": "56308",
+                  "display": "Laparoscopy, surgical; with vaginal hysterectomy with or without removal of tube(s), with or without removal of ovary(s) (laparoscopic assisted vaginal hysterectomy)"
+                }
+              ]
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "51925",
+                  "display": "Closure of vesicouterine fistula; with hysterectomy"
+                },
+                {
+                  "code": "57540",
+                  "display": "Excision of cervical stump, abdominal approach"
+                },
+                {
+                  "code": "57545",
+                  "display": "Excision of cervical stump, abdominal approach; with pelvic floor repair"
+                },
+                {
+                  "code": "57550",
+                  "display": "Excision of cervical stump, vaginal approach"
+                },
+                {
+                  "code": "57555",
+                  "display": "Excision of cervical stump, vaginal approach; with anterior and/or posterior repair"
+                },
+                {
+                  "code": "57556",
+                  "display": "Excision of cervical stump, vaginal approach; with repair of enterocele"
+                },
+                {
+                  "code": "58150",
+                  "display": "Total abdominal hysterectomy (corpus and cervix), with or without removal of tube(s), with or without removal of ovary(s)"
+                },
+                {
+                  "code": "58152",
+                  "display": "Total abdominal hysterectomy (corpus and cervix), with or without removal of tube(s), with or without removal of ovary(s); with colpo-urethrocystopexy (eg, Marshall-Marchetti-Krantz, Burch)"
+                },
+                {
+                  "code": "58200",
+                  "display": "Total abdominal hysterectomy, including partial vaginectomy, with para-aortic and pelvic lymph node sampling, with or without removal of tube(s), with or without removal of ovary(s)"
+                },
+                {
+                  "code": "58210",
+                  "display": "Radical abdominal hysterectomy, with bilateral total pelvic lymphadenectomy and para-aortic lymph node sampling (biopsy), with or without removal of tube(s), with or without removal of ovary(s)"
+                },
+                {
+                  "code": "58240",
+                  "display": "Pelvic exenteration for gynecologic malignancy, with total abdominal hysterectomy or cervicectomy, with or without removal of tube(s), with or without removal of ovary(s), with removal of bladder and ureteral transplantations, and/or abdominoperineal resection of rectum and colon and colostomy, or any combination thereof"
+                },
+                {
+                  "code": "58260",
+                  "display": "Vaginal hysterectomy, for uterus 250 g or less"
+                },
+                {
+                  "code": "58262",
+                  "display": "Vaginal hysterectomy, for uterus 250 g or less; with removal of tube(s), and/or ovary(s)"
+                },
+                {
+                  "code": "58263",
+                  "display": "Vaginal hysterectomy, for uterus 250 g or less; with removal of tube(s), and/or ovary(s), with repair of enterocele"
+                },
+                {
+                  "code": "58267",
+                  "display": "Vaginal hysterectomy, for uterus 250 g or less; with colpo-urethrocystopexy (Marshall-Marchetti-Krantz type, Pereyra type) with or without endoscopic control"
+                },
+                {
+                  "code": "58270",
+                  "display": "Vaginal hysterectomy, for uterus 250 g or less; with repair of enterocele"
+                },
+                {
+                  "code": "58275",
+                  "display": "Vaginal hysterectomy, with total or partial vaginectomy"
+                },
+                {
+                  "code": "58280",
+                  "display": "Vaginal hysterectomy, with total or partial vaginectomy; with repair of enterocele"
+                },
+                {
+                  "code": "58285",
+                  "display": "Vaginal hysterectomy, radical (Schauta type operation)"
+                },
+                {
+                  "code": "58290",
+                  "display": "Vaginal hysterectomy, for uterus greater than 250 g"
+                },
+                {
+                  "code": "58291",
+                  "display": "Vaginal hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s)"
+                },
+                {
+                  "code": "58292",
+                  "display": "Vaginal hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s), with repair of enterocele"
+                },
+                {
+                  "code": "58293",
+                  "display": "Vaginal hysterectomy, for uterus greater than 250 g; with colpo-urethrocystopexy (Marshall-Marchetti-Krantz type, Pereyra type) with or without endoscopic control"
+                },
+                {
+                  "code": "58294",
+                  "display": "Vaginal hysterectomy, for uterus greater than 250 g; with repair of enterocele"
+                },
+                {
+                  "code": "58548",
+                  "display": "Laparoscopy, surgical, with radical hysterectomy, with bilateral total pelvic lymphadenectomy and para-aortic lymph node sampling (biopsy), with removal of tube(s) and ovary(s), if performed"
+                },
+                {
+                  "code": "58550",
+                  "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus 250 g or less"
+                },
+                {
+                  "code": "58552",
+                  "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus 250 g or less; with removal of tube(s) and/or ovary(s)"
+                },
+                {
+                  "code": "58553",
+                  "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus greater than 250 g"
+                },
+                {
+                  "code": "58554",
+                  "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s)"
+                },
+                {
+                  "code": "58570",
+                  "display": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less"
+                },
+                {
+                  "code": "58571",
+                  "display": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less; with removal of tube(s) and/or ovary(s)"
+                },
+                {
+                  "code": "58572",
+                  "display": "Laparoscopy, surgical, with total hysterectomy, for uterus greater than 250 g"
+                },
+                {
+                  "code": "58573",
+                  "display": "Laparoscopy, surgical, with total hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s)"
+                },
+                {
+                  "code": "58951",
+                  "display": "Resection (initial) of ovarian, tubal or primary peritoneal malignancy with bilateral salpingo-oophorectomy and omentectomy; with total abdominal hysterectomy, pelvic and limited para-aortic lymphadenectomy"
+                },
+                {
+                  "code": "58953",
+                  "display": "Bilateral salpingo-oophorectomy with omentectomy, total abdominal hysterectomy and radical dissection for debulking"
+                },
+                {
+                  "code": "58954",
+                  "display": "Bilateral salpingo-oophorectomy with omentectomy, total abdominal hysterectomy and radical dissection for debulking; with pelvic lymphadenectomy and limited para-aortic lymphadenectomy"
+                },
+                {
+                  "code": "58956",
+                  "display": "Bilateral salpingo-oophorectomy with total omentectomy, total abdominal hysterectomy for malignancy"
+                },
+                {
+                  "code": "59135",
+                  "display": "Surgical treatment of ectopic pregnancy; interstitial, uterine pregnancy requiring total hysterectomy"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2017-09",
+              "concept": [
+                {
+                  "code": "27950001",
+                  "display": "Total hysterectomy with unilateral removal of ovary (procedure)"
+                },
+                {
+                  "code": "31545000",
+                  "display": "Total hysterectomy with unilateral removal of tube (procedure)"
+                },
+                {
+                  "code": "59750000",
+                  "display": "Total hysterectomy with unilateral removal of tube and ovary (procedure)"
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2018-03",
+              "concept": [
+                {
+                  "code": "112918004",
+                  "display": "Vaginal hysterectomy with colpo-urethrocystopexy, Marshall-Marchetti-Krantz type (procedure)"
+                },
+                {
+                  "code": "116140006",
+                  "display": "Total hysterectomy (procedure)"
+                },
+                {
+                  "code": "116142003",
+                  "display": "Radical hysterectomy (procedure)"
+                },
+                {
+                  "code": "116143008",
+                  "display": "Total abdominal hysterectomy (procedure)"
+                },
+                {
+                  "code": "116144002",
+                  "display": "Total abdominal hysterectomy with bilateral salpingo-oophorectomy (procedure)"
+                },
+                {
+                  "code": "236888001",
+                  "display": "Laparoscopic total hysterectomy (procedure)"
+                },
+                {
+                  "code": "236891001",
+                  "display": "Laparoscopic radical hysterectomy (procedure)"
+                },
+                {
+                  "code": "24293001",
+                  "display": "Excision of cervical stump by abdominal approach (procedure)"
+                },
+                {
+                  "code": "265056007",
+                  "display": "Vaginal hysterectomy (procedure)"
+                },
+                {
+                  "code": "27185000",
+                  "display": "Vaginal hysterectomy with partial colpectomy and repair of enterocele (procedure)"
+                },
+                {
+                  "code": "287924009",
+                  "display": "Excision of cervix stump (procedure)"
+                },
+                {
+                  "code": "30160001",
+                  "display": "Vaginal hysterectomy with total colpectomy and repair of enterocele (procedure)"
+                },
+                {
+                  "code": "307771009",
+                  "display": "Radical abdominal hysterectomy (procedure)"
+                },
+                {
+                  "code": "309880009",
+                  "display": "Vaginal hysterocolpectomy (procedure)"
+                },
+                {
+                  "code": "35955002",
+                  "display": "Radical vaginal hysterectomy (procedure)"
+                },
+                {
+                  "code": "359971002",
+                  "display": "Ward-Mayo operation for vaginal hysterectomy (procedure)"
+                },
+                {
+                  "code": "359974005",
+                  "display": "Tuffier operation for vaginal hysterectomy (procedure)"
+                },
+                {
+                  "code": "359977003",
+                  "display": "Mayo operation for vaginal hysterectomy (procedure)"
+                },
+                {
+                  "code": "359983000",
+                  "display": "Heaney operation for vaginal hysterectomy (procedure)"
+                },
+                {
+                  "code": "361222003",
+                  "display": "Wertheim-Meigs abdominal hysterectomy (procedure)"
+                },
+                {
+                  "code": "361223008",
+                  "display": "Wertheim operation (procedure)"
+                },
+                {
+                  "code": "413145007",
+                  "display": "Vaginal hysterectomy with conservation of ovaries (procedure)"
+                },
+                {
+                  "code": "414575003",
+                  "display": "Laparoscopic total abdominal hysterectomy and bilateral salpingo-oophorectomy (procedure)"
+                },
+                {
+                  "code": "41566006",
+                  "display": "Excision of cervical stump by vaginal approach (procedure)"
+                },
+                {
+                  "code": "43791001",
+                  "display": "Vaginal hysterectomy with total colpectomy (procedure)"
+                },
+                {
+                  "code": "441820006",
+                  "display": "Laparoscopy assisted vaginal hysterectomy with bilateral salpingo-oophorectomy (procedure)"
+                },
+                {
+                  "code": "446446002",
+                  "display": "Total abdominal hysterectomy and removal of vaginal cuff (procedure)"
+                },
+                {
+                  "code": "446679008",
+                  "display": "Total laparoscopic excision of uterus by abdominal approach (procedure)"
+                },
+                {
+                  "code": "447771005",
+                  "display": "Abdominal hysterectomy and excision of periuterine tissue (procedure)"
+                },
+                {
+                  "code": "448539002",
+                  "display": "Vaginal hysterectomy and excision of periuterine tissue (procedure)"
+                },
+                {
+                  "code": "54490004",
+                  "display": "Vaginal hysterectomy with repair of enterocele (procedure)"
+                },
+                {
+                  "code": "63516002",
+                  "display": "Vaginal hysterectomy with colpo-urethrocystopexy, Pereyra type (procedure)"
+                },
+                {
+                  "code": "708877008",
+                  "display": "Laparoscopic total hysterectomy using robotic assistance (procedure)"
+                },
+                {
+                  "code": "708878003",
+                  "display": "Laparoscopic radical hysterectomy using robotic assistance (procedure)"
+                },
+                {
+                  "code": "75835007",
+                  "display": "Laparoscopic-assisted vaginal hysterectomy (procedure)"
+                },
+                {
+                  "code": "77902002",
+                  "display": "Vaginal hysterectomy with partial colpectomy (procedure)"
+                },
+                {
+                  "code": "86477000",
+                  "display": "Total hysterectomy with removal of both tubes and ovaries (procedure)"
+                },
+                {
+                  "code": "88144003",
+                  "display": "Removal of ectopic interstitial uterine pregnancy requiring total hysterectomy (procedure)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.198.12.1014"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.101.12.1001",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.101.12.1001"
+          }
+        ],
+        "version": "20180310",
+        "name": "OfficeVisit",
+        "title": "Office Visit",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "99201",
+                  "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A problem focused history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 10 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99202",
+                  "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 20 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99203",
+                  "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A detailed history; A detailed examination; Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 30 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99204",
+                  "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 45 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99205",
+                  "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 60 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99212",
+                  "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A problem focused history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 10 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99213",
+                  "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: An expanded problem focused history; An expanded problem focused examination; Medical decision making of low complexity. Counseling and coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low to moderate severity. Typically, 15 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99214",
+                  "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A detailed history; A detailed examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 25 minutes are spent face-to-face with the patient and/or family."
+                },
+                {
+                  "code": "99215",
+                  "display": "Office or other outpatient visit for the evaluation and management of an established patient, which requires at least 2 of these 3 key components: A comprehensive history; A comprehensive examination; Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 40 minutes are spent face-to-face with the patient and/or family."
+                }
+              ]
+            },
+            {
+              "system": "http://snomed.info/sct",
+              "version": "2018-03",
+              "concept": [
+                {
+                  "code": "185463005",
+                  "display": "Visit out of hours (procedure)"
+                },
+                {
+                  "code": "185464004",
+                  "display": "Out of hours visit - not night visit (procedure)"
+                },
+                {
+                  "code": "185465003",
+                  "display": "Weekend visit (procedure)"
+                },
+                {
+                  "code": "30346009",
+                  "display": "Evaluation and management of established outpatient in office or other outpatient facility (procedure)"
+                },
+                {
+                  "code": "3391000175108",
+                  "display": "Office visit for pediatric care and assessment (procedure)"
+                },
+                {
+                  "code": "37894004",
+                  "display": "Evaluation and management of new outpatient in office or other outpatient facility (procedure)"
+                },
+                {
+                  "code": "439740005",
+                  "display": "Postoperative follow-up visit (procedure)"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113762.1.4.1",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113762.1.4.1"
+          }
+        ],
+        "version": "20150331",
+        "name": "ONCAdministrativeSex",
+        "title": "ONC Administrative Sex",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://hl7.org/fhir/v3/AdministrativeGender",
+              "version": "HL7V3.0_2017-07",
+              "concept": [
+                {
+                  "code": "F",
+                  "display": "Female"
+                },
+                {
+                  "code": "M",
+                  "display": "Male"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113762.1.4.1"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1017",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.108.12.1017",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1017",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.108.12.1017"
+          }
+        ],
+        "version": "20170504",
+        "name": "PapTest",
+        "title": "Pap Test",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://loinc.org",
+              "version": "2.64",
+              "concept": [
+                {
+                  "code": "10524-7",
+                  "display": "Microscopic observation [Identifier] in Cervix by Cyto stain"
+                },
+                {
+                  "code": "18500-9",
+                  "display": "Microscopic observation [Identifier] in Cervix by Cyto stain.thin prep"
+                },
+                {
+                  "code": "19762-4",
+                  "display": "General categories [Interpretation] of Cervical or vaginal smear or scraping by Cyto stain"
+                },
+                {
+                  "code": "19764-0",
+                  "display": "Statement of adequacy [Interpretation] of Cervical or vaginal smear or scraping by Cyto stain"
+                },
+                {
+                  "code": "19765-7",
+                  "display": "Microscopic observation [Identifier] in Cervical or vaginal smear or scraping by Cyto stain"
+                },
+                {
+                  "code": "19766-5",
+                  "display": "Microscopic observation [Identifier] in Cervical or vaginal smear or scraping by Cyto stain Narrative"
+                },
+                {
+                  "code": "19774-9",
+                  "display": "Cytology study comment Cervical or vaginal smear or scraping Cyto stain"
+                },
+                {
+                  "code": "33717-0",
+                  "display": "Cytology Cervical or vaginal smear or scraping study"
+                },
+                {
+                  "code": "47527-7",
+                  "display": "Cytology report of Cervical or vaginal smear or scraping Cyto stain.thin prep"
+                },
+                {
+                  "code": "47528-5",
+                  "display": "Cytology report of Cervical or vaginal smear or scraping Cyto stain"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.108.12.1017"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.3591",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.114222.4.11.3591",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.3591",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.114222.4.11.3591"
+          }
+        ],
+        "version": "20180718",
+        "name": "Payer",
+        "title": "Payer",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.phdsc.org/standards/pdfs/SourceofPaymentTypologyVersion6FINALSeptember2015.pdf",
+              "version": "8.0",
+              "concept": [
+                {
+                  "code": "1",
+                  "display": "MEDICARE"
+                },
+                {
+                  "code": "11",
+                  "display": "Medicare (Managed Care)"
+                },
+                {
+                  "code": "111",
+                  "display": "Medicare HMO"
+                },
+                {
+                  "code": "112",
+                  "display": "Medicare PPO"
+                },
+                {
+                  "code": "113",
+                  "display": "Medicare POS"
+                },
+                {
+                  "code": "119",
+                  "display": "Medicare Managed Care Other"
+                },
+                {
+                  "code": "12",
+                  "display": "Medicare (Non-managed Care)"
+                },
+                {
+                  "code": "121",
+                  "display": "Medicare FFS"
+                },
+                {
+                  "code": "122",
+                  "display": "Medicare Drug Benefit"
+                },
+                {
+                  "code": "123",
+                  "display": "Medicare Medical Savings Account (MSA)"
+                },
+                {
+                  "code": "129",
+                  "display": "Medicare Non-managed Care Other"
+                },
+                {
+                  "code": "13",
+                  "display": "Medicare Hospice"
+                },
+                {
+                  "code": "14",
+                  "display": "Dual Eligibility Medicare/Medicaid Organization"
+                },
+                {
+                  "code": "19",
+                  "display": "Medicare Other"
+                },
+                {
+                  "code": "191",
+                  "display": "Medicare Pharmacy Benefit Manager"
+                },
+                {
+                  "code": "2",
+                  "display": "MEDICAID"
+                },
+                {
+                  "code": "21",
+                  "display": "Medicaid (Managed Care)"
+                },
+                {
+                  "code": "211",
+                  "display": "Medicaid HMO"
+                },
+                {
+                  "code": "212",
+                  "display": "Medicaid PPO"
+                },
+                {
+                  "code": "213",
+                  "display": "Medicaid PCCM (Primary Care Case Management)"
+                },
+                {
+                  "code": "219",
+                  "display": "Medicaid Managed Care Other"
+                },
+                {
+                  "code": "22",
+                  "display": "Medicaid (Non-managed Care Plan)"
+                },
+                {
+                  "code": "23",
+                  "display": "Medicaid/SCHIP"
+                },
+                {
+                  "code": "25",
+                  "display": "Medicaid - Out of State"
+                },
+                {
+                  "code": "26",
+                  "display": "Medicaid -- Long Term Care"
+                },
+                {
+                  "code": "29",
+                  "display": "Medicaid Other"
+                },
+                {
+                  "code": "291",
+                  "display": "Medicaid Pharmacy Benefit Manager"
+                },
+                {
+                  "code": "299",
+                  "display": "Medicaid - Dental"
+                },
+                {
+                  "code": "3",
+                  "display": "OTHER GOVERNMENT (Federal/State/Local) (excluding Department of Corrections)"
+                },
+                {
+                  "code": "31",
+                  "display": "Department of Defense"
+                },
+                {
+                  "code": "311",
+                  "display": "TRICARE (CHAMPUS)"
+                },
+                {
+                  "code": "3111",
+                  "display": "TRICARE Prime--HMO"
+                },
+                {
+                  "code": "3112",
+                  "display": "TRICARE Extra--PPO"
+                },
+                {
+                  "code": "3113",
+                  "display": "TRICARE Standard - Fee For Service"
+                },
+                {
+                  "code": "3114",
+                  "display": "TRICARE For Life--Medicare Supplement"
+                },
+                {
+                  "code": "3115",
+                  "display": "TRICARE Reserve Select"
+                },
+                {
+                  "code": "3116",
+                  "display": "Uniformed Services Family Health Plan (USFHP) -- HMO"
+                },
+                {
+                  "code": "3119",
+                  "display": "Department of Defense - (other)"
+                },
+                {
+                  "code": "312",
+                  "display": "Military Treatment Facility"
+                },
+                {
+                  "code": "3121",
+                  "display": "Enrolled Prime--HMO"
+                },
+                {
+                  "code": "3122",
+                  "display": "Non-enrolled Space Available"
+                },
+                {
+                  "code": "3123",
+                  "display": "TRICARE For Life (TFL)"
+                },
+                {
+                  "code": "313",
+                  "display": "Dental --Stand Alone"
+                },
+                {
+                  "code": "32",
+                  "display": "Department of Veterans Affairs"
+                },
+                {
+                  "code": "321",
+                  "display": "Veteran care--Care provided to Veterans"
+                },
+                {
+                  "code": "3211",
+                  "display": "Direct Care--Care provided in VA facilities"
+                },
+                {
+                  "code": "3212",
+                  "display": "Indirect Care--Care provided outside VA facilities"
+                },
+                {
+                  "code": "32121",
+                  "display": "Fee Basis"
+                },
+                {
+                  "code": "32122",
+                  "display": "Foreign Fee/Foreign Medical Program (FMP)"
+                },
+                {
+                  "code": "32123",
+                  "display": "Contract Nursing Home/Community Nursing Home"
+                },
+                {
+                  "code": "32124",
+                  "display": "State Veterans Home"
+                },
+                {
+                  "code": "32125",
+                  "display": "Sharing Agreements"
+                },
+                {
+                  "code": "32126",
+                  "display": "Other Federal Agency"
+                },
+                {
+                  "code": "32127",
+                  "display": "Dental Care"
+                },
+                {
+                  "code": "32128",
+                  "display": "Vision Care"
+                },
+                {
+                  "code": "322",
+                  "display": "Non-veteran care"
+                },
+                {
+                  "code": "3221",
+                  "display": "Civilian Health and Medical Program for the VA (CHAMPVA)"
+                },
+                {
+                  "code": "3222",
+                  "display": "Spina Bifida Health Care Program (SB)"
+                },
+                {
+                  "code": "3223",
+                  "display": "Children of Women Vietnam Veterans (CWVV)"
+                },
+                {
+                  "code": "3229",
+                  "display": "Other non-veteran care"
+                },
+                {
+                  "code": "33",
+                  "display": "Indian Health Service or Tribe"
+                },
+                {
+                  "code": "331",
+                  "display": "Indian Health Service -- Regular"
+                },
+                {
+                  "code": "332",
+                  "display": "Indian Health Service -- Contract"
+                },
+                {
+                  "code": "333",
+                  "display": "Indian Health Service - Managed Care"
+                },
+                {
+                  "code": "334",
+                  "display": "Indian Tribe - Sponsored Coverage"
+                },
+                {
+                  "code": "34",
+                  "display": "HRSA Program"
+                },
+                {
+                  "code": "341",
+                  "display": "Title V (MCH Block Grant)"
+                },
+                {
+                  "code": "342",
+                  "display": "Migrant Health Program"
+                },
+                {
+                  "code": "343",
+                  "display": "Ryan White Act"
+                },
+                {
+                  "code": "349",
+                  "display": "Other"
+                },
+                {
+                  "code": "35",
+                  "display": "Black Lung"
+                },
+                {
+                  "code": "36",
+                  "display": "State Government"
+                },
+                {
+                  "code": "361",
+                  "display": "State SCHIP program (codes for individual states)"
+                },
+                {
+                  "code": "362",
+                  "display": "Specific state programs (list/ local code)"
+                },
+                {
+                  "code": "369",
+                  "display": "State, not otherwise specified (other state)"
+                },
+                {
+                  "code": "37",
+                  "display": "Local Government"
+                },
+                {
+                  "code": "371",
+                  "display": "Local - Managed care"
+                },
+                {
+                  "code": "3711",
+                  "display": "HMO"
+                },
+                {
+                  "code": "3712",
+                  "display": "PPO"
+                },
+                {
+                  "code": "3713",
+                  "display": "POS"
+                },
+                {
+                  "code": "372",
+                  "display": "FFS/Indemnity"
+                },
+                {
+                  "code": "379",
+                  "display": "Local, not otherwise specified (other local, county)"
+                },
+                {
+                  "code": "38",
+                  "display": "Other Government (Federal, State, Local not specified)"
+                },
+                {
+                  "code": "381",
+                  "display": "Federal, State, Local not specified managed care"
+                },
+                {
+                  "code": "3811",
+                  "display": "Federal, State, Local not specified - HMO"
+                },
+                {
+                  "code": "3812",
+                  "display": "Federal, State, Local not specified - PPO"
+                },
+                {
+                  "code": "3813",
+                  "display": "Federal, State, Local not specified - POS"
+                },
+                {
+                  "code": "3819",
+                  "display": "Federal, State, Local not specified - not specified managed care"
+                },
+                {
+                  "code": "382",
+                  "display": "Federal, State, Local not specified - FFS"
+                },
+                {
+                  "code": "389",
+                  "display": "Federal, State, Local not specified - Other"
+                },
+                {
+                  "code": "39",
+                  "display": "Other Federal"
+                },
+                {
+                  "code": "391",
+                  "display": "Federal Employee Health Plan - Use when known"
+                },
+                {
+                  "code": "4",
+                  "display": "DEPARTMENTS OF CORRECTIONS"
+                },
+                {
+                  "code": "41",
+                  "display": "Corrections Federal"
+                },
+                {
+                  "code": "42",
+                  "display": "Corrections State"
+                },
+                {
+                  "code": "43",
+                  "display": "Corrections Local"
+                },
+                {
+                  "code": "44",
+                  "display": "Corrections Unknown Level"
+                },
+                {
+                  "code": "5",
+                  "display": "PRIVATE HEALTH INSURANCE"
+                },
+                {
+                  "code": "51",
+                  "display": "Managed Care (Private)"
+                },
+                {
+                  "code": "511",
+                  "display": "Commercial Managed Care - HMO"
+                },
+                {
+                  "code": "512",
+                  "display": "Commercial Managed Care - PPO"
+                },
+                {
+                  "code": "513",
+                  "display": "Commercial Managed Care - POS"
+                },
+                {
+                  "code": "514",
+                  "display": "Exclusive Provider Organization"
+                },
+                {
+                  "code": "515",
+                  "display": "Gatekeeper PPO (GPPO)"
+                },
+                {
+                  "code": "516",
+                  "display": "Commercial Managed Care - Pharmacy Benefit Manager"
+                },
+                {
+                  "code": "517",
+                  "display": "Commercial Managed Care - Dental"
+                },
+                {
+                  "code": "519",
+                  "display": "Managed Care, Other (non HMO)"
+                },
+                {
+                  "code": "52",
+                  "display": "Private Health Insurance - Indemnity"
+                },
+                {
+                  "code": "521",
+                  "display": "Commercial Indemnity"
+                },
+                {
+                  "code": "522",
+                  "display": "Self-insured (ERISA) Administrative Services Only (ASO) plan"
+                },
+                {
+                  "code": "523",
+                  "display": "Medicare supplemental policy (as second payer)"
+                },
+                {
+                  "code": "524",
+                  "display": "Indemnity Insurance - Dental"
+                },
+                {
+                  "code": "529",
+                  "display": "Private health insurance--other commercial Indemnity"
+                },
+                {
+                  "code": "53",
+                  "display": "Managed Care (private) or private health insurance (indemnity), not otherwise specified"
+                },
+                {
+                  "code": "54",
+                  "display": "Organized Delivery System"
+                },
+                {
+                  "code": "55",
+                  "display": "Small Employer Purchasing Group"
+                },
+                {
+                  "code": "56",
+                  "display": "Specialized Stand Alone Plan"
+                },
+                {
+                  "code": "561",
+                  "display": "Dental"
+                },
+                {
+                  "code": "562",
+                  "display": "Vision"
+                },
+                {
+                  "code": "59",
+                  "display": "Other Private Insurance"
+                },
+                {
+                  "code": "6",
+                  "display": "BLUE CROSS/BLUE SHIELD"
+                },
+                {
+                  "code": "61",
+                  "display": "BC Managed Care"
+                },
+                {
+                  "code": "611",
+                  "display": "BC Managed Care -- HMO"
+                },
+                {
+                  "code": "612",
+                  "display": "BC Managed Care -- PPO"
+                },
+                {
+                  "code": "613",
+                  "display": "BC Managed Care -- POS"
+                },
+                {
+                  "code": "614",
+                  "display": "BC Managed Care - Dental"
+                },
+                {
+                  "code": "619",
+                  "display": "BC Managed Care -- Other"
+                },
+                {
+                  "code": "62",
+                  "display": "BC Insurance Indemnity"
+                },
+                {
+                  "code": "621",
+                  "display": "BC Indemnity"
+                },
+                {
+                  "code": "622",
+                  "display": "BC Self-insured (ERISA) Administrative Services Only (ASO)Plan"
+                },
+                {
+                  "code": "623",
+                  "display": "BC Medicare Supplemental Plan"
+                },
+                {
+                  "code": "629",
+                  "display": "BC Indemnity - Dental"
+                },
+                {
+                  "code": "7",
+                  "display": "MANAGED CARE, UNSPECIFIED (to be used only if one can't distinguish public from private)"
+                },
+                {
+                  "code": "71",
+                  "display": "HMO"
+                },
+                {
+                  "code": "72",
+                  "display": "PPO"
+                },
+                {
+                  "code": "73",
+                  "display": "POS"
+                },
+                {
+                  "code": "79",
+                  "display": "Other Managed Care"
+                },
+                {
+                  "code": "8",
+                  "display": "NO PAYMENT from an Organization/Agency/Program/Private Payer Listed"
+                },
+                {
+                  "code": "81",
+                  "display": "Self-pay (Includes applicants for insurance and Medicaid applicants)"
+                },
+                {
+                  "code": "82",
+                  "display": "No Charge"
+                },
+                {
+                  "code": "821",
+                  "display": "Charity"
+                },
+                {
+                  "code": "822",
+                  "display": "Professional Courtesy"
+                },
+                {
+                  "code": "823",
+                  "display": "Research/Clinical Trial"
+                },
+                {
+                  "code": "83",
+                  "display": "Refusal to Pay/Bad Debt"
+                },
+                {
+                  "code": "84",
+                  "display": "Hill Burton Free Care"
+                },
+                {
+                  "code": "85",
+                  "display": "Research/Donor"
+                },
+                {
+                  "code": "89",
+                  "display": "No Payment, Other"
+                },
+                {
+                  "code": "9",
+                  "display": "MISCELLANEOUS/OTHER"
+                },
+                {
+                  "code": "91",
+                  "display": "Foreign National"
+                },
+                {
+                  "code": "92",
+                  "display": "Other (Non-government)"
+                },
+                {
+                  "code": "93",
+                  "display": "Disability Insurance"
+                },
+                {
+                  "code": "94",
+                  "display": "Long-term Care Insurance"
+                },
+                {
+                  "code": "95",
+                  "display": "Worker's Compensation"
+                },
+                {
+                  "code": "951",
+                  "display": "Worker's Comp HMO"
+                },
+                {
+                  "code": "953",
+                  "display": "Worker's Comp Fee-for-Service"
+                },
+                {
+                  "code": "954",
+                  "display": "Worker's Comp Other Managed Care"
+                },
+                {
+                  "code": "959",
+                  "display": "Worker's Comp, Other unspecified"
+                },
+                {
+                  "code": "96",
+                  "display": "Auto Insurance (includes no fault)"
+                },
+                {
+                  "code": "97",
+                  "display": "Legal Liability / Liability Insurance"
+                },
+                {
+                  "code": "98",
+                  "display": "Other specified but not otherwise classifiable (includes Hospice - Unspecified plan)"
+                },
+                {
+                  "code": "99",
+                  "display": "No Typology Code available for payment source"
+                },
+                {
+                  "code": "9999",
+                  "display": "Unavailable / No Payer Specified / Blank"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.114222.4.11.3591"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1025",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.101.12.1025",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1025",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.101.12.1025"
+          }
+        ],
+        "version": "20170504",
+        "name": "PreventiveCareServices-EstablishedOfficeVisit,18andUp",
+        "title": "Preventive Care Services - Established Office Visit, 18 and Up",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "99395",
+                  "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 18-39 years"
+                },
+                {
+                  "code": "99396",
+                  "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 40-64 years"
+                },
+                {
+                  "code": "99397",
+                  "display": "Periodic comprehensive preventive medicine reevaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, established patient; 65 years and older"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.101.12.1025"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1023",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.464.1003.101.12.1023",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1023",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.464.1003.101.12.1023"
+          }
+        ],
+        "version": "20170504",
+        "name": "PreventiveCareServices-InitialOfficeVisit,18andUp",
+        "title": "Preventive Care Services-Initial Office Visit, 18 and Up",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "99385",
+                  "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 18-39 years"
+                },
+                {
+                  "code": "99386",
+                  "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 40-64 years"
+                },
+                {
+                  "code": "99387",
+                  "display": "Initial comprehensive preventive medicine evaluation and management of an individual including an age and gender appropriate history, examination, counseling/anticipatory guidance/risk factor reduction interventions, and the ordering of laboratory/diagnostic procedures, new patient; 65 years and older"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.464.1003.101.12.1023"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.836",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.114222.4.11.836",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.836",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.114222.4.11.836"
+          }
+        ],
+        "version": "20121025",
+        "name": "Race",
+        "title": "Race",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "http://www.cdc.gov/phin/resources/vocabulary/index.html",
+              "version": "1.2",
+              "concept": [
+                {
+                  "code": "1002-5",
+                  "display": "American Indian or Alaska Native"
+                },
+                {
+                  "code": "2028-9",
+                  "display": "Asian"
+                },
+                {
+                  "code": "2054-5",
+                  "display": "Black or African American"
+                },
+                {
+                  "code": "2076-8",
+                  "display": "Native Hawaiian or Other Pacific Islander"
+                },
+                {
+                  "code": "2106-3",
+                  "display": "White"
+                },
+                {
+                  "code": "2131-1",
+                  "display": "Other Race"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.114222.4.11.836"
+      }
+    },
+    {
+      "fullUrl": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.3.1240",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "2.16.840.1.113883.3.526.3.1240",
+        "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.3.1240",
+        "identifier": [
+          {
+            "system": "urn:ietf:rfc:3986",
+            "value": "2.16.840.1.113883.3.526.3.1240"
+          }
+        ],
+        "version": "20170504",
+        "name": "AnnualWellnessVisit",
+        "title": "Annual Wellness Visit",
+        "status": "active",
+        "publisher": "NLM",
+        "compose": {
+          "include": [
+            {
+              "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+              "version": "2018",
+              "concept": [
+                {
+                  "code": "G0438",
+                  "display": "Annual wellness visit; includes a personalized prevention plan of service (pps), initial visit"
+                },
+                {
+                  "code": "G0439",
+                  "display": "Annual wellness visit, includes a personalized prevention plan of service (pps), subsequent visit"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "ValueSet/2.16.840.1.113883.3.526.3.1240"
+      }
+    }
+  ]
+}

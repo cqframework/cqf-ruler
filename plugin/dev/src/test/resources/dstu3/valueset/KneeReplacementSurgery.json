@@ -1,0 +1,392 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.261",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.261",
+  "title": "Knee Replacement Surgery",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "179344006",
+            "display": "Primary cemented total knee replacement (procedure)"
+          },
+          {
+            "code": "179345007",
+            "display": "Conversion to cemented total knee replacement (procedure)"
+          },
+          {
+            "code": "179351002",
+            "display": "Primary uncemented total knee replacement (procedure)"
+          },
+          {
+            "code": "179352009",
+            "display": "Conversion to uncemented total knee replacement (procedure)"
+          },
+          {
+            "code": "179406003",
+            "display": "Conversion from cemented unicompartmental knee replacement (procedure)"
+          },
+          {
+            "code": "179411001",
+            "display": "Conversion from uncemented unicompartmental knee replacement (procedure)"
+          },
+          {
+            "code": "179416006",
+            "display": "Conversion from hybrid unicompartmental knee replacement (procedure)"
+          },
+          {
+            "code": "265170009",
+            "display": "Total prosthetic replacement of knee joint using cement (procedure)"
+          },
+          {
+            "code": "265172001",
+            "display": "Total prosthetic replacement of knee joint not using cement (procedure)"
+          },
+          {
+            "code": "27748003",
+            "display": "Arthroplasty of knee, condyle and plateau, lateral compartment (procedure)"
+          },
+          {
+            "code": "29712008",
+            "display": "Revision of knee replacement (procedure)"
+          },
+          {
+            "code": "443681002",
+            "display": "Total replacement of left knee joint (procedure)"
+          },
+          {
+            "code": "443682009",
+            "display": "Total replacement of right knee joint (procedure)"
+          },
+          {
+            "code": "445091006",
+            "display": "Revision of hybrid knee replacement (procedure)"
+          },
+          {
+            "code": "88056004",
+            "display": "Arthroplasty of knee with constrained prosthesis (procedure)"
+          },
+          {
+            "code": "90827004",
+            "display": "Arthroplasty of knee, condyle and plateau, medial compartment (procedure)"
+          }
+        ]
+      },
+      {
+        "system": "http://www.icd10data.com/icd10pcs",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "0QPD0JZ",
+            "display": "Removal of Synthetic Substitute from Right Patella, Open Approach"
+          },
+          {
+            "code": "0QPF0JZ",
+            "display": "Removal of Synthetic Substitute from Left Patella, Open Approach"
+          },
+          {
+            "code": "0QRD0JZ",
+            "display": "Replacement of Right Patella with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0QRF0JZ",
+            "display": "Replacement of Left Patella with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0QUD0JZ",
+            "display": "Supplement Right Patella with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0QUF0JZ",
+            "display": "Supplement Left Patella with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SPC09Z",
+            "display": "Removal of Liner from Right Knee Joint, Open Approach"
+          },
+          {
+            "code": "0SPC0JC",
+            "display": "Removal of Synthetic Substitute from Right Knee Joint, Patellar Surface, Open Approach"
+          },
+          {
+            "code": "0SPC0JZ",
+            "display": "Removal of Synthetic Substitute from Right Knee Joint, Open Approach"
+          },
+          {
+            "code": "0SPD09Z",
+            "display": "Removal of Liner from Left Knee Joint, Open Approach"
+          },
+          {
+            "code": "0SPD0JC",
+            "display": "Removal of Synthetic Substitute from Left Knee Joint, Patellar Surface, Open Approach"
+          },
+          {
+            "code": "0SPD0JZ",
+            "display": "Removal of Synthetic Substitute from Left Knee Joint, Open Approach"
+          },
+          {
+            "code": "0SPT0JZ",
+            "display": "Removal of Synthetic Substitute from Right Knee Joint, Femoral Surface, Open Approach"
+          },
+          {
+            "code": "0SPU0JZ",
+            "display": "Removal of Synthetic Substitute from Left Knee Joint, Femoral Surface, Open Approach"
+          },
+          {
+            "code": "0SPV0JZ",
+            "display": "Removal of Synthetic Substitute from Right Knee Joint, Tibial Surface, Open Approach"
+          },
+          {
+            "code": "0SPW0JZ",
+            "display": "Removal of Synthetic Substitute from Left Knee Joint, Tibial Surface, Open Approach"
+          },
+          {
+            "code": "0SRC07Z",
+            "display": "Replacement of Right Knee Joint with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRC0J9",
+            "display": "Replacement of Right Knee Joint with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRC0JA",
+            "display": "Replacement of Right Knee Joint with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRC0JZ",
+            "display": "Replacement of Right Knee Joint with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRC0KZ",
+            "display": "Replacement of Right Knee Joint with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRC0L9",
+            "display": "Replacement of Right Knee Joint with Medial Unicondylar Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRC0LA",
+            "display": "Replacement of Right Knee Joint with Medial Unicondylar Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRC0LZ",
+            "display": "Replacement of Right Knee Joint with Medial Unicondylar Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRD07Z",
+            "display": "Replacement of Left Knee Joint with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRD0J9",
+            "display": "Replacement of Left Knee Joint with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRD0JA",
+            "display": "Replacement of Left Knee Joint with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRD0JZ",
+            "display": "Replacement of Left Knee Joint with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRD0KZ",
+            "display": "Replacement of Left Knee Joint with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRD0L9",
+            "display": "Replacement of Left Knee Joint with Medial Unicondylar Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRD0LA",
+            "display": "Replacement of Left Knee Joint with Medial Unicondylar Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRD0LZ",
+            "display": "Replacement of Left Knee Joint with Medial Unicondylar Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRT07Z",
+            "display": "Replacement of Right Knee Joint, Femoral Surface with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRT0J9",
+            "display": "Replacement of Right Knee Joint, Femoral Surface with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRT0JA",
+            "display": "Replacement of Right Knee Joint, Femoral Surface with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRT0JZ",
+            "display": "Replacement of Right Knee Joint, Femoral Surface with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRT0KZ",
+            "display": "Replacement of Right Knee Joint, Femoral Surface with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRU07Z",
+            "display": "Replacement of Left Knee Joint, Femoral Surface with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRU0J9",
+            "display": "Replacement of Left Knee Joint, Femoral Surface with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRU0JA",
+            "display": "Replacement of Left Knee Joint, Femoral Surface with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRU0JZ",
+            "display": "Replacement of Left Knee Joint, Femoral Surface with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRU0KZ",
+            "display": "Replacement of Left Knee Joint, Femoral Surface with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRV07Z",
+            "display": "Replacement of Right Knee Joint, Tibial Surface with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRV0J9",
+            "display": "Replacement of Right Knee Joint, Tibial Surface with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRV0JA",
+            "display": "Replacement of Right Knee Joint, Tibial Surface with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRV0JZ",
+            "display": "Replacement of Right Knee Joint, Tibial Surface with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRV0KZ",
+            "display": "Replacement of Right Knee Joint, Tibial Surface with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRW07Z",
+            "display": "Replacement of Left Knee Joint, Tibial Surface with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRW0J9",
+            "display": "Replacement of Left Knee Joint, Tibial Surface with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRW0JA",
+            "display": "Replacement of Left Knee Joint, Tibial Surface with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRW0JZ",
+            "display": "Replacement of Left Knee Joint, Tibial Surface with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRW0KZ",
+            "display": "Replacement of Left Knee Joint, Tibial Surface with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SUC07Z",
+            "display": "Supplement Right Knee Joint with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SUC09C",
+            "display": "Supplement Right Knee Joint with Liner, Patellar Surface, Open Approach"
+          },
+          {
+            "code": "0SUC09Z",
+            "display": "Supplement Right Knee Joint with Liner, Open Approach"
+          },
+          {
+            "code": "0SUC0JZ",
+            "display": "Supplement Right Knee Joint with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SUC0KZ",
+            "display": "Supplement Right Knee Joint with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SUD07Z",
+            "display": "Supplement Left Knee Joint with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SUD09C",
+            "display": "Supplement Left Knee Joint with Liner, Patellar Surface, Open Approach"
+          },
+          {
+            "code": "0SUD09Z",
+            "display": "Supplement Left Knee Joint with Liner, Open Approach"
+          },
+          {
+            "code": "0SUD0JZ",
+            "display": "Supplement Left Knee Joint with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SUD0KZ",
+            "display": "Supplement Left Knee Joint with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SUT09Z",
+            "display": "Supplement Right Knee Joint, Femoral Surface with Liner, Open Approach"
+          },
+          {
+            "code": "0SUU09Z",
+            "display": "Supplement Left Knee Joint, Femoral Surface with Liner, Open Approach"
+          },
+          {
+            "code": "0SUV09Z",
+            "display": "Supplement Right Knee Joint, Tibial Surface with Liner, Open Approach"
+          },
+          {
+            "code": "0SUW09Z",
+            "display": "Supplement Left Knee Joint, Tibial Surface with Liner, Open Approach"
+          },
+          {
+            "code": "0SWC09Z",
+            "display": "Revision of Liner in Right Knee Joint, Open Approach"
+          },
+          {
+            "code": "0SWC0JC",
+            "display": "Revision of Synthetic Substitute in Right Knee Joint, Patellar Surface, Open Approach"
+          },
+          {
+            "code": "0SWC0JZ",
+            "display": "Revision of Synthetic Substitute in Right Knee Joint, Open Approach"
+          },
+          {
+            "code": "0SWD09Z",
+            "display": "Revision of Liner in Left Knee Joint, Open Approach"
+          },
+          {
+            "code": "0SWD0JC",
+            "display": "Revision of Synthetic Substitute in Left Knee Joint, Patellar Surface, Open Approach"
+          },
+          {
+            "code": "0SWD0JZ",
+            "display": "Revision of Synthetic Substitute in Left Knee Joint, Open Approach"
+          },
+          {
+            "code": "0SWT0JZ",
+            "display": "Revision of Synthetic Substitute in Right Knee Joint, Femoral Surface, Open Approach"
+          },
+          {
+            "code": "0SWU0JZ",
+            "display": "Revision of Synthetic Substitute in Left Knee Joint, Femoral Surface, Open Approach"
+          },
+          {
+            "code": "0SWV0JZ",
+            "display": "Revision of Synthetic Substitute in Right Knee Joint, Tibial Surface, Open Approach"
+          },
+          {
+            "code": "0SWW0JZ",
+            "display": "Revision of Synthetic Substitute in Left Knee Joint, Tibial Surface, Open Approach"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,1488 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.272",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.272",
+  "title": "Urological Surgery",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "108022006",
+            "display": "Kidney excision (procedure)"
+          },
+          {
+            "code": "108034003",
+            "display": "Urinary bladder excision (procedure)"
+          },
+          {
+            "code": "11050006",
+            "display": "Closure of vesicouterine fistula with hysterectomy (procedure)"
+          },
+          {
+            "code": "112902005",
+            "display": "Partial urinary cystectomy (procedure)"
+          },
+          {
+            "code": "116033007",
+            "display": "Radical nephrectomy (procedure)"
+          },
+          {
+            "code": "116166009",
+            "display": "Radical nephrectomy AND ipsilateral adrenalectomy (procedure)"
+          },
+          {
+            "code": "119991007",
+            "display": "Bladder closure (procedure)"
+          },
+          {
+            "code": "12976005",
+            "display": "Donor nephrectomy (procedure)"
+          },
+          {
+            "code": "13246003",
+            "display": "Closure of enterovesical fistula with bladder resection (procedure)"
+          },
+          {
+            "code": "13991004",
+            "display": "Repair of ileovesical fistula (procedure)"
+          },
+          {
+            "code": "15044006",
+            "display": "Repair of urinary bladder exstrophy (procedure)"
+          },
+          {
+            "code": "15918009",
+            "display": "Closure of vesicovaginal fistula by transvesical and vaginal approach (procedure)"
+          },
+          {
+            "code": "16068008",
+            "display": "Repair of vesicosigmoidovaginal fistula (procedure)"
+          },
+          {
+            "code": "175905003",
+            "display": "Total nephrectomy (procedure)"
+          },
+          {
+            "code": "175907006",
+            "display": "Nephroureterectomy (procedure)"
+          },
+          {
+            "code": "175908001",
+            "display": "Heminephrectomy for horseshoe kidney (procedure)"
+          },
+          {
+            "code": "175911000",
+            "display": "Live donor nephrectomy (procedure)"
+          },
+          {
+            "code": "175912007",
+            "display": "Nephroureterectomy with open lower ureterectomy (procedure)"
+          },
+          {
+            "code": "175913002",
+            "display": "Nephroureterectomy with pluck lower ureterectomy (procedure)"
+          },
+          {
+            "code": "175916005",
+            "display": "Heminephrectomy for duplex kidney (procedure)"
+          },
+          {
+            "code": "175917001",
+            "display": "Upper polar partial nephrectomy (procedure)"
+          },
+          {
+            "code": "175918006",
+            "display": "Lower polar partial nephrectomy (procedure)"
+          },
+          {
+            "code": "176004009",
+            "display": "Construction of continent ileal conduit (procedure)"
+          },
+          {
+            "code": "176024008",
+            "display": "Anastomosis of ureter to bladder (procedure)"
+          },
+          {
+            "code": "176106009",
+            "display": "Radical cystoprostatourethrectomy (procedure)"
+          },
+          {
+            "code": "176107000",
+            "display": "Radical cystourethrectomy - female (procedure)"
+          },
+          {
+            "code": "176108005",
+            "display": "Simple cystectomy (procedure)"
+          },
+          {
+            "code": "176117005",
+            "display": "Cecocystoplasty (procedure)"
+          },
+          {
+            "code": "176118000",
+            "display": "Ileocecocystoplasty (procedure)"
+          },
+          {
+            "code": "176123000",
+            "display": "Clam ileocystoplasty (procedure)"
+          },
+          {
+            "code": "176132003",
+            "display": "Repair of rupture of bladder (procedure)"
+          },
+          {
+            "code": "176144000",
+            "display": "Creation of vesicovaginal fistula (procedure)"
+          },
+          {
+            "code": "176165006",
+            "display": "Transurethral operation to increase bladder capacity (procedure)"
+          },
+          {
+            "code": "176234008",
+            "display": "Open resection of female bladder neck (procedure)"
+          },
+          {
+            "code": "176260009",
+            "display": "Transvesical two stage prostatectomy (procedure)"
+          },
+          {
+            "code": "176275001",
+            "display": "Open resection of male bladder neck (procedure)"
+          },
+          {
+            "code": "176722004",
+            "display": "Abdominal repair vesicovaginal fistula (procedure)"
+          },
+          {
+            "code": "18008000",
+            "display": "Closure of vesicovaginal fistula by vaginal approach (procedure)"
+          },
+          {
+            "code": "18280002",
+            "display": "Repair of vesicourethrorectal fistula (procedure)"
+          },
+          {
+            "code": "1866009",
+            "display": "Bilateral total nephrectomy (procedure)"
+          },
+          {
+            "code": "19149007",
+            "display": "Subtotal retropubic prostatectomy (procedure)"
+          },
+          {
+            "code": "21338008",
+            "display": "Cystourethroplasty with bilateral ureteroneocystostomy (procedure)"
+          },
+          {
+            "code": "21482000",
+            "display": "Closure of enterovesical fistula with bowel resection (procedure)"
+          },
+          {
+            "code": "22783008",
+            "display": "Construction of anus for congenital absence with repair of urinary fistula (procedure)"
+          },
+          {
+            "code": "22829001",
+            "display": "Repair of vesicoperineal fistula (procedure)"
+          },
+          {
+            "code": "2344008",
+            "display": "Complicated cystorrhaphy (procedure)"
+          },
+          {
+            "code": "236139004",
+            "display": "Nephroureterectomy with cystoscopically assisted ureterectomy (procedure)"
+          },
+          {
+            "code": "236140002",
+            "display": "Middle partial nephrectomy (procedure)"
+          },
+          {
+            "code": "236165000",
+            "display": "Anastomosis of ureter to bladder with psoas hitch (procedure)"
+          },
+          {
+            "code": "236167008",
+            "display": "Urinary undiversion (procedure)"
+          },
+          {
+            "code": "236209003",
+            "display": "Salvage cystoprostatourethrectomy (procedure)"
+          },
+          {
+            "code": "236210008",
+            "display": "Salvage cystourethrectomy - female (procedure)"
+          },
+          {
+            "code": "236211007",
+            "display": "Salvage cystoprostatectomy (procedure)"
+          },
+          {
+            "code": "236213005",
+            "display": "Partial cystectomy with excision of urachal remnant (procedure)"
+          },
+          {
+            "code": "236214004",
+            "display": "Primary closure of bladder exstrophy (procedure)"
+          },
+          {
+            "code": "236215003",
+            "display": "Single stage primary closure of bladder exstrophy (procedure)"
+          },
+          {
+            "code": "236216002",
+            "display": "First stage of staged closure of bladder exstrophy (procedure)"
+          },
+          {
+            "code": "236219009",
+            "display": "Surgical closure of bladder neck (procedure)"
+          },
+          {
+            "code": "236247008",
+            "display": "Reconstruction of female bladder neck (procedure)"
+          },
+          {
+            "code": "236251005",
+            "display": "Reconstruction of male bladder neck (procedure)"
+          },
+          {
+            "code": "240325001",
+            "display": "Cadaver donor nephrectomy (procedure)"
+          },
+          {
+            "code": "24221008",
+            "display": "Repair of rectovesical fistula with colostomy (procedure)"
+          },
+          {
+            "code": "243306000",
+            "display": "Ureteroileostomy (procedure)"
+          },
+          {
+            "code": "24677003",
+            "display": "Closure of cervicovesical fistula (procedure)"
+          },
+          {
+            "code": "25466008",
+            "display": "Anastomosis of urinary bladder (procedure)"
+          },
+          {
+            "code": "277837003",
+            "display": "Detrusor myotomy (procedure)"
+          },
+          {
+            "code": "2813008",
+            "display": "Nephroureterocystectomy (procedure)"
+          },
+          {
+            "code": "281416002",
+            "display": "Second stage bladder exstrophy repair (procedure)"
+          },
+          {
+            "code": "28579000",
+            "display": "Radical retropubic prostatectomy with lymph node biopsy (procedure)"
+          },
+          {
+            "code": "28609005",
+            "display": "Closure of vesicouterine fistula (procedure)"
+          },
+          {
+            "code": "287716007",
+            "display": "Urinary bladder reconstruction (procedure)"
+          },
+          {
+            "code": "287718008",
+            "display": "Total cystectomy and urethrectomy (procedure)"
+          },
+          {
+            "code": "287720006",
+            "display": "Cystoprostatectomy (procedure)"
+          },
+          {
+            "code": "287722003",
+            "display": "Cystectomy - wedge resection (procedure)"
+          },
+          {
+            "code": "287723008",
+            "display": "Cystectomy - dome of bladder (procedure)"
+          },
+          {
+            "code": "288013007",
+            "display": "Open bladder excision (procedure)"
+          },
+          {
+            "code": "288014001",
+            "display": "Bladder sphincteroplasty (procedure)"
+          },
+          {
+            "code": "289754003",
+            "display": "Nephrectomy of remaining or solitary kidney (procedure)"
+          },
+          {
+            "code": "290691008",
+            "display": "Nephrectomy of remaining kidney (procedure)"
+          },
+          {
+            "code": "32417007",
+            "display": "Paquin operation, ureteroneocystostomy (procedure)"
+          },
+          {
+            "code": "33654003",
+            "display": "Repair of old obstetric laceration of urinary bladder (procedure)"
+          },
+          {
+            "code": "34006000",
+            "display": "Hutch operation, ureteroneocystostomy (procedure)"
+          },
+          {
+            "code": "361249003",
+            "display": "Nephrectomy with excision of perirenal tissue (procedure)"
+          },
+          {
+            "code": "361256009",
+            "display": "Autoaugmentation of bladder (procedure)"
+          },
+          {
+            "code": "361257000",
+            "display": "Clam cystoplasty (procedure)"
+          },
+          {
+            "code": "36253005",
+            "display": "Suprapubic prostatectomy (procedure)"
+          },
+          {
+            "code": "36432003",
+            "display": "Bladder to intestine anastomosis (procedure)"
+          },
+          {
+            "code": "36586008",
+            "display": "Bischoff operation, ureteroneocystostomy (procedure)"
+          },
+          {
+            "code": "36935008",
+            "display": "Closure of urethroperineovesical fistula (procedure)"
+          },
+          {
+            "code": "386652006",
+            "display": "Colocystoplasty (procedure)"
+          },
+          {
+            "code": "387707007",
+            "display": "Repair AND revision of stoma of urinary bladder (procedure)"
+          },
+          {
+            "code": "39214002",
+            "display": "Closure of rectovesicovaginal fistula (procedure)"
+          },
+          {
+            "code": "41416003",
+            "display": "Radical retropubic prostatectomy with bilateral pelvic lymphadenectomy (procedure)"
+          },
+          {
+            "code": "439110003",
+            "display": "Cystoscopic anastomosis of ureter to bladder (procedure)"
+          },
+          {
+            "code": "439235001",
+            "display": "Laparoscopic radical nephrectomy (procedure)"
+          },
+          {
+            "code": "439497008",
+            "display": "Cystourethroscopy and excision of internal sphincter (procedure)"
+          },
+          {
+            "code": "439739008",
+            "display": "Laparoscopic partial excision of kidney (procedure)"
+          },
+          {
+            "code": "439964001",
+            "display": "Laparoscopic excision of kidney and total excision of ureter (procedure)"
+          },
+          {
+            "code": "440076006",
+            "display": "Cystoscopic anastomosis of ureter to bladder with insertion of stent into ureter (procedure)"
+          },
+          {
+            "code": "440446009",
+            "display": "Laparoscopic excision of kidney and partial excision of ureter (procedure)"
+          },
+          {
+            "code": "442919002",
+            "display": "Adrenal sparing radical nephrectomy (procedure)"
+          },
+          {
+            "code": "443869003",
+            "display": "Total excision of right kidney (procedure)"
+          },
+          {
+            "code": "444083005",
+            "display": "Total excision of left kidney (procedure)"
+          },
+          {
+            "code": "446296004",
+            "display": "Laparoscopic total excision of kidney (procedure)"
+          },
+          {
+            "code": "446586007",
+            "display": "Laparoscopic partial excision of urinary bladder (procedure)"
+          },
+          {
+            "code": "446894005",
+            "display": "Laparoscopic partial excision of kidney by retroperitoneal approach (procedure)"
+          },
+          {
+            "code": "446990000",
+            "display": "Laparoscopic excision of ureter and kidney (procedure)"
+          },
+          {
+            "code": "447307008",
+            "display": "Laparoscopic total excision of urinary bladder (procedure)"
+          },
+          {
+            "code": "447308003",
+            "display": "Excision of urethra and urinary bladder (procedure)"
+          },
+          {
+            "code": "447527008",
+            "display": "Laparoscopic total excision of kidney by retroperitoneal approach (procedure)"
+          },
+          {
+            "code": "447531002",
+            "display": "Laparoscopic excision of ureter and kidney by retroperitoneal approach (procedure)"
+          },
+          {
+            "code": "48007004",
+            "display": "Augmentation of urinary bladder (procedure)"
+          },
+          {
+            "code": "4895001",
+            "display": "Construction of sigmoid bladder (procedure)"
+          },
+          {
+            "code": "49780003",
+            "display": "Heminephrectomy (procedure)"
+          },
+          {
+            "code": "49935007",
+            "display": "Partial pelvectomy of kidney (procedure)"
+          },
+          {
+            "code": "51870000",
+            "display": "Excision of lesion of kidney with partial nephrectomy (procedure)"
+          },
+          {
+            "code": "52969004",
+            "display": "Closure of vesicocutaneous fistula (procedure)"
+          },
+          {
+            "code": "533005",
+            "display": "Closure of vesicocolic fistula (procedure)"
+          },
+          {
+            "code": "535003",
+            "display": "Closure of ureterovesicovaginal fistula (procedure)"
+          },
+          {
+            "code": "54033009",
+            "display": "Cystourethroplasty (procedure)"
+          },
+          {
+            "code": "56256008",
+            "display": "Closure of vesicocervicovaginal fistula (procedure)"
+          },
+          {
+            "code": "56614001",
+            "display": "Repair of fistula involving bladder and intestine (procedure)"
+          },
+          {
+            "code": "57212002",
+            "display": "Calico-ileoneocystostomy (procedure)"
+          },
+          {
+            "code": "63016009",
+            "display": "Total resection of urinary bladder (procedure)"
+          },
+          {
+            "code": "63361002",
+            "display": "Closure of fistula of bladder (procedure)"
+          },
+          {
+            "code": "64063003",
+            "display": "Radical cystectomy (procedure)"
+          },
+          {
+            "code": "65551008",
+            "display": "Radical retropubic prostatectomy (procedure)"
+          },
+          {
+            "code": "66633009",
+            "display": "Nephrocystanastomosis (procedure)"
+          },
+          {
+            "code": "67113002",
+            "display": "Closure of vesicometrorectal fistula (procedure)"
+          },
+          {
+            "code": "67212000",
+            "display": "Ileocystoplasty (procedure)"
+          },
+          {
+            "code": "67598001",
+            "display": "Retropubic prostatectomy (procedure)"
+          },
+          {
+            "code": "68960009",
+            "display": "Closure of enterovesical fistula with bowel and bladder resection (procedure)"
+          },
+          {
+            "code": "69926006",
+            "display": "Closure of vesicosigmoidal fistula (procedure)"
+          },
+          {
+            "code": "71550003",
+            "display": "Closure of cystostomy (procedure)"
+          },
+          {
+            "code": "73380001",
+            "display": "Repair of laceration of urinary bladder by suture (procedure)"
+          },
+          {
+            "code": "73953002",
+            "display": "Closure of rectovesical fistula (procedure)"
+          },
+          {
+            "code": "73966002",
+            "display": "Hemicystectomy (procedure)"
+          },
+          {
+            "code": "74146001",
+            "display": "Repair of urinary bladder (procedure)"
+          },
+          {
+            "code": "76414006",
+            "display": "Closure of urethrovesicovaginal fistula (procedure)"
+          },
+          {
+            "code": "78062004",
+            "display": "Closure of vaginovesical fistula (procedure)"
+          },
+          {
+            "code": "80945002",
+            "display": "Cystoproctostomy (procedure)"
+          },
+          {
+            "code": "81232004",
+            "display": "Radical cystoprostatectomy (procedure)"
+          },
+          {
+            "code": "81516001",
+            "display": "Partial nephrectomy (procedure)"
+          },
+          {
+            "code": "83444008",
+            "display": "Renal papillectomy (procedure)"
+          },
+          {
+            "code": "83483005",
+            "display": "Closure of urethrovesical fistula (procedure)"
+          },
+          {
+            "code": "83588004",
+            "display": "Ureteroneocystostomy with bladder flap (procedure)"
+          },
+          {
+            "code": "83809000",
+            "display": "Renal calicectomy (procedure)"
+          },
+          {
+            "code": "84575008",
+            "display": "Urinary bladder trigonectomy (procedure)"
+          },
+          {
+            "code": "85175006",
+            "display": "Partial cystectomy, complicated (procedure)"
+          },
+          {
+            "code": "88930008",
+            "display": "Total nephrectomy in recipient (procedure)"
+          },
+          {
+            "code": "89230009",
+            "display": "Closure of ureterovesical fistula (procedure)"
+          },
+          {
+            "code": "89528006",
+            "display": "Cystourethroplasty with unilateral ureteroneocystostomy (procedure)"
+          },
+          {
+            "code": "90648000",
+            "display": "Partial cystectomy with reimplantation of ureter into bladder (procedure)"
+          },
+          {
+            "code": "91531008",
+            "display": "One stage subtotal suprapubic prostatectomy (procedure)"
+          }
+        ]
+      },
+      {
+        "system": "http://www.icd10data.com/icd10pcs",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "0T1307B",
+            "display": "Bypass Right Kidney Pelvis to Bladder with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T130JB",
+            "display": "Bypass Right Kidney Pelvis to Bladder with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T130KB",
+            "display": "Bypass Right Kidney Pelvis to Bladder with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T130ZB",
+            "display": "Bypass Right Kidney Pelvis to Bladder, Open Approach"
+          },
+          {
+            "code": "0T1407B",
+            "display": "Bypass Left Kidney Pelvis to Bladder with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T140JB",
+            "display": "Bypass Left Kidney Pelvis to Bladder with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T140KB",
+            "display": "Bypass Left Kidney Pelvis to Bladder with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T140ZB",
+            "display": "Bypass Left Kidney Pelvis to Bladder, Open Approach"
+          },
+          {
+            "code": "0T16076",
+            "display": "Bypass Right Ureter to Right Ureter with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T16077",
+            "display": "Bypass Right Ureter to Left Ureter with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T16078",
+            "display": "Bypass Right Ureter to Colon with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1607A",
+            "display": "Bypass Right Ureter to Ileum with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1607B",
+            "display": "Bypass Right Ureter to Bladder with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1607C",
+            "display": "Bypass Right Ureter to Ileocutaneous with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T160J6",
+            "display": "Bypass Right Ureter to Right Ureter with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T160J7",
+            "display": "Bypass Right Ureter to Left Ureter with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T160J8",
+            "display": "Bypass Right Ureter to Colon with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T160JA",
+            "display": "Bypass Right Ureter to Ileum with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T160JB",
+            "display": "Bypass Right Ureter to Bladder with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T160JC",
+            "display": "Bypass Right Ureter to Ileocutaneous with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T160K6",
+            "display": "Bypass Right Ureter to Right Ureter with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T160K7",
+            "display": "Bypass Right Ureter to Left Ureter with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T160K8",
+            "display": "Bypass Right Ureter to Colon with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T160KA",
+            "display": "Bypass Right Ureter to Ileum with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T160KB",
+            "display": "Bypass Right Ureter to Bladder with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T160KC",
+            "display": "Bypass Right Ureter to Ileocutaneous with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T160Z6",
+            "display": "Bypass Right Ureter to Right Ureter, Open Approach"
+          },
+          {
+            "code": "0T160Z7",
+            "display": "Bypass Right Ureter to Left Ureter, Open Approach"
+          },
+          {
+            "code": "0T160Z8",
+            "display": "Bypass Right Ureter to Colon, Open Approach"
+          },
+          {
+            "code": "0T160ZA",
+            "display": "Bypass Right Ureter to Ileum, Open Approach"
+          },
+          {
+            "code": "0T160ZB",
+            "display": "Bypass Right Ureter to Bladder, Open Approach"
+          },
+          {
+            "code": "0T160ZC",
+            "display": "Bypass Right Ureter to Ileocutaneous, Open Approach"
+          },
+          {
+            "code": "0T17076",
+            "display": "Bypass Left Ureter to Right Ureter with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T17077",
+            "display": "Bypass Left Ureter to Left Ureter with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T17078",
+            "display": "Bypass Left Ureter to Colon with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1707A",
+            "display": "Bypass Left Ureter to Ileum with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1707B",
+            "display": "Bypass Left Ureter to Bladder with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1707C",
+            "display": "Bypass Left Ureter to Ileocutaneous with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T170J6",
+            "display": "Bypass Left Ureter to Right Ureter with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T170J7",
+            "display": "Bypass Left Ureter to Left Ureter with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T170J8",
+            "display": "Bypass Left Ureter to Colon with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T170JA",
+            "display": "Bypass Left Ureter to Ileum with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T170JB",
+            "display": "Bypass Left Ureter to Bladder with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T170JC",
+            "display": "Bypass Left Ureter to Ileocutaneous with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T170K6",
+            "display": "Bypass Left Ureter to Right Ureter with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T170K7",
+            "display": "Bypass Left Ureter to Left Ureter with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T170K8",
+            "display": "Bypass Left Ureter to Colon with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T170KA",
+            "display": "Bypass Left Ureter to Ileum with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T170KB",
+            "display": "Bypass Left Ureter to Bladder with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T170KC",
+            "display": "Bypass Left Ureter to Ileocutaneous with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T170Z6",
+            "display": "Bypass Left Ureter to Right Ureter, Open Approach"
+          },
+          {
+            "code": "0T170Z7",
+            "display": "Bypass Left Ureter to Left Ureter, Open Approach"
+          },
+          {
+            "code": "0T170Z8",
+            "display": "Bypass Left Ureter to Colon, Open Approach"
+          },
+          {
+            "code": "0T170ZA",
+            "display": "Bypass Left Ureter to Ileum, Open Approach"
+          },
+          {
+            "code": "0T170ZB",
+            "display": "Bypass Left Ureter to Bladder, Open Approach"
+          },
+          {
+            "code": "0T170ZC",
+            "display": "Bypass Left Ureter to Ileocutaneous, Open Approach"
+          },
+          {
+            "code": "0T18076",
+            "display": "Bypass Bilateral Ureters to Right Ureter with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T18077",
+            "display": "Bypass Bilateral Ureters to Left Ureter with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T18078",
+            "display": "Bypass Bilateral Ureters to Colon with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1807A",
+            "display": "Bypass Bilateral Ureters to Ileum with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1807B",
+            "display": "Bypass Bilateral Ureters to Bladder with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1807C",
+            "display": "Bypass Bilateral Ureters to Ileocutaneous with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T180J6",
+            "display": "Bypass Bilateral Ureters to Right Ureter with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T180J7",
+            "display": "Bypass Bilateral Ureters to Left Ureter with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T180J8",
+            "display": "Bypass Bilateral Ureters to Colon with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T180JA",
+            "display": "Bypass Bilateral Ureters to Ileum with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T180JB",
+            "display": "Bypass Bilateral Ureters to Bladder with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T180JC",
+            "display": "Bypass Bilateral Ureters to Ileocutaneous with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T180K6",
+            "display": "Bypass Bilateral Ureters to Right Ureter with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T180K7",
+            "display": "Bypass Bilateral Ureters to Left Ureter with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T180K8",
+            "display": "Bypass Bilateral Ureters to Colon with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T180KA",
+            "display": "Bypass Bilateral Ureters to Ileum with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T180KB",
+            "display": "Bypass Bilateral Ureters to Bladder with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T180KC",
+            "display": "Bypass Bilateral Ureters to Ileocutaneous with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T180Z6",
+            "display": "Bypass Bilateral Ureters to Right Ureter, Open Approach"
+          },
+          {
+            "code": "0T180Z7",
+            "display": "Bypass Bilateral Ureters to Left Ureter, Open Approach"
+          },
+          {
+            "code": "0T180Z8",
+            "display": "Bypass Bilateral Ureters to Colon, Open Approach"
+          },
+          {
+            "code": "0T180ZA",
+            "display": "Bypass Bilateral Ureters to Ileum, Open Approach"
+          },
+          {
+            "code": "0T180ZB",
+            "display": "Bypass Bilateral Ureters to Bladder, Open Approach"
+          },
+          {
+            "code": "0T180ZC",
+            "display": "Bypass Bilateral Ureters to Ileocutaneous, Open Approach"
+          },
+          {
+            "code": "0T1B079",
+            "display": "Bypass Bladder to Colocutaneous with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1B07C",
+            "display": "Bypass Bladder to Ileocutaneous with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1B07D",
+            "display": "Bypass Bladder to Cutaneous with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1B0J9",
+            "display": "Bypass Bladder to Colocutaneous with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T1B0JC",
+            "display": "Bypass Bladder to Ileocutaneous with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T1B0JD",
+            "display": "Bypass Bladder to Cutaneous with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0T1B0K9",
+            "display": "Bypass Bladder to Colocutaneous with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1B0KC",
+            "display": "Bypass Bladder to Ileocutaneous with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1B0KD",
+            "display": "Bypass Bladder to Cutaneous with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0T1B0Z9",
+            "display": "Bypass Bladder to Colocutaneous, Open Approach"
+          },
+          {
+            "code": "0T1B0ZC",
+            "display": "Bypass Bladder to Ileocutaneous, Open Approach"
+          },
+          {
+            "code": "0T7B0DZ",
+            "display": "Dilation of Bladder with Intraluminal Device, Open Approach"
+          },
+          {
+            "code": "0T7B0ZZ",
+            "display": "Dilation of Bladder, Open Approach"
+          },
+          {
+            "code": "0T7B7DZ",
+            "display": "Dilation of Bladder with Intraluminal Device, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0T7B7ZZ",
+            "display": "Dilation of Bladder, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0T7B8DZ",
+            "display": "Dilation of Bladder with Intraluminal Device, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0T7B8ZZ",
+            "display": "Dilation of Bladder, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0T9300Z",
+            "display": "Drainage of Right Kidney Pelvis with Drainage Device, Open Approach"
+          },
+          {
+            "code": "0T930ZZ",
+            "display": "Drainage of Right Kidney Pelvis, Open Approach"
+          },
+          {
+            "code": "0T9400Z",
+            "display": "Drainage of Left Kidney Pelvis with Drainage Device, Open Approach"
+          },
+          {
+            "code": "0T940ZZ",
+            "display": "Drainage of Left Kidney Pelvis, Open Approach"
+          },
+          {
+            "code": "0TB00ZZ",
+            "display": "Excision of Right Kidney, Open Approach"
+          },
+          {
+            "code": "0TB07ZZ",
+            "display": "Excision of Right Kidney, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TB08ZZ",
+            "display": "Excision of Right Kidney, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TB10ZZ",
+            "display": "Excision of Left Kidney, Open Approach"
+          },
+          {
+            "code": "0TB17ZZ",
+            "display": "Excision of Left Kidney, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TB18ZZ",
+            "display": "Excision of Left Kidney, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TB30ZZ",
+            "display": "Excision of Right Kidney Pelvis, Open Approach"
+          },
+          {
+            "code": "0TB37ZZ",
+            "display": "Excision of Right Kidney Pelvis, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TB38ZZ",
+            "display": "Excision of Right Kidney Pelvis, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TB40ZZ",
+            "display": "Excision of Left Kidney Pelvis, Open Approach"
+          },
+          {
+            "code": "0TB47ZZ",
+            "display": "Excision of Left Kidney Pelvis, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TB48ZZ",
+            "display": "Excision of Left Kidney Pelvis, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TBB0ZZ",
+            "display": "Excision of Bladder, Open Approach"
+          },
+          {
+            "code": "0TBC0ZZ",
+            "display": "Excision of Bladder Neck, Open Approach"
+          },
+          {
+            "code": "0TJ50ZZ",
+            "display": "Inspection of Kidney, Open Approach"
+          },
+          {
+            "code": "0TMB0ZZ",
+            "display": "Reattachment of Bladder, Open Approach"
+          },
+          {
+            "code": "0TMC0ZZ",
+            "display": "Reattachment of Bladder Neck, Open Approach"
+          },
+          {
+            "code": "0TN00ZZ",
+            "display": "Release Right Kidney, Open Approach"
+          },
+          {
+            "code": "0TN07ZZ",
+            "display": "Release Right Kidney, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TN08ZZ",
+            "display": "Release Right Kidney, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TN10ZZ",
+            "display": "Release Left Kidney, Open Approach"
+          },
+          {
+            "code": "0TN17ZZ",
+            "display": "Release Left Kidney, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TN18ZZ",
+            "display": "Release Left Kidney, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TN30ZZ",
+            "display": "Release Right Kidney Pelvis, Open Approach"
+          },
+          {
+            "code": "0TN37ZZ",
+            "display": "Release Right Kidney Pelvis, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TN38ZZ",
+            "display": "Release Right Kidney Pelvis, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TN40ZZ",
+            "display": "Release Left Kidney Pelvis, Open Approach"
+          },
+          {
+            "code": "0TN47ZZ",
+            "display": "Release Left Kidney Pelvis, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TN48ZZ",
+            "display": "Release Left Kidney Pelvis, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TN60ZZ",
+            "display": "Release Right Ureter, Open Approach"
+          },
+          {
+            "code": "0TN70ZZ",
+            "display": "Release Left Ureter, Open Approach"
+          },
+          {
+            "code": "0TQ60ZZ",
+            "display": "Repair Right Ureter, Open Approach"
+          },
+          {
+            "code": "0TQ67ZZ",
+            "display": "Repair Right Ureter, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TQ68ZZ",
+            "display": "Repair Right Ureter, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TQ70ZZ",
+            "display": "Repair Left Ureter, Open Approach"
+          },
+          {
+            "code": "0TQ77ZZ",
+            "display": "Repair Left Ureter, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TQ78ZZ",
+            "display": "Repair Left Ureter, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TQB0ZZ",
+            "display": "Repair Bladder, Open Approach"
+          },
+          {
+            "code": "0TQB7ZZ",
+            "display": "Repair Bladder, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TQB8ZZ",
+            "display": "Repair Bladder, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TQC0ZZ",
+            "display": "Repair Bladder Neck, Open Approach"
+          },
+          {
+            "code": "0TQC7ZZ",
+            "display": "Repair Bladder Neck, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TQC8ZZ",
+            "display": "Repair Bladder Neck, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TRB07Z",
+            "display": "Replacement of Bladder with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0TRB0JZ",
+            "display": "Replacement of Bladder with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0TRB0KZ",
+            "display": "Replacement of Bladder with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0TRB77Z",
+            "display": "Replacement of Bladder with Autologous Tissue Substitute, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TRB7JZ",
+            "display": "Replacement of Bladder with Synthetic Substitute, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TRB7KZ",
+            "display": "Replacement of Bladder with Nonautologous Tissue Substitute, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TRB87Z",
+            "display": "Replacement of Bladder with Autologous Tissue Substitute, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TRB8JZ",
+            "display": "Replacement of Bladder with Synthetic Substitute, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TRB8KZ",
+            "display": "Replacement of Bladder with Nonautologous Tissue Substitute, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TRC07Z",
+            "display": "Replacement of Bladder Neck with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0TRC0JZ",
+            "display": "Replacement of Bladder Neck with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0TRC0KZ",
+            "display": "Replacement of Bladder Neck with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0TRC77Z",
+            "display": "Replacement of Bladder Neck with Autologous Tissue Substitute, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TRC7JZ",
+            "display": "Replacement of Bladder Neck with Synthetic Substitute, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TRC7KZ",
+            "display": "Replacement of Bladder Neck with Nonautologous Tissue Substitute, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TRC87Z",
+            "display": "Replacement of Bladder Neck with Autologous Tissue Substitute, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TRC8JZ",
+            "display": "Replacement of Bladder Neck with Synthetic Substitute, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TRC8KZ",
+            "display": "Replacement of Bladder Neck with Nonautologous Tissue Substitute, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TSB0ZZ",
+            "display": "Reposition Bladder, Open Approach"
+          },
+          {
+            "code": "0TT00ZZ",
+            "display": "Resection of Right Kidney, Open Approach"
+          },
+          {
+            "code": "0TT10ZZ",
+            "display": "Resection of Left Kidney, Open Approach"
+          },
+          {
+            "code": "0TT20ZZ",
+            "display": "Resection of Bilateral Kidneys, Open Approach"
+          },
+          {
+            "code": "0TT30ZZ",
+            "display": "Resection of Right Kidney Pelvis, Open Approach"
+          },
+          {
+            "code": "0TT37ZZ",
+            "display": "Resection of Right Kidney Pelvis, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TT38ZZ",
+            "display": "Resection of Right Kidney Pelvis, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TT40ZZ",
+            "display": "Resection of Left Kidney Pelvis, Open Approach"
+          },
+          {
+            "code": "0TT47ZZ",
+            "display": "Resection of Left Kidney Pelvis, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TT48ZZ",
+            "display": "Resection of Left Kidney Pelvis, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TTB0ZZ",
+            "display": "Resection of Bladder, Open Approach"
+          },
+          {
+            "code": "0TTB7ZZ",
+            "display": "Resection of Bladder, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TTB8ZZ",
+            "display": "Resection of Bladder, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TTC0ZZ",
+            "display": "Resection of Bladder Neck, Open Approach"
+          },
+          {
+            "code": "0TTC7ZZ",
+            "display": "Resection of Bladder Neck, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TTC8ZZ",
+            "display": "Resection of Bladder Neck, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TTD0ZZ",
+            "display": "Resection of Urethra, Open Approach"
+          },
+          {
+            "code": "0TTD7ZZ",
+            "display": "Resection of Urethra, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TTD8ZZ",
+            "display": "Resection of Urethra, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TUB07Z",
+            "display": "Supplement Bladder with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0TUB0JZ",
+            "display": "Supplement Bladder with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0TUB0KZ",
+            "display": "Supplement Bladder with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0TUB77Z",
+            "display": "Supplement Bladder with Autologous Tissue Substitute, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TUB7JZ",
+            "display": "Supplement Bladder with Synthetic Substitute, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TUB7KZ",
+            "display": "Supplement Bladder with Nonautologous Tissue Substitute, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TUB87Z",
+            "display": "Supplement Bladder with Autologous Tissue Substitute, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TUB8JZ",
+            "display": "Supplement Bladder with Synthetic Substitute, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TUB8KZ",
+            "display": "Supplement Bladder with Nonautologous Tissue Substitute, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TVB0CZ",
+            "display": "Restriction of Bladder with Extraluminal Device, Open Approach"
+          },
+          {
+            "code": "0TVB0DZ",
+            "display": "Restriction of Bladder with Intraluminal Device, Open Approach"
+          },
+          {
+            "code": "0TVB0ZZ",
+            "display": "Restriction of Bladder, Open Approach"
+          },
+          {
+            "code": "0TVB7DZ",
+            "display": "Restriction of Bladder with Intraluminal Device, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TVB7ZZ",
+            "display": "Restriction of Bladder, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TVB8DZ",
+            "display": "Restriction of Bladder with Intraluminal Device, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TVB8ZZ",
+            "display": "Restriction of Bladder, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TVC0CZ",
+            "display": "Restriction of Bladder Neck with Extraluminal Device, Open Approach"
+          },
+          {
+            "code": "0TVC0DZ",
+            "display": "Restriction of Bladder Neck with Intraluminal Device, Open Approach"
+          },
+          {
+            "code": "0TVC0ZZ",
+            "display": "Restriction of Bladder Neck, Open Approach"
+          },
+          {
+            "code": "0TVC7DZ",
+            "display": "Restriction of Bladder Neck with Intraluminal Device, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TVC7ZZ",
+            "display": "Restriction of Bladder Neck, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0TVC8DZ",
+            "display": "Restriction of Bladder Neck with Intraluminal Device, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0TVC8ZZ",
+            "display": "Restriction of Bladder Neck, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0VT00ZZ",
+            "display": "Resection of Prostate, Open Approach"
+          },
+          {
+            "code": "0VT07ZZ",
+            "display": "Resection of Prostate, Via Natural or Artificial Opening"
+          },
+          {
+            "code": "0VT08ZZ",
+            "display": "Resection of Prostate, Via Natural or Artificial Opening Endoscopic"
+          },
+          {
+            "code": "0VT30ZZ",
+            "display": "Resection of Bilateral Seminal Vesicles, Open Approach"
+          },
+          {
+            "code": "0WBH0ZZ",
+            "display": "Excision of Retroperitoneum, Open Approach"
+          },
+          {
+            "code": "0WQF0ZZ",
+            "display": "Repair Abdominal Wall, Open Approach"
+          },
+          {
+            "code": "0WQFXZ2",
+            "display": "Repair Abdominal Wall, Stoma, External Approach"
+          },
+          {
+            "code": "0WQFXZZ",
+            "display": "Repair Abdominal Wall, External Approach"
+          }
+        ]
+      }
+    ]
+  }
+}

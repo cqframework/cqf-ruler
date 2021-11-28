@@ -1,0 +1,90 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.219",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.219",
+  "title": "Low Molecular Weight Heparin for VTE Prophylaxis",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2019-08",
+        "concept": [
+          {
+            "code": "854228",
+            "display": "0.3 ML Enoxaparin sodium 100 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "854235",
+            "display": "0.4 ML Enoxaparin sodium 100 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "854238",
+            "display": "0.6 ML Enoxaparin sodium 100 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "854241",
+            "display": "0.8 ML Enoxaparin sodium 100 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "854245",
+            "display": "0.8 ML Enoxaparin sodium 150 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "854248",
+            "display": "1 ML Enoxaparin sodium 100 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "854252",
+            "display": "1 ML Enoxaparin sodium 150 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "854255",
+            "display": "Enoxaparin sodium 100 MG/ML Injectable Solution"
+          },
+          {
+            "code": "978713",
+            "display": "Tinzaparin sodium 20000 UNT/ML Injectable Solution"
+          },
+          {
+            "code": "978725",
+            "display": "0.2 ML Dalteparin Sodium 12500 UNT/ML Prefilled Syringe"
+          },
+          {
+            "code": "978733",
+            "display": "0.2 ML Dalteparin Sodium 25000 UNT/ML Prefilled Syringe"
+          },
+          {
+            "code": "978736",
+            "display": "0.3 ML Dalteparin Sodium 25000 UNT/ML Prefilled Syringe"
+          },
+          {
+            "code": "978740",
+            "display": "0.5 ML Dalteparin Sodium 25000 UNT/ML Prefilled Syringe"
+          },
+          {
+            "code": "978744",
+            "display": "0.6 ML Dalteparin Sodium 25000 UNT/ML Prefilled Syringe"
+          },
+          {
+            "code": "978746",
+            "display": "0.72 ML Dalteparin Sodium 25000 UNT/ML Prefilled Syringe"
+          },
+          {
+            "code": "978755",
+            "display": "1 ML Dalteparin Sodium 10000 UNT/ML Prefilled Syringe"
+          },
+          {
+            "code": "978759",
+            "display": "Dalteparin Sodium 10000 UNT/ML Injectable Solution"
+          },
+          {
+            "code": "978777",
+            "display": "Dalteparin Sodium 25000 UNT/ML Injectable Solution"
+          }
+        ]
+      }
+    ]
+  }
+}

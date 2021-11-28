@@ -1,0 +1,54 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.232",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.232",
+  "title": "Warfarin",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2019-08",
+        "concept": [
+          {
+            "code": "855288",
+            "display": "Warfarin Sodium 1 MG Oral Tablet"
+          },
+          {
+            "code": "855296",
+            "display": "Warfarin Sodium 10 MG Oral Tablet"
+          },
+          {
+            "code": "855302",
+            "display": "Warfarin Sodium 2 MG Oral Tablet"
+          },
+          {
+            "code": "855312",
+            "display": "Warfarin Sodium 2.5 MG Oral Tablet"
+          },
+          {
+            "code": "855318",
+            "display": "Warfarin Sodium 3 MG Oral Tablet"
+          },
+          {
+            "code": "855324",
+            "display": "Warfarin Sodium 4 MG Oral Tablet"
+          },
+          {
+            "code": "855332",
+            "display": "Warfarin Sodium 5 MG Oral Tablet"
+          },
+          {
+            "code": "855338",
+            "display": "Warfarin Sodium 6 MG Oral Tablet"
+          },
+          {
+            "code": "855344",
+            "display": "Warfarin Sodium 7.5 MG Oral Tablet"
+          }
+        ]
+      }
+    ]
+  }
+}

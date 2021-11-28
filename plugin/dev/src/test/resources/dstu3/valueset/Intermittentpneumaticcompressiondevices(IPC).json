@@ -1,0 +1,38 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.214",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.214",
+  "title": "Intermittent pneumatic compression devices (IPC)",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "428411000124104",
+            "display": "Intermittent pneumatic compression boot (physical object)"
+          },
+          {
+            "code": "428421000124107",
+            "display": "Intermittent pneumatic compression sleeve (physical object)"
+          },
+          {
+            "code": "442111003",
+            "display": "Intermittent pneumatic compression stockings (physical object)"
+          },
+          {
+            "code": "469317002",
+            "display": "Intermittent venous compression system pump (physical object)"
+          },
+          {
+            "code": "469365001",
+            "display": "Intermittent venous compression system (physical object)"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.526.3.353",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.3.353",
+  "title": "End Stage Renal Disease",
+  "status": "active",
+  "publisher": "PCPI Foundation",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "236434000",
+            "display": "End stage renal failure untreated by renal replacement therapy (disorder)"
+          },
+          {
+            "code": "236435004",
+            "display": "End stage renal failure on dialysis (disorder)"
+          },
+          {
+            "code": "236436003",
+            "display": "End stage renal failure with renal transplant (disorder)"
+          },
+          {
+            "code": "46177005",
+            "display": "End-stage renal disease (disorder)"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-9-cm",
+        "version": "2013",
+        "concept": [
+          {
+            "code": "585.6",
+            "display": "End stage renal disease"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "N18.6",
+            "display": "End stage renal disease"
+          }
+        ]
+      }
+    ]
+  }
+}

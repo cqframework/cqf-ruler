@@ -1,0 +1,30 @@
+<ValueSet xmlns="http://hl7.org/fhir">
+    <id value="hospice-procedure"/>
+    <extension url="http://hl7.org/fhir/StructureDefinition/valueset-warning">
+        <valueMarkdown value="Note that the terminologies included in this implementation guide will need to be updated, because the ideal mechanism for distribution (as an expression) is not currently supported by the content logical definition constructs available in the FHIR ValueSet resource and all known implementations of it. Before use in a production environment, ensure you have the latest value sets based on the definitions for each value set (as defined in the inclusion/exclusion criteria for each one)."/>
+    </extension>
+    <url value="http://fhir.org/guides/cdc/opioid-cds/ValueSet/hospice-procedure"/>
+    <name value="Valueset_hospice_procedure"/>
+    <status value="active"/>
+    <compose>
+        <include>
+            <system value="http://snomed.info/sct"/>
+            <concept>
+                <code value="306205009"/>
+                <!--<display value="Referral to hospice (procedure)"/>-->
+            </concept>
+            <concept>
+                <code value="305336008"/>
+                <!--<display value="Admission to hospice (procedure)"/>-->
+            </concept>
+            <concept>
+                <code value="183919006"/>
+                <!--<display value="Urgent admission to hospice (procedure)"/>-->
+            </concept>
+            <concept>
+                <code value="428371000124100"/>
+                <!--<display value="Discharge to healthcare facility for hospice care (procedure)"/>-->
+            </concept>
+        </include>
+    </compose>
+</ValueSet>

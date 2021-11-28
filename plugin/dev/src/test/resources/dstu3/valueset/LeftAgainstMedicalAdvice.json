@@ -1,0 +1,30 @@
+{
+    "resourceType": "ValueSet",
+    "id": "2.16.840.1.113883.3.117.1.7.1.308",
+    "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.308",
+    "identifier": [
+      {
+        "system": "urn:ietf:rfc:3986",
+        "value": "2.16.840.1.113883.3.117.1.7.1.308"
+      }
+    ],
+    "version": "20170726",
+    "name": "LeftAgainstMedicalAdvice",
+    "title": "Left Against Medical Advice",
+    "status": "active",
+    "publisher": "NLM",
+    "compose": {
+      "include": [
+        {
+          "system": "http://snomed.info/sct",
+          "version": "2018-03",
+          "concept": [
+            {
+              "code": "445060000",
+              "display": "Left against medical advice (finding)"
+            }
+          ]
+        }
+      ]
+    }
+  }
