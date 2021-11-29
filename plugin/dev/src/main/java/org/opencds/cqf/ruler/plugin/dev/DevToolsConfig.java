@@ -1,18 +1,10 @@
 package org.opencds.cqf.ruler.plugin.dev;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoCodeSystem;
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
 import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -28,15 +20,15 @@ public class DevToolsConfig {
         return new DevToolsProperties();
     }
 
-    // @Bean
-    // @Conditional(OnR4Condition.class)
-    // public OperationProvider r4CodeSystemUpdateProvider() {
-    //     return new org.opencds.cqf.ruler.plugin.dev.r4.CodeSystemUpdateProvider();
-    // }
+    @Bean
+    @Conditional(OnR4Condition.class)
+    public OperationProvider r4CodeSystemUpdateProvider() {
+        return new org.opencds.cqf.ruler.plugin.dev.r4.CodeSystemUpdateProvider();
+    }
 
-    // @Bean
-    // @Conditional(OnDSTU3Condition.class)
-    // public OperationProvider dstu3CodeSystemUpdateProvider() {
-    //     return new org.opencds.cqf.ruler.plugin.dev.dstu3.CodeSystemUpdateProvider();
-    // }
+    @Bean
+    @Conditional(OnDSTU3Condition.class)
+    public OperationProvider dstu3CodeSystemUpdateProvider() {
+        return new org.opencds.cqf.ruler.plugin.dev.dstu3.CodeSystemUpdateProvider();
+    }
 }
