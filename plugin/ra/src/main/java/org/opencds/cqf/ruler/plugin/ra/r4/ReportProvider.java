@@ -166,6 +166,7 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
     return patientParameter;
   }
 
+  //TODO: this might be useful to make a utility
   private List<IAnyResource> getEvaluatedResources(MeasureReport report) {
     List<IAnyResource> resources = new ArrayList<>();
     for (Reference evaluatedResource : report.getEvaluatedResource()) {
