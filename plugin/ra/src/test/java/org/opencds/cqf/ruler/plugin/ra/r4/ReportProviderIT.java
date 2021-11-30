@@ -296,7 +296,7 @@ public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
     }
 
     @Test
-    public void testReportDoesNotIncludeNotEvaluatedResources() throws IOException {
+    public void testReportDoesNotIncludeNonEvaluatedResources() throws IOException {
 
         Parameters params = new Parameters();
         params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
