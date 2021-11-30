@@ -10,7 +10,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
 
 /**
@@ -183,7 +183,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveByName(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theName) {
-		return resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), null, theName, null);
+		return resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), theName, null, null);
 	}
 
 	/**
@@ -200,7 +200,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveByName(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theName, RequestDetails theRequestDetails) {
-		return resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), null, theName,
+		return resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), theName, null,
 				theRequestDetails);
 	}
 
@@ -215,7 +215,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveByName(
 			IFhirResourceDao<ResourceType> theResourceDao, String theName) {
-		return resolveByNameAndVersion(theResourceDao, null, theName, null);
+		return resolveByNameAndVersion(theResourceDao, theName, null, null);
 	}
 
 	/**
@@ -301,7 +301,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 			RequestDetails theRequestDetails) {
 		@SuppressWarnings("unchecked")
 		List<ResourceType> resources = (List<ResourceType>) theResourceDao
-				.search(SearchParameterMap.newSynchronous().add("name", new TokenParam(theName))).getAllResources();
+				.search(SearchParameterMap.newSynchronous().add("name", new StringParam(theName))).getAllResources();
 
 		return this.selectFromList(resources, theVersion, this.getVersionFunction(theResourceDao.getResourceType()));
 	}
@@ -373,7 +373,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
 			IFhirResourceDao<ResourceType> theResourceDao, String theUrl, RequestDetails theRequestDetails) {
-		String[] urlParts = theUrl.split("|");
+		String[] urlParts = theUrl.split("\\|");
 		String url = urlParts[0];
 		String version = null;
 		if (urlParts.length > 1) {
