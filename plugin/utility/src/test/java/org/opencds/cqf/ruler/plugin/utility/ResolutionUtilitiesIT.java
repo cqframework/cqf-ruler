@@ -2,7 +2,6 @@ package org.opencds.cqf.ruler.plugin.utility;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Observation;
@@ -18,7 +17,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
         Application.class }, properties = {
@@ -43,7 +41,6 @@ public class ResolutionUtilitiesIT implements ResolutionUtilities {
 
     @BeforeAll
     void beforeAll() {
-
         Library library1 = new Library().setName("TestLibrary").setVersion("1.0.0")
                 .setUrl("http://test.com/Library/TestLibrary");
         library1.setId("libraryone");
@@ -139,6 +136,11 @@ public class ResolutionUtilitiesIT implements ResolutionUtilities {
         // Doesn't exist explodes
         assertThrows(RuntimeException.class, () -> {
             this.resolveById(ourRegistry, Library.class, "librarythree");
+        });
+
+        // Doesn't exist on partition explodes
+        assertThrows(RuntimeException.class, () -> {
+            this.resolveById(ourRegistry, Patient.class, "patienttwo");
         });
 
         // Mismatched Id types explodes
