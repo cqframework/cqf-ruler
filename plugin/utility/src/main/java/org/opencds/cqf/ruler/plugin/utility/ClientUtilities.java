@@ -19,7 +19,7 @@ import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
  * setting up authentication
  */
 public interface ClientUtilities {
-
+    
     /**
      * Creates an IGenericClient for the given url. Defaults to NEVER
      * ServerValidationMode
