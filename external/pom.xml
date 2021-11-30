@@ -94,7 +94,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <!-- <?m2e execute onIncremental?> -->
+                        <?m2e execute onConfiguration?>
                         <phase>generate-sources</phase>
                         <configuration>
                             <target>
@@ -160,7 +160,7 @@
                 <version>1.4.1</version>
                 <executions>
                     <execution>
-                        <!-- <?m2e execute onIncremental?> -->
+                        <?m2e execute onConfiguration?>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>replace</goal>

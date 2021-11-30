@@ -138,6 +138,14 @@ hapi:
 ###   1: NORMALIZED_QUANTITY_STORAGE_SUPPORTED
 ###   2: NORMALIZED_QUANTITY_SEARCH_SUPPORTED
 #    normalized_quantity_search_level: 2
+
+## RA Settings
+    ra:
+      enabled: true
+      report:
+        endpoint: ''
+
+        
 #elasticsearch:
 #  debug:
 #    pretty_print_json_log: false

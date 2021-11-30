@@ -13,7 +13,8 @@
             "vmArgs": [
                 "-XX:TieredStopAtLevel=1",
                 "-Xverify:none",
-                "-Dspring.main.lazy-initialization=true"
+                "-Dspring.main.lazy-initialization=true",
+					 "-Dloader.debug=true"
             ],
             "stepFilters": {
                 "classNameFilters": [
@@ -30,7 +31,6 @@
                 "${workspaceFolder}/plugin/hello-world/target/classes",
                 "${workspaceFolder}/plugin/ra/target/classes",
                 "${workspaceFolder}/plugin/sdc/target/classes",
-                "${workspaceFolder}/plugin/test-utility/target/classes",
                 "${workspaceFolder}/plugin/utility/target/classes"
             ]
         },
