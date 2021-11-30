@@ -1,9 +1,9 @@
 package org.opencds.cqf.ruler.plugin.testutility;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.commons.validator.routines.UrlValidator;
-
 import org.junit.jupiter.api.Test;
 
 public class ClientUtilitiesTest implements ClientUtilities {
