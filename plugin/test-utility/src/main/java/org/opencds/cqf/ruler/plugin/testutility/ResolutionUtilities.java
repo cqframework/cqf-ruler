@@ -29,6 +29,7 @@ public interface ResolutionUtilities {
 	 * @param theLocation    the location of the Resource to resolve
 	 * @param theFhirContext the FhirContext to use to parse the resource
 	 * @return the Resource at the specified location
+	 * @throws IOException if the location does not exist or is unaccessible
 	 */
 	@SuppressWarnings("unchecked")
 	public default <ResourceType extends IBaseResource> ResourceType resolveByLocation(
@@ -51,6 +52,7 @@ public interface ResolutionUtilities {
 	 * 
 	 * @param theLocation the location of the Resource to resolve
 	 * @return the string representation of the Resource
+	 * @throws IOException if the location does not exist or is unaccessible
 	 */
 	public default String stringFromResource(String theLocation) throws IOException {
 		InputStream is = null;

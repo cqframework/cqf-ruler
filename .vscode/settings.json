@@ -16,6 +16,5 @@
         "jpaserver",
         "springframework",
         "Versionless"
-    ],
-    "java.saveActions.organizeImports": true
+    ]
 }

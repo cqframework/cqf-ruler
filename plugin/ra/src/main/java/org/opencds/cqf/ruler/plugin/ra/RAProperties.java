@@ -9,36 +9,36 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 public class RAProperties {
 
-    private Boolean enabled = true;
+	private Boolean enabled = true;
 
-    public Boolean getEnabled() {
-        return this.enabled;
-    }
+	public Boolean getEnabled() {
+		return this.enabled;
+	}
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
 
-    private Report report = new Report();
+	private Report report = new Report();
 
-    public Report getReport() {
-        return report;
-    }
+	public Report getReport() {
+		return report;
+	}
 
-    public void setReport(Report report) {
-        this.report = report;
-    }
+	public void setReport(Report report) {
+		this.report = report;
+	}
 
-    public static class Report {
+	public static class Report {
 
-        private String endpoint;
+		private String endpoint;
 
-        public String getEndpoint() {
-            return endpoint;
-        }
+		public String getEndpoint() {
+			return endpoint;
+		}
 
-        public void setEndpoint(String endpoint) {
-            this.endpoint = endpoint;
-        }       
-    }
+		public void setEndpoint(String endpoint) {
+			this.endpoint = endpoint;
+		}
+	}
 }
