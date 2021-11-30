@@ -2,6 +2,8 @@ package org.opencds.cqf.ruler.plugin.testutility;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.apache.commons.validator.routines.UrlValidator;
+
 import org.junit.jupiter.api.Test;
 
 public class ClientUtilitiesTest implements ClientUtilities {
@@ -12,6 +14,11 @@ public class ClientUtilitiesTest implements ClientUtilities {
         Integer port = 8084;
         String url = getClientUrl(template, port);
 
+        String[] schemes = {"http","https"};
+        UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
+        
+        assertTrue(urlValidator.isValid(url));
+
         assertEquals("http://localhost:8084/fhir", url);
     }
 
@@ -21,6 +28,9 @@ public class ClientUtilitiesTest implements ClientUtilities {
         Integer port = 8084;
         String url = getClientUrl(port);
 
-        assertEquals("http://localhost:8084/fhir", url);
+        String[] schemes = {"http","https"};
+        UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
+        
+        assertTrue(urlValidator.isValid(url));
     }
 }
