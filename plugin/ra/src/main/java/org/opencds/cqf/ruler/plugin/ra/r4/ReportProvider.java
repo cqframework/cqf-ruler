@@ -35,7 +35,6 @@ import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.param.ReferenceParam;
-
 public class ReportProvider implements OperationProvider, OperatorUtilities {
 
 	@Autowired

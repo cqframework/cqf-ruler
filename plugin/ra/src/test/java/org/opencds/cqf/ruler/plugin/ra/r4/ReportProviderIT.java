@@ -19,7 +19,6 @@ import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.ra.RAConfig;
 import org.opencds.cqf.ruler.plugin.ra.RAProperties;
 import org.opencds.cqf.ruler.plugin.testutility.ResolutionUtilities;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
