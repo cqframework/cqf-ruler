@@ -10,7 +10,11 @@
             "request": "launch",
             "mainClass": "org.opencds.cqf.ruler.Application",
             "projectName": "cqf-ruler-server",
-            "vmArgs": ["-XX:TieredStopAtLevel=1", "-Xverify:none", "-Dspring.main.lazy-initialization=true"],
+            "vmArgs": [
+                "-XX:TieredStopAtLevel=1",
+                "-Xverify:none",
+                "-Dspring.main.lazy-initialization=true"
+            ],
             "stepFilters": {
                 "classNameFilters": [
                     "java.*",
@@ -25,7 +29,8 @@
                 "$Auto",
                 "${workspaceFolder}/plugin/hello-world/target/classes",
                 "${workspaceFolder}/plugin/ra/target/classes",
-                "${workspaceFolder}/plugin/sdc/target/classes",                
+                "${workspaceFolder}/plugin/sdc/target/classes",
+                "${workspaceFolder}/plugin/test-utility/target/classes",
                 "${workspaceFolder}/plugin/utility/target/classes"
             ]
         },

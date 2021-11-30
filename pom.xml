@@ -11,6 +11,7 @@
         <module>external</module>
         <module>server</module>
         <module>plugin/utility</module>
+        <module>plugin/test-utility</module>
         <module>plugin/hello-world</module>
         <module>plugin/ra</module>
         <module>plugin/sdc</module>        

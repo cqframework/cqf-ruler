@@ -15,7 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.sdc.SDCConfig;
 import org.opencds.cqf.ruler.plugin.sdc.SDCProperties;
-import org.opencds.cqf.ruler.plugin.utility.ResolutionUtilities;
+import org.opencds.cqf.ruler.plugin.testutility.ResolutionUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

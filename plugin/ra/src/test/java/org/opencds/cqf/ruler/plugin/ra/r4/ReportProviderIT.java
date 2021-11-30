@@ -18,8 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.ra.RAConfig;
 import org.opencds.cqf.ruler.plugin.ra.RAProperties;
-import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
-import org.opencds.cqf.ruler.plugin.utility.ResolutionUtilities;
+import org.opencds.cqf.ruler.plugin.testutility.ResolutionUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
         RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.ra.enabled=true" })
-public class ReportProviderIT implements ClientUtilities, ResolutionUtilities {
+public class ReportProviderIT implements org.opencds.cqf.ruler.plugin.testutility.ClientUtilities, ResolutionUtilities, org.opencds.cqf.ruler.plugin.utility.ClientUtilities {
     private Logger ourLog = LoggerFactory.getLogger(ReportProviderIT.class);
 
     private IGenericClient ourClient;
