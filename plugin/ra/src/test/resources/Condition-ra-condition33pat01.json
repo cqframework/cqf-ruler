@@ -4,8 +4,7 @@
   "meta": {
     "profile": [
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
-    ],
-    "source": "http://example.org/fhir/server"
+    ]
   },
   "clinicalStatus": {
     "coding": [
