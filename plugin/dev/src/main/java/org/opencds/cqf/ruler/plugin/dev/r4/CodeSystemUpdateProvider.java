@@ -31,6 +31,10 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.param.UriParam;
 
+/**
+ * This class provides an {@link OperationProvider OperationProvider} implementation
+ * to enable {@link ValueSet ValueSet} expansion and validation without complete {@link CodeSystem CodeSystems}.
+ */
 public class CodeSystemUpdateProvider implements OperationProvider {
 
     private static Logger log = LoggerFactory.getLogger(CodeSystemUpdateProvider.class);
@@ -43,10 +47,10 @@ public class CodeSystemUpdateProvider implements OperationProvider {
     private DevUtilities idUtilities = new DevUtilities();
 
     /***
-     * Update existing CodeSystems with the codes in all ValueSet resources. System
-     * level CodeSystem update operation
+     * Update existing {@link CodeSystem CodeSystems} with the codes in all {@link ValueSet ValueSet} resources.
+     * System level CodeSystem update operation
      *
-     * @return FHIR OperationOutcome detailing the success or failure of the
+     * @return FHIR {@link OperationOutcome OperationOutcome} detailing the success or failure of the
      *         operation
      */
     @Operation(name = "$updateCodeSystems", idempotent = true)
@@ -68,22 +72,26 @@ public class CodeSystemUpdateProvider implements OperationProvider {
     }
 
     /***
-     * Update existing CodeSystems with the codes in the specified ValueSet.
+     * Update existing {@link CodeSystem CodeSystems} with the codes in the specified {@link ValueSet ValueSet}.
      *
      * This is for development environment purposes to enable ValueSet expansion and
      * validation without complete CodeSystems.
      *
-     * @param theId the id of the ValueSet
-     * @return FHIR OperationOutcome detailing the success or failure of the
+     * @param theId the id of the {@link ValueSet ValueSet}
+     * @return FHIR {@link OperationOutcome OperationOutcome} detailing the success or failure of the
      *         operation
      */
     @Operation(name = "$updateCodeSystems", idempotent = true, type = ValueSet.class)
     public OperationOutcome updateCodeSystems(@IdParam IdType theId) {
-        ValueSet vs = this.myValueSetDaoR4.read(theId);
-
         OperationOutcome response = new OperationOutcome();
-        if (vs == null) {
-            return buildIssue(response, "error", "notfound", "Unable to find Resource: " + theId.getId());
+        ValueSet vs = null;
+        try {
+            vs = this.myValueSetDaoR4.read(theId);
+            if (vs == null) {
+                return buildIssue(response, "error", "not-found", "Unable to find Resource: " + theId.getIdPart());
+            }  
+        } catch (Exception e) {
+            return buildIssue(response, "error", "not-found", "Unable to find Resource: " + theId.getIdPart() + "\n" + e);
         }
 
         return performCodeSystemUpdate(Collections.singletonList(vs));
