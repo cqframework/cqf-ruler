@@ -75,9 +75,9 @@ public class CacheValueSetsProvider implements OperationProvider {
 
         if (userName != null || password != null) {
             if (userName == null) {
-                createErrorOutcome("Password was provided, but not a user name.");
+                return createErrorOutcome("Password was provided, but not a user name.");
             } else if (password == null) {
-                createErrorOutcome("User name was provided, but not a password.");
+                return createErrorOutcome("User name was provided, but not a password.");
             }
 
             BasicAuthInterceptor basicAuth = new BasicAuthInterceptor(userName, password);

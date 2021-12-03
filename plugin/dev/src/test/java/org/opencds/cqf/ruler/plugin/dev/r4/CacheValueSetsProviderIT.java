@@ -76,6 +76,26 @@ public class CacheValueSetsProviderIT implements TesterUtilities {
     }
 
     @Test
+    public void testCacheValueSetsAuthenticationErrorUsername() throws Exception {
+        Endpoint endpoint = uploadLocalServerEndpoint();
+        StringAndListParam stringAndListParam = getStringAndListParamFromValueSet("valueset/AcuteInpatient.json");
+        RequestDetails details = Mockito.mock(RequestDetails.class);
+        Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, endpoint.getIdElement(), stringAndListParam, "username", null);
+        String detailMessage = "User name was provided, but not a password.";
+        validateOutcome(outcomeResource, detailMessage);
+    }
+
+    @Test
+    public void testCacheValueSetsAuthenticationErrorPassword() throws Exception {
+        Endpoint endpoint = uploadLocalServerEndpoint();
+        StringAndListParam stringAndListParam = getStringAndListParamFromValueSet("valueset/AcuteInpatient.json");
+        RequestDetails details = Mockito.mock(RequestDetails.class);
+        Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, endpoint.getIdElement(), stringAndListParam, null, "password");
+        String detailMessage = "Password was provided, but not a user name.";
+        validateOutcome(outcomeResource, detailMessage);
+    }
+
+    @Test
     public void testCacheValueSetsValueSetDNE() throws Exception {
         Endpoint endpoint = uploadLocalServerEndpoint();
         StringAndListParam stringAndListParam = new StringAndListParam();
