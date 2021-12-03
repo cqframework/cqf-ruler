@@ -10,6 +10,11 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
+/**
+ * This class provides the {@link Bean Bean} {@link Configuration Configuration} for the dstu3 {@link org.opencds.cqf.ruler.plugin.dev.dstu3.CodeSystemUpdateProvider CodeSystemUpdateProvider},
+ * the r4 {@link org.opencds.cqf.ruler.plugin.dev.r4.CodeSystemUpdateProvider CodeSystemUpdateProvider}, the dstu3 {@link org.opencds.cqf.ruler.plugin.dev.dstu3.CacheValueSetsProvider CacheValueSetsProvider}
+ * and the r4 {@link org.opencds.cqf.ruler.plugin.dev.r4.CacheValueSetsProvider CacheValueSetsProvider}
+ */
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.dev", name ="enabled", havingValue = "true")
 public class DevToolsConfig {
@@ -30,5 +35,17 @@ public class DevToolsConfig {
     @Conditional(OnDSTU3Condition.class)
     public OperationProvider dstu3CodeSystemUpdateProvider() {
         return new org.opencds.cqf.ruler.plugin.dev.dstu3.CodeSystemUpdateProvider();
+    }
+
+    @Bean
+    @Conditional(OnR4Condition.class)
+    public OperationProvider r4CacheValueSetsProvider() {
+        return new org.opencds.cqf.ruler.plugin.dev.r4.CacheValueSetsProvider();
+    }
+
+    @Bean
+    @Conditional(OnDSTU3Condition.class)
+    public OperationProvider dstu3CacheValueSetsProvider() {
+        return new org.opencds.cqf.ruler.plugin.dev.dstu3.CacheValueSetsProvider();
     }
 }
