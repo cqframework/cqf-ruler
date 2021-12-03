@@ -15,9 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.sdc.SDCConfig;
 import org.opencds.cqf.ruler.plugin.sdc.SDCProperties;
-import org.opencds.cqf.ruler.plugin.utility.ResolutionUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opencds.cqf.ruler.plugin.testutility.ResolutionUtilities;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -37,8 +36,6 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
         SDCConfig.class }, properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.sdc.enabled=true" })
 public class ExtractProviderIT implements ResolutionUtilities {
-    private Logger log = LoggerFactory.getLogger(ExtractProviderIT.class);
-
     private IGenericClient ourClient;
     private FhirContext ourCtx;
     

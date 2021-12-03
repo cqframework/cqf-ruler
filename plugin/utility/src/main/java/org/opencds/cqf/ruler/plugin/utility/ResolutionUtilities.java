@@ -1,25 +1,16 @@
 package org.opencds.cqf.ruler.plugin.utility;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
-import com.google.common.base.Charsets;
-import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
 
 /**
@@ -33,9 +24,9 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	/**
 	 * Returns the Resource with a matching Id
 	 * 
-	 * @param <ResourceType>    an IBaseResource type
-	 * @param theDaoRegistry    the DaoRegistry to use for resolution
-	 * @param theId             the Id of the Resource to resolve
+	 * @param <ResourceType> an IBaseResource type
+	 * @param theDaoRegistry the DaoRegistry to use for resolution
+	 * @param theId          the Id of the Resource to resolve
 	 * @return the Resource matching the criteria
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
@@ -192,7 +183,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveByName(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theName) {
-		return resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), null, theName, null);
+		return resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), theName, null, null);
 	}
 
 	/**
@@ -209,7 +200,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveByName(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theName, RequestDetails theRequestDetails) {
-		return resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), null, theName,
+		return resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), theName, null,
 				theRequestDetails);
 	}
 
@@ -224,7 +215,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveByName(
 			IFhirResourceDao<ResourceType> theResourceDao, String theName) {
-		return resolveByNameAndVersion(theResourceDao, null, theName, null);
+		return resolveByNameAndVersion(theResourceDao, theName, null, null);
 	}
 
 	/**
@@ -310,7 +301,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 			RequestDetails theRequestDetails) {
 		@SuppressWarnings("unchecked")
 		List<ResourceType> resources = (List<ResourceType>) theResourceDao
-				.search(SearchParameterMap.newSynchronous().add("name", new TokenParam(theName))).getAllResources();
+				.search(SearchParameterMap.newSynchronous().add("name", new StringParam(theName))).getAllResources();
 
 		return this.selectFromList(resources, theVersion, this.getVersionFunction(theResourceDao.getResourceType()));
 	}
@@ -382,7 +373,7 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
 			IFhirResourceDao<ResourceType> theResourceDao, String theUrl, RequestDetails theRequestDetails) {
-		String[] urlParts = theUrl.split("|");
+		String[] urlParts = theUrl.split("\\|");
 		String url = urlParts[0];
 		String version = null;
 		if (urlParts.length > 1) {
@@ -466,46 +457,5 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 			IFhirResourceDao<ResourceType> theResourceDao, IPrimitiveType<String> theUrl,
 			RequestDetails theRequestDetails) {
 		return this.resolveByCanonicalUrl(theResourceDao, theUrl.getValue(), theRequestDetails);
-	}
-
-	/**
-	 * Returns the Resource at the specified location.
-	 * @param <ResourceType>    an IBaseResource type
-	 * @param theResourceDao    the DaoRegistry to use for resolution
-	 * @param theLocation       the location of the Resource to resolve
-	 * @param theFhirContext	the FhirContext to use to parse the resource
-	 * @return the Resource at the specified location
-	 */
-	@SuppressWarnings("unchecked")
-	public default <ResourceType extends IBaseResource> ResourceType resolveByLocation(
-		DaoRegistry theResourceDao, String theLocation, FhirContext theFhirContext)
-		throws IOException {
-	  String json = stringFromResource(theLocation);
-	  IBaseResource resource = theFhirContext.newJsonParser().parseResource(json);
-	  IFhirResourceDao<IBaseResource> dao = theResourceDao.getResourceDao(resource.getIdElement().getResourceType());
-	  if (dao == null) {
-		return null;
-	  } else {
-		dao.update(resource);
-		return (ResourceType) resource;
-	  }
-	}
-  
-	/**
-	 * Returns a String representation of the Resource
-	 * at the specified location.
-	 * @param theLocation	the location of the Resource to resolve
-	 * @return the string representation of the Resource
-	 */
-	public default String stringFromResource(String theLocation) throws IOException {
-	  InputStream is = null;
-	  if (theLocation.startsWith(File.separator)) {
-		is = new FileInputStream(theLocation);
-	  } else {
-		DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-		Resource resource = resourceLoader.getResource(theLocation);
-		is = resource.getInputStream();
-	  }
-	  return IOUtils.toString(is, Charsets.UTF_8);
 	}
 }

@@ -14,6 +14,8 @@
     "cSpell.words": [
         "autoconfigure",
         "jpaserver",
-        "springframework"
-    ]
+        "springframework",
+        "Versionless"
+    ],
+    "java.saveActions.organizeImports": true
 }
