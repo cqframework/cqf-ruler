@@ -15,7 +15,7 @@
         <module>plugin/hello-world</module>
 		<module>plugin/ra</module>
         <module>plugin/sdc</module>
-        <module>plugin/dev</module>
+        <module>plugin/dev-tools</module>
         <!-- <module>plugin/cql</module> -->
 		<!-- <module>plugin/cql</module> -->
 		<!-- <module>cqf-ruler-common</module>
