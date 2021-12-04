@@ -21,11 +21,12 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.plugin.dev.utils.DevUtilities;
+import org.opencds.cqf.ruler.plugin.utility.IdUtilities;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoCodeSystem;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
@@ -35,7 +36,7 @@ import ca.uhn.fhir.rest.param.UriParam;
  * This class provides an {@link OperationProvider OperationProvider} implementation
  * to enable {@link ValueSet ValueSet} expansion and validation without complete {@link CodeSystem CodeSystems}.
  */
-public class CodeSystemUpdateProvider implements OperationProvider {
+public class CodeSystemUpdateProvider implements OperationProvider, IdUtilities {
 
     private static Logger log = LoggerFactory.getLogger(CodeSystemUpdateProvider.class);
 
@@ -44,8 +45,6 @@ public class CodeSystemUpdateProvider implements OperationProvider {
     @Autowired
     private IFhirResourceDaoCodeSystem<CodeSystem, Coding, CodeableConcept> myCodeSystemDaoDSTU3;
 
-    private DevUtilities idUtilities = new DevUtilities();
-
     /***
      * Update existing {@link CodeSystem CodeSystems} with the codes in all {@link ValueSet ValueSet} resources.
      * System level CodeSystem update operation
@@ -53,6 +52,11 @@ public class CodeSystemUpdateProvider implements OperationProvider {
      * @return FHIR {@link OperationOutcome OperationOutcome} detailing the success or failure of the
      *         operation
      */
+    @Description(
+        shortDefinition = "$updateCodeSystems",
+        value = "Update existing CodeSystems with the codes in all ValueSet resources. System level CodeSystem update operation",
+        example = "$updateCodeSystems"
+    )
     @Operation(name = "$updateCodeSystems", idempotent = true)
     public OperationOutcome updateCodeSystems() {
         IBundleProvider valuesets = this.myValueSetDaoDSTU3.search(SearchParameterMap.newSynchronous());
@@ -81,6 +85,11 @@ public class CodeSystemUpdateProvider implements OperationProvider {
      * @return FHIR {@link OperationOutcome OperationOutcome} detailing the success or failure of the
      *         operation
      */
+    @Description(
+        shortDefinition = "$updateCodeSystems",
+        value = "Update existing CodeSystems with the codes in the specified ValueSet This is for development environment purposes to enable ValueSet expansion and validation without complete CodeSystems.",
+        example = "ValueSet/example-id/$updateCodeSystems"
+    )
     @Operation(name = "$updateCodeSystems", idempotent = true, type = ValueSet.class)
     public OperationOutcome updateCodeSystems(@IdParam IdType theId) {
         OperationOutcome response = new OperationOutcome();
@@ -160,7 +169,7 @@ public class CodeSystemUpdateProvider implements OperationProvider {
             return (CodeSystem) bundleProvider.getResources(0, 1).get(0);
         }
 
-        return (CodeSystem) new CodeSystem().setUrl(url).setId(idUtilities.createId(CodeSystem.class, UUID.randomUUID().toString()));
+        return (CodeSystem) new CodeSystem().setUrl(url).setId(this.createId(CodeSystem.class, UUID.randomUUID().toString()));
     }
 
     /***

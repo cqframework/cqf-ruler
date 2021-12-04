@@ -20,14 +20,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.opencds.cqf.ruler.Application;
+import org.opencds.cqf.ruler.plugin.dev.IServerSupport;
 import org.opencds.cqf.ruler.plugin.dev.DevToolsConfig;
-import org.opencds.cqf.ruler.plugin.dev.TesterUtilities;
+import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
+import org.opencds.cqf.ruler.plugin.utility.IdUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -38,10 +39,9 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.param.StringAndListParam;
 
 @ExtendWith(SpringExtension.class)
-@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=r4", "hapi.fhir.dev.enabled=true"})
-public class CacheValueSetsProviderIT implements TesterUtilities {
+public class CacheValueSetsProviderIT implements IServerSupport, IdUtilities, ClientUtilities {
     private Logger log = LoggerFactory.getLogger(CodeSystemProviderIT.class);
     
     @Autowired

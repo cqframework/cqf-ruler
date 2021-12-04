@@ -1,14 +1,3 @@
 spring:
   config:
     import: application.yaml
-  main:
-    allow-bean-definition-overriding: true
-  batch:
-    job:
-      enabled: false
-  datasource:
-    url: jdbc:h2:mem:dbr4-mt
-
-hapi:
-  fhir:
-    tester_enabled: false

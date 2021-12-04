@@ -6,7 +6,6 @@ import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.parser.IParser;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
 
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;

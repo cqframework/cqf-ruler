@@ -14,12 +14,13 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.plugin.dev.utils.DevUtilities;
+import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
+import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
@@ -34,7 +35,7 @@ import ca.uhn.fhir.rest.param.StringParam;
  * This class is used to provide an {@link OperationProvider OperationProvider} implementation
  * that supports caching {@link ValueSet ValueSets } and ensuring expansion of those {@link ValueSet ValueSets }
  */
-public class CacheValueSetsProvider implements OperationProvider {
+public class CacheValueSetsProvider implements OperationProvider, ClientUtilities  {
 
     @Autowired
     private IFhirSystemDao<Bundle, ?> systemDao;
@@ -42,8 +43,6 @@ public class CacheValueSetsProvider implements OperationProvider {
     private IFhirResourceDao<Endpoint> endpointDao;
     @Autowired
     private FhirContext ourCtx;
-
-    private DevUtilities devUtilities = new DevUtilities();
 
     /**
      * Using basic authentication this {@link Operation Operation} will update
@@ -56,6 +55,11 @@ public class CacheValueSetsProvider implements OperationProvider {
      * @param password the password
      * @return the {@link OperationOutcome OperationOutcome} or the resulting {@link Bundle Bundle}
      */
+    @Description(
+        shortDefinition = "$cache-valuesets",
+        value = "Using basic authentication this Operation will update any Valueset listed given the Endpoint provided. Any Valuesets that require expansion will be expanded.", 
+        example = "Endpoint/example-id/$cache-valuesets?valuesets=valuesetId1&valuesets=valuesetId2&user=user&password=password"
+    )
     @Operation(name = "cache-valuesets", idempotent = true, type = Endpoint.class)
     public Resource cacheValuesets(RequestDetails details, @IdParam IdType endpointId,
             @OperationParam(name = "valuesets") StringAndListParam valuesets,
@@ -71,7 +75,7 @@ public class CacheValueSetsProvider implements OperationProvider {
                 return createErrorOutcome("Could not find Endpoint/" + endpointId + "\n" + e);
             }
 
-        IGenericClient client = devUtilities.createClient(ourCtx, endpoint);
+        IGenericClient client = this.createClient(ourCtx, endpoint);
 
         if (userName != null || password != null) {
             if (userName == null) {

@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.plugin.dev;
 
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
 import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
 
