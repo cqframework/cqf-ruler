@@ -17,5 +17,7 @@
         "springframework",
         "Versionless"
     ],
-    "java.saveActions.organizeImports": true
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    }
 }
