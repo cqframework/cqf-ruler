@@ -20,23 +20,27 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 /**
  * This class provides an implementation of the cql-engine's RetrieveProvider interface which is used for loading
  * data during CQL evaluation.
- * 
- * TODO: This implementation is not tenant-aware. The RequestDetails needs to be passed in to the search request
- * of the IFhirResourceDao to make it work correctly.
  */
 public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(JpaFhirRetrieveProvider.class);
 
-    DaoRegistry registry;
+    private final DaoRegistry myDaoRegistry;
+	 private final RequestDetails myRequestDetails;
 
-    public JpaFhirRetrieveProvider(DaoRegistry registry, SearchParameterResolver searchParameterResolver) {
+	 public JpaFhirRetrieveProvider(DaoRegistry theDaoRegistry, SearchParameterResolver theSearchParameterResolver) {
+		this(theDaoRegistry, theSearchParameterResolver, null);
+  }
+
+    public JpaFhirRetrieveProvider(DaoRegistry registry, SearchParameterResolver searchParameterResolver, RequestDetails requestDetails) {
         super(searchParameterResolver);
-        this.registry = registry;
+        this.myDaoRegistry = registry;
+		  this.myRequestDetails = requestDetails;
     }
 
     @Override
@@ -73,9 +77,9 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
             logger.warn("Error converting search parameter map", e);
         }
 
-        IFhirResourceDao<?> dao = this.registry.getResourceDao(dataType);
+        IFhirResourceDao<?> dao = this.myDaoRegistry.getResourceDao(dataType);
 
-        IBundleProvider bundleProvider = dao.search(hapiMap);
+        IBundleProvider bundleProvider = dao.search(hapiMap, myRequestDetails);
         if (bundleProvider.size() == null) {
             return resolveResourceList(bundleProvider.getAllResources());
         }
@@ -86,13 +90,9 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
         return resolveResourceList(resourceList);
     }
 
-    public synchronized Collection<Object> resolveResourceList(List<IBaseResource> resourceList) {
-        List<Object> ret = new ArrayList<>();
-        for (IBaseResource res : resourceList) {
-            Class<?> clazz = res.getClass();
-            ret.add(clazz.cast(res));
-        }
-        // ret.addAll(resourceList);
+    public Collection<Object> resolveResourceList(List<IBaseResource> resourceList) {
+        List<Object> ret = new ArrayList<>(resourceList.size());
+		  ret.addAll(resourceList);
         return ret;
     }
 }

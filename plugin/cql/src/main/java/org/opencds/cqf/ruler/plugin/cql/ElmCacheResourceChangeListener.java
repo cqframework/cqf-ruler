@@ -11,7 +11,6 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.ruler.plugin.utility.ReflectionUtilities;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.cache.IResourceChangeEvent;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListener;
@@ -23,18 +22,15 @@ public class ElmCacheResourceChangeListener implements IResourceChangeListener, 
 
     private final IFhirResourceDao<?> myLibraryDao;
     private final Map<VersionedIdentifier, Library> myGlobalLibraryCache;
-    private final FhirContext myFhirContext;
     private final Function<IBaseResource, String> myNameFunction;
     private final Function<IBaseResource, String> myVersionFunction;
 
-    @SuppressWarnings("unchecked")
     public ElmCacheResourceChangeListener(IFhirResourceDao<?> theLibraryDao,
             Map<VersionedIdentifier, Library> theGlobalLibraryCache) {
         this.myLibraryDao = theLibraryDao;
         this.myGlobalLibraryCache = theGlobalLibraryCache;
-        this.myFhirContext = theLibraryDao.getContext();
-        this.myNameFunction = this.getNameFunction(myFhirContext, (Class<IBaseResource>)theLibraryDao.getResourceType());
-        this.myVersionFunction = this.getVersionFunction(myFhirContext, (Class<IBaseResource>)theLibraryDao.getResourceType());
+        this.myNameFunction = this.getNameFunction(theLibraryDao.getResourceType());
+        this.myVersionFunction = this.getVersionFunction(theLibraryDao.getResourceType());
     }
 
     @Override

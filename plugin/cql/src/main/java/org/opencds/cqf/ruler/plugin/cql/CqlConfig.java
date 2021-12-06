@@ -72,19 +72,19 @@ public class CqlConfig {
         return libraryManager;
     }
 
-    // @Bean
-    // public LibraryLoader libraryLoader(CqlTranslatorOptions cqlTranslatorOptions, LibraryManager libraryManager, ModelManager modelManager, Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache) {
-    //     TranslatingLibraryLoader translatingLibraryLoader = new TranslatingLibraryLoader(modelManager, contentProviders,
-    //             cqlTranslatorOptions);
+   //  @Bean
+   //  public LibraryLoader libraryLoader(CqlTranslatorOptions cqlTranslatorOptions, LibraryManager libraryManager, ModelManager modelManager, Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache) {
+   //      TranslatingLibraryLoader translatingLibraryLoader = new TranslatingLibraryLoader(modelManager, contentProviders,
+   //              cqlTranslatorOptions);
 
-    //     // TOOO: Need the bug fixes in the translator / evaluator to correctly detect whether the translator options match.
-    //     return new CacheAwareLibraryLoaderDecorator(translatingLibraryLoader, globalLibraryCache) {
-    //         @Override
-    //         protected Boolean translatorOptionsMatch(org.cqframework.cql.elm.execution.Library library) {
-    //             return true;
-    //         }
-    //     };
-    // }
+   //      // TOOO: Need the bug fixes in the translator / evaluator to correctly detect whether the translator options match.
+   //      return new CacheAwareLibraryLoaderDecorator(translatingLibraryLoader, globalLibraryCache) {
+   //          @Override
+   //          protected Boolean translatorOptionsMatch(org.cqframework.cql.elm.execution.Library library) {
+   //              return true;
+   //          }
+   //      };
+   //  }
 
     @Bean
     SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
@@ -156,6 +156,8 @@ public class CqlConfig {
     @Bean
     @Conditional(OnR5Condition.class)
     public ModelResolver modelResolverR5() {
+		  // TODO: The key piece missing for R5 support is a ModelInfo in the CQL Translator. That's being tracked here:
+		  // https://github.com/cqframework/clinical_quality_language/issues/665
         throw new IllegalStateException("CQL support not yet implemented for R5. Please disable the CQL plugin.");
     }
 }

@@ -19,15 +19,14 @@ import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 /**
- * This class provides an implementation of the cql-engine's TerminologyProvider interface, which is used for Terminology operations
+ * This class provides an implementation of the cql-engine's TerminologyProvider
+ * interface, which is used for Terminology operations
  * in CQL
- * 
- * TODO: This implementation is not tenant-aware. The RequestDetails needs to be passed in to the search request
- * of the IFhirResourceDao to make it work correctly.
  */
 public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities {
 
@@ -35,13 +34,20 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 	private final DaoRegistry myDaoRegistry;
 	private final IValidationSupport myValidationSupport;
 	private final IFhirResourceDao<?> myValueSetDao;
+	private final RequestDetails myRequestDetails;
 
 	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, DaoRegistry theDaoRegistry,
 			IValidationSupport theValidationSupport) {
+				this(theTerminologySvc, theDaoRegistry, theValidationSupport, null);
+	}
+
+	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, DaoRegistry theDaoRegistry,
+			IValidationSupport theValidationSupport, RequestDetails theRequestDetails) {
 		myTerminologySvc = theTerminologySvc;
 		myDaoRegistry = theDaoRegistry;
 		myValidationSupport = theValidationSupport;
 		myValueSetDao = myDaoRegistry.getResourceDao("ValueSet");
+		myRequestDetails = theRequestDetails;
 	}
 
 	@Override
@@ -72,7 +78,7 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 			}
 
 			IBundleProvider bundleProvider = myValueSetDao
-					.search(SearchParameterMap.newSynchronous().add("url", new UriParam(valueSet.getId())));
+					.search(SearchParameterMap.newSynchronous().add("url", new UriParam(valueSet.getId())), myRequestDetails);
 			List<IBaseResource> valueSets = bundleProvider.getAllResources();
 			if (valueSets.isEmpty()) {
 				throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));
@@ -82,24 +88,27 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 				throw new IllegalArgumentException("Found more than 1 ValueSet with url: " + valueSet.getId());
 			}
 		} else {
-			vs = myValueSetDao.read(this.createId(this.myTerminologySvc.getFhirContext(), valueSet.getId()));
+			vs = myValueSetDao.read(this.createId(this.myTerminologySvc.getFhirContext(), valueSet.getId()), myRequestDetails);
 			if (vs == null) {
 				throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));
 			}
 		}
 
-		// TODO: There's probably a way to share a bit more code between the various versions of FHIR
-		// here. The cql-evaluator has a CodeUtil class that read any version of a ValueSet, but it
+		// TODO: There's probably a way to share a bit more code between the various
+		// versions of FHIR
+		// here. The cql-evaluator has a CodeUtil class that read any version of a
+		// ValueSet, but it
 		// relies heavily on reflection.
-		switch(vs.getStructureFhirVersionEnum()) {
-		case DSTU3:
-			return getCodes((org.hl7.fhir.dstu3.model.ValueSet)vs);
-		case R4:
-			return getCodes((org.hl7.fhir.r4.model.ValueSet)vs);
-		case R5:
-			return getCodes((org.hl7.fhir.dstu3.model.ValueSet)vs);
-		default:
-			throw new IllegalArgumentException(String.format("expand does not support FHIR version %s", vs.getStructureFhirVersionEnum().getFhirVersionString()));
+		switch (vs.getStructureFhirVersionEnum()) {
+			case DSTU3:
+				return getCodes((org.hl7.fhir.dstu3.model.ValueSet) vs);
+			case R4:
+				return getCodes((org.hl7.fhir.r4.model.ValueSet) vs);
+			case R5:
+				return getCodes((org.hl7.fhir.dstu3.model.ValueSet) vs);
+			default:
+				throw new IllegalArgumentException(String.format("expand does not support FHIR version %s",
+						vs.getStructureFhirVersionEnum().getFhirVersionString()));
 		}
 	}
 
@@ -210,7 +219,7 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 
 	@SuppressWarnings("unchecked")
 	protected <T extends IBaseResource> T innerExpand(T theValueSet) {
-		return (T)myTerminologySvc.expandValueSet(
-			new ValueSetExpansionOptions().setCount(Integer.MAX_VALUE).setFailOnMissingCodeSystem(false), theValueSet);
+		return (T) myTerminologySvc.expandValueSet(
+				new ValueSetExpansionOptions().setCount(Integer.MAX_VALUE).setFailOnMissingCodeSystem(false), theValueSet);
 	}
 }
