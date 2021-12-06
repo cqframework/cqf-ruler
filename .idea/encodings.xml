@@ -5,6 +5,8 @@
     <file url="file://$PROJECT_DIR$/plugin/hello-world/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugin/ra/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugin/ra/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/plugin/cpg/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/plugin/cpg/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugin/sdc/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugin/sdc/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugin/test-utility/src/main/java" charset="UTF-8" />
