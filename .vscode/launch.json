@@ -14,7 +14,8 @@
                 "-XX:TieredStopAtLevel=1",
                 "-Xverify:none",
                 "-Dspring.main.lazy-initialization=true",
-					 "-Dloader.debug=true"
+					 "-Dloader.debug=true",
+					 "-Ddebug=true"
             ],
             "stepFilters": {
                 "classNameFilters": [
