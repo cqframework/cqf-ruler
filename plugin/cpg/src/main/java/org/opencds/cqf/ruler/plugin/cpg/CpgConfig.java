@@ -32,9 +32,6 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(prefix = "hapi.fhir.cpg", name = "enabled", havingValue = "true")
 public class CpgConfig {
     private static final Logger ourLog = LoggerFactory.getLogger(CpgConfig.class);
-    
-    @Autowired
-    public CpgProperties cpgProperties;
 
 	@Bean
 	public CpgProperties cpgProperties() {
@@ -43,7 +40,8 @@ public class CpgConfig {
 
     @Bean
     public CqlTranslatorOptions cqlTranslatorOptions(FhirContext fhirContext) {
-        CqlTranslatorOptions options = cpgProperties.getCqlTranslatorOptions();
+        // TODO: get from properties
+        CqlTranslatorOptions options = CqlTranslatorOptions.defaultOptions();
 
         if (fhirContext.getVersion().getVersion().isOlderThan(FhirVersionEnum.R4)
                 && (options.getCompatibilityLevel() == "1.5" || options.getCompatibilityLevel() == "1.4")) {

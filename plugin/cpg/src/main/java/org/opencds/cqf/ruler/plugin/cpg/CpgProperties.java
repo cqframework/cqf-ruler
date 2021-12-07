@@ -9,6 +9,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class CpgProperties {
 
 	private Boolean enabled = true;
+
+    private Boolean cql_debug_enabled = false;
 	
     private CqlTranslatorOptions cqlTranslatorOptions = CqlTranslatorOptions.defaultOptions();
 
@@ -26,6 +28,14 @@ public class CpgProperties {
 
     public void setCqlTranslatorOptions(CqlTranslatorOptions cqlTranslatorOptions) {
         this.cqlTranslatorOptions = cqlTranslatorOptions;
+    }
+
+    public Boolean getCql_debug_enabled() {
+      return cql_debug_enabled;
+    }
+  
+    public void setCql_debug_enabled(Boolean cql_debug_enabled) {
+      this.cql_debug_enabled = cql_debug_enabled;
     }
     
 }

@@ -29,6 +29,7 @@ import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.cql.engine.data.DataProvider;
+import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
@@ -43,7 +44,7 @@ import ca.uhn.fhir.cql.common.provider.EvaluationProviderFactory;
 import ca.uhn.fhir.cql.common.provider.LibraryContentProvider;
 
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.plugin.cpg.LoggingHelper;
+import org.opencds.cqf.ruler.plugin.cpg.CpgProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -68,6 +69,8 @@ public class CqlExecutionProvider implements OperationProvider, OperatorUtilitie
     private LibraryHelper libraryHelper;
     @Autowired
     private ModelManager modelManager;
+    @Autowired
+    private CpgProperties cpgProperties;
 
     private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> getLibraryResourceProvider() {
         return this.libraryResourceProvider;
@@ -225,7 +228,7 @@ public class CqlExecutionProvider implements OperationProvider, OperatorUtilitie
         // This enables expressions to access the resource by root, as well as through
         // the %context attribute
         Context context = new Context(library);
-        context.setDebugMap(LoggingHelper.getDebugMap());
+        context.setDebugMap(getDebugMap());
         context.setParameter(null, instance.fhirType(), instance);
         context.setParameter(null, "%context", instance);
         context.setExpressionCaching(true);
@@ -291,7 +294,7 @@ public class CqlExecutionProvider implements OperationProvider, OperatorUtilitie
 
         org.cqframework.cql.elm.execution.Library library = this.translateLibrary(translator);
         Context context = new Context(library);
-        context.setDebugMap(LoggingHelper.getDebugMap());
+        context.setDebugMap(getDebugMap());
         context.registerLibraryLoader(libraryLoader);
 
         List<Triple<String, String, String>> usingDefs = this.getUsingUrlAndVersion(library.getUsings());
@@ -443,5 +446,13 @@ public class CqlExecutionProvider implements OperationProvider, OperatorUtilitie
                 return "Retrieve";
         }
         return type;
+    }
+
+    public DebugMap getDebugMap() {
+        DebugMap debugMap = new DebugMap();
+        if (cpgProperties.getCql_debug_enabled()) {
+            debugMap.setIsLoggingEnabled(true);
+        }
+        return debugMap;
     }
 }
