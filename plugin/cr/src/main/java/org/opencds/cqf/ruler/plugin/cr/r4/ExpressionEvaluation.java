@@ -19,7 +19,7 @@ import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
-import org.opencds.cqf.ruler.plugin.cr.CrProperties;
+import org.opencds.cqf.ruler.plugin.cql.CqlProperties;
 import org.opencds.cqf.ruler.plugin.cr.r4.utilities.CanonicalUtilities;
 import org.opencds.cqf.ruler.plugin.cr.utilities.LibraryUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
     @Autowired
     private ModelManager modelManager;
     @Autowired
-    private CrProperties crProperties;
+    private CqlProperties cqlProperties;
 
     /* Evaluates the given CQL expression in the context of the given resource */
     /*
@@ -224,7 +224,7 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
 
     public DebugMap getDebugMap() {
         DebugMap debugMap = new DebugMap();
-        if (crProperties.getCql_debug_enabled()) {
+        if (cqlProperties.getCql_debug_enabled()) {
             debugMap.setIsLoggingEnabled(true);
         }
         return debugMap;
