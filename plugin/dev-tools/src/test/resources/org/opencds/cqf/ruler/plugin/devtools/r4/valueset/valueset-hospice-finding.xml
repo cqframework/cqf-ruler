@@ -1,0 +1,30 @@
+<ValueSet xmlns="http://hl7.org/fhir">
+    <id value="hospice-finding"/>
+    <extension url="http://hl7.org/fhir/StructureDefinition/valueset-warning">
+        <valueMarkdown value="Note that the terminologies included in this implementation guide will need to be updated, because the ideal mechanism for distribution (as an expression) is not currently supported by the content logical definition constructs available in the FHIR ValueSet resource and all known implementations of it. Before use in a production environment, ensure you have the latest value sets based on the definitions for each value set (as defined in the inclusion/exclusion criteria for each one)."/>
+    </extension>
+    <url value="http://fhir.org/guides/cdc/opioid-cds/ValueSet/hospice-finding"/>
+    <name value="Valueset_hospice_finding"/>
+    <status value="active"/>
+    <compose>
+        <include>
+            <system value="http://snomed.info/sct"/>
+            <concept>
+                <code value="170935008"/>
+                <!--<display value="Full care by hospice (finding)"/>-->
+            </concept>
+            <concept>
+                <code value="448451000124101"/>
+                <!--<display value="Transition from self-care to hospice (finding)"/>-->
+            </concept>
+            <concept>
+                <code value="1891000124102"/>
+                <!--<display value="Transition from acute care to hospice (finding)"/>-->
+            </concept>
+            <concept>
+                <code value="1951000124104"/>
+                <!--<display value="Transition from long-term care to hospice (finding)"/>-->
+            </concept>
+        </include>
+    </compose>
+</ValueSet>

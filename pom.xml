@@ -10,16 +10,13 @@
 	<modules>
 		<module>external</module>
 		<module>server</module>
-		<module>plugin/utility</module>
-		<module>plugin/test-utility</module>
 		<module>plugin/hello-world</module>
+		<module>plugin/test-utility</module>
+		<module>plugin/utility</module>
 		<module>plugin/ra</module>
 		<module>plugin/sdc</module>
+		<module>plugin/dev-tools</module>
 		<module>plugin/cql</module>
-		<!-- <module>cqf-ruler-common</module>
-        <module>cqf-ruler-dstu3</module>
-        <module>cqf-ruler-r4</module> -->
-		<!-- <module>cqf-ruler-server</module> -->
 	</modules>
 
 	<name>cqf-ruler</name>

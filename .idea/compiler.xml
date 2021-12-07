@@ -11,7 +11,8 @@
         <module name="cqf-ruler-external" />
         <module name="cqf-ruler-plugin-ra" />
         <module name="cqf-ruler-plugin-sdc" /> 
-        <module name="cqf-ruler-plugin-test-utility" />        
+        <module name="cqf-ruler-plugin-test-utility" />     
+        <module name="cqf-ruler-plugin-dev-tools" />   
       </profile>
     </annotationProcessing>
   </component>
@@ -23,6 +24,7 @@
       <module name="cqf-ruler-plugin-sdc" options="-Xlint:all -Xlint:-options -Xlint:-processing -Werror" />
       <module name="cqf-ruler-plugin-test-utility" options="-Xlint:all -Xlint:-options -Xlint:-processing -Werror" />
       <module name="cqf-ruler-server" options="-Xlint:all -Xlint:-options -Xlint:-processing -Werror" />
+      <module name="cqf-ruler-plugin-dev-tools" options="-Xlint:all -Xlint:-options -Xlint:-processing -Werror" />  
     </option>
   </component>
 </project>

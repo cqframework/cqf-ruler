@@ -1,0 +1,66 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.198.12.1005",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1005",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.464.1003.198.12.1005"
+    }
+  ],
+  "version": "20171219",
+  "name": "BilateralMastectomy",
+  "title": "Bilateral Mastectomy",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2018-03",
+        "concept": [
+          {
+            "code": "14693006",
+            "display": "Bilateral subcutaneous mammectomy (procedure)"
+          },
+          {
+            "code": "14714006",
+            "display": "Bilateral mastectomy with excision of bilateral regional lymph nodes (procedure)"
+          },
+          {
+            "code": "17086001",
+            "display": "Modified radical mastectomy, bilateral (procedure)"
+          },
+          {
+            "code": "22418005",
+            "display": "Bilateral simple mastectomy (procedure)"
+          },
+          {
+            "code": "27865001",
+            "display": "Bilateral mastectomy (procedure)"
+          },
+          {
+            "code": "456903003",
+            "display": "Bilateral extended radical mastectomy (procedure)"
+          },
+          {
+            "code": "52314009",
+            "display": "Bilateral mastectomy extended simple (procedure)"
+          },
+          {
+            "code": "60633004",
+            "display": "Bilateral subcutaneous mammectomy with synchronous implant (procedure)"
+          },
+          {
+            "code": "726636007",
+            "display": "Prophylactic bilateral mastectomy (procedure)"
+          },
+          {
+            "code": "76468001",
+            "display": "Bilateral radical mastectomy (procedure)"
+          }
+        ]
+      }
+    ]
+  }
+}
