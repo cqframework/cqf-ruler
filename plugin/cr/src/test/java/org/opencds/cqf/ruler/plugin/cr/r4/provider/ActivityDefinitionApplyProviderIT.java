@@ -19,7 +19,8 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
         CrConfig.class }, properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.batch.job.enabled=false",
-            "hapi.fhir.fhir_version=r4"
+            "hapi.fhir.fhir_version=r4",
+            "hapi.fhir.cr.enabled=true"
 })
 public class ActivityDefinitionApplyProviderIT {
     private IGenericClient ourClient;

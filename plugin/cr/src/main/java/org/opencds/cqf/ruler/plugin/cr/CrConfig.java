@@ -7,7 +7,6 @@ import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.evaluator.cql2elm.model.CacheAwareModelManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -22,9 +21,11 @@ import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
 public class CrConfig {
 
     private static final Logger ourLog = LoggerFactory.getLogger(CrConfig.class);
-
-    @Autowired
-    public CrProperties crProperties;
+    
+    @Bean
+    public CrProperties crProperties() {
+        return new CrProperties();
+    }
 
     @Bean
     public ModelManager modelManager(
