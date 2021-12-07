@@ -70,7 +70,8 @@ public interface OperatorUtilities extends ResolutionUtilities {
      * @return the FHIR period date as a java.util.Date type
      */
     public default String getFullUrl(String serverAddress, String fhirType, String elementId) {
-        String fullUrl = String.format("%s%s/%s", serverAddress, fhirType, elementId);
+        String fullUrl = String.format("%s%s/%s", serverAddress + (serverAddress.endsWith("/") ? "" : "/"), fhirType,
+                elementId);
         return fullUrl;
     }
 

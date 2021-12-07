@@ -1,0 +1,708 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.101.12.1083",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1083",
+  "title": "Acute Inpatient",
+  "status": "active",
+  "publisher": "National Committee for Quality Assurance",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "112689000",
+            "display": "Hospital admission, elective, with complete pre-admission work-up (procedure)"
+          },
+          {
+            "code": "1505002",
+            "display": "Hospital admission for isolation (procedure)"
+          },
+          {
+            "code": "15584006",
+            "display": "Hospital admission, elective, with partial pre-admission work-up (procedure)"
+          },
+          {
+            "code": "183450002",
+            "display": "Admission to burn unit (procedure)"
+          },
+          {
+            "code": "183481006",
+            "display": "Non-urgent hospital admission (procedure)"
+          },
+          {
+            "code": "183487005",
+            "display": "Non-urgent medical admission (procedure)"
+          },
+          {
+            "code": "183488000",
+            "display": "Non-urgent surgical admission (procedure)"
+          },
+          {
+            "code": "183489008",
+            "display": "Non-urgent psychiatric admission (procedure)"
+          },
+          {
+            "code": "183491000",
+            "display": "Non-urgent geriatric admission (procedure)"
+          },
+          {
+            "code": "183492007",
+            "display": "Non-urgent pediatric admission (procedure)"
+          },
+          {
+            "code": "183493002",
+            "display": "Non-urgent gynecological admission (procedure)"
+          },
+          {
+            "code": "183494008",
+            "display": "Non-urgent obstetric admission (procedure)"
+          },
+          {
+            "code": "183495009",
+            "display": "Non-urgent orthopedic admission (procedure)"
+          },
+          {
+            "code": "183496005",
+            "display": "Non-urgent ear, nose and throat admission (procedure)"
+          },
+          {
+            "code": "183497001",
+            "display": "Non-urgent trauma admission (procedure)"
+          },
+          {
+            "code": "183498006",
+            "display": "Non-urgent ophthalmological admission (procedure)"
+          },
+          {
+            "code": "183499003",
+            "display": "Non-urgent rheumatology admission (procedure)"
+          },
+          {
+            "code": "183500007",
+            "display": "Non-urgent dermatology admission (procedure)"
+          },
+          {
+            "code": "183501006",
+            "display": "Non-urgent neurology admission (procedure)"
+          },
+          {
+            "code": "183502004",
+            "display": "Non-urgent urology admission (procedure)"
+          },
+          {
+            "code": "183503009",
+            "display": "Non-urgent radiotherapy admission (procedure)"
+          },
+          {
+            "code": "183504003",
+            "display": "Non-urgent hematology admission (procedure)"
+          },
+          {
+            "code": "183505002",
+            "display": "Non-urgent plastic surgery admission (procedure)"
+          },
+          {
+            "code": "183506001",
+            "display": "Non-urgent diabetic admission (procedure)"
+          },
+          {
+            "code": "183507005",
+            "display": "Non-urgent respiratory admission (procedure)"
+          },
+          {
+            "code": "183508000",
+            "display": "Non-urgent psychogeriatric admission (procedure)"
+          },
+          {
+            "code": "183509008",
+            "display": "Non-urgent renal medicine admission (procedure)"
+          },
+          {
+            "code": "183510003",
+            "display": "Non-urgent neurosurgical admission (procedure)"
+          },
+          {
+            "code": "183511004",
+            "display": "Non-urgent cardiothoracic admission (procedure)"
+          },
+          {
+            "code": "183512006",
+            "display": "Non-urgent oral surgical admission (procedure)"
+          },
+          {
+            "code": "235313004",
+            "display": "Non-emergency appendectomy (procedure)"
+          },
+          {
+            "code": "25986004",
+            "display": "Hospital admission, under police custody (procedure)"
+          },
+          {
+            "code": "287927002",
+            "display": "Dilatation and curettage: routine (procedure)"
+          },
+          {
+            "code": "304566005",
+            "display": "Admission for treatment (procedure)"
+          },
+          {
+            "code": "305337004",
+            "display": "Admission to community hospital (procedure)"
+          },
+          {
+            "code": "305338009",
+            "display": "Admission to general practice hospital (procedure)"
+          },
+          {
+            "code": "305341000",
+            "display": "Admission to tertiary referral hospital (procedure)"
+          },
+          {
+            "code": "305342007",
+            "display": "Admission to ward (procedure)"
+          },
+          {
+            "code": "305350003",
+            "display": "Admission to anesthetic department (procedure)"
+          },
+          {
+            "code": "305354007",
+            "display": "Admission to medical department (procedure)"
+          },
+          {
+            "code": "305355008",
+            "display": "Admission to clinical allergy department (procedure)"
+          },
+          {
+            "code": "305356009",
+            "display": "Admission to audiology department (procedure)"
+          },
+          {
+            "code": "305357000",
+            "display": "Admission to cardiology department (procedure)"
+          },
+          {
+            "code": "305358005",
+            "display": "Admission to chest medicine department (procedure)"
+          },
+          {
+            "code": "305359002",
+            "display": "Admission to thoracic medicine department (procedure)"
+          },
+          {
+            "code": "305360007",
+            "display": "Admission to respiratory medicine department (procedure)"
+          },
+          {
+            "code": "305361006",
+            "display": "Admission to clinical immunology department (procedure)"
+          },
+          {
+            "code": "305362004",
+            "display": "Admission to clinical neurophysiology department (procedure)"
+          },
+          {
+            "code": "305363009",
+            "display": "Admission to clinical pharmacology department (procedure)"
+          },
+          {
+            "code": "305364003",
+            "display": "Admission to clinical physiology department (procedure)"
+          },
+          {
+            "code": "305365002",
+            "display": "Admission to dermatology department (procedure)"
+          },
+          {
+            "code": "305366001",
+            "display": "Admission to endocrinology department (procedure)"
+          },
+          {
+            "code": "305367005",
+            "display": "Admission to gastroenterology department (procedure)"
+          },
+          {
+            "code": "305368000",
+            "display": "Admission to general medical department (procedure)"
+          },
+          {
+            "code": "305369008",
+            "display": "Admission to genetics department (procedure)"
+          },
+          {
+            "code": "305370009",
+            "display": "Admission to clinical genetics department (procedure)"
+          },
+          {
+            "code": "305371008",
+            "display": "Admission to clinical cytogenetics department (procedure)"
+          },
+          {
+            "code": "305372001",
+            "display": "Admission to clinical molecular genetics department (procedure)"
+          },
+          {
+            "code": "305374000",
+            "display": "Admission to genitourinary medicine department (procedure)"
+          },
+          {
+            "code": "305375004",
+            "display": "Admission to care of the elderly department (procedure)"
+          },
+          {
+            "code": "305376003",
+            "display": "Admission to infectious diseases department (procedure)"
+          },
+          {
+            "code": "305377007",
+            "display": "Admission to medical ophthalmology department (procedure)"
+          },
+          {
+            "code": "305378002",
+            "display": "Admission to nephrology department (procedure)"
+          },
+          {
+            "code": "305379005",
+            "display": "Admission to neurology department (procedure)"
+          },
+          {
+            "code": "305380008",
+            "display": "Admission to nuclear medicine department (procedure)"
+          },
+          {
+            "code": "305382000",
+            "display": "Admission to rehabilitation department (procedure)"
+          },
+          {
+            "code": "305383005",
+            "display": "Admission to rheumatology department (procedure)"
+          },
+          {
+            "code": "305384004",
+            "display": "Admission to obstetrics and gynecology department (procedure)"
+          },
+          {
+            "code": "305385003",
+            "display": "Admission to gynecology department (procedure)"
+          },
+          {
+            "code": "305386002",
+            "display": "Admission to obstetrics department (procedure)"
+          },
+          {
+            "code": "305387006",
+            "display": "Admission to pediatric department (procedure)"
+          },
+          {
+            "code": "305388001",
+            "display": "Admission to special care baby unit (procedure)"
+          },
+          {
+            "code": "305389009",
+            "display": "Admission to pediatric neurology department (procedure)"
+          },
+          {
+            "code": "305390000",
+            "display": "Admission to pediatric oncology department (procedure)"
+          },
+          {
+            "code": "305391001",
+            "display": "Admission to pain management department (procedure)"
+          },
+          {
+            "code": "305392008",
+            "display": "Admission to pathology department (procedure)"
+          },
+          {
+            "code": "305393003",
+            "display": "Admission to blood transfusion department (procedure)"
+          },
+          {
+            "code": "305394009",
+            "display": "Admission to chemical pathology department (procedure)"
+          },
+          {
+            "code": "305395005",
+            "display": "Admission to general pathology department (procedure)"
+          },
+          {
+            "code": "305396006",
+            "display": "Admission to hematology department (procedure)"
+          },
+          {
+            "code": "305397002",
+            "display": "Admission to medical microbiology department (procedure)"
+          },
+          {
+            "code": "305399004",
+            "display": "Admission to neuropathology department (procedure)"
+          },
+          {
+            "code": "305400006",
+            "display": "Admission to psychiatry department (procedure)"
+          },
+          {
+            "code": "305401005",
+            "display": "Admission to child and adolescent psychiatry department (procedure)"
+          },
+          {
+            "code": "305402003",
+            "display": "Admission to forensic psychiatry department (procedure)"
+          },
+          {
+            "code": "305403008",
+            "display": "Admission to psychogeriatric department (procedure)"
+          },
+          {
+            "code": "305404002",
+            "display": "Admission to mental handicap psychiatry department (procedure)"
+          },
+          {
+            "code": "305405001",
+            "display": "Admission to rehabilitation psychiatry department (procedure)"
+          },
+          {
+            "code": "305406000",
+            "display": "Admission to radiology department (procedure)"
+          },
+          {
+            "code": "305407009",
+            "display": "Admission to occupational health department (procedure)"
+          },
+          {
+            "code": "305408004",
+            "display": "Admission to surgical department (procedure)"
+          },
+          {
+            "code": "305409007",
+            "display": "Admission to breast surgery department (procedure)"
+          },
+          {
+            "code": "305410002",
+            "display": "Admission to cardiothoracic surgery department (procedure)"
+          },
+          {
+            "code": "305411003",
+            "display": "Admission to thoracic surgery department (procedure)"
+          },
+          {
+            "code": "305412005",
+            "display": "Admission to cardiac surgery department (procedure)"
+          },
+          {
+            "code": "305413000",
+            "display": "Admission to dental surgery department (procedure)"
+          },
+          {
+            "code": "305414006",
+            "display": "Admission to orthodontics department (procedure)"
+          },
+          {
+            "code": "305415007",
+            "display": "Admission to pediatric dentistry department (procedure)"
+          },
+          {
+            "code": "305416008",
+            "display": "Admission to restorative dentistry department (procedure)"
+          },
+          {
+            "code": "305417004",
+            "display": "Admission to ear, nose and throat department (procedure)"
+          },
+          {
+            "code": "305418009",
+            "display": "Admission to endocrine surgery department (procedure)"
+          },
+          {
+            "code": "305419001",
+            "display": "Admission to gastrointestinal surgery department (procedure)"
+          },
+          {
+            "code": "305420007",
+            "display": "Admission to general gastrointestinal surgery department (procedure)"
+          },
+          {
+            "code": "305421006",
+            "display": "Admission to upper gastrointestinal surgery department (procedure)"
+          },
+          {
+            "code": "305422004",
+            "display": "Admission to colorectal surgery department (procedure)"
+          },
+          {
+            "code": "305423009",
+            "display": "Admission to general surgical department (procedure)"
+          },
+          {
+            "code": "305424003",
+            "display": "Admission to hepatobiliary surgical department (procedure)"
+          },
+          {
+            "code": "305425002",
+            "display": "Admission to neurosurgical department (procedure)"
+          },
+          {
+            "code": "305426001",
+            "display": "Admission to ophthalmology department (procedure)"
+          },
+          {
+            "code": "305427005",
+            "display": "Admission to oral surgery department (procedure)"
+          },
+          {
+            "code": "305428000",
+            "display": "Admission to orthopedic department (procedure)"
+          },
+          {
+            "code": "305429008",
+            "display": "Admission to pancreatic surgery department (procedure)"
+          },
+          {
+            "code": "305430003",
+            "display": "Admission to pediatric surgical department (procedure)"
+          },
+          {
+            "code": "305431004",
+            "display": "Admission to plastic surgery department (procedure)"
+          },
+          {
+            "code": "305432006",
+            "display": "Admission to surgical transplant department (procedure)"
+          },
+          {
+            "code": "305433001",
+            "display": "Admission to trauma surgery department (procedure)"
+          },
+          {
+            "code": "305434007",
+            "display": "Admission to urology department (procedure)"
+          },
+          {
+            "code": "305435008",
+            "display": "Admission to vascular surgery department (procedure)"
+          },
+          {
+            "code": "306732000",
+            "display": "Admission to general dental surgery department (procedure)"
+          },
+          {
+            "code": "306803007",
+            "display": "Admission to stroke unit (procedure)"
+          },
+          {
+            "code": "306967009",
+            "display": "Admission to hand surgery department (procedure)"
+          },
+          {
+            "code": "308251003",
+            "display": "Admission to clinical oncology department (procedure)"
+          },
+          {
+            "code": "308252005",
+            "display": "Admission to radiotherapy department (procedure)"
+          },
+          {
+            "code": "308253000",
+            "display": "Admission to diabetic department (procedure)"
+          },
+          {
+            "code": "310361003",
+            "display": "Non-urgent cardiological admission (procedure)"
+          },
+          {
+            "code": "3241000175106",
+            "display": "Hospital admission from non-health care facility (procedure)"
+          },
+          {
+            "code": "32485007",
+            "display": "Hospital admission (procedure)"
+          },
+          {
+            "code": "373113001",
+            "display": "Routine procedure (procedure)"
+          },
+          {
+            "code": "397769005",
+            "display": "Unexpected admission to high dependency unit (procedure)"
+          },
+          {
+            "code": "398162007",
+            "display": "Admission to high dependency unit (procedure)"
+          },
+          {
+            "code": "405614004",
+            "display": "Unexpected hospital admission (procedure)"
+          },
+          {
+            "code": "417005",
+            "display": "Hospital re-admission (procedure)"
+          },
+          {
+            "code": "432621000124105",
+            "display": "Hospital admission from dialysis facility (procedure)"
+          },
+          {
+            "code": "442281000124108",
+            "display": "Emergency hospital admission from observation unit (procedure)"
+          },
+          {
+            "code": "447941000124106",
+            "display": "Hospital admission of newborn (procedure)"
+          },
+          {
+            "code": "448421000124105",
+            "display": "Hospital admission, transfer from physician office (procedure)"
+          },
+          {
+            "code": "448431000124108",
+            "display": "Hospital admission, transfer from assisted living facility (procedure)"
+          },
+          {
+            "code": "448441000124103",
+            "display": "Hospital admission, transfer from intermediate care facility (procedure)"
+          },
+          {
+            "code": "448851000124103",
+            "display": "Hospital admission from observation unit (procedure)"
+          },
+          {
+            "code": "4563007",
+            "display": "Hospital admission, transfer from other hospital or health care facility (procedure)"
+          },
+          {
+            "code": "45702004",
+            "display": "Hospital admission, precertified by medical audit action (procedure)"
+          },
+          {
+            "code": "47348005",
+            "display": "Hospital admission, mother, for observation, delivered outside of hospital (procedure)"
+          },
+          {
+            "code": "48183000",
+            "display": "Hospital admission, special (procedure)"
+          },
+          {
+            "code": "51032003",
+            "display": "Hospital admission, donor for transplant organ (procedure)"
+          },
+          {
+            "code": "51501005",
+            "display": "Hospital admission, parent, for in-hospital child care (procedure)"
+          },
+          {
+            "code": "5161006",
+            "display": "Specialty clinic admission (procedure)"
+          },
+          {
+            "code": "52748007",
+            "display": "Hospital admission, involuntary (procedure)"
+          },
+          {
+            "code": "60059000",
+            "display": "Hospital admission, infant, for observation, delivered outside of hospital (procedure)"
+          },
+          {
+            "code": "63551005",
+            "display": "Hospital admission, from remote area, by means of special transportation (procedure)"
+          },
+          {
+            "code": "699124006",
+            "display": "Admission to substance misuse detoxification center (procedure)"
+          },
+          {
+            "code": "70755000",
+            "display": "Hospital admission, by legal authority (commitment) (procedure)"
+          },
+          {
+            "code": "71290004",
+            "display": "Hospital admission, limited to designated procedures (procedure)"
+          },
+          {
+            "code": "76193006",
+            "display": "Routinely scheduled operation (procedure)"
+          },
+          {
+            "code": "76464004",
+            "display": "Hospital admission, for observation (procedure)"
+          },
+          {
+            "code": "81672003",
+            "display": "Hospital admission, elective, without pre-admission work-up (procedure)"
+          },
+          {
+            "code": "82942009",
+            "display": "Hospital admission, blood donor (procedure)"
+          },
+          {
+            "code": "8715000",
+            "display": "Hospital admission, elective (procedure)"
+          }
+        ]
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "2019",
+        "concept": [
+          {
+            "code": "99221",
+            "display": "Initial hospital care, per day, for the evaluation and management of a patient, which requires these 3 key components: A detailed or comprehensive history; A detailed or comprehensive examination; and Medical decision making that is straightforward or of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the problem(s) requiring admission are of low severity. Typically, 30 minutes are spent at the bedside and on the patient's hospital floor or unit."
+          },
+          {
+            "code": "99222",
+            "display": "Initial hospital care, per day, for the evaluation and management of a patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the problem(s) requiring admission are of moderate severity. Typically, 50 minutes are spent at the bedside and on the patient's hospital floor or unit."
+          },
+          {
+            "code": "99223",
+            "display": "Initial hospital care, per day, for the evaluation and management of a patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the problem(s) requiring admission are of high severity. Typically, 70 minutes are spent at the bedside and on the patient's hospital floor or unit."
+          },
+          {
+            "code": "99231",
+            "display": "Subsequent hospital care, per day, for the evaluation and management of a patient, which requires at least 2 of these 3 key components: A problem focused interval history; A problem focused examination; Medical decision making that is straightforward or of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the patient is stable, recovering or improving. Typically, 15 minutes are spent at the bedside and on the patient's hospital floor or unit."
+          },
+          {
+            "code": "99232",
+            "display": "Subsequent hospital care, per day, for the evaluation and management of a patient, which requires at least 2 of these 3 key components: An expanded problem focused interval history; An expanded problem focused examination; Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the patient is responding inadequately to therapy or has developed a minor complication. Typically, 25 minutes are spent at the bedside and on the patient's hospital floor or unit."
+          },
+          {
+            "code": "99233",
+            "display": "Subsequent hospital care, per day, for the evaluation and management of a patient, which requires at least 2 of these 3 key components: A detailed interval history; A detailed examination; Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the patient is unstable or has developed a significant complication or a significant new problem. Typically, 35 minutes are spent at the bedside and on the patient's hospital floor or unit."
+          },
+          {
+            "code": "99238",
+            "display": "Hospital discharge day management; 30 minutes or less"
+          },
+          {
+            "code": "99239",
+            "display": "Hospital discharge day management; more than 30 minutes"
+          },
+          {
+            "code": "99251",
+            "display": "Inpatient consultation for a new or established patient, which requires these 3 key components: A problem focused history; A problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 20 minutes are spent at the bedside and on the patient's hospital floor or unit."
+          },
+          {
+            "code": "99252",
+            "display": "Inpatient consultation for a new or established patient, which requires these 3 key components: An expanded problem focused history; An expanded problem focused examination; and Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of low severity. Typically, 40 minutes are spent at the bedside and on the patient's hospital floor or unit."
+          },
+          {
+            "code": "99253",
+            "display": "Inpatient consultation for a new or established patient, which requires these 3 key components: A detailed history; A detailed examination; and Medical decision making of low complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate severity. Typically, 55 minutes are spent at the bedside and on the patient's hospital floor or unit."
+          },
+          {
+            "code": "99254",
+            "display": "Inpatient consultation for a new or established patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of moderate complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 80 minutes are spent at the bedside and on the patient's hospital floor or unit."
+          },
+          {
+            "code": "99255",
+            "display": "Inpatient consultation for a new or established patient, which requires these 3 key components: A comprehensive history; A comprehensive examination; and Medical decision making of high complexity. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are of moderate to high severity. Typically, 110 minutes are spent at the bedside and on the patient's hospital floor or unit."
+          },
+          {
+            "code": "99291",
+            "display": "Critical care, evaluation and management of the critically ill or critically injured patient; first 30-74 minutes"
+          }
+        ]
+      }
+    ]
+  }
+}

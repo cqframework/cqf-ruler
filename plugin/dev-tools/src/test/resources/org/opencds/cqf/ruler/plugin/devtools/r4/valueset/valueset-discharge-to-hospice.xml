@@ -1,0 +1,62 @@
+<ValueSet xmlns="http://hl7.org/fhir">
+    <id value="discharge-to-hospice"/>
+    <meta>
+        <profile value="http://hl7.org/fhir/StructureDefinition/shareablevalueset"/>
+        <profile value="http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-valueset"/>
+    </meta>
+    <extension url="http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/cdc-valueset-inclusion">
+        <valueString value="Discharge to another facility for hospice."/>
+    </extension>
+    <extension url="http://hl7.org/fhir/StructureDefinition/valueset-warning">
+        <valueMarkdown value="Note that the terminologies included in this implementation guide will need to be updated, because the ideal mechanism for distribution (as an expression) is not currently supported by the content logical definition constructs available in the FHIR ValueSet resource and all known implementations of it. Before use in a production environment, ensure you have the latest value sets based on the definitions for each value set (as defined in the inclusion/exclusion criteria for each one)."/>
+    </extension>
+    <url value="http://fhir.org/guides/cdc/opioid-cds/ValueSet/discharge-to-hospice"/>
+    <version value="1.0.0"/>
+    <name value="Valueset_discharge_to_hospice"/>
+    <title value="Snomed Discharge to Hospice"/>
+    <status value="active"/>
+    <experimental value="false"/>
+    <date value="2018-04-23"/>
+    <publisher value="Centers for Disease Control and Prevention (CDC)"/>
+    <description value="ValueSet containing procedure discharging a patient to some form of hospice care codes."/>
+    <useContext>
+        <code>
+            <system value="http://terminology.hl7.org/CodeSystem/usage-context-type"/>
+            <code value="focus"/>
+            <display value="Clinical Focus"/>
+        </code>
+        <valueCodeableConcept>
+            <text value="Procedure discharging a patient to some form of hospice care."/>
+        </valueCodeableConcept>
+    </useContext>
+    <jurisdiction>
+        <coding>
+            <system value="urn:iso:std:iso:3166"/>
+            <code value="US"/>
+            <display value="United States of America"/>
+        </coding>
+    </jurisdiction>
+    <purpose value="Used to determine if patient was discharged to hospice as part of the patient's end of life assessment workflow in all recommendations."/>
+    <copyright value="© CDC 2016+."/>
+    <compose>
+        <extension url="http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/cdc-valueset-query">
+            <extension url="language">
+                <valueUri value="http://www.apelondts.org/tql"/>
+            </extension>
+            <extension url="expression">
+                <valueString value="set delimiter = &quot; &quot;; FROM [^SNOMED CT US Edition^] with CONCEPT DESCENDANT_OF_PLUS &quot;Discharge to home for hospice care (procedure)[SNOMED CT US Edition]&quot; OR CONCEPT DESCENDANT_OF_PLUS &quot;Discharge to healthcare facility for hospice care (procedure)[SNOMED CT US Edition]&quot; EXPORT Concept_Name,^Code in Source[SNOMED CT US Edition]^,^Parent^;"/>
+            </extension>
+        </extension>
+        <include>
+            <system value="http://snomed.info/sct"/>
+            <concept>
+                <code value="428371000124100"/>
+                <display value="Discharge to healthcare facility for hospice care (procedure)"/>
+            </concept>
+            <concept>
+                <code value="428361000124107"/>
+                <display value="Discharge to home for hospice care (procedure)"/>
+            </concept>
+        </include>
+    </compose>
+</ValueSet>

@@ -1,0 +1,34 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.526.3.1240",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.3.1240",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.526.3.1240"
+    }
+  ],
+  "version": "20170504",
+  "name": "AnnualWellnessVisit",
+  "title": "Annual Wellness Visit",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+        "version": "2018",
+        "concept": [
+          {
+            "code": "G0438",
+            "display": "Annual wellness visit; includes a personalized prevention plan of service (pps), initial visit"
+          },
+          {
+            "code": "G0439",
+            "display": "Annual wellness visit, includes a personalized prevention plan of service (pps), subsequent visit"
+          }
+        ]
+      }
+    ]
+  }
+}
