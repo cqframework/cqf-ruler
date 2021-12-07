@@ -31,7 +31,8 @@
                 "${workspaceFolder}/plugin/hello-world/target/classes",
                 "${workspaceFolder}/plugin/ra/target/classes",
                 "${workspaceFolder}/plugin/sdc/target/classes",
-                "${workspaceFolder}/plugin/utility/target/classes"
+                "${workspaceFolder}/plugin/utility/target/classes",
+					 "${workspaceFolder}/plugin/devtools/target/classes"
             ]
         },
         {

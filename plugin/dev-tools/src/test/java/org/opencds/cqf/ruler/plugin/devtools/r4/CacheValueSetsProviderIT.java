@@ -9,23 +9,21 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ValueSet;
-import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
-import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.opencds.cqf.ruler.Application;
-import org.opencds.cqf.ruler.plugin.devtools.IServerSupport;
 import org.opencds.cqf.ruler.plugin.devtools.DevToolsConfig;
+import org.opencds.cqf.ruler.plugin.testutility.IServerSupport;
 import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
 import org.opencds.cqf.ruler.plugin.utility.IdUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -35,15 +33,12 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.api.QualifiedParamList;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.param.StringAndListParam;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=r4", "hapi.fhir.dev.enabled=true"})
+DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=r4", "hapi.fhir.devtools.enabled=true", "spring.batch.job.enabled=false", "spring.main.allow-bean-definition-overriding=true"})
 public class CacheValueSetsProviderIT implements IServerSupport, IdUtilities, ClientUtilities {
-    private Logger log = LoggerFactory.getLogger(CodeSystemProviderIT.class);
-    
     @Autowired
     private CacheValueSetsProvider cacheValueSetsProvider;
 
@@ -99,15 +94,10 @@ public class CacheValueSetsProviderIT implements IServerSupport, IdUtilities, Cl
     public void testCacheValueSetsValueSetDNE() throws Exception {
         Endpoint endpoint = uploadLocalServerEndpoint();
         StringAndListParam stringAndListParam = new StringAndListParam();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(CacheValueSetsProvider.class.getResourceAsStream("valueset/AcuteInpatient.json")));
-        String resourceString = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-        reader.close();
-        // Do not update vs in dao
-        ValueSet vs = (ValueSet) loadResource("json", resourceString, ourCtx, null);
-        stringAndListParam.setValuesAsQueryTokens(ourCtx, "valueset", Arrays.asList(QualifiedParamList.singleton(vs.getIdElement().getIdPart())));
+        stringAndListParam.setValuesAsQueryTokens(ourCtx, "valueset", Arrays.asList(QualifiedParamList.singleton("dne")));
         RequestDetails details = Mockito.mock(RequestDetails.class);
         Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, endpoint.getIdElement(), stringAndListParam, null, null);
-        validateOutcome(outcomeResource, "HTTP 404 : Resource ValueSet/" + vs.getIdElement().getIdPart() + " is not known");
+        validateOutcome(outcomeResource, "HTTP 404 : Resource ValueSet/" + "dne" + " is not known");
     }
     
     @Test
@@ -134,7 +124,7 @@ public class CacheValueSetsProviderIT implements IServerSupport, IdUtilities, Cl
         BundleEntryComponent entry = resultBundle.getEntry().get(0);
         assertTrue(entry.getResponse().getLocation().startsWith("ValueSet/" + vs.getIdElement().getIdPart()));
         assertTrue(entry.getResponse().getStatus().equals("200 OK"));
-        ValueSet resultingValueSet = createClient(ourCtx, endpoint).read().resource(ValueSet.class).withId(vs.getIdElement()).execute();
+        // ValueSet resultingValueSet = createClient(ourCtx, endpoint).read().resource(ValueSet.class).withId(vs.getIdElement()).execute();
         // resultingValueSet not returning with a version
         // assertTrue(resultingValueSet.getVersion().endsWith("-cached"));
     }
@@ -178,7 +168,7 @@ public class CacheValueSetsProviderIT implements IServerSupport, IdUtilities, Cl
         BundleEntryComponent entry = resultBundle.getEntry().get(0);
         assertTrue(entry.getResponse().getLocation().startsWith("ValueSet/" + vs.getIdElement().getIdPart()));
         assertTrue(entry.getResponse().getStatus().equals("200 OK"));
-        ValueSet resultingValueSet = myDaoRegistry.getResourceDao(ValueSet.class).read(vs.getIdElement());
+        // ValueSet resultingValueSet = myDaoRegistry.getResourceDao(ValueSet.class).read(vs.getIdElement());
         // resultingValueSet not returning with a version
         // assertTrue(resultingValueSet.getVersion().endsWith("-cached"));
     }

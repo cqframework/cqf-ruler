@@ -1,26 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.opencds.cqf.ruler</groupId>
-    <artifactId>cqf-ruler</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+	<groupId>org.opencds.cqf.ruler</groupId>
+	<artifactId>cqf-ruler</artifactId>
+	<version>0.5.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-    <modules>
-        <module>external</module>
-        <module>server</module>
-        <module>plugin/utility</module>
+	<modules>
+		<module>external</module>
+		<module>server</module>
+		<module>plugin/hello-world</module>
 		<module>plugin/test-utility</module>
-        <module>plugin/hello-world</module>
+		<module>plugin/utility</module>
 		<module>plugin/ra</module>
-        <module>plugin/sdc</module>
-        <module>plugin/dev-tools</module>
+		<module>plugin/sdc</module>
+		<module>plugin/dev-tools</module>
 		<module>plugin/cql</module>
-		<!-- <module>cqf-ruler-common</module>
-        <module>cqf-ruler-dstu3</module>
-        <module>cqf-ruler-r4</module> -->
-		<!-- <module>cqf-ruler-server</module> -->
 	</modules>
 
 	<name>cqf-ruler</name>

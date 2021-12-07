@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.hl7.fhir.r4.model.CodeSystem;
-import org.hl7.fhir.r4.model.ValueSet;
-import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
 import org.hl7.fhir.r4.model.OperationOutcome;
+import org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.devtools.DevToolsConfig;
-import org.opencds.cqf.ruler.plugin.devtools.IServerSupport;
+import org.opencds.cqf.ruler.plugin.testutility.IServerSupport;
 import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
 import org.opencds.cqf.ruler.plugin.utility.IdUtilities;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=r4", "hapi.fhir.dev.enabled=true"})
+DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=r4", "hapi.fhir.devtools.enabled=true", "spring.batch.job.enabled=false", "spring.main.allow-bean-definition-overriding=true"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CodeSystemProviderIT implements IServerSupport, IdUtilities, ClientUtilities {
     private Logger log = LoggerFactory.getLogger(CodeSystemProviderIT.class);

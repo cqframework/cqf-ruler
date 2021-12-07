@@ -144,7 +144,9 @@ hapi:
       enabled: true
       report:
         endpoint: ''
-
+## Dev Tools Settings        
+    devtools:
+      enabled: true
         
 #elasticsearch:
 #  debug:

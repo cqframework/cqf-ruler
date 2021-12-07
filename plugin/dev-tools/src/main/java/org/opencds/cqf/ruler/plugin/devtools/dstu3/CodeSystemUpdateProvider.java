@@ -10,18 +10,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.hl7.fhir.dstu3.model.CodeSystem;
 import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.ValueSet;
-import org.hl7.fhir.dstu3.model.Coding;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.plugin.utility.IdUtilities;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoCodeSystem;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
@@ -37,9 +35,6 @@ import ca.uhn.fhir.rest.param.UriParam;
  * to enable {@link ValueSet ValueSet} expansion and validation without complete {@link CodeSystem CodeSystems}.
  */
 public class CodeSystemUpdateProvider implements OperationProvider, IdUtilities {
-
-    private static Logger log = LoggerFactory.getLogger(CodeSystemUpdateProvider.class);
-
     @Autowired
     private IFhirResourceDaoValueSet<ValueSet, Coding, CodeableConcept> myValueSetDaoDSTU3;
     @Autowired
