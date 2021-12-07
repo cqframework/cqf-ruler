@@ -30,18 +30,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
-import ca.uhn.fhir.jpa.starter.AppProperties;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+
 public class ReportProvider implements OperationProvider, OperatorUtilities {
 
 	@Autowired
 	private DaoRegistry myDaoRegistry;
-
-	@Autowired
-	private AppProperties myAppProperties;
 
 	private static final Logger ourLog = LoggerFactory.getLogger(ReportProvider.class);
 
@@ -62,6 +60,7 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 
 	@Operation(name = "$report", idempotent = true, type = MeasureReport.class)
 	public Parameters report(
+			RequestDetails requestDetails,
 			@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
 			@OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
 			@OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {
@@ -74,7 +73,7 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 				.forEach(
 						patient -> {
 							Parameters.ParametersParameterComponent patientParameter = patientReport(patient, period,
-									myAppProperties.getServer_address());
+									requestDetails.getFhirServerBase());
 							result.addParameter(patientParameter);
 						});
 
