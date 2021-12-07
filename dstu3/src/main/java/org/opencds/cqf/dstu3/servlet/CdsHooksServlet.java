@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -178,7 +180,10 @@ public class CdsHooksServlet extends HttpServlet {
                 throw new ServletException("ERROR: Request hook does not match the service called.");
             }
             LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(libraryResolutionProvider);
-            Library library = this.libraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider);
+
+            //todo how to utilize requestDetails
+            RequestDetails requestDetails = new SystemRequestDetails();
+            Library library = this.libraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider, requestDetails);
 
             CompositeDataProvider provider = new CompositeDataProvider(this.modelResolver, fhirRetrieveProvider);
 

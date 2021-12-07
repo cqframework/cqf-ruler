@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import com.google.common.base.Strings;
 import com.vladsch.flexmark.ext.autolink.AutolinkExtension;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
@@ -48,7 +50,8 @@ import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.hl7.elm.r1.ValueSetRef;
-import org.hl7.fhir.convertors.VersionConvertor_40_50;
+import org.hl7.fhir.convertors.advisors.impl.BaseAdvisor_40_50;
+import org.hl7.fhir.convertors.conv40_50.VersionConvertor_40_50;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Base64BinaryType;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -92,18 +95,19 @@ public class DataRequirementsProvider {
     }
 
     public Measure createMeasure(Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(measure);
+        VersionConvertor_40_50 versionConvertor_40_50 = new VersionConvertor_40_50(new BaseAdvisor_40_50());
+        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) versionConvertor_40_50.convertResource(measure);
         org.hl7.fhir.r5.model.Measure convertedMeasure = dataRequirementsProvider.createMeasure(measureR5, libraryManager, translatedLibrary, options);
-        org.hl7.fhir.r4.model.Measure measureR4 = (org.hl7.fhir.r4.model.Measure) VersionConvertor_40_50.convertResource(convertedMeasure);
+        org.hl7.fhir.r4.model.Measure measureR4 = (org.hl7.fhir.r4.model.Measure) versionConvertor_40_50.convertResource(convertedMeasure);
 
         return measureR4;
     }
 
     public org.hl7.fhir.r4.model.Library getModuleDefinitionLibrary(Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(measure);
-
+        VersionConvertor_40_50 versionConvertor_40_50 = new VersionConvertor_40_50(new BaseAdvisor_40_50());
+        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) versionConvertor_40_50.convertResource(measure);
         org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(measureR5, libraryManager, translatedLibrary, options);
-        org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(libraryR5);
+        org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) versionConvertor_40_50.convertResource(libraryR5);
         return libraryR4;
     }
 
@@ -111,6 +115,7 @@ public class DataRequirementsProvider {
                                                                LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {
         org.hl7.fhir.r4.model.Library primaryLibrary = null;
         Iterator var6 = measure.getLibrary().iterator();
+        RequestDetails requestDetails = new SystemRequestDetails();
 
         String library = null;
         //use the first library
@@ -121,7 +126,7 @@ public class DataRequirementsProvider {
                 library = (String) ref.getValue();
             }
         }
-        primaryLibrary = libraryHelper.resolveLibraryReference(libraryResourceProvider, library);
+        primaryLibrary = libraryHelper.resolveLibraryReference(libraryResourceProvider, library, requestDetails);
 
         return primaryLibrary;
     }
@@ -137,15 +142,17 @@ public class DataRequirementsProvider {
     // Once via the loader, Once manually
     public CqfMeasure createCqfMeasure(Measure measure,
             LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {
+        RequestDetails requestDetails = new SystemRequestDetails();
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> libraryMap = this
-                .createLibraryMap(measure, libraryResourceProvider);
+                .createLibraryMap(measure, libraryResourceProvider, requestDetails);
         return this.createCqfMeasure(measure, libraryMap);
     }
 
     private Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> createLibraryMap(Measure measure,
-            LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {
+            LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider,
+            RequestDetails requestDetails) {
         LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(libraryResourceProvider);
-        List<Library> libraries = this.libraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider);
+        List<Library> libraries = this.libraryHelper.loadLibraries(measure, libraryLoader, libraryResourceProvider, requestDetails);
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> libraryMap = new HashMap<>();
 
         for (Library library : libraries) {
@@ -530,8 +537,9 @@ public class DataRequirementsProvider {
 
     public org.hl7.fhir.r4.model.Library getDataRequirements(Measure measure,
             LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider) {
+        RequestDetails requestDetails = new SystemRequestDetails();
         Map<VersionedIdentifier, Pair<Library, org.hl7.fhir.r4.model.Library>> libraryMap = this
-                .createLibraryMap(measure, libraryResourceProvider);
+                .createLibraryMap(measure, libraryResourceProvider, requestDetails);
         return this.getDataRequirements(measure,
                 libraryMap.values().stream().map(Pair::getRight).filter(Objects::nonNull).collect(Collectors.toList()));
     }

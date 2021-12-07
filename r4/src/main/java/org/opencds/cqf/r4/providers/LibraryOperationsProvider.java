@@ -385,7 +385,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
     }
 
     @Override
-    public Library resolveLibraryById(String libraryId) {
+    public Library resolveLibraryById(String libraryId, RequestDetails requestDetails) {
         try {
             return this.libraryResourceProvider.getDao().read(new IdType(libraryId));
         } catch (Exception e) {
@@ -407,7 +407,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
     }
 
     @Override 
-    public Library resolveLibraryByCanonicalUrl(String url) {
+    public Library resolveLibraryByCanonicalUrl(String url, RequestDetails requestDetails) {
         Objects.requireNonNull(url, "url must not be null");
 
         String[] parts = url.split("\\|");

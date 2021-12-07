@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -56,11 +57,12 @@ public class LibraryHelper extends ca.uhn.fhir.cql.dstu3.helper.LibraryHelper {
     } 
 
     public Library resolvePrimaryLibrary(PlanDefinition planDefinition,
-            org.opencds.cqf.cql.engine.execution.LibraryLoader libraryLoader,
-            LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider) {
+                                         org.opencds.cqf.cql.engine.execution.LibraryLoader libraryLoader,
+                                         LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResourceProvider,
+                                         RequestDetails requestDetails) {
         String id = planDefinition.getLibrary().get(0).getReference();
 
-        Library library = resolveLibraryById(id, libraryLoader, libraryResourceProvider);
+        Library library = resolveLibraryById(id, libraryLoader, libraryResourceProvider, requestDetails);
 
         if (library == null) {
             throw new IllegalArgumentException(String.format("Could not resolve primary library for PlanDefinition/%s",

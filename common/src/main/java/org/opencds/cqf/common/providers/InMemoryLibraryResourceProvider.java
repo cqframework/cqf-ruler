@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class InMemoryLibraryResourceProvider<LibraryType> implements LibraryResolutionProvider<LibraryType> {
 
@@ -17,7 +18,7 @@ public class InMemoryLibraryResourceProvider<LibraryType> implements LibraryReso
     private Function<LibraryType, String> getVersion;
 
     public InMemoryLibraryResourceProvider() {
-    };
+    }
 
     public InMemoryLibraryResourceProvider(Collection<LibraryType> initialLibraries,
             Function<LibraryType, String> getId, Function<LibraryType, String> getName,
@@ -32,8 +33,9 @@ public class InMemoryLibraryResourceProvider<LibraryType> implements LibraryReso
         }
     }
 
+
     @Override
-    public LibraryType resolveLibraryById(String libraryId) {
+    public LibraryType resolveLibraryById(String libraryId, RequestDetails requestDetails) {
         if (this.libraries.containsKey(libraryId)) {
             return this.libraries.get(libraryId);
         }
@@ -60,7 +62,7 @@ public class InMemoryLibraryResourceProvider<LibraryType> implements LibraryReso
     }
 
     @Override
-    public LibraryType resolveLibraryByCanonicalUrl(String libraryUrl) {
+    public LibraryType resolveLibraryByCanonicalUrl(String libraryUrl, RequestDetails requestDetails) {
         // TODO Auto-generated method stub
         return null;
     }
