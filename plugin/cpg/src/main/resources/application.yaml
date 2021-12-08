@@ -1,0 +1,5 @@
+hapi:
+  fhir:
+    cpg:
+      enabled: true
+      cql_debug_enabled: false

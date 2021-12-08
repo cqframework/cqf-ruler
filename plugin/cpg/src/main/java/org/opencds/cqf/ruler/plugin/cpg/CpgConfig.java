@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty(prefix = "hapi.fhir.cpg", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "hapi.fhir.cpg", name ="enabled", havingValue = "true")
 public class CpgConfig {
     private static final Logger ourLog = LoggerFactory.getLogger(CpgConfig.class);
 

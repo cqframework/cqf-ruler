@@ -23,8 +23,8 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
         CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cpg.enabled=true" })
 public class CqlExecutionProviderIT {
 
-        @Autowired
-        CqlExecutionProvider cqlExecutionProvider;
+       // @Autowired
+       // CqlExecutionProvider cqlExecutionProvider;
 
         @Test
         public void testCqlExecutionProvider() throws Exception {
