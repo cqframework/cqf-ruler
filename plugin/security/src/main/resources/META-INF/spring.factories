@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.opencds.cqf.ruler.plugin.security.OAuthConfig
+org.opencds.cqf.ruler.plugin.security.SecurityConfig

@@ -18,7 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-	OAuthConfig.class }, properties = {
+	SecurityConfig.class }, properties = {
 	// Override is currently required when using MDM as the construction of the MDM
 	// beans are ambiguous as they are constructed multiple places. This is evident
 	// when running in a spring boot environment
@@ -27,7 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 	"spring.datasource.url=jdbc:h2:mem:dbr4-mt",
 	"hapi.fhir.fhir_version=r4",
 	"hapi.fhir.tester_enabled=false",
-	"oauth.enabled=true"
+	"hapi.fhir.security.oauth.enabled=true"
 
 })
 public class OAuthProviderIT {

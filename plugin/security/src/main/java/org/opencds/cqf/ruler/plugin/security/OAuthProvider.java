@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class OAuthProvider implements MetadataExtender<CapabilityStatement> {
 
 	@Autowired
-	OAuthProperties oAuthProperties;
+	SecurityProperties oAuthProperties;
 
 	@Override
 	public void extend(CapabilityStatement metadata) {

@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class OAuthConfig {
+public class SecurityConfig {
     
     @Bean
-	 @ConfigurationProperties(prefix = "oauth")
-    public OAuthProperties OAuthProperties() {
-        return new OAuthProperties();
+	 @ConfigurationProperties(prefix = "hapi.fhir.security.oauth")
+    public SecurityProperties OAuthProperties() {
+        return new SecurityProperties();
     }
 
     @Bean
