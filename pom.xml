@@ -18,6 +18,7 @@
 		<module>plugin/dev-tools</module>
 		<module>plugin/cql</module>
 		<module>plugin/cr</module>
+		<module>plugin/security</module>
 	</modules>
 
 	<name>cqf-ruler</name>

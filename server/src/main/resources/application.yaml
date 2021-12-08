@@ -144,9 +144,25 @@ hapi:
       enabled: true
       report:
         endpoint: ''
+
 ## Dev Tools Settings        
     devtools:
       enabled: true
+
+## Security settings
+    security:
+      enabled: false
+      oauth:
+        securityCors: true
+        securityUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
+        securityExtAuthUrl: authorize
+        securityExtAuthValueUri: http://launch.smarthealthit.org/v/r4/auth/authorize
+        securityExtTokenUrl: token
+        securityExtTokenValueUri: http://launch.smarthealthit.org/v/r4/auth/token
+        serviceSystem: http://hl7.org/fhir/restful-security-service
+        serviceCode: SMART-on-FHIR
+        serviceDisplay: SMART-on-FHIR
+        serviceText: OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)
         
 #elasticsearch:
 #  debug:
