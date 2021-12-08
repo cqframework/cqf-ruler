@@ -1,28 +1,12 @@
 package org.opencds.cqf.ruler.plugin.security;
 
-import ca.uhn.fhir.context.support.IValidationSupport;
-import ca.uhn.fhir.jpa.api.config.DaoConfig;
-import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.server.RestfulServer;
-import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
-import org.hl7.fhir.instance.model.api.IBaseConformance;
 import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.UriType;
 import org.hl7.fhir.r4.model.Coding;
 import org.opencds.cqf.ruler.api.MetadataExtender;
-import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.capability.RulerJpaCapabilityStatementProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import ca.uhn.fhir.model.api.annotation.Description;
-import ca.uhn.fhir.rest.annotation.Operation;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 public class OAuthProvider implements MetadataExtender<CapabilityStatement> {
 
