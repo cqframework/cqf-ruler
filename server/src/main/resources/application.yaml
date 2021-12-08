@@ -163,6 +163,9 @@ hapi:
         serviceCode: SMART-on-FHIR
         serviceDisplay: SMART-on-FHIR
         serviceText: OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)
+## CR Settings
+  cr:
+    enabled: true
         
 #elasticsearch:
 #  debug:
