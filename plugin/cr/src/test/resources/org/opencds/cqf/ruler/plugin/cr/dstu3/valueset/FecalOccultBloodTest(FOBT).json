@@ -1,0 +1,90 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.198.12.1011",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1011",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.464.1003.198.12.1011"
+    }
+  ],
+  "version": "20171219",
+  "name": "FecalOccultBloodTest(FOBT)",
+  "title": "Fecal Occult Blood Test (FOBT)",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://loinc.org",
+        "version": "2.64",
+        "concept": [
+          {
+            "code": "12503-9",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --4th specimen"
+          },
+          {
+            "code": "12504-7",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --5th specimen"
+          },
+          {
+            "code": "14563-1",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --1st specimen"
+          },
+          {
+            "code": "14564-9",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --2nd specimen"
+          },
+          {
+            "code": "14565-6",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --3rd specimen"
+          },
+          {
+            "code": "2335-8",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool"
+          },
+          {
+            "code": "27396-1",
+            "display": "Hemoglobin.gastrointestinal [Mass/mass] in Stool"
+          },
+          {
+            "code": "27401-9",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --6th specimen"
+          },
+          {
+            "code": "27925-7",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --7th specimen"
+          },
+          {
+            "code": "27926-5",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool --8th specimen"
+          },
+          {
+            "code": "29771-3",
+            "display": "Hemoglobin.gastrointestinal.lower [Presence] in Stool by Immunoassay"
+          },
+          {
+            "code": "56490-6",
+            "display": "Hemoglobin.gastrointestinal.lower [Presence] in Stool by Immunoassay --2nd specimen"
+          },
+          {
+            "code": "56491-4",
+            "display": "Hemoglobin.gastrointestinal.lower [Presence] in Stool by Immunoassay --3rd specimen"
+          },
+          {
+            "code": "57905-2",
+            "display": "Hemoglobin.gastrointestinal.lower [Presence] in Stool by Immunoassay --1st specimen"
+          },
+          {
+            "code": "58453-2",
+            "display": "Hemoglobin.gastrointestinal.lower [Mass/volume] in Stool by Immunoassay"
+          },
+          {
+            "code": "80372-6",
+            "display": "Hemoglobin.gastrointestinal [Presence] in Stool by Rapid immunoassay"
+          }
+        ]
+      }
+    ]
+  }
+}

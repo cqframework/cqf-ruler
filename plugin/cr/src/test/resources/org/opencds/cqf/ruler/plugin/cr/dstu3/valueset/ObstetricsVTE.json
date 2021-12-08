@@ -1,0 +1,300 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.264",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.264",
+  "title": "Obstetrics VTE",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "13943000",
+            "display": "Failed attempted abortion complicated by embolism (disorder)"
+          },
+          {
+            "code": "19363005",
+            "display": "Failed attempted abortion with blood-clot embolism (disorder)"
+          },
+          {
+            "code": "198876008",
+            "display": "Failed medical abortion, complicated by embolism (disorder)"
+          },
+          {
+            "code": "200232006",
+            "display": "Antenatal deep vein thrombosis - delivered (disorder)"
+          },
+          {
+            "code": "200233001",
+            "display": "Antenatal deep vein thrombosis with antenatal complication (disorder)"
+          },
+          {
+            "code": "200237000",
+            "display": "Postnatal deep vein thrombosis - delivered with postnatal complication (disorder)"
+          },
+          {
+            "code": "200238005",
+            "display": "Postnatal deep vein thrombosis with postnatal complication (disorder)"
+          },
+          {
+            "code": "200284000",
+            "display": "Obstetric pulmonary embolism (disorder)"
+          },
+          {
+            "code": "200299000",
+            "display": "Obstetric blood-clot pulmonary embolism (disorder)"
+          },
+          {
+            "code": "200301007",
+            "display": "Obstetric blood-clot pulmonary embolism - delivered (disorder)"
+          },
+          {
+            "code": "200302000",
+            "display": "Obstetric blood-clot pulmonary embolism - delivered with postnatal complication (disorder)"
+          },
+          {
+            "code": "200303005",
+            "display": "Obstetric blood-clot pulmonary embolism with antenatal complication (disorder)"
+          },
+          {
+            "code": "200304004",
+            "display": "Obstetric blood-clot pulmonary embolism with postnatal complication (disorder)"
+          },
+          {
+            "code": "21604008",
+            "display": "Illegal abortion with blood-clot embolism (disorder)"
+          },
+          {
+            "code": "267280004",
+            "display": "Venous complication of pregnancy and/or the puerperium (disorder)"
+          },
+          {
+            "code": "26743002",
+            "display": "Illegal abortion complicated by embolism (disorder)"
+          },
+          {
+            "code": "280966008",
+            "display": "Phlegmasia alba dolens - obstetric (disorder)"
+          },
+          {
+            "code": "37787009",
+            "display": "Legal abortion with blood-clot embolism (disorder)"
+          },
+          {
+            "code": "43306002",
+            "display": "Miscarriage complicated by embolism (disorder)"
+          },
+          {
+            "code": "49956009",
+            "display": "Antepartum deep phlebothrombosis (disorder)"
+          },
+          {
+            "code": "51096002",
+            "display": "Legal abortion with pulmonary embolism (disorder)"
+          },
+          {
+            "code": "55589000",
+            "display": "Illegal abortion with pulmonary embolism (disorder)"
+          },
+          {
+            "code": "55976003",
+            "display": "Miscarriage with blood-clot embolism (disorder)"
+          },
+          {
+            "code": "56272000",
+            "display": "Postpartum deep phlebothrombosis (disorder)"
+          },
+          {
+            "code": "56462001",
+            "display": "Failed attempted abortion with soap embolism (disorder)"
+          },
+          {
+            "code": "57734001",
+            "display": "Legal abortion complicated by embolism (disorder)"
+          },
+          {
+            "code": "58123006",
+            "display": "Failed attempted abortion with pulmonary embolism (disorder)"
+          },
+          {
+            "code": "609497003",
+            "display": "Venous complication in the puerperium (disorder)"
+          },
+          {
+            "code": "62583006",
+            "display": "Puerperal phlegmasia alba dolens (disorder)"
+          },
+          {
+            "code": "63795001",
+            "display": "Thrombosis of intracranial venous sinus of pregnancy AND/OR puerperium (disorder)"
+          },
+          {
+            "code": "663008",
+            "display": "Pulmonary embolism following molar AND/OR ectopic pregnancy (disorder)"
+          },
+          {
+            "code": "82153002",
+            "display": "Miscarriage with pulmonary embolism (disorder)"
+          },
+          {
+            "code": "84216001",
+            "display": "Cerebral venous thrombosis of pregnancy AND/OR puerperium (disorder)"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "O03.2",
+            "display": "Embolism following incomplete spontaneous abortion"
+          },
+          {
+            "code": "O03.35",
+            "display": "Other venous complications following incomplete spontaneous abortion"
+          },
+          {
+            "code": "O03.7",
+            "display": "Embolism following complete or unspecified spontaneous abortion"
+          },
+          {
+            "code": "O03.85",
+            "display": "Other venous complications following complete or unspecified spontaneous abortion"
+          },
+          {
+            "code": "O04.7",
+            "display": "Embolism following (induced) termination of pregnancy"
+          },
+          {
+            "code": "O04.85",
+            "display": "Other venous complications following (induced) termination of pregnancy"
+          },
+          {
+            "code": "O07.2",
+            "display": "Embolism following failed attempted termination of pregnancy"
+          },
+          {
+            "code": "O07.35",
+            "display": "Other venous complications following failed attempted termination of pregnancy"
+          },
+          {
+            "code": "O08.2",
+            "display": "Embolism following ectopic and molar pregnancy"
+          },
+          {
+            "code": "O08.7",
+            "display": "Other venous complications following an ectopic and molar pregnancy"
+          },
+          {
+            "code": "O22.30",
+            "display": "Deep phlebothrombosis in pregnancy, unspecified trimester"
+          },
+          {
+            "code": "O22.31",
+            "display": "Deep phlebothrombosis in pregnancy, first trimester"
+          },
+          {
+            "code": "O22.32",
+            "display": "Deep phlebothrombosis in pregnancy, second trimester"
+          },
+          {
+            "code": "O22.33",
+            "display": "Deep phlebothrombosis in pregnancy, third trimester"
+          },
+          {
+            "code": "O22.50",
+            "display": "Cerebral venous thrombosis in pregnancy, unspecified trimester"
+          },
+          {
+            "code": "O22.51",
+            "display": "Cerebral venous thrombosis in pregnancy, first trimester"
+          },
+          {
+            "code": "O22.52",
+            "display": "Cerebral venous thrombosis in pregnancy, second trimester"
+          },
+          {
+            "code": "O22.53",
+            "display": "Cerebral venous thrombosis in pregnancy, third trimester"
+          },
+          {
+            "code": "O22.8X1",
+            "display": "Other venous complications in pregnancy, first trimester"
+          },
+          {
+            "code": "O22.8X2",
+            "display": "Other venous complications in pregnancy, second trimester"
+          },
+          {
+            "code": "O22.8X3",
+            "display": "Other venous complications in pregnancy, third trimester"
+          },
+          {
+            "code": "O22.8X9",
+            "display": "Other venous complications in pregnancy, unspecified trimester"
+          },
+          {
+            "code": "O22.90",
+            "display": "Venous complication in pregnancy, unspecified, unspecified trimester"
+          },
+          {
+            "code": "O22.91",
+            "display": "Venous complication in pregnancy, unspecified, first trimester"
+          },
+          {
+            "code": "O22.92",
+            "display": "Venous complication in pregnancy, unspecified, second trimester"
+          },
+          {
+            "code": "O22.93",
+            "display": "Venous complication in pregnancy, unspecified, third trimester"
+          },
+          {
+            "code": "O87.1",
+            "display": "Deep phlebothrombosis in the puerperium"
+          },
+          {
+            "code": "O87.3",
+            "display": "Cerebral venous thrombosis in the puerperium"
+          },
+          {
+            "code": "O87.8",
+            "display": "Other venous complications in the puerperium"
+          },
+          {
+            "code": "O87.9",
+            "display": "Venous complication in the puerperium, unspecified"
+          },
+          {
+            "code": "O88.211",
+            "display": "Thromboembolism in pregnancy, first trimester"
+          },
+          {
+            "code": "O88.212",
+            "display": "Thromboembolism in pregnancy, second trimester"
+          },
+          {
+            "code": "O88.213",
+            "display": "Thromboembolism in pregnancy, third trimester"
+          },
+          {
+            "code": "O88.219",
+            "display": "Thromboembolism in pregnancy, unspecified trimester"
+          },
+          {
+            "code": "O88.22",
+            "display": "Thromboembolism in childbirth"
+          },
+          {
+            "code": "O88.23",
+            "display": "Thromboembolism in the puerperium"
+          }
+        ]
+      }
+    ]
+  }
+}

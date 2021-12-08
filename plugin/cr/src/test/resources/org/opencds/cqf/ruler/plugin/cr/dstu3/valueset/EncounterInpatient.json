@@ -1,0 +1,38 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.666.5.307",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.666.5.307"
+    }
+  ],
+  "version": "20170504",
+  "name": "EncounterInpatient",
+  "title": "Encounter Inpatient",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2018-03",
+        "concept": [
+          {
+            "code": "183452005",
+            "display": "Emergency hospital admission (procedure)"
+          },
+          {
+            "code": "32485007",
+            "display": "Hospital admission (procedure)"
+          },
+          {
+            "code": "8715000",
+            "display": "Hospital admission, elective (procedure)"
+          }
+        ]
+      }
+    ]
+  }
+}

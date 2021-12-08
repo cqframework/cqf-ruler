@@ -1,0 +1,732 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.113.12.1074",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.113.12.1074",
+  "title": "Frailty Diagnosis",
+  "status": "active",
+  "publisher": "National Committee for Quality Assurance",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "10637031000119106",
+            "display": "Pressure ulcer of buttock stage 1 (disorder)"
+          },
+          {
+            "code": "10637071000119109",
+            "display": "Pressure ulcer of buttock stage 2 (disorder)"
+          },
+          {
+            "code": "10637111000119102",
+            "display": "Pressure ulcer of buttock stage 3 (disorder)"
+          },
+          {
+            "code": "10637151000119101",
+            "display": "Pressure ulcer of buttock stage 4 (disorder)"
+          },
+          {
+            "code": "129588001",
+            "display": "Adult failure to thrive syndrome (disorder)"
+          },
+          {
+            "code": "138371000119104",
+            "display": "Paresis as late effect of poliomyelitis (disorder)"
+          },
+          {
+            "code": "162845004",
+            "display": "On examination - failure to thrive (disorder)"
+          },
+          {
+            "code": "17886000",
+            "display": "Fall from wheelchair (event)"
+          },
+          {
+            "code": "20902002",
+            "display": "Fall from bed (event)"
+          },
+          {
+            "code": "217082002",
+            "display": "Accidental fall (event)"
+          },
+          {
+            "code": "217083007",
+            "display": "Fall on or from stairs or steps (event)"
+          },
+          {
+            "code": "217084001",
+            "display": "Fall on or from escalator (event)"
+          },
+          {
+            "code": "217086004",
+            "display": "Fall from escalator (event)"
+          },
+          {
+            "code": "217088003",
+            "display": "Fall on or from stairs (event)"
+          },
+          {
+            "code": "217090002",
+            "display": "Fall from stairs (event)"
+          },
+          {
+            "code": "217092005",
+            "display": "Fall on or from steps (event)"
+          },
+          {
+            "code": "217093000",
+            "display": "Fall on steps (event)"
+          },
+          {
+            "code": "217094006",
+            "display": "Fall from steps (event)"
+          },
+          {
+            "code": "217142006",
+            "display": "Fall from chair or bed (event)"
+          },
+          {
+            "code": "217154006",
+            "display": "Fall on same level from slipping, tripping or stumbling (event)"
+          },
+          {
+            "code": "217155007",
+            "display": "Fall on same level from slipping (event)"
+          },
+          {
+            "code": "217156008",
+            "display": "Fall on same level from tripping (event)"
+          },
+          {
+            "code": "217157004",
+            "display": "Fall on same level from stumbling (event)"
+          },
+          {
+            "code": "217158009",
+            "display": "Fall on moving sidewalk (event)"
+          },
+          {
+            "code": "217173005",
+            "display": "Fall from bump against object (event)"
+          },
+          {
+            "code": "225558004",
+            "display": "Pressure ulcer of back (disorder)"
+          },
+          {
+            "code": "225562005",
+            "display": "Pressure ulcer of sacral region (disorder)"
+          },
+          {
+            "code": "225563000",
+            "display": "Pressure ulcer of buttock (disorder)"
+          },
+          {
+            "code": "242388006",
+            "display": "Fall on ice wearing ice-skates (event)"
+          },
+          {
+            "code": "242389003",
+            "display": "Fall due to wet surface (event)"
+          },
+          {
+            "code": "242390007",
+            "display": "Fall due to polished surface (event)"
+          },
+          {
+            "code": "242391006",
+            "display": "Fall due to discarded object (event)"
+          },
+          {
+            "code": "242392004",
+            "display": "Fall in bath or shower (event)"
+          },
+          {
+            "code": "242393009",
+            "display": "Fall due to defective pavement (event)"
+          },
+          {
+            "code": "242394003",
+            "display": "Fall due to accidental trip by another person (event)"
+          },
+          {
+            "code": "242395002",
+            "display": "Fall due to trip on loose carpet (event)"
+          },
+          {
+            "code": "242396001",
+            "display": "Fall due to uneven surface indoors (event)"
+          },
+          {
+            "code": "242402009",
+            "display": "Fall on same level due to accidental impact with another person (event)"
+          },
+          {
+            "code": "242404005",
+            "display": "Fall due to impact against pedestrian conveyance (event)"
+          },
+          {
+            "code": "242405006",
+            "display": "Fall due to impact against baby buggy (event)"
+          },
+          {
+            "code": "242406007",
+            "display": "Fall due to impact against supermarket shopping cart (event)"
+          },
+          {
+            "code": "242407003",
+            "display": "Fall due to impact against wheelbarrow (event)"
+          },
+          {
+            "code": "242413007",
+            "display": "Fall from furniture (event)"
+          },
+          {
+            "code": "242414001",
+            "display": "Fall from stool (event)"
+          },
+          {
+            "code": "242419006",
+            "display": "Fall from toilet seat (event)"
+          },
+          {
+            "code": "250054005",
+            "display": "Frontal gait disorder (disorder)"
+          },
+          {
+            "code": "269699007",
+            "display": "Fall on same level from impact against object (event)"
+          },
+          {
+            "code": "274918000",
+            "display": "Fall on same level due to nature of surface (event)"
+          },
+          {
+            "code": "274919008",
+            "display": "Fall on same level due to impact against another person (event)"
+          },
+          {
+            "code": "288296009",
+            "display": "Fall - collision/push/shove (event)"
+          },
+          {
+            "code": "33036003",
+            "display": "Fall on same level (event)"
+          },
+          {
+            "code": "40104005",
+            "display": "Fall in home (event)"
+          },
+          {
+            "code": "414188008",
+            "display": "Fall down stairs (event)"
+          },
+          {
+            "code": "414189000",
+            "display": "Fall down steps (event)"
+          },
+          {
+            "code": "414190009",
+            "display": "Fall on stairs (event)"
+          },
+          {
+            "code": "427849003",
+            "display": "Fall on hard surface (event)"
+          },
+          {
+            "code": "428484005",
+            "display": "Organic failure to thrive (disorder)"
+          },
+          {
+            "code": "429621003",
+            "display": "Fall on concrete (event)"
+          },
+          {
+            "code": "44188002",
+            "display": "Fall in shower (event)"
+          },
+          {
+            "code": "54840006",
+            "display": "Failure to thrive (disorder)"
+          },
+          {
+            "code": "56307009",
+            "display": "Fall from table (event)"
+          },
+          {
+            "code": "67223001",
+            "display": "Fall on escalator (event)"
+          },
+          {
+            "code": "699214007",
+            "display": "Pressure ulcer of hip (disorder)"
+          },
+          {
+            "code": "699215008",
+            "display": "Pressure ulcer of lower back (disorder)"
+          },
+          {
+            "code": "699216009",
+            "display": "Pressure ulcer of coccygeal region (disorder)"
+          },
+          {
+            "code": "699218005",
+            "display": "Pressure ulcer of upper back (disorder)"
+          },
+          {
+            "code": "715504003",
+            "display": "Spastic paraparesis co-occurrent with deafness (disorder)"
+          },
+          {
+            "code": "736313002",
+            "display": "Dissociative neurological symptom disorder co-occurrent with symptoms of gait disorder (disorder)"
+          },
+          {
+            "code": "74541001",
+            "display": "Fall from bench (event)"
+          },
+          {
+            "code": "83468000",
+            "display": "Fall from chair (event)"
+          },
+          {
+            "code": "8960001000004106",
+            "display": "Pressure ulcer of skin of right ischial tuberosity region (disorder)"
+          },
+          {
+            "code": "90619006",
+            "display": "Fall in bathtub (event)"
+          },
+          {
+            "code": "92341000119107",
+            "display": "Weakness of extremities as sequela of stroke (disorder)"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "L89.119",
+            "display": "Pressure ulcer of right upper back, unspecified stage"
+          },
+          {
+            "code": "L89.139",
+            "display": "Pressure ulcer of right lower back, unspecified stage"
+          },
+          {
+            "code": "L89.149",
+            "display": "Pressure ulcer of left lower back, unspecified stage"
+          },
+          {
+            "code": "L89.159",
+            "display": "Pressure ulcer of sacral region, unspecified stage"
+          },
+          {
+            "code": "L89.209",
+            "display": "Pressure ulcer of unspecified hip, unspecified stage"
+          },
+          {
+            "code": "L89.309",
+            "display": "Pressure ulcer of unspecified buttock, unspecified stage"
+          },
+          {
+            "code": "L89.899",
+            "display": "Pressure ulcer of other site, unspecified stage"
+          },
+          {
+            "code": "L89.90",
+            "display": "Pressure ulcer of unspecified site, unspecified stage"
+          },
+          {
+            "code": "M62.50",
+            "display": "Muscle wasting and atrophy, not elsewhere classified, unspecified site"
+          },
+          {
+            "code": "M62.81",
+            "display": "Muscle weakness (generalized)"
+          },
+          {
+            "code": "M62.84",
+            "display": "Sarcopenia"
+          },
+          {
+            "code": "W01.0XXA",
+            "display": "Fall on same level from slipping, tripping and stumbling without subsequent striking against object, initial encounter"
+          },
+          {
+            "code": "W01.0XXD",
+            "display": "Fall on same level from slipping, tripping and stumbling without subsequent striking against object, subsequent encounter"
+          },
+          {
+            "code": "W01.0XXS",
+            "display": "Fall on same level from slipping, tripping and stumbling without subsequent striking against object, sequela"
+          },
+          {
+            "code": "W01.10XA",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against unspecified object, initial encounter"
+          },
+          {
+            "code": "W01.10XD",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against unspecified object, subsequent encounter"
+          },
+          {
+            "code": "W01.10XS",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against unspecified object, sequela"
+          },
+          {
+            "code": "W01.110A",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against sharp glass, initial encounter"
+          },
+          {
+            "code": "W01.110D",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against sharp glass, subsequent encounter"
+          },
+          {
+            "code": "W01.110S",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against sharp glass, sequela"
+          },
+          {
+            "code": "W01.111A",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against power tool or machine, initial encounter"
+          },
+          {
+            "code": "W01.111D",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against power tool or machine, subsequent encounter"
+          },
+          {
+            "code": "W01.111S",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against power tool or machine, sequela"
+          },
+          {
+            "code": "W01.118A",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against other sharp object, initial encounter"
+          },
+          {
+            "code": "W01.118D",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against other sharp object, subsequent encounter"
+          },
+          {
+            "code": "W01.118S",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against other sharp object, sequela"
+          },
+          {
+            "code": "W01.119A",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against unspecified sharp object, initial encounter"
+          },
+          {
+            "code": "W01.119D",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against unspecified sharp object, subsequent encounter"
+          },
+          {
+            "code": "W01.119S",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against unspecified sharp object, sequela"
+          },
+          {
+            "code": "W01.190A",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against furniture, initial encounter"
+          },
+          {
+            "code": "W01.190D",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against furniture, subsequent encounter"
+          },
+          {
+            "code": "W01.190S",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against furniture, sequela"
+          },
+          {
+            "code": "W01.198A",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against other object, initial encounter"
+          },
+          {
+            "code": "W01.198D",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against other object, subsequent encounter"
+          },
+          {
+            "code": "W01.198S",
+            "display": "Fall on same level from slipping, tripping and stumbling with subsequent striking against other object, sequela"
+          },
+          {
+            "code": "W06.XXXA",
+            "display": "Fall from bed, initial encounter"
+          },
+          {
+            "code": "W06.XXXD",
+            "display": "Fall from bed, subsequent encounter"
+          },
+          {
+            "code": "W06.XXXS",
+            "display": "Fall from bed, sequela"
+          },
+          {
+            "code": "W07.XXXA",
+            "display": "Fall from chair, initial encounter"
+          },
+          {
+            "code": "W07.XXXD",
+            "display": "Fall from chair, subsequent encounter"
+          },
+          {
+            "code": "W07.XXXS",
+            "display": "Fall from chair, sequela"
+          },
+          {
+            "code": "W08.XXXA",
+            "display": "Fall from other furniture, initial encounter"
+          },
+          {
+            "code": "W08.XXXD",
+            "display": "Fall from other furniture, subsequent encounter"
+          },
+          {
+            "code": "W08.XXXS",
+            "display": "Fall from other furniture, sequela"
+          },
+          {
+            "code": "W10.0XXA",
+            "display": "Fall (on)(from) escalator, initial encounter"
+          },
+          {
+            "code": "W10.0XXD",
+            "display": "Fall (on)(from) escalator, subsequent encounter"
+          },
+          {
+            "code": "W10.0XXS",
+            "display": "Fall (on)(from) escalator, sequela"
+          },
+          {
+            "code": "W10.1XXA",
+            "display": "Fall (on)(from) sidewalk curb, initial encounter"
+          },
+          {
+            "code": "W10.1XXD",
+            "display": "Fall (on)(from) sidewalk curb, subsequent encounter"
+          },
+          {
+            "code": "W10.1XXS",
+            "display": "Fall (on)(from) sidewalk curb, sequela"
+          },
+          {
+            "code": "W10.2XXA",
+            "display": "Fall (on)(from) incline, initial encounter"
+          },
+          {
+            "code": "W10.2XXD",
+            "display": "Fall (on)(from) incline, subsequent encounter"
+          },
+          {
+            "code": "W10.2XXS",
+            "display": "Fall (on)(from) incline, sequela"
+          },
+          {
+            "code": "W10.8XXA",
+            "display": "Fall (on) (from) other stairs and steps, initial encounter"
+          },
+          {
+            "code": "W10.8XXD",
+            "display": "Fall (on) (from) other stairs and steps, subsequent encounter"
+          },
+          {
+            "code": "W10.8XXS",
+            "display": "Fall (on) (from) other stairs and steps, sequela"
+          },
+          {
+            "code": "W10.9XXA",
+            "display": "Fall (on) (from) unspecified stairs and steps, initial encounter"
+          },
+          {
+            "code": "W10.9XXD",
+            "display": "Fall (on) (from) unspecified stairs and steps, subsequent encounter"
+          },
+          {
+            "code": "W10.9XXS",
+            "display": "Fall (on) (from) unspecified stairs and steps, sequela"
+          },
+          {
+            "code": "W18.00XA",
+            "display": "Striking against unspecified object with subsequent fall, initial encounter"
+          },
+          {
+            "code": "W18.00XD",
+            "display": "Striking against unspecified object with subsequent fall, subsequent encounter"
+          },
+          {
+            "code": "W18.00XS",
+            "display": "Striking against unspecified object with subsequent fall, sequela"
+          },
+          {
+            "code": "W18.02XA",
+            "display": "Striking against glass with subsequent fall, initial encounter"
+          },
+          {
+            "code": "W18.02XD",
+            "display": "Striking against glass with subsequent fall, subsequent encounter"
+          },
+          {
+            "code": "W18.02XS",
+            "display": "Striking against glass with subsequent fall, sequela"
+          },
+          {
+            "code": "W18.09XA",
+            "display": "Striking against other object with subsequent fall, initial encounter"
+          },
+          {
+            "code": "W18.09XD",
+            "display": "Striking against other object with subsequent fall, subsequent encounter"
+          },
+          {
+            "code": "W18.09XS",
+            "display": "Striking against other object with subsequent fall, sequela"
+          },
+          {
+            "code": "W18.11XA",
+            "display": "Fall from or off toilet without subsequent striking against object, initial encounter"
+          },
+          {
+            "code": "W18.11XD",
+            "display": "Fall from or off toilet without subsequent striking against object, subsequent encounter"
+          },
+          {
+            "code": "W18.11XS",
+            "display": "Fall from or off toilet without subsequent striking against object, sequela"
+          },
+          {
+            "code": "W18.12XA",
+            "display": "Fall from or off toilet with subsequent striking against object, initial encounter"
+          },
+          {
+            "code": "W18.12XD",
+            "display": "Fall from or off toilet with subsequent striking against object, subsequent encounter"
+          },
+          {
+            "code": "W18.12XS",
+            "display": "Fall from or off toilet with subsequent striking against object, sequela"
+          },
+          {
+            "code": "W18.2XXA",
+            "display": "Fall in (into) shower or empty bathtub, initial encounter"
+          },
+          {
+            "code": "W18.2XXD",
+            "display": "Fall in (into) shower or empty bathtub, subsequent encounter"
+          },
+          {
+            "code": "W18.2XXS",
+            "display": "Fall in (into) shower or empty bathtub, sequela"
+          },
+          {
+            "code": "W18.30XA",
+            "display": "Fall on same level, unspecified, initial encounter"
+          },
+          {
+            "code": "W18.30XD",
+            "display": "Fall on same level, unspecified, subsequent encounter"
+          },
+          {
+            "code": "W18.30XS",
+            "display": "Fall on same level, unspecified, sequela"
+          },
+          {
+            "code": "W18.31XA",
+            "display": "Fall on same level due to stepping on an object, initial encounter"
+          },
+          {
+            "code": "W18.31XD",
+            "display": "Fall on same level due to stepping on an object, subsequent encounter"
+          },
+          {
+            "code": "W18.31XS",
+            "display": "Fall on same level due to stepping on an object, sequela"
+          },
+          {
+            "code": "W18.39XA",
+            "display": "Other fall on same level, initial encounter"
+          },
+          {
+            "code": "W18.39XD",
+            "display": "Other fall on same level, subsequent encounter"
+          },
+          {
+            "code": "W18.39XS",
+            "display": "Other fall on same level, sequela"
+          },
+          {
+            "code": "W19.XXXA",
+            "display": "Unspecified fall, initial encounter"
+          },
+          {
+            "code": "W19.XXXD",
+            "display": "Unspecified fall, subsequent encounter"
+          },
+          {
+            "code": "W19.XXXS",
+            "display": "Unspecified fall, sequela"
+          },
+          {
+            "code": "Y92.199",
+            "display": "Unspecified place in other specified residential institution as the place of occurrence of the external cause"
+          },
+          {
+            "code": "Z59.3",
+            "display": "Problems related to living in residential institution"
+          },
+          {
+            "code": "Z73.6",
+            "display": "Limitation of activities due to disability"
+          },
+          {
+            "code": "Z74.01",
+            "display": "Bed confinement status"
+          },
+          {
+            "code": "Z74.09",
+            "display": "Other reduced mobility"
+          },
+          {
+            "code": "Z74.1",
+            "display": "Need for assistance with personal care"
+          },
+          {
+            "code": "Z74.2",
+            "display": "Need for assistance at home and no other household member able to render care"
+          },
+          {
+            "code": "Z74.3",
+            "display": "Need for continuous supervision"
+          },
+          {
+            "code": "Z74.8",
+            "display": "Other problems related to care provider dependency"
+          },
+          {
+            "code": "Z74.9",
+            "display": "Problem related to care provider dependency, unspecified"
+          },
+          {
+            "code": "Z91.81",
+            "display": "History of falling"
+          },
+          {
+            "code": "Z99.11",
+            "display": "Dependence on respirator [ventilator] status"
+          },
+          {
+            "code": "Z99.3",
+            "display": "Dependence on wheelchair"
+          },
+          {
+            "code": "Z99.81",
+            "display": "Dependence on supplemental oxygen"
+          },
+          {
+            "code": "Z99.89",
+            "display": "Dependence on other enabling machines and devices"
+          }
+        ]
+      }
+    ]
+  }
+}

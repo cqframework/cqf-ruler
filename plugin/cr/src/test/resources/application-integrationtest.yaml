@@ -1,0 +1,15 @@
+spring:
+  config:
+    import: application.yaml
+  main:
+    allow-bean-definition-overriding: true
+  batch:
+    job:
+      enabled: false"
+
+hapi:
+  fhir:
+    tester_enabled: false;
+    enforce_referential_integrity_on_write: false
+    enforce_referential_integrity_on_delete: false
+    allow_external_references: true

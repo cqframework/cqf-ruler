@@ -1,0 +1,34 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.218",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.218",
+  "title": "Unfractionated Heparin",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2019-08",
+        "concept": [
+          {
+            "code": "1361607",
+            "display": "500 ML heparin sodium, porcine 40 UNT/ML Injection"
+          },
+          {
+            "code": "1658717",
+            "display": "250 ML heparin sodium, porcine 100 UNT/ML Injection"
+          },
+          {
+            "code": "1659195",
+            "display": "500 ML heparin sodium, porcine 50 UNT/ML Injection"
+          },
+          {
+            "code": "1659197",
+            "display": "250 ML heparin sodium, porcine 50 UNT/ML Injection"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.205",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.205",
+  "title": "Direct Thrombin Inhibitor",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2019-08",
+        "concept": [
+          {
+            "code": "1037045",
+            "display": "dabigatran etexilate 150 MG Oral Capsule"
+          },
+          {
+            "code": "1037179",
+            "display": "dabigatran etexilate 75 MG Oral Capsule"
+          },
+          {
+            "code": "1723476",
+            "display": "dabigatran etexilate 110 MG Oral Capsule"
+          },
+          {
+            "code": "1804735",
+            "display": "50 ML argatroban 1 MG/ML Injection"
+          },
+          {
+            "code": "1804737",
+            "display": "125 ML argatroban 1 MG/ML Injection"
+          },
+          {
+            "code": "1804738",
+            "display": "250 ML argatroban 1 MG/ML Injection"
+          },
+          {
+            "code": "1997015",
+            "display": "50 ML bivalirudin 5 MG/ML Injection"
+          },
+          {
+            "code": "1997017",
+            "display": "100 ML bivalirudin 5 MG/ML Injection"
+          },
+          {
+            "code": "308351",
+            "display": "2.5 ML argatroban 100 MG/ML Injection"
+          },
+          {
+            "code": "308769",
+            "display": "bivalirudin 250 MG Injection"
+          }
+        ]
+      }
+    ]
+  }
+}

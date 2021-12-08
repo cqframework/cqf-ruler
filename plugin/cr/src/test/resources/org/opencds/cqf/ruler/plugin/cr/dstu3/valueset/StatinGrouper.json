@@ -1,0 +1,230 @@
+{
+    "resourceType": "ValueSet",
+    "id": "2.16.840.1.113762.1.4.1110.19",
+    "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1110.19",
+    "identifier": [
+      {
+        "system": "urn:ietf:rfc:3986",
+        "value": "2.16.840.1.113762.1.4.1110.19"
+      }
+    ],
+    "version": "20170504",
+    "name": "StatinGrouper",
+    "title": "Statin Grouper",
+    "status": "active",
+    "publisher": "NLM",
+    "compose": {
+      "include": [
+        {
+          "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+          "version": "2018-07",
+          "concept": [
+            {
+              "code": "197903",
+              "display": "Lovastatin 10 MG Oral Tablet"
+            },
+            {
+              "code": "197904",
+              "display": "Lovastatin 20 MG Oral Tablet"
+            },
+            {
+              "code": "197905",
+              "display": "Lovastatin 40 MG Oral Tablet"
+            },
+            {
+              "code": "198211",
+              "display": "Simvastatin 40 MG Oral Tablet"
+            },
+            {
+              "code": "2001254",
+              "display": "pitavastatin magnesium 1 MG Oral Tablet"
+            },
+            {
+              "code": "2001262",
+              "display": "pitavastatin magnesium 2 MG Oral Tablet"
+            },
+            {
+              "code": "2001266",
+              "display": "pitavastatin magnesium 4 MG Oral Tablet"
+            },
+            {
+              "code": "200345",
+              "display": "Simvastatin 80 MG Oral Tablet"
+            },
+            {
+              "code": "259255",
+              "display": "atorvastatin 80 MG Oral Tablet"
+            },
+            {
+              "code": "310404",
+              "display": "fluvastatin 20 MG Oral Capsule"
+            },
+            {
+              "code": "310405",
+              "display": "fluvastatin 40 MG Oral Capsule"
+            },
+            {
+              "code": "312961",
+              "display": "Simvastatin 20 MG Oral Tablet"
+            },
+            {
+              "code": "312962",
+              "display": "Simvastatin 5 MG Oral Tablet"
+            },
+            {
+              "code": "314231",
+              "display": "Simvastatin 10 MG Oral Tablet"
+            },
+            {
+              "code": "359731",
+              "display": "24 HR Lovastatin 40 MG Extended Release Oral Tablet"
+            },
+            {
+              "code": "359732",
+              "display": "24 HR Lovastatin 60 MG Extended Release Oral Tablet"
+            },
+            {
+              "code": "360507",
+              "display": "24 HR fluvastatin 80 MG Extended Release Oral Tablet"
+            },
+            {
+              "code": "404011",
+              "display": "Amlodipine 5 MG / atorvastatin 80 MG Oral Tablet"
+            },
+            {
+              "code": "404013",
+              "display": "Amlodipine 10 MG / atorvastatin 80 MG Oral Tablet"
+            },
+            {
+              "code": "433849",
+              "display": "24 HR Lovastatin 20 MG Extended Release Oral Tablet"
+            },
+            {
+              "code": "476345",
+              "display": "ezetimibe 10 MG / Simvastatin 10 MG Oral Tablet"
+            },
+            {
+              "code": "476349",
+              "display": "ezetimibe 10 MG / Simvastatin 20 MG Oral Tablet"
+            },
+            {
+              "code": "476350",
+              "display": "ezetimibe 10 MG / Simvastatin 40 MG Oral Tablet"
+            },
+            {
+              "code": "476351",
+              "display": "ezetimibe 10 MG / Simvastatin 80 MG Oral Tablet"
+            },
+            {
+              "code": "597967",
+              "display": "Amlodipine 10 MG / atorvastatin 20 MG Oral Tablet"
+            },
+            {
+              "code": "597971",
+              "display": "Amlodipine 2.5 MG / atorvastatin 10 MG Oral Tablet"
+            },
+            {
+              "code": "597974",
+              "display": "Amlodipine 2.5 MG / atorvastatin 20 MG Oral Tablet"
+            },
+            {
+              "code": "597977",
+              "display": "Amlodipine 5 MG / atorvastatin 10 MG Oral Tablet"
+            },
+            {
+              "code": "597980",
+              "display": "Amlodipine 5 MG / atorvastatin 20 MG Oral Tablet"
+            },
+            {
+              "code": "597984",
+              "display": "Amlodipine 5 MG / atorvastatin 40 MG Oral Tablet"
+            },
+            {
+              "code": "597987",
+              "display": "Amlodipine 10 MG / atorvastatin 10 MG Oral Tablet"
+            },
+            {
+              "code": "597990",
+              "display": "Amlodipine 10 MG / atorvastatin 40 MG Oral Tablet"
+            },
+            {
+              "code": "597993",
+              "display": "Amlodipine 2.5 MG / atorvastatin 40 MG Oral Tablet"
+            },
+            {
+              "code": "617310",
+              "display": "atorvastatin 20 MG Oral Tablet"
+            },
+            {
+              "code": "617311",
+              "display": "atorvastatin 40 MG Oral Tablet"
+            },
+            {
+              "code": "617312",
+              "display": "atorvastatin 10 MG Oral Tablet"
+            },
+            {
+              "code": "757702",
+              "display": "Simvastatin 10 MG Disintegrating Oral Tablet"
+            },
+            {
+              "code": "757703",
+              "display": "Simvastatin 20 MG Disintegrating Oral Tablet"
+            },
+            {
+              "code": "757704",
+              "display": "Simvastatin 40 MG Disintegrating Oral Tablet"
+            },
+            {
+              "code": "757705",
+              "display": "Simvastatin 80 MG Disintegrating Oral Tablet"
+            },
+            {
+              "code": "859419",
+              "display": "Rosuvastatin calcium 40 MG Oral Tablet"
+            },
+            {
+              "code": "859424",
+              "display": "Rosuvastatin calcium 5 MG Oral Tablet"
+            },
+            {
+              "code": "859747",
+              "display": "Rosuvastatin calcium 10 MG Oral Tablet"
+            },
+            {
+              "code": "859751",
+              "display": "Rosuvastatin calcium 20 MG Oral Tablet"
+            },
+            {
+              "code": "861643",
+              "display": "pitavastatin calcium 1 MG Oral Tablet"
+            },
+            {
+              "code": "861648",
+              "display": "pitavastatin calcium 2 MG Oral Tablet"
+            },
+            {
+              "code": "861652",
+              "display": "pitavastatin calcium 4 MG Oral Tablet"
+            },
+            {
+              "code": "904458",
+              "display": "Pravastatin Sodium 10 MG Oral Tablet"
+            },
+            {
+              "code": "904467",
+              "display": "Pravastatin Sodium 20 MG Oral Tablet"
+            },
+            {
+              "code": "904475",
+              "display": "Pravastatin Sodium 40 MG Oral Tablet"
+            },
+            {
+              "code": "904481",
+              "display": "Pravastatin Sodium 80 MG Oral Tablet"
+            }
+          ]
+        }
+      ]
+    }
+  }

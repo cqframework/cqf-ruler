@@ -1,0 +1,90 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.473",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.473",
+  "title": "Medical Reason",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "183932001",
+            "display": "Procedure contraindicated (situation)"
+          },
+          {
+            "code": "183964008",
+            "display": "Treatment not indicated (situation)"
+          },
+          {
+            "code": "183966005",
+            "display": "Drug treatment not indicated (situation)"
+          },
+          {
+            "code": "266721009",
+            "display": "Absent response to treatment (situation)"
+          },
+          {
+            "code": "31438003",
+            "display": "Drug resistance (disorder)"
+          },
+          {
+            "code": "35688006",
+            "display": "Complication of medical care (disorder)"
+          },
+          {
+            "code": "397745006",
+            "display": "Medical contraindication (finding)"
+          },
+          {
+            "code": "407563006",
+            "display": "Treatment not tolerated (situation)"
+          },
+          {
+            "code": "410529002",
+            "display": "Not needed (qualifier value)"
+          },
+          {
+            "code": "410534003",
+            "display": "Not indicated (qualifier value)"
+          },
+          {
+            "code": "410536001",
+            "display": "Contraindicated (qualifier value)"
+          },
+          {
+            "code": "416098002",
+            "display": "Allergy to drug (finding)"
+          },
+          {
+            "code": "419511003",
+            "display": "Propensity to adverse reactions to drug (finding)"
+          },
+          {
+            "code": "428024001",
+            "display": "Clinical trial participant (person)"
+          },
+          {
+            "code": "428119001",
+            "display": "Procedure not indicated (situation)"
+          },
+          {
+            "code": "59037007",
+            "display": "Intolerance to drug (finding)"
+          },
+          {
+            "code": "62014003",
+            "display": "Adverse reaction caused by drug (disorder)"
+          },
+          {
+            "code": "79899007",
+            "display": "Drug interaction (finding)"
+          }
+        ]
+      }
+    ]
+  }
+}

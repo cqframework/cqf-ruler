@@ -1,0 +1,366 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1125.1",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1125.1",
+  "title": "Schedule IV Benzodiazepines",
+  "status": "active",
+  "publisher": "Mathematica",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2019-11",
+        "concept": [
+          {
+            "code": "1298088",
+            "display": "Flurazepam Hydrochloride 15 MG Oral Capsule"
+          },
+          {
+            "code": "1298091",
+            "display": "Flurazepam Hydrochloride 30 MG Oral Capsule"
+          },
+          {
+            "code": "1366192",
+            "display": "clobazam 2.5 MG/ML Oral Suspension"
+          },
+          {
+            "code": "1551393",
+            "display": "2 ML Midazolam 5 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "1551395",
+            "display": "1 ML Midazolam 5 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "1665188",
+            "display": "1 ML Lorazepam 2 MG/ML Injection"
+          },
+          {
+            "code": "1665326",
+            "display": "1 ML Lorazepam 4 MG/ML Injection"
+          },
+          {
+            "code": "1666777",
+            "display": "2 ML Midazolam 1 MG/ML Cartridge"
+          },
+          {
+            "code": "1666798",
+            "display": "2 ML Midazolam 1 MG/ML Injection"
+          },
+          {
+            "code": "1666800",
+            "display": "5 ML Midazolam 1 MG/ML Injection"
+          },
+          {
+            "code": "1666814",
+            "display": "1 ML Midazolam 5 MG/ML Injection"
+          },
+          {
+            "code": "1666821",
+            "display": "1 ML Midazolam 5 MG/ML Cartridge"
+          },
+          {
+            "code": "1666823",
+            "display": "2 ML Midazolam 5 MG/ML Injection"
+          },
+          {
+            "code": "197321",
+            "display": "Alprazolam 1 MG Oral Tablet"
+          },
+          {
+            "code": "197322",
+            "display": "Alprazolam 2 MG Oral Tablet"
+          },
+          {
+            "code": "197464",
+            "display": "Clorazepate Dipotassium 15 MG Oral Tablet"
+          },
+          {
+            "code": "197465",
+            "display": "Clorazepate Dipotassium 3.75 MG Oral Tablet"
+          },
+          {
+            "code": "197466",
+            "display": "Clorazepate Dipotassium 7.5 MG Oral Tablet"
+          },
+          {
+            "code": "197527",
+            "display": "Clonazepam 0.5 MG Oral Tablet"
+          },
+          {
+            "code": "197528",
+            "display": "Clonazepam 1 MG Oral Tablet"
+          },
+          {
+            "code": "197529",
+            "display": "Clonazepam 2 MG Oral Tablet"
+          },
+          {
+            "code": "197589",
+            "display": "Diazepam 10 MG Oral Tablet"
+          },
+          {
+            "code": "197590",
+            "display": "Diazepam 2 MG Oral Tablet"
+          },
+          {
+            "code": "197591",
+            "display": "Diazepam 5 MG Oral Tablet"
+          },
+          {
+            "code": "197653",
+            "display": "Estazolam 1 MG Oral Tablet"
+          },
+          {
+            "code": "197654",
+            "display": "Estazolam 2 MG Oral Tablet"
+          },
+          {
+            "code": "197900",
+            "display": "Lorazepam 0.5 MG Oral Tablet"
+          },
+          {
+            "code": "197901",
+            "display": "Lorazepam 1 MG Oral Tablet"
+          },
+          {
+            "code": "197902",
+            "display": "Lorazepam 2 MG Oral Tablet"
+          },
+          {
+            "code": "198057",
+            "display": "Oxazepam 10 MG Oral Capsule"
+          },
+          {
+            "code": "198059",
+            "display": "Oxazepam 30 MG Oral Capsule"
+          },
+          {
+            "code": "198183",
+            "display": "quazepam 15 MG Oral Tablet"
+          },
+          {
+            "code": "198241",
+            "display": "Temazepam 15 MG Oral Capsule"
+          },
+          {
+            "code": "198242",
+            "display": "Temazepam 30 MG Oral Capsule"
+          },
+          {
+            "code": "198243",
+            "display": "Temazepam 7.5 MG Oral Capsule"
+          },
+          {
+            "code": "198317",
+            "display": "Triazolam 0.125 MG Oral Tablet"
+          },
+          {
+            "code": "198318",
+            "display": "Triazolam 0.25 MG Oral Tablet"
+          },
+          {
+            "code": "199273",
+            "display": "Temazepam 10 MG Oral Capsule"
+          },
+          {
+            "code": "199275",
+            "display": "Lorazepam 2.5 MG Oral Tablet"
+          },
+          {
+            "code": "199278",
+            "display": "Temazepam 20 MG Oral Capsule"
+          },
+          {
+            "code": "199450",
+            "display": "clobazam 10 MG Oral Tablet"
+          },
+          {
+            "code": "199775",
+            "display": "Midazolam 7.5 MG Oral Tablet"
+          },
+          {
+            "code": "199975",
+            "display": "Temazepam 10 MG Oral Tablet"
+          },
+          {
+            "code": "204892",
+            "display": "Clonazepam 0.25 MG Oral Tablet"
+          },
+          {
+            "code": "238100",
+            "display": "Lorazepam 2 MG/ML Injectable Solution"
+          },
+          {
+            "code": "238101",
+            "display": "Lorazepam 4 MG/ML Injectable Solution"
+          },
+          {
+            "code": "246172",
+            "display": "clobazam 20 MG Oral Tablet"
+          },
+          {
+            "code": "308047",
+            "display": "Alprazolam 0.25 MG Oral Tablet"
+          },
+          {
+            "code": "308048",
+            "display": "Alprazolam 0.5 MG Oral Tablet"
+          },
+          {
+            "code": "308050",
+            "display": "Alprazolam 1 MG/ML Oral Solution"
+          },
+          {
+            "code": "309843",
+            "display": "Diazepam 1 MG/ML Oral Solution"
+          },
+          {
+            "code": "309844",
+            "display": "Diazepam 5 MG/ML Oral Solution"
+          },
+          {
+            "code": "309845",
+            "display": "Diazepam 5 MG/ML Injectable Solution"
+          },
+          {
+            "code": "311376",
+            "display": "Lorazepam 2 MG/ML Oral Solution"
+          },
+          {
+            "code": "311700",
+            "display": "Midazolam 1 MG/ML Injectable Solution"
+          },
+          {
+            "code": "311702",
+            "display": "Midazolam 5 MG/ML Injectable Solution"
+          },
+          {
+            "code": "312133",
+            "display": "Oxazepam 10 MG Oral Tablet"
+          },
+          {
+            "code": "312134",
+            "display": "Oxazepam 15 MG Oral Capsule"
+          },
+          {
+            "code": "312135",
+            "display": "Oxazepam 30 MG Oral Tablet"
+          },
+          {
+            "code": "349194",
+            "display": "Clonazepam 0.125 MG Disintegrating Oral Tablet"
+          },
+          {
+            "code": "349195",
+            "display": "Clonazepam 0.25 MG Disintegrating Oral Tablet"
+          },
+          {
+            "code": "349196",
+            "display": "Clonazepam 1 MG Disintegrating Oral Tablet"
+          },
+          {
+            "code": "349197",
+            "display": "Clonazepam 2 MG Disintegrating Oral Tablet"
+          },
+          {
+            "code": "349198",
+            "display": "Clonazepam 0.5 MG Disintegrating Oral Tablet"
+          },
+          {
+            "code": "422410",
+            "display": "Midazolam 2 MG/ML Oral Solution"
+          },
+          {
+            "code": "433798",
+            "display": "24 HR Alprazolam 0.5 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "433799",
+            "display": "24 HR Alprazolam 2 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "433800",
+            "display": "24 HR Alprazolam 1 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "433801",
+            "display": "24 HR Alprazolam 3 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "485413",
+            "display": "Alprazolam 0.25 MG Disintegrating Oral Tablet"
+          },
+          {
+            "code": "485414",
+            "display": "Alprazolam 1 MG Disintegrating Oral Tablet"
+          },
+          {
+            "code": "485415",
+            "display": "Alprazolam 0.5 MG Disintegrating Oral Tablet"
+          },
+          {
+            "code": "485416",
+            "display": "Alprazolam 2 MG Disintegrating Oral Tablet"
+          },
+          {
+            "code": "485489",
+            "display": "Temazepam 22.5 MG Oral Capsule"
+          },
+          {
+            "code": "618737",
+            "display": "Clorazepate Dipotassium 5 MG Oral Capsule"
+          },
+          {
+            "code": "763028",
+            "display": "1 ML Lorazepam 2 MG/ML Cartridge"
+          },
+          {
+            "code": "763029",
+            "display": "1 ML Lorazepam 4 MG/ML Cartridge"
+          },
+          {
+            "code": "801957",
+            "display": "0.5 ML Diazepam 5 MG/ML Rectal Gel"
+          },
+          {
+            "code": "801961",
+            "display": "2 ML Diazepam 5 MG/ML Rectal Gel"
+          },
+          {
+            "code": "801966",
+            "display": "4 ML Diazepam 5 MG/ML Rectal Gel"
+          },
+          {
+            "code": "856769",
+            "display": "Amitriptyline Hydrochloride 12.5 MG / Chlordiazepoxide 5 MG Oral Tablet"
+          },
+          {
+            "code": "856792",
+            "display": "Amitriptyline Hydrochloride 25 MG / Chlordiazepoxide 10 MG Oral Tablet"
+          },
+          {
+            "code": "889614",
+            "display": "Chlordiazepoxide Hydrochloride 5 MG / Clidinium bromide 2.5 MG Oral Capsule"
+          },
+          {
+            "code": "905369",
+            "display": "Chlordiazepoxide Hydrochloride 10 MG Oral Capsule"
+          },
+          {
+            "code": "905495",
+            "display": "Chlordiazepoxide Hydrochloride 25 MG Oral Capsule"
+          },
+          {
+            "code": "905516",
+            "display": "Chlordiazepoxide Hydrochloride 5 MG Oral Capsule"
+          },
+          {
+            "code": "998211",
+            "display": "2 ML Midazolam 1 MG/ML Prefilled Syringe"
+          }
+        ]
+      }
+    ]
+  }
+}

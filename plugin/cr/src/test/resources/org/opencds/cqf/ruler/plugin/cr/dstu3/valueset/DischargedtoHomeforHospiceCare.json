@@ -1,0 +1,30 @@
+{
+    "resourceType": "ValueSet",
+    "id": "2.16.840.1.113883.3.117.1.7.1.209",
+    "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.209",
+    "identifier": [
+      {
+        "system": "urn:ietf:rfc:3986",
+        "value": "2.16.840.1.113883.3.117.1.7.1.209"
+      }
+    ],
+    "version": "20170725",
+    "name": "DischargedtoHomeforHospiceCare",
+    "title": "Discharged to Home for Hospice Care",
+    "status": "active",
+    "publisher": "NLM",
+    "compose": {
+      "include": [
+        {
+          "system": "http://snomed.info/sct",
+          "version": "2018-03",
+          "concept": [
+            {
+              "code": "428361000124107",
+              "display": "Discharge to home for hospice care (procedure)"
+            }
+          ]
+        }
+      ]
+    }
+  }

@@ -1,0 +1,84 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.258",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.258",
+  "title": "Hip Fracture Surgery",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "16174006",
+            "display": "Acetabuloplasty with use of methyl methacrylate (procedure)"
+          },
+          {
+            "code": "239499008",
+            "display": "Excision arthroplasty of the hip (procedure)"
+          },
+          {
+            "code": "239500004",
+            "display": "Interposition arthroplasty of the hip (procedure)"
+          },
+          {
+            "code": "265745003",
+            "display": "Secondary arthroplasty of hip for correction of congenital deformity (procedure)"
+          },
+          {
+            "code": "32972004",
+            "display": "Acetabuloplasty, Whitman type procedure (procedure)"
+          },
+          {
+            "code": "44167006",
+            "display": "Shelf operation, arthroplasty of hip (procedure)"
+          },
+          {
+            "code": "47458005",
+            "display": "Repair of hip joint (procedure)"
+          },
+          {
+            "code": "61509005",
+            "display": "Acetabuloplasty, Colonna type procedure (procedure)"
+          },
+          {
+            "code": "73764009",
+            "display": "Repair of acetabulum (procedure)"
+          },
+          {
+            "code": "83381006",
+            "display": "Arthroplasty of hip with bone graft (procedure)"
+          },
+          {
+            "code": "87618002",
+            "display": "Acetabuloplasty with resection of femoral head (procedure)"
+          }
+        ]
+      },
+      {
+        "system": "http://www.icd10data.com/icd10pcs",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "0SQ90ZZ",
+            "display": "Repair Right Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SQ9XZZ",
+            "display": "Repair Right Hip Joint, External Approach"
+          },
+          {
+            "code": "0SQB0ZZ",
+            "display": "Repair Left Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SQBXZZ",
+            "display": "Repair Left Hip Joint, External Approach"
+          }
+        ]
+      }
+    ]
+  }
+}

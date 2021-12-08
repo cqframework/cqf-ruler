@@ -1,0 +1,42 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.526.3.1002",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.3.1002",
+  "title": "Chronic Kidney Disease, Stage 5",
+  "status": "active",
+  "publisher": "PCPI Foundation",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "433146000",
+            "display": "Chronic kidney disease stage 5 (disorder)"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-9-cm",
+        "version": "2013",
+        "concept": [
+          {
+            "code": "585.5",
+            "display": "Chronic kidney disease, Stage V"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "N18.5",
+            "display": "Chronic kidney disease, stage 5"
+          }
+        ]
+      }
+    ]
+  }
+}

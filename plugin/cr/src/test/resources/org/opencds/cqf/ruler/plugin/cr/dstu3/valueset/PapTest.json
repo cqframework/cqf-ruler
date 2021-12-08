@@ -1,0 +1,66 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.108.12.1017",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1017",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.464.1003.108.12.1017"
+    }
+  ],
+  "version": "20170504",
+  "name": "PapTest",
+  "title": "Pap Test",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://loinc.org",
+        "version": "2.64",
+        "concept": [
+          {
+            "code": "10524-7",
+            "display": "Microscopic observation [Identifier] in Cervix by Cyto stain"
+          },
+          {
+            "code": "18500-9",
+            "display": "Microscopic observation [Identifier] in Cervix by Cyto stain.thin prep"
+          },
+          {
+            "code": "19762-4",
+            "display": "General categories [Interpretation] of Cervical or vaginal smear or scraping by Cyto stain"
+          },
+          {
+            "code": "19764-0",
+            "display": "Statement of adequacy [Interpretation] of Cervical or vaginal smear or scraping by Cyto stain"
+          },
+          {
+            "code": "19765-7",
+            "display": "Microscopic observation [Identifier] in Cervical or vaginal smear or scraping by Cyto stain"
+          },
+          {
+            "code": "19766-5",
+            "display": "Microscopic observation [Identifier] in Cervical or vaginal smear or scraping by Cyto stain Narrative"
+          },
+          {
+            "code": "19774-9",
+            "display": "Cytology study comment Cervical or vaginal smear or scraping Cyto stain"
+          },
+          {
+            "code": "33717-0",
+            "display": "Cytology Cervical or vaginal smear or scraping study"
+          },
+          {
+            "code": "47527-7",
+            "display": "Cytology report of Cervical or vaginal smear or scraping Cyto stain.thin prep"
+          },
+          {
+            "code": "47528-5",
+            "display": "Cytology report of Cervical or vaginal smear or scraping Cyto stain"
+          }
+        ]
+      }
+    ]
+  }
+}

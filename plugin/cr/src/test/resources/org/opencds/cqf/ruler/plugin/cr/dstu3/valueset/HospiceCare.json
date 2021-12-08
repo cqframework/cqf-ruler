@@ -1,0 +1,54 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.3157.1004.20",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.3157.1004.20",
+  "title": "Hospice Care",
+  "status": "active",
+  "publisher": "Mathematica",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-09",
+        "concept": [
+          {
+            "code": "170935008",
+            "display": "Full care by hospice (finding)"
+          },
+          {
+            "code": "170936009",
+            "display": "Shared care - hospice and general practitioner (finding)"
+          },
+          {
+            "code": "1891000124102",
+            "display": "Transition from acute care to hospice (finding)"
+          },
+          {
+            "code": "1921000124108",
+            "display": "Transition from home-health care to hospice (finding)"
+          },
+          {
+            "code": "1951000124104",
+            "display": "Transition from long-term care to hospice (finding)"
+          },
+          {
+            "code": "1981000124107",
+            "display": "Transition from hospice to long-term care (finding)"
+          },
+          {
+            "code": "305911006",
+            "display": "Seen in hospice (finding)"
+          },
+          {
+            "code": "313372007",
+            "display": "Patient died in hospice (finding)"
+          },
+          {
+            "code": "448451000124101",
+            "display": "Transition from self-care to hospice (finding)"
+          }
+        ]
+      }
+    ]
+  }
+}

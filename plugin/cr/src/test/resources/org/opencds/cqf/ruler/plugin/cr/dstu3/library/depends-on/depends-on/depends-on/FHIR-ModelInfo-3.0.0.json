@@ -1,0 +1,52 @@
+{
+  "resourceType": "Library",
+  "id": "FHIR-ModelInfo-3.0.0",
+  "text": {
+    "status": "extensions",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">\r\n    <table class=\"grid dict\">\r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Id: </b></th>\r\n            <td style=\"padding-left: 25px;\">FHIR-ModelInfo</td>\r\n        </tr>\r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Url: </b></th>\r\n            <td style=\"padding-left: 25px;\">http://hl7.org/fhir/Library/FHIR-ModelInfo</td>\r\n        </tr>\r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Version: </b></th>\r\n            <td style=\"padding-left: 25px;\">4.0.1</td>\r\n        </tr>\r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Identifier: </b></th>\r\n            <td style=\"padding-left: 25px;\">\r\n                \r\n                \r\n                <p style=\"margin-bottom: 5px;\">\r\n                    <b>value: </b> <span>FHIR</span>\r\n                </p>\r\n                \r\n            </td>\r\n        </tr>\r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Name: </b></th>\r\n            <td style=\"padding-left: 25px;\">FHIR</td>\r\n        </tr>\r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Title: </b></th>\r\n            <td style=\"padding-left: 25px;\">FHIR Model Definition</td>\r\n        </tr>\r\n        \r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Status: </b></th>\r\n            <td style=\"padding-left: 25px;\">active</td>\r\n        </tr>\r\n        \r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Type: </b></th>\r\n            <td style=\"padding-left: 25px;\">\r\n                \r\n                    \r\n                        \r\n                        <p style=\"margin-bottom: 5px;\">\r\n                            <b>system: </b> <span>http://terminology.hl7.org/CodeSystem/library-type</span>\r\n                        </p>\r\n                        \r\n                        \r\n                        <p style=\"margin-bottom: 5px;\">\r\n                            <b>code: </b> <span>model-definition</span>\r\n                        </p>\r\n                        \r\n                        \r\n                    \r\n                \r\n                \r\n            </td>\r\n        </tr>\r\n        \r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Date: </b></th>\r\n            <td style=\"padding-left: 25px;\">2019-08-08</td>\r\n        </tr>\r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Publisher: </b></th>\r\n            <td style=\"padding-left: 25px;\">Health Level 7 International - Clinical Quality Information Work Group</td>\r\n        </tr>\r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Description: </b></th>\r\n            <td style=\"padding-left: 25px;\">Model definition for the FHIR R4 (v4.0.1) Model</td>\r\n        </tr>\r\n        \r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Jurisdiction: </b></th>\r\n            <td style=\"padding-left: 25px;\">US</td>\r\n        </tr>\r\n        \r\n        \r\n        \r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Approval Date: </b></th>\r\n            <td style=\"padding-left: 25px;\">2019-08-08</td>\r\n        </tr>\r\n        \r\n        \r\n        <tr>\r\n            <th scope=\"row\"><b>Last Review Date: </b></th>\r\n            <td style=\"padding-left: 25px;\">2020-06-19</td>\r\n        </tr>\r\n        \r\n        \r\n        \r\n        \r\n        \r\n        \r\n        \r\n        \r\n        <tr>\r\n          <table>\r\n            <tr><th><b>Content: </b> application/xml</th></tr>\r\n            <tr><td><pre><code>Encoded data ( characters)</code></pre></td></tr>\r\n          </table>\r\n        </tr>\r\n        \r\n        \r\n    </table>\r\n</div>"
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-softwaresystem",
+    "valueReference": {
+      "reference": "cqf-tooling"
+    }
+  } ],
+  "url": "http://hl7.org/fhir/Library/FHIR-ModelInfo",
+  "identifier": [ {
+    "use": "official",
+    "system": "http://example.org/fhir/cqi/ecqm/Library/Identifier",
+    "value": "FHIR"
+  } ],
+  "version": "3.0.0",
+  "name": "FHIR",
+  "title": "FHIR Model Definition",
+  "status": "active",
+  "type": {
+    "coding": [ {
+      "system": "http://terminology.hl7.org/CodeSystem/library-type",
+      "code": "model-definition"
+    } ]
+  },
+  "date": "2019-08-08",
+  "publisher": "Health Level 7 International - Clinical Quality Information Work Group",
+  "description": "Model definition for the FHIR DSTU3 (v3.0.0) Model",
+  "approvalDate": "2019-08-08",
+  "lastReviewDate": "2020-06-19",
+  "jurisdiction": [ {
+    "coding": [ {
+      "system": "urn:iso:std:iso:3166",
+      "code": "US",
+      "display": "United States of America"
+    } ]
+  } ],
+  "contact": [ {
+    "telecom": [ {
+      "system": "url",
+      "value": "http://www.hl7.org/Special/committees/cqi/index.cfm"
+    } ]
+  } ],
+  "content": [ {
+    "contentType": "application/xml",
+    "url": "https://github.com/cqframework/clinical_quality_language/blob/master/Src/java/quick/src/main/resources/org/hl7/fhir/fhir-modelinfo-3.0.0.xml"
+  } ]
+}

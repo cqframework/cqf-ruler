@@ -1,0 +1,22 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1111.162",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1111.162",
+  "title": "Palliative Care",
+  "status": "active",
+  "publisher": "Lantana",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-09",
+        "concept": [
+          {
+            "code": "305496007",
+            "display": "Under care of palliative care physician (finding)"
+          }
+        ]
+      }
+    ]
+  }
+}

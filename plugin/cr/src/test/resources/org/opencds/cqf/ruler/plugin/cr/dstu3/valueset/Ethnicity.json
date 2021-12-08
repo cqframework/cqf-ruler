@@ -1,0 +1,34 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.114222.4.11.837",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.114222.4.11.837",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.114222.4.11.837"
+    }
+  ],
+  "version": "20121025",
+  "name": "Ethnicity",
+  "title": "Ethnicity",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.cdc.gov/phin/resources/vocabulary/index.html",
+        "version": "1.2",
+        "concept": [
+          {
+            "code": "2135-2",
+            "display": "Hispanic or Latino"
+          },
+          {
+            "code": "2186-5",
+            "display": "Not Hispanic or Latino"
+          }
+        ]
+      }
+    ]
+  }
+}

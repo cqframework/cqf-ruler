@@ -1,0 +1,698 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1056.50",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1056.50",
+  "title": "Human Immunodeficiency Virus (HIV) Laboratory Test Codes (Ab and Ag)",
+  "status": "active",
+  "publisher": "Mathematica",
+  "compose": {
+    "include": [
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "concept": [
+          {
+            "code": "10901-7",
+            "display": "HIV 2 gp125 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "10902-5",
+            "display": "HIV 2 gp36 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "11078-3",
+            "display": "HIV 2 gp80 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "11079-1",
+            "display": "HIV 2 p26 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "11080-9",
+            "display": "HIV 2 p53 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "11081-7",
+            "display": "HIV 2 p56 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "11082-5",
+            "display": "HIV 2 p68 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12855-3",
+            "display": "HIV 1 p23 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12856-1",
+            "display": "HIV 1 p65 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12857-9",
+            "display": "HIV 1 p28 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12858-7",
+            "display": "HIV 1 p32 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12859-5",
+            "display": "HIV 1 p18 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12870-2",
+            "display": "HIV 1 gp34 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12871-0",
+            "display": "HIV 1 p26 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12872-8",
+            "display": "HIV 1 p15 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12875-1",
+            "display": "HIV 1 p64 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12876-9",
+            "display": "HIV 1 p53 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12893-4",
+            "display": "HIV 1 gp105 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12894-2",
+            "display": "HIV 1 p68 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "12895-9",
+            "display": "HIV 1 p58 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "13499-9",
+            "display": "HIV 1 Ab band pattern [Interpretation] in Serum by Immunoblot"
+          },
+          {
+            "code": "13920-4",
+            "display": "HIV 2 p41 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "14092-1",
+            "display": "HIV 1 Ab [Presence] in Serum by Immunofluorescence"
+          },
+          {
+            "code": "14126-7",
+            "display": "HIV 1 gp120+gp160 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "16132-3",
+            "display": "HIV 1 p15+p18 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "16974-8",
+            "display": "HIV 1 Ab [Presence] in Cerebral spinal fluid"
+          },
+          {
+            "code": "16975-5",
+            "display": "HIV 1 IgG Ab [Presence] in Serum"
+          },
+          {
+            "code": "16976-3",
+            "display": "HIV 1 Ag [Units/volume] in Serum"
+          },
+          {
+            "code": "16977-1",
+            "display": "HIV 1 Ag [Presence] in Cerebral spinal fluid"
+          },
+          {
+            "code": "16978-9",
+            "display": "HIV 1 p24 Ab [Units/volume] in Serum"
+          },
+          {
+            "code": "16979-7",
+            "display": "HIV 1 p24 Ag [Units/volume] in Cerebral spinal fluid"
+          },
+          {
+            "code": "18396-2",
+            "display": "HIV 1 p24 Ag [Presence] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "19110-6",
+            "display": "HIV 1 gp41+gp43 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "21007-0",
+            "display": "HIV 1 Ab [Presence] in Serum from Donor"
+          },
+          {
+            "code": "21331-4",
+            "display": "HIV 1 p24 Ab [Titer] in Serum by Immunoblot"
+          },
+          {
+            "code": "21332-2",
+            "display": "HIV 1 p41 Ab [Titer] in Serum by Immunoblot"
+          },
+          {
+            "code": "21334-8",
+            "display": "HIV 2 gp105 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "21335-5",
+            "display": "HIV 2 gp120 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "21336-3",
+            "display": "HIV 2 gp15 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "21337-1",
+            "display": "HIV 2 gp34 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "21338-9",
+            "display": "HIV 2 p31 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "21339-7",
+            "display": "HIV 2 p55 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "21340-5",
+            "display": "HIV 2 p58 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "22356-0",
+            "display": "HIV 1 Ab [Units/volume] in Serum"
+          },
+          {
+            "code": "22357-8",
+            "display": "HIV 1+2 Ab [Units/volume] in Serum"
+          },
+          {
+            "code": "22358-6",
+            "display": "HIV 2 Ab [Units/volume] in Serum"
+          },
+          {
+            "code": "24012-7",
+            "display": "HIV 1 Ag [Presence] in Serum"
+          },
+          {
+            "code": "28004-0",
+            "display": "HIV 1 IgG Ab [Presence] in Cerebral spinal fluid by Immunoblot"
+          },
+          {
+            "code": "28052-9",
+            "display": "HIV 1 IgG band pattern [Interpretation] in Cerebral spinal fluid by Immunoblot"
+          },
+          {
+            "code": "29327-4",
+            "display": "HIV 1 Ab [Presence] in Body fluid"
+          },
+          {
+            "code": "29893-5",
+            "display": "HIV 1 Ab [Presence] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "30361-0",
+            "display": "HIV 2 Ab [Presence] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "31072-2",
+            "display": "HIV 1 p41 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "31073-0",
+            "display": "HIV 2 Ab band pattern [Interpretation] in Serum by Immunoblot"
+          },
+          {
+            "code": "31201-7",
+            "display": "HIV 1+2 Ab [Presence] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "31430-2",
+            "display": "HIV 1 IgG Ab [Presence] in Cerebral spinal fluid"
+          },
+          {
+            "code": "32571-2",
+            "display": "HIV 1 Ab [Presence] in Urine by Immunoblot"
+          },
+          {
+            "code": "32602-5",
+            "display": "HIV 1+2 Ab [Presence] in Cerebral spinal fluid"
+          },
+          {
+            "code": "32827-8",
+            "display": "HIV 1 p17+p18 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "32842-7",
+            "display": "HIV 1 p17+p18 Ab [Presence] in Serum"
+          },
+          {
+            "code": "33508-3",
+            "display": "HIV 1 p65+p66 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "33660-2",
+            "display": "HIV 1 p24 Ag [Presence] in Serum or Plasma by Neutralization test"
+          },
+          {
+            "code": "33806-1",
+            "display": "HIV 2 IgG Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "33807-9",
+            "display": "HIV 2 IgG Ab [Presence] in Serum"
+          },
+          {
+            "code": "33866-5",
+            "display": "HIV 1 Ab [Presence] in Capillary blood by Immunoassay"
+          },
+          {
+            "code": "34591-8",
+            "display": "HIV 1 Ab [Presence] in Body fluid by Immunoassay"
+          },
+          {
+            "code": "34592-6",
+            "display": "HIV 1 Ab [Presence] in Body fluid by Immunoblot"
+          },
+          {
+            "code": "35437-3",
+            "display": "HIV 1 Ab [Presence] in Saliva (oral fluid) by Immunoassay"
+          },
+          {
+            "code": "35438-1",
+            "display": "HIV 1 Ab [Units/volume] in Saliva (oral fluid) by Immunoassay"
+          },
+          {
+            "code": "35439-9",
+            "display": "HIV 1 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35440-7",
+            "display": "HIV 1 gp160 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35441-5",
+            "display": "HIV 1 gp120 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35442-3",
+            "display": "HIV 1 p66 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35443-1",
+            "display": "HIV 1 p65 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35444-9",
+            "display": "HIV 1 p55 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35445-6",
+            "display": "HIV 1 p51 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35446-4",
+            "display": "HIV 1 gp41 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35447-2",
+            "display": "HIV 1 p31 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35448-0",
+            "display": "HIV 1 p24 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35449-8",
+            "display": "HIV 1 p17 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35450-6",
+            "display": "HIV 1 p18 Ab [Presence] in Saliva (oral fluid) by Immunoblot"
+          },
+          {
+            "code": "35452-2",
+            "display": "HIV 1 gp40 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "35564-4",
+            "display": "HIV 1 p31+p32 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "35565-1",
+            "display": "HIV 1 p40 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "40437-6",
+            "display": "HIV 1 p24 Ab [Presence] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "40438-4",
+            "display": "HIV 1 gp41 Ab [Presence] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "40439-2",
+            "display": "HIV 1 gp120+gp160 Ab [Presence] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "40732-0",
+            "display": "HIV 1 IgG Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "40733-8",
+            "display": "HIV 1+2 IgG Ab [Presence] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "41143-9",
+            "display": "HIV 1 Ab [Units/volume] in Saliva (oral fluid)"
+          },
+          {
+            "code": "41144-7",
+            "display": "HIV 1 Ab [Presence] in Saliva (oral fluid)"
+          },
+          {
+            "code": "41145-4",
+            "display": "HIV 1 Ab [Presence] in Capillary blood"
+          },
+          {
+            "code": "41290-8",
+            "display": "HIV 1+2 IgM Ab [Units/volume] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "42339-2",
+            "display": "HIV 1 p24 Ag [Mass/volume] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "42600-7",
+            "display": "HIV 1+2 Ab [Presence] in Unspecified specimen by Immunoassay"
+          },
+          {
+            "code": "42627-0",
+            "display": "HIV 1 Ab [Presence] in Cerebral spinal fluid by Immunofluorescence"
+          },
+          {
+            "code": "42768-2",
+            "display": "HIV 1 and 2 Ab [Interpretation] in Serum Narrative"
+          },
+          {
+            "code": "43008-2",
+            "display": "HIV 1+2 IgM Ab [Units/volume] in Serum"
+          },
+          {
+            "code": "43009-0",
+            "display": "HIV 1+2 IgG Ab [Presence] in Serum"
+          },
+          {
+            "code": "43010-8",
+            "display": "HIV 1+2 Ab [Presence] in Unspecified specimen"
+          },
+          {
+            "code": "43011-6",
+            "display": "HIV 1 p24 Ab [Presence] in Serum"
+          },
+          {
+            "code": "43012-4",
+            "display": "HIV 1 gp41 Ab [Presence] in Serum"
+          },
+          {
+            "code": "43013-2",
+            "display": "HIV 1 gp120+gp160 Ab [Presence] in Serum"
+          },
+          {
+            "code": "43185-8",
+            "display": "HIV 1 and 2 Ab band pattern [Interpretation] in Serum by Immunoblot"
+          },
+          {
+            "code": "43599-0",
+            "display": "HIV 1 Ab [Units/volume] in Serum by Immunofluorescence"
+          },
+          {
+            "code": "44531-2",
+            "display": "HIV 1 Ag [Presence] in Serum from Donor"
+          },
+          {
+            "code": "44532-0",
+            "display": "HIV 1 gp120 Ab [Presence] in Serum"
+          },
+          {
+            "code": "44533-8",
+            "display": "HIV 1+2 Ab [Presence] in Serum from Donor"
+          },
+          {
+            "code": "44607-0",
+            "display": "HIV 1 [Interpretation] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "44872-0",
+            "display": "HIV 1 p24 Ag [Presence] in Serum or Plasma from Donor by Immunoassay"
+          },
+          {
+            "code": "44873-8",
+            "display": "HIV 1+2 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "45212-8",
+            "display": "HIV 2 p31+p34 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "47029-4",
+            "display": "HIV 2 Ab [Presence] in Cerebral spinal fluid by Immunoblot"
+          },
+          {
+            "code": "48345-3",
+            "display": "HIV 1+O+2 Ab [Presence] in Serum or Plasma"
+          },
+          {
+            "code": "48346-1",
+            "display": "HIV 1+O+2 Ab [Units/volume] in Serum or Plasma"
+          },
+          {
+            "code": "49483-1",
+            "display": "HIV 1 [Interpretation] in Serum or Plasma by Immunoassay Narrative"
+          },
+          {
+            "code": "49580-4",
+            "display": "HIV 1+2 Ab [Presence] in Unspecified specimen by Rapid immunoassay"
+          },
+          {
+            "code": "49718-0",
+            "display": "HIV 1 p24 Ag [Presence] in Cerebral spinal fluid"
+          },
+          {
+            "code": "49905-3",
+            "display": "HIV 1 Ab [Presence] in Unspecified specimen by Rapid immunoassay"
+          },
+          {
+            "code": "49965-7",
+            "display": "Deprecated HIV 1 Ab/HIV 2 Ab Ab [Ratio] in Serum by Immunoblot (IB)"
+          },
+          {
+            "code": "51786-2",
+            "display": "HIV 2 Ab Signal/Cutoff in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "51866-2",
+            "display": "Deprecated HIV 1 Ab+Ag [Presence] in Serum"
+          },
+          {
+            "code": "5220-9",
+            "display": "HIV 1 Ab [Units/volume] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "5221-7",
+            "display": "HIV 1 Ab [Presence] in Serum or Plasma by Immunoblot"
+          },
+          {
+            "code": "5222-5",
+            "display": "HIV 1 Ag [Presence] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "5223-3",
+            "display": "HIV 1+2 Ab [Units/volume] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "5224-1",
+            "display": "HIV 2 Ab [Units/volume] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "5225-8",
+            "display": "HIV 2 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "53379-4",
+            "display": "HIV 1 Ab [Presence] in Unspecified specimen"
+          },
+          {
+            "code": "53601-1",
+            "display": "HIV 1 p24 Ag [Units/volume] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "54086-4",
+            "display": "HIV 1+2 IgG Ab [Presence] in DBS"
+          },
+          {
+            "code": "56888-1",
+            "display": "HIV 1+2 Ab+HIV1 p24 Ag [Presence] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "57974-8",
+            "display": "HIV 1 Ab [Presence] in Cerebral spinal fluid by Immunoblot"
+          },
+          {
+            "code": "57975-5",
+            "display": "HIV 1+O+2 Ab [Presence] in Body fluid"
+          },
+          {
+            "code": "57976-3",
+            "display": "HIV 2 gp140 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "57977-1",
+            "display": "HIV 2 p16 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "57978-9",
+            "display": "HIV 2 p34 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "58900-2",
+            "display": "HIV 1+2 Ab+HIV1 p24 Ag [Units/volume] in Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "62456-9",
+            "display": "HIV 2 p15 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "68961-2",
+            "display": "HIV 1 Ab [Presence] in Serum, Plasma or Blood by Rapid immunoassay"
+          },
+          {
+            "code": "69668-2",
+            "display": "HIV 1 and 2 Ab [Identifier] in Serum or Plasma by Rapid immunoassay"
+          },
+          {
+            "code": "73905-2",
+            "display": "HIV 1+2 IgG Ab [Presence] in Serum or Plasma by Rapid immunoassay"
+          },
+          {
+            "code": "73906-0",
+            "display": "HIV 1+2 IgG Ab [Presence] in Blood by Rapid immunoassay"
+          },
+          {
+            "code": "75622-1",
+            "display": "HIV 1 and 2 tests - Meaningful Use set"
+          },
+          {
+            "code": "75666-8",
+            "display": "HIV 1+2 Ab and HIV1 p24 Ag [Identifier] in Serum, Plasma or Blood by Rapid immunoassay"
+          },
+          {
+            "code": "77685-6",
+            "display": "HIV 1 and 2 IgG Ab [Identifier] in Serum or Plasma by Immunoblot"
+          },
+          {
+            "code": "7917-8",
+            "display": "HIV 1 Ab [Presence] in Serum"
+          },
+          {
+            "code": "7918-6",
+            "display": "HIV 1+2 Ab [Presence] in Serum"
+          },
+          {
+            "code": "7919-4",
+            "display": "HIV 2 Ab [Presence] in Serum"
+          },
+          {
+            "code": "80203-3",
+            "display": "HIV 1 and 2 Ab [Identifier] in Serum, Plasma or Blood by Rapid immunoassay"
+          },
+          {
+            "code": "80387-4",
+            "display": "HIV 1+2 Ab [Presence] in Serum, Plasma or Blood by Rapid immunoassay"
+          },
+          {
+            "code": "81641-3",
+            "display": "HIV 2 Ab [Presence] in Serum, Plasma or Blood by Rapid immunoassay"
+          },
+          {
+            "code": "83101-6",
+            "display": "HIV 1+2 Ab and HIV1 p24 Ag panel - Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "85037-0",
+            "display": "HIV 1 and 2 Ab and HIV 1 p24 Ag panel - Serum or Plasma by Immunoassay"
+          },
+          {
+            "code": "85686-4",
+            "display": "HIV 1 Ab [Presence] in Serum, Plasma or Blood by Immunofluorescence"
+          },
+          {
+            "code": "86233-4",
+            "display": "HIV 1 Ab [Presence] in Serum, Plasma or Blood by Immunoblot"
+          },
+          {
+            "code": "86657-4",
+            "display": "HIV 1 and 2 tests - FPAR 2.0 set"
+          },
+          {
+            "code": "89365-1",
+            "display": "HIV 1 and 2 Ab panel - Serum, Plasma or Blood by Rapid immunoassay"
+          },
+          {
+            "code": "89374-3",
+            "display": "HIV 1 Ab [Presence] in Unspecified specimen by Immunoassay"
+          },
+          {
+            "code": "9660-2",
+            "display": "HIV 1 gp160 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "9661-0",
+            "display": "HIV 1 gp120 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "9662-8",
+            "display": "HIV 1 gp41 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "9663-6",
+            "display": "HIV 1 p17 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "9664-4",
+            "display": "HIV 1 p24 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "9665-1",
+            "display": "HIV 1 p24 Ag [Units/volume] in Serum"
+          },
+          {
+            "code": "9666-9",
+            "display": "HIV 1 p31 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "9667-7",
+            "display": "HIV 1 p51 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "9668-5",
+            "display": "HIV 1 p55 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "9669-3",
+            "display": "HIV 1 p66 Ab [Presence] in Serum by Immunoblot"
+          },
+          {
+            "code": "9821-0",
+            "display": "HIV 1 p24 Ag [Presence] in Serum"
+          }
+        ]
+      }
+    ]
+  }
+}

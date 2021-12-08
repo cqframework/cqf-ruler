@@ -1,0 +1,1232 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.260",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.260",
+  "title": "Intracranial Neurosurgery",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "10458001",
+            "display": "Evacuation of intracerebral hematoma (procedure)"
+          },
+          {
+            "code": "112929000",
+            "display": "Exploratory craniotomy, supratentorial (procedure)"
+          },
+          {
+            "code": "13431007",
+            "display": "Prefrontal lobotomy (procedure)"
+          },
+          {
+            "code": "13433005",
+            "display": "Excision of lesion of brain by transtemporal approach (procedure)"
+          },
+          {
+            "code": "13666002",
+            "display": "Leukotomy (procedure)"
+          },
+          {
+            "code": "14247003",
+            "display": "Cerebral hemispherectomy (procedure)"
+          },
+          {
+            "code": "14554005",
+            "display": "Cryotherapy of brain (procedure)"
+          },
+          {
+            "code": "1583007",
+            "display": "Tractotomy of mesencephalon (procedure)"
+          },
+          {
+            "code": "171442008",
+            "display": "Major excision of brain tissue (procedure)"
+          },
+          {
+            "code": "171443003",
+            "display": "Total lobectomy of brain (procedure)"
+          },
+          {
+            "code": "171446006",
+            "display": "Excision of lesion of brain tissue (procedure)"
+          },
+          {
+            "code": "171447002",
+            "display": "Excision of lesion of frontal lobe of brain (procedure)"
+          },
+          {
+            "code": "171448007",
+            "display": "Excision of lesion of temporal lobe of brain (procedure)"
+          },
+          {
+            "code": "171449004",
+            "display": "Excision of lesion of parietal lobe of brain (procedure)"
+          },
+          {
+            "code": "171450004",
+            "display": "Excision of lesion of occipital lobe of brain (procedure)"
+          },
+          {
+            "code": "171451000",
+            "display": "Excision of lesion of cerebellum (procedure)"
+          },
+          {
+            "code": "171455009",
+            "display": "Stereotactic leucotomy (procedure)"
+          },
+          {
+            "code": "171471009",
+            "display": "Drainage of lesion of brain tissue (procedure)"
+          },
+          {
+            "code": "171472002",
+            "display": "Drainage of abscess of brain tissue (procedure)"
+          },
+          {
+            "code": "171473007",
+            "display": "Evacuation of hematoma from temporal lobe of brain (procedure)"
+          },
+          {
+            "code": "171474001",
+            "display": "Evacuation of hematoma from cerebellum (procedure)"
+          },
+          {
+            "code": "171479006",
+            "display": "Open division of brain tissue (procedure)"
+          },
+          {
+            "code": "171495006",
+            "display": "Maintenance of neurostimulator in brain (procedure)"
+          },
+          {
+            "code": "171540003",
+            "display": "Endoscopic extirpation of lesion of ventricle of brain (procedure)"
+          },
+          {
+            "code": "171554006",
+            "display": "Drainage of subarachnoid space of brain (procedure)"
+          },
+          {
+            "code": "171692002",
+            "display": "Removal of lesion of brain meninges (procedure)"
+          },
+          {
+            "code": "171693007",
+            "display": "Extirpation of lesion of meninges of brain cortex (procedure)"
+          },
+          {
+            "code": "171694001",
+            "display": "Extirpation of lesion of meninges of sphenoidal ridge of cranium (procedure)"
+          },
+          {
+            "code": "171695000",
+            "display": "Extirpation of lesion of meninges of subfrontal region of brain (procedure)"
+          },
+          {
+            "code": "171696004",
+            "display": "Extirpation of lesion of meninges of parasagittal region of brain (procedure)"
+          },
+          {
+            "code": "171697008",
+            "display": "Extirpation of lesion of falx cerebri (procedure)"
+          },
+          {
+            "code": "171698003",
+            "display": "Extirpation of lesion of tentorium cerebelli (procedure)"
+          },
+          {
+            "code": "171722000",
+            "display": "Evacuation of intracranial subdural abscess (procedure)"
+          },
+          {
+            "code": "178373004",
+            "display": "Exploratory open craniotomy (procedure)"
+          },
+          {
+            "code": "178375006",
+            "display": "Exploratory burrhole of cranium (procedure)"
+          },
+          {
+            "code": "178376007",
+            "display": "Reopening of cranium and re-exploration of intracranial operation site and surgical arrest of postoperative bleeding (procedure)"
+          },
+          {
+            "code": "178391009",
+            "display": "Cranial morcellization (procedure)"
+          },
+          {
+            "code": "1868005",
+            "display": "Removal of foreign body from brain (procedure)"
+          },
+          {
+            "code": "1995001",
+            "display": "Stripping of cerebral meninges (procedure)"
+          },
+          {
+            "code": "19994000",
+            "display": "Division of cerebral nerve tracts (procedure)"
+          },
+          {
+            "code": "21205002",
+            "display": "Removal of foreign body from brain without incision into brain (procedure)"
+          },
+          {
+            "code": "21551002",
+            "display": "Division of brain tissue (procedure)"
+          },
+          {
+            "code": "22480005",
+            "display": "Intracranial microdissection (procedure)"
+          },
+          {
+            "code": "230810008",
+            "display": "Excision of tumor of brain meninges (procedure)"
+          },
+          {
+            "code": "230811007",
+            "display": "Excision of cyst of brain meninges (procedure)"
+          },
+          {
+            "code": "230814004",
+            "display": "Removal of intracranial subdural tumor (procedure)"
+          },
+          {
+            "code": "230837005",
+            "display": "Focal excision of brain tissue tumor (procedure)"
+          },
+          {
+            "code": "230838000",
+            "display": "Focal excision of brain abscess (procedure)"
+          },
+          {
+            "code": "230839008",
+            "display": "Focal excision of brain hematoma (procedure)"
+          },
+          {
+            "code": "230840005",
+            "display": "Focal excision of brain cyst (procedure)"
+          },
+          {
+            "code": "230841009",
+            "display": "Focal excision of swollen brain (procedure)"
+          },
+          {
+            "code": "230859007",
+            "display": "Destruction of brain tumor (procedure)"
+          },
+          {
+            "code": "230886007",
+            "display": "Exploration of ventricle of brain (procedure)"
+          },
+          {
+            "code": "230888008",
+            "display": "Open exploration of ventricle of brain (procedure)"
+          },
+          {
+            "code": "230890009",
+            "display": "Excision of lesion of ventricle of brain (procedure)"
+          },
+          {
+            "code": "230893006",
+            "display": "Removal of foreign body from ventricle of brain (procedure)"
+          },
+          {
+            "code": "234064002",
+            "display": "Marsupialization of cerebral lesion (procedure)"
+          },
+          {
+            "code": "234915008",
+            "display": "Marsupialization of lesion of brain (procedure)"
+          },
+          {
+            "code": "243570009",
+            "display": "Drainage of cerebral subarachnoid space by incision or trephination (procedure)"
+          },
+          {
+            "code": "244238001",
+            "display": "Drainage of intracranial space, subarachnoid or subdural by incision or trephination (procedure)"
+          },
+          {
+            "code": "25353009",
+            "display": "Craniotomy (procedure)"
+          },
+          {
+            "code": "2552005",
+            "display": "Incision of cerebral subarachnoid space (procedure)"
+          },
+          {
+            "code": "260643004",
+            "display": "Middle cranial fossa craniectomy (procedure)"
+          },
+          {
+            "code": "260644005",
+            "display": "Posterior cranial fossa craniectomy (procedure)"
+          },
+          {
+            "code": "26096003",
+            "display": "Stripping of cerebral subdural membrane (procedure)"
+          },
+          {
+            "code": "27181009",
+            "display": "Removal of foreign body from brain with incision into brain (procedure)"
+          },
+          {
+            "code": "27190002",
+            "display": "Excision of lesion of cerebral meninges (procedure)"
+          },
+          {
+            "code": "2737001",
+            "display": "Exploratory craniotomy, infratentorial (procedure)"
+          },
+          {
+            "code": "273991000",
+            "display": "Lobotomy of brain (procedure)"
+          },
+          {
+            "code": "27968003",
+            "display": "Drainage of cerebral epidural space by incision or trephination (procedure)"
+          },
+          {
+            "code": "28264008",
+            "display": "Amygdalotomy (procedure)"
+          },
+          {
+            "code": "287205001",
+            "display": "Brain decortication (procedure)"
+          },
+          {
+            "code": "287208004",
+            "display": "Operation on thalamus (procedure)"
+          },
+          {
+            "code": "29063004",
+            "display": "Incision of cerebrum (procedure)"
+          },
+          {
+            "code": "29114001",
+            "display": "Incision and drainage of cranial sinus (procedure)"
+          },
+          {
+            "code": "2968008",
+            "display": "Craniectomy with treatment of penetrating wound of brain (procedure)"
+          },
+          {
+            "code": "30195003",
+            "display": "Excision of lesion of cerebral cortex (procedure)"
+          },
+          {
+            "code": "304848009",
+            "display": "Callosotomy (procedure)"
+          },
+          {
+            "code": "304849001",
+            "display": "Subpial transection of cortex (procedure)"
+          },
+          {
+            "code": "307299001",
+            "display": "Removal of lesion from intracranial subdural space (procedure)"
+          },
+          {
+            "code": "31746001",
+            "display": "Debridement of cerebral meninges (procedure)"
+          },
+          {
+            "code": "32606000",
+            "display": "Marsupialization of cyst of brain (procedure)"
+          },
+          {
+            "code": "34097003",
+            "display": "Craniectomy for excision of meningioma, infratentorial (procedure)"
+          },
+          {
+            "code": "34719005",
+            "display": "Drainage of cerebral subdural space by incision or trephination (procedure)"
+          },
+          {
+            "code": "36910002",
+            "display": "Craniectomy (procedure)"
+          },
+          {
+            "code": "37380009",
+            "display": "Destruction of cerebral lesion (procedure)"
+          },
+          {
+            "code": "38512006",
+            "display": "Resection of cerebral meninges (procedure)"
+          },
+          {
+            "code": "39667005",
+            "display": "Amygdalohippocampotomy (procedure)"
+          },
+          {
+            "code": "39704007",
+            "display": "Exploration of brain (procedure)"
+          },
+          {
+            "code": "4045001",
+            "display": "Drainage of cerebral ventricle by incision (procedure)"
+          },
+          {
+            "code": "42699003",
+            "display": "Incision of brain (procedure)"
+          },
+          {
+            "code": "427037000",
+            "display": "Complete callosotomy (procedure)"
+          },
+          {
+            "code": "427599009",
+            "display": "Excision of lesion of tissue of brain stem (procedure)"
+          },
+          {
+            "code": "429314008",
+            "display": "Partial callosotomy (procedure)"
+          },
+          {
+            "code": "429510003",
+            "display": "Multiple subpial transections of cerebral cortex (procedure)"
+          },
+          {
+            "code": "438369007",
+            "display": "Incision of bone of cranium and transection of tentorium cerebelli (procedure)"
+          },
+          {
+            "code": "438614004",
+            "display": "Excision of bone of cranium and excision of neoplasm of cerebellopontine angle (procedure)"
+          },
+          {
+            "code": "439493007",
+            "display": "Incision of bone of cranium with elevation of bone flap and excision of epileptogenic focus (procedure)"
+          },
+          {
+            "code": "439499006",
+            "display": "Excision of bone of cranium and excision of infratentorial neoplasm of brain (procedure)"
+          },
+          {
+            "code": "440062005",
+            "display": "Excision of bone of cranium with excision of abscess of brain (procedure)"
+          },
+          {
+            "code": "441832005",
+            "display": "Extirpation of lesion of meninges of base of skull (procedure)"
+          },
+          {
+            "code": "442616007",
+            "display": "Extirpation of lesion of meninges of clivus of skull (procedure)"
+          },
+          {
+            "code": "445746008",
+            "display": "Craniotomy and removal of hematoma from extradural space (procedure)"
+          },
+          {
+            "code": "44589002",
+            "display": "Debridement of brain (procedure)"
+          },
+          {
+            "code": "445926009",
+            "display": "Excision of intradural lesion of base of middle cranial fossa (procedure)"
+          },
+          {
+            "code": "445942002",
+            "display": "Excision of temporal lobe (procedure)"
+          },
+          {
+            "code": "446103006",
+            "display": "Partial excision of lesion of brain (procedure)"
+          },
+          {
+            "code": "446115005",
+            "display": "Elevation of depressed fracture of skull and debridement of brain (procedure)"
+          },
+          {
+            "code": "446209004",
+            "display": "Excision of intradural lesion of base of anterior cranial fossa (procedure)"
+          },
+          {
+            "code": "446210009",
+            "display": "Excision of intradural lesion of base of posterior cranial fossa (procedure)"
+          },
+          {
+            "code": "446440008",
+            "display": "Curettage of lesion of brain (procedure)"
+          },
+          {
+            "code": "446570000",
+            "display": "Craniectomy by retromastoid approach (procedure)"
+          },
+          {
+            "code": "446571001",
+            "display": "Craniotomy of posterior fossa (procedure)"
+          },
+          {
+            "code": "446683008",
+            "display": "Craniotomy and decompression of brain (procedure)"
+          },
+          {
+            "code": "446705006",
+            "display": "Trephination of cranium and drainage of chronic hematoma from subdural space (procedure)"
+          },
+          {
+            "code": "446816008",
+            "display": "Craniotomy and evacuation of traumatic hematoma (procedure)"
+          },
+          {
+            "code": "446848007",
+            "display": "Craniotomy and evacuation of blood clot (procedure)"
+          },
+          {
+            "code": "446850004",
+            "display": "Trephination of cranium and external drainage of effusion from subdural space (procedure)"
+          },
+          {
+            "code": "446865003",
+            "display": "Craniotomy and removal of foreign body (procedure)"
+          },
+          {
+            "code": "446868001",
+            "display": "Excision of meningioma by supratentorial approach (procedure)"
+          },
+          {
+            "code": "447107001",
+            "display": "Craniotomy and excision of neoplasm of brain (procedure)"
+          },
+          {
+            "code": "447115003",
+            "display": "Total excision of lesion of brain tissue (procedure)"
+          },
+          {
+            "code": "447156000",
+            "display": "Trephination of cranium and drainage of empyema of subdural space (procedure)"
+          },
+          {
+            "code": "447362004",
+            "display": "Excision of meningioma by infratentorial approach (procedure)"
+          },
+          {
+            "code": "447363009",
+            "display": "Craniotomy by retromastoid approach (procedure)"
+          },
+          {
+            "code": "447469009",
+            "display": "Partial excision of meningioma by infratentorial approach (procedure)"
+          },
+          {
+            "code": "447518007",
+            "display": "Partial excision of meningioma by supratentorial approach (procedure)"
+          },
+          {
+            "code": "447529006",
+            "display": "Total excision of meningioma by infratentorial approach (procedure)"
+          },
+          {
+            "code": "447594008",
+            "display": "Total excision of meningioma by supratentorial approach (procedure)"
+          },
+          {
+            "code": "45322003",
+            "display": "Decompression of brain (procedure)"
+          },
+          {
+            "code": "4570007",
+            "display": "Chemopallidectomy (procedure)"
+          },
+          {
+            "code": "51991009",
+            "display": "Incision of epidural or extradural space of brain (procedure)"
+          },
+          {
+            "code": "53423001",
+            "display": "Lobectomy of brain (procedure)"
+          },
+          {
+            "code": "5384005",
+            "display": "Excision of part of frontal cortex (procedure)"
+          },
+          {
+            "code": "54872009",
+            "display": "Destruction of lesion of cerebral meninges (procedure)"
+          },
+          {
+            "code": "54891009",
+            "display": "Removal of foreign body from cerebral meninges (procedure)"
+          },
+          {
+            "code": "56143008",
+            "display": "Division of cerebral meninges (procedure)"
+          },
+          {
+            "code": "56959007",
+            "display": "Operation on globus pallidus (procedure)"
+          },
+          {
+            "code": "58337008",
+            "display": "Transorbital leukotomy (procedure)"
+          },
+          {
+            "code": "58515002",
+            "display": "Cryoleucotomy (procedure)"
+          },
+          {
+            "code": "59696004",
+            "display": "Curettage of cerebral meninges (procedure)"
+          },
+          {
+            "code": "59712006",
+            "display": "Evacuation of subdural hematoma (procedure)"
+          },
+          {
+            "code": "61327009",
+            "display": "Puncture and drainage of craniopharyngioma (procedure)"
+          },
+          {
+            "code": "61965006",
+            "display": "Incision of cranial sinus (procedure)"
+          },
+          {
+            "code": "67402009",
+            "display": "Partial lobectomy of brain (procedure)"
+          },
+          {
+            "code": "67864003",
+            "display": "Trephination of cranium (procedure)"
+          },
+          {
+            "code": "68346000",
+            "display": "Drainage of cerebrum (procedure)"
+          },
+          {
+            "code": "68731005",
+            "display": "Decortication of cerebral meninges (procedure)"
+          },
+          {
+            "code": "69086007",
+            "display": "Curettage of brain (procedure)"
+          },
+          {
+            "code": "69788001",
+            "display": "Tractotomy of medulla oblongata (procedure)"
+          },
+          {
+            "code": "71722001",
+            "display": "Thalamotomy (procedure)"
+          },
+          {
+            "code": "73006002",
+            "display": "Cranial decompression, posterior fossa (procedure)"
+          },
+          {
+            "code": "75626002",
+            "display": "Pallidoamygdalotomy (procedure)"
+          },
+          {
+            "code": "76961002",
+            "display": "Lobotomy and tractotomy (procedure)"
+          },
+          {
+            "code": "77697000",
+            "display": "Cryothalamectomy (procedure)"
+          },
+          {
+            "code": "789003",
+            "display": "Cranial decompression, subtemporal, supratentorial (procedure)"
+          },
+          {
+            "code": "79093007",
+            "display": "Craniotomy with treatment of penetrating wound of brain (procedure)"
+          },
+          {
+            "code": "79272003",
+            "display": "Division of cerebral tracts (procedure)"
+          },
+          {
+            "code": "80460006",
+            "display": "Coagulation or electrocoagulation of brain tissue (procedure)"
+          },
+          {
+            "code": "807005",
+            "display": "Excision of brain (procedure)"
+          },
+          {
+            "code": "81259007",
+            "display": "Incision of cerebral meninges (procedure)"
+          },
+          {
+            "code": "8155007",
+            "display": "Excision of basal ganglion (procedure)"
+          },
+          {
+            "code": "81849003",
+            "display": "Pallidoansotomy (procedure)"
+          },
+          {
+            "code": "82443007",
+            "display": "Craniectomy with excision of tumor (procedure)"
+          },
+          {
+            "code": "82678002",
+            "display": "Incision of cerebral epidural space (procedure)"
+          },
+          {
+            "code": "82917000",
+            "display": "Reopening of craniotomy site (procedure)"
+          },
+          {
+            "code": "87060004",
+            "display": "Pallidotomy (procedure)"
+          },
+          {
+            "code": "87192001",
+            "display": "Pallidectomy (procedure)"
+          },
+          {
+            "code": "90287005",
+            "display": "Thalamectomy (procedure)"
+          },
+          {
+            "code": "91652006",
+            "display": "Incision of cerebral subdural space (procedure)"
+          },
+          {
+            "code": "9257004",
+            "display": "Revision of intracranial neurostimulator receiver (procedure)"
+          },
+          {
+            "code": "9372002",
+            "display": "Drainage of cranial sinus by trephination (procedure)"
+          },
+          {
+            "code": "9580008",
+            "display": "Chemothalamectomy (procedure)"
+          },
+          {
+            "code": "9888007",
+            "display": "Excision of intracranial lesion (procedure)"
+          }
+        ]
+      },
+      {
+        "system": "http://www.icd10data.com/icd10pcs",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "00500ZZ",
+            "display": "Destruction of Brain, Open Approach"
+          },
+          {
+            "code": "00510ZZ",
+            "display": "Destruction of Cerebral Meninges, Open Approach"
+          },
+          {
+            "code": "00520ZZ",
+            "display": "Destruction of Dura Mater, Open Approach"
+          },
+          {
+            "code": "00560ZZ",
+            "display": "Destruction of Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "00570ZZ",
+            "display": "Destruction of Cerebral Hemisphere, Open Approach"
+          },
+          {
+            "code": "00580ZZ",
+            "display": "Destruction of Basal Ganglia, Open Approach"
+          },
+          {
+            "code": "00590ZZ",
+            "display": "Destruction of Thalamus, Open Approach"
+          },
+          {
+            "code": "005A0ZZ",
+            "display": "Destruction of Hypothalamus, Open Approach"
+          },
+          {
+            "code": "005B0ZZ",
+            "display": "Destruction of Pons, Open Approach"
+          },
+          {
+            "code": "005C0ZZ",
+            "display": "Destruction of Cerebellum, Open Approach"
+          },
+          {
+            "code": "005D0ZZ",
+            "display": "Destruction of Medulla Oblongata, Open Approach"
+          },
+          {
+            "code": "00800ZZ",
+            "display": "Division of Brain, Open Approach"
+          },
+          {
+            "code": "00870ZZ",
+            "display": "Division of Cerebral Hemisphere, Open Approach"
+          },
+          {
+            "code": "00880ZZ",
+            "display": "Division of Basal Ganglia, Open Approach"
+          },
+          {
+            "code": "009000Z",
+            "display": "Drainage of Brain with Drainage Device, Open Approach"
+          },
+          {
+            "code": "00900ZZ",
+            "display": "Drainage of Brain, Open Approach"
+          },
+          {
+            "code": "009100Z",
+            "display": "Drainage of Cerebral Meninges with Drainage Device, Open Approach"
+          },
+          {
+            "code": "00910ZZ",
+            "display": "Drainage of Cerebral Meninges, Open Approach"
+          },
+          {
+            "code": "009200Z",
+            "display": "Drainage of Dura Mater with Drainage Device, Open Approach"
+          },
+          {
+            "code": "00920ZZ",
+            "display": "Drainage of Dura Mater, Open Approach"
+          },
+          {
+            "code": "009300Z",
+            "display": "Drainage of Intracranial Epidural Space with Drainage Device, Open Approach"
+          },
+          {
+            "code": "00930ZZ",
+            "display": "Drainage of Intracranial Epidural Space, Open Approach"
+          },
+          {
+            "code": "009400Z",
+            "display": "Drainage of Intracranial Subdural Space with Drainage Device, Open Approach"
+          },
+          {
+            "code": "00940ZZ",
+            "display": "Drainage of Intracranial Subdural Space, Open Approach"
+          },
+          {
+            "code": "009500Z",
+            "display": "Drainage of Intracranial Subarachnoid Space with Drainage Device, Open Approach"
+          },
+          {
+            "code": "00950ZZ",
+            "display": "Drainage of Intracranial Subarachnoid Space, Open Approach"
+          },
+          {
+            "code": "009600Z",
+            "display": "Drainage of Cerebral Ventricle with Drainage Device, Open Approach"
+          },
+          {
+            "code": "00960ZZ",
+            "display": "Drainage of Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "009700Z",
+            "display": "Drainage of Cerebral Hemisphere with Drainage Device, Open Approach"
+          },
+          {
+            "code": "00970ZZ",
+            "display": "Drainage of Cerebral Hemisphere, Open Approach"
+          },
+          {
+            "code": "009800Z",
+            "display": "Drainage of Basal Ganglia with Drainage Device, Open Approach"
+          },
+          {
+            "code": "00980ZZ",
+            "display": "Drainage of Basal Ganglia, Open Approach"
+          },
+          {
+            "code": "009900Z",
+            "display": "Drainage of Thalamus with Drainage Device, Open Approach"
+          },
+          {
+            "code": "00990ZZ",
+            "display": "Drainage of Thalamus, Open Approach"
+          },
+          {
+            "code": "009A00Z",
+            "display": "Drainage of Hypothalamus with Drainage Device, Open Approach"
+          },
+          {
+            "code": "009A0ZZ",
+            "display": "Drainage of Hypothalamus, Open Approach"
+          },
+          {
+            "code": "009B00Z",
+            "display": "Drainage of Pons with Drainage Device, Open Approach"
+          },
+          {
+            "code": "009B0ZZ",
+            "display": "Drainage of Pons, Open Approach"
+          },
+          {
+            "code": "009C00Z",
+            "display": "Drainage of Cerebellum with Drainage Device, Open Approach"
+          },
+          {
+            "code": "009C0ZZ",
+            "display": "Drainage of Cerebellum, Open Approach"
+          },
+          {
+            "code": "009D00Z",
+            "display": "Drainage of Medulla Oblongata with Drainage Device, Open Approach"
+          },
+          {
+            "code": "009D0ZZ",
+            "display": "Drainage of Medulla Oblongata, Open Approach"
+          },
+          {
+            "code": "00B00ZZ",
+            "display": "Excision of Brain, Open Approach"
+          },
+          {
+            "code": "00B10ZZ",
+            "display": "Excision of Cerebral Meninges, Open Approach"
+          },
+          {
+            "code": "00B20ZZ",
+            "display": "Excision of Dura Mater, Open Approach"
+          },
+          {
+            "code": "00B60ZZ",
+            "display": "Excision of Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "00B70ZZ",
+            "display": "Excision of Cerebral Hemisphere, Open Approach"
+          },
+          {
+            "code": "00B80ZZ",
+            "display": "Excision of Basal Ganglia, Open Approach"
+          },
+          {
+            "code": "00B90ZZ",
+            "display": "Excision of Thalamus, Open Approach"
+          },
+          {
+            "code": "00BA0ZZ",
+            "display": "Excision of Hypothalamus, Open Approach"
+          },
+          {
+            "code": "00BB0ZZ",
+            "display": "Excision of Pons, Open Approach"
+          },
+          {
+            "code": "00BC0ZZ",
+            "display": "Excision of Cerebellum, Open Approach"
+          },
+          {
+            "code": "00BD0ZZ",
+            "display": "Excision of Medulla Oblongata, Open Approach"
+          },
+          {
+            "code": "00C00ZZ",
+            "display": "Extirpation of Matter from Brain, Open Approach"
+          },
+          {
+            "code": "00C10ZZ",
+            "display": "Extirpation of Matter from Cerebral Meninges, Open Approach"
+          },
+          {
+            "code": "00C20ZZ",
+            "display": "Extirpation of Matter from Dura Mater, Open Approach"
+          },
+          {
+            "code": "00C30ZZ",
+            "display": "Extirpation of Matter from Intracranial Epidural Space, Open Approach"
+          },
+          {
+            "code": "00C40ZZ",
+            "display": "Extirpation of Matter from Intracranial Subdural Space, Open Approach"
+          },
+          {
+            "code": "00C50ZZ",
+            "display": "Extirpation of Matter from Intracranial Subarachnoid Space, Open Approach"
+          },
+          {
+            "code": "00C60ZZ",
+            "display": "Extirpation of Matter from Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "00C70ZZ",
+            "display": "Extirpation of Matter from Cerebral Hemisphere, Open Approach"
+          },
+          {
+            "code": "00C80ZZ",
+            "display": "Extirpation of Matter from Basal Ganglia, Open Approach"
+          },
+          {
+            "code": "00C90ZZ",
+            "display": "Extirpation of Matter from Thalamus, Open Approach"
+          },
+          {
+            "code": "00CA0ZZ",
+            "display": "Extirpation of Matter from Hypothalamus, Open Approach"
+          },
+          {
+            "code": "00CB0ZZ",
+            "display": "Extirpation of Matter from Pons, Open Approach"
+          },
+          {
+            "code": "00CC0ZZ",
+            "display": "Extirpation of Matter from Cerebellum, Open Approach"
+          },
+          {
+            "code": "00CD0ZZ",
+            "display": "Extirpation of Matter from Medulla Oblongata, Open Approach"
+          },
+          {
+            "code": "00D10ZZ",
+            "display": "Extraction of Cerebral Meninges, Open Approach"
+          },
+          {
+            "code": "00D20ZZ",
+            "display": "Extraction of Dura Mater, Open Approach"
+          },
+          {
+            "code": "00H002Z",
+            "display": "Insertion of Monitoring Device into Brain, Open Approach"
+          },
+          {
+            "code": "00H003Z",
+            "display": "Insertion of Infusion Device into Brain, Open Approach"
+          },
+          {
+            "code": "00H602Z",
+            "display": "Insertion of Monitoring Device into Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "00H603Z",
+            "display": "Insertion of Infusion Device into Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "00J00ZZ",
+            "display": "Inspection of Brain, Open Approach"
+          },
+          {
+            "code": "00N90ZZ",
+            "display": "Release Thalamus, Open Approach"
+          },
+          {
+            "code": "00NA0ZZ",
+            "display": "Release Hypothalamus, Open Approach"
+          },
+          {
+            "code": "00P000Z",
+            "display": "Removal of Drainage Device from Brain, Open Approach"
+          },
+          {
+            "code": "00P002Z",
+            "display": "Removal of Monitoring Device from Brain, Open Approach"
+          },
+          {
+            "code": "00P003Z",
+            "display": "Removal of Infusion Device from Brain, Open Approach"
+          },
+          {
+            "code": "00P007Z",
+            "display": "Removal of Autologous Tissue Substitute from Brain, Open Approach"
+          },
+          {
+            "code": "00P00JZ",
+            "display": "Removal of Synthetic Substitute from Brain, Open Approach"
+          },
+          {
+            "code": "00P00KZ",
+            "display": "Removal of Nonautologous Tissue Substitute from Brain, Open Approach"
+          },
+          {
+            "code": "00P600Z",
+            "display": "Removal of Drainage Device from Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "00P602Z",
+            "display": "Removal of Monitoring Device from Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "00P603Z",
+            "display": "Removal of Infusion Device from Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "00P6X2Z",
+            "display": "Removal of Monitoring Device from Cerebral Ventricle, External Approach"
+          },
+          {
+            "code": "00Q90ZZ",
+            "display": "Repair Thalamus, Open Approach"
+          },
+          {
+            "code": "00QA0ZZ",
+            "display": "Repair Hypothalamus, Open Approach"
+          },
+          {
+            "code": "00T70ZZ",
+            "display": "Resection of Cerebral Hemisphere, Open Approach"
+          },
+          {
+            "code": "00W000Z",
+            "display": "Revision of Drainage Device in Brain, Open Approach"
+          },
+          {
+            "code": "00W002Z",
+            "display": "Revision of Monitoring Device in Brain, Open Approach"
+          },
+          {
+            "code": "00W003Z",
+            "display": "Revision of Infusion Device in Brain, Open Approach"
+          },
+          {
+            "code": "00W007Z",
+            "display": "Revision of Autologous Tissue Substitute in Brain, Open Approach"
+          },
+          {
+            "code": "00W00JZ",
+            "display": "Revision of Synthetic Substitute in Brain, Open Approach"
+          },
+          {
+            "code": "00W00KZ",
+            "display": "Revision of Nonautologous Tissue Substitute in Brain, Open Approach"
+          },
+          {
+            "code": "00W00MZ",
+            "display": "Revision of Neurostimulator Lead in Brain, Open Approach"
+          },
+          {
+            "code": "00W600Z",
+            "display": "Revision of Drainage Device in Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "00W602Z",
+            "display": "Revision of Monitoring Device in Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "00W603Z",
+            "display": "Revision of Infusion Device in Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "00W60MZ",
+            "display": "Revision of Neurostimulator Lead in Cerebral Ventricle, Open Approach"
+          },
+          {
+            "code": "0N9000Z",
+            "display": "Drainage of Skull with Drainage Device, Open Approach"
+          },
+          {
+            "code": "0N900ZZ",
+            "display": "Drainage of Skull, Open Approach"
+          },
+          {
+            "code": "0N9100Z",
+            "display": "Drainage of Frontal Bone with Drainage Device, Open Approach"
+          },
+          {
+            "code": "0N910ZZ",
+            "display": "Drainage of Frontal Bone, Open Approach"
+          },
+          {
+            "code": "0N9300Z",
+            "display": "Drainage of Right Parietal Bone with Drainage Device, Open Approach"
+          },
+          {
+            "code": "0N930ZZ",
+            "display": "Drainage of Right Parietal Bone, Open Approach"
+          },
+          {
+            "code": "0N9400Z",
+            "display": "Drainage of Left Parietal Bone with Drainage Device, Open Approach"
+          },
+          {
+            "code": "0N940ZZ",
+            "display": "Drainage of Left Parietal Bone, Open Approach"
+          },
+          {
+            "code": "0N9500Z",
+            "display": "Drainage of Right Temporal Bone with Drainage Device, Open Approach"
+          },
+          {
+            "code": "0N950ZZ",
+            "display": "Drainage of Right Temporal Bone, Open Approach"
+          },
+          {
+            "code": "0N9600Z",
+            "display": "Drainage of Left Temporal Bone with Drainage Device, Open Approach"
+          },
+          {
+            "code": "0N960ZZ",
+            "display": "Drainage of Left Temporal Bone, Open Approach"
+          },
+          {
+            "code": "0N9700Z",
+            "display": "Drainage of Occipital Bone with Drainage Device, Open Approach"
+          },
+          {
+            "code": "0N970ZZ",
+            "display": "Drainage of Occipital Bone, Open Approach"
+          },
+          {
+            "code": "0W9100Z",
+            "display": "Drainage of Cranial Cavity with Drainage Device, Open Approach"
+          },
+          {
+            "code": "0W910ZZ",
+            "display": "Drainage of Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WC10ZZ",
+            "display": "Extirpation of Matter from Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WH10YZ",
+            "display": "Insertion of Other Device into Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WJ10ZZ",
+            "display": "Inspection of Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WP100Z",
+            "display": "Removal of Drainage Device from Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WP101Z",
+            "display": "Removal of Radioactive Element from Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WP10JZ",
+            "display": "Removal of Synthetic Substitute from Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WP10YZ",
+            "display": "Removal of Other Device from Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WW100Z",
+            "display": "Revision of Drainage Device in Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WW101Z",
+            "display": "Revision of Radioactive Element in Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WW103Z",
+            "display": "Revision of Infusion Device in Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WW10JZ",
+            "display": "Revision of Synthetic Substitute in Cranial Cavity, Open Approach"
+          },
+          {
+            "code": "0WW10YZ",
+            "display": "Revision of Other Device in Cranial Cavity, Open Approach"
+          }
+        ]
+      }
+    ]
+  }
+}

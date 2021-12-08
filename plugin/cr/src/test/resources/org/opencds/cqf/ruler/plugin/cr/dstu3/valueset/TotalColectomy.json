@@ -1,0 +1,122 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.198.12.1019",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1019",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.464.1003.198.12.1019"
+    }
+  ],
+  "version": "20171222",
+  "name": "TotalColectomy",
+  "title": "Total Colectomy",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "2006",
+        "concept": [
+          {
+            "code": "44152",
+            "display": "Colectomy, total, abdominal, without proctectomy; with rectal mucosectomy, ileoanal anastomosis, with or without loop ileostomy"
+          },
+          {
+            "code": "44153",
+            "display": "Colectomy, total, abdominal, without proctectomy; with rectal mucosectomy, ileoanal anastomosis, creation of ileal reservoir (S or J), with or without loop ileostomy"
+          }
+        ]
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "2018",
+        "concept": [
+          {
+            "code": "44150",
+            "display": "Colectomy, total, abdominal, without proctectomy; with ileostomy or ileoproctostomy"
+          },
+          {
+            "code": "44151",
+            "display": "Colectomy, total, abdominal, without proctectomy; with continent ileostomy"
+          },
+          {
+            "code": "44155",
+            "display": "Colectomy, total, abdominal, with proctectomy; with ileostomy"
+          },
+          {
+            "code": "44156",
+            "display": "Colectomy, total, abdominal, with proctectomy; with continent ileostomy"
+          },
+          {
+            "code": "44157",
+            "display": "Colectomy, total, abdominal, with proctectomy; with ileoanal anastomosis, includes loop ileostomy, and rectal mucosectomy, when performed"
+          },
+          {
+            "code": "44158",
+            "display": "Colectomy, total, abdominal, with proctectomy; with ileoanal anastomosis, creation of ileal reservoir (S or J), includes loop ileostomy, and rectal mucosectomy, when performed"
+          },
+          {
+            "code": "44210",
+            "display": "Laparoscopy, surgical; colectomy, total, abdominal, without proctectomy, with ileostomy or ileoproctostomy"
+          },
+          {
+            "code": "44211",
+            "display": "Laparoscopy, surgical; colectomy, total, abdominal, with proctectomy, with ileoanal anastomosis, creation of ileal reservoir (S or J), with loop ileostomy, includes rectal mucosectomy, when performed"
+          },
+          {
+            "code": "44212",
+            "display": "Laparoscopy, surgical; colectomy, total, abdominal, with proctectomy, with ileostomy"
+          }
+        ]
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2018-03",
+        "concept": [
+          {
+            "code": "26390003",
+            "display": "Total colectomy (procedure)"
+          },
+          {
+            "code": "303401008",
+            "display": "Parks panproctocolectomy, anastomosis of ileum to anus and creation of pouch (procedure)"
+          },
+          {
+            "code": "307666008",
+            "display": "Total colectomy and ileostomy (procedure)"
+          },
+          {
+            "code": "307667004",
+            "display": "Total colectomy, ileostomy and rectal mucous fistula (procedure)"
+          },
+          {
+            "code": "307669001",
+            "display": "Total colectomy, ileostomy and closure of rectal stump (procedure)"
+          },
+          {
+            "code": "31130001",
+            "display": "Total abdominal colectomy with proctectomy and ileostomy (procedure)"
+          },
+          {
+            "code": "36192008",
+            "display": "Total abdominal colectomy with ileoproctostomy (procedure)"
+          },
+          {
+            "code": "44751009",
+            "display": "Total abdominal colectomy with proctectomy and continent ileostomy (procedure)"
+          },
+          {
+            "code": "456004",
+            "display": "Total abdominal colectomy with ileostomy (procedure)"
+          },
+          {
+            "code": "80294005",
+            "display": "Total abdominal colectomy with rectal mucosectomy and ileoanal anastomosis (procedure)"
+          }
+        ]
+      }
+    ]
+  }
+}

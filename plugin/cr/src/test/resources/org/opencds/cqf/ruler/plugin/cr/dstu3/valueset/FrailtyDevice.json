@@ -1,0 +1,318 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.118.12.1300",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.118.12.1300",
+  "title": "Frailty Device",
+  "status": "active",
+  "publisher": "National Committee for Quality Assurance",
+  "compose": {
+    "include": [
+      {
+        "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+        "version": "2019",
+        "concept": [
+          {
+            "code": "E0100",
+            "display": "Cane, includes canes of all materials, adjustable or fixed, with tip"
+          },
+          {
+            "code": "E0105",
+            "display": "Cane, quad or three prong, includes canes of all materials, adjustable or fixed, with tips"
+          },
+          {
+            "code": "E0130",
+            "display": "Walker, rigid (pickup), adjustable or fixed height"
+          },
+          {
+            "code": "E0135",
+            "display": "Walker, folding (pickup), adjustable or fixed height"
+          },
+          {
+            "code": "E0140",
+            "display": "Walker, with trunk support, adjustable or fixed height, any type"
+          },
+          {
+            "code": "E0141",
+            "display": "Walker, rigid, wheeled, adjustable or fixed height"
+          },
+          {
+            "code": "E0143",
+            "display": "Walker, folding, wheeled, adjustable or fixed height"
+          },
+          {
+            "code": "E0144",
+            "display": "Walker, enclosed, four sided framed, rigid or folding, wheeled with posterior seat"
+          },
+          {
+            "code": "E0147",
+            "display": "Walker, heavy duty, multiple braking system, variable wheel resistance"
+          },
+          {
+            "code": "E0148",
+            "display": "Walker, heavy duty, without wheels, rigid or folding, any type, each"
+          },
+          {
+            "code": "E0149",
+            "display": "Walker, heavy duty, wheeled, rigid or folding, any type"
+          },
+          {
+            "code": "E0163",
+            "display": "Commode chair, mobile or stationary, with fixed arms"
+          },
+          {
+            "code": "E0165",
+            "display": "Commode chair, mobile or stationary, with detachable arms"
+          },
+          {
+            "code": "E0167",
+            "display": "Pail or pan for use with commode chair, replacement only"
+          },
+          {
+            "code": "E0168",
+            "display": "Commode chair, extra wide and/or heavy duty, stationary or mobile, with or without arms, any type, each"
+          },
+          {
+            "code": "E0170",
+            "display": "Commode chair with integrated seat lift mechanism, electric, any type"
+          },
+          {
+            "code": "E0171",
+            "display": "Commode chair with integrated seat lift mechanism, non-electric, any type"
+          },
+          {
+            "code": "E0250",
+            "display": "Hospital bed, fixed height, with any type side rails, with mattress"
+          },
+          {
+            "code": "E0251",
+            "display": "Hospital bed, fixed height, with any type side rails, without mattress"
+          },
+          {
+            "code": "E0255",
+            "display": "Hospital bed, variable height, hi-lo, with any type side rails, with mattress"
+          },
+          {
+            "code": "E0256",
+            "display": "Hospital bed, variable height, hi-lo, with any type side rails, without mattress"
+          },
+          {
+            "code": "E0260",
+            "display": "Hospital bed, semi-electric (head and foot adjustment), with any type side rails, with mattress"
+          },
+          {
+            "code": "E0261",
+            "display": "Hospital bed, semi-electric (head and foot adjustment), with any type side rails, without mattress"
+          },
+          {
+            "code": "E0265",
+            "display": "Hospital bed, total electric (head, foot and height adjustments), with any type side rails, with mattress"
+          },
+          {
+            "code": "E0266",
+            "display": "Hospital bed, total electric (head, foot and height adjustments), with any type side rails, without mattress"
+          },
+          {
+            "code": "E0270",
+            "display": "Hospital bed, institutional type includes: oscillating, circulating and stryker frame, with mattress"
+          },
+          {
+            "code": "E0290",
+            "display": "Hospital bed, fixed height, without side rails, with mattress"
+          },
+          {
+            "code": "E0291",
+            "display": "Hospital bed, fixed height, without side rails, without mattress"
+          },
+          {
+            "code": "E0292",
+            "display": "Hospital bed, variable height, hi-lo, without side rails, with mattress"
+          },
+          {
+            "code": "E0293",
+            "display": "Hospital bed, variable height, hi-lo, without side rails, without mattress"
+          },
+          {
+            "code": "E0294",
+            "display": "Hospital bed, semi-electric (head and foot adjustment), without side rails, with mattress"
+          },
+          {
+            "code": "E0295",
+            "display": "Hospital bed, semi-electric (head and foot adjustment), without side rails, without mattress"
+          },
+          {
+            "code": "E0296",
+            "display": "Hospital bed, total electric (head, foot and height adjustments), without side rails, with mattress"
+          },
+          {
+            "code": "E0297",
+            "display": "Hospital bed, total electric (head, foot and height adjustments), without side rails, without mattress"
+          },
+          {
+            "code": "E0301",
+            "display": "Hospital bed, heavy duty, extra wide, with weight capacity greater than 350 pounds, but less than or equal to 600 pounds, with any type side rails, without mattress"
+          },
+          {
+            "code": "E0302",
+            "display": "Hospital bed, extra heavy duty, extra wide, with weight capacity greater than 600 pounds, with any type side rails, without mattress"
+          },
+          {
+            "code": "E0303",
+            "display": "Hospital bed, heavy duty, extra wide, with weight capacity greater than 350 pounds, but less than or equal to 600 pounds, with any type side rails, with mattress"
+          },
+          {
+            "code": "E0304",
+            "display": "Hospital bed, extra heavy duty, extra wide, with weight capacity greater than 600 pounds, with any type side rails, with mattress"
+          },
+          {
+            "code": "E0424",
+            "display": "Stationary compressed gaseous oxygen system, rental; includes container, contents, regulator, flowmeter, humidifier, nebulizer, cannula or mask, and tubing"
+          },
+          {
+            "code": "E0425",
+            "display": "Stationary compressed gas system, purchase; includes regulator, flowmeter, humidifier, nebulizer, cannula or mask, and tubing"
+          },
+          {
+            "code": "E0430",
+            "display": "Portable gaseous oxygen system, purchase; includes regulator, flowmeter, humidifier, cannula or mask, and tubing"
+          },
+          {
+            "code": "E0431",
+            "display": "Portable gaseous oxygen system, rental; includes portable container, regulator, flowmeter, humidifier, cannula or mask, and tubing"
+          },
+          {
+            "code": "E0433",
+            "display": "Portable liquid oxygen system, rental; home liquefier used to fill portable liquid oxygen containers, includes portable containers, regulator, flowmeter, humidifier, cannula or mask and tubing, with or without supply reservoir and contents gauge"
+          },
+          {
+            "code": "E0434",
+            "display": "Portable liquid oxygen system, rental; includes portable container, supply reservoir, humidifier, flowmeter, refill adaptor, contents gauge, cannula or mask, and tubing"
+          },
+          {
+            "code": "E0435",
+            "display": "Portable liquid oxygen system, purchase; includes portable container, supply reservoir, flowmeter, humidifier, contents gauge, cannula or mask, tubing and refill adaptor"
+          },
+          {
+            "code": "E0439",
+            "display": "Stationary liquid oxygen system, rental; includes container, contents, regulator, flowmeter, humidifier, nebulizer, cannula or mask, & tubing"
+          },
+          {
+            "code": "E0440",
+            "display": "Stationary liquid oxygen system, purchase; includes use of reservoir, contents indicator, regulator, flowmeter, humidifier, nebulizer, cannula or mask, and tubing"
+          },
+          {
+            "code": "E0441",
+            "display": "Stationary oxygen contents, gaseous, 1 month's supply = 1 unit"
+          },
+          {
+            "code": "E0442",
+            "display": "Stationary oxygen contents, liquid, 1 month's supply = 1 unit"
+          },
+          {
+            "code": "E0443",
+            "display": "Portable oxygen contents, gaseous, 1 month's supply = 1 unit"
+          },
+          {
+            "code": "E0444",
+            "display": "Portable oxygen contents, liquid, 1 month's supply = 1 unit"
+          },
+          {
+            "code": "E0462",
+            "display": "Rocking bed with or without side rails"
+          },
+          {
+            "code": "E0465",
+            "display": "Home ventilator, any type, used with invasive interface, (e.g., tracheostomy tube)"
+          },
+          {
+            "code": "E0466",
+            "display": "Home ventilator, any type, used with non-invasive interface, (e.g., mask, chest shell)"
+          },
+          {
+            "code": "E0470",
+            "display": "Respiratory assist device, bi-level pressure capability, without backup rate feature, used with noninvasive interface, e.g., nasal or facial mask (intermittent assist device with continuous positive airway pressure device)"
+          },
+          {
+            "code": "E0471",
+            "display": "Respiratory assist device, bi-level pressure capability, with back-up rate feature, used with noninvasive interface, e.g., nasal or facial mask (intermittent assist device with continuous positive airway pressure device)"
+          },
+          {
+            "code": "E0472",
+            "display": "Respiratory assist device, bi-level pressure capability, with backup rate feature, used with invasive interface, e.g., tracheostomy tube (intermittent assist device with continuous positive airway pressure device)"
+          },
+          {
+            "code": "E0561",
+            "display": "Humidifier, non-heated, used with positive airway pressure device"
+          },
+          {
+            "code": "E0562",
+            "display": "Humidifier, heated, used with positive airway pressure device"
+          },
+          {
+            "code": "E1130",
+            "display": "Standard wheelchair, fixed full length arms, fixed or swing away detachable footrests"
+          },
+          {
+            "code": "E1140",
+            "display": "Wheelchair, detachable arms, desk or full length, swing away detachable footrests"
+          },
+          {
+            "code": "E1150",
+            "display": "Wheelchair, detachable arms, desk or full length swing away detachable elevating legrests"
+          },
+          {
+            "code": "E1160",
+            "display": "Wheelchair, fixed full length arms, swing away detachable elevating legrests"
+          },
+          {
+            "code": "E1161",
+            "display": "Manual adult size wheelchair, includes tilt in space"
+          },
+          {
+            "code": "E1240",
+            "display": "Lightweight wheelchair, detachable arms, (desk or full length) swing away detachable, elevating legrest"
+          },
+          {
+            "code": "E1250",
+            "display": "Lightweight wheelchair, fixed full length arms, swing away detachable footrest"
+          },
+          {
+            "code": "E1260",
+            "display": "Lightweight wheelchair, detachable arms (desk or full length) swing away detachable footrest"
+          },
+          {
+            "code": "E1270",
+            "display": "Lightweight wheelchair, fixed full length arms, swing away detachable elevating legrests"
+          },
+          {
+            "code": "E1280",
+            "display": "Heavy duty wheelchair, detachable arms (desk or full length) elevating legrests"
+          },
+          {
+            "code": "E1285",
+            "display": "Heavy duty wheelchair, fixed full length arms, swing away detachable footrest"
+          },
+          {
+            "code": "E1290",
+            "display": "Heavy duty wheelchair, detachable arms (desk or full length) swing away detachable footrest"
+          },
+          {
+            "code": "E1295",
+            "display": "Heavy duty wheelchair, fixed full length arms, elevating legrest"
+          },
+          {
+            "code": "E1296",
+            "display": "Special wheelchair seat height from floor"
+          },
+          {
+            "code": "E1297",
+            "display": "Special wheelchair seat depth, by upholstery"
+          },
+          {
+            "code": "E1298",
+            "display": "Special wheelchair seat depth and/or width, by construction"
+          }
+        ]
+      }
+    ]
+  }
+}

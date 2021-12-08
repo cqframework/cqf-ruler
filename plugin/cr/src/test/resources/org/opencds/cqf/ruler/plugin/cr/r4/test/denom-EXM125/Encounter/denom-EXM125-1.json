@@ -1,0 +1,33 @@
+{
+    "resourceType": "Encounter",
+    "id": "denom-EXM125-1",
+    "subject": {
+        "reference": "Patient/denom-EXM125"
+    },
+    "meta": {
+        "profile": [
+          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-encounter"
+        ]
+      },
+      "status": "finished",
+      "class": {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+        "code": "AMB",
+        "display": "ambulatory"
+      },
+    "type": [
+        {
+            "coding": [
+                {
+                    "system": "http://www.ama-assn.org/go/cpt",
+                    "code": "99201",
+                    "display": "Office or other outpatient visit for the evaluation and management of a new patient, which requires these 3 key components: A problem focused history; A problem focused examination; Straightforward medical decision making. Counseling and/or coordination of care with other physicians, other qualified health care professionals, or agencies are provided consistent with the nature of the problem(s) and the patient's and/or family's needs. Usually, the presenting problem(s) are self limited or minor. Typically, 10 minutes are spent face-to-face with the patient and/or family."
+                }
+            ] 
+        }
+    ],
+    "period": {
+        "start": "2019-05-31T00:00:00-00:00",
+        "end": "2019-05-31T00:00:00-00:00"
+    }
+}

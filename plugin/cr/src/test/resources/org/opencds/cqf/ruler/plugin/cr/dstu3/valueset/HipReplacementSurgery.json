@@ -1,0 +1,708 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.259",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.259",
+  "title": "Hip Replacement Surgery",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "112727005",
+            "display": "Revision of hip replacement (procedure)"
+          },
+          {
+            "code": "112728000",
+            "display": "Total revision of hip replacement with use of methyl methacrylate (procedure)"
+          },
+          {
+            "code": "15036006",
+            "display": "Implantation of prosthesis or prosthetic device of acetabulum of hip joint, Aufranc-Turner (procedure)"
+          },
+          {
+            "code": "179294005",
+            "display": "Conversion to cemented total hip replacement (procedure)"
+          },
+          {
+            "code": "179295006",
+            "display": "Revision cemented total hip replacement (procedure)"
+          },
+          {
+            "code": "179304004",
+            "display": "Primary uncemented total hip replacement (procedure)"
+          },
+          {
+            "code": "179305003",
+            "display": "Conversion to uncemented total hip replacement (procedure)"
+          },
+          {
+            "code": "179306002",
+            "display": "Revision uncemented total hip replacement (procedure)"
+          },
+          {
+            "code": "179326003",
+            "display": "Primary uncemented hemiarthroplasty of hip (procedure)"
+          },
+          {
+            "code": "19954002",
+            "display": "Reconstruction of hip with use of methyl methacrylate (procedure)"
+          },
+          {
+            "code": "265157000",
+            "display": "Total prosthetic replacement of hip joint using cement (procedure)"
+          },
+          {
+            "code": "265158005",
+            "display": "Primary cemented total hip replacement (procedure)"
+          },
+          {
+            "code": "265160007",
+            "display": "Total prosthetic replacement of hip joint not using cement (procedure)"
+          },
+          {
+            "code": "265161006",
+            "display": "Conversion from uncemented total hip replacement (procedure)"
+          },
+          {
+            "code": "276178005",
+            "display": "Prosthetic uncemented hemiarthroplasty of hip (procedure)"
+          },
+          {
+            "code": "29969002",
+            "display": "Replacement of acetabulum of hip (procedure)"
+          },
+          {
+            "code": "307814001",
+            "display": "Arthroplasty of hip joint using cement (procedure)"
+          },
+          {
+            "code": "307815000",
+            "display": "Arthroplasty of hip without cement (procedure)"
+          },
+          {
+            "code": "309853002",
+            "display": "Removal of previous uncemented total prosthetic replacement of hip joint (procedure)"
+          },
+          {
+            "code": "314489006",
+            "display": "Primary hybrid total replacement of hip joint (procedure)"
+          },
+          {
+            "code": "314491003",
+            "display": "Prosthetic hybrid total replacement of hip joint (procedure)"
+          },
+          {
+            "code": "32581000",
+            "display": "Partial hip replacement by cup with acetabuloplasty (procedure)"
+          },
+          {
+            "code": "340922009",
+            "display": "Partial hip replacement by cup (procedure)"
+          },
+          {
+            "code": "386649003",
+            "display": "Partial hip replacement by prosthesis (procedure)"
+          },
+          {
+            "code": "397956004",
+            "display": "Prosthetic arthroplasty of the hip (procedure)"
+          },
+          {
+            "code": "425443008",
+            "display": "Prosthetic hybrid total replacement of hip joint using cement (procedure)"
+          },
+          {
+            "code": "426618001",
+            "display": "Prosthetic hybrid total replacement of hip joint using cemented femoral component (procedure)"
+          },
+          {
+            "code": "426904006",
+            "display": "Prosthetic hybrid total replacement of hip joint using cemented acetabular component (procedure)"
+          },
+          {
+            "code": "427728006",
+            "display": "Primary hybrid total prosthetic replacement of hip joint using cemented femoral component (procedure)"
+          },
+          {
+            "code": "428622003",
+            "display": "Revision of hybrid total prosthetic replacement of hip joint using cemented femoral component (procedure)"
+          },
+          {
+            "code": "429156003",
+            "display": "Primary hybrid total prosthetic replacement of hip joint using cemented acetabular component (procedure)"
+          },
+          {
+            "code": "430688009",
+            "display": "Prosthetic arthroplasty of left hip (procedure)"
+          },
+          {
+            "code": "430694001",
+            "display": "Prosthetic arthroplasty of right hip (procedure)"
+          },
+          {
+            "code": "443435007",
+            "display": "Total replacement of right hip joint (procedure)"
+          },
+          {
+            "code": "444051004",
+            "display": "Bilateral replacement of hip joints (procedure)"
+          },
+          {
+            "code": "445185007",
+            "display": "Resurfacing of head of femur (procedure)"
+          },
+          {
+            "code": "447947007",
+            "display": "Conversion from previous total prosthetic replacement of hip joint (procedure)"
+          },
+          {
+            "code": "447992000",
+            "display": "Conversion from hybrid total prosthetic hip replacement (procedure)"
+          },
+          {
+            "code": "449039004",
+            "display": "Conversion to total prosthetic replacement of hip joint (procedure)"
+          },
+          {
+            "code": "450813004",
+            "display": "Primary total prosthetic replacement of hip (procedure)"
+          },
+          {
+            "code": "47596009",
+            "display": "Cup arthroplasty of hip with use of methyl methacrylate (procedure)"
+          },
+          {
+            "code": "52734007",
+            "display": "Total replacement of hip (procedure)"
+          },
+          {
+            "code": "53081006",
+            "display": "Arthroplasty, acetabular and proximal femoral, prosthetic replacement (procedure)"
+          },
+          {
+            "code": "57589001",
+            "display": "Arthroplasty, acetabular and proximal femoral prosthetic replacement, with allograft (procedure)"
+          },
+          {
+            "code": "62402000",
+            "display": "Revision of total hip replacement (procedure)"
+          },
+          {
+            "code": "68491008",
+            "display": "Implantation of prosthesis or prosthetic device of acetabulum of hip joint with use of methyl methacrylate (procedure)"
+          },
+          {
+            "code": "76116002",
+            "display": "Implantation of prosthesis or prosthetic device of acetabulum of hip joint (procedure)"
+          },
+          {
+            "code": "76915002",
+            "display": "Arthroplasty, acetabular and proximal femoral prosthetic replacement, with autograft (procedure)"
+          },
+          {
+            "code": "7989006",
+            "display": "Removal of prosthesis of joint structures of hip (procedure)"
+          }
+        ]
+      },
+      {
+        "system": "http://www.icd10data.com/icd10pcs",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "0SP909Z",
+            "display": "Removal of Liner from Right Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SP90JZ",
+            "display": "Removal of Synthetic Substitute from Right Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SPA0JZ",
+            "display": "Removal of Synthetic Substitute from Right Hip Joint, Acetabular Surface, Open Approach"
+          },
+          {
+            "code": "0SPB09Z",
+            "display": "Removal of Liner from Left Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SPB0JZ",
+            "display": "Removal of Synthetic Substitute from Left Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SPE0JZ",
+            "display": "Removal of Synthetic Substitute from Left Hip Joint, Acetabular Surface, Open Approach"
+          },
+          {
+            "code": "0SPR0JZ",
+            "display": "Removal of Synthetic Substitute from Right Hip Joint, Femoral Surface, Open Approach"
+          },
+          {
+            "code": "0SPS0JZ",
+            "display": "Removal of Synthetic Substitute from Left Hip Joint, Femoral Surface, Open Approach"
+          },
+          {
+            "code": "0SR9019",
+            "display": "Replacement of Right Hip Joint with Metal Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SR901A",
+            "display": "Replacement of Right Hip Joint with Metal Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SR901Z",
+            "display": "Replacement of Right Hip Joint with Metal Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SR9029",
+            "display": "Replacement of Right Hip Joint with Metal on Polyethylene Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SR902A",
+            "display": "Replacement of Right Hip Joint with Metal on Polyethylene Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SR902Z",
+            "display": "Replacement of Right Hip Joint with Metal on Polyethylene Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SR9039",
+            "display": "Replacement of Right Hip Joint with Ceramic Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SR903A",
+            "display": "Replacement of Right Hip Joint with Ceramic Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SR903Z",
+            "display": "Replacement of Right Hip Joint with Ceramic Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SR9049",
+            "display": "Replacement of Right Hip Joint with Ceramic on Polyethylene Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SR904A",
+            "display": "Replacement of Right Hip Joint with Ceramic on Polyethylene Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SR904Z",
+            "display": "Replacement of Right Hip Joint with Ceramic on Polyethylene Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SR907Z",
+            "display": "Replacement of Right Hip Joint with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SR90J9",
+            "display": "Replacement of Right Hip Joint with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SR90JA",
+            "display": "Replacement of Right Hip Joint with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SR90JZ",
+            "display": "Replacement of Right Hip Joint with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SR90KZ",
+            "display": "Replacement of Right Hip Joint with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRA009",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Polyethylene Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRA00A",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Polyethylene Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRA00Z",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Polyethylene Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRA019",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Metal Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRA01A",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Metal Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRA01Z",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Metal Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRA039",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Ceramic Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRA03A",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Ceramic Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRA03Z",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Ceramic Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRA07Z",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRA0J9",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRA0JA",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRA0JZ",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRA0KZ",
+            "display": "Replacement of Right Hip Joint, Acetabular Surface with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRB019",
+            "display": "Replacement of Left Hip Joint with Metal Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRB01A",
+            "display": "Replacement of Left Hip Joint with Metal Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRB01Z",
+            "display": "Replacement of Left Hip Joint with Metal Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRB029",
+            "display": "Replacement of Left Hip Joint with Metal on Polyethylene Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRB02A",
+            "display": "Replacement of Left Hip Joint with Metal on Polyethylene Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRB02Z",
+            "display": "Replacement of Left Hip Joint with Metal on Polyethylene Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRB039",
+            "display": "Replacement of Left Hip Joint with Ceramic Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRB03A",
+            "display": "Replacement of Left Hip Joint with Ceramic Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRB03Z",
+            "display": "Replacement of Left Hip Joint with Ceramic Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRB049",
+            "display": "Replacement of Left Hip Joint with Ceramic on Polyethylene Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRB04A",
+            "display": "Replacement of Left Hip Joint with Ceramic on Polyethylene Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRB04Z",
+            "display": "Replacement of Left Hip Joint with Ceramic on Polyethylene Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRB07Z",
+            "display": "Replacement of Left Hip Joint with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRB0J9",
+            "display": "Replacement of Left Hip Joint with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRB0JA",
+            "display": "Replacement of Left Hip Joint with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRB0JZ",
+            "display": "Replacement of Left Hip Joint with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRB0KZ",
+            "display": "Replacement of Left Hip Joint with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRE009",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Polyethylene Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRE00A",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Polyethylene Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRE00Z",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Polyethylene Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRE019",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Metal Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRE01A",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Metal Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRE01Z",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Metal Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRE039",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Ceramic Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRE03A",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Ceramic Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRE03Z",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Ceramic Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRE07Z",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRE0J9",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRE0JA",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRE0JZ",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRE0KZ",
+            "display": "Replacement of Left Hip Joint, Acetabular Surface with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRR019",
+            "display": "Replacement of Right Hip Joint, Femoral Surface with Metal Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRR01A",
+            "display": "Replacement of Right Hip Joint, Femoral Surface with Metal Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRR01Z",
+            "display": "Replacement of Right Hip Joint, Femoral Surface with Metal Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRR039",
+            "display": "Replacement of Right Hip Joint, Femoral Surface with Ceramic Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRR03A",
+            "display": "Replacement of Right Hip Joint, Femoral Surface with Ceramic Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRR03Z",
+            "display": "Replacement of Right Hip Joint, Femoral Surface with Ceramic Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRR07Z",
+            "display": "Replacement of Right Hip Joint, Femoral Surface with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRR0J9",
+            "display": "Replacement of Right Hip Joint, Femoral Surface with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRR0JA",
+            "display": "Replacement of Right Hip Joint, Femoral Surface with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRR0JZ",
+            "display": "Replacement of Right Hip Joint, Femoral Surface with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRR0KZ",
+            "display": "Replacement of Right Hip Joint, Femoral Surface with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRS019",
+            "display": "Replacement of Left Hip Joint, Femoral Surface with Metal Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRS01A",
+            "display": "Replacement of Left Hip Joint, Femoral Surface with Metal Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRS01Z",
+            "display": "Replacement of Left Hip Joint, Femoral Surface with Metal Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRS039",
+            "display": "Replacement of Left Hip Joint, Femoral Surface with Ceramic Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRS03A",
+            "display": "Replacement of Left Hip Joint, Femoral Surface with Ceramic Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRS03Z",
+            "display": "Replacement of Left Hip Joint, Femoral Surface with Ceramic Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRS07Z",
+            "display": "Replacement of Left Hip Joint, Femoral Surface with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SRS0J9",
+            "display": "Replacement of Left Hip Joint, Femoral Surface with Synthetic Substitute, Cemented, Open Approach"
+          },
+          {
+            "code": "0SRS0JA",
+            "display": "Replacement of Left Hip Joint, Femoral Surface with Synthetic Substitute, Uncemented, Open Approach"
+          },
+          {
+            "code": "0SRS0JZ",
+            "display": "Replacement of Left Hip Joint, Femoral Surface with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SRS0KZ",
+            "display": "Replacement of Left Hip Joint, Femoral Surface with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SU907Z",
+            "display": "Supplement Right Hip Joint with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SU909Z",
+            "display": "Supplement Right Hip Joint with Liner, Open Approach"
+          },
+          {
+            "code": "0SU90BZ",
+            "display": "Supplement Right Hip Joint with Resurfacing Device, Open Approach"
+          },
+          {
+            "code": "0SU90JZ",
+            "display": "Supplement Right Hip Joint with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SU90KZ",
+            "display": "Supplement Right Hip Joint with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SUA09Z",
+            "display": "Supplement Right Hip Joint, Acetabular Surface with Liner, Open Approach"
+          },
+          {
+            "code": "0SUA0BZ",
+            "display": "Supplement Right Hip Joint, Acetabular Surface with Resurfacing Device, Open Approach"
+          },
+          {
+            "code": "0SUB07Z",
+            "display": "Supplement Left Hip Joint with Autologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SUB09Z",
+            "display": "Supplement Left Hip Joint with Liner, Open Approach"
+          },
+          {
+            "code": "0SUB0BZ",
+            "display": "Supplement Left Hip Joint with Resurfacing Device, Open Approach"
+          },
+          {
+            "code": "0SUB0JZ",
+            "display": "Supplement Left Hip Joint with Synthetic Substitute, Open Approach"
+          },
+          {
+            "code": "0SUB0KZ",
+            "display": "Supplement Left Hip Joint with Nonautologous Tissue Substitute, Open Approach"
+          },
+          {
+            "code": "0SUE09Z",
+            "display": "Supplement Left Hip Joint, Acetabular Surface with Liner, Open Approach"
+          },
+          {
+            "code": "0SUE0BZ",
+            "display": "Supplement Left Hip Joint, Acetabular Surface with Resurfacing Device, Open Approach"
+          },
+          {
+            "code": "0SUR09Z",
+            "display": "Supplement Right Hip Joint, Femoral Surface with Liner, Open Approach"
+          },
+          {
+            "code": "0SUR0BZ",
+            "display": "Supplement Right Hip Joint, Femoral Surface with Resurfacing Device, Open Approach"
+          },
+          {
+            "code": "0SUS09Z",
+            "display": "Supplement Left Hip Joint, Femoral Surface with Liner, Open Approach"
+          },
+          {
+            "code": "0SUS0BZ",
+            "display": "Supplement Left Hip Joint, Femoral Surface with Resurfacing Device, Open Approach"
+          },
+          {
+            "code": "0SW907Z",
+            "display": "Revision of Autologous Tissue Substitute in Right Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SW909Z",
+            "display": "Revision of Liner in Right Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SW90JZ",
+            "display": "Revision of Synthetic Substitute in Right Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SW90KZ",
+            "display": "Revision of Nonautologous Tissue Substitute in Right Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SWA0JZ",
+            "display": "Revision of Synthetic Substitute in Right Hip Joint, Acetabular Surface, Open Approach"
+          },
+          {
+            "code": "0SWB07Z",
+            "display": "Revision of Autologous Tissue Substitute in Left Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SWB09Z",
+            "display": "Revision of Liner in Left Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SWB0JZ",
+            "display": "Revision of Synthetic Substitute in Left Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SWB0KZ",
+            "display": "Revision of Nonautologous Tissue Substitute in Left Hip Joint, Open Approach"
+          },
+          {
+            "code": "0SWE0JZ",
+            "display": "Revision of Synthetic Substitute in Left Hip Joint, Acetabular Surface, Open Approach"
+          },
+          {
+            "code": "0SWR0JZ",
+            "display": "Revision of Synthetic Substitute in Right Hip Joint, Femoral Surface, Open Approach"
+          },
+          {
+            "code": "0SWS0JZ",
+            "display": "Revision of Synthetic Substitute in Left Hip Joint, Femoral Surface, Open Approach"
+          }
+        ]
+      }
+    ]
+  }
+}

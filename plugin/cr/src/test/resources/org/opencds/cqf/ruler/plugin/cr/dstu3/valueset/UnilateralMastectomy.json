@@ -1,0 +1,240 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.198.12.1020",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1020",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.464.1003.198.12.1020"
+    }
+  ],
+  "version": "20171216",
+  "name": "UnilateralMastectomy",
+  "title": "Unilateral Mastectomy",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "2006",
+        "concept": [
+          {
+            "code": "19180",
+            "display": "Mastectomy, simple, complete"
+          },
+          {
+            "code": "19200",
+            "display": "Mastectomy, radical, including pectoral muscles, axillary lymph nodes"
+          },
+          {
+            "code": "19220",
+            "display": "Mastectomy, radical, including pectoral muscles, axillary and internal mammary lymph nodes (Urban type operation)"
+          },
+          {
+            "code": "19240",
+            "display": "Mastectomy, modified radical, including axillary lymph nodes, with or without pectoralis minor muscle, but excluding pectoralis major muscle"
+          }
+        ]
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "2018",
+        "concept": [
+          {
+            "code": "19303",
+            "display": "Mastectomy, simple, complete"
+          },
+          {
+            "code": "19304",
+            "display": "Mastectomy, subcutaneous"
+          },
+          {
+            "code": "19305",
+            "display": "Mastectomy, radical, including pectoral muscles, axillary lymph nodes"
+          },
+          {
+            "code": "19306",
+            "display": "Mastectomy, radical, including pectoral muscles, axillary and internal mammary lymph nodes (Urban type operation)"
+          },
+          {
+            "code": "19307",
+            "display": "Mastectomy, modified radical, including axillary lymph nodes, with or without pectoralis minor muscle, but excluding pectoralis major muscle"
+          }
+        ]
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2017-09",
+        "concept": [
+          {
+            "code": "287654001",
+            "display": "Extended simple mastectomy (procedure)"
+          }
+        ]
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2018-03",
+        "concept": [
+          {
+            "code": "12275171000119105",
+            "display": "Postmastectomy lymphedema syndrome of right upper limb (disorder)"
+          },
+          {
+            "code": "12275221000119100",
+            "display": "Postmastectomy lymphedema syndrome of left upper limb (disorder)"
+          },
+          {
+            "code": "172043006",
+            "display": "Simple mastectomy (procedure)"
+          },
+          {
+            "code": "237367009",
+            "display": "Total mastectomy and division of pectoralis minor muscle (procedure)"
+          },
+          {
+            "code": "237368004",
+            "display": "Total mastectomy and excision of part of pectoral muscles and chest wall (procedure)"
+          },
+          {
+            "code": "237385002",
+            "display": "Excision of mastectomy scar (procedure)"
+          },
+          {
+            "code": "237388000",
+            "display": "Biopsy of mastectomy scar (procedure)"
+          },
+          {
+            "code": "274957008",
+            "display": "Radical mastectomy including axillary lymph nodes (procedure)"
+          },
+          {
+            "code": "287653007",
+            "display": "Subcutaneous mastectomy and prosthetic implant (procedure)"
+          },
+          {
+            "code": "303690008",
+            "display": "Excisional biopsy of mastectomy scar (procedure)"
+          },
+          {
+            "code": "307995002",
+            "display": "Excision of lesion of mastectomy scar (procedure)"
+          },
+          {
+            "code": "318190001",
+            "display": "Mastectomy with preservation of skin and nipple with synchronous implant (procedure)"
+          },
+          {
+            "code": "33129002",
+            "display": "Postmastectomy lymphedema syndrome (disorder)"
+          },
+          {
+            "code": "359728003",
+            "display": "Radical mastectomy including pectoral muscles and axillary lymph nodes (procedure)"
+          },
+          {
+            "code": "359731002",
+            "display": "Urban operation, extended radical mastectomy (procedure)"
+          },
+          {
+            "code": "359734005",
+            "display": "Halsted mastectomy (procedure)"
+          },
+          {
+            "code": "359740003",
+            "display": "Extended radical mastectomy (procedure)"
+          },
+          {
+            "code": "384723003",
+            "display": "Radical mastectomy (procedure)"
+          },
+          {
+            "code": "395702000",
+            "display": "Patey total mastectomy (procedure)"
+          },
+          {
+            "code": "406505007",
+            "display": "Modified radical mastectomy (procedure)"
+          },
+          {
+            "code": "428564008",
+            "display": "Skin sparing mastectomy (procedure)"
+          },
+          {
+            "code": "428571003",
+            "display": "Mastectomy of left breast (procedure)"
+          },
+          {
+            "code": "429400009",
+            "display": "Mastectomy of right breast (procedure)"
+          },
+          {
+            "code": "446109005",
+            "display": "Simple mastectomy with excision of axillary lymph nodes (procedure)"
+          },
+          {
+            "code": "446420001",
+            "display": "Simple mastectomy with complete axillary lymphadenectomy (procedure)"
+          },
+          {
+            "code": "447135002",
+            "display": "Simple mastectomy with axillary lymph node sampling (procedure)"
+          },
+          {
+            "code": "447421006",
+            "display": "Prophylactic mastectomy (procedure)"
+          },
+          {
+            "code": "451201000124106",
+            "display": "Prophylactic mastectomy of right breast (procedure)"
+          },
+          {
+            "code": "451211000124109",
+            "display": "Prophylactic mastectomy of left breast (procedure)"
+          },
+          {
+            "code": "66398006",
+            "display": "Mastectomy with excision of regional lymph nodes (procedure)"
+          },
+          {
+            "code": "70183006",
+            "display": "Subcutaneous mastectomy (procedure)"
+          },
+          {
+            "code": "714111001",
+            "display": "Post-mastectomy breast deformity (disorder)"
+          },
+          {
+            "code": "714252004",
+            "display": "Post-mastectomy chronic pain syndrome (disorder)"
+          },
+          {
+            "code": "726429001",
+            "display": "Radical mastectomy of left breast (procedure)"
+          },
+          {
+            "code": "726430006",
+            "display": "Radical mastectomy of right breast (procedure)"
+          },
+          {
+            "code": "726434002",
+            "display": "Subcutaneous mastectomy of right breast (procedure)"
+          },
+          {
+            "code": "726435001",
+            "display": "Subcutaneous mastectomy of left breast (procedure)"
+          },
+          {
+            "code": "726436000",
+            "display": "Modified radical mastectomy of right breast (procedure)"
+          },
+          {
+            "code": "726437009",
+            "display": "Modified radical mastectomy of left breast (procedure)"
+          }
+        ]
+      }
+    ]
+  }
+}

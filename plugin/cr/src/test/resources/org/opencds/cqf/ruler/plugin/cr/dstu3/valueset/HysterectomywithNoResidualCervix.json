@@ -1,0 +1,364 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.198.12.1014",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1014",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.464.1003.198.12.1014"
+    }
+  ],
+  "version": "20170504",
+  "name": "HysterectomywithNoResidualCervix",
+  "title": "Hysterectomy with No Residual Cervix",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "1998",
+        "concept": [
+          {
+            "code": "56308",
+            "display": "Laparoscopy, surgical; with vaginal hysterectomy with or without removal of tube(s), with or without removal of ovary(s) (laparoscopic assisted vaginal hysterectomy)"
+          }
+        ]
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "2018",
+        "concept": [
+          {
+            "code": "51925",
+            "display": "Closure of vesicouterine fistula; with hysterectomy"
+          },
+          {
+            "code": "57540",
+            "display": "Excision of cervical stump, abdominal approach"
+          },
+          {
+            "code": "57545",
+            "display": "Excision of cervical stump, abdominal approach; with pelvic floor repair"
+          },
+          {
+            "code": "57550",
+            "display": "Excision of cervical stump, vaginal approach"
+          },
+          {
+            "code": "57555",
+            "display": "Excision of cervical stump, vaginal approach; with anterior and/or posterior repair"
+          },
+          {
+            "code": "57556",
+            "display": "Excision of cervical stump, vaginal approach; with repair of enterocele"
+          },
+          {
+            "code": "58150",
+            "display": "Total abdominal hysterectomy (corpus and cervix), with or without removal of tube(s), with or without removal of ovary(s)"
+          },
+          {
+            "code": "58152",
+            "display": "Total abdominal hysterectomy (corpus and cervix), with or without removal of tube(s), with or without removal of ovary(s); with colpo-urethrocystopexy (eg, Marshall-Marchetti-Krantz, Burch)"
+          },
+          {
+            "code": "58200",
+            "display": "Total abdominal hysterectomy, including partial vaginectomy, with para-aortic and pelvic lymph node sampling, with or without removal of tube(s), with or without removal of ovary(s)"
+          },
+          {
+            "code": "58210",
+            "display": "Radical abdominal hysterectomy, with bilateral total pelvic lymphadenectomy and para-aortic lymph node sampling (biopsy), with or without removal of tube(s), with or without removal of ovary(s)"
+          },
+          {
+            "code": "58240",
+            "display": "Pelvic exenteration for gynecologic malignancy, with total abdominal hysterectomy or cervicectomy, with or without removal of tube(s), with or without removal of ovary(s), with removal of bladder and ureteral transplantations, and/or abdominoperineal resection of rectum and colon and colostomy, or any combination thereof"
+          },
+          {
+            "code": "58260",
+            "display": "Vaginal hysterectomy, for uterus 250 g or less"
+          },
+          {
+            "code": "58262",
+            "display": "Vaginal hysterectomy, for uterus 250 g or less; with removal of tube(s), and/or ovary(s)"
+          },
+          {
+            "code": "58263",
+            "display": "Vaginal hysterectomy, for uterus 250 g or less; with removal of tube(s), and/or ovary(s), with repair of enterocele"
+          },
+          {
+            "code": "58267",
+            "display": "Vaginal hysterectomy, for uterus 250 g or less; with colpo-urethrocystopexy (Marshall-Marchetti-Krantz type, Pereyra type) with or without endoscopic control"
+          },
+          {
+            "code": "58270",
+            "display": "Vaginal hysterectomy, for uterus 250 g or less; with repair of enterocele"
+          },
+          {
+            "code": "58275",
+            "display": "Vaginal hysterectomy, with total or partial vaginectomy"
+          },
+          {
+            "code": "58280",
+            "display": "Vaginal hysterectomy, with total or partial vaginectomy; with repair of enterocele"
+          },
+          {
+            "code": "58285",
+            "display": "Vaginal hysterectomy, radical (Schauta type operation)"
+          },
+          {
+            "code": "58290",
+            "display": "Vaginal hysterectomy, for uterus greater than 250 g"
+          },
+          {
+            "code": "58291",
+            "display": "Vaginal hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s)"
+          },
+          {
+            "code": "58292",
+            "display": "Vaginal hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s), with repair of enterocele"
+          },
+          {
+            "code": "58293",
+            "display": "Vaginal hysterectomy, for uterus greater than 250 g; with colpo-urethrocystopexy (Marshall-Marchetti-Krantz type, Pereyra type) with or without endoscopic control"
+          },
+          {
+            "code": "58294",
+            "display": "Vaginal hysterectomy, for uterus greater than 250 g; with repair of enterocele"
+          },
+          {
+            "code": "58548",
+            "display": "Laparoscopy, surgical, with radical hysterectomy, with bilateral total pelvic lymphadenectomy and para-aortic lymph node sampling (biopsy), with removal of tube(s) and ovary(s), if performed"
+          },
+          {
+            "code": "58550",
+            "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus 250 g or less"
+          },
+          {
+            "code": "58552",
+            "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus 250 g or less; with removal of tube(s) and/or ovary(s)"
+          },
+          {
+            "code": "58553",
+            "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus greater than 250 g"
+          },
+          {
+            "code": "58554",
+            "display": "Laparoscopy, surgical, with vaginal hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s)"
+          },
+          {
+            "code": "58570",
+            "display": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less"
+          },
+          {
+            "code": "58571",
+            "display": "Laparoscopy, surgical, with total hysterectomy, for uterus 250 g or less; with removal of tube(s) and/or ovary(s)"
+          },
+          {
+            "code": "58572",
+            "display": "Laparoscopy, surgical, with total hysterectomy, for uterus greater than 250 g"
+          },
+          {
+            "code": "58573",
+            "display": "Laparoscopy, surgical, with total hysterectomy, for uterus greater than 250 g; with removal of tube(s) and/or ovary(s)"
+          },
+          {
+            "code": "58951",
+            "display": "Resection (initial) of ovarian, tubal or primary peritoneal malignancy with bilateral salpingo-oophorectomy and omentectomy; with total abdominal hysterectomy, pelvic and limited para-aortic lymphadenectomy"
+          },
+          {
+            "code": "58953",
+            "display": "Bilateral salpingo-oophorectomy with omentectomy, total abdominal hysterectomy and radical dissection for debulking"
+          },
+          {
+            "code": "58954",
+            "display": "Bilateral salpingo-oophorectomy with omentectomy, total abdominal hysterectomy and radical dissection for debulking; with pelvic lymphadenectomy and limited para-aortic lymphadenectomy"
+          },
+          {
+            "code": "58956",
+            "display": "Bilateral salpingo-oophorectomy with total omentectomy, total abdominal hysterectomy for malignancy"
+          },
+          {
+            "code": "59135",
+            "display": "Surgical treatment of ectopic pregnancy; interstitial, uterine pregnancy requiring total hysterectomy"
+          }
+        ]
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2017-09",
+        "concept": [
+          {
+            "code": "27950001",
+            "display": "Total hysterectomy with unilateral removal of ovary (procedure)"
+          },
+          {
+            "code": "31545000",
+            "display": "Total hysterectomy with unilateral removal of tube (procedure)"
+          },
+          {
+            "code": "59750000",
+            "display": "Total hysterectomy with unilateral removal of tube and ovary (procedure)"
+          }
+        ]
+      },
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2018-03",
+        "concept": [
+          {
+            "code": "112918004",
+            "display": "Vaginal hysterectomy with colpo-urethrocystopexy, Marshall-Marchetti-Krantz type (procedure)"
+          },
+          {
+            "code": "116140006",
+            "display": "Total hysterectomy (procedure)"
+          },
+          {
+            "code": "116142003",
+            "display": "Radical hysterectomy (procedure)"
+          },
+          {
+            "code": "116143008",
+            "display": "Total abdominal hysterectomy (procedure)"
+          },
+          {
+            "code": "116144002",
+            "display": "Total abdominal hysterectomy with bilateral salpingo-oophorectomy (procedure)"
+          },
+          {
+            "code": "236888001",
+            "display": "Laparoscopic total hysterectomy (procedure)"
+          },
+          {
+            "code": "236891001",
+            "display": "Laparoscopic radical hysterectomy (procedure)"
+          },
+          {
+            "code": "24293001",
+            "display": "Excision of cervical stump by abdominal approach (procedure)"
+          },
+          {
+            "code": "265056007",
+            "display": "Vaginal hysterectomy (procedure)"
+          },
+          {
+            "code": "27185000",
+            "display": "Vaginal hysterectomy with partial colpectomy and repair of enterocele (procedure)"
+          },
+          {
+            "code": "287924009",
+            "display": "Excision of cervix stump (procedure)"
+          },
+          {
+            "code": "30160001",
+            "display": "Vaginal hysterectomy with total colpectomy and repair of enterocele (procedure)"
+          },
+          {
+            "code": "307771009",
+            "display": "Radical abdominal hysterectomy (procedure)"
+          },
+          {
+            "code": "309880009",
+            "display": "Vaginal hysterocolpectomy (procedure)"
+          },
+          {
+            "code": "35955002",
+            "display": "Radical vaginal hysterectomy (procedure)"
+          },
+          {
+            "code": "359971002",
+            "display": "Ward-Mayo operation for vaginal hysterectomy (procedure)"
+          },
+          {
+            "code": "359974005",
+            "display": "Tuffier operation for vaginal hysterectomy (procedure)"
+          },
+          {
+            "code": "359977003",
+            "display": "Mayo operation for vaginal hysterectomy (procedure)"
+          },
+          {
+            "code": "359983000",
+            "display": "Heaney operation for vaginal hysterectomy (procedure)"
+          },
+          {
+            "code": "361222003",
+            "display": "Wertheim-Meigs abdominal hysterectomy (procedure)"
+          },
+          {
+            "code": "361223008",
+            "display": "Wertheim operation (procedure)"
+          },
+          {
+            "code": "413145007",
+            "display": "Vaginal hysterectomy with conservation of ovaries (procedure)"
+          },
+          {
+            "code": "414575003",
+            "display": "Laparoscopic total abdominal hysterectomy and bilateral salpingo-oophorectomy (procedure)"
+          },
+          {
+            "code": "41566006",
+            "display": "Excision of cervical stump by vaginal approach (procedure)"
+          },
+          {
+            "code": "43791001",
+            "display": "Vaginal hysterectomy with total colpectomy (procedure)"
+          },
+          {
+            "code": "441820006",
+            "display": "Laparoscopy assisted vaginal hysterectomy with bilateral salpingo-oophorectomy (procedure)"
+          },
+          {
+            "code": "446446002",
+            "display": "Total abdominal hysterectomy and removal of vaginal cuff (procedure)"
+          },
+          {
+            "code": "446679008",
+            "display": "Total laparoscopic excision of uterus by abdominal approach (procedure)"
+          },
+          {
+            "code": "447771005",
+            "display": "Abdominal hysterectomy and excision of periuterine tissue (procedure)"
+          },
+          {
+            "code": "448539002",
+            "display": "Vaginal hysterectomy and excision of periuterine tissue (procedure)"
+          },
+          {
+            "code": "54490004",
+            "display": "Vaginal hysterectomy with repair of enterocele (procedure)"
+          },
+          {
+            "code": "63516002",
+            "display": "Vaginal hysterectomy with colpo-urethrocystopexy, Pereyra type (procedure)"
+          },
+          {
+            "code": "708877008",
+            "display": "Laparoscopic total hysterectomy using robotic assistance (procedure)"
+          },
+          {
+            "code": "708878003",
+            "display": "Laparoscopic radical hysterectomy using robotic assistance (procedure)"
+          },
+          {
+            "code": "75835007",
+            "display": "Laparoscopic-assisted vaginal hysterectomy (procedure)"
+          },
+          {
+            "code": "77902002",
+            "display": "Vaginal hysterectomy with partial colpectomy (procedure)"
+          },
+          {
+            "code": "86477000",
+            "display": "Total hysterectomy with removal of both tubes and ovaries (procedure)"
+          },
+          {
+            "code": "88144003",
+            "display": "Removal of ectopic interstitial uterine pregnancy requiring total hysterectomy (procedure)"
+          }
+        ]
+      }
+    ]
+  }
+}

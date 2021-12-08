@@ -1,0 +1,102 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.93",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.93",
+  "title": "Patient Refusal",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "105480006",
+            "display": "Refusal of treatment by patient (situation)"
+          },
+          {
+            "code": "182890002",
+            "display": "Patient requests alternative treatment (finding)"
+          },
+          {
+            "code": "182895007",
+            "display": "Drug declined by patient (situation)"
+          },
+          {
+            "code": "182896008",
+            "display": "Drug declined by patient - dislikes taste (situation)"
+          },
+          {
+            "code": "182897004",
+            "display": "Drug declined by patient - side effects (situation)"
+          },
+          {
+            "code": "182898009",
+            "display": "Drug declined by patient - inconvenient (situation)"
+          },
+          {
+            "code": "182900006",
+            "display": "Drug declined by patient - patient beliefs (situation)"
+          },
+          {
+            "code": "182901005",
+            "display": "Drug declined by patient - alternative therapy (situation)"
+          },
+          {
+            "code": "182903008",
+            "display": "Drug declined by patient - reason unknown (situation)"
+          },
+          {
+            "code": "183944003",
+            "display": "Procedure refused (situation)"
+          },
+          {
+            "code": "183945002",
+            "display": "Procedure refused for religious reason (situation)"
+          },
+          {
+            "code": "183946001",
+            "display": "Procedure refused - uncooperative (situation)"
+          },
+          {
+            "code": "183947005",
+            "display": "Refused procedure - after thought (situation)"
+          },
+          {
+            "code": "183948000",
+            "display": "Refused procedure - parent's wish (situation)"
+          },
+          {
+            "code": "275936005",
+            "display": "Patient noncompliance - general (situation)"
+          },
+          {
+            "code": "371138003",
+            "display": "Refusal of treatment by parents (situation)"
+          },
+          {
+            "code": "406149000",
+            "display": "Medication refused (situation)"
+          },
+          {
+            "code": "413312003",
+            "display": "Patient non-compliant - refused service (situation)"
+          },
+          {
+            "code": "416432009",
+            "display": "Procedure not wanted (situation)"
+          },
+          {
+            "code": "443390004",
+            "display": "Refused (qualifier value)"
+          },
+          {
+            "code": "609589008",
+            "display": "Refused by parents of subject (qualifier value)"
+          }
+        ]
+      }
+    ]
+  }
+}

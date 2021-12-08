@@ -1,0 +1,1390 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1125.2",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1125.2",
+  "title": "Schedule II and Schedule III Opioids",
+  "status": "active",
+  "publisher": "Mathematica",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "version": "2019-11",
+        "concept": [
+          {
+            "code": "1010600",
+            "display": "Buprenorphine 2 MG / Naloxone 0.5 MG Oral Strip"
+          },
+          {
+            "code": "1010604",
+            "display": "Buprenorphine 8 MG / Naloxone 2 MG Oral Strip"
+          },
+          {
+            "code": "1014599",
+            "display": "Acetaminophen 300 MG / Oxycodone Hydrochloride 10 MG Oral Tablet"
+          },
+          {
+            "code": "1014615",
+            "display": "Acetaminophen 300 MG / Oxycodone Hydrochloride 5 MG Oral Tablet"
+          },
+          {
+            "code": "1014632",
+            "display": "Acetaminophen 300 MG / Oxycodone Hydrochloride 7.5 MG Oral Tablet"
+          },
+          {
+            "code": "1037259",
+            "display": "Acetaminophen 300 MG / Oxycodone Hydrochloride 2.5 MG Oral Tablet"
+          },
+          {
+            "code": "1042693",
+            "display": "Chlorpheniramine Maleate 0.4 MG/ML / Codeine Phosphate 2 MG/ML / Phenylephrine Hydrochloride 1 MG/ML Oral Solution"
+          },
+          {
+            "code": "1044427",
+            "display": "Acetaminophen 20 MG/ML / Hydrocodone Bitartrate 0.667 MG/ML Oral Solution"
+          },
+          {
+            "code": "1049214",
+            "display": "Acetaminophen 325 MG / Oxycodone Hydrochloride 10 MG Oral Tablet"
+          },
+          {
+            "code": "1049221",
+            "display": "Acetaminophen 325 MG / Oxycodone Hydrochloride 5 MG Oral Tablet"
+          },
+          {
+            "code": "1049225",
+            "display": "Acetaminophen 325 MG / Oxycodone Hydrochloride 7.5 MG Oral Tablet"
+          },
+          {
+            "code": "1049251",
+            "display": "Acetaminophen 400 MG / Oxycodone Hydrochloride 10 MG Oral Tablet"
+          },
+          {
+            "code": "1049260",
+            "display": "Acetaminophen 400 MG / Oxycodone Hydrochloride 5 MG Oral Tablet"
+          },
+          {
+            "code": "1049502",
+            "display": "12 HR Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1049543",
+            "display": "12 HR Oxycodone Hydrochloride 15 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1049563",
+            "display": "12 HR Oxycodone Hydrochloride 20 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1049574",
+            "display": "12 HR Oxycodone Hydrochloride 30 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1049580",
+            "display": "Acetaminophen 65 MG/ML / Oxycodone Hydrochloride 1 MG/ML Oral Solution"
+          },
+          {
+            "code": "1049584",
+            "display": "12 HR Oxycodone Hydrochloride 40 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1049589",
+            "display": "Ibuprofen 400 MG / Oxycodone Hydrochloride 5 MG Oral Tablet"
+          },
+          {
+            "code": "1049593",
+            "display": "12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1049599",
+            "display": "12 HR Oxycodone Hydrochloride 80 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1049604",
+            "display": "Oxycodone Hydrochloride 1 MG/ML Oral Solution"
+          },
+          {
+            "code": "1049611",
+            "display": "Oxycodone Hydrochloride 15 MG Oral Tablet"
+          },
+          {
+            "code": "1049615",
+            "display": "Oxycodone Hydrochloride 20 MG/ML Oral Solution"
+          },
+          {
+            "code": "1049618",
+            "display": "Oxycodone Hydrochloride 30 MG Oral Tablet"
+          },
+          {
+            "code": "1049621",
+            "display": "Oxycodone Hydrochloride 5 MG Oral Tablet"
+          },
+          {
+            "code": "1049635",
+            "display": "Acetaminophen 325 MG / Oxycodone Hydrochloride 2.5 MG Oral Tablet"
+          },
+          {
+            "code": "1049683",
+            "display": "Oxycodone Hydrochloride 10 MG Oral Tablet"
+          },
+          {
+            "code": "1049686",
+            "display": "Oxycodone Hydrochloride 20 MG Oral Tablet"
+          },
+          {
+            "code": "1049691",
+            "display": "Aspirin 325 MG / Oxycodone Hydrochloride 5 MG Oral Tablet"
+          },
+          {
+            "code": "1049696",
+            "display": "Oxycodone Hydrochloride 5 MG Oral Capsule"
+          },
+          {
+            "code": "1053647",
+            "display": "Fentanyl 0.1 MG Sublingual Tablet"
+          },
+          {
+            "code": "1053652",
+            "display": "Fentanyl 0.2 MG Sublingual Tablet"
+          },
+          {
+            "code": "1053655",
+            "display": "Fentanyl 0.3 MG Sublingual Tablet"
+          },
+          {
+            "code": "1053658",
+            "display": "Fentanyl 0.4 MG Sublingual Tablet"
+          },
+          {
+            "code": "1053661",
+            "display": "Fentanyl 0.6 MG Sublingual Tablet"
+          },
+          {
+            "code": "1053664",
+            "display": "Fentanyl 0.8 MG Sublingual Tablet"
+          },
+          {
+            "code": "1087459",
+            "display": "12 HR CHLORPHENIRAMINE POLISTIREX 1.6 MG/ML / HYDROCODONE POLISTIREX 2 MG/ML Extended Release Suspension"
+          },
+          {
+            "code": "1089055",
+            "display": "Codeine Phosphate 10 MG / Guaifenesin 400 MG / Pseudoephedrine Hydrochloride 20 MG Oral Tablet"
+          },
+          {
+            "code": "1089058",
+            "display": "Codeine Phosphate 10 MG / Guaifenesin 400 MG / Pseudoephedrine Hydrochloride 30 MG Oral Tablet"
+          },
+          {
+            "code": "1089061",
+            "display": "Codeine Phosphate 10 MG / Guaifenesin 400 MG / Pseudoephedrine Hydrochloride 40 MG Oral Tablet"
+          },
+          {
+            "code": "1089070",
+            "display": "Codeine Phosphate 10 MG / Guaifenesin 400 MG / Pseudoephedrine Hydrochloride 60 MG Oral Tablet"
+          },
+          {
+            "code": "1099711",
+            "display": "Codeine Phosphate 20 MG / Pseudoephedrine Hydrochloride 60 MG / Triprolidine Hydrochloride 4 MG Oral Tablet"
+          },
+          {
+            "code": "1112220",
+            "display": "Chlorpheniramine Maleate 0.8 MG/ML / Hydrocodone Bitartrate 1 MG/ML / Pseudoephedrine Hydrochloride 12 MG/ML Oral Solution"
+          },
+          {
+            "code": "1113314",
+            "display": "Oxycodone Hydrochloride 7.5 MG Oral Tablet"
+          },
+          {
+            "code": "1113417",
+            "display": "Chlorpheniramine Maleate 0.4 MG/ML / Codeine Phosphate 2 MG/ML / Pseudoephedrine Hydrochloride 6 MG/ML Oral Solution"
+          },
+          {
+            "code": "1113998",
+            "display": "Chlorpheniramine Maleate 0.4 MG/ML / Codeine Phosphate 1.6 MG/ML Oral Solution"
+          },
+          {
+            "code": "1114003",
+            "display": "Chlorpheniramine Maleate 0.4 MG/ML / Codeine Phosphate 1.6 MG/ML / Pseudoephedrine Hydrochloride 6 MG/ML Oral Solution"
+          },
+          {
+            "code": "1114026",
+            "display": "Codeine Phosphate 1.6 MG/ML / Guaifenesin 40 MG/ML Oral Solution"
+          },
+          {
+            "code": "1114110",
+            "display": "Codeine Phosphate 1.6 MG/ML / Guaifenesin 40 MG/ML / Pseudoephedrine Hydrochloride 6 MG/ML Oral Solution"
+          },
+          {
+            "code": "1114334",
+            "display": "Hydrocodone Bitartrate 1 MG/ML / Pseudoephedrine Hydrochloride 12 MG/ML Oral Solution"
+          },
+          {
+            "code": "1114878",
+            "display": "Codeine Phosphate 1.6 MG/ML / Pseudoephedrine Hydrochloride 6 MG/ML Oral Solution"
+          },
+          {
+            "code": "1115573",
+            "display": "Fentanyl 0.1 MG/ACTUAT Metered Dose Nasal Spray"
+          },
+          {
+            "code": "1115577",
+            "display": "Fentanyl 0.4 MG/ACTUAT Metered Dose Nasal Spray"
+          },
+          {
+            "code": "1148797",
+            "display": "12 HR tapentadol 100 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1148800",
+            "display": "12 HR tapentadol 150 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1148803",
+            "display": "12 HR tapentadol 200 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1148807",
+            "display": "12 HR tapentadol 250 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1148809",
+            "display": "12 HR tapentadol 50 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1190580",
+            "display": "Codeine Phosphate 1.2 MG/ML / Dexbrompheniramine maleate 0.133 MG/ML / Pseudoephedrine Hydrochloride 4 MG/ML Oral Solution"
+          },
+          {
+            "code": "1232113",
+            "display": "1 ML Morphine Sulfate 15 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "1234872",
+            "display": "Aspirin 356.4 MG / Caffeine 30 MG / dihydrocodeine bitartrate 16 MG Oral Capsule"
+          },
+          {
+            "code": "1234941",
+            "display": "Chlorpheniramine Maleate 0.4 MG/ML / dihydrocodeine bitartrate 0.6 MG/ML / Phenylephrine Hydrochloride 1.5 MG/ML Oral Solution"
+          },
+          {
+            "code": "1235862",
+            "display": "Chlorcyclizine hydrochloride 2.5 MG/ML / Codeine Phosphate 1.8 MG/ML / Pseudoephedrine Hydrochloride 6 MG/ML Oral Solution"
+          },
+          {
+            "code": "1236239",
+            "display": "dihydrocodeine bitartrate 60 MG Oral Tablet"
+          },
+          {
+            "code": "1237050",
+            "display": "Fentanyl 0.1 MG/ACTUAT Mucosal Spray"
+          },
+          {
+            "code": "1237057",
+            "display": "Fentanyl 0.2 MG/ACTUAT Mucosal Spray"
+          },
+          {
+            "code": "1237060",
+            "display": "Fentanyl 0.4 MG/ACTUAT Mucosal Spray"
+          },
+          {
+            "code": "1237064",
+            "display": "Fentanyl 0.6 MG/ACTUAT Mucosal Spray"
+          },
+          {
+            "code": "1237068",
+            "display": "Fentanyl 0.8 MG/ACTUAT Mucosal Spray"
+          },
+          {
+            "code": "1303736",
+            "display": "Morphine Sulfate 40 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1306898",
+            "display": "24 HR Hydromorphone Hydrochloride 32 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1307056",
+            "display": "Buprenorphine 4 MG / Naloxone 1 MG Oral Strip"
+          },
+          {
+            "code": "1307061",
+            "display": "Buprenorphine 12 MG / Naloxone 3 MG Oral Strip"
+          },
+          {
+            "code": "1356797",
+            "display": "Brompheniramine Maleate 4 MG / Codeine Phosphate 10 MG / Phenylephrine Hydrochloride 10 MG Oral Tablet"
+          },
+          {
+            "code": "1356800",
+            "display": "Brompheniramine Maleate 4 MG / Codeine Phosphate 10 MG Oral Tablet"
+          },
+          {
+            "code": "1356804",
+            "display": "Brompheniramine Maleate 4 MG / Codeine Phosphate 20 MG / Phenylephrine Hydrochloride 10 MG Oral Tablet"
+          },
+          {
+            "code": "1356807",
+            "display": "Brompheniramine Maleate 4 MG / Codeine Phosphate 20 MG Oral Tablet"
+          },
+          {
+            "code": "1366873",
+            "display": "Hydrocodone Bitartrate 5 MG / Pseudoephedrine Hydrochloride 60 MG Oral Tablet"
+          },
+          {
+            "code": "1372265",
+            "display": "Chlorpheniramine Maleate 0.8 MG/ML / Hydrocodone Bitartrate 1 MG/ML Oral Solution"
+          },
+          {
+            "code": "1424295",
+            "display": "Acetaminophen 325 MG / Chlorpheniramine Maleate 2 MG / Codeine Phosphate 8 MG / Pseudoephedrine Hydrochloride 30 MG Oral Tablet"
+          },
+          {
+            "code": "1431076",
+            "display": "Buprenorphine 1.4 MG / Naloxone 0.36 MG Sublingual Tablet"
+          },
+          {
+            "code": "1431102",
+            "display": "Buprenorphine 5.7 MG / Naloxone 1.4 MG Sublingual Tablet"
+          },
+          {
+            "code": "1431286",
+            "display": "Acetaminophen 300 MG / butalbital 50 MG / Caffeine 40 MG / Codeine Phosphate 30 MG Oral Capsule"
+          },
+          {
+            "code": "1432969",
+            "display": "168 HR Buprenorphine 0.015 MG/HR Transdermal System"
+          },
+          {
+            "code": "1433251",
+            "display": "0.5 ML Hydromorphone Hydrochloride 1 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "1440003",
+            "display": "Codeine Phosphate 1.8 MG/ML / Dexchlorpheniramine maleate 0.2 MG/ML / Phenylephrine Hydrochloride 1 MG/ML Oral Solution"
+          },
+          {
+            "code": "1442790",
+            "display": "1 ML Morphine Sulfate 5 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "1491832",
+            "display": "12 HR Acetaminophen 325 MG / Oxycodone Hydrochloride 7.5 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1541630",
+            "display": "Brompheniramine Maleate 0.8 MG/ML / Codeine Phosphate 2 MG/ML / Phenylephrine Hydrochloride 2 MG/ML Oral Solution"
+          },
+          {
+            "code": "1542390",
+            "display": "Buprenorphine 2.1 MG / Naloxone 0.3 MG Buccal Film"
+          },
+          {
+            "code": "1542997",
+            "display": "168 HR Buprenorphine 0.0075 MG/HR Transdermal System"
+          },
+          {
+            "code": "1544851",
+            "display": "Buprenorphine 4.2 MG / Naloxone 0.7 MG Buccal Film"
+          },
+          {
+            "code": "1544854",
+            "display": "Buprenorphine 6.3 MG / Naloxone 1 MG Buccal Film"
+          },
+          {
+            "code": "1595730",
+            "display": "Abuse-Deterrent 24 HR Hydrocodone Bitartrate 20 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1595740",
+            "display": "Abuse-Deterrent 24 HR Hydrocodone Bitartrate 30 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1595746",
+            "display": "Abuse-Deterrent 24 HR Hydrocodone Bitartrate 40 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1595752",
+            "display": "Abuse-Deterrent 24 HR Hydrocodone Bitartrate 60 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1595758",
+            "display": "Abuse-Deterrent 24 HR Hydrocodone Bitartrate 80 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1595764",
+            "display": "Abuse-Deterrent 24 HR Hydrocodone Bitartrate 100 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1595770",
+            "display": "Abuse-Deterrent 24 HR Hydrocodone Bitartrate 120 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1596108",
+            "display": "Acetaminophen 320.5 MG / Caffeine 30 MG / dihydrocodeine bitartrate 16 MG Oral Capsule"
+          },
+          {
+            "code": "1597568",
+            "display": "Buprenorphine 11.4 MG / Naloxone 2.9 MG Sublingual Tablet"
+          },
+          {
+            "code": "1597573",
+            "display": "Buprenorphine 8.6 MG / Naloxone 2.1 MG Sublingual Tablet"
+          },
+          {
+            "code": "1603495",
+            "display": "72 HR Fentanyl 0.0375 MG/HR Transdermal System"
+          },
+          {
+            "code": "1603498",
+            "display": "72 HR Fentanyl 0.0625 MG/HR Transdermal System"
+          },
+          {
+            "code": "1603501",
+            "display": "72 HR Fentanyl 0.0875 MG/HR Transdermal System"
+          },
+          {
+            "code": "1651558",
+            "display": "Guaifenesin 40 MG/ML / Hydrocodone Bitartrate 0.5 MG/ML / Pseudoephedrine Hydrochloride 6 MG/ML Oral Solution"
+          },
+          {
+            "code": "1652087",
+            "display": "12 HR CHLORPHENIRAMINE POLISTIREX 0.8 MG/ML / CODEINE POLISTIREX 4 MG/ML Extended Release Suspension"
+          },
+          {
+            "code": "1655032",
+            "display": "1 ML Buprenorphine 0.3 MG/ML Cartridge"
+          },
+          {
+            "code": "1655058",
+            "display": "Meperidine Hydrochloride 150 MG Oral Tablet"
+          },
+          {
+            "code": "1655060",
+            "display": "Meperidine Hydrochloride 75 MG Oral Tablet"
+          },
+          {
+            "code": "1661319",
+            "display": "Codeine Phosphate 2 MG/ML / Phenylephrine Hydrochloride 2 MG/ML / Triprolidine Hydrochloride 0.5 MG/ML Oral Solution"
+          },
+          {
+            "code": "1664543",
+            "display": "12 HR Chlorpheniramine Maleate 8 MG / Codeine Phosphate 54.3 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1666338",
+            "display": "Buprenorphine 2.9 MG / Naloxone 0.71 MG Sublingual Tablet"
+          },
+          {
+            "code": "1666831",
+            "display": "80 ACTUAT Fentanyl 0.04 MG/ACTUAT Transdermal System"
+          },
+          {
+            "code": "1716057",
+            "display": "Buprenorphine 0.15 MG Buccal Film"
+          },
+          {
+            "code": "1716065",
+            "display": "Buprenorphine 0.3 MG Buccal Film"
+          },
+          {
+            "code": "1716069",
+            "display": "Buprenorphine 0.45 MG Buccal Film"
+          },
+          {
+            "code": "1716073",
+            "display": "Buprenorphine 0.6 MG Buccal Film"
+          },
+          {
+            "code": "1716077",
+            "display": "Buprenorphine 0.075 MG Buccal Film"
+          },
+          {
+            "code": "1716081",
+            "display": "Buprenorphine 0.75 MG Buccal Film"
+          },
+          {
+            "code": "1716086",
+            "display": "Buprenorphine 0.9 MG Buccal Film"
+          },
+          {
+            "code": "1724383",
+            "display": "1 ML Hydromorphone Hydrochloride 1 MG/ML Cartridge"
+          },
+          {
+            "code": "1724644",
+            "display": "1 ML Hydromorphone Hydrochloride 2 MG/ML Cartridge"
+          },
+          {
+            "code": "1729197",
+            "display": "1 ML Morphine Sulfate 2 MG/ML Cartridge"
+          },
+          {
+            "code": "1729320",
+            "display": "Fentanyl 0.3 MG/ACTUAT Metered Dose Nasal Spray"
+          },
+          {
+            "code": "1731995",
+            "display": "1 ML Morphine Sulfate 10 MG/ML Cartridge"
+          },
+          {
+            "code": "1732003",
+            "display": "1 ML Morphine Sulfate 8 MG/ML Cartridge"
+          },
+          {
+            "code": "1732014",
+            "display": "1 ML Morphine Sulfate 4 MG/ML Cartridge"
+          },
+          {
+            "code": "1733080",
+            "display": "1 ML Morphine Sulfate 15 MG/ML Cartridge"
+          },
+          {
+            "code": "1790527",
+            "display": "Abuse-Deterrent 12 HR Oxycodone 9 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1791558",
+            "display": "Abuse-Deterrent 12 HR Oxycodone 13.5 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1791567",
+            "display": "Abuse-Deterrent 12 HR Oxycodone 18 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1791574",
+            "display": "Abuse-Deterrent 12 HR Oxycodone 27 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1791580",
+            "display": "Abuse-Deterrent 12 HR Oxycodone 36 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1792707",
+            "display": "Codeine Phosphate 2 MG/ML / Guaifenesin 40 MG/ML / Pseudoephedrine Hydrochloride 6 MG/ML Oral Solution"
+          },
+          {
+            "code": "1797650",
+            "display": "Buprenorphine 74.2 MG Drug Implant"
+          },
+          {
+            "code": "1812164",
+            "display": "Acetaminophen 325 MG / Caffeine 30 MG / dihydrocodeine bitartrate 16 MG Oral Tablet"
+          },
+          {
+            "code": "1860127",
+            "display": "Abuse-Deterrent 12 HR Oxycodone Hydrochloride 60 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1860129",
+            "display": "Abuse-Deterrent 12 HR Oxycodone Hydrochloride 20 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1860137",
+            "display": "Abuse-Deterrent 12 HR Oxycodone Hydrochloride 40 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1860148",
+            "display": "Abuse-Deterrent 12 HR Oxycodone Hydrochloride 80 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1860151",
+            "display": "Abuse-Deterrent 12 HR Oxycodone Hydrochloride 30 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1860154",
+            "display": "Abuse-Deterrent 12 HR Oxycodone Hydrochloride 15 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1860157",
+            "display": "Abuse-Deterrent 12 HR Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1860491",
+            "display": "12 HR Hydrocodone Bitartrate 10 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1860493",
+            "display": "12 HR Hydrocodone Bitartrate 15 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1860495",
+            "display": "12 HR Hydrocodone Bitartrate 20 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1860497",
+            "display": "12 HR Hydrocodone Bitartrate 30 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1860499",
+            "display": "12 HR Hydrocodone Bitartrate 40 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1860501",
+            "display": "12 HR Hydrocodone Bitartrate 50 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "1864412",
+            "display": "Buprenorphine 0.7 MG / Naloxone 0.18 MG Sublingual Tablet"
+          },
+          {
+            "code": "1871434",
+            "display": "Abuse-Deterrent 12 HR Morphine Sulfate 15 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1871441",
+            "display": "Abuse-Deterrent 12 HR Morphine Sulfate 30 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1871444",
+            "display": "Abuse-Deterrent 12 HR Morphine Sulfate 60 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1872234",
+            "display": "Abuse-Deterrent 12 HR Morphine Sulfate 100 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1872271",
+            "display": "1 ML Hydromorphone Hydrochloride 4 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "197696",
+            "display": "72 HR Fentanyl 0.075 MG/HR Transdermal System"
+          },
+          {
+            "code": "197873",
+            "display": "Levorphanol 2 MG Oral Tablet"
+          },
+          {
+            "code": "200240",
+            "display": "paregoric 0.4 MG/ML Oral Solution"
+          },
+          {
+            "code": "245134",
+            "display": "72 HR Fentanyl 0.025 MG/HR Transdermal System"
+          },
+          {
+            "code": "245135",
+            "display": "72 HR Fentanyl 0.05 MG/HR Transdermal System"
+          },
+          {
+            "code": "245136",
+            "display": "72 HR Fentanyl 0.1 MG/HR Transdermal System"
+          },
+          {
+            "code": "310293",
+            "display": "Fentanyl 1.2 MG Oral Lozenge"
+          },
+          {
+            "code": "310294",
+            "display": "Fentanyl 1.6 MG Oral Lozenge"
+          },
+          {
+            "code": "310295",
+            "display": "Fentanyl 0.2 MG Oral Lozenge"
+          },
+          {
+            "code": "310297",
+            "display": "Fentanyl 0.4 MG Oral Lozenge"
+          },
+          {
+            "code": "312104",
+            "display": "Belladonna Alkaloids 16.2 MG / Opium 30 MG Rectal Suppository"
+          },
+          {
+            "code": "312107",
+            "display": "Belladonna Alkaloids 16.2 MG / Opium 60 MG Rectal Suppository"
+          },
+          {
+            "code": "313992",
+            "display": "Fentanyl 0.6 MG Oral Lozenge"
+          },
+          {
+            "code": "313993",
+            "display": "Fentanyl 0.8 MG Oral Lozenge"
+          },
+          {
+            "code": "351264",
+            "display": "Buprenorphine 2 MG Sublingual Tablet"
+          },
+          {
+            "code": "351265",
+            "display": "Buprenorphine 8 MG Sublingual Tablet"
+          },
+          {
+            "code": "351266",
+            "display": "Buprenorphine 2 MG / Naloxone 0.5 MG Sublingual Tablet"
+          },
+          {
+            "code": "351267",
+            "display": "Buprenorphine 8 MG / Naloxone 2 MG Sublingual Tablet"
+          },
+          {
+            "code": "577057",
+            "display": "72 HR Fentanyl 0.012 MG/HR Transdermal System"
+          },
+          {
+            "code": "637540",
+            "display": "Aspirin 325 MG / Oxycodone Hydrochloride 4.5 MG / oxycodone terephthalate 0.38 MG Oral Tablet"
+          },
+          {
+            "code": "668363",
+            "display": "Fentanyl 0.1 MG Buccal Tablet"
+          },
+          {
+            "code": "668364",
+            "display": "Fentanyl 0.2 MG Buccal Tablet"
+          },
+          {
+            "code": "668365",
+            "display": "Fentanyl 0.4 MG Buccal Tablet"
+          },
+          {
+            "code": "668366",
+            "display": "Fentanyl 0.6 MG Buccal Tablet"
+          },
+          {
+            "code": "668367",
+            "display": "Fentanyl 0.8 MG Buccal Tablet"
+          },
+          {
+            "code": "727759",
+            "display": "2 ML Fentanyl 0.05 MG/ML Cartridge"
+          },
+          {
+            "code": "825409",
+            "display": "tapentadol 100 MG Oral Tablet"
+          },
+          {
+            "code": "825411",
+            "display": "tapentadol 50 MG Oral Tablet"
+          },
+          {
+            "code": "825413",
+            "display": "tapentadol 75 MG Oral Tablet"
+          },
+          {
+            "code": "830196",
+            "display": "opium tincture 100 MG/ML Oral Solution"
+          },
+          {
+            "code": "848768",
+            "display": "Aspirin 325 MG / Oxycodone Hydrochloride 4.84 MG Oral Tablet"
+          },
+          {
+            "code": "856908",
+            "display": "Acetaminophen 660 MG / Hydrocodone Bitartrate 10 MG Oral Tablet"
+          },
+          {
+            "code": "856940",
+            "display": "Acetaminophen 21.7 MG/ML / Hydrocodone Bitartrate 0.5 MG/ML Oral Solution"
+          },
+          {
+            "code": "856944",
+            "display": "Acetaminophen 21.7 MG/ML / Hydrocodone Bitartrate 0.67 MG/ML Oral Solution"
+          },
+          {
+            "code": "856980",
+            "display": "Acetaminophen 300 MG / Hydrocodone Bitartrate 10 MG Oral Tablet"
+          },
+          {
+            "code": "856987",
+            "display": "Acetaminophen 300 MG / Hydrocodone Bitartrate 5 MG Oral Tablet"
+          },
+          {
+            "code": "856992",
+            "display": "Acetaminophen 300 MG / Hydrocodone Bitartrate 7.5 MG Oral Tablet"
+          },
+          {
+            "code": "856999",
+            "display": "Acetaminophen 325 MG / Hydrocodone Bitartrate 10 MG Oral Tablet"
+          },
+          {
+            "code": "857002",
+            "display": "Acetaminophen 325 MG / Hydrocodone Bitartrate 5 MG Oral Tablet"
+          },
+          {
+            "code": "857005",
+            "display": "Acetaminophen 325 MG / Hydrocodone Bitartrate 7.5 MG Oral Tablet"
+          },
+          {
+            "code": "857099",
+            "display": "Acetaminophen 33.3 MG/ML / Hydrocodone Bitartrate 0.5 MG/ML Oral Solution"
+          },
+          {
+            "code": "857131",
+            "display": "Acetaminophen 400 MG / Hydrocodone Bitartrate 5 MG Oral Tablet"
+          },
+          {
+            "code": "857391",
+            "display": "Acetaminophen 325 MG / Hydrocodone Bitartrate 2.5 MG Oral Tablet"
+          },
+          {
+            "code": "857510",
+            "display": "12 HR CHLORPHENIRAMINE POLISTIREX 4 MG / HYDROCODONE POLISTIREX 5 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "857512",
+            "display": "12 HR CHLORPHENIRAMINE POLISTIREX 8 MG / HYDROCODONE POLISTIREX 10 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "858770",
+            "display": "Hydrocodone Bitartrate 2.5 MG / Ibuprofen 200 MG Oral Tablet"
+          },
+          {
+            "code": "858778",
+            "display": "Hydrocodone Bitartrate 5 MG / Ibuprofen 200 MG Oral Tablet"
+          },
+          {
+            "code": "858798",
+            "display": "Hydrocodone Bitartrate 7.5 MG / Ibuprofen 200 MG Oral Tablet"
+          },
+          {
+            "code": "859315",
+            "display": "Hydrocodone Bitartrate 10 MG / Ibuprofen 200 MG Oral Tablet"
+          },
+          {
+            "code": "859383",
+            "display": "Guaifenesin 40 MG/ML / Hydrocodone Bitartrate 0.5 MG/ML Oral Solution"
+          },
+          {
+            "code": "860792",
+            "display": "1 ML Meperidine Hydrochloride 75 MG/ML Cartridge"
+          },
+          {
+            "code": "861447",
+            "display": "Meperidine Hydrochloride 10 MG/ML Injectable Solution"
+          },
+          {
+            "code": "861455",
+            "display": "Meperidine Hydrochloride 100 MG Oral Tablet"
+          },
+          {
+            "code": "861459",
+            "display": "Meperidine Hydrochloride 100 MG/ML Injectable Solution"
+          },
+          {
+            "code": "861463",
+            "display": "Meperidine Hydrochloride 50 MG/ML Injectable Solution"
+          },
+          {
+            "code": "861467",
+            "display": "Meperidine Hydrochloride 50 MG Oral Tablet"
+          },
+          {
+            "code": "861473",
+            "display": "1 ML Meperidine Hydrochloride 50 MG/ML Cartridge"
+          },
+          {
+            "code": "861479",
+            "display": "Meperidine Hydrochloride 10 MG/ML Oral Solution"
+          },
+          {
+            "code": "861493",
+            "display": "1 ML Meperidine Hydrochloride 100 MG/ML Cartridge"
+          },
+          {
+            "code": "861494",
+            "display": "1 ML Meperidine Hydrochloride 25 MG/ML Cartridge"
+          },
+          {
+            "code": "861578",
+            "display": "Meperidine Hydrochloride 50 MG / Promethazine Hydrochloride 25 MG Oral Capsule"
+          },
+          {
+            "code": "863845",
+            "display": "Abuse-Deterrent Morphine Sulfate 100 MG / Naltrexone hydrochloride 4 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "863848",
+            "display": "Abuse-Deterrent Morphine Sulfate 20 MG / Naltrexone hydrochloride 0.8 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "863850",
+            "display": "Abuse-Deterrent Morphine Sulfate 30 MG / Naltrexone hydrochloride 1.2 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "863852",
+            "display": "Abuse-Deterrent Morphine Sulfate 50 MG / Naltrexone hydrochloride 2 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "863854",
+            "display": "Abuse-Deterrent Morphine Sulfate 60 MG / Naltrexone hydrochloride 2.4 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "863856",
+            "display": "Abuse-Deterrent Morphine Sulfate 80 MG / Naltrexone hydrochloride 3.2 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "864706",
+            "display": "Methadone Hydrochloride 10 MG Oral Tablet"
+          },
+          {
+            "code": "864714",
+            "display": "Methadone Hydrochloride 10 MG/ML Injectable Solution"
+          },
+          {
+            "code": "864718",
+            "display": "Methadone Hydrochloride 5 MG Oral Tablet"
+          },
+          {
+            "code": "864761",
+            "display": "Methadone Hydrochloride 1 MG/ML Oral Solution"
+          },
+          {
+            "code": "864769",
+            "display": "Methadone Hydrochloride 2 MG/ML Oral Solution"
+          },
+          {
+            "code": "864978",
+            "display": "Methadone Hydrochloride 40 MG Tablet for Oral Suspension"
+          },
+          {
+            "code": "891874",
+            "display": "Morphine Sulfate 100 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "891878",
+            "display": "12 HR Morphine Sulfate 15 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "891881",
+            "display": "Morphine Sulfate 15 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "891883",
+            "display": "12 HR Morphine Sulfate 100 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "891885",
+            "display": "12 HR Morphine Sulfate 30 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "891888",
+            "display": "Morphine Sulfate 30 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "891890",
+            "display": "12 HR Morphine Sulfate 60 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "891893",
+            "display": "Morphine Sulfate 60 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "892297",
+            "display": "24 HR Morphine Sulfate 120 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "892342",
+            "display": "24 HR Morphine Sulfate 30 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "892345",
+            "display": "Morphine Sulfate 30 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "892349",
+            "display": "24 HR Morphine Sulfate 60 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "892352",
+            "display": "Morphine Sulfate 60 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "892355",
+            "display": "24 HR Morphine Sulfate 90 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "892494",
+            "display": "Morphine Sulfate 10 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "892516",
+            "display": "Morphine Sulfate 10 MG Rectal Suppository"
+          },
+          {
+            "code": "892554",
+            "display": "Morphine Sulfate 100 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "892582",
+            "display": "Morphine Sulfate 15 MG Oral Tablet"
+          },
+          {
+            "code": "892589",
+            "display": "Morphine Sulfate 2 MG/ML Oral Solution"
+          },
+          {
+            "code": "892596",
+            "display": "Morphine Sulfate 20 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "892603",
+            "display": "Morphine Sulfate 20 MG Rectal Suppository"
+          },
+          {
+            "code": "892625",
+            "display": "Morphine Sulfate 20 MG/ML Oral Solution"
+          },
+          {
+            "code": "892643",
+            "display": "Morphine Sulfate 200 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "892646",
+            "display": "Morphine Sulfate 200 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "892672",
+            "display": "Morphine Sulfate 30 MG Oral Tablet"
+          },
+          {
+            "code": "892678",
+            "display": "Morphine Sulfate 30 MG Rectal Suppository"
+          },
+          {
+            "code": "894780",
+            "display": "Morphine Sulfate 4 MG/ML Oral Solution"
+          },
+          {
+            "code": "894801",
+            "display": "Morphine Sulfate 50 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "894807",
+            "display": "Morphine Sulfate 5 MG Rectal Suppository"
+          },
+          {
+            "code": "894814",
+            "display": "Morphine Sulfate 80 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "894911",
+            "display": "0.7 ML Morphine Sulfate 14.3 MG/ML Auto-Injector"
+          },
+          {
+            "code": "894912",
+            "display": "1 ML Morphine Sulfate 10 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "894914",
+            "display": "1 ML Morphine Sulfate 8 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "894918",
+            "display": "12 HR Morphine Sulfate 200 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "894942",
+            "display": "24 HR Morphine Sulfate 45 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "894970",
+            "display": "24 HR Morphine Sulfate 75 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "895201",
+            "display": "Morphine Sulfate 20 MG Oral Tablet"
+          },
+          {
+            "code": "895217",
+            "display": "Morphine Sulfate 5 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "895221",
+            "display": "Morphine Sulfate 50 MG Oral Tablet"
+          },
+          {
+            "code": "895861",
+            "display": "Morphine Sulfate 25 MG Oral Tablet"
+          },
+          {
+            "code": "895867",
+            "display": "Morphine hydrochloride 40 MG Oral Tablet"
+          },
+          {
+            "code": "895869",
+            "display": "Morphine Sulfate 5 MG Oral Tablet"
+          },
+          {
+            "code": "897657",
+            "display": "Hydromorphone Hydrochloride 1 MG/ML Oral Solution"
+          },
+          {
+            "code": "897696",
+            "display": "Hydromorphone Hydrochloride 2 MG Oral Tablet"
+          },
+          {
+            "code": "897702",
+            "display": "Hydromorphone Hydrochloride 4 MG Oral Tablet"
+          },
+          {
+            "code": "897710",
+            "display": "Hydromorphone Hydrochloride 8 MG Oral Tablet"
+          },
+          {
+            "code": "897745",
+            "display": "Hydromorphone Hydrochloride 2 MG/ML Injectable Solution"
+          },
+          {
+            "code": "897749",
+            "display": "Hydromorphone Hydrochloride 3 MG Rectal Suppository"
+          },
+          {
+            "code": "897756",
+            "display": "1 ML Hydromorphone Hydrochloride 1 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "897757",
+            "display": "1 ML Hydromorphone Hydrochloride 2 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "897758",
+            "display": "1 ML Hydromorphone Hydrochloride 4 MG/ML Cartridge"
+          },
+          {
+            "code": "898612",
+            "display": "12 HR Hydromorphone Hydrochloride 3 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "898624",
+            "display": "Hydromorphone Hydrochloride 30 MG Extended Release Oral Capsule"
+          },
+          {
+            "code": "902729",
+            "display": "24 HR Hydromorphone Hydrochloride 12 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "902736",
+            "display": "24 HR Hydromorphone Hydrochloride 16 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "902741",
+            "display": "24 HR Hydromorphone Hydrochloride 8 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "904870",
+            "display": "168 HR Buprenorphine 0.01 MG/HR Transdermal System"
+          },
+          {
+            "code": "904876",
+            "display": "168 HR Buprenorphine 0.02 MG/HR Transdermal System"
+          },
+          {
+            "code": "904880",
+            "display": "168 HR Buprenorphine 0.005 MG/HR Transdermal System"
+          },
+          {
+            "code": "977874",
+            "display": "12 HR Oxymorphone Hydrochloride 10 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "977894",
+            "display": "12 HR Oxymorphone Hydrochloride 15 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "977902",
+            "display": "12 HR Oxymorphone Hydrochloride 20 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "977909",
+            "display": "12 HR Oxymorphone Hydrochloride 30 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "977915",
+            "display": "12 HR Oxymorphone Hydrochloride 40 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "977923",
+            "display": "12 HR Oxymorphone Hydrochloride 5 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "977929",
+            "display": "12 HR Oxymorphone Hydrochloride 7.5 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "977939",
+            "display": "Oxymorphone Hydrochloride 5 MG Oral Tablet"
+          },
+          {
+            "code": "977942",
+            "display": "Oxymorphone Hydrochloride 10 MG Oral Tablet"
+          },
+          {
+            "code": "991147",
+            "display": "Methadone Hydrochloride 10 MG/ML Oral Solution"
+          },
+          {
+            "code": "991486",
+            "display": "Codeine Phosphate 2 MG/ML / Promethazine Hydrochloride 1.25 MG/ML Oral Solution"
+          },
+          {
+            "code": "992656",
+            "display": "homatropine methylbromide 1.5 MG / Hydrocodone Bitartrate 5 MG Oral Tablet"
+          },
+          {
+            "code": "992668",
+            "display": "homatropine methylbromide 0.3 MG/ML / Hydrocodone Bitartrate 1 MG/ML Oral Solution"
+          },
+          {
+            "code": "993755",
+            "display": "Acetaminophen 24 MG/ML / Codeine Phosphate 2.4 MG/ML Oral Solution"
+          },
+          {
+            "code": "993763",
+            "display": "Acetaminophen 24 MG/ML / Codeine Phosphate 2.4 MG/ML Oral Suspension"
+          },
+          {
+            "code": "993770",
+            "display": "Acetaminophen 300 MG / Codeine Phosphate 15 MG Oral Tablet"
+          },
+          {
+            "code": "993781",
+            "display": "Acetaminophen 300 MG / Codeine Phosphate 30 MG Oral Tablet"
+          },
+          {
+            "code": "993890",
+            "display": "Acetaminophen 300 MG / Codeine Phosphate 60 MG Oral Tablet"
+          },
+          {
+            "code": "993943",
+            "display": "Acetaminophen 325 MG / butalbital 50 MG / Caffeine 40 MG / Codeine Phosphate 30 MG Oral Capsule"
+          },
+          {
+            "code": "994226",
+            "display": "Aspirin 325 MG / Carisoprodol 200 MG / Codeine Phosphate 16 MG Oral Tablet"
+          },
+          {
+            "code": "994237",
+            "display": "Aspirin 325 MG / butalbital 50 MG / Caffeine 40 MG / Codeine Phosphate 30 MG Oral Capsule"
+          },
+          {
+            "code": "994289",
+            "display": "Brompheniramine Maleate 0.27 MG/ML / Codeine Phosphate 1.27 MG/ML / Pseudoephedrine Hydrochloride 2 MG/ML Oral Solution"
+          },
+          {
+            "code": "994402",
+            "display": "Brompheniramine Maleate 0.4 MG/ML / Codeine Phosphate 1.5 MG/ML / Pseudoephedrine Hydrochloride 6 MG/ML Oral Solution"
+          },
+          {
+            "code": "995226",
+            "display": "Codeine Phosphate 0.5 MG/ML / Guaifenesin 15 MG/ML Oral Solution"
+          },
+          {
+            "code": "995438",
+            "display": "Codeine Phosphate 1.26 MG/ML / Guaifenesin 20 MG/ML Oral Solution"
+          },
+          {
+            "code": "995441",
+            "display": "Codeine Phosphate 1.5 MG/ML / Guaifenesin 45 MG/ML Oral Solution"
+          },
+          {
+            "code": "995447",
+            "display": "Codeine Phosphate 1.8 MG/ML / Pyrilamine Maleate 1.67 MG/ML Oral Solution"
+          },
+          {
+            "code": "995450",
+            "display": "Codeine Phosphate 10 MG / Guaifenesin 300 MG Oral Tablet"
+          },
+          {
+            "code": "995476",
+            "display": "Codeine Phosphate 10 MG / Guaifenesin 400 MG Oral Tablet"
+          },
+          {
+            "code": "995483",
+            "display": "Codeine Phosphate 2 MG/ML / Guaifenesin 40 MG/ML Oral Solution"
+          },
+          {
+            "code": "995868",
+            "display": "Codeine Phosphate 2 MG/ML / Guaifenesin 20 MG/ML Oral Solution"
+          },
+          {
+            "code": "995983",
+            "display": "Codeine Phosphate 2 MG/ML / Guaifenesin 20 MG/ML / Pseudoephedrine Hydrochloride 6 MG/ML Oral Solution"
+          },
+          {
+            "code": "996580",
+            "display": "Codeine Phosphate 2 MG/ML / Phenylephrine Hydrochloride 1 MG/ML / Pyrilamine Maleate 1 MG/ML Oral Solution"
+          },
+          {
+            "code": "996640",
+            "display": "Codeine Phosphate 2 MG/ML / Pseudoephedrine Hydrochloride 6 MG/ML / Triprolidine Hydrochloride 0.25 MG/ML Oral Solution"
+          },
+          {
+            "code": "996706",
+            "display": "Codeine Phosphate 20 MG / Guaifenesin 400 MG / Phenylephrine Hydrochloride 10 MG Oral Tablet"
+          },
+          {
+            "code": "996710",
+            "display": "Codeine Phosphate 20 MG / Guaifenesin 400 MG / Pseudoephedrine Hydrochloride 20 MG Oral Tablet"
+          },
+          {
+            "code": "996714",
+            "display": "Codeine Phosphate 20 MG / Guaifenesin 400 MG / Pseudoephedrine Hydrochloride 30 MG Oral Tablet"
+          },
+          {
+            "code": "996718",
+            "display": "Codeine Phosphate 20 MG / Guaifenesin 400 MG / Pseudoephedrine Hydrochloride 40 MG Oral Tablet"
+          },
+          {
+            "code": "996722",
+            "display": "Codeine Phosphate 20 MG / Guaifenesin 400 MG / Pseudoephedrine Hydrochloride 60 MG Oral Tablet"
+          },
+          {
+            "code": "996725",
+            "display": "Codeine Phosphate 20 MG / Guaifenesin 400 MG Oral Tablet"
+          },
+          {
+            "code": "996728",
+            "display": "Codeine Phosphate 20 MG / Pseudoephedrine Hydrochloride 60 MG Oral Capsule"
+          },
+          {
+            "code": "996736",
+            "display": "Codeine Phosphate 9 MG / Guaifenesin 200 MG Oral Capsule"
+          },
+          {
+            "code": "996757",
+            "display": "Codeine Phosphate 2 MG/ML / Phenylephrine Hydrochloride 1 MG/ML / Promethazine Hydrochloride 1.25 MG/ML Oral Solution"
+          },
+          {
+            "code": "996988",
+            "display": "Aspirin 300 MG / Codeine Phosphate 8 MG Oral Tablet"
+          },
+          {
+            "code": "996998",
+            "display": "Brompheniramine Maleate 0.266 MG/ML / Codeine Phosphate 1.27 MG/ML / Phenylephrine Hydrochloride 0.666 MG/ML Oral Solution"
+          },
+          {
+            "code": "997169",
+            "display": "Codeine Phosphate 15 MG Oral Tablet"
+          },
+          {
+            "code": "997170",
+            "display": "Codeine sulfate 15 MG Oral Tablet"
+          },
+          {
+            "code": "997287",
+            "display": "Codeine sulfate 30 MG Oral Tablet"
+          },
+          {
+            "code": "997296",
+            "display": "Codeine sulfate 60 MG Oral Tablet"
+          },
+          {
+            "code": "997398",
+            "display": "Codeine Phosphate 2 MG/ML Oral Solution"
+          },
+          {
+            "code": "998212",
+            "display": "1 ML Morphine Sulfate 2 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "998213",
+            "display": "1 ML Morphine Sulfate 4 MG/ML Prefilled Syringe"
+          }
+        ]
+      }
+    ]
+  }
+}

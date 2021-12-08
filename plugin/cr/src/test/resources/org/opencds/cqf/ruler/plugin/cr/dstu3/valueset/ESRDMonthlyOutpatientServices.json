@@ -1,0 +1,118 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.109.12.1014",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.109.12.1014",
+  "title": "ESRD Monthly Outpatient Services",
+  "status": "active",
+  "publisher": "National Committee for Quality Assurance",
+  "compose": {
+    "include": [
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "2019",
+        "concept": [
+          {
+            "code": "90951",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients younger than 2 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 4 or more face-to-face visits by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90952",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients younger than 2 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 2-3 face-to-face visits by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90953",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients younger than 2 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 1 face-to-face visit by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90954",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 2-11 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 4 or more face-to-face visits by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90955",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 2-11 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 2-3 face-to-face visits by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90956",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 2-11 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 1 face-to-face visit by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90957",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 12-19 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 4 or more face-to-face visits by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90958",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 12-19 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 2-3 face-to-face visits by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90959",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 12-19 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 1 face-to-face visit by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90960",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 20 years of age and older; with 4 or more face-to-face visits by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90961",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 20 years of age and older; with 2-3 face-to-face visits by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90962",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 20 years of age and older; with 1 face-to-face visit by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90963",
+            "display": "End-stage renal disease (ESRD) related services for home dialysis per full month, for patients younger than 2 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents"
+          },
+          {
+            "code": "90964",
+            "display": "End-stage renal disease (ESRD) related services for home dialysis per full month, for patients 2-11 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents"
+          },
+          {
+            "code": "90965",
+            "display": "End-stage renal disease (ESRD) related services for home dialysis per full month, for patients 12-19 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents"
+          },
+          {
+            "code": "90966",
+            "display": "End-stage renal disease (ESRD) related services for home dialysis per full month, for patients 20 years of age and older"
+          },
+          {
+            "code": "90967",
+            "display": "End-stage renal disease (ESRD) related services for dialysis less than a full month of service, per day; for patients younger than 2 years of age"
+          },
+          {
+            "code": "90968",
+            "display": "End-stage renal disease (ESRD) related services for dialysis less than a full month of service, per day; for patients 2-11 years of age"
+          },
+          {
+            "code": "90969",
+            "display": "End-stage renal disease (ESRD) related services for dialysis less than a full month of service, per day; for patients 12-19 years of age"
+          },
+          {
+            "code": "90970",
+            "display": "End-stage renal disease (ESRD) related services for dialysis less than a full month of service, per day; for patients 20 years of age and older"
+          },
+          {
+            "code": "90989",
+            "display": "Dialysis training, patient, including helper where applicable, any mode, completed course"
+          },
+          {
+            "code": "90993",
+            "display": "Dialysis training, patient, including helper where applicable, any mode, course not completed, per training session"
+          },
+          {
+            "code": "90997",
+            "display": "Hemoperfusion (eg, with activated charcoal or resin)"
+          },
+          {
+            "code": "90999",
+            "display": "Unlisted dialysis procedure, inpatient or outpatient"
+          },
+          {
+            "code": "99512",
+            "display": "Home visit for hemodialysis"
+          }
+        ]
+      }
+    ]
+  }
+}

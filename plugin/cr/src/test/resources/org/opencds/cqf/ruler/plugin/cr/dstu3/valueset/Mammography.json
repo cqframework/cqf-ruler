@@ -1,0 +1,418 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.108.12.1018",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1018",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.464.1003.108.12.1018"
+    }
+  ],
+  "version": "20171222",
+  "name": "Mammography",
+  "title": "Mammography",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+        "version": "2017",
+        "concept": [
+          {
+            "code": "G0202",
+            "display": "Screening mammography, bilateral (2-view study of each breast), including computer-aided detection (cad) when performed"
+          },
+          {
+            "code": "G0204",
+            "display": "Diagnostic mammography, including computer-aided detection (cad) when performed; bilateral"
+          },
+          {
+            "code": "G0206",
+            "display": "Diagnostic mammography, including computer-aided detection (cad) when performed; unilateral"
+          }
+        ]
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.58",
+        "concept": [
+          {
+            "code": "38067-5",
+            "display": "Breast - bilateral Mammogram nipple profile"
+          }
+        ]
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.64",
+        "concept": [
+          {
+            "code": "24604-1",
+            "display": "MG Breast Diagnostic Limited Views"
+          },
+          {
+            "code": "24605-8",
+            "display": "MG Breast Diagnostic"
+          },
+          {
+            "code": "24606-6",
+            "display": "MG Breast Screening"
+          },
+          {
+            "code": "24610-8",
+            "display": "MG Breast Limited Views"
+          },
+          {
+            "code": "26175-0",
+            "display": "MG Breast - bilateral Screening"
+          },
+          {
+            "code": "26176-8",
+            "display": "MG Breast - left Screening"
+          },
+          {
+            "code": "26177-6",
+            "display": "MG Breast - right Screening"
+          },
+          {
+            "code": "26287-3",
+            "display": "MG Breast - bilateral Limited Views"
+          },
+          {
+            "code": "26289-9",
+            "display": "MG Breast - left Limited Views"
+          },
+          {
+            "code": "26291-5",
+            "display": "MG Breast - right Limited Views"
+          },
+          {
+            "code": "26346-7",
+            "display": "MG Breast - bilateral Diagnostic"
+          },
+          {
+            "code": "26347-5",
+            "display": "MG Breast - left Diagnostic"
+          },
+          {
+            "code": "26348-3",
+            "display": "MG Breast - right Diagnostic"
+          },
+          {
+            "code": "26349-1",
+            "display": "MG Breast - bilateral Diagnostic Limited Views"
+          },
+          {
+            "code": "26350-9",
+            "display": "MG Breast - left Diagnostic Limited Views"
+          },
+          {
+            "code": "26351-7",
+            "display": "MG Breast - right Diagnostic Limited Views"
+          },
+          {
+            "code": "36319-2",
+            "display": "MG Breast 4 Views"
+          },
+          {
+            "code": "36625-2",
+            "display": "MG Breast Views"
+          },
+          {
+            "code": "36626-0",
+            "display": "MG Breast - bilateral Views"
+          },
+          {
+            "code": "36627-8",
+            "display": "MG Breast - left Views"
+          },
+          {
+            "code": "36642-7",
+            "display": "MG Breast - left 2 Views"
+          },
+          {
+            "code": "36962-9",
+            "display": "MG Breast Axillary"
+          },
+          {
+            "code": "37005-6",
+            "display": "MG Breast - left Magnification"
+          },
+          {
+            "code": "37006-4",
+            "display": "MG Breast - bilateral MLO"
+          },
+          {
+            "code": "37016-3",
+            "display": "MG Breast - bilateral Rolled Views"
+          },
+          {
+            "code": "37017-1",
+            "display": "MG Breast - left Rolled Views"
+          },
+          {
+            "code": "37028-8",
+            "display": "MG Breast Tangential"
+          },
+          {
+            "code": "37029-6",
+            "display": "MG Breast - bilateral Tangential"
+          },
+          {
+            "code": "37030-4",
+            "display": "MG Breast - left Tangential"
+          },
+          {
+            "code": "37037-9",
+            "display": "MG Breast True lateral"
+          },
+          {
+            "code": "37038-7",
+            "display": "MG Breast - bilateral True lateral"
+          },
+          {
+            "code": "37052-8",
+            "display": "MG Breast - bilateral XCCL"
+          },
+          {
+            "code": "37053-6",
+            "display": "MG Breast - left XCCL"
+          },
+          {
+            "code": "37539-4",
+            "display": "MG Breast Grid Views"
+          },
+          {
+            "code": "37542-8",
+            "display": "MG Breast Magnification Views"
+          },
+          {
+            "code": "37543-6",
+            "display": "MG Breast - bilateral Magnification Views"
+          },
+          {
+            "code": "37551-9",
+            "display": "MG Breast Spot Views"
+          },
+          {
+            "code": "37552-7",
+            "display": "MG Breast - bilateral Spot Views"
+          },
+          {
+            "code": "37553-5",
+            "display": "MG Breast - left Spot Views compression"
+          },
+          {
+            "code": "37554-3",
+            "display": "MG Breast - bilateral Magnification and Spot"
+          },
+          {
+            "code": "37768-9",
+            "display": "MG Breast - right 2 Views"
+          },
+          {
+            "code": "37769-7",
+            "display": "MG Breast - right Magnification and Spot"
+          },
+          {
+            "code": "37770-5",
+            "display": "MG Breast - right Tangential"
+          },
+          {
+            "code": "37771-3",
+            "display": "MG Breast - right True lateral"
+          },
+          {
+            "code": "37772-1",
+            "display": "MG Breast - right XCCL"
+          },
+          {
+            "code": "37773-9",
+            "display": "MG Breast - right Magnification"
+          },
+          {
+            "code": "37774-7",
+            "display": "MG Breast - right Views"
+          },
+          {
+            "code": "37775-4",
+            "display": "MG Breast - right Rolled Views"
+          },
+          {
+            "code": "38070-9",
+            "display": "MG Breast Views for implant"
+          },
+          {
+            "code": "38071-7",
+            "display": "MG Breast - bilateral Views for implant"
+          },
+          {
+            "code": "38072-5",
+            "display": "MG Breast - left Views for implant"
+          },
+          {
+            "code": "38090-7",
+            "display": "MG Breast - bilateral Air gap Views"
+          },
+          {
+            "code": "38091-5",
+            "display": "MG Breast - left Air gap Views"
+          },
+          {
+            "code": "38807-4",
+            "display": "MG Breast - right Spot Views"
+          },
+          {
+            "code": "38820-7",
+            "display": "MG Breast - right Views for implant"
+          },
+          {
+            "code": "38854-6",
+            "display": "MG Breast - left Magnification and Spot"
+          },
+          {
+            "code": "38855-3",
+            "display": "MG Breast - left True lateral"
+          },
+          {
+            "code": "39150-8",
+            "display": "FFD mammogram Breast Views Post Localization"
+          },
+          {
+            "code": "39152-4",
+            "display": "FFD mammogram Breast Diagnostic"
+          },
+          {
+            "code": "39153-2",
+            "display": "FFD mammogram Breast Screening"
+          },
+          {
+            "code": "39154-0",
+            "display": "FFD mammogram Breast - bilateral Diagnostic"
+          },
+          {
+            "code": "42168-5",
+            "display": "FFD mammogram Breast - right Diagnostic"
+          },
+          {
+            "code": "42169-3",
+            "display": "FFD mammogram Breast - left Diagnostic"
+          },
+          {
+            "code": "42174-3",
+            "display": "FFD mammogram Breast - bilateral Screening"
+          },
+          {
+            "code": "42415-0",
+            "display": "MG Breast - bilateral Views Post Wire Placement"
+          },
+          {
+            "code": "42416-8",
+            "display": "MG Breast - left Views Post Wire Placement"
+          },
+          {
+            "code": "46335-6",
+            "display": "MG Breast - bilateral Single view"
+          },
+          {
+            "code": "46336-4",
+            "display": "MG Breast - left Single view"
+          },
+          {
+            "code": "46337-2",
+            "display": "MG Breast - right Single view"
+          },
+          {
+            "code": "46338-0",
+            "display": "MG Breast - unilateral Single view"
+          },
+          {
+            "code": "46339-8",
+            "display": "MG Breast - unilateral Views"
+          },
+          {
+            "code": "46342-2",
+            "display": "FFD mammogram Breast Views"
+          },
+          {
+            "code": "46350-5",
+            "display": "MG Breast - unilateral Diagnostic"
+          },
+          {
+            "code": "46351-3",
+            "display": "MG Breast - bilateral Displacement Views for Implant"
+          },
+          {
+            "code": "46354-7",
+            "display": "FFD mammogram Breast - right Screening"
+          },
+          {
+            "code": "46355-4",
+            "display": "FFD mammogram Breast - left Screening"
+          },
+          {
+            "code": "46356-2",
+            "display": "MG Breast - unilateral Screening"
+          },
+          {
+            "code": "46380-2",
+            "display": "MG Breast - unilateral Views for implant"
+          },
+          {
+            "code": "48475-8",
+            "display": "MG Breast - bilateral Diagnostic for implant"
+          },
+          {
+            "code": "48492-3",
+            "display": "MG Breast - bilateral Screening for implant"
+          },
+          {
+            "code": "69150-1",
+            "display": "MG Breast - left Diagnostic for implant"
+          },
+          {
+            "code": "69251-7",
+            "display": "MG Breast Views Post Wire Placement"
+          },
+          {
+            "code": "69259-0",
+            "display": "MG Breast - right Diagnostic for implant"
+          },
+          {
+            "code": "72137-3",
+            "display": "DBT Breast - right diagnostic"
+          },
+          {
+            "code": "72138-1",
+            "display": "DBT Breast - left diagnostic"
+          },
+          {
+            "code": "72139-9",
+            "display": "DBT Breast - bilateral diagnostic"
+          },
+          {
+            "code": "72140-7",
+            "display": "DBT Breast - right screening"
+          },
+          {
+            "code": "72141-5",
+            "display": "DBT Breast - left screening"
+          },
+          {
+            "code": "72142-3",
+            "display": "DBT Breast - bilateral screening"
+          },
+          {
+            "code": "86462-9",
+            "display": "DBT Breast - unilateral"
+          },
+          {
+            "code": "86463-7",
+            "display": "DBT Breast - bilateral"
+          }
+        ]
+      }
+    ]
+  }
+}

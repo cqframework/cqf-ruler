@@ -1,0 +1,30 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.560.100.2",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.560.100.2",
+  "identifier": [
+    {
+      "system": "urn:ietf:rfc:3986",
+      "value": "2.16.840.1.113883.3.560.100.2"
+    }
+  ],
+  "version": "20160331",
+  "name": "Female",
+  "title": "Female",
+  "status": "active",
+  "publisher": "NLM",
+  "compose": {
+    "include": [
+      {
+        "system": "http://hl7.org/fhir/v3/AdministrativeGender",
+        "version": "HL7V3.0_2017-07",
+        "concept": [
+          {
+            "code": "F",
+            "display": "Female"
+          }
+        ]
+      }
+    ]
+  }
+}

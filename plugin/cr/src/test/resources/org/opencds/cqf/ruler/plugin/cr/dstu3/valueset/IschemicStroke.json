@@ -1,0 +1,484 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.117.1.7.1.247",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.247",
+  "title": "Ischemic Stroke",
+  "status": "active",
+  "publisher": "The Joint Commission",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "111297002",
+            "display": "Nonparalytic stroke (disorder)"
+          },
+          {
+            "code": "116288000",
+            "display": "Paralytic stroke (disorder)"
+          },
+          {
+            "code": "195185009",
+            "display": "Cerebral infarct due to thrombosis of precerebral arteries (disorder)"
+          },
+          {
+            "code": "195186005",
+            "display": "Cerebral infarction due to embolism of precerebral arteries (disorder)"
+          },
+          {
+            "code": "195189003",
+            "display": "Cerebral infarction due to thrombosis of cerebral arteries (disorder)"
+          },
+          {
+            "code": "195190007",
+            "display": "Cerebral infarction due to embolism of cerebral arteries (disorder)"
+          },
+          {
+            "code": "195212005",
+            "display": "Brainstem stroke syndrome (disorder)"
+          },
+          {
+            "code": "195213000",
+            "display": "Cerebellar stroke syndrome (disorder)"
+          },
+          {
+            "code": "195216008",
+            "display": "Left sided cerebral hemisphere cerebrovascular accident (disorder)"
+          },
+          {
+            "code": "195217004",
+            "display": "Right sided cerebral hemisphere cerebrovascular accident (disorder)"
+          },
+          {
+            "code": "195230003",
+            "display": "Cerebral infarction due to cerebral venous thrombosis, non-pyogenic (disorder)"
+          },
+          {
+            "code": "230690007",
+            "display": "Cerebrovascular accident (disorder)"
+          },
+          {
+            "code": "230691006",
+            "display": "Cerebrovascular accident due to occlusion of cerebral artery (disorder)"
+          },
+          {
+            "code": "230692004",
+            "display": "Infarction - precerebral (disorder)"
+          },
+          {
+            "code": "230693009",
+            "display": "Anterior cerebral circulation infarction (disorder)"
+          },
+          {
+            "code": "230694003",
+            "display": "Total anterior cerebral circulation infarction (disorder)"
+          },
+          {
+            "code": "230695002",
+            "display": "Partial anterior cerebral circulation infarction (disorder)"
+          },
+          {
+            "code": "230696001",
+            "display": "Posterior cerebral circulation infarction (disorder)"
+          },
+          {
+            "code": "230698000",
+            "display": "Lacunar infarction (disorder)"
+          },
+          {
+            "code": "230699008",
+            "display": "Pure motor lacunar infarction (disorder)"
+          },
+          {
+            "code": "230700009",
+            "display": "Pure sensory lacunar infarction (disorder)"
+          },
+          {
+            "code": "230701008",
+            "display": "Pure sensorimotor lacunar infarction (disorder)"
+          },
+          {
+            "code": "307363008",
+            "display": "Multiple lacunar infarcts (disorder)"
+          },
+          {
+            "code": "426107000",
+            "display": "Acute lacunar infarction (disorder)"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "I63.00",
+            "display": "Cerebral infarction due to thrombosis of unspecified precerebral artery"
+          },
+          {
+            "code": "I63.011",
+            "display": "Cerebral infarction due to thrombosis of right vertebral artery"
+          },
+          {
+            "code": "I63.012",
+            "display": "Cerebral infarction due to thrombosis of left vertebral artery"
+          },
+          {
+            "code": "I63.013",
+            "display": "Cerebral infarction due to thrombosis of bilateral vertebral arteries"
+          },
+          {
+            "code": "I63.019",
+            "display": "Cerebral infarction due to thrombosis of unspecified vertebral artery"
+          },
+          {
+            "code": "I63.02",
+            "display": "Cerebral infarction due to thrombosis of basilar artery"
+          },
+          {
+            "code": "I63.031",
+            "display": "Cerebral infarction due to thrombosis of right carotid artery"
+          },
+          {
+            "code": "I63.032",
+            "display": "Cerebral infarction due to thrombosis of left carotid artery"
+          },
+          {
+            "code": "I63.033",
+            "display": "Cerebral infarction due to thrombosis of bilateral carotid arteries"
+          },
+          {
+            "code": "I63.039",
+            "display": "Cerebral infarction due to thrombosis of unspecified carotid artery"
+          },
+          {
+            "code": "I63.09",
+            "display": "Cerebral infarction due to thrombosis of other precerebral artery"
+          },
+          {
+            "code": "I63.10",
+            "display": "Cerebral infarction due to embolism of unspecified precerebral artery"
+          },
+          {
+            "code": "I63.111",
+            "display": "Cerebral infarction due to embolism of right vertebral artery"
+          },
+          {
+            "code": "I63.112",
+            "display": "Cerebral infarction due to embolism of left vertebral artery"
+          },
+          {
+            "code": "I63.113",
+            "display": "Cerebral infarction due to embolism of bilateral vertebral arteries"
+          },
+          {
+            "code": "I63.119",
+            "display": "Cerebral infarction due to embolism of unspecified vertebral artery"
+          },
+          {
+            "code": "I63.12",
+            "display": "Cerebral infarction due to embolism of basilar artery"
+          },
+          {
+            "code": "I63.131",
+            "display": "Cerebral infarction due to embolism of right carotid artery"
+          },
+          {
+            "code": "I63.132",
+            "display": "Cerebral infarction due to embolism of left carotid artery"
+          },
+          {
+            "code": "I63.133",
+            "display": "Cerebral infarction due to embolism of bilateral carotid arteries"
+          },
+          {
+            "code": "I63.139",
+            "display": "Cerebral infarction due to embolism of unspecified carotid artery"
+          },
+          {
+            "code": "I63.19",
+            "display": "Cerebral infarction due to embolism of other precerebral artery"
+          },
+          {
+            "code": "I63.20",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of unspecified precerebral arteries"
+          },
+          {
+            "code": "I63.211",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of right vertebral artery"
+          },
+          {
+            "code": "I63.212",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of left vertebral artery"
+          },
+          {
+            "code": "I63.213",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of bilateral vertebral arteries"
+          },
+          {
+            "code": "I63.219",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of unspecified vertebral artery"
+          },
+          {
+            "code": "I63.22",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of basilar artery"
+          },
+          {
+            "code": "I63.231",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of right carotid arteries"
+          },
+          {
+            "code": "I63.232",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of left carotid arteries"
+          },
+          {
+            "code": "I63.233",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of bilateral carotid arteries"
+          },
+          {
+            "code": "I63.239",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of unspecified carotid artery"
+          },
+          {
+            "code": "I63.29",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of other precerebral arteries"
+          },
+          {
+            "code": "I63.30",
+            "display": "Cerebral infarction due to thrombosis of unspecified cerebral artery"
+          },
+          {
+            "code": "I63.311",
+            "display": "Cerebral infarction due to thrombosis of right middle cerebral artery"
+          },
+          {
+            "code": "I63.312",
+            "display": "Cerebral infarction due to thrombosis of left middle cerebral artery"
+          },
+          {
+            "code": "I63.313",
+            "display": "Cerebral infarction due to thrombosis of bilateral middle cerebral arteries"
+          },
+          {
+            "code": "I63.319",
+            "display": "Cerebral infarction due to thrombosis of unspecified middle cerebral artery"
+          },
+          {
+            "code": "I63.321",
+            "display": "Cerebral infarction due to thrombosis of right anterior cerebral artery"
+          },
+          {
+            "code": "I63.322",
+            "display": "Cerebral infarction due to thrombosis of left anterior cerebral artery"
+          },
+          {
+            "code": "I63.323",
+            "display": "Cerebral infarction due to thrombosis of bilateral anterior cerebral arteries"
+          },
+          {
+            "code": "I63.329",
+            "display": "Cerebral infarction due to thrombosis of unspecified anterior cerebral artery"
+          },
+          {
+            "code": "I63.331",
+            "display": "Cerebral infarction due to thrombosis of right posterior cerebral artery"
+          },
+          {
+            "code": "I63.332",
+            "display": "Cerebral infarction due to thrombosis of left posterior cerebral artery"
+          },
+          {
+            "code": "I63.333",
+            "display": "Cerebral infarction due to thrombosis of bilateral posterior cerebral arteries"
+          },
+          {
+            "code": "I63.339",
+            "display": "Cerebral infarction due to thrombosis of unspecified posterior cerebral artery"
+          },
+          {
+            "code": "I63.341",
+            "display": "Cerebral infarction due to thrombosis of right cerebellar artery"
+          },
+          {
+            "code": "I63.342",
+            "display": "Cerebral infarction due to thrombosis of left cerebellar artery"
+          },
+          {
+            "code": "I63.343",
+            "display": "Cerebral infarction due to thrombosis of bilateral cerebellar arteries"
+          },
+          {
+            "code": "I63.349",
+            "display": "Cerebral infarction due to thrombosis of unspecified cerebellar artery"
+          },
+          {
+            "code": "I63.39",
+            "display": "Cerebral infarction due to thrombosis of other cerebral artery"
+          },
+          {
+            "code": "I63.40",
+            "display": "Cerebral infarction due to embolism of unspecified cerebral artery"
+          },
+          {
+            "code": "I63.411",
+            "display": "Cerebral infarction due to embolism of right middle cerebral artery"
+          },
+          {
+            "code": "I63.412",
+            "display": "Cerebral infarction due to embolism of left middle cerebral artery"
+          },
+          {
+            "code": "I63.413",
+            "display": "Cerebral infarction due to embolism of bilateral middle cerebral arteries"
+          },
+          {
+            "code": "I63.419",
+            "display": "Cerebral infarction due to embolism of unspecified middle cerebral artery"
+          },
+          {
+            "code": "I63.421",
+            "display": "Cerebral infarction due to embolism of right anterior cerebral artery"
+          },
+          {
+            "code": "I63.422",
+            "display": "Cerebral infarction due to embolism of left anterior cerebral artery"
+          },
+          {
+            "code": "I63.423",
+            "display": "Cerebral infarction due to embolism of bilateral anterior cerebral arteries"
+          },
+          {
+            "code": "I63.429",
+            "display": "Cerebral infarction due to embolism of unspecified anterior cerebral artery"
+          },
+          {
+            "code": "I63.431",
+            "display": "Cerebral infarction due to embolism of right posterior cerebral artery"
+          },
+          {
+            "code": "I63.432",
+            "display": "Cerebral infarction due to embolism of left posterior cerebral artery"
+          },
+          {
+            "code": "I63.433",
+            "display": "Cerebral infarction due to embolism of bilateral posterior cerebral arteries"
+          },
+          {
+            "code": "I63.439",
+            "display": "Cerebral infarction due to embolism of unspecified posterior cerebral artery"
+          },
+          {
+            "code": "I63.441",
+            "display": "Cerebral infarction due to embolism of right cerebellar artery"
+          },
+          {
+            "code": "I63.442",
+            "display": "Cerebral infarction due to embolism of left cerebellar artery"
+          },
+          {
+            "code": "I63.443",
+            "display": "Cerebral infarction due to embolism of bilateral cerebellar arteries"
+          },
+          {
+            "code": "I63.449",
+            "display": "Cerebral infarction due to embolism of unspecified cerebellar artery"
+          },
+          {
+            "code": "I63.49",
+            "display": "Cerebral infarction due to embolism of other cerebral artery"
+          },
+          {
+            "code": "I63.50",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of unspecified cerebral artery"
+          },
+          {
+            "code": "I63.511",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of right middle cerebral artery"
+          },
+          {
+            "code": "I63.512",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of left middle cerebral artery"
+          },
+          {
+            "code": "I63.513",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of bilateral middle cerebral arteries"
+          },
+          {
+            "code": "I63.519",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of unspecified middle cerebral artery"
+          },
+          {
+            "code": "I63.521",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of right anterior cerebral artery"
+          },
+          {
+            "code": "I63.522",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of left anterior cerebral artery"
+          },
+          {
+            "code": "I63.523",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of bilateral anterior cerebral arteries"
+          },
+          {
+            "code": "I63.529",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of unspecified anterior cerebral artery"
+          },
+          {
+            "code": "I63.531",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of right posterior cerebral artery"
+          },
+          {
+            "code": "I63.532",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of left posterior cerebral artery"
+          },
+          {
+            "code": "I63.533",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of bilateral posterior cerebral arteries"
+          },
+          {
+            "code": "I63.539",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of unspecified posterior cerebral artery"
+          },
+          {
+            "code": "I63.541",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of right cerebellar artery"
+          },
+          {
+            "code": "I63.542",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of left cerebellar artery"
+          },
+          {
+            "code": "I63.543",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of bilateral cerebellar arteries"
+          },
+          {
+            "code": "I63.549",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of unspecified cerebellar artery"
+          },
+          {
+            "code": "I63.59",
+            "display": "Cerebral infarction due to unspecified occlusion or stenosis of other cerebral artery"
+          },
+          {
+            "code": "I63.6",
+            "display": "Cerebral infarction due to cerebral venous thrombosis, nonpyogenic"
+          },
+          {
+            "code": "I63.81",
+            "display": "Other cerebral infarction due to occlusion or stenosis of small artery"
+          },
+          {
+            "code": "I63.89",
+            "display": "Other cerebral infarction"
+          },
+          {
+            "code": "I63.9",
+            "display": "Cerebral infarction, unspecified"
+          }
+        ]
+      }
+    ]
+  }
+}
