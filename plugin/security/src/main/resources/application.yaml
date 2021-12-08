@@ -1,5 +1,5 @@
 oauth:
-   enabled: true
+   enabled: false
    securityCors: true
    securityUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
    securityExtAuthUrl: authorize
