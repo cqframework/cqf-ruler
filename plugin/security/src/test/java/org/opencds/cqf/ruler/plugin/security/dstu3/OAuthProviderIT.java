@@ -1,20 +1,21 @@
-package org.opencds.cqf.ruler.plugin.security;
-
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
-import org.hl7.fhir.r4.model.CapabilityStatement;
-import org.opencds.cqf.ruler.Application;
-import org.springframework.boot.web.server.LocalServerPort;
+package org.opencds.cqf.ruler.plugin.security.dstu3;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.opencds.cqf.ruler.Application;
+import org.opencds.cqf.ruler.plugin.security.SecurityConfig;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
@@ -24,11 +25,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 	// when running in a spring boot environment
 	"spring.main.allow-bean-definition-overriding=true",
 	"spring.batch.job.enabled=false",
-	"spring.datasource.url=jdbc:h2:mem:dbr4-mt",
-	"hapi.fhir.fhir_version=r4",
+	"spring.datasource.url=jdbc:h2:mem:dbdstu3-mt",
+	"hapi.fhir.fhir_version=dstu3",
 	"hapi.fhir.tester_enabled=false",
-	"hapi.fhir.security.oauth.enabled=true"
-
+	"hapi.fhir.security.enabled=true"
 })
 public class OAuthProviderIT {
 	private IGenericClient ourClient;
@@ -40,7 +40,7 @@ public class OAuthProviderIT {
 	@BeforeEach
 	void beforeEach() {
 
-		ourCtx = FhirContext.forR4();
+		ourCtx = FhirContext.forDstu3Cached();
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";

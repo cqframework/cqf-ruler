@@ -1,37 +1,38 @@
-package org.opencds.cqf.ruler.plugin.security;
+package org.opencds.cqf.ruler.plugin.security.r4;
 
 import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.UriType;
-import org.hl7.fhir.r4.model.Coding;
 import org.opencds.cqf.ruler.api.MetadataExtender;
+import org.opencds.cqf.ruler.plugin.security.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class OAuthProvider implements MetadataExtender<CapabilityStatement> {
 
 	@Autowired
-	SecurityProperties oAuthProperties;
+	SecurityProperties securityProperties;
 
 	@Override
 	public void extend(CapabilityStatement metadata) {
-		metadata.getRestFirstRep().getSecurity().setCors(oAuthProperties.getSecurityCors());
+		metadata.getRestFirstRep().getSecurity().setCors(securityProperties.getOAuth().getSecurityCors());
 		Extension securityExtension = metadata.getRestFirstRep().getSecurity().addExtension();
-		securityExtension.setUrl(oAuthProperties.getSecurityUrl());
+		securityExtension.setUrl(securityProperties.getOAuth().getSecurityUrl());
 
 		// security.extension.extension
 		Extension securityExtExt = securityExtension.addExtension();
-		securityExtExt.setUrl(oAuthProperties.getSecurityExtAuthUrl());
-		securityExtExt.setValue(new UriType(oAuthProperties.getSecurityExtAuthValueUri()));
+		securityExtExt.setUrl(securityProperties.getOAuth().getSecurityExtAuthUrl());
+		securityExtExt.setValue(new UriType(securityProperties.getOAuth().getSecurityExtAuthValueUri()));
 		Extension securityTokenExt = securityExtension.addExtension();
-		securityTokenExt.setUrl(oAuthProperties.getSecurityExtTokenUrl());
-		securityTokenExt.setValue(new UriType(oAuthProperties.getSecurityExtTokenValueUri()));
+		securityTokenExt.setUrl(securityProperties.getOAuth().getSecurityExtTokenUrl());
+		securityTokenExt.setValue(new UriType(securityProperties.getOAuth().getSecurityExtTokenValueUri()));
 
 		// security.extension.service
 		Coding coding = new Coding();
-		coding.setSystem(oAuthProperties.getServiceSystem());
-		coding.setCode(oAuthProperties.getServiceCode());
-		coding.setDisplay(oAuthProperties.getServiceDisplay());
+		coding.setSystem(securityProperties.getOAuth().getServiceSystem());
+		coding.setCode(securityProperties.getOAuth().getServiceCode());
+		coding.setDisplay(securityProperties.getOAuth().getServiceDisplay());
 		CodeableConcept codeConcept = new CodeableConcept();
 		codeConcept.addCoding(coding);
 		metadata.getRestFirstRep().getSecurity().getService().add(codeConcept);
