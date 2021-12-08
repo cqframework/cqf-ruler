@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.base.Strings;
+
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
 import org.hl7.fhir.dstu3.model.DomainResource;
@@ -19,8 +21,10 @@ import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.ruler.plugin.cql.CqlProperties;
 import org.opencds.cqf.ruler.plugin.cql.JpaDataProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.JpaFhirDal;
 import org.opencds.cqf.ruler.plugin.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.LibraryLoaderFactory;
@@ -47,17 +51,25 @@ public class ExpressionEvaluation implements LibraryUtilities {
      * is loaded into the context for the expression
      */
     public Object evaluateInContext(DomainResource instance, String cql, String patientId, RequestDetails theRequest) {
-        Iterable<Reference> libraries = getLibraryReferences(instance, theRequest);
+		JpaFhirDal jpaFhirDal = jpaFhirDalFactory.create(theRequest);
+        Iterable<Reference> libraries = getLibraryReferences(instance, jpaFhirDal, theRequest);
         //String fhirVersion = this.context.getVersion().getVersion().getFhirVersionString();
         String fhirVersion = "3.0.0";
 
+		// temporary LibraryLoader to resolve library dependencies when building includes
+        LibraryLoader tempLibraryLoader = libraryLoaderFactory.create(
+			  	new ArrayList<LibraryContentProvider>(
+					  Arrays.asList(
+							jpaLibraryContentProviderFactory.create(theRequest)
+				))
+			);
         // Provide the instance as the value of the '%context' parameter, as well as the
         // value of a parameter named the same as the resource
         // This enables expressions to access the resource by root, as well as through
         // the %context attribute
         String source = String.format(
                 "library LocalLibrary using FHIR version '"+ fhirVersion + "' include FHIRHelpers version '"+ fhirVersion + "' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-                buildIncludes(libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
+                buildIncludes(tempLibraryLoader, jpaFhirDal, libraries), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
         // String source = String.format("library LocalLibrary using FHIR version '1.8'
         // include FHIRHelpers version '1.8' called FHIRHelpers %s parameter %s %s
         // parameter \"%%context\" %s define Expression: %s",
@@ -65,10 +77,12 @@ public class ExpressionEvaluation implements LibraryUtilities {
         // instance.fhirType(), cql);
 
         LibraryLoader libraryLoader = libraryLoaderFactory.create(
-            Arrays.asList(
-                jpaLibraryContentProviderFactory.create(theRequest), 
-                new InMemoryLibraryContentProvider(Arrays.asList(source))
-        ));
+			  	new ArrayList<LibraryContentProvider>(
+					  Arrays.asList(
+							jpaLibraryContentProviderFactory.create(theRequest), 
+							new InMemoryLibraryContentProvider(Arrays.asList(source)
+				)))
+			);
 
         Context context = new Context(libraryLoader.load(new VersionedIdentifier().withId("LocalLibrary")));
         context.setDebugMap(getDebugMap());
@@ -82,14 +96,14 @@ public class ExpressionEvaluation implements LibraryUtilities {
         return context.resolveExpressionRef("Expression").evaluate(context);
     }
 
-    private Iterable<Reference> getLibraryReferences(DomainResource instance, RequestDetails theRequest) {
+    private Iterable<Reference> getLibraryReferences(DomainResource instance, JpaFhirDal jpaFhirDal, RequestDetails theRequest) {
         List<Reference> references = new ArrayList<>();
 
         if (instance.hasContained()) {
             for (Resource resource : instance.getContained()) {
                 if (resource instanceof Library) {
                     resource.setId(resource.getIdElement().getIdPart().replace("#", ""));
-                    jpaFhirDalFactory.create(theRequest).update((Library) resource);
+                    jpaFhirDal.update((Library) resource);
                     // getLibraryLoader().putLibrary(resource.getIdElement().getIdPart(),
                     // getLibraryLoader().toElmLibrary((Library) resource));
                 }
@@ -124,32 +138,61 @@ public class ExpressionEvaluation implements LibraryUtilities {
         return cleanReferences(references);
     }
 
-    private String buildIncludes(Iterable<Reference> references) {
+    private String buildIncludes(LibraryLoader libraryLoader, JpaFhirDal jpaFhirDal, Iterable<Reference> references) {
         StringBuilder builder = new StringBuilder();
         for (Reference reference : references) {
+			  String cqlLibraryName = reference.getReferenceElement().getIdPart();
+			  String cqlLibraryVersion = reference.getReferenceElement().getVersionIdPart();
+			  VersionedIdentifier vi = new VersionedIdentifier();
+			  vi.withId(cqlLibraryName);
+			  if (!Strings.isNullOrEmpty(cqlLibraryVersion)) {
+					vi.withVersion(cqlLibraryVersion);
+			  }
 
-            if (builder.length() > 0) {
-                builder.append(" ");
-            }
-
-            builder.append("include ");
-
-            // TODO: This assumes the libraries resource id is the same as the library name,
-            // need to work this out better
-            builder.append(reference.getReferenceElement().getIdPart());
-
-            if (reference.getReferenceElement().getVersionIdPart() != null) {
-                builder.append(" version '");
-                builder.append(reference.getReferenceElement().getVersionIdPart());
-                builder.append("'");
-            }
-
-            builder.append(" called ");
-            builder.append(reference.getReferenceElement().getIdPart());
+			  // Still not the best way to build include, but at least checks dal for an existing library
+			  // Check if id works for LibraryRetrieval
+			  org.cqframework.cql.elm.execution.Library executionLibrary = null;
+			  try {
+					executionLibrary = libraryLoader.load(vi);  
+			  } catch (Exception e) {
+				  // log error
+			  }
+			  if (executionLibrary != null) {
+				// log not found so looking in local data
+					builder.append(buildLibraryIncludeString(reference, cqlLibraryName, cqlLibraryVersion));
+			  }
+			  // else check local data for Library to get name and version from
+			  else {
+				  Library library = (Library) jpaFhirDal.read(reference.getReferenceElement());
+				  builder.append(buildLibraryIncludeString(reference, library.getName(), library.getVersion()));
+			  }
         }
 
         return builder.toString();
     }
+
+	private String buildLibraryIncludeString(Reference reference, String cqlLibraryName, String cqlLibraryVersion) {
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append("include ");
+		
+		// TODO: This assumes the libraries resource id is the same as the library name,
+		// need to work this out better
+		builder.append(cqlLibraryName);
+
+		if (cqlLibraryVersion != null) {
+			builder.append(" version '");
+			builder.append(cqlLibraryVersion);
+			builder.append("'");
+		}
+
+		builder.append(" called ");
+		builder.append(cqlLibraryName);
+
+		builder.append(" ");
+
+		return builder.toString();
+	}
 
     private List<Reference> cleanReferences(List<Reference> references) {
         List<Reference> cleanRefs = new ArrayList<>();

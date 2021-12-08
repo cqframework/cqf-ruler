@@ -18,6 +18,7 @@ import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.ruler.plugin.cql.CqlProperties;
 import org.opencds.cqf.ruler.plugin.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaFhirDalFactory;
@@ -69,12 +70,14 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
                 "library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"+ fhirVersion +"' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
                 buildIncludes(libraries, theRequest), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
 
-        LibraryLoader libraryLoader = libraryLoaderFactory.create(
-            Arrays.asList(
-                jpaLibraryContentProviderFactory.create(theRequest),
-                new InMemoryLibraryContentProvider(Arrays.asList(source))
-            )
-        );
+
+			LibraryLoader libraryLoader = libraryLoaderFactory.create(
+				new ArrayList<LibraryContentProvider>(
+					Arrays.asList(
+							jpaLibraryContentProviderFactory.create(theRequest), 
+							new InMemoryLibraryContentProvider(Arrays.asList(source)
+				)))
+			);
         // resolve execution context
         return setupContext(instance, patientId, libraryLoader, theRequest);
     }  
