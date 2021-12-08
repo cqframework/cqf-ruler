@@ -16,6 +16,7 @@
 		<module>plugin/ra</module>
 		<module>plugin/sdc</module>
 		<module>plugin/cql</module>
+		<module>plugin/security</module>
 		<!-- <module>cqf-ruler-common</module>
         <module>cqf-ruler-dstu3</module>
         <module>cqf-ruler-r4</module> -->
