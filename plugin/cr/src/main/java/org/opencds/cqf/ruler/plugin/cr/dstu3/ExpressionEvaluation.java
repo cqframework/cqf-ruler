@@ -1,13 +1,11 @@
 package org.opencds.cqf.ruler.plugin.cr.dstu3;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
-import org.hl7.fhir.dstu3.model.Attachment;
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -20,26 +18,27 @@ import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvider;
 import org.opencds.cqf.ruler.plugin.cql.CqlProperties;
+import org.opencds.cqf.ruler.plugin.cql.JpaDataProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.JpaFhirDalFactory;
+import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.plugin.cr.utilities.LibraryUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import ca.uhn.fhir.cql.common.provider.EvaluationProviderFactory;
-import ca.uhn.fhir.cql.common.provider.LibraryContentProvider;
-import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
-import ca.uhn.fhir.cql.dstu3.helper.LibraryHelper;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class ExpressionEvaluation implements LibraryUtilities {
-    
+
     @Autowired
-    private EvaluationProviderFactory providerFactory;
+    private LibraryLoaderFactory libraryLoaderFactory;
     @Autowired
-    private LibraryResolutionProvider<Library> libraryResolutionProvider;
+    private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
     @Autowired
-    private LibraryHelper libraryHelper;
+    private JpaDataProviderFactory jpaDataProviderFactory;
     @Autowired
-    private ModelManager modelManager;
+    private JpaFhirDalFactory jpaFhirDalFactory;
     @Autowired
     private CqlProperties cqlProperties;
     /* Evaluates the given CQL expression in the context of the given resource */
@@ -47,8 +46,8 @@ public class ExpressionEvaluation implements LibraryUtilities {
      * If the resource has a library extension, or a library element, that library
      * is loaded into the context for the expression
      */
-    public Object evaluateInContext(DomainResource instance, String cql, String patientId, RequestDetails requestDetails) {
-        Iterable<Reference> libraries = getLibraryReferences(instance);
+    public Object evaluateInContext(DomainResource instance, String cql, String patientId, RequestDetails theRequest) {
+        Iterable<Reference> libraries = getLibraryReferences(instance, theRequest);
         //String fhirVersion = this.context.getVersion().getVersion().getFhirVersionString();
         String fhirVersion = "3.0.0";
 
@@ -65,10 +64,13 @@ public class ExpressionEvaluation implements LibraryUtilities {
         // buildIncludes(libraries), instance.fhirType(), instance.fhirType(),
         // instance.fhirType(), cql);
 
-        LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(this.libraryResolutionProvider);
+        LibraryLoader libraryLoader = libraryLoaderFactory.create(
+            Arrays.asList(
+                jpaLibraryContentProviderFactory.create(theRequest), 
+                new InMemoryLibraryContentProvider(Arrays.asList(source))
+        ));
 
-        org.cqframework.cql.elm.execution.Library library = this.translateLibrary(source, getLibraryManager(this.libraryResolutionProvider), modelManager);
-        Context context = new Context(library);
+        Context context = new Context(libraryLoader.load(new VersionedIdentifier().withId("LocalLibrary")));
         context.setDebugMap(getDebugMap());
         context.setParameter(null, instance.fhirType(), instance);
         context.setParameter(null, "%context", instance);
@@ -76,18 +78,18 @@ public class ExpressionEvaluation implements LibraryUtilities {
         context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
 
-        context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", fhirVersion, requestDetails));
+        context.registerDataProvider("http://hl7.org/fhir", jpaDataProviderFactory.create(theRequest));
         return context.resolveExpressionRef("Expression").evaluate(context);
     }
 
-    private Iterable<Reference> getLibraryReferences(DomainResource instance) {
+    private Iterable<Reference> getLibraryReferences(DomainResource instance, RequestDetails theRequest) {
         List<Reference> references = new ArrayList<>();
 
         if (instance.hasContained()) {
             for (Resource resource : instance.getContained()) {
                 if (resource instanceof Library) {
                     resource.setId(resource.getIdElement().getIdPart().replace("#", ""));
-                    this.libraryResolutionProvider.update((Library) resource);
+                    jpaFhirDalFactory.create(theRequest).update((Library) resource);
                     // getLibraryLoader().putLibrary(resource.getIdElement().getIdPart(),
                     // getLibraryLoader().toElmLibrary((Library) resource));
                 }
@@ -170,18 +172,6 @@ public class ExpressionEvaluation implements LibraryUtilities {
                     reference.getReferenceElement().getVersionIdPart())));
         }
         return cleanRefs;
-    }
-
-    private LibraryManager getLibraryManager(LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> provider) {
-		List<org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider> contentProviders = Collections.singletonList(new LibraryContentProvider<org.hl7.fhir.dstu3.model.Library, Attachment>(
-			provider, x -> x.getContent(), x -> x.getContentType(), x -> x.getData()));
-            
-        LibraryManager libraryManager = new LibraryManager(modelManager);
-        for (org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider contentProvider : contentProviders) {
-            libraryManager.getLibrarySourceLoader().registerProvider(contentProvider);
-        }
-
-        return libraryManager;
     }
 
     public DebugMap getDebugMap() {

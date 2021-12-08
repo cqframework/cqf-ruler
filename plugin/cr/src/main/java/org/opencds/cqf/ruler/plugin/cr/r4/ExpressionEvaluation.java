@@ -1,13 +1,11 @@
 package org.opencds.cqf.ruler.plugin.cr.r4;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.r4.model.ActivityDefinition;
-import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Extension;
@@ -19,30 +17,31 @@ import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvider;
 import org.opencds.cqf.ruler.plugin.cql.CqlProperties;
+import org.opencds.cqf.ruler.plugin.cql.JpaDataProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.JpaFhirDalFactory;
+import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.plugin.cr.r4.utilities.CanonicalUtilities;
 import org.opencds.cqf.ruler.plugin.cr.utilities.LibraryUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.cql.common.provider.EvaluationProviderFactory;
-import ca.uhn.fhir.cql.common.provider.LibraryContentProvider;
-import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
-import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilities {
-    
+
     @Autowired
-    private EvaluationProviderFactory providerFactory;
+    private LibraryLoaderFactory libraryLoaderFactory;
     @Autowired
-    private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> libraryResourceProvider;
+    private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
     @Autowired
     private FhirContext fhirContext;
     @Autowired
-    private LibraryHelper libraryHelper;
+    private JpaDataProviderFactory jpaDataProviderFactory;
     @Autowired
-    private ModelManager modelManager;
+    private JpaFhirDalFactory jpaFhirDalFactory;
     @Autowired
     private CqlProperties cqlProperties;
 
@@ -51,61 +50,43 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
      * If the resource has a library extension, or a library element, that library
      * is loaded into the context for the expression
      */
-    public Object evaluateInContext(DomainResource instance, String cql, String patientId, RequestDetails requestDetails) {
-        Iterable<CanonicalType> libraries = getLibraryReferences(instance);
+    public Object evaluateInContext(DomainResource instance, String cql, String patientId, RequestDetails theRequest) {
+        Context context = setupContext(instance, cql, patientId, theRequest);
+        return context.resolveExpressionRef("Expression").evaluate(context);
+    }
+
+    public Object evaluateInContext(DomainResource instance, String cql, String patientId, Boolean aliasedExpression, RequestDetails theRequest) {
+        Context context = setupContext(instance, cql, patientId, theRequest);
+        return context.resolveExpressionRef(cql).evaluate(context);
+    }
+
+    private Context setupContext(DomainResource instance, String cql, String patientId, RequestDetails theRequest) {
+        Iterable<CanonicalType> libraries = getLibraryReferences(instance, theRequest);
 
         String fhirVersion = this.fhirContext.getVersion().getVersion().getFhirVersionString();
 
         String source = String.format(
                 "library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"+ fhirVersion +"' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-                buildIncludes(libraries, requestDetails), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
+                buildIncludes(libraries, theRequest), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
 
-        LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(this.libraryResourceProvider);
-
-        org.cqframework.cql.elm.execution.Library library = this.translateLibrary(source, getLibraryManager(this.libraryResourceProvider), modelManager);
-
+        LibraryLoader libraryLoader = libraryLoaderFactory.create(
+            Arrays.asList(
+                jpaLibraryContentProviderFactory.create(theRequest),
+                new InMemoryLibraryContentProvider(Arrays.asList(source))
+            )
+        );
         // resolve execution context
-        Context context = setupContext(instance, patientId, libraryLoader, library, requestDetails);
-        return context.resolveExpressionRef("Expression").evaluate(context);
-    }
+        return setupContext(instance, patientId, libraryLoader, theRequest);
+    }  
 
-    public Object evaluateInContext(DomainResource instance, String cql, String patientId, Boolean aliasedExpression, RequestDetails requestDetails) {
-        Iterable<CanonicalType> libraries = getLibraryReferences(instance);
-        if (aliasedExpression) {
-            Object result = null;
-            for (CanonicalType reference : libraries) {
-                Library lib = this.libraryResourceProvider.resolveLibraryById(this.getId(reference), requestDetails);
-                if (lib == null) {
-                    throw new RuntimeException("Library with id " + reference.getIdBase() + "not found");
-                }
-                LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(this.libraryResourceProvider);
-                // resolve primary library
-                org.cqframework.cql.elm.execution.Library library = this.libraryHelper.resolveLibraryById(lib.getId(),
-                        libraryLoader, this.libraryResourceProvider, requestDetails);
-
-                // resolve execution context
-                Context context = setupContext(instance, patientId, libraryLoader, library, requestDetails);
-                result = context.resolveExpressionRef(cql).evaluate(context);
-                if (result != null) {
-                    return result;
-                }
-            }
-            throw new RuntimeException("Could not find Expression in Referenced Libraries");
-        } else {
-            return evaluateInContext(instance, cql, patientId, requestDetails);
-        }
-    }
-
-    
-
-    private Iterable<CanonicalType> getLibraryReferences(DomainResource instance) {
+    private Iterable<CanonicalType> getLibraryReferences(DomainResource instance, RequestDetails theRequest) {
         List<CanonicalType> references = new ArrayList<>();
 
         if (instance.hasContained()) {
             for (Resource resource : instance.getContained()) {
                 if (resource instanceof Library) {
                     resource.setId(resource.getIdElement().getIdPart().replace("#", ""));
-                    this.libraryResourceProvider.update((Library) resource);
+                    this.jpaFhirDalFactory.create(theRequest).update((Library) resource);
                     // getLibraryLoader().putLibrary(resource.getIdElement().getIdPart(),
                     // getLibraryLoader().toElmLibrary((Library) resource));
                 }
@@ -140,7 +121,7 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
         return cleanReferences(references);
     }
 
-    private String buildIncludes(Iterable<CanonicalType> references, RequestDetails requestDetails) {
+    private String buildIncludes(Iterable<CanonicalType> references, RequestDetails theRequest) {
         StringBuilder builder = new StringBuilder();
         for (CanonicalType reference : references) {
 
@@ -152,7 +133,7 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
 
             // TODO: This assumes the libraries resource id is the same as the library name,
             // need to work this out better
-            Library lib = this.libraryResourceProvider.resolveLibraryById(this.getId(reference), requestDetails);
+            Library lib = (Library) this.jpaFhirDalFactory.create(theRequest).read(this.getIdType(reference));
             if (lib.hasName()) {
                 builder.append(lib.getName());
             } else {
@@ -193,33 +174,21 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
         return cleanRefs;
     }
 
-    private Context setupContext(DomainResource instance, String patientId, LibraryLoader libraryLoader,
-            org.cqframework.cql.elm.execution.Library library, RequestDetails requestDetails) {
+    private Context setupContext(DomainResource instance, String patientId,
+        LibraryLoader libraryLoader, RequestDetails theRequest) {
         // Provide the instance as the value of the '%context' parameter, as well as the
         // value of a parameter named the same as the resource
         // This enables expressions to access the resource by root, as well as through
         // the %context attribute
-        Context context = new Context(library);
+        Context context = new Context(libraryLoader.load(new VersionedIdentifier().withId("LocalLibrary")));
         context.setDebugMap(getDebugMap());
         context.setParameter(null, instance.fhirType(), instance);
         context.setParameter(null, "%context", instance);
         context.setExpressionCaching(true);
         context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
-        context.registerDataProvider("http://hl7.org/fhir", this.providerFactory.createDataProvider("FHIR", this.fhirContext.getVersion().getVersion().getFhirVersionString(), requestDetails));
+        context.registerDataProvider("http://hl7.org/fhir", jpaDataProviderFactory.create(theRequest));
         return context;
-    }
-
-    private LibraryManager getLibraryManager(LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> provider) {
-		List<org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider> contentProviders = Collections.singletonList(new LibraryContentProvider<org.hl7.fhir.r4.model.Library, Attachment>(
-			provider, x -> x.getContent(), x -> x.getContentType(), x -> x.getData()));
-            
-        LibraryManager libraryManager = new LibraryManager(modelManager);
-        for (org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider contentProvider : contentProviders) {
-            libraryManager.getLibrarySourceLoader().registerProvider(contentProvider);
-        }
-
-        return libraryManager;
     }
 
     public DebugMap getDebugMap() {
