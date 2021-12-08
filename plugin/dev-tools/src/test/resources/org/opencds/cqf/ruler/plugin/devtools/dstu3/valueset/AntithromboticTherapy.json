@@ -1,0 +1,458 @@
+{
+    "resourceType": "ValueSet",
+    "id": "2.16.840.1.113883.3.117.1.7.1.201",
+    "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.201",
+    "title": "Antithrombotic Therapy",
+    "status": "active",
+    "publisher": "The Joint Commission",
+    "compose": {
+      "include": [
+        {
+          "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+          "version": "2019-08",
+          "concept": [
+            {
+              "code": "1037045",
+              "display": "dabigatran etexilate 150 MG Oral Capsule"
+            },
+            {
+              "code": "1037179",
+              "display": "dabigatran etexilate 75 MG Oral Capsule"
+            },
+            {
+              "code": "103863",
+              "display": "Aspirin 150 MG Rectal Suppository"
+            },
+            {
+              "code": "1092398",
+              "display": "Aspirin 500 MG / Diphenhydramine Hydrochloride 25 MG Oral Tablet"
+            },
+            {
+              "code": "1114198",
+              "display": "rivaroxaban 10 MG Oral Tablet"
+            },
+            {
+              "code": "1232082",
+              "display": "rivaroxaban 15 MG Oral Tablet"
+            },
+            {
+              "code": "1232086",
+              "display": "rivaroxaban 20 MG Oral Tablet"
+            },
+            {
+              "code": "1250907",
+              "display": "Aspirin 500 MG / Diphenhydramine Citrate 38.3 MG Oral Tablet"
+            },
+            {
+              "code": "1291868",
+              "display": "Aspirin 325 MG / Diphenhydramine Citrate 38 MG Oral Tablet"
+            },
+            {
+              "code": "1361574",
+              "display": "heparin sodium, porcine 20000 UNT/ML Injectable Solution"
+            },
+            {
+              "code": "1364435",
+              "display": "apixaban 2.5 MG Oral Tablet"
+            },
+            {
+              "code": "1364445",
+              "display": "apixaban 5 MG Oral Tablet"
+            },
+            {
+              "code": "1536467",
+              "display": "Aspirin 325 MG / Citric Acid 1000 MG / Sodium Bicarbonate 1700 MG Effervescent Oral Tablet"
+            },
+            {
+              "code": "1536498",
+              "display": "Aspirin 325 MG / Dextromethorphan Hydrobromide 10 MG / Phenylephrine bitartrate 7.8 MG Effervescent Oral Tablet"
+            },
+            {
+              "code": "1536503",
+              "display": "Aspirin 500 MG / Dextromethorphan Hydrobromide 10 MG / doxylamine succinate 6.25 MG / Phenylephrine bitartrate 7.8 MG Effervescent Oral Tablet"
+            },
+            {
+              "code": "1536675",
+              "display": "Aspirin 325 MG / Citric Acid 1000 MG / Sodium Bicarbonate 1916 MG Effervescent Oral Tablet"
+            },
+            {
+              "code": "1536815",
+              "display": "Aspirin 500 MG / Caffeine 65 MG Effervescent Oral Tablet"
+            },
+            {
+              "code": "1536833",
+              "display": "Aspirin 500 MG / Citric Acid 1000 MG / Sodium Bicarbonate 1985 MG Effervescent Oral Tablet"
+            },
+            {
+              "code": "1536840",
+              "display": "Aspirin 325 MG / Chlorpheniramine Maleate 2 MG / Phenylephrine bitartrate 7.8 MG Effervescent Oral Tablet"
+            },
+            {
+              "code": "1537029",
+              "display": "Aspirin 325 MG / Chlorpheniramine Maleate 2 MG / Dextromethorphan Hydrobromide 10 MG / Phenylephrine bitartrate 7.8 MG Effervescent Oral Tablet"
+            },
+            {
+              "code": "1549682",
+              "display": "{42 (rivaroxaban 15 MG Oral Tablet) / 9 (rivaroxaban 20 MG Oral Tablet) } Pack"
+            },
+            {
+              "code": "1593110",
+              "display": "Acetaminophen 250 MG / Aspirin 250 MG / Diphenhydramine Citrate 38 MG Oral Tablet"
+            },
+            {
+              "code": "1599543",
+              "display": "edoxaban 15 MG Oral Tablet"
+            },
+            {
+              "code": "1599551",
+              "display": "edoxaban 30 MG Oral Tablet"
+            },
+            {
+              "code": "1599555",
+              "display": "edoxaban 60 MG Oral Tablet"
+            },
+            {
+              "code": "1658717",
+              "display": "250 ML heparin sodium, porcine 100 UNT/ML Injection"
+            },
+            {
+              "code": "1659195",
+              "display": "500 ML heparin sodium, porcine 50 UNT/ML Injection"
+            },
+            {
+              "code": "1659197",
+              "display": "250 ML heparin sodium, porcine 50 UNT/ML Injection"
+            },
+            {
+              "code": "1665356",
+              "display": "24 HR Aspirin 162.5 MG Extended Release Oral Capsule"
+            },
+            {
+              "code": "1722689",
+              "display": "Aspirin 81 MG / Calcium Carbonate 777 MG Oral Tablet"
+            },
+            {
+              "code": "1723476",
+              "display": "dabigatran etexilate 110 MG Oral Capsule"
+            },
+            {
+              "code": "1730187",
+              "display": "{12 (Aspirin 325 MG / Dextromethorphan Hydrobromide 10 MG / Phenylephrine bitartrate 7.8 MG Effervescent Oral Tablet) / 8 (Aspirin 500 MG / Dextromethorphan Hydrobromide 10 MG / doxylamine succinate 6.25 MG / Phenylephrine bitartrate 7.8 MG Effervescent Oral Tablet) } Pack"
+            },
+            {
+              "code": "1804735",
+              "display": "50 ML argatroban 1 MG/ML Injection"
+            },
+            {
+              "code": "1804737",
+              "display": "125 ML argatroban 1 MG/ML Injection"
+            },
+            {
+              "code": "1804738",
+              "display": "250 ML argatroban 1 MG/ML Injection"
+            },
+            {
+              "code": "1811631",
+              "display": "Aspirin 81 MG / Omeprazole 40 MG Delayed Release Oral Tablet"
+            },
+            {
+              "code": "1811632",
+              "display": "Aspirin 325 MG / Omeprazole 40 MG Delayed Release Oral Tablet"
+            },
+            {
+              "code": "198464",
+              "display": "Aspirin 300 MG Rectal Suppository"
+            },
+            {
+              "code": "198466",
+              "display": "Aspirin 325 MG Oral Capsule"
+            },
+            {
+              "code": "198467",
+              "display": "Aspirin 325 MG Delayed Release Oral Tablet"
+            },
+            {
+              "code": "198471",
+              "display": "Aspirin 500 MG Oral Tablet"
+            },
+            {
+              "code": "198473",
+              "display": "Aspirin 600 MG Rectal Suppository"
+            },
+            {
+              "code": "198475",
+              "display": "Aspirin 650 MG Oral Tablet"
+            },
+            {
+              "code": "198479",
+              "display": "Aspirin 400 MG / Caffeine 32 MG Oral Tablet"
+            },
+            {
+              "code": "198480",
+              "display": "Aspirin 500 MG / Caffeine 32 MG Oral Tablet"
+            },
+            {
+              "code": "1992427",
+              "display": "{74 (apixaban 5 MG Oral Tablet) } Pack"
+            },
+            {
+              "code": "199274",
+              "display": "Aspirin 300 MG Oral Capsule"
+            },
+            {
+              "code": "212033",
+              "display": "Aspirin 325 MG Oral Tablet"
+            },
+            {
+              "code": "243670",
+              "display": "Aspirin 81 MG Oral Tablet"
+            },
+            {
+              "code": "243685",
+              "display": "Aspirin 421 MG / Caffeine 32 MG Oral Tablet"
+            },
+            {
+              "code": "243694",
+              "display": "Acetaminophen 194 MG / Aspirin 227 MG / Caffeine 33 MG Oral Tablet"
+            },
+            {
+              "code": "259081",
+              "display": "12 HR Aspirin 25 MG / Dipyridamole 200 MG Extended Release Oral Capsule"
+            },
+            {
+              "code": "308278",
+              "display": "Acetaminophen 115 MG / Aspirin 210 MG / Caffeine 16 MG / salicylamide 65 MG Oral Tablet"
+            },
+            {
+              "code": "308297",
+              "display": "Acetaminophen 250 MG / Aspirin 250 MG / Caffeine 65 MG Oral Tablet"
+            },
+            {
+              "code": "308351",
+              "display": "2.5 ML argatroban 100 MG/ML Injection"
+            },
+            {
+              "code": "308363",
+              "display": "Aspirin 325 MG / Caffeine 16 MG / salicylamide 95 MG Oral Tablet"
+            },
+            {
+              "code": "308409",
+              "display": "Aspirin 500 MG Delayed Release Oral Tablet"
+            },
+            {
+              "code": "308411",
+              "display": "Aspirin 650 MG Delayed Release Oral Tablet"
+            },
+            {
+              "code": "308416",
+              "display": "Aspirin 81 MG Delayed Release Oral Tablet"
+            },
+            {
+              "code": "308417",
+              "display": "Aspirin 975 MG Delayed Release Oral Tablet"
+            },
+            {
+              "code": "309362",
+              "display": "clopidogrel 75 MG Oral Tablet"
+            },
+            {
+              "code": "313406",
+              "display": "Ticlopidine Hydrochloride 250 MG Oral Tablet"
+            },
+            {
+              "code": "318272",
+              "display": "Aspirin 81 MG Chewable Tablet"
+            },
+            {
+              "code": "359221",
+              "display": "Acetaminophen 110 MG / Aspirin 162 MG / Caffeine 32.4 MG / salicylamide 152 MG Oral Tablet"
+            },
+            {
+              "code": "432638",
+              "display": "Acetaminophen 250 MG / Aspirin 250 MG Oral Tablet"
+            },
+            {
+              "code": "605252",
+              "display": "Aspirin 650 MG / Caffeine 33.3 MG / salicylamide 195 MG Oral Powder"
+            },
+            {
+              "code": "692836",
+              "display": "Acetaminophen 325 MG / Aspirin 500 MG / Caffeine 65 MG Oral Powder"
+            },
+            {
+              "code": "702316",
+              "display": "Aspirin 500 MG / Caffeine 32.5 MG Oral Tablet"
+            },
+            {
+              "code": "747211",
+              "display": "Aspirin 81 MG Disintegrating Oral Tablet"
+            },
+            {
+              "code": "749196",
+              "display": "clopidogrel 300 MG Oral Tablet"
+            },
+            {
+              "code": "763111",
+              "display": "Acetaminophen 325 MG / Aspirin 500 MG Oral Powder"
+            },
+            {
+              "code": "763116",
+              "display": "Acetaminophen 260 MG / Aspirin 520 MG / Caffeine 32.5 MG Oral Powder"
+            },
+            {
+              "code": "797050",
+              "display": "Aspirin 650 MG / Caffeine 32 MG / salicylamide 200 MG Oral Powder"
+            },
+            {
+              "code": "827318",
+              "display": "Acetaminophen 250 MG / Aspirin 250 MG / Caffeine 65 MG Oral Capsule"
+            },
+            {
+              "code": "854238",
+              "display": "0.6 ML Enoxaparin sodium 100 MG/ML Prefilled Syringe"
+            },
+            {
+              "code": "854241",
+              "display": "0.8 ML Enoxaparin sodium 100 MG/ML Prefilled Syringe"
+            },
+            {
+              "code": "854245",
+              "display": "0.8 ML Enoxaparin sodium 150 MG/ML Prefilled Syringe"
+            },
+            {
+              "code": "854248",
+              "display": "1 ML Enoxaparin sodium 100 MG/ML Prefilled Syringe"
+            },
+            {
+              "code": "854252",
+              "display": "1 ML Enoxaparin sodium 150 MG/ML Prefilled Syringe"
+            },
+            {
+              "code": "854255",
+              "display": "Enoxaparin sodium 100 MG/ML Injectable Solution"
+            },
+            {
+              "code": "855288",
+              "display": "Warfarin Sodium 1 MG Oral Tablet"
+            },
+            {
+              "code": "855296",
+              "display": "Warfarin Sodium 10 MG Oral Tablet"
+            },
+            {
+              "code": "855302",
+              "display": "Warfarin Sodium 2 MG Oral Tablet"
+            },
+            {
+              "code": "855312",
+              "display": "Warfarin Sodium 2.5 MG Oral Tablet"
+            },
+            {
+              "code": "855318",
+              "display": "Warfarin Sodium 3 MG Oral Tablet"
+            },
+            {
+              "code": "855324",
+              "display": "Warfarin Sodium 4 MG Oral Tablet"
+            },
+            {
+              "code": "855332",
+              "display": "Warfarin Sodium 5 MG Oral Tablet"
+            },
+            {
+              "code": "855338",
+              "display": "Warfarin Sodium 6 MG Oral Tablet"
+            },
+            {
+              "code": "855344",
+              "display": "Warfarin Sodium 7.5 MG Oral Tablet"
+            },
+            {
+              "code": "861356",
+              "display": "0.8 ML Fondaparinux sodium 12.5 MG/ML Prefilled Syringe"
+            },
+            {
+              "code": "861360",
+              "display": "0.5 ML Fondaparinux sodium 5 MG/ML Prefilled Syringe"
+            },
+            {
+              "code": "861363",
+              "display": "0.4 ML Fondaparinux sodium 12.5 MG/ML Prefilled Syringe"
+            },
+            {
+              "code": "861365",
+              "display": "0.6 ML Fondaparinux sodium 12.5 MG/ML Prefilled Syringe"
+            },
+            {
+              "code": "863184",
+              "display": "Aspirin 360 MG / Caffeine 75 MG / magnesium carbonate 100 MG / Magnesium Salicylate 60 MG Oral Tablet"
+            },
+            {
+              "code": "863186",
+              "display": "Aspirin 410 MG / Caffeine 60 MG / salicylamide 30 MG Oral Tablet"
+            },
+            {
+              "code": "896884",
+              "display": "Aspirin 742 MG / Caffeine 38 MG / salicylamide 222 MG Oral Powder"
+            },
+            {
+              "code": "900528",
+              "display": "Aspirin 850 MG / Caffeine 65 MG Oral Powder"
+            },
+            {
+              "code": "978725",
+              "display": "0.2 ML Dalteparin Sodium 12500 UNT/ML Prefilled Syringe"
+            },
+            {
+              "code": "978733",
+              "display": "0.2 ML Dalteparin Sodium 25000 UNT/ML Prefilled Syringe"
+            },
+            {
+              "code": "978736",
+              "display": "0.3 ML Dalteparin Sodium 25000 UNT/ML Prefilled Syringe"
+            },
+            {
+              "code": "978740",
+              "display": "0.5 ML Dalteparin Sodium 25000 UNT/ML Prefilled Syringe"
+            },
+            {
+              "code": "978744",
+              "display": "0.6 ML Dalteparin Sodium 25000 UNT/ML Prefilled Syringe"
+            },
+            {
+              "code": "978746",
+              "display": "0.72 ML Dalteparin Sodium 25000 UNT/ML Prefilled Syringe"
+            },
+            {
+              "code": "978755",
+              "display": "1 ML Dalteparin Sodium 10000 UNT/ML Prefilled Syringe"
+            },
+            {
+              "code": "978759",
+              "display": "Dalteparin Sodium 10000 UNT/ML Injectable Solution"
+            },
+            {
+              "code": "978777",
+              "display": "Dalteparin Sodium 25000 UNT/ML Injectable Solution"
+            },
+            {
+              "code": "994430",
+              "display": "Aspirin 1000 MG / Caffeine 65 MG Oral Powder"
+            },
+            {
+              "code": "994435",
+              "display": "Aspirin 845 MG / Caffeine 65 MG Oral Powder"
+            },
+            {
+              "code": "994528",
+              "display": "Aspirin 385 MG / Caffeine 30 MG / Orphenadrine Citrate 25 MG Oral Tablet"
+            },
+            {
+              "code": "994535",
+              "display": "Aspirin 770 MG / Caffeine 60 MG / Orphenadrine Citrate 50 MG Oral Tablet"
+            }
+          ]
+        }
+      ]
+    }
+  }

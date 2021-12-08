@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.plugin.utility;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -7,10 +8,10 @@ import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 
+import ca.uhn.fhir.context.BaseRuntimeChildDefinition.IAccessor;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.RuntimeResourceDefinition;
-import ca.uhn.fhir.context.BaseRuntimeChildDefinition.IAccessor;
 
 /**
  * This interface provides utility methods for doing reflection on FHIR
@@ -74,7 +75,7 @@ public interface ReflectionUtilities {
      *         ResourceType
      */
     @SuppressWarnings("unchecked")
-    public default <ResourceType extends IBaseResource, ReturnType> Function<ResourceType, ReturnType> getFunction(final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
+    public default <ResourceType extends IBaseResource, ReturnType> Function<ResourceType, ReturnType> getPrimitiveFunction(final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
         IAccessor accessor = this.getAccessor(theResourceTypeClass, theChildName);
         return r -> {
             Optional<IBase> value = accessor.getFirstValueOrNull(r);
@@ -86,6 +87,26 @@ public interface ReflectionUtilities {
         };
     }
 
+	 /**
+	 * Generates a function to access a primitive property of the given
+	 * ResourceType.
+	 * 
+	 * @param <ResourceType>       an IBaseResource type
+	 * @param <ReturnType>         a return type for the Functions
+	 * @param theResourceTypeClass the class of a the IBaseResource type
+	 * @param theChildName         to create a function for
+	 * @return a function for accessing the "theChildName" property of the
+	 *         ResourceType
+	 */
+	@SuppressWarnings("unchecked")
+	public default <ResourceType extends IBaseResource, ReturnType extends List<? extends IBase>> Function<ResourceType, ReturnType> getFunction(final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
+		 IAccessor accessor = this.getAccessor(theResourceTypeClass, theChildName);
+		 return r -> {
+			  return (ReturnType)accessor.getValues(r);
+		 };
+	}
+
+
     /**
      * Generates a function to access the "version" property of the given
      * ResourceType.
@@ -95,7 +116,7 @@ public interface ReflectionUtilities {
      * @return a function for accessing the "version" property of the ResourceType
      */
     public default <ResourceType extends IBaseResource> Function<ResourceType, String> getVersionFunction(final Class<? extends ResourceType> theResourceTypeClass) {
-        return this.getFunction(theResourceTypeClass, "version");
+        return this.getPrimitiveFunction(theResourceTypeClass, "version");
     }
 
     /**
@@ -106,7 +127,7 @@ public interface ReflectionUtilities {
      * @return a function for accessing the "url" property of the ResourceType
      */
     public default <ResourceType extends IBaseResource> Function<ResourceType, String> getUrlFunction(final Class<? extends ResourceType> theResourceTypeClass) {
-        return this.getFunction(theResourceTypeClass, "url");
+        return this.getPrimitiveFunction(theResourceTypeClass, "url");
     }
 
     /**
@@ -117,6 +138,6 @@ public interface ReflectionUtilities {
      * @return a function for accessing the "name" property of the ResourceType
      */
     public default <ResourceType extends IBaseResource> Function<ResourceType, String> getNameFunction(final Class<? extends ResourceType> theResourceTypeClass) {
-        return this.getFunction(theResourceTypeClass, "name");
+        return this.getPrimitiveFunction(theResourceTypeClass, "name");
     }
 }

@@ -14,7 +14,8 @@
                 "-XX:TieredStopAtLevel=1",
                 "-Xverify:none",
                 "-Dspring.main.lazy-initialization=true",
-					 "-Dloader.debug=true"
+					 "-Dloader.debug=true",
+					 "-Ddebug=true"
             ],
             "stepFilters": {
                 "classNameFilters": [
@@ -31,7 +32,9 @@
                 "${workspaceFolder}/plugin/hello-world/target/classes",
                 "${workspaceFolder}/plugin/ra/target/classes",
                 "${workspaceFolder}/plugin/sdc/target/classes",
-                "${workspaceFolder}/plugin/utility/target/classes"
+                "${workspaceFolder}/plugin/utility/target/classes",
+					 "${workspaceFolder}/plugin/devtools/target/classes",
+					 "${workspaceFolder}/plugin/cql/target/classes"
             ]
         },
         {

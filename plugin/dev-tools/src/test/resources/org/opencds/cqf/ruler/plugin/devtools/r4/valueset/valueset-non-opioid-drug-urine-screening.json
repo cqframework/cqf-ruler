@@ -1,0 +1,2536 @@
+{
+  "resourceType": "ValueSet",
+  "id": "non-opioid-drug-urine-screening",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-distributablevalueset",
+      "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-publishablevalueset"
+    ]
+  },
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "MD Partners, Inc.",
+        "telecom": [
+          {
+            "system": "email",
+            "value": "info@mdpartners.com"
+          }
+        ]
+      }
+    }
+  ],
+  "url": "http://fhir.org/guides/cdc/opioid-cds/ValueSet/non-opioid-drug-urine-screening",
+  "name": "Non_Opioid_Drug_Urine_Screening",
+  "title": "Non-opioid Drug Urine Screening",
+  "status": "active",
+  "experimental": true,
+  "date": "2020-03-26T17:39:09-06:00",
+  "publisher": "Centers for Disease Control and Prevention (CDC)",
+  "description": "Individual tests and panels of tests of urine for illicit drugs EXCEPT those for opioids.",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US"
+        }
+      ]
+    }
+  ],
+  "purpose": "Identification of non-opioid urine drug tests where rusults can be used when considering opioid therapy",
+  "copyright": "© CDC 2016+.",
+  "compose": {
+    "include": [
+      {
+        "system": "http://loinc.org",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "LP31448-1"
+          },
+          {
+            "property": "system",
+            "op": "=",
+            "value": "Urine"
+          }
+        ]
+      },
+      {
+        "system": "http://loinc.org",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "LP29683-7"
+          },
+          {
+            "property": "concept",
+            "op": "=",
+            "value": "*Drugs of abuse*"
+          },
+          {
+            "property": "system",
+            "op": "=",
+            "value": "Urine"
+          }
+        ]
+      }
+    ],
+    "exclude": [
+      {
+        "system": "http://loinc.org",
+        "filter": [
+          {
+            "property": "concept",
+            "op": "is-a",
+            "value": "LP18149-2"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-03-26T17:39:09-06:00",
+    "contains": [
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "80113-4",
+        "display": "11-Hydroxy delta-9 tetrahydrocannabinol:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78754-9",
+        "display": "11-Hydroxy delta-9 tetrahydrocannabinol:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "69798-7",
+        "display": "2,5-dimethoxy-4-bromoamphetamine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "45185-6",
+        "display": "2-Oxo-3-Hydroxy-Lysergate diethylamide:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78757-2",
+        "display": "2-Oxo-3-Hydroxy-Lysergate diethylamide:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "73998-7",
+        "display": "25H-NBOMe:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "74000-1",
+        "display": "25I-NBOMe:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "73999-5",
+        "display": "2C-C-NBOMe:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "86194-8",
+        "display": "3,4-Dimethylmethcathinone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "50594-1",
+        "display": "3-Hydroxybenzoylecgonine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "86195-5",
+        "display": "4-Ethylmethcathinone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "86192-2",
+        "display": "4-Methylethcathinone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "88022-9",
+        "display": "5-fluoro PB-22 3-carboxyindole:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "90746-9",
+        "display": "5-fluoro ADB-M7:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87495-8",
+        "display": "AB-CHMINACA butanoate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87494-1",
+        "display": "AB-CHMINACA hydroxycyclohexyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87493-3",
+        "display": "AB-FUBINACA oxobutanoate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87492-5",
+        "display": "AB-PINACA pentanoate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87490-9",
+        "display": "ADB-PINACA pentanoate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87491-7",
+        "display": "ADBICA N-4-hydroxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87485-9",
+        "display": "ADBICA N-pentanoate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87489-1",
+        "display": "AKB48 N-pentanoate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72817-0",
+        "display": "AM-2201 4-hydroxypentyl:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72463-3",
+        "display": "AM-2201 4-hydroxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78783-8",
+        "display": "AM-2201 4-hydroxypentyl cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72818-8",
+        "display": "AM-2201 4-hydroxypentyl/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87488-3",
+        "display": "AM694 N-5-hydroxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "86196-3",
+        "display": "Alpha pyrrolidinovalerophenone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "33507-5",
+        "display": "Alpha-Phenyl-2-Piperidine acetate:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72790-9",
+        "display": "Alpha-Phenyl-2-Piperidine acetate:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "61058-4",
+        "display": "Alpha-Phenyl-2-Piperidine acetate:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72791-7",
+        "display": "Alpha-Phenyl-2-Piperidine acetate/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19346-6",
+        "display": "Amphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "16234-7",
+        "display": "Amphetamine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "52957-8",
+        "display": "Amphetamine:SCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19344-1",
+        "display": "Amphetamine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19343-3",
+        "display": "Amphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19348-2",
+        "display": "Amphetamine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19347-4",
+        "display": "Amphetamine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "56120-9",
+        "display": "Amphetamine+Methamphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "33280-9",
+        "display": "Amphetamine+Methamphetamine:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "40419-4",
+        "display": "Amphetamine+Methamphetamine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "76492-8",
+        "display": "Amphetamine+Methamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "58357-5",
+        "display": "Amphetamine/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19265-8",
+        "display": "Amphetamines positive:Prid:Pt:Urine:Nom:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "8150-5",
+        "display": "Amphetamines:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20410-7",
+        "display": "Amphetamines:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "70138-3",
+        "display": "Amphetamines:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3349-8",
+        "display": "Amphetamines:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "14309-9",
+        "display": "Amphetamines:PrThr:Pt:Urine:Ord:Confirm>200 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "16369-1",
+        "display": "Amphetamines:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "8151-3",
+        "display": "Amphetamines:PrThr:Pt:Urine:Ord:SAMHSA confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "8152-1",
+        "display": "Amphetamines:PrThr:Pt:Urine:Ord:SAMHSA screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19261-7",
+        "display": "Amphetamines:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "14308-1",
+        "display": "Amphetamines:PrThr:Pt:Urine:Ord:Screen>1000 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "43983-6",
+        "display": "Amphetamines:PrThr:Pt:Urine:Ord:Screen>500 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19269-0",
+        "display": "Amphetamines confirm method:Prid:Pt:Urine:Nom:*"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19059-5",
+        "display": "Amphetamines cutoff:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19267-4",
+        "display": "Amphetamines cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19266-6",
+        "display": "Amphetamines cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19268-2",
+        "display": "Amphetamines screen method:Prid:Pt:Urine:Nom:*"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19263-3",
+        "display": "Amphetamines tested for:Prid:Pt:Urine:Nar:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19262-5",
+        "display": "Amphetamines tested for:Prid:Pt:Urine:Nom:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "41464-9",
+        "display": "Amphetamines/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3352-2",
+        "display": "Amphetaminil:MRat:24H:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3351-4",
+        "display": "Amphetaminil:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3350-6",
+        "display": "Amphetaminil:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87484-2",
+        "display": "BB-22 3-carboxyindole:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3394-4",
+        "display": "Benzoylecgonine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "16226-3",
+        "display": "Benzoylecgonine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "70146-6",
+        "display": "Benzoylecgonine:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3393-6",
+        "display": "Benzoylecgonine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "14315-6",
+        "display": "Benzoylecgonine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "8192-7",
+        "display": "Benzoylecgonine:PrThr:Pt:Urine:Ord:SAMHSA confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "8193-5",
+        "display": "Benzoylecgonine:PrThr:Pt:Urine:Ord:SAMHSA screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "14314-9",
+        "display": "Benzoylecgonine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "43984-4",
+        "display": "Benzoylecgonine:PrThr:Pt:Urine:Ord:Screen>150 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "43985-1",
+        "display": "Benzoylecgonine:PrThr:Pt:Urine:Ord:Screen>300 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19065-2",
+        "display": "Benzoylecgonine cutoff:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19358-1",
+        "display": "Benzoylecgonine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19357-3",
+        "display": "Benzoylecgonine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "13479-1",
+        "display": "Benzoylecgonine/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "59287-3",
+        "display": "Benzylpiperazine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "59135-4",
+        "display": "Benzylpiperazine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "64233-0",
+        "display": "Benzylpiperazine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "5608-5",
+        "display": "Bufotenine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "16492-1",
+        "display": "Bufotenine:ACnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79234-1",
+        "display": "Butylone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79235-8",
+        "display": "Butylone cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78813-3",
+        "display": "Cannabicyclohexanol:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78814-1",
+        "display": "Cannabicyclohexanol cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "42860-7",
+        "display": "Cannabinoids:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20413-1",
+        "display": "Cannabinoids:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "70143-3",
+        "display": "Cannabinoids:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "52954-5",
+        "display": "Cannabinoids:SCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3427-2",
+        "display": "Cannabinoids:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19289-8",
+        "display": "Cannabinoids:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "18282-4",
+        "display": "Cannabinoids:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "70144-1",
+        "display": "Cannabinoids:PrThr:Pt:Urine:Ord:Screen>20 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "70145-8",
+        "display": "Cannabinoids:PrThr:Pt:Urine:Ord:Screen>50 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "26760-9",
+        "display": "Cannabinoids:ACnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19294-8",
+        "display": "Cannabinoids confirm method:Prid:Pt:Urine:Nom:*"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19073-6",
+        "display": "Cannabinoids cutoff:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19292-2",
+        "display": "Cannabinoids cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19291-4",
+        "display": "Cannabinoids cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19290-6",
+        "display": "Cannabinoids positive:Prid:Pt:Urine:Nom:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19293-0",
+        "display": "Cannabinoids screen method:Prid:Pt:Urine:Nom:*"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "67126-3",
+        "display": "Cannabinoids.synthetic:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19288-0",
+        "display": "Cannabinoids tested for:Prid:Pt:Urine:Nar:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19287-2",
+        "display": "Cannabinoids tested for:Prid:Pt:Urine:Nom:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "26747-6",
+        "display": "Cannabinoids/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3436-3",
+        "display": "Carboxy tetrahydrocannabinol:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20521-1",
+        "display": "Carboxy tetrahydrocannabinol:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3435-5",
+        "display": "Carboxy tetrahydrocannabinol:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19382-1",
+        "display": "Carboxy tetrahydrocannabinol:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19381-3",
+        "display": "Carboxy tetrahydrocannabinol:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19384-7",
+        "display": "Carboxy tetrahydrocannabinol cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19383-9",
+        "display": "Carboxy tetrahydrocannabinol cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19055-3",
+        "display": "Carboxy tetrahydrocannabinol/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78817-4",
+        "display": "Cathinone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79141-8",
+        "display": "Cathinone:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3489-2",
+        "display": "Clobenzorex:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3488-4",
+        "display": "Clobenzorex:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19408-4",
+        "display": "Cocaethylene:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "16632-2",
+        "display": "Cocaethylene:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19406-8",
+        "display": "Cocaethylene:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19405-0",
+        "display": "Cocaethylene:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19410-0",
+        "display": "Cocaethylene cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19409-2",
+        "display": "Cocaethylene cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "86606-1",
+        "display": "Cocaethylene/Creatinine:MRto:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3398-5",
+        "display": "Cocaine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20519-5",
+        "display": "Cocaine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "52953-7",
+        "display": "Cocaine:SCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3397-7",
+        "display": "Cocaine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19360-7",
+        "display": "Cocaine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19359-9",
+        "display": "Cocaine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "16448-3",
+        "display": "Cocaine:ACnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19363-1",
+        "display": "Cocaine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19362-3",
+        "display": "Cocaine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "53743-1",
+        "display": "Cocaine metabolites.other:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "47400-7",
+        "display": "Cocaine+Benzoylecgonine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "42241-0",
+        "display": "Cocaine+Benzoylecgonine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "82723-8",
+        "display": "Cocaine+Benzoylecgonine+Cocaethylene:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "86607-9",
+        "display": "Cocaine/Creatinine:MRto:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "15366-8",
+        "display": "Dextroamphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20525-2",
+        "display": "Dextroamphetamine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19420-9",
+        "display": "Dextroamphetamine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19419-1",
+        "display": "Dextroamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19422-5",
+        "display": "Dextroamphetamine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19421-7",
+        "display": "Dextroamphetamine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "31025-0",
+        "display": "Dextroamphetamine/Amphetamines.total:MFr:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "13497-3",
+        "display": "Dextroamphetamine/Levoamphetamine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "12477-6",
+        "display": "Dextromethamphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19425-8",
+        "display": "Dextromethamphetamine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "58925-9",
+        "display": "Dextromethamphetamine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19424-1",
+        "display": "Dextromethamphetamine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19423-3",
+        "display": "Dextromethamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19428-2",
+        "display": "Dextromethamphetamine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19427-4",
+        "display": "Dextromethamphetamine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "31026-8",
+        "display": "Dextromethamphetamine/Amphetamines.total:MFr:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "13498-1",
+        "display": "Dextromethamphetamine/Levomethamphetamine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3566-7",
+        "display": "Dimetamphetamine:MRat:24H:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3565-9",
+        "display": "Dimetamphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20526-0",
+        "display": "Dimetamphetamine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3564-2",
+        "display": "Dimetamphetamine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19453-0",
+        "display": "Dimetamphetamine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19452-2",
+        "display": "Dimetamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19455-5",
+        "display": "Dimetamphetamine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19454-8",
+        "display": "Dimetamphetamine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3568-3",
+        "display": "Dimethyltryptamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "12292-9",
+        "display": "Dimethyltryptamine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "24349-3",
+        "display": "Drugs of abuse 5 panel:-:Pt:Urine:-:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "65750-2",
+        "display": "Drugs of abuse 5 panel:-:Pt:Urine:-:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "51782-1",
+        "display": "Drugs of abuse 7 & Alcohol & Tricyclics panel:-:Pt:Urine:-:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "69739-1",
+        "display": "Drugs of abuse panel:-:Pt:Urine:-:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87428-9",
+        "display": "Drugs of abuse screen W Reflex confirm panel:-:Pt:Urine:-:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "50592-5",
+        "display": "Ecgonine methyl ester:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "80144-9",
+        "display": "Ecgonine methyl ester:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19459-7",
+        "display": "Ethylamphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19458-9",
+        "display": "Ethylamphetamine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "16212-3",
+        "display": "Ethylamphetamine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19456-3",
+        "display": "Ethylamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19461-3",
+        "display": "Ethylamphetamine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19460-5",
+        "display": "Ethylamphetamine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79243-2",
+        "display": "Ethylone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79244-0",
+        "display": "Ethylone cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "86191-4",
+        "display": "Eutylone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3629-3",
+        "display": "Fenetylline:MRat:24H:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3628-5",
+        "display": "Fenetylline:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3627-7",
+        "display": "Fenetylline:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3635-0",
+        "display": "Fenproporex:MRat:24H:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3634-3",
+        "display": "Fenproporex:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3633-5",
+        "display": "Fenproporex:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3658-2",
+        "display": "Furfenorex:MRat:24H:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3657-4",
+        "display": "Furfenorex:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3656-6",
+        "display": "Furfenorex:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "12295-2",
+        "display": "Hallucinogens:Prid:Pt:Urine:Nom:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "73914-4",
+        "display": "JWH-018:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72459-1",
+        "display": "JWH-018 4+5-hydroxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78836-4",
+        "display": "JWH-018 5-hydroxypentyl cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72808-9",
+        "display": "JWH-018 carboxylated:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72809-7",
+        "display": "JWH-018 carboxylated/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72782-6",
+        "display": "JWH-018 pentanoate:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72461-7",
+        "display": "JWH-018 pentanoate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78837-2",
+        "display": "JWH-018 pentanoate cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72783-4",
+        "display": "JWH-018 pentanoate/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72780-0",
+        "display": "JWH-018 pentanol:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72781-8",
+        "display": "JWH-018 pentanol/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "73918-5",
+        "display": "JWH-073:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72460-9",
+        "display": "JWH-073 3-hydroxybutyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72464-1",
+        "display": "JWH-073 4-hydroxybutyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78838-0",
+        "display": "JWH-073 4-hydroxybutyl cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72778-4",
+        "display": "JWH-073 butanoate:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72465-8",
+        "display": "JWH-073 butanoate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78839-8",
+        "display": "JWH-073 butanoate cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72779-2",
+        "display": "JWH-073 butanoate/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72875-8",
+        "display": "JWH-073 butanol:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72874-1",
+        "display": "JWH-073 butanol/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72806-3",
+        "display": "JWH-073 carboxylated:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72807-1",
+        "display": "JWH-073 carboxylated/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "77771-4",
+        "display": "JWH-081 5-hydroxypentyl:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78840-6",
+        "display": "JWH-081 5-hydroxypentyl cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78841-4",
+        "display": "JWH-122 5-hydroxypentyl:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72474-0",
+        "display": "JWH-122 5-hydroxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78842-2",
+        "display": "JWH-122 5-hydroxypentyl cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78843-0",
+        "display": "JWH-200 4-Hydroxyindole:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72462-5",
+        "display": "JWH-200 4-Hydroxyindole:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78844-8",
+        "display": "JWH-200 4-Hydroxyindole cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78845-5",
+        "display": "JWH-200 6-Hydroxyindole:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78846-3",
+        "display": "JWH-200 6-Hydroxyindole cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78848-9",
+        "display": "JWH-210 5-Hydroxypentyl:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78849-7",
+        "display": "JWH-210 5-hydroxypentyl cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72804-8",
+        "display": "JWH-210 5-carboxypentyl:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78847-1",
+        "display": "JWH-210 5-carboxypentyl cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72805-5",
+        "display": "JWH-210 5-carboxypentyl/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "73917-7",
+        "display": "JWH-250 4+5-hydroxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72802-2",
+        "display": "JWH-250 5-carboxypentyl:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72467-4",
+        "display": "JWH-250 5-carboxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72803-0",
+        "display": "JWH-250 5-carboxypentyl/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72466-6",
+        "display": "JWH-250 5-hydroxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78850-5",
+        "display": "JWH-250 5-hydroxypentyl cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72473-2",
+        "display": "JWH-398 5-hydroxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "31016-9",
+        "display": "Levoamphetamine/Amphetamines.total:MFr:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "12478-4",
+        "display": "Levomethamphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19512-3",
+        "display": "Levomethamphetamine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19511-5",
+        "display": "Levomethamphetamine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19510-7",
+        "display": "Levomethamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19515-6",
+        "display": "Levomethamphetamine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19514-9",
+        "display": "Levomethamphetamine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "15404-7",
+        "display": "Levomethamphetamine/Amphetamines.total:MFr:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "5679-6",
+        "display": "Lysergate diethylamide:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20542-7",
+        "display": "Lysergate diethylamide:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "33350-0",
+        "display": "Lysergate diethylamide:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3732-5",
+        "display": "Lysergate diethylamide:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "16214-9",
+        "display": "Lysergate diethylamide:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19528-9",
+        "display": "Lysergate diethylamide:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19531-3",
+        "display": "Lysergate diethylamide cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19530-5",
+        "display": "Lysergate diethylamide cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87487-5",
+        "display": "MAB-CHMINACA butanoate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72470-8",
+        "display": "MAM-2201 pentanoate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "90747-7",
+        "display": "MDMB-FUBINACA-M1:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72795-8",
+        "display": "Mephedrone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "67838-3",
+        "display": "Mephedrone:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79237-4",
+        "display": "Mephedrone cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72796-6",
+        "display": "Mephedrone/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "9726-1",
+        "display": "Mescaline:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20543-5",
+        "display": "Mescaline:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "12296-0",
+        "display": "Mescaline:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19543-8",
+        "display": "Mescaline:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19542-0",
+        "display": "Mescaline:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19545-3",
+        "display": "Mescaline cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19544-6",
+        "display": "Mescaline cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3780-4",
+        "display": "Methamphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "16235-4",
+        "display": "Methamphetamine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "55587-0",
+        "display": "Methamphetamine:SCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3779-6",
+        "display": "Methamphetamine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19555-2",
+        "display": "Methamphetamine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "21386-8",
+        "display": "Methamphetamine:PrThr:Pt:Urine:Ord:SAMHSA confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19554-5",
+        "display": "Methamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19557-8",
+        "display": "Methamphetamine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19556-0",
+        "display": "Methamphetamine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "91037-2",
+        "display": "Methamphetamine+Methylenedioxymethamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "58358-3",
+        "display": "Methamphetamine/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3787-9",
+        "display": "Methaqualone:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "16244-6",
+        "display": "Methaqualone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "59928-2",
+        "display": "Methaqualone:SCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3786-1",
+        "display": "Methaqualone:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "18389-7",
+        "display": "Methaqualone:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19558-6",
+        "display": "Methaqualone:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19560-2",
+        "display": "Methaqualone cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19559-4",
+        "display": "Methaqualone cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "42252-7",
+        "display": "Methaqualone+Metabolite:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78858-8",
+        "display": "Methcathinone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79144-2",
+        "display": "Methcathinone:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79236-6",
+        "display": "Methcathinone cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87762-1",
+        "display": "Methcathinone/Creatinine:MRto:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79246-5",
+        "display": "Methedrone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79241-6",
+        "display": "Methedrone cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "27409-2",
+        "display": "Methylenedianiline:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "18355-8",
+        "display": "Methylenedioxyamphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20545-0",
+        "display": "Methylenedioxyamphetamine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "42253-5",
+        "display": "Methylenedioxyamphetamine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19566-9",
+        "display": "Methylenedioxyamphetamine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19565-1",
+        "display": "Methylenedioxyamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20546-8",
+        "display": "Methylenedioxyamphetamine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19567-7",
+        "display": "Methylenedioxyamphetamine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "64138-1",
+        "display": "Methylenedioxyamphetamine/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "27085-0",
+        "display": "Methylenedioxyethylamphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "45143-5",
+        "display": "Methylenedioxyethylamphetamine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "61048-5",
+        "display": "Methylenedioxyethylamphetamine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "59844-1",
+        "display": "Methylenedioxyethylamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "77772-2",
+        "display": "Methylenedioxyethylamphetamine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "64127-4",
+        "display": "Methylenedioxyethylamphetamine/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19570-1",
+        "display": "Methylenedioxymethamphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "18358-2",
+        "display": "Methylenedioxymethamphetamine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "14267-9",
+        "display": "Methylenedioxymethamphetamine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19569-3",
+        "display": "Methylenedioxymethamphetamine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19568-5",
+        "display": "Methylenedioxymethamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19572-7",
+        "display": "Methylenedioxymethamphetamine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19571-9",
+        "display": "Methylenedioxymethamphetamine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "73971-4",
+        "display": "Methylenedioxymethamphetamine+Methylenedioxyethylamphetamine+Methylenedioxyamphetamine:Imp:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "44424-0",
+        "display": "Methylenedioxymethamphetamine/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72793-3",
+        "display": "Methylone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "73686-8",
+        "display": "Methylone:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79242-4",
+        "display": "Methylone cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72794-1",
+        "display": "Methylone/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3810-9",
+        "display": "Methylphenidate:MRat:24H:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3809-1",
+        "display": "Methylphenidate:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20548-4",
+        "display": "Methylphenidate:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3808-3",
+        "display": "Methylphenidate:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19578-4",
+        "display": "Methylphenidate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19577-6",
+        "display": "Methylphenidate:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19580-0",
+        "display": "Methylphenidate cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19579-2",
+        "display": "Methylphenidate cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72792-5",
+        "display": "Methylphenidate/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "74001-9",
+        "display": "NBOMe:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79232-5",
+        "display": "Naphyrone:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "79233-3",
+        "display": "Naphyrone cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "87486-7",
+        "display": "PB-22 3-carboxyindole:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3903-2",
+        "display": "Para hydroxyamphetamine:MRat:24H:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3902-4",
+        "display": "Para hydroxyamphetamine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20554-2",
+        "display": "Para hydroxyamphetamine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3901-6",
+        "display": "Para hydroxyamphetamine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19652-7",
+        "display": "Para hydroxyamphetamine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19651-9",
+        "display": "Para hydroxyamphetamine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19654-3",
+        "display": "Para hydroxyamphetamine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19653-5",
+        "display": "Para hydroxyamphetamine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3937-0",
+        "display": "Phencyclidine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "16254-5",
+        "display": "Phencyclidine:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72825-3",
+        "display": "Phencyclidine:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "52951-1",
+        "display": "Phencyclidine:SCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3936-2",
+        "display": "Phencyclidine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "14311-5",
+        "display": "Phencyclidine:PrThr:Pt:Urine:Ord:Confirm>20 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "18392-1",
+        "display": "Phencyclidine:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "8237-0",
+        "display": "Phencyclidine:PrThr:Pt:Urine:Ord:SAMHSA confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "8238-8",
+        "display": "Phencyclidine:PrThr:Pt:Urine:Ord:SAMHSA screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19659-2",
+        "display": "Phencyclidine:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "14310-7",
+        "display": "Phencyclidine:PrThr:Pt:Urine:Ord:Screen>25 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19661-8",
+        "display": "Phencyclidine cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19660-0",
+        "display": "Phencyclidine cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "58397-1",
+        "display": "Phencyclidine/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3941-2",
+        "display": "Phendimetrazine:MRat:24H:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3940-4",
+        "display": "Phendimetrazine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3939-6",
+        "display": "Phendimetrazine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "12331-5",
+        "display": "Phenethylamine:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3970-1",
+        "display": "Pholedrine:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "18415-0",
+        "display": "Psilocin:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "20558-3",
+        "display": "Psilocin:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "18414-3",
+        "display": "Psilocin:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19683-2",
+        "display": "Psilocin:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19682-4",
+        "display": "Psilocin:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19685-7",
+        "display": "Psilocin cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19684-0",
+        "display": "Psilocin cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "6930-2",
+        "display": "Psilocybin:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19688-1",
+        "display": "Psilocybin:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "17504-2",
+        "display": "Psilocybin:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19687-3",
+        "display": "Psilocybin:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19686-5",
+        "display": "Psilocybin:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19691-5",
+        "display": "Psilocybin cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19690-7",
+        "display": "Psilocybin cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78878-6",
+        "display": "RCS-4 5-carboxypentyl:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72469-0",
+        "display": "RCS-4 5-carboxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78879-4",
+        "display": "RCS-4 5-carboxypentyl cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78880-2",
+        "display": "RCS-4 5-hydroxypentyl:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72468-2",
+        "display": "RCS-4 5-hydroxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "78881-0",
+        "display": "RCS-4 5-hydroxypentyl cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "59328-5",
+        "display": "Salvinorin A:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "59329-3",
+        "display": "Salvinorin B:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3530-3",
+        "display": "Tetrahydrocannabinol:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "14313-1",
+        "display": "Tetrahydrocannabinol:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "3426-4",
+        "display": "Tetrahydrocannabinol:PrThr:Pt:Urine:Ord:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "17872-3",
+        "display": "Tetrahydrocannabinol:PrThr:Pt:Urine:Ord:Confirm>25 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19416-7",
+        "display": "Tetrahydrocannabinol:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "8174-5",
+        "display": "Tetrahydrocannabinol:PrThr:Pt:Urine:Ord:SAMHSA confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "8175-2",
+        "display": "Tetrahydrocannabinol:PrThr:Pt:Urine:Ord:SAMHSA screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19415-9",
+        "display": "Tetrahydrocannabinol:PrThr:Pt:Urine:Ord:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "21557-4",
+        "display": "Tetrahydrocannabinol:PrThr:Pt:Urine:Ord:Screen>100 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "21556-6",
+        "display": "Tetrahydrocannabinol:PrThr:Pt:Urine:Ord:Screen>20 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "14312-3",
+        "display": "Tetrahydrocannabinol:PrThr:Pt:Urine:Ord:Screen>50 ng/mL"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19418-3",
+        "display": "Tetrahydrocannabinol cutoff:MCnc:Pt:Urine:Qn:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "19417-5",
+        "display": "Tetrahydrocannabinol cutoff:MCnc:Pt:Urine:Qn:Screen"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "13478-3",
+        "display": "Tetrahydrocannabinol/Creatinine:MRto:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "75651-0",
+        "display": "Tetrahydrocannabivarin:MCnc:Pt:Urine:Qn:"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72471-6",
+        "display": "UR-144 4+5-hydroxypentyl:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "72472-4",
+        "display": "UR-144 pentanoate:PrThr:Pt:Urine:Ord:Confirm"
+      },
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "88023-7",
+        "display": "XLR-11 N-(4-hydroxypentyl):PrThr:Pt:Urine:Ord:Confirm"
+      }
+    ]
+  }
+}
