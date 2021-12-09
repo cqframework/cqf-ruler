@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,6 +71,8 @@ public class ExpressionEvaluationIT implements IServerSupport {
 
         // This test requires the following application setting:
         // enforce_referential_integrity_on_write: false
+		  @Autowired
+		  private CqlTranslatorOptions cqlTranslatorOptions;
     @Test
     public void testExpressionEvaluationEXM104Denominator() throws Exception {
         RequestDetails theRequest = new SystemRequestDetails();
@@ -78,6 +81,8 @@ public class ExpressionEvaluationIT implements IServerSupport {
         uploadTests("test/denom-EXM104-FHIR3/Patient");
         Map<String, IBaseResource> resources = uploadTests("test/denom-EXM104-FHIR3");
         IBaseResource patient = resources.get("denom-EXM104-FHIR3");
+		  // Should not use this find updated cql
+		  cqlTranslatorOptions.setCompatibilityLevel("1.3");
         Object ipResult = expressionEvaluation.evaluateInContext(measure, "EXM104_FHIR3.\"Initial Population\"", patient.getIdElement().getIdPart(), theRequest);
         Object denomResult = expressionEvaluation.evaluateInContext(measure, "EXM104_FHIR3.\"Denominator\"", patient.getIdElement().getIdPart(), theRequest);
         Object numerResult = expressionEvaluation.evaluateInContext(measure, "EXM104_FHIR3.\"Numerator\"", patient.getIdElement().getIdPart(), theRequest);

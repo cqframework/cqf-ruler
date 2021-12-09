@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.plugin.cr.dstu3;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Strings;
 
@@ -45,6 +46,8 @@ public class ExpressionEvaluation implements LibraryUtilities {
     private JpaFhirDalFactory jpaFhirDalFactory;
     @Autowired
     private CqlProperties cqlProperties;
+	 @Autowired
+	 Map<VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache;
     /* Evaluates the given CQL expression in the context of the given resource */
     /*
      * If the resource has a library extension, or a library element, that library
@@ -84,7 +87,11 @@ public class ExpressionEvaluation implements LibraryUtilities {
 				)))
 			);
 
-        Context context = new Context(libraryLoader.load(new VersionedIdentifier().withId("LocalLibrary")));
+			// Remove LocalLibrary from cache first...
+			VersionedIdentifier localLibraryIdentifier = new VersionedIdentifier().withId("LocalLibrary");
+			globalLibraryCache.remove(localLibraryIdentifier);
+
+        Context context = new Context(libraryLoader.load(localLibraryIdentifier));
         context.setDebugMap(getDebugMap());
         context.setParameter(null, instance.fhirType(), instance);
         context.setParameter(null, "%context", instance);
