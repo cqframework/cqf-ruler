@@ -19,7 +19,7 @@ public interface CanonicalUtilities {
         if (canonical.hasValue()) {
             String id = canonical.getValue();
             String temp = id.contains("/") ? id.substring(id.lastIndexOf("/") + 1) : id;
-            return new IdType(temp.split("\\|")[0]);
+            return new IdType(this.getResourceName(canonical), temp.split("\\|")[0]);
         }
 
         throw new RuntimeException("CanonicalType must have a value for id extraction");

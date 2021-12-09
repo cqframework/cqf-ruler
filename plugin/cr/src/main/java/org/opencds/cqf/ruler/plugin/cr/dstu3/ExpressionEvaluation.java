@@ -18,6 +18,7 @@ import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.Type;
+import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
@@ -28,6 +29,7 @@ import org.opencds.cqf.ruler.plugin.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaFhirDal;
 import org.opencds.cqf.ruler.plugin.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.plugin.cr.utilities.LibraryUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,8 @@ public class ExpressionEvaluation implements LibraryUtilities {
     private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
     @Autowired
     private JpaDataProviderFactory jpaDataProviderFactory;
+	 @Autowired
+	 private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
     @Autowired
     private JpaFhirDalFactory jpaFhirDalFactory;
     @Autowired
@@ -99,7 +103,8 @@ public class ExpressionEvaluation implements LibraryUtilities {
         context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
 
-        context.registerDataProvider("http://hl7.org/fhir", jpaDataProviderFactory.create(theRequest));
+		  DataProvider dataProvider = jpaDataProviderFactory.create(theRequest, jpaTerminologyProviderFactory.create(theRequest));
+        context.registerDataProvider("http://hl7.org/fhir", dataProvider);
         return context.resolveExpressionRef("Expression").evaluate(context);
     }
 

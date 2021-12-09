@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cql.CqlConfig;
 import org.opencds.cqf.ruler.plugin.cr.CrConfig;
+import org.opencds.cqf.ruler.plugin.devtools.dstu3.CodeSystemUpdateProvider;
 import org.opencds.cqf.ruler.plugin.testutility.IServerSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,6 +58,9 @@ public class ExpressionEvaluationIT implements IServerSupport {
     @LocalServerPort
     private int port;
 
+	 @Autowired
+	 private CodeSystemUpdateProvider codeSystemUpdateProvider;
+
     private Map<String, IBaseResource> libraries;
     private Map<String, IBaseResource> vocabulary;
 	 private Map<String, IBaseResource> measures;
@@ -64,6 +68,7 @@ public class ExpressionEvaluationIT implements IServerSupport {
     @BeforeEach
     public void setup() throws Exception {
         vocabulary = uploadTests("valueset");
+		  codeSystemUpdateProvider.updateCodeSystems();
         libraries = uploadTests("library");
 		  measures = uploadTests("measure");
     }
@@ -74,31 +79,27 @@ public class ExpressionEvaluationIT implements IServerSupport {
 		  @Autowired
 		  private CqlTranslatorOptions cqlTranslatorOptions;
     @Test
-    public void testExpressionEvaluationEXM104Denominator() throws Exception {
+    public void testExpressionEvaluationANCIND01MeasureDomain() throws Exception {
         RequestDetails theRequest = new SystemRequestDetails();
-        DomainResource measure = (DomainResource) measures.get("measure-EXM104-FHIR3-8.1.000");
+        DomainResource measure = (DomainResource) measures.get("ANCIND01");
         // Patient First
-        uploadTests("test/denom-EXM104-FHIR3/Patient");
-        Map<String, IBaseResource> resources = uploadTests("test/denom-EXM104-FHIR3");
-        IBaseResource patient = resources.get("denom-EXM104-FHIR3");
+        uploadTests("test/measure/ANCIND01/charity-otala-1/Patient");
+        Map<String, IBaseResource> resources = uploadTests("test/measure/ANCIND01");
+        IBaseResource patient = resources.get("charity-otala-1");
 		  // Should not use this find updated cql
-		  cqlTranslatorOptions.setCompatibilityLevel("1.3");
-        Object ipResult = expressionEvaluation.evaluateInContext(measure, "EXM104_FHIR3.\"Initial Population\"", patient.getIdElement().getIdPart(), theRequest);
-        Object denomResult = expressionEvaluation.evaluateInContext(measure, "EXM104_FHIR3.\"Denominator\"", patient.getIdElement().getIdPart(), theRequest);
-        Object numerResult = expressionEvaluation.evaluateInContext(measure, "EXM104_FHIR3.\"Numerator\"", patient.getIdElement().getIdPart(), theRequest);
-    }
-
-    @Test
-    public void testExpressionEvaluationEXM104Numerator() throws Exception {
-        RequestDetails theRequest = new SystemRequestDetails();
-        DomainResource primaryLibrary = (DomainResource) libraries.get("EXM104-FHIR3-8.1.000");
-        // Patient First
-        uploadTests("test/numer-EXM104-FHIR3/Patient");
-        Map<String, IBaseResource> resources = uploadTests("test/numer-EXM104-FHIR3");
-        IBaseResource patient = resources.get("numer-EXM104-FHIR3");
-        Object ipResult = expressionEvaluation.evaluateInContext(primaryLibrary, "Initital Population", patient.getIdElement().getIdPart(), theRequest);
-        Object denomResult = expressionEvaluation.evaluateInContext(primaryLibrary, "Denominator", patient.getIdElement().getIdPart(), theRequest);
-        Object numerResult = expressionEvaluation.evaluateInContext(primaryLibrary, "Numerator", patient.getIdElement().getIdPart(), theRequest);
+		  // cqlTranslatorOptions.setCompatibilityLevel("1.3");
+		//   Encounter encounter = myDaoRegistry.getResourceDao(Encounter.class).read(resources.get("denom-EXM104-FHIR3-2").getIdElement());
+		//   SearchParameterMap searchMap = new SearchParameterMap();
+		//   searchMap.put("patient", Arrays.asList(Arrays.asList(new ReferenceParam(patient.getIdElement()))));
+		//   TokenParam tkparam = new TokenParam(null, "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.424", false);
+		//   // http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.424
+		//   tkparam.setModifier(TokenParamModifier.IN);
+		//   searchMap.put("type", Arrays.asList(Arrays.asList(tkparam)));
+		//   IBundleProvider bundleProvider = myDaoRegistry.getResourceDao(Encounter.class).search(searchMap);
+		//   bundleProvider.getAllResources();
+        Object ipResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.\"Initial Population\"", patient.getIdElement().getIdPart(), theRequest);
+        Object denomResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Denominator", patient.getIdElement().getIdPart(), theRequest);
+        Object numerResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Numerator", patient.getIdElement().getIdPart(), theRequest);
     }
 
     private Map<String, IBaseResource> uploadTests(String testDirectory) throws URISyntaxException, IOException {
