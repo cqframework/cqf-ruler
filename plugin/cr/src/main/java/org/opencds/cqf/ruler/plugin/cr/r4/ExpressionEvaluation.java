@@ -26,14 +26,13 @@ import org.opencds.cqf.ruler.plugin.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.LibraryLoaderFactory;
-import org.opencds.cqf.ruler.plugin.cr.r4.utilities.CanonicalUtilities;
-import org.opencds.cqf.ruler.plugin.cr.utilities.LibraryUtilities;
+import org.opencds.cqf.ruler.plugin.utility.CanonicalUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilities {
+public class ExpressionEvaluation implements CanonicalUtilities {
 
     @Autowired
     private LibraryLoaderFactory libraryLoaderFactory;
@@ -140,7 +139,7 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
 
             // TODO: This assumes the libraries resource id is the same as the library name,
             // need to work this out better
-            Library lib = (Library) this.jpaFhirDalFactory.create(theRequest).read(this.getIdType(reference));
+            Library lib = (Library) this.jpaFhirDalFactory.create(theRequest).read(this.getIdElement(reference));
             if (lib.hasName()) {
                 builder.append(lib.getName());
             } else {

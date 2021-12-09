@@ -1,6 +1,5 @@
 package org.opencds.cqf.ruler.plugin.cr;
 
-import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "hapi.fhir.cr")
