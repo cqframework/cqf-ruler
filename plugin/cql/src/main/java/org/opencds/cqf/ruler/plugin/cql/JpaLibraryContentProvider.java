@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentType;
@@ -47,7 +48,7 @@ public class JpaLibraryContentProvider
 
 		ContentFunctions cf = cachedContentFunctions.computeIfAbsent(libraryDao.getResourceType(), x -> this.getContentFunctions(this.libraryDao.getContext()));
 		try {
-			for (IBaseResource attachment : cf.getAttachments().apply(library)) {
+			for (IBase attachment : cf.getAttachments().apply(library)) {
 				String contentType = cf.getContentType().apply(attachment);
 				if (contentType != null && contentType.equals("text/cql")) {
 					byte[] content = cf.getContent().apply(attachment);
