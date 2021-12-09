@@ -80,8 +80,14 @@ public class CqlConfig {
 	@Bean
 	JpaDataProviderFactory jpaDataProviderFactory(ModelResolver modelResolver, DaoRegistry daoRegistry,
 			SearchParameterResolver searchParameterResolver) {
-		return rd -> new CompositeDataProvider(modelResolver,
-				new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, rd));
+		return (rd, t) -> {
+			JpaFhirRetrieveProvider provider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, rd);
+			if (t != null) {
+				provider.setTerminologyProvider(t);
+				provider.setExpandValueSets(true);
+			}
+			return new CompositeDataProvider(modelResolver, provider);
+		};
 	}
 
 	@Bean
