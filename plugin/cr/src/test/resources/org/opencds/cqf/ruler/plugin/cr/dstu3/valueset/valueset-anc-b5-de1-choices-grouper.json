@@ -1,0 +1,37 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b5-de1-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b5-de1-choices-grouper",
+  "name": "ReasonforcomingtofacilityChoicesGrouper",
+  "title": "Reason for coming to facility Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Reason for coming to facility Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b5-de2" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b5-de3" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b5-de4" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B5.DE2",
+      "display": "First antenatal care contact"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B5.DE3",
+      "display": "Scheduled antenatal care contact"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B5.DE4",
+      "display": "Specific complaint related to antenatal care"
+    } ]
+  }
+}

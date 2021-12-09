@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b6-de22",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de22",
+  "name": "ExpecteddateofdeliveryEDD",
+  "title": "Expected date of delivery (EDD)",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Expected date of delivery (EDD) element",
+  "immutable": true
+}

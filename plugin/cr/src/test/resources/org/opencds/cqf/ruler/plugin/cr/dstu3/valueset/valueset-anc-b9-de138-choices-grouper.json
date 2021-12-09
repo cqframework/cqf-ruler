@@ -1,0 +1,43 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b9-de138-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de138-choices-grouper",
+  "name": "UrinedipstickresultleukocytesChoicesGrouper",
+  "title": "Urine dipstick result - leukocytes Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Urine dipstick result - leukocytes Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de139" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de140" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE139",
+      "display": "None"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE140",
+      "display": "+"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE141",
+      "display": "++"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE142",
+      "display": "+++"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE143",
+      "display": "++++"
+    } ]
+  }
+}

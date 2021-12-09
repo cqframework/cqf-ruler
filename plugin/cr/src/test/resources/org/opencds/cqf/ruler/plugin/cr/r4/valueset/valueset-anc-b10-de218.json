@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b10-de218",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b10-de218",
+  "name": "Hasheeverusedaweaponorthreatenedyouwithaweapon",
+  "title": "Has he ever used a weapon or threatened you with a weapon",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Has he ever used a weapon or threatened you with a weapon element",
+  "immutable": true
+}

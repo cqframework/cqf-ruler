@@ -1,0 +1,31 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b9-de89-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de89-choices-grouper",
+  "name": "HepatitisCtestresultChoicesGrouper",
+  "title": "Hepatitis C test result Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Hepatitis C test result Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de90" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de91" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE90",
+      "display": "Hepatitis C positive"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE91",
+      "display": "Hepatitis C negative"
+    } ]
+  }
+}

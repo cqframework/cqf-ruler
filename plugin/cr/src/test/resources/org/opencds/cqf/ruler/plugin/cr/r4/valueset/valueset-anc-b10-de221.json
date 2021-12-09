@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b10-de221",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b10-de221",
+  "name": "Isheviolentlyandconstantlyjealousofyou",
+  "title": "Is he violently and constantly jealous of you",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Is he violently and constantly jealous of you element",
+  "immutable": true
+}

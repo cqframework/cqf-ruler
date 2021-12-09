@@ -1,0 +1,101 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-end-41",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-end-41",
+  "name": "CauseofdeathChoices",
+  "title": "Cause of death Choices",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Cause of death Choices element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "concept": [ {
+        "code": "ANC.End.41",
+        "display": "Unknown"
+      }, {
+        "code": "ANC.End.42",
+        "display": "Abortion-related complications"
+      }, {
+        "code": "ANC.End.43",
+        "display": "Obstructed labour"
+      }, {
+        "code": "ANC.End.44",
+        "display": "Pre-eclampsia"
+      }, {
+        "code": "ANC.End.45",
+        "display": "Eclampsia"
+      }, {
+        "code": "ANC.End.46",
+        "display": "Postpartum haemorrhage"
+      }, {
+        "code": "ANC.End.47",
+        "display": "Antepartum haemorrhage"
+      }, {
+        "code": "ANC.End.48",
+        "display": "Placental abruption"
+      }, {
+        "code": "ANC.End.49",
+        "display": "Infection"
+      }, {
+        "code": "ANC.End.50",
+        "display": "Other (specify)"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:11:23-07:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.41",
+      "display": "Unknown"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.42",
+      "display": "Abortion-related complications"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.43",
+      "display": "Obstructed labour"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.44",
+      "display": "Pre-eclampsia"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.45",
+      "display": "Eclampsia"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.46",
+      "display": "Postpartum haemorrhage"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.47",
+      "display": "Antepartum haemorrhage"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.48",
+      "display": "Placental abruption"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.49",
+      "display": "Infection"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.50",
+      "display": "Other (specify)"
+    } ]
+  }
+}

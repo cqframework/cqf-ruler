@@ -1,0 +1,38 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b6-de41",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de41",
+  "name": "PastpregnancycomplicationsConvulsionsChoices",
+  "title": "Past pregnancy complications - Convulsions Choices",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Past pregnancy complications - Convulsions Choices element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "concept": [ {
+        "code": "ANC.B6.DE41",
+        "display": "Convulsions"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:11:22-07:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE41",
+      "display": "Convulsions"
+    } ]
+  }
+}

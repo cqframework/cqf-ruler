@@ -1,0 +1,79 @@
+{
+  "resourceType": "ValueSet",
+  "id": "inactive-condition",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-publishablevalueset", "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueCode": "shareable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueCode": "computable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueCode": "publishable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueCode": "structured"
+  }, {
+    "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+    "valueContactDetail": {
+      "name": "Bryn Rhodes"
+    }
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/cqf/common/ValueSet/inactive-condition",
+  "version": "0.1.0",
+  "name": "CQFInactiveCondition",
+  "title": "CQF Inactive Condition",
+  "status": "active",
+  "experimental": false,
+  "date": "2019-07-21",
+  "publisher": "Health Level 7 International - Clinical Decision Support WG",
+  "contact": [ {
+    "telecom": [ {
+      "system": "url",
+      "value": "http://www.hl7.org/Special/committees/dss/index.cfm"
+    } ]
+  } ],
+  "description": "Inactive condition clinical status codes",
+  "purpose": "Used to specify the set of clinical status codes that are considered inactive",
+  "copyright": "© HL7 2016+.",
+  "compose": {
+    "include": [ {
+      "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+      "concept": [ {
+        "code": "inactive",
+        "display": "Inactive"
+      }, {
+        "code": "remission",
+        "display": "Remission"
+      }, {
+        "code": "resolved",
+        "display": "Resolved"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:13:06-07:00",
+    "contains": [ {
+      "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+      "code": "inactive",
+      "display": "Inactive"
+    }, {
+      "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+      "code": "remission",
+      "display": "Remission"
+    }, {
+      "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+      "code": "resolved",
+      "display": "Resolved"
+    } ]
+  }
+}

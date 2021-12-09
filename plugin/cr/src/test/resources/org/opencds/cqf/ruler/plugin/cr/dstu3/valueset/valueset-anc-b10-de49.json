@@ -1,0 +1,38 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b10-de49",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b10-de49",
+  "name": "CounsellingonUseofWheatBranorOtherFibreSupplementstoRelieveConstipation",
+  "title": "Counselling on Use of Wheat Bran or Other Fibre Supplements to Relieve Constipation",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Counselling on Use of Wheat Bran or Other Fibre Supplements to Relieve Constipation element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "concept": [ {
+        "code": "ANC.B10.DE49",
+        "display": "Counselling conducted on use of wheat bran or other fibre supplements to relieve constipation"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:11:22-07:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B10.DE49",
+      "display": "Counselling conducted on use of wheat bran or other fibre supplements to relieve constipation"
+    } ]
+  }
+}

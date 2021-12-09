@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-end-38",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-end-38",
+  "name": "Dateofmiscarriageorabortion",
+  "title": "Date of miscarriage or abortion",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Date of miscarriage or abortion element",
+  "immutable": true
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Condition xmlns="http://hl7.org/fhir">
+  <id value="charity-otala-1-pregnancy"/>
+  <meta>
+    <profile value="http://fhir.org/guides/who/anc-cds/StructureDefinition/anc-condition"/>
+    <profile value="http://fhir.org/guides/who/core/StructureDefinition/who-condition"/>
+  </meta>
+
+  <clinicalStatus>
+    <coding>
+      <system value="http://terminology.hl7.org/CodeSystem/condition-clinical"/>
+      <code value="active"/>
+    </coding>
+  </clinicalStatus>
+
+  <verificationStatus>
+    <coding>
+      <system value="http://terminology.hl7.org/CodeSystem/condition-ver-status"/>
+      <code value="confirmed"/>
+    </coding>
+  </verificationStatus>
+
+  <category>
+    <coding>
+      <system value="http://terminology.hl7.org/CodeSystem/condition-category"/>
+      <code value="problem-list-item"/>
+      <display value="Problem List Item"/>
+    </coding>
+  </category>
+
+  <code>
+    <coding>
+      <system value="http://snomed.info/sct"/>
+      <code value="77386006"/>
+      <display value="Pregnancy"/>
+    </coding>
+    <text value="Pregnancy"/>
+  </code>
+
+  <subject>
+    <reference value="Patient/charity-otala-1"/>
+  </subject>
+  <onsetDateTime value="2019-05-22"/>
+</Condition>

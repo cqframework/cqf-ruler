@@ -1,0 +1,80 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b6-de85",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de85",
+  "name": "ExistingchronichealthconditionsChoices",
+  "title": "Existing chronic health conditions Choices",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Existing chronic health conditions Choices element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "concept": [ {
+        "code": "ANC.B6.DE85",
+        "display": "Don't know if there are any chronic or past health conditions"
+      }, {
+        "code": "ANC.B6.DE87",
+        "display": "Blood disorder (e.g. sickle cell, anaemia, thalassemia)"
+      }, {
+        "code": "ANC.B6.DE88",
+        "display": "Cancer - gynaecological"
+      }, {
+        "code": "ANC.B6.DE89",
+        "display": "Cancer - other site (specify)"
+      }, {
+        "code": "ANC.B6.DE94",
+        "display": "Epilepsy"
+      }, {
+        "code": "ANC.B6.DE95",
+        "display": "HIV positive"
+      }, {
+        "code": "ANC.B6.DE98",
+        "display": "Other (specify)"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:11:23-07:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE85",
+      "display": "Don't know if there are any chronic or past health conditions"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE87",
+      "display": "Blood disorder (e.g. sickle cell, anaemia, thalassemia)"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE88",
+      "display": "Cancer - gynaecological"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE89",
+      "display": "Cancer - other site (specify)"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE94",
+      "display": "Epilepsy"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE95",
+      "display": "HIV positive"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE98",
+      "display": "Other (specify)"
+    } ]
+  }
+}
