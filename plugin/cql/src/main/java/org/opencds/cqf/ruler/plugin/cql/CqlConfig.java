@@ -73,6 +73,11 @@ public class CqlConfig {
 	}
 
 	@Bean
+	JpaFhirDalFactory jpaFhirDalFactory(DaoRegistry daoRegistry) {
+		return rd -> new JpaFhirDal(daoRegistry, rd);
+	}
+
+	@Bean
 	JpaDataProviderFactory jpaDataProviderFactory(ModelResolver modelResolver, DaoRegistry daoRegistry,
 			SearchParameterResolver searchParameterResolver) {
 		return (rd, t) -> {

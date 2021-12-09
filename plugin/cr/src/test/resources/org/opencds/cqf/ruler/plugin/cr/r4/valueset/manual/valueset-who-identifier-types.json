@@ -1,0 +1,15 @@
+{
+  "resourceType": "ValueSet",
+  "id": "who-identifier-types",
+  "url": "http://fhir.org/guides/who/core/ValueSet/who-identifier-types",
+  "name": "WHOIdentifierTypes",
+  "title": "ANC Identifier Types",
+  "status": "active",
+  "compose": {
+    "include": [
+      {
+        "system": "http://fhir.org/guides/who/core/CodeSystem/who-identifier-types"
+      }
+    ]
+  }
+}

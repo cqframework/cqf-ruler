@@ -1,0 +1,31 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b9-de29-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de29-choices-grouper",
+  "name": "RhfactorChoicesGrouper",
+  "title": "Rh factor Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Rh factor Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de30" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de31" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE30",
+      "display": "Rh positive"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE31",
+      "display": "Rh negative"
+    } ]
+  }
+}

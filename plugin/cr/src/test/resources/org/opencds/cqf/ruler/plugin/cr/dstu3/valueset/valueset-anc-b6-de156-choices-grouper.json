@@ -1,0 +1,37 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b6-de156-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de156-choices-grouper",
+  "name": "PartnerHIVstatusreportedChoicesGrouper",
+  "title": "Partner HIV status (reported) Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Partner HIV status (reported) Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de157" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de158" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de159" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE157",
+      "display": "HIV positive"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE158",
+      "display": "HIV negative"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE159",
+      "display": "Inconclusive"
+    } ]
+  }
+}

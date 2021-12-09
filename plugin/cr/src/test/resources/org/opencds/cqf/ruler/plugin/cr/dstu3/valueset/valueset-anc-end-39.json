@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-end-39",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-end-39",
+  "name": "Dateofdeath",
+  "title": "Date of death",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Date of death element",
+  "immutable": true
+}

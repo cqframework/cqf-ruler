@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b10-de241",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b10-de241",
+  "name": "Counsellingconductedonmalariaprevention",
+  "title": "Counselling conducted on malaria prevention",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Counselling conducted on malaria prevention element",
+  "immutable": true
+}

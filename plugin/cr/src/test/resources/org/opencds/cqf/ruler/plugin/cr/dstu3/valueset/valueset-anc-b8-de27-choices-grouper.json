@@ -1,0 +1,47 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b8-de27-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de27-choices-grouper",
+  "name": "SymptomsofseverepreeclampsiaChoicesGrouper",
+  "title": "Symptoms of severe pre-eclampsia Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Symptoms of severe pre-eclampsia Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de28" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de29" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE28",
+      "display": "No symptoms of severe pre-eclampsia"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE29",
+      "display": "Severe headache"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE30",
+      "display": "Visual disturbance"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE31",
+      "display": "Epigastric pain"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE32",
+      "display": "Dizziness"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE33",
+      "display": "Vomiting"
+    } ]
+  }
+}

@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CarePlan xmlns="http://hl7.org/fhir">
+  <id value="charity-otala-1-transient-first-contact"/>
+  <contained>
+    <RequestGroup>
+      <id value="requestgroup-anc-b"/>
+      <instantiatesCanonical value="http://fhir.org/guides/who/anc-cds/PlanDefinition/ANCB"/>
+      <status value="draft"/>
+      <intent value="proposal"/>
+      <subject>
+        <reference value="Patient/charity-otala-1"/>
+        <display value="Charity Otala"/>
+      </subject>
+      <encounter>
+        <reference value="Encounter/anc-encounter-charity-otala-1"/>
+      </encounter>
+
+      <!-- ANC.B4 Confirm Pregnancy -->
+      <action id="4">
+        <relatedAction>
+          <actionId value="5"/>
+          <relationship value="before-start"/>
+        </relatedAction>
+        <resource>
+          <reference value="#task-anc-b4"/>
+        </resource>
+      </action>
+
+      <!-- ANC.B5 Quick Check -->
+      <action id="5">
+        <relatedAction>
+          <actionId value="6"/>
+          <relationship value="before-start"/>
+        </relatedAction>
+        <resource>
+          <reference value="#task-anc-b5"/>
+        </resource>
+      </action>
+
+      <!-- ANC.B6 Profile -->
+      <action id="6">
+        <relatedAction>
+          <actionId value="7"/>
+          <relationship value="before-start"/>
+        </relatedAction>
+        <resource>
+          <reference value="#task-anc-b6"/>
+        </resource>
+      </action>
+
+      <!-- ANC.B7 Symptoms and Followup -->
+      <action id="7">
+        <relatedAction>
+          <actionId value="8"/>
+          <relationship value="before-start"/>
+        </relatedAction>
+        <resource>
+          <reference value="#task-anc-b7"/>
+        </resource>
+      </action>
+
+      <!-- ANC.B8 Physical Exam -->
+      <action id="8">
+        <relatedAction>
+          <actionId value="9"/>
+          <relationship value="before-start"/>
+        </relatedAction>
+        <resource>
+          <reference value="#task-anc-b8"/>
+        </resource>
+      </action>
+
+      <!-- ANC.B9 Laboratory Testing and Imaging -->
+      <action id="9">
+        <relatedAction>
+          <actionId value="10"/>
+          <relationship value="before-start"/>
+        </relatedAction>
+        <resource>
+          <reference value="#task-anc-b9"/>
+        </resource>
+      </action>
+
+      <!-- ANC.B10 Counselling and Treatment -->
+      <action id="10">
+        <relatedAction>
+          <actionId value="11"/>
+          <relationship value="before-start"/>
+        </relatedAction>
+        <resource>
+          <reference value="#task-anc-b10"/>
+        </resource>
+      </action>
+
+      <!-- ANC.B11 Referral Needed -->
+      <action id="11">
+        <relatedAction>
+          <actionId value="12"/>
+          <relationship value="before-start"/>
+        </relatedAction>
+        <resource>
+          <reference value="#task-anc-b11"/>
+        </resource>
+      </action>
+
+      <!-- ANC.B12 Scheduling -->
+      <action id="12">
+        <resource>
+          <reference value="#task-anc-b12"/>
+        </resource>
+      </action>
+    </RequestGroup>
+  </contained>
+  <contained>
+    <Task>
+      <id value="task-anc-b4"/>
+      <instantiatesCanonical value="http://fhir.org/guides/who/anc-cds/ActivityDefinition/ANCB4"/>
+      <status value="draft"/>
+      <intent value="proposal"/>
+      <code>
+        <coding>
+          <system value="http://fhir.org/guides/who/anc-cds/CodeSystem/activity-codes"/>
+          <code value="ANC.B4"/>
+          <display value="Confirm pregnancy"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+          <code value="collect-information"/>
+          <display value="Collect Information"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process"/>
+          <code value="history-and-physical"/>
+          <display value="History and Physical"/>
+        </coding>
+      </code>
+      <input>
+        <type>
+          <coding>
+            <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+            <code value="collect-information"/>
+            <display value="Collect Information"/>
+          </coding>
+        </type>
+        <valueCanonical value="http://fhir.org/guides/who/anc-cds/Questionnaire/ANCB4"/>
+      </input>
+    </Task>
+    <Task>
+      <id value="task-anc-b5"/>
+      <instantiatesCanonical value="http://fhir.org/guides/who/anc-cds/ActivityDefinition/ANCB5"/>
+      <status value="draft"/>
+      <intent value="proposal"/>
+      <code>
+        <coding>
+          <system value="http://fhir.org/guides/who/anc-cds/CodeSystem/activity-codes"/>
+          <code value="ANC.B5"/>
+          <display value="Quick check"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+          <code value="collect-information"/>
+          <display value="Collect Information"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process"/>
+          <code value="triage"/>
+          <display value="Triage"/>
+        </coding>
+      </code>
+      <input>
+        <type>
+          <coding>
+            <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+            <code value="collect-information"/>
+            <display value="Collect Information"/>
+          </coding>
+        </type>
+        <valueCanonical value="http://fhir.org/guides/who/anc-cds/Questionnaire/ANCB5"/>
+      </input>
+    </Task>
+    <Task>
+      <id value="task-anc-b6"/>
+      <instantiatesCanonical value="http://fhir.org/guides/who/anc-cds/ActivityDefinition/ANCB6"/>
+      <status value="draft"/>
+      <intent value="proposal"/>
+      <code>
+        <coding>
+          <system value="http://fhir.org/guides/who/anc-cds/CodeSystem/activity-codes"/>
+          <code value="ANC.B6"/>
+          <display value="Profile"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+          <code value="collect-information"/>
+          <display value="Collect Information"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process"/>
+          <code value="history-and-physical"/>
+          <display value="History and Physical"/>
+        </coding>
+      </code>
+      <input>
+        <type>
+          <coding>
+            <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+            <code value="collect-information"/>
+            <display value="Collect Information"/>
+          </coding>
+        </type>
+        <valueCanonical value="http://fhir.org/guides/who/anc-cds/Questionnaire/ANCB6"/>
+      </input>
+    </Task>
+    <Task>
+      <id value="task-anc-b7"/>
+      <instantiatesCanonical value="http://fhir.org/guides/who/anc-cds/ActivityDefinition/ANCB7"/>
+      <status value="draft"/>
+      <intent value="proposal"/>
+      <code>
+        <coding>
+          <system value="http://fhir.org/guides/who/anc-cds/CodeSystem/activity-codes"/>
+          <code value="ANC.B7"/>
+          <display value="Symptoms and Followup"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+          <code value="collect-information"/>
+          <display value="Collect Information"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process"/>
+          <code value="guideline-based-care"/>
+          <display value="Guideline-based Care"/>
+        </coding>
+      </code>
+      <input>
+        <type>
+          <coding>
+            <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+            <code value="collect-information"/>
+            <display value="Collect Information"/>
+          </coding>
+        </type>
+        <valueCanonical value="http://fhir.org/guides/who/anc-cds/Questionnaire/ANCB7"/>
+      </input>
+    </Task>
+    <Task>
+      <id value="task-anc-b8"/>
+      <instantiatesCanonical value="http://fhir.org/guides/who/anc-cds/ActivityDefinition/ANCB8"/>
+      <status value="draft"/>
+      <intent value="proposal"/>
+      <code>
+        <coding>
+          <system value="http://fhir.org/guides/who/anc-cds/CodeSystem/activity-codes"/>
+          <code value="ANC.B8"/>
+          <display value="Physical exam"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+          <code value="collect-information"/>
+          <display value="Collect Information"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process"/>
+          <code value="history-and-physical"/>
+          <display value="History and Physical"/>
+        </coding>
+      </code>
+      <input>
+        <type>
+          <coding>
+            <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+            <code value="collect-information"/>
+            <display value="Collect Information"/>
+          </coding>
+        </type>
+        <valueCanonical value="http://fhir.org/guides/who/anc-cds/Questionnaire/ANCB8"/>
+      </input>
+    </Task>
+    <Task>
+      <id value="task-anc-b9"/>
+      <instantiatesCanonical value="http://fhir.org/guides/who/anc-cds/ActivityDefinition/ANCB9"/>
+      <status value="draft"/>
+      <intent value="proposal"/>
+      <code>
+        <coding>
+          <system value="http://fhir.org/guides/who/anc-cds/CodeSystem/activity-codes"/>
+          <code value="ANC.B9"/>
+          <display value="Conduct Laboratory Test and Imaging"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+          <code value="collect-information"/>
+          <display value="Collect Information"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process"/>
+          <code value="diagnostic-testing"/>
+          <display value="Diagnostic Testing"/>
+        </coding>
+      </code>
+      <input>
+        <type>
+          <coding>
+            <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+            <code value="collect-information"/>
+            <display value="Collect Information"/>
+          </coding>
+        </type>
+        <valueCanonical value="http://fhir.org/guides/who/anc-cds/Questionnaire/ANCB9"/>
+      </input>
+    </Task>
+    <Task>
+      <id value="task-anc-b10"/>
+      <instantiatesCanonical value="http://fhir.org/guides/who/anc-cds/ActivityDefinition/ANCB10"/>
+      <status value="draft"/>
+      <intent value="proposal"/>
+      <code>
+        <coding>
+          <system value="http://fhir.org/guides/who/anc-cds/CodeSystem/activity-codes"/>
+          <code value="ANC.B10"/>
+          <display value="Counselling and Treatment"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+          <code value="collect-information"/>
+          <display value="Collect Information"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process"/>
+          <code value="provide-counseling"/>
+          <display value="Provide Counseling"/>
+        </coding>
+      </code>
+      <input>
+        <type>
+          <coding>
+            <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+            <code value="collect-information"/>
+            <display value="Collect Information"/>
+          </coding>
+        </type>
+        <valueCanonical value="http://fhir.org/guides/who/anc-cds/Questionnaire/ANCB10"/>
+      </input>
+    </Task>
+    <Task>
+      <id value="task-anc-b11"/>
+      <instantiatesCanonical value="http://fhir.org/guides/who/anc-cds/ActivityDefinition/ANCB11"/>
+      <status value="draft"/>
+      <intent value="proposal"/>
+      <code>
+        <coding>
+          <system value="http://fhir.org/guides/who/anc-cds/CodeSystem/activity-codes"/>
+          <code value="ANC.B11"/>
+          <display value="Referral Needed?"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+          <code value="collect-information"/>
+          <display value="Collect Information"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process"/>
+          <code value="discharge-referral-of-patient"/>
+          <display value="Discharge/Referral of Patient"/>
+        </coding>
+      </code>
+      <input>
+        <type>
+          <coding>
+            <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+            <code value="collect-information"/>
+            <display value="Collect Information"/>
+          </coding>
+        </type>
+        <valueCanonical value="http://fhir.org/guides/who/anc-cds/Questionnaire/ANCB11"/>
+      </input>
+    </Task>
+    <Task>
+      <id value="task-anc-b12"/>
+      <instantiatesCanonical value="http://fhir.org/guides/who/anc-cds/ActivityDefinition/ANCB12"/>
+      <status value="draft"/>
+      <intent value="proposal"/>
+      <code>
+        <coding>
+          <system value="http://fhir.org/guides/who/anc-cds/CodeSystem/activity-codes"/>
+          <code value="ANC.B12"/>
+          <display value="Scheduling"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+          <code value="collect-information"/>
+          <display value="Collect Information"/>
+        </coding>
+        <coding>
+          <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-common-process"/>
+          <code value="discharge-referral-of-patient"/>
+          <display value="Discharge/Referral of Patient"/>
+        </coding>
+      </code>
+      <input>
+        <type>
+          <coding>
+            <system value="http://hl7.org/fhir/uv/cpg/CodeSystem/cpg-activity-type"/>
+            <code value="collect-information"/>
+            <display value="Collect Information"/>
+          </coding>
+        </type>
+        <valueCanonical value="http://fhir.org/guides/who/anc-cds/Questionnaire/ANCB12"/>
+      </input>
+    </Task>
+  </contained>
+	<instantiatesCanonical value="http://fhir.org/guides/who/anc-cds/PlanDefinition/ANCB"/>
+  <status value="active"/>
+  <intent value="plan"/>
+  <subject>
+    <reference value="Patient/charity-otala-1"/>
+    <display value="Charity Otala"/>
+  </subject>
+
+  <!-- ANC.B Routine Contact -->
+  <activity>
+    <reference>
+      <reference value="#requestgroup-anc-b"/>
+    </reference>
+  </activity>
+</CarePlan>

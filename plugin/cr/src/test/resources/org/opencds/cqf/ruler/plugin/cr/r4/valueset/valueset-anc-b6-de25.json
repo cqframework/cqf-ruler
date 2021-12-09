@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b6-de25",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de25",
+  "name": "Numberofmiscarriagesandorabortions",
+  "title": "Number of miscarriages and/or abortions",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Number of miscarriages and/or abortions element",
+  "immutable": true
+}

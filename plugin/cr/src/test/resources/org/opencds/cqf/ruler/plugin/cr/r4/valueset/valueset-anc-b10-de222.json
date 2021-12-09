@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b10-de222",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b10-de222",
+  "name": "Doyoubelievehecouldkillyou",
+  "title": "Do you believe he could kill you",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Do you believe he could kill you element",
+  "immutable": true
+}

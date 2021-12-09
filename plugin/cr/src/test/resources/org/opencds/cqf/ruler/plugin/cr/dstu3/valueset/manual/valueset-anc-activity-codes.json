@@ -1,0 +1,15 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-activity-codes",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-activity-codes",
+  "name": "ANCActivityCodes",
+  "title": "ANC Activity Codes",
+  "status": "active",
+  "compose": {
+    "include": [
+      {
+        "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-activity-codes"
+      }
+    ]
+  }
+}

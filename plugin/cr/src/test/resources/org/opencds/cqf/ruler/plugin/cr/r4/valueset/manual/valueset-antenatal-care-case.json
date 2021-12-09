@@ -1,0 +1,38 @@
+{
+  "resourceType": "ValueSet",
+  "id": "antenatal-care-case",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/antenatal-care-case",
+  "name": "AntenatalCareCase",
+  "title": "Antenatal care case",
+  "status": "draft",
+  "experimental": false,
+  "description": "An episode of antenatal care related to a single pregnancy",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-care-codes",
+      "concept": [ {
+        "code": "ANC.Case",
+        "display": "Antenatal care case"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:13:39-07:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-care-codes",
+      "code": "ANC.Case",
+      "display": "Antenatal care case"
+    } ]
+  }
+}

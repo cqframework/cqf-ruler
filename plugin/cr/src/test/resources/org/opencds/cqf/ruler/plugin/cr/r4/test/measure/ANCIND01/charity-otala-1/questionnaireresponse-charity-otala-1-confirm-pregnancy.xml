@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuestionnaireResponse xmlns="http://hl7.org/fhir">
+	<id value="charity-otala-1-confirm-pregnancy"/>
+
+	<!-- TODO: identifier -->
+
+  <questionnaire value="http://fhir.org/guides/who/anc-cds/Questionnaire/ANCB4"/>
+  <status value="completed"/>
+  <subject>
+    <reference value="Patient/charity-otala-1"/>
+  </subject>
+  <encounter>
+    <reference value="Encounter/anc-encounter-charity-otala-1"/>
+  </encounter>
+  <authored value="2021-03-24"/>
+  <author>
+    <reference value="PractitionerRole/jane"/>
+  </author>
+  <source>
+    <reference value="Patient/charity-otala-1"/>
+  </source>
+  <item>
+    <linkId value="1"/>
+    <definition value="http://fhir.org/guides/who/anc-cds/StructureDefinition/anc-b4-de1#Observation.value[x]"/>
+    <text value="Pregnancy confirmed"/>
+    <answer>
+      <valueBoolean value="true"/>
+    </answer>
+  </item>
+</QuestionnaireResponse>

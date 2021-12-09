@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b9-de79",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de79",
+  "name": "HepatitisCtestordered",
+  "title": "Hepatitis C test ordered",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Hepatitis C test ordered element",
+  "immutable": true
+}

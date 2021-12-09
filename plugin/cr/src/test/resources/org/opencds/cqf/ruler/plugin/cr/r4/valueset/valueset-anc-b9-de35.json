@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b9-de35",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de35",
+  "name": "HIVtestconducted",
+  "title": "HIV test conducted",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the HIV test conducted element",
+  "immutable": true
+}

@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-c-de5",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-c-de5",
+  "name": "Anytreatmentgivenbeforereferral",
+  "title": "Any treatment given before referral",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Any treatment given before referral element",
+  "immutable": true
+}

@@ -1,0 +1,15 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-care-codes",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-care-codes",
+  "name": "ANCCareCodes",
+  "title": "ANC Care Codes",
+  "status": "active",
+  "compose": {
+    "include": [
+      {
+        "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-care-codes"
+      }
+    ]
+  }
+}

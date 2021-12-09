@@ -17,6 +17,7 @@ import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.ValueSet;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.plugin.utility.IdUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,7 +165,7 @@ public class CodeSystemUpdateProvider implements OperationProvider, IdUtilities 
             return (CodeSystem) bundleProvider.getResources(0, 1).get(0);
         }
 
-        return (CodeSystem) new CodeSystem().setUrl(url).setId(this.createId(CodeSystem.class, UUID.randomUUID().toString()));
+        return (CodeSystem) new CodeSystem().setUrl(url).setId((IIdType)this.createId(CodeSystem.class, UUID.randomUUID().toString()));
     }
 
     /***

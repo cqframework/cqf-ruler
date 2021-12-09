@@ -1,0 +1,38 @@
+{
+  "resourceType": "ValueSet",
+  "id": "antenatal-care-contact",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/antenatal-care-contact",
+  "name": "AntenatalCareContact",
+  "title": "Antenatal care contact",
+  "status": "draft",
+  "experimental": false,
+  "description": "An initial or planned contact as part of antenatal care",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-care-codes",
+      "concept": [ {
+        "code": "ANC.Contact",
+        "display": "Antenatal care contact"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:13:39-07:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-care-codes",
+      "code": "ANC.Contact",
+      "display": "Antenatal care contact"
+    } ]
+  }
+}

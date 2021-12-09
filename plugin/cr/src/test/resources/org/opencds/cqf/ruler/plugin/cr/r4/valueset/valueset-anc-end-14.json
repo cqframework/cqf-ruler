@@ -1,0 +1,52 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-end-14",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-end-14",
+  "name": "PlaceofdeliveryChoices",
+  "title": "Place of delivery Choices",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Place of delivery Choices element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "concept": [ {
+        "code": "ANC.End.14",
+        "display": "Health-care facility"
+      }, {
+        "code": "ANC.End.15",
+        "display": "Home"
+      }, {
+        "code": "ANC.End.16",
+        "display": "Other (specify)"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:11:23-07:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.14",
+      "display": "Health-care facility"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.15",
+      "display": "Home"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.End.16",
+      "display": "Other (specify)"
+    } ]
+  }
+}
