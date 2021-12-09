@@ -9,6 +9,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 
 import ca.uhn.fhir.context.BaseRuntimeChildDefinition.IAccessor;
+import ca.uhn.fhir.context.BaseRuntimeElementDefinition;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.RuntimeResourceDefinition;
@@ -27,7 +28,7 @@ public interface ReflectionUtilities {
      * @param theResourceTypeClass the class of the resource to get the version for
      * @return the FhirVersionEnum corresponding to the theResourceTypeClass
      */
-    public default <ResourceType extends IBaseResource> FhirVersionEnum getFhirVersion(final 
+    public default <ResourceType extends IBase> FhirVersionEnum getFhirVersion(final 
             Class<? extends ResourceType> theResourceTypeClass) {
         String packageName = theResourceTypeClass.getPackage().getName();
         if (packageName.contains("r5")) {
@@ -57,10 +58,15 @@ public interface ReflectionUtilities {
      *                             ResourceType to generate an accessor for
      * @return an IAccessor for the given child and the ResourceType
      */
-    public default <ResourceType extends IBaseResource> IAccessor getAccessor(final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
+    public default <ResourceType extends IBase> IAccessor getAccessor(final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
         FhirContext fhirContext = FhirContext.forCached(this.getFhirVersion(theResourceTypeClass));
-        RuntimeResourceDefinition resourceDefinition = fhirContext.getResourceDefinition(theResourceTypeClass);
-        return resourceDefinition.getChildByName(theChildName).getAccessor();
+		  if (theResourceTypeClass.isInstance(IBaseResource.class)) {
+				RuntimeResourceDefinition resourceDefinition = fhirContext.getResourceDefinition(IBaseResource.class.cast(theResourceTypeClass));
+				return resourceDefinition.getChildByName(theChildName).getAccessor();
+		  } else {
+			  BaseRuntimeElementDefinition<?> elementDefinition = fhirContext.getElementDefinition(theResourceTypeClass);
+			  return elementDefinition.getChildByName(theChildName).getAccessor();
+		  }
     }
 
     /**
@@ -75,7 +81,7 @@ public interface ReflectionUtilities {
      *         ResourceType
      */
     @SuppressWarnings("unchecked")
-    public default <ResourceType extends IBaseResource, ReturnType> Function<ResourceType, ReturnType> getPrimitiveFunction(final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
+    public default <ResourceType extends IBase, ReturnType> Function<ResourceType, ReturnType> getPrimitiveFunction(final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
         IAccessor accessor = this.getAccessor(theResourceTypeClass, theChildName);
         return r -> {
             Optional<IBase> value = accessor.getFirstValueOrNull(r);
@@ -99,7 +105,7 @@ public interface ReflectionUtilities {
 	 *         ResourceType
 	 */
 	@SuppressWarnings("unchecked")
-	public default <ResourceType extends IBaseResource, ReturnType extends List<? extends IBase>> Function<ResourceType, ReturnType> getFunction(final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
+	public default <ResourceType extends IBase, ReturnType extends List<? extends IBase>> Function<ResourceType, ReturnType> getFunction(final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
 		 IAccessor accessor = this.getAccessor(theResourceTypeClass, theChildName);
 		 return r -> {
 			  return (ReturnType)accessor.getValues(r);
@@ -115,7 +121,7 @@ public interface ReflectionUtilities {
      * @param theResourceTypeClass the class of a the IBaseResource type
      * @return a function for accessing the "version" property of the ResourceType
      */
-    public default <ResourceType extends IBaseResource> Function<ResourceType, String> getVersionFunction(final Class<? extends ResourceType> theResourceTypeClass) {
+    public default <ResourceType extends IBase> Function<ResourceType, String> getVersionFunction(final Class<? extends ResourceType> theResourceTypeClass) {
         return this.getPrimitiveFunction(theResourceTypeClass, "version");
     }
 
@@ -126,7 +132,7 @@ public interface ReflectionUtilities {
      * @param theResourceTypeClass the class of a the IBaseResource type
      * @return a function for accessing the "url" property of the ResourceType
      */
-    public default <ResourceType extends IBaseResource> Function<ResourceType, String> getUrlFunction(final Class<? extends ResourceType> theResourceTypeClass) {
+    public default <ResourceType extends IBase> Function<ResourceType, String> getUrlFunction(final Class<? extends ResourceType> theResourceTypeClass) {
         return this.getPrimitiveFunction(theResourceTypeClass, "url");
     }
 
@@ -137,7 +143,7 @@ public interface ReflectionUtilities {
      * @param theResourceTypeClass the class of a the IBaseResource type
      * @return a function for accessing the "name" property of the ResourceType
      */
-    public default <ResourceType extends IBaseResource> Function<ResourceType, String> getNameFunction(final Class<? extends ResourceType> theResourceTypeClass) {
+    public default <ResourceType extends IBase> Function<ResourceType, String> getNameFunction(final Class<? extends ResourceType> theResourceTypeClass) {
         return this.getPrimitiveFunction(theResourceTypeClass, "name");
     }
 }
