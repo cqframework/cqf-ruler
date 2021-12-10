@@ -10,21 +10,16 @@ import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.jpa.starter.annotations.OnDSTU2Condition;
 import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
 import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.cql2elm.model.Model;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.elm.r1.VersionedIdentifier;
-import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
-import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu2FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
+import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.EmbeddedFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.model.CacheAwareModelManager;
@@ -35,8 +30,6 @@ import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.plugin.cpg.helpers.common.LoggingHelper;
 import org.opencds.cqf.ruler.plugin.cpg.helpers.r4.LibraryHelper;
 import org.opencds.cqf.ruler.plugin.cql.ElmCacheResourceChangeListener;
-import org.opencds.cqf.ruler.plugin.cql.JpaDataProviderFactory;
-import org.opencds.cqf.ruler.plugin.cql.JpaFhirRetrieveProvider;
 import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProvider;
 import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProvider;
@@ -49,6 +42,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cpg", name ="enabled", havingValue = "true")

@@ -92,9 +92,13 @@ public class LibraryEvaluationProviderIT implements ResolutionUtilities {
 
 		String packagePrefix = "org.opencds.cqf.ruler.plugin.cpg.r4.provider/";
 		resolveByLocation(ourRegistry, packagePrefix + "ColorectalCancerScreeningsFHIR.json", ourCtx);
-		//transactionByLocation(ourRegistry, packagePrefix + "additionalData.json", ourCtx);
-		String bundleText = stringFromResource(packagePrefix + "additionalData.json");
+
+		String bundleTextValueSets = stringFromResource(packagePrefix + "valuesets-ColorectalCancerScreeningsFHIR-bundle.json");
 		FhirContext fhirContext = FhirContext.forR4();
+		Bundle bundleValueSet = (Bundle)fhirContext.newJsonParser().parseResource(bundleTextValueSets);
+		Bundle resultValueSet = ourClient.transaction().withBundle(bundleValueSet).execute();
+
+		String bundleText = stringFromResource(packagePrefix + "additionalData.json");
 		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleText);
 		Library lib = ourClient.read().resource(Library.class).withId("ColorectalCancerScreeningsFHIR").execute();
 
@@ -109,15 +113,13 @@ public class LibraryEvaluationProviderIT implements ResolutionUtilities {
 		params.addParameter().setName("additionalData").setResource(bundle);
 
 
-		//caused By Unknown ValueSet: http%3A%2F%2Fcts.nlm.nih.gov%2Ffhir%2FValueSet%2F2.16.840.1.114222.4.11.3591
-		assertThrows(InternalErrorException.class, () -> {
-			ourClient.operation().onInstance(new IdType("Library", "ColorectalCancerScreeningsFHIR"))
-				.named("$evaluate")
-				.withParameters(params)
-				.returnResourceType(Bundle.class)
-				.execute();
-		});
+		Bundle returnBundle = ourClient.operation().onInstance(new IdType("Library", "ColorectalCancerScreeningsFHIR"))
+			.named("$evaluate")
+			.withParameters(params)
+			.returnResourceType(Bundle.class)
+			.execute();
 
+		assertNotNull(returnBundle);
 	}
 
 }
