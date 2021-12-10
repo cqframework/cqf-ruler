@@ -1,11 +1,10 @@
 package org.opencds.cqf.ruler.plugin.cpg.r4.provider;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.IdType;
@@ -24,11 +23,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
-
 import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
@@ -89,31 +87,37 @@ public class LibraryEvaluationProviderIT implements ResolutionUtilities {
 		});
 	}
 
-//	@Test
-//	public void testLibraryEvaluationValidData() throws IOException {
-//
-//		String packagePrefix = "org.opencds.cqf.ruler.plugin.cpg.r4.provider/";
-//		resolveByLocation(ourRegistry, packagePrefix + "ColorectalCancerScreeningsFHIR.json", ourCtx);
-//		transactionByLocation(ourRegistry, packagePrefix + "additionalData.json", ourCtx);
-//		Bundle bundle = ourClient.read().resource(Bundle.class).withId("additionalData").execute();
-//		Library lib = ourClient.read().resource(Library.class).withId("ColorectalCancerScreeningsFHIR").execute();
-//		assertNotNull(bundle);
-//		assertNotNull(lib);
-//
-//		Parameters params = new Parameters();
-//		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
-//		params.addParameter().setName("periodEnd").setValue(new StringType("2019-12-31"));
-//		params.addParameter().setName("patientId").setValue(new StringType("numer-EXM130"));
-//		params.addParameter().setName("context").setValue(new StringType("Patient"));
-//		params.addParameter().setName("additionalData").setResource(bundle);
-//
-//
-//		ourClient.operation().onInstance(new IdType("Library", "ColorectalCancerScreeningsFHIR"))
-//			.named("$evaluate")
-//			.withParameters(params)
-//			.returnResourceType(Bundle.class)
-//			.execute();
-//
-//	}
+	@Test
+	public void testLibraryEvaluationValidData() throws IOException {
+
+		String packagePrefix = "org.opencds.cqf.ruler.plugin.cpg.r4.provider/";
+		resolveByLocation(ourRegistry, packagePrefix + "ColorectalCancerScreeningsFHIR.json", ourCtx);
+		//transactionByLocation(ourRegistry, packagePrefix + "additionalData.json", ourCtx);
+		String bundleText = stringFromResource(packagePrefix + "additionalData.json");
+		FhirContext fhirContext = FhirContext.forR4();
+		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleText);
+		Library lib = ourClient.read().resource(Library.class).withId("ColorectalCancerScreeningsFHIR").execute();
+
+		assertNotNull(bundle);
+		assertNotNull(lib);
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
+		params.addParameter().setName("periodEnd").setValue(new StringType("2019-12-31"));
+		params.addParameter().setName("patientId").setValue(new StringType("numer-EXM130"));
+		params.addParameter().setName("context").setValue(new StringType("Patient"));
+		params.addParameter().setName("additionalData").setResource(bundle);
+
+
+		//caused By Unknown ValueSet: http%3A%2F%2Fcts.nlm.nih.gov%2Ffhir%2FValueSet%2F2.16.840.1.114222.4.11.3591
+		assertThrows(InternalErrorException.class, () -> {
+			ourClient.operation().onInstance(new IdType("Library", "ColorectalCancerScreeningsFHIR"))
+				.named("$evaluate")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
+		});
+
+	}
 
 }

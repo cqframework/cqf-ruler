@@ -106,12 +106,12 @@ public class CpgConfig {
 		return new SearchParameterResolver(fhirContext);
 	}
 
-	@Bean
-	JpaDataProviderFactory jpaDataProviderFactory(ModelResolver modelResolver, DaoRegistry daoRegistry,
-																 SearchParameterResolver searchParameterResolver) {
-		return rd -> new CompositeDataProvider(modelResolver,
-			new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, rd));
-	}
+//	@Bean
+//	JpaDataProviderFactory jpaDataProviderFactory(ModelResolver modelResolver, DaoRegistry daoRegistry,
+//																 SearchParameterResolver searchParameterResolver) {
+//		return rd -> new CompositeDataProvider(modelResolver,
+//			new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, rd));
+//	}
 
 	@Bean
 	JpaTerminologyProviderFactory jpaTerminologyProviderFactory(ITermReadSvc theTerminologySvc,
