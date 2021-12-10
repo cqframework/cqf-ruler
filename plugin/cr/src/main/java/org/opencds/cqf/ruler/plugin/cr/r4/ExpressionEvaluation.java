@@ -3,6 +3,9 @@ package org.opencds.cqf.ruler.plugin.cr.r4;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
+import com.google.common.base.Strings;
 
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.r4.model.ActivityDefinition;
@@ -18,10 +21,12 @@ import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
+import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.ruler.plugin.cql.CqlProperties;
 import org.opencds.cqf.ruler.plugin.cql.JpaDataProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.JpaFhirDal;
 import org.opencds.cqf.ruler.plugin.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
@@ -49,6 +54,8 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
     private JpaFhirDalFactory jpaFhirDalFactory;
     @Autowired
     private CqlProperties cqlProperties;
+	 @Autowired
+	 Map<VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache;
 
     /* Evaluates the given CQL expression in the context of the given resource */
     /*
@@ -66,14 +73,25 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
     }
 
     private Context setupContext(DomainResource instance, String cql, String patientId, RequestDetails theRequest) {
+		JpaFhirDal jpaFhirDal = jpaFhirDalFactory.create(theRequest);
         Iterable<CanonicalType> libraries = getLibraryReferences(instance, theRequest);
 
         String fhirVersion = this.fhirContext.getVersion().getVersion().getFhirVersionString();
 
+			// Remove LocalLibrary from cache first...
+			VersionedIdentifier localLibraryIdentifier = new VersionedIdentifier().withId("LocalLibrary");
+			globalLibraryCache.remove(localLibraryIdentifier);
+
+		// temporary LibraryLoader to resolve library dependencies when building includes
+		LibraryLoader tempLibraryLoader = libraryLoaderFactory.create(
+			new ArrayList<LibraryContentProvider>(
+				Arrays.asList(
+					 jpaLibraryContentProviderFactory.create(theRequest)
+		 ))
+	 );
         String source = String.format(
                 "library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"+ fhirVersion +"' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-                buildIncludes(libraries, theRequest), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
-
+                buildIncludes(tempLibraryLoader, jpaFhirDal, libraries, theRequest), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
 
 			LibraryLoader libraryLoader = libraryLoaderFactory.create(
 				new ArrayList<LibraryContentProvider>(
@@ -128,58 +146,86 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
         return cleanReferences(references);
     }
 
-    private String buildIncludes(Iterable<CanonicalType> references, RequestDetails theRequest) {
+    private String buildIncludes(LibraryLoader libraryLoader, JpaFhirDal jpaFhirDal, Iterable<CanonicalType> references, RequestDetails theRequest) {
         StringBuilder builder = new StringBuilder();
         for (CanonicalType reference : references) {
 
-            if (builder.length() > 0) {
-                builder.append(" ");
-            }
+			VersionedIdentifier vi = new VersionedIdentifier();
+			String cqlLibraryName = this.getIdType(reference).getIdPart();
+			vi.withId(cqlLibraryName);
+			String cqlLibraryVersion = null;
+			if (reference.hasValue() && reference.getValue().split("\\|").length > 1) {
+				 builder.append(reference.getValue().split("\\|")[1]);
+				 cqlLibraryVersion = reference.getValue().split("\\|")[1];
+				 if (!Strings.isNullOrEmpty(cqlLibraryVersion)) {
+					  vi.withVersion(cqlLibraryVersion);
+				 }
+			}
 
-            builder.append("include ");
+			// Still not the best way to build include, but at least checks dal for an existing library
+			// Check if id works for LibraryRetrieval
+			org.cqframework.cql.elm.execution.Library executionLibrary = null;
+			try {
+				 executionLibrary = libraryLoader.load(vi);  
+			} catch (Exception e) {
+				// log error
+			}
+			if (executionLibrary != null) {
+			 // log not found so looking in local data
+				 builder.append(buildLibraryIncludeString(cqlLibraryName, cqlLibraryVersion));
+			}
+			// else check local data for Library to get name and version from
+			else {
+				Library library = (Library) jpaFhirDal.read(this.getIdType(reference));
+				builder.append(buildLibraryIncludeString(library.getName(), library.getVersion()));
+			}
+		}
 
-            // TODO: This assumes the libraries resource id is the same as the library name,
-            // need to work this out better
-            Library lib = (Library) this.jpaFhirDalFactory.create(theRequest).read(this.getIdType(reference));
-            if (lib.hasName()) {
-                builder.append(lib.getName());
-            } else {
-                throw new RuntimeException("Library name unknown");
-            }
+		return builder.toString();
+  }
 
-            if (reference.hasValue() && reference.getValue().split("\\|").length > 1) {
-                builder.append(" version '");
-                builder.append(reference.getValue().split("\\|")[1]);
-                builder.append("'");
-            }
+  private String buildLibraryIncludeString(String cqlLibraryName, String cqlLibraryVersion) {
+	  StringBuilder builder = new StringBuilder();
+	  
+	  builder.append("include ");
+	  
+	  // TODO: This assumes the libraries resource id is the same as the library name,
+	  // need to work this out better
+	  builder.append(cqlLibraryName);
 
-            builder.append(" called ");
-            builder.append(lib.getName());
-        }
+	  if (cqlLibraryVersion != null) {
+		  builder.append(" version '");
+		  builder.append(cqlLibraryVersion);
+		  builder.append("'");
+	  }
 
-        return builder.toString();
-    }
+	  builder.append(" called ");
+	  builder.append(cqlLibraryName);
 
-    private List<CanonicalType> cleanReferences(List<CanonicalType> references) {
-        List<CanonicalType> cleanRefs = new ArrayList<>();
-        List<CanonicalType> noDupes = new ArrayList<>();
+	  builder.append(" ");
 
-        for (CanonicalType reference : references) {
-            boolean dup = false;
-            for (CanonicalType ref : noDupes) {
-                if (ref.equalsDeep(reference)) {
-                    dup = true;
-                }
-            }
-            if (!dup) {
-                noDupes.add(reference);
-            }
-        }
-        for (CanonicalType reference : noDupes) {
-            cleanRefs.add(new CanonicalType(reference.getValue().replace("#", "")));
-        }
-        return cleanRefs;
-    }
+	  return builder.toString();
+  }
+  private List<CanonicalType> cleanReferences(List<CanonicalType> references) {
+	List<CanonicalType> cleanRefs = new ArrayList<>();
+	List<CanonicalType> noDupes = new ArrayList<>();
+
+	for (CanonicalType reference : references) {
+		 boolean dup = false;
+		 for (CanonicalType ref : noDupes) {
+			  if (ref.equalsDeep(reference)) {
+					dup = true;
+			  }
+		 }
+		 if (!dup) {
+			  noDupes.add(reference);
+		 }
+	}
+	for (CanonicalType reference : noDupes) {
+		 cleanRefs.add(new CanonicalType(reference.getValue().replace("#", "")));
+	}
+	return cleanRefs;
+}
 
     private Context setupContext(DomainResource instance, String patientId,
         LibraryLoader libraryLoader, RequestDetails theRequest) {
@@ -194,8 +240,9 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
         context.setExpressionCaching(true);
         context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
-
-		  DataProvider dataProvider = jpaDataProviderFactory.create(theRequest, jpaTerminologyProviderFactory.create(theRequest));
+			TerminologyProvider terminologyProvider = jpaTerminologyProviderFactory.create(theRequest);
+			context.registerTerminologyProvider(terminologyProvider);
+		  DataProvider dataProvider = jpaDataProviderFactory.create(theRequest, terminologyProvider);
         context.registerDataProvider("http://hl7.org/fhir", dataProvider);
         return context;
     }

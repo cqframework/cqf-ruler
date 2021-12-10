@@ -22,6 +22,7 @@ import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
+import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.ruler.plugin.cql.CqlProperties;
@@ -103,7 +104,9 @@ public class ExpressionEvaluation implements LibraryUtilities {
         context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
 
-		  DataProvider dataProvider = jpaDataProviderFactory.create(theRequest, jpaTerminologyProviderFactory.create(theRequest));
+		  TerminologyProvider terminologyProvider = jpaTerminologyProviderFactory.create(theRequest);
+		  context.registerTerminologyProvider(terminologyProvider);
+		  DataProvider dataProvider = jpaDataProviderFactory.create(theRequest, terminologyProvider);
         context.registerDataProvider("http://hl7.org/fhir", dataProvider);
         return context.resolveExpressionRef("Expression").evaluate(context);
     }

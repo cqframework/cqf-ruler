@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.plugin.cr.r4;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +32,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
@@ -63,6 +64,7 @@ public class ExpressionEvaluationIT implements IServerSupport {
     private Map<String, IBaseResource> libraries;
     private Map<String, IBaseResource> vocabulary;
 	 private Map<String, IBaseResource> measures;
+	 private Map<String, IBaseResource> plandefinitions;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -70,20 +72,48 @@ public class ExpressionEvaluationIT implements IServerSupport {
 		  codeSystemUpdateProvider.updateCodeSystems();
         libraries = uploadTests("library");
 		  measures = uploadTests("measure");
+		  plandefinitions = uploadTests("plandefinition");
     }
 
     @Test
     public void testExpressionEvaluationANCIND01MeasureDomain() throws Exception {
-        RequestDetails theRequest = new SystemRequestDetails();
         DomainResource measure = (DomainResource) measures.get("ANCIND01");
         // Patient First
         uploadTests("test/measure/ANCIND01/charity-otala-1/Patient");
         Map<String, IBaseResource> resources = uploadTests("test/measure/ANCIND01");
         IBaseResource patient = resources.get("charity-otala-1");
-        Object ipResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.\"Initial Population\"", patient.getIdElement().getIdPart(), theRequest);
-        Object denomResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Denominator", patient.getIdElement().getIdPart(), theRequest);
-        Object numerResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Numerator", patient.getIdElement().getIdPart(), theRequest);
+        Object ipResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.\"Initial Population\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  assertTrue(ipResult instanceof Boolean);
+		  assertTrue(((Boolean) ipResult).booleanValue());
+        Object denomResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Denominator", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  assertTrue(denomResult instanceof Boolean);
+		  assertTrue(((Boolean) denomResult).booleanValue());
+		  Object numerResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Numerator", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  assertTrue(numerResult instanceof Boolean);
+		  assertTrue(((Boolean) numerResult).booleanValue());
     }
+
+    @Test
+    public void testExpressionEvaluationANCDT01PlanDefinitionDomain() throws Exception {
+        DomainResource plandefinition = (DomainResource) plandefinitions.get("ANCDT01");
+        // Patient First
+        uploadTests("test/plandefinition/ANCDT01/charity-with-danger-signs/Patient");
+        Map<String, IBaseResource> resources = uploadTests("test/plandefinition/ANCDT01");
+        IBaseResource patient = resources.get("charity-with-danger-signs");
+        Object dangerSigns = expressionEvaluation.evaluateInContext(plandefinition, "ANCDT01.\"Danger signs\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  //assertTrue(dangerSigns instanceof Boolean);
+		  //assertTrue(((Boolean) dangerSigns).booleanValue());
+        Object ancContactOnly = expressionEvaluation.evaluateInContext(plandefinition, "ANCDT01.\"Should Proceed with ANC contact\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+        // assertTrue(ancContactOnly instanceof Boolean);
+        //assertTrue(((Boolean) ancContactOnly).booleanValue());
+        Object ancContactOrReferralForCyanosis = expressionEvaluation.evaluateInContext(plandefinition, "ANCDT01.\"Should Proceed with ANC contact OR Referral for Central cyanosis\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+        // assertTrue(ancContactOrReferralForCyanosis instanceof Boolean);
+        //assertTrue(((Boolean) ancContactOrReferralForCyanosis).booleanValue());
+        Object ancContactOrReferral = expressionEvaluation.evaluateInContext(plandefinition, "ANCDT01.\"Should Proceed with ANC contact OR Referral\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+        //assertTrue(ancContactOrReferral instanceof Boolean);
+        //assertTrue(((Boolean) ancContactOrReferral).booleanValue());
+        System.out.println("x");
+        }
 
     private Map<String, IBaseResource> uploadTests(String testDirectory) throws URISyntaxException, IOException {
             URL url = ExpressionEvaluationIT.class.getResource(testDirectory);
