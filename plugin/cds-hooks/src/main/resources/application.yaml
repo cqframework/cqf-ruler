@@ -1,0 +1,10 @@
+hapi:
+   fhir:
+      cdshooks:
+         enabled: true
+         fhirServer:
+            maxCodesPerQuery: ~
+            expandValueSets: ~
+            searchStyle: ~
+            maxUriLength: ~
+

@@ -19,6 +19,7 @@
 		<module>plugin/cql</module>
 		<module>plugin/cr</module>
 		<module>plugin/security</module>
+		<module>plugin/cds-hooks</module>
 	</modules>
 
 	<name>cqf-ruler</name>
@@ -399,7 +400,6 @@
 							<!-- This fixes a bootstrapclass path warning which the "release" property fixes on Java 9+ -->
 							<arg>-Xlint:-options</arg>
 							<arg>-Xlint:-processing</arg>
-							<arg>-Werror</arg>
 						</compilerArgs>
 					</configuration>
 				</plugin>
