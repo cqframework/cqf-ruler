@@ -31,14 +31,13 @@ import org.opencds.cqf.ruler.plugin.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.LibraryLoaderFactory;
-import org.opencds.cqf.ruler.plugin.cr.r4.utilities.CanonicalUtilities;
-import org.opencds.cqf.ruler.plugin.cr.utilities.LibraryUtilities;
+import org.opencds.cqf.ruler.plugin.utility.CanonicalUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilities {
+public class ExpressionEvaluation implements CanonicalUtilities {
 
     @Autowired
     private LibraryLoaderFactory libraryLoaderFactory;
@@ -151,7 +150,7 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
         for (CanonicalType reference : references) {
 
 			VersionedIdentifier vi = new VersionedIdentifier();
-			String cqlLibraryName = this.getIdType(reference).getIdPart();
+			String cqlLibraryName = this.getIdElement(reference).getIdPart();
 			vi.withId(cqlLibraryName);
 			String cqlLibraryVersion = null;
 			if (reference.hasValue() && reference.getValue().split("\\|").length > 1) {
@@ -176,7 +175,7 @@ public class ExpressionEvaluation implements LibraryUtilities, CanonicalUtilitie
 			}
 			// else check local data for Library to get name and version from
 			else {
-				Library library = (Library) jpaFhirDal.read(this.getIdType(reference));
+				Library library = (Library) jpaFhirDal.read(this.getIdElement(reference));
 				builder.append(buildLibraryIncludeString(library.getName(), library.getVersion()));
 			}
 		}

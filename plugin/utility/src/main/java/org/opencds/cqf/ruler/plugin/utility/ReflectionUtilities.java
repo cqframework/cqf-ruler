@@ -22,15 +22,15 @@ import ca.uhn.fhir.context.RuntimeResourceDefinition;
  */
 public interface ReflectionUtilities {
 	/**
-	 * Returns a FhirVersionEnum for a given ResourceType
+	 * Returns a FhirVersionEnum for a given BaseType
 	 * 
-	 * @param <ResourceType>       an IBaseResource type
-	 * @param theResourceTypeClass the class of the resource to get the version for
-	 * @return the FhirVersionEnum corresponding to the theResourceTypeClass
+	 * @param <BaseType>       an IBase type
+	 * @param theBaseTypeClass the class of the resource to get the version for
+	 * @return the FhirVersionEnum corresponding to the theBaseTypeClass
 	 */
-	public default <ResourceType extends IBase> FhirVersionEnum getFhirVersion(
-			final Class<? extends ResourceType> theResourceTypeClass) {
-		String packageName = theResourceTypeClass.getPackage().getName();
+	public default <BaseType extends IBase> FhirVersionEnum getFhirVersion(
+			final Class<? extends BaseType> theBaseTypeClass) {
+		String packageName = theBaseTypeClass.getPackage().getName();
 		if (packageName.contains("r5")) {
 			return FhirVersionEnum.R5;
 		} else if (packageName.contains("r4")) {
@@ -45,48 +45,48 @@ public interface ReflectionUtilities {
 			return FhirVersionEnum.DSTU2;
 		} else {
 			throw new IllegalArgumentException(String.format(
-					"Unable to determine FHIR version for IBaseResource type: %s", theResourceTypeClass.getName()));
+					"Unable to determine FHIR version for IBaseResource type: %s", theBaseTypeClass.getName()));
 		}
 	}
 
 	/**
-	 * Gets the IAccessor for the given ResourceType and child
+	 * Gets the IAccessor for the given BaseType and child
 	 * 
-	 * @param <ResourceType>       an IBaseResource type
-	 * @param theResourceTypeClass the class of a the IBaseResource type
+	 * @param <BaseType>       an IBase type
+	 * @param theBaseTypeClass the class of a the IBase type
 	 * @param theChildName         the name of the child property of the
-	 *                             ResourceType to generate an accessor for
-	 * @return an IAccessor for the given child and the ResourceType
+	 *                             BaseType to generate an accessor for
+	 * @return an IAccessor for the given child and the BaseType
 	 */
-	public default <ResourceType extends IBase> IAccessor getAccessor(
-			final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
-		FhirContext fhirContext = FhirContext.forCached(this.getFhirVersion(theResourceTypeClass));
-		if (theResourceTypeClass.isInstance(IBaseResource.class)) {
+	public default <BaseType extends IBase> IAccessor getAccessor(
+			final Class<? extends BaseType> theBaseTypeClass, String theChildName) {
+		FhirContext fhirContext = FhirContext.forCached(this.getFhirVersion(theBaseTypeClass));
+		if (theBaseTypeClass.isInstance(IBaseResource.class)) {
 			@SuppressWarnings("unchecked")
 			RuntimeResourceDefinition resourceDefinition = fhirContext
-					.getResourceDefinition((Class<? extends IBaseResource>) theResourceTypeClass);
+					.getResourceDefinition((Class<? extends IBaseResource>) theBaseTypeClass);
 			return resourceDefinition.getChildByName(theChildName).getAccessor();
 		} else {
-			BaseRuntimeElementDefinition<?> elementDefinition = fhirContext.getElementDefinition(theResourceTypeClass);
+			BaseRuntimeElementDefinition<?> elementDefinition = fhirContext.getElementDefinition(theBaseTypeClass);
 			return elementDefinition.getChildByName(theChildName).getAccessor();
 		}
 	}
 
 	/**
 	 * Generates a function to access a primitive property of the given
-	 * ResourceType.
+	 * BaseType.
 	 * 
-	 * @param <ResourceType>       an IBaseResource type
+	 * @param <BaseType>       an IBase type
 	 * @param <ReturnType>         a return type for the Functions
-	 * @param theResourceTypeClass the class of a the IBaseResource type
+	 * @param theBaseTypeClass the class of a the IBase type
 	 * @param theChildName         to create a function for
 	 * @return a function for accessing the "theChildName" property of the
-	 *         ResourceType
+	 *         BaseType
 	 */
 	@SuppressWarnings("unchecked")
-	public default <ResourceType extends IBase, ReturnType> Function<ResourceType, ReturnType> getPrimitiveFunction(
-			final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
-		IAccessor accessor = this.getAccessor(theResourceTypeClass, theChildName);
+	public default <BaseType extends IBase, ReturnType> Function<BaseType, ReturnType> getPrimitiveFunction(
+			final Class<? extends BaseType> theBaseTypeClass, String theChildName) {
+		IAccessor accessor = this.getAccessor(theBaseTypeClass, theChildName);
 		return r -> {
 			Optional<IBase> value = accessor.getFirstValueOrNull(r);
 			if (!value.isPresent()) {
@@ -99,19 +99,19 @@ public interface ReflectionUtilities {
 
 	/**
 	 * Generates a function to access a primitive property of the given
-	 * ResourceType.
+	 * BaseType.
 	 * 
-	 * @param <ResourceType>       an IBaseResource type
+	 * @param <BaseType>       an IBase type
 	 * @param <ReturnType>         a return type for the Functions
-	 * @param theResourceTypeClass the class of a the IBaseResource type
+	 * @param theBaseTypeClass the class of a the IBase type
 	 * @param theChildName         to create a function for
 	 * @return a function for accessing the "theChildName" property of the
-	 *         ResourceType
+	 *         BaseType
 	 */
 	@SuppressWarnings("unchecked")
-	public default <ResourceType extends IBase, ReturnType extends List<? extends IBase>> Function<ResourceType, ReturnType> getFunction(
-			final Class<? extends ResourceType> theResourceTypeClass, String theChildName) {
-		IAccessor accessor = this.getAccessor(theResourceTypeClass, theChildName);
+	public default <BaseType extends IBase, ReturnType extends List<? extends IBase>> Function<BaseType, ReturnType> getFunction(
+			final Class<? extends BaseType> theBaseTypeClass, String theChildName) {
+		IAccessor accessor = this.getAccessor(theBaseTypeClass, theChildName);
 		return r -> {
 			return (ReturnType) accessor.getValues(r);
 		};
@@ -119,38 +119,38 @@ public interface ReflectionUtilities {
 
 	/**
 	 * Generates a function to access the "version" property of the given
-	 * ResourceType.
+	 * BaseType.
 	 * 
-	 * @param <ResourceType>       an IBaseResource type
-	 * @param theResourceTypeClass the class of a the IBaseResource type
-	 * @return a function for accessing the "version" property of the ResourceType
+	 * @param <BaseType>       an IBase type
+	 * @param theBaseTypeClass the class of a the IBase type
+	 * @return a function for accessing the "version" property of the BaseType
 	 */
-	public default <ResourceType extends IBase> Function<ResourceType, String> getVersionFunction(
-			final Class<? extends ResourceType> theResourceTypeClass) {
-		return this.getPrimitiveFunction(theResourceTypeClass, "version");
+	public default <BaseType extends IBase> Function<BaseType, String> getVersionFunction(
+			final Class<? extends BaseType> theBaseTypeClass) {
+		return this.getPrimitiveFunction(theBaseTypeClass, "version");
 	}
 
 	/**
-	 * Generates a function to access the "url" property of the given ResourceType.
+	 * Generates a function to access the "url" property of the given BaseType.
 	 * 
-	 * @param <ResourceType>       an IBaseResource type
-	 * @param theResourceTypeClass the class of a the IBaseResource type
-	 * @return a function for accessing the "url" property of the ResourceType
+	 * @param <BaseType>       an IBase type
+	 * @param theBaseTypeClass the class of a the IBase type
+	 * @return a function for accessing the "url" property of the BaseType
 	 */
-	public default <ResourceType extends IBase> Function<ResourceType, String> getUrlFunction(
-			final Class<? extends ResourceType> theResourceTypeClass) {
-		return this.getPrimitiveFunction(theResourceTypeClass, "url");
+	public default <BaseType extends IBase> Function<BaseType, String> getUrlFunction(
+			final Class<? extends BaseType> theBaseTypeClass) {
+		return this.getPrimitiveFunction(theBaseTypeClass, "url");
 	}
 
 	/**
-	 * Generates a function to access the "name" property of the given ResourceType.
+	 * Generates a function to access the "name" property of the given BaseType.
 	 * 
-	 * @param <ResourceType>       an IBaseResource type
-	 * @param theResourceTypeClass the class of a the IBaseResource type
-	 * @return a function for accessing the "name" property of the ResourceType
+	 * @param <BaseType>       an IBase type
+	 * @param theBaseTypeClass the class of a the IBase type
+	 * @return a function for accessing the "name" property of the BaseType
 	 */
-	public default <ResourceType extends IBase> Function<ResourceType, String> getNameFunction(
-			final Class<? extends ResourceType> theResourceTypeClass) {
-		return this.getPrimitiveFunction(theResourceTypeClass, "name");
+	public default <BaseType extends IBase> Function<BaseType, String> getNameFunction(
+			final Class<? extends BaseType> theBaseTypeClass) {
+		return this.getPrimitiveFunction(theBaseTypeClass, "name");
 	}
 }
