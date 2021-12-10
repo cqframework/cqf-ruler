@@ -71,6 +71,7 @@ import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.providers.CommonDataRequirementsProvider;
+import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.fhir.retrieve.BaseFhirQueryGenerator;
 import org.opencds.cqf.cql.engine.fhir.retrieve.FhirQueryGeneratorFactory;
@@ -126,8 +127,9 @@ public class DataRequirementsProvider {
 
         BaseFhirQueryGenerator fhirQueryGenerator = new FhirQueryGeneratorFactory().create(FhirVersionEnum.DSTU3, searchParameterResolver, terminologyProvider);
 
+        Context engineContext = new Context(new Library().withIdentifier(new VersionedIdentifier().withId(library.getId())));
         for (org.hl7.fhir.dstu3.model.DataRequirement drq : dataReqs) {
-            List<String> queries = fhirQueryGenerator.generateFhirQueries(drq, null);
+            List<String> queries = fhirQueryGenerator.generateFhirQueries(drq, engineContext, null);
             for (String query : queries) {
                 org.hl7.fhir.dstu3.model.Extension ext = new org.hl7.fhir.dstu3.model.Extension();
                 ext.setUrl(EXTENSION_URL_FHIR_QUERY_PATTERN);
