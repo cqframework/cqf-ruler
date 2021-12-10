@@ -12,7 +12,6 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Attachment;
 import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
 import org.opencds.cqf.ruler.plugin.cql.JpaFhirRetrieveProvider;
-import org.opencds.cqf.ruler.plugin.cpg.helpers.common.ClientHelperDos;
 import org.opencds.cqf.ruler.plugin.cpg.helpers.common.LoggingHelper;
 import org.opencds.cqf.ruler.plugin.cpg.helpers.r4.LibraryHelper;
 import org.opencds.cqf.ruler.plugin.cpg.helpers.util.R4ApelonFhirTerminologyProvider;
@@ -52,7 +51,8 @@ import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDec
 import org.opencds.cqf.cql.evaluator.engine.execution.TranslatingLibraryLoader;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.plugin.cpg.helpers.common.DateHelper;
+import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
+import org.opencds.cqf.ruler.plugin.utility.OperatorUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +66,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class LibraryEvaluationProvider implements LibraryResolutionProvider<Library>, OperationProvider {
+public class LibraryEvaluationProvider implements LibraryResolutionProvider<Library>, OperationProvider, ClientUtilities, OperatorUtilities {
 
 	private static final Logger log = LoggerFactory.getLogger(LibraryEvaluationProvider.class);
 
@@ -133,7 +133,7 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 		TerminologyProvider terminologyProvider;
 
 		if (terminologyEndpoint != null) {
-			IGenericClient client = ClientHelperDos.getClient(resolver.getFhirContext(), terminologyEndpoint);
+			IGenericClient client = this.createClient(resolver.getFhirContext(), terminologyEndpoint);
 			if (terminologyEndpoint.getAddress().contains("apelon")) {
 				terminologyProvider = new R4ApelonFhirTerminologyProvider(client);
 			} else {
@@ -146,7 +146,7 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 		DataProvider dataProvider;
 		if (dataEndpoint != null) {
 			List<RetrieveProvider> retrieveProviderList = new ArrayList<>();
-			IGenericClient client = ClientHelperDos.getClient(resolver.getFhirContext(), dataEndpoint);
+			IGenericClient client = this.createClient(resolver.getFhirContext(), dataEndpoint);
 			RestFhirRetrieveProvider retriever = new RestFhirRetrieveProvider(new SearchParameterResolver(resolver.getFhirContext()), client);
 			retriever.setTerminologyProvider(terminologyProvider);
 			if (terminologyEndpoint == null ||(terminologyEndpoint != null && !terminologyEndpoint.getAddress().equals(dataEndpoint.getAddress()))) {
@@ -213,8 +213,8 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 
 		if (periodStart != null && periodEnd != null) {
 			// resolve the measurement period
-			Interval measurementPeriod = new Interval(DateHelper.resolveRequestDate(periodStart, true), true,
-				DateHelper.resolveRequestDate(periodEnd, false), true);
+			Interval measurementPeriod = new Interval(this.resolveRequestDate(periodStart, true), true,
+				this.resolveRequestDate(periodEnd, false), true);
 
 			resolvedParameters.put("Measurement Period",
 				new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,

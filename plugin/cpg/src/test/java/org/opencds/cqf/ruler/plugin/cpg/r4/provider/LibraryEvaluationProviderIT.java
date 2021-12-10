@@ -119,6 +119,7 @@ public class LibraryEvaluationProviderIT implements ResolutionUtilities {
 			.returnResourceType(Bundle.class)
 			.execute();
 
+		System.out.println(fhirContext.newJsonParser().setPrettyPrint(true).encodeResourceToString(returnBundle));
 		assertNotNull(returnBundle);
 	}
 

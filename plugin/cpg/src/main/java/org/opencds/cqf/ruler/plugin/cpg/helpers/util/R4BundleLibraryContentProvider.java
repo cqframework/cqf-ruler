@@ -6,6 +6,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Library;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentType;
+import org.opencds.cqf.ruler.plugin.utility.VersionUtilities;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -13,7 +14,7 @@ import java.util.Objects;
 
 
 // TODO: Add support for ELM
-public class R4BundleLibraryContentProvider extends VersionComparingLibrarySourceProvider implements org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider  {
+public class R4BundleLibraryContentProvider  implements VersionUtilities, org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider  {
 
     Bundle bundle;
     public R4BundleLibraryContentProvider(Bundle bundle) {
