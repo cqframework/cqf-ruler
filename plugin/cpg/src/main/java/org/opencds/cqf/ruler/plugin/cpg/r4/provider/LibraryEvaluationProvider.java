@@ -11,7 +11,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Attachment;
 import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
-import org.opencds.cqf.ruler.plugin.cpg.helpers.util.JpaFhirRetrieveProvider;
+import org.opencds.cqf.ruler.plugin.cql.JpaFhirRetrieveProvider;
 import org.opencds.cqf.ruler.plugin.cpg.helpers.common.ClientHelperDos;
 import org.opencds.cqf.ruler.plugin.cpg.helpers.common.LoggingHelper;
 import org.opencds.cqf.ruler.plugin.cpg.helpers.r4.LibraryHelper;

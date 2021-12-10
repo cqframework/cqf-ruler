@@ -19,7 +19,6 @@ import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cpg.CpgConfig;
 import org.opencds.cqf.ruler.plugin.cpg.CpgProperties;
 import org.opencds.cqf.ruler.plugin.testutility.ResolutionUtilities;
-import org.opencds.cqf.ruler.plugin.utility.ResolutionUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
