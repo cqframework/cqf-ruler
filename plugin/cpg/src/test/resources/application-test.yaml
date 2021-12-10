@@ -1,0 +1,19 @@
+spring:
+  config:
+    import: application.yaml
+  main:
+    allow-bean-definition-overriding: true
+  batch:
+    job:
+      enabled: false
+  datasource:
+    url: jdbc:h2:mem:dbr4-mt
+
+hapi:
+  fhir:
+    tester_enabled: false;
+    enforce_referential_integrity_on_write: false
+    cpg:
+      enabled: true
+      log_enabled: false
+      cql_debug_enabled: false
