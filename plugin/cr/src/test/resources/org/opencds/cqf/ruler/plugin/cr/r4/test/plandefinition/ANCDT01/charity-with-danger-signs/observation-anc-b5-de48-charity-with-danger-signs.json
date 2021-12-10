@@ -15,6 +15,9 @@
   "subject": {
     "reference": "Patient/charity-with-danger-signs"
   },
+  "encounter": {
+	  "reference": "Encounter/encounter-anc-charity-with-danger-signs"
+  },
   "valueCodeableConcept": {
     "coding": [ {
       "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
