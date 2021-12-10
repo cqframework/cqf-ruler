@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b10-de225",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b10-de225",
+  "name": "WasclientreferredChoices",
+  "title": "Was client referred Choices",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Was client referred Choices element",
+  "immutable": true
+}

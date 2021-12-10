@@ -1,0 +1,45 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b10-de93",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b10-de93",
+  "name": "TypeofironsupplementdosageprovidedChoices",
+  "title": "Type of iron supplement dosage provided Choices",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Type of iron supplement dosage provided Choices element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://unitsofmeasure.org",
+      "concept": [ {
+        "code": "d",
+        "display": "Day"
+      }, {
+        "code": "wk",
+        "display": "Week"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:11:22-07:00",
+    "contains": [ {
+      "system": "http://unitsofmeasure.org",
+      "code": "d",
+      "display": "Day"
+    }, {
+      "system": "http://unitsofmeasure.org",
+      "code": "wk",
+      "display": "Week"
+    } ]
+  }
+}

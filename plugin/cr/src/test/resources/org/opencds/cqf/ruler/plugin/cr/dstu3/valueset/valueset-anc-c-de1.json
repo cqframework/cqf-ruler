@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-c-de1",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-c-de1",
+  "name": "Emergencyreferral",
+  "title": "Emergency referral",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Emergency referral element",
+  "immutable": true
+}

@@ -1,0 +1,15 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-persona",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-persona",
+  "name": "ANCPersona",
+  "title": "ANC Persona",
+  "status": "active",
+  "compose": {
+    "include": [
+      {
+        "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-persona"
+      }
+    ]
+  }
+}

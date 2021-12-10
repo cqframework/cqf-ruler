@@ -10,6 +10,8 @@ public class CqlProperties {
 
     private Boolean use_embedded_cql_translator_content = true;
 
+	 private Boolean cql_debug_enabled = true;
+
     private CqlTranslatorOptions cqlTranslatorOptions = CqlTranslatorOptions.defaultOptions();
 
     public Boolean getEnabled() {
@@ -34,5 +36,13 @@ public class CqlProperties {
 
     public void setCqlTranslatorOptions(CqlTranslatorOptions cqlTranslatorOptions) {
         this.cqlTranslatorOptions = cqlTranslatorOptions;
+    }
+
+	 public Boolean getCql_debug_enabled() {
+      return cql_debug_enabled;
+    }
+  
+    public void setCql_debug_enabled(Boolean cql_debug_enabled) {
+      this.cql_debug_enabled = cql_debug_enabled;
     }
 }

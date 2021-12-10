@@ -15,8 +15,6 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class JpaLibraryContentProvider
 	implements LibraryContentProvider, ResolutionUtilities, LibraryUtilities {
-	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(LibraryContentProvider.class);
-
 	private static Map<Class<? extends IBaseResource>, ContentFunctions> cachedContentFunctions = new HashMap<>();
 
 	protected final IFhirResourceDao<?> libraryDao;
@@ -46,19 +44,9 @@ public class JpaLibraryContentProvider
 		}
 
 		ContentFunctions cf = cachedContentFunctions.computeIfAbsent(libraryDao.getResourceType(), x -> this.getContentFunctions(this.libraryDao.getContext()));
-		try {
-			for (IBaseResource attachment : cf.getAttachments().apply(library)) {
-				String contentType = cf.getContentType().apply(attachment);
-				if (contentType != null && contentType.equals("text/cql")) {
-					byte[] content = cf.getContent().apply(attachment);
-					if (content != null) {
-						return new ByteArrayInputStream(content);
-					}
-				}
-			}
-		} catch (Exception e) {
-			ourLog.warn("Failed to parse Library source for VersionedIdentifier '" + libraryIdentifier + "'!"
-				+ System.lineSeparator() + e.getMessage(), e);
+		byte[] content = this.getContent(library, cf, "text/cql");
+		if (content != null) {
+			return new ByteArrayInputStream(content);
 		}
 
 		return null;

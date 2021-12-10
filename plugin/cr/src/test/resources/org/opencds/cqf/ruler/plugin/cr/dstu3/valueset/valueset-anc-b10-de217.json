@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b10-de217",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b10-de217",
+  "name": "Hasthephysicalviolencehappenedmoreoftenorgottenworseoverthepast6months",
+  "title": "Has the physical violence happened more often or gotten worse over the past 6 months",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Has the physical violence happened more often or gotten worse over the past 6 months element",
+  "immutable": true
+}

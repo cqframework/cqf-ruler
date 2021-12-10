@@ -1,10 +1,10 @@
 # cqf-ruler
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-r4/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-r4) [![Build Status](https://www.travis-ci.com/DBCG/cqf-ruler.svg?branch=master)](https://www.travis-ci.com/DBCG/cqf-ruler) [![docker image](https://img.shields.io/docker/v/contentgroup/cqf-ruler/latest?style=flat&color=brightgreen&label=docker%20image)](https://hub.docker.com/r/contentgroup/cqf-ruler/tags) [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://chat.fhir.org/#narrow/stream/179220-cql)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-server/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-r4) [![Build Status](https://www.travis-ci.com/DBCG/cqf-ruler.svg?branch=master)](https://www.travis-ci.com/DBCG/cqf-ruler) [![docker image](https://img.shields.io/docker/v/contentgroup/cqf-ruler/latest?style=flat&color=brightgreen&label=docker%20image)](https://hub.docker.com/r/contentgroup/cqf-ruler/tags) [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://chat.fhir.org/#narrow/stream/179220-cql)
 
 The CQF Ruler is based on the [HAPI FHIR JPA Server Starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) and adds a set of plugins that provide an implementation of FHIR's [Clinical Reasoning Module](
 http://hl7.org/fhir/clinicalreasoning-module.html), serve as a
-knowledge artifact repository, and a [cds-hooks](https://cds-hooks.org/) compatible clinical decision support service. It does this via integrating a number of other CQL-related projects, which are listed below.
+knowledge artifact repository, and a [cds-hooks](https://cds-hooks.org/) compatible clinical decision support service. It does this via integrating a number of other CQL and FHIR-related projects, some of which are listed below.
 
 ## Usage
 
@@ -96,6 +96,14 @@ Currently the cqf-ruler recognizes three types of plugin contributions:
 
 The plugin system is very simple and naive. Plugins are expected to be well-behaved, and not contribute any beans that may be invalid for the current server's configuration. This includes but is not limited to, multiple versions of plugins, mismatched FHIR versions, operation overrides, etc.
 
+## Coding Conventions
+
+The CQF Project has adopted an over-arching goal to contribute back to HAPI.
+To this end:
+
+* The CQF Ruler project has adopted the HAPI Coding Conventions: <https://github.com/hapifhir/hapi-fhir/wiki/Contributing>
+* Plugins should generally use the "hapi.fhir" prefix for configuration properties
+
 ## Commit Policy
 
 All new development takes place on `<feature>` branches off `master`. Once feature development on the branch is complete, the feature branch is submitted to `master` as a PR. The PR is reviewed by maintainers and regression testing by the CI build occurs.
@@ -103,6 +111,26 @@ All new development takes place on `<feature>` branches off `master`. Once featu
 Changes to the `master` branch must be done through an approved PR. Delete branches after merging to keep the repository clean.
 
 Merges to `master` trigger a deployment to the Maven Snapshots repositories. Once ready for a release, the `master` branch is updated with the correct version number and is tagged. Tags trigger a full release to Maven Central and a corresponding release to Github. Releases SHALL NOT have a SNAPSHOT version, nor any SNAPSHOT dependencies.
+
+## Release Process
+
+To release a new version of CQF Ruler:
+
+* [ ] Ensure target versions/releases of:
+  * [ ] HAPI
+  * [ ] CQFTooling
+  * [ ] CDSHooks
+* [ ] Update master to be a release (i.e. no SNAPSHOT) version
+  * [ ] Regression test each of the operations of all the plugins
+* [ ] Passed Travis Build for release profile
+* [ ] Create a Github Release (which creates a tag at the current commit of master)
+  * [ ] Choose the "Auto-generate release notes" option
+* Travis does the release to Maven, ensure binaries are published to the binaries repository:
+  * [ ]  server: (<https://oss.sonatype.org/#view-repositories;public~browsestorage~org/opencds/cqf/cqf-ruler-server>)
+* Travis does the release of the image to DockerHub
+  * [ ] Ensure the image is published to DockerHub (<https://hub.docker.com/r/contentgroup/cqf-ruler>)
+* [ ] Update master to vNext-SNAPSHOT
+* [ ] Ensure all issues included in the release are Closed
 
 ## Getting Help
 

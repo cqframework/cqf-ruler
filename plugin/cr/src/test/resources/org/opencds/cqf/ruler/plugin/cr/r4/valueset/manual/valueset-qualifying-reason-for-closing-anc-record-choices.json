@@ -1,0 +1,101 @@
+{
+  "resourceType": "ValueSet",
+  "id": "qualifying-reason-for-closing-anc-record-choices",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/qualifying-reason-for-closing-anc-record-choices",
+  "name": "QualifyingReasonForClosingANCRecordChoices",
+  "title": "Qualifying Reason for closing ANC record Choices",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing qualifying values for the Reason for closing ANC record Choices element (i.e. reportable record closing)",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom",
+      "concept": [ {
+        "code": "Reason for closing ANC record-Live birth",
+        "display": "Live birth"
+      }, {
+        "code": "Reason for closing ANC record-Stillbirth",
+        "display": "Stillbirth"
+      }, {
+        "code": "Reason for closing ANC record-Miscarriage",
+        "display": "Miscarriage"
+      }, {
+        "code": "Reason for closing ANC record-Abortion",
+        "display": "Abortion"
+      }, {
+        "code": "Reason for closing ANC record-Death",
+        "display": "Death"
+      }, {
+        "code": "Reason for closing ANC record-Lost to follow-up",
+        "display": "Lost to follow-up"
+      }, {
+        "code": "Reason for closing ANC record-Moved away",
+        "display": "Moved away"
+      }, {
+        "code": "Reason for closing ANC record-False pregnancy",
+        "display": "False pregnancy"
+      }, {
+        "code": "Reason for closing ANC record-Wrong entry",
+        "display": "Wrong entry"
+      }, {
+        "code": "Reason for closing ANC record-Other (specify)",
+        "display": "Other (specify)"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:13:39-07:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom",
+      "code": "Reason for closing ANC record-Live birth",
+      "display": "Live birth"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom",
+      "code": "Reason for closing ANC record-Stillbirth",
+      "display": "Stillbirth"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom",
+      "code": "Reason for closing ANC record-Miscarriage",
+      "display": "Miscarriage"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom",
+      "code": "Reason for closing ANC record-Abortion",
+      "display": "Abortion"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom",
+      "code": "Reason for closing ANC record-Death",
+      "display": "Death"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom",
+      "code": "Reason for closing ANC record-Lost to follow-up",
+      "display": "Lost to follow-up"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom",
+      "code": "Reason for closing ANC record-Moved away",
+      "display": "Moved away"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom",
+      "code": "Reason for closing ANC record-False pregnancy",
+      "display": "False pregnancy"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom",
+      "code": "Reason for closing ANC record-Wrong entry",
+      "display": "Wrong entry"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom",
+      "code": "Reason for closing ANC record-Other (specify)",
+      "display": "Other (specify)"
+    } ]
+  }
+}

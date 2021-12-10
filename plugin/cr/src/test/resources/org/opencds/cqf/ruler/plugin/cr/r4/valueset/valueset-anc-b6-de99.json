@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b6-de99",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de99",
+  "name": "HIVdiagnosisdate",
+  "title": "HIV diagnosis date",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the HIV diagnosis date element",
+  "immutable": true
+}

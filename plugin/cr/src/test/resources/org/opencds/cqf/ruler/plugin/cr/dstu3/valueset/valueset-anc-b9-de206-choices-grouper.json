@@ -1,0 +1,39 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b9-de206-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de206-choices-grouper",
+  "name": "TBscreeningresultChoicesGrouper",
+  "title": "TB screening result Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the TB screening result Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de207" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de208" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE207",
+      "display": "Positive for TB"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE208",
+      "display": "Negative for TB"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE209",
+      "display": "Inconclusive"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B9.DE210",
+      "display": "Incomplete (symptoms only)"
+    } ]
+  }
+}
