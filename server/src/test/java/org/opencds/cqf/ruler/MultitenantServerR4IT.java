@@ -1,13 +1,12 @@
 package org.opencds.cqf.ruler;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.api.CacheControlDirective;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
-import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
-import ca.uhn.fhir.rest.client.interceptor.UrlTenantSelectionInterceptor;
-import ca.uhn.fhir.rest.server.provider.ProviderConstants;
-import org.hl7.fhir.r4.model.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CodeType;
+import org.hl7.fhir.r4.model.IntegerType;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Patient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +14,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.api.CacheControlDirective;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
+import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
+import ca.uhn.fhir.rest.client.interceptor.UrlTenantSelectionInterceptor;
+import ca.uhn.fhir.rest.server.provider.ProviderConstants;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties =
@@ -93,7 +98,7 @@ public class MultitenantServerR4IT {
   void beforeEach() {
 
     ourClientTenantInterceptor = new UrlTenantSelectionInterceptor();
-    ourCtx = FhirContext.forR4();
+    ourCtx = FhirContext.forR4Cached();
     ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
     ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
     String ourServerBase = "http://localhost:" + port + "/fhir/";

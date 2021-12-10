@@ -1,0 +1,55 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b6-de146-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de146-choices-grouper",
+  "name": "CurrentalcoholandorothersubstanceuseChoicesGrouper",
+  "title": "Current alcohol and/or other substance use Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Current alcohol and/or other substance use Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de147" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de148" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de149" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de150" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de151" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de152" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE147",
+      "display": "No alcohol and/or substances"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE148",
+      "display": "Alcohol"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE149",
+      "display": "Cocaine"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE150",
+      "display": "Injectable drugs"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE151",
+      "display": "Marijuana"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B6.DE152",
+      "display": "Other substance use (specify)"
+    } ]
+  }
+}

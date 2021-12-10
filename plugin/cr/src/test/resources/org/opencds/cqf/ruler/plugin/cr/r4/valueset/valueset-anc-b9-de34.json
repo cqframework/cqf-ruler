@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b9-de34",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de34",
+  "name": "HIVtestordered",
+  "title": "HIV test ordered",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the HIV test ordered element",
+  "immutable": true
+}

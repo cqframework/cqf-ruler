@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.CodeSystem;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -164,7 +165,7 @@ public class CodeSystemUpdateProvider implements OperationProvider, IdUtilities 
             return (CodeSystem) bundleProvider.getResources(0, 1).get(0);
         }
 
-        return (CodeSystem) new CodeSystem().setUrl(url).setId(this.createId(CodeSystem.class, UUID.randomUUID().toString()));
+        return (CodeSystem) new CodeSystem().setUrl(url).setId((IIdType)this.createId(CodeSystem.class, UUID.randomUUID().toString()));
     }
 
     /***

@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b9-de33",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b9-de33",
+  "name": "HIVtestrequired",
+  "title": "HIV test required",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the HIV test required element",
+  "immutable": true
+}

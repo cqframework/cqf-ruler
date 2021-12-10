@@ -1,0 +1,67 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b7-ded9-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-ded9-choices-grouper",
+  "name": "PersistentbehavioursChoicesGrouper",
+  "title": "Persistent behaviours Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Persistent behaviours Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de10" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de11" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de12" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de13" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de14" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de15" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de16" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de17" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE10",
+      "display": "High caffeine intake"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE11",
+      "display": "Tobacco use"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE12",
+      "display": "Recently quit tobacco products"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE13",
+      "display": "Exposure to second-hand smoke"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE14",
+      "display": "No condom use during sex"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE15",
+      "display": "Alcohol use"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE16",
+      "display": "Substance use"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE17",
+      "display": "No persistent behaviours"
+    } ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b6-de26",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b6-de26",
+  "name": "Numberoflivebirths",
+  "title": "Number of live births",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Number of live births element",
+  "immutable": true
+}

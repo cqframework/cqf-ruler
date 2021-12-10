@@ -20,7 +20,7 @@ import ca.uhn.fhir.rest.param.UriParam;
  * 
  * TODO: Eventually we need FhirDal versions of these functions.
  */
-public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
+public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilities {
 	/**
 	 * Returns the Resource with a matching Id
 	 * 
@@ -373,12 +373,9 @@ public interface ResolutionUtilities extends IdUtilities, VersionUtilities {
 	 */
 	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
 			IFhirResourceDao<ResourceType> theResourceDao, String theUrl, RequestDetails theRequestDetails) {
-		String[] urlParts = theUrl.split("\\|");
-		String url = urlParts[0];
-		String version = null;
-		if (urlParts.length > 1) {
-			version = urlParts[1];
-		}
+
+		String url = this.getUrl(theUrl);
+		String version = this.getVersion(theUrl);
 
 		@SuppressWarnings("unchecked")
 		List<ResourceType> resources = (List<ResourceType>) theResourceDao

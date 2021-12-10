@@ -1,0 +1,38 @@
+{
+  "resourceType": "ValueSet",
+  "id": "iron-supplement",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/iron-supplement",
+  "name": "IronSupplement",
+  "title": "Iron Supplement",
+  "status": "draft",
+  "experimental": false,
+  "description": "Iron supplement prescribed as part of the delivery of antenatal care",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-care-codes",
+      "concept": [ {
+        "code": "ANC.IronSupplement",
+        "display": "Iron supplement"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:13:39-07:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-care-codes",
+      "code": "ANC.IronSupplement",
+      "display": "Iron supplement"
+    } ]
+  }
+}

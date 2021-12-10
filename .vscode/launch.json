@@ -35,7 +35,8 @@
                 "${workspaceFolder}/plugin/sdc/target/classes",
                 "${workspaceFolder}/plugin/utility/target/classes",
 					 "${workspaceFolder}/plugin/devtools/target/classes",
-					 "${workspaceFolder}/plugin/cql/target/classes"
+					 "${workspaceFolder}/plugin/cql/target/classes",
+					 "${workspaceFolder}/plugin/security/target/classes"
             ]
         },
         {

@@ -1,0 +1,52 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b10-de258",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b10-de258",
+  "name": "ReasonreferralnotdoneChoices",
+  "title": "Reason referral not done Choices",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Reason referral not done Choices element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "concept": [ {
+        "code": "ANC.B10.DE258",
+        "display": "Client refused"
+      }, {
+        "code": "ANC.B10.DE259",
+        "display": "Referral not necessary"
+      }, {
+        "code": "ANC.B10.DE260",
+        "display": "Other reason referral not done (specify)"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:11:22-07:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B10.DE258",
+      "display": "Client refused"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B10.DE259",
+      "display": "Referral not necessary"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B10.DE260",
+      "display": "Other reason referral not done (specify)"
+    } ]
+  }
+}

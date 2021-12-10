@@ -1,0 +1,73 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b8-de61-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de61-choices-grouper",
+  "name": "BreastexamresultChoicesGrouper",
+  "title": "Breast exam result Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Breast exam result Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de62" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de63" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de64" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de65" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de66" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de67" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de68" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de69" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de70" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE62",
+      "display": "Breast exam not done"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE63",
+      "display": "Normal breast exam result"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE64",
+      "display": "Nodule"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE65",
+      "display": "Discharge"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE66",
+      "display": "Flushing"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE67",
+      "display": "Local pain"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE68",
+      "display": "Bleeding"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE69",
+      "display": "Increased temperature"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE70",
+      "display": "Other breast exam result (specify)"
+    } ]
+  }
+}

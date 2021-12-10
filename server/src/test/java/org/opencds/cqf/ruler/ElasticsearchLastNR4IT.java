@@ -115,7 +115,7 @@
 //   @BeforeEach
 //   void beforeEach() {
 
-//     ourCtx = FhirContext.forR4();
+//     ourCtx = FhirContext.forR4Cached();
 //     ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 //     ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 //     String ourServerBase = "http://localhost:" + port + "/fhir/";

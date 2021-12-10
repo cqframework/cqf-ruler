@@ -1,0 +1,11 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b10-de220",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b10-de220",
+  "name": "Hasheeverbeatenyouwhenyouwerepregnant",
+  "title": "Has he ever beaten you when you were pregnant",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Has he ever beaten you when you were pregnant element",
+  "immutable": true
+}

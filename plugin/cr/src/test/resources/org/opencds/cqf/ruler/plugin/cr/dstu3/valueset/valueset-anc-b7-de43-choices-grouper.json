@@ -1,0 +1,179 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b7-de43-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de43-choices-grouper",
+  "name": "CurrentphysiologicalsymptomsChoicesGrouper",
+  "title": "Current physiological symptoms Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Current physiological symptoms Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de44" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de45" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de46" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de47" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de48" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de49" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de50" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de51" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de52" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de53" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de54" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de55" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de56" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de57" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de58" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de59" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de60" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de61" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de62" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de63" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de64" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de65" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de66" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de67" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de68" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de70" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE44",
+      "display": "None"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE45",
+      "display": "Abnormal pulse rate"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE46",
+      "display": "Abnormal vaginal discharge (physiological) (foul smelling) (curd like)"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE47",
+      "display": "Breathing difficulty"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE48",
+      "display": "Breathless during routine activities"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE49",
+      "display": "Constipation"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE50",
+      "display": "Contractions"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE51",
+      "display": "Cough lasting more than 3 weeks"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE52",
+      "display": "Fever"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE53",
+      "display": "Gets tired easily"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE54",
+      "display": "Headache"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE55",
+      "display": "Heartburn"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE56",
+      "display": "Leg cramps"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE57",
+      "display": "Leg redness"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE58",
+      "display": "Nausea"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE69",
+      "display": "Vomiting"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE59",
+      "display": "Oedema"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE60",
+      "display": "Pain - during urination (dysuria)"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE61",
+      "display": "Pain - Leg"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE62",
+      "display": "Pain - Low back"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE63",
+      "display": "Pain - Pelvic"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE64",
+      "display": "Pain - Extreme pelvic pain/can't walk (symphysis pubis dysfunction)"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE65",
+      "display": "Pain - Other"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE66",
+      "display": "Vaginal bleeding"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE67",
+      "display": "Varicose veins"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE68",
+      "display": "Visual disturbance"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE70",
+      "display": "Other current physiological symptoms (specify)"
+    } ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b8-de77",
+  "meta": {
+    "profile": [ "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-executablevalueset" ]
+  },
+  "extension": [ {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeCapability",
+    "valueString": "executable"
+  }, {
+    "url": "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-knowledgeRepresentationLevel",
+    "valueString": "executable"
+  } ],
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de77",
+  "name": "AbdominalexamresultPainfuldecompressionChoices",
+  "title": "Abdominal exam result - Painful decompression Choices",
+  "status": "draft",
+  "experimental": false,
+  "description": "Codes representing possible values for the Abdominal exam result - Painful decompression Choices element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "concept": [ {
+        "code": "ANC.B8.DE77",
+        "display": "Painful decompression"
+      } ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-11-30T07:11:23-07:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE77",
+      "display": "Painful decompression"
+    } ]
+  }
+}

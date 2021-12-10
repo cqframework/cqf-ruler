@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
-import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu2FhirModelResolver;
@@ -12,17 +11,18 @@ import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.EmbeddedFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.model.CacheAwareModelManager;
 import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDecorator;
 import org.opencds.cqf.cql.evaluator.engine.execution.TranslatingLibraryLoader;
 import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -43,11 +43,13 @@ public class CqlConfig {
 
 	private static final Logger ourLog = LoggerFactory.getLogger(CqlConfig.class);
 
-	@Autowired
-	public CqlProperties cqlProperties;
+	@Bean
+	public CqlProperties cqlProperties() {
+		return new CqlProperties();
+	}
 
 	@Bean
-	public CqlTranslatorOptions cqlTranslatorOptions(FhirContext fhirContext) {
+	public CqlTranslatorOptions cqlTranslatorOptions(FhirContext fhirContext, CqlProperties cqlProperties) {
 		CqlTranslatorOptions options = cqlProperties.getCqlTranslatorOptions();
 
 		if (fhirContext.getVersion().getVersion().isOlderThan(FhirVersionEnum.R4)
@@ -71,10 +73,21 @@ public class CqlConfig {
 	}
 
 	@Bean
+	JpaFhirDalFactory jpaFhirDalFactory(DaoRegistry daoRegistry) {
+		return rd -> new JpaFhirDal(daoRegistry, rd);
+	}
+
+	@Bean
 	JpaDataProviderFactory jpaDataProviderFactory(ModelResolver modelResolver, DaoRegistry daoRegistry,
 			SearchParameterResolver searchParameterResolver) {
-		return rd -> new CompositeDataProvider(modelResolver,
-				new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, rd));
+		return (rd, t) -> {
+			JpaFhirRetrieveProvider provider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, rd);
+			if (t != null) {
+				provider.setTerminologyProvider(t);
+				provider.setExpandValueSets(true);
+			}
+			return new CompositeDataProvider(modelResolver, provider);
+		};
 	}
 
 	@Bean
@@ -92,19 +105,22 @@ public class CqlConfig {
 	@Bean
 	LibraryLoaderFactory libraryLoaderFactory(
 			Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache,
-			ModelManager modelManager, CqlTranslatorOptions cqlTranslatorOptions) {
-		LibraryManager libraryManager = new LibraryManager(modelManager);
-		if (!cqlProperties.getUse_embedded_cql_translator_content()) {
-			libraryManager.getLibrarySourceLoader().clearProviders();
-		}
+			ModelManager modelManager, CqlTranslatorOptions cqlTranslatorOptions, CqlProperties cqlProperties) {
+		return lcp -> {
 
-		return lcp -> new CacheAwareLibraryLoaderDecorator(
-				new TranslatingLibraryLoader(modelManager, lcp, cqlTranslatorOptions), globalLibraryCache) {
-			// TODO: This is due to a bug with the ELM annotations which prevent options from matching the way they should
-			@Override
-			protected Boolean translatorOptionsMatch(org.cqframework.cql.elm.execution.Library library) {
-				return true;
+			if (cqlProperties.getUse_embedded_cql_translator_content()) {
+				lcp.add(new EmbeddedFhirLibraryContentProvider());
 			}
+
+			return new CacheAwareLibraryLoaderDecorator(
+					new TranslatingLibraryLoader(modelManager, lcp, cqlTranslatorOptions), globalLibraryCache) {
+				// TODO: This is due to a bug with the ELM annotations which prevent options
+				// from matching the way they should
+				@Override
+				protected Boolean translatorOptionsMatch(org.cqframework.cql.elm.execution.Library library) {
+					return true;
+				}
+			};
 		};
 	}
 
@@ -125,6 +141,7 @@ public class CqlConfig {
 	}
 
 	@Bean
+	@Primary
 	public ElmCacheResourceChangeListener elmCacheResourceChangeListener(
 			IResourceChangeListenerRegistry resourceChangeListenerRegistry, IFhirResourceDao<?> libraryDao,
 			Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache) {
@@ -135,6 +152,7 @@ public class CqlConfig {
 	}
 
 	@Bean
+	@Primary
 	@Conditional(OnDSTU2Condition.class)
 	public ModelResolver modelResolverDstu2(FhirContext fhirContext) {
 		if (fhirContext.getVersion().getVersion() == FhirVersionEnum.DSTU2_1
@@ -147,18 +165,21 @@ public class CqlConfig {
 	}
 
 	@Bean
+	@Primary
 	@Conditional(OnDSTU3Condition.class)
 	public ModelResolver modelResolverDstu3() {
 		return new CachingModelResolverDecorator(new Dstu3FhirModelResolver());
 	}
 
 	@Bean
+	@Primary
 	@Conditional(OnR4Condition.class)
 	public ModelResolver modelResolverR4() {
 		return new CachingModelResolverDecorator(new R4FhirModelResolver());
 	}
 
 	@Bean
+	@Primary
 	@Conditional(OnR5Condition.class)
 	public ModelResolver modelResolverR5() {
 		// TODO: The key piece missing for R5 support is a ModelInfo in the CQL
