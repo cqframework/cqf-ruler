@@ -61,7 +61,6 @@ public interface CanonicalUtilities extends IdUtilities {
 			return null;
 		}
 
-		theCanonical = theCanonical.replace(theCanonical.substring(theCanonical.lastIndexOf("/")), "");
 		return theCanonical.contains("/") ? theCanonical.substring(theCanonical.lastIndexOf("/") + 1) : theCanonical;
 	}
 

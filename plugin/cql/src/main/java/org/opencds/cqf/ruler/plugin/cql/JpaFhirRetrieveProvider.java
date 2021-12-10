@@ -16,6 +16,7 @@ import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.model.api.IQueryParameterType;
@@ -33,12 +34,12 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
     private final DaoRegistry myDaoRegistry;
 	 private final RequestDetails myRequestDetails;
 
-	 public JpaFhirRetrieveProvider(DaoRegistry theDaoRegistry, SearchParameterResolver theSearchParameterResolver) {
-		this(theDaoRegistry, theSearchParameterResolver, null);
+	 public JpaFhirRetrieveProvider(DaoRegistry theDaoRegistry, FhirContext fhirContext, SearchParameterResolver theSearchParameterResolver) {
+		this(theDaoRegistry, fhirContext, theSearchParameterResolver, null);
   }
 
-    public JpaFhirRetrieveProvider(DaoRegistry registry, SearchParameterResolver searchParameterResolver, RequestDetails requestDetails) {
-        super(searchParameterResolver);
+    public JpaFhirRetrieveProvider(DaoRegistry registry, FhirContext fhirContext, SearchParameterResolver searchParameterResolver, RequestDetails requestDetails) {
+        super(searchParameterResolver, fhirContext);
         this.myDaoRegistry = registry;
 		  this.myRequestDetails = requestDetails;
     }

@@ -18,6 +18,7 @@ import org.opencds.cqf.cql.evaluator.engine.execution.TranslatingLibraryLoader;
 import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -42,6 +43,8 @@ import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 public class CqlConfig {
 
 	private static final Logger ourLog = LoggerFactory.getLogger(CqlConfig.class);
+	@Autowired
+	private FhirContext ourCtx;
 
 	@Bean
 	public CqlProperties cqlProperties() {
@@ -81,7 +84,7 @@ public class CqlConfig {
 	JpaDataProviderFactory jpaDataProviderFactory(ModelResolver modelResolver, DaoRegistry daoRegistry,
 			SearchParameterResolver searchParameterResolver) {
 		return (rd, t) -> {
-			JpaFhirRetrieveProvider provider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, rd);
+			JpaFhirRetrieveProvider provider = new JpaFhirRetrieveProvider(daoRegistry, ourCtx, searchParameterResolver, rd);
 			if (t != null) {
 				provider.setTerminologyProvider(t);
 				provider.setExpandValueSets(true);
