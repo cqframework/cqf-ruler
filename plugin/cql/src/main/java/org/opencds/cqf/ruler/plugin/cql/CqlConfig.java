@@ -43,8 +43,6 @@ import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 public class CqlConfig {
 
 	private static final Logger ourLog = LoggerFactory.getLogger(CqlConfig.class);
-	@Autowired
-	private FhirContext ourCtx;
 
 	@Bean
 	public CqlProperties cqlProperties() {
@@ -81,10 +79,10 @@ public class CqlConfig {
 	}
 
 	@Bean
-	JpaDataProviderFactory jpaDataProviderFactory(ModelResolver modelResolver, DaoRegistry daoRegistry,
+	JpaDataProviderFactory jpaDataProviderFactory(ModelResolver modelResolver, FhirContext fhirContext, DaoRegistry daoRegistry,
 			SearchParameterResolver searchParameterResolver) {
 		return (rd, t) -> {
-			JpaFhirRetrieveProvider provider = new JpaFhirRetrieveProvider(daoRegistry, ourCtx, searchParameterResolver, rd);
+			JpaFhirRetrieveProvider provider = new JpaFhirRetrieveProvider(daoRegistry, fhirContext, searchParameterResolver, rd);
 			if (t != null) {
 				provider.setTerminologyProvider(t);
 				provider.setExpandValueSets(true);
