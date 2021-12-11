@@ -76,15 +76,13 @@ public class PlanDefinitionApplyProviderIT implements IServerSupport {
 
 	@Test
 	public void testPlanDefinitionApplyFormerSmoker() throws Exception {
-		 DomainResource plandefinition = (DomainResource) plandefinitions.get("lcs-cds-patient-view");
-		 // Patient First
-		 uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
-		 Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker");
-		 IBaseResource patient = resources.get("Former-Smoker");
-		 Object isFormerSmoker = planDefinitionApplyProvider.applyPlanDefinition(new SystemRequestDetails(), plandefinition.getIdElement(), patient.getIdElement().getIdPart(), null, null, null, null, null, null, null, null);
-		 assertTrue(isFormerSmoker instanceof CarePlan);
-		 assertTrue(((CarePlan) isFormerSmoker).getDescription().equals("Potential eligible patient: Jake Lungsahoy: Born 1942-01-14 (Age: 79), Gender: male"));
-		 System.out.println("x");
+			DomainResource plandefinition = (DomainResource) plandefinitions.get("lcs-cds-patient-view");
+			// Patient First
+			uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
+			Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker");
+			IBaseResource patient = resources.get("Former-Smoker");
+			Object isFormerSmoker = planDefinitionApplyProvider.applyPlanDefinition(new SystemRequestDetails(), plandefinition.getIdElement(), patient.getIdElement().getIdPart(), null, null, null, null, null, null, null, null);
+			assertTrue(isFormerSmoker instanceof CarePlan);
 		 }
 
 		 private Map<String, IBaseResource> uploadTests(String testDirectory) throws URISyntaxException, IOException {

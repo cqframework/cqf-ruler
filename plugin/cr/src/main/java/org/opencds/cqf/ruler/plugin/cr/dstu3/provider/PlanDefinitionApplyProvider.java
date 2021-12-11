@@ -7,8 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.hl7.fhir.dstu3.model.ActivityDefinition;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CarePlan;
 import org.hl7.fhir.r4.model.DomainResource;
@@ -33,7 +33,7 @@ import org.opencds.cqf.ruler.plugin.cr.r4.builder.ReferenceBuilder;
 import org.opencds.cqf.ruler.plugin.cr.r4.builder.RelatedArtifactBuilder;
 import org.opencds.cqf.ruler.plugin.cr.r4.builder.RequestGroupActionBuilder;
 import org.opencds.cqf.ruler.plugin.cr.r4.builder.RequestGroupBuilder;
-import org.opencds.cqf.ruler.plugin.cr.utilities.ContainedHelper;
+import org.opencds.cqf.ruler.plugin.cr.r4.helper.ContainedHelper;
 import org.opencds.cqf.ruler.plugin.utility.CanonicalUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

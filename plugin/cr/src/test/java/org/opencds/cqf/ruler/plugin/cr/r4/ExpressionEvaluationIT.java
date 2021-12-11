@@ -100,14 +100,13 @@ public class ExpressionEvaluationIT implements IServerSupport {
         uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
         Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker");
         IBaseResource patient = resources.get("Former-Smoker");
-		  Object isFormerSmoker = expressionEvaluation.evaluateInContext(plandefinition, "LungCancerScreening.\"Is former smoker who quit within past 15 years\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  Object isFormerSmoker = expressionEvaluation.evaluateInContext(plandefinition, "Is former smoker who quit within past 15 years", patient.getIdElement().getIdPart(), true, new SystemRequestDetails());
 		  assertTrue(isFormerSmoker instanceof Boolean);
 		  assertTrue(((Boolean) isFormerSmoker).booleanValue());
 		  
-        Object isCurrentSmoker = expressionEvaluation.evaluateInContext(plandefinition, "LungCancerScreening.\"Is current smoker\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+        Object isCurrentSmoker = expressionEvaluation.evaluateInContext(plandefinition, "Is current smoker", patient.getIdElement().getIdPart(), true, new SystemRequestDetails());
 		  assertTrue(isCurrentSmoker instanceof Boolean);
 		  assertTrue((!(Boolean) isCurrentSmoker));
-        System.out.println("x");
         }
 
     private Map<String, IBaseResource> uploadTests(String testDirectory) throws URISyntaxException, IOException {

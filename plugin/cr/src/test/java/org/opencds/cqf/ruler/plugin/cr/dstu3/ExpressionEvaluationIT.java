@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.plugin.cr.dstu3;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +14,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
-import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +32,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
@@ -64,6 +64,7 @@ public class ExpressionEvaluationIT implements IServerSupport {
     private Map<String, IBaseResource> libraries;
     private Map<String, IBaseResource> vocabulary;
 	 private Map<String, IBaseResource> measures;
+	 private Map<String, IBaseResource> plandefinitions;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -71,36 +72,43 @@ public class ExpressionEvaluationIT implements IServerSupport {
 		  codeSystemUpdateProvider.updateCodeSystems();
         libraries = uploadTests("library");
 		  measures = uploadTests("measure");
+		  plandefinitions = uploadTests("plandefinition");
     }
 
-
-        // This test requires the following application setting:
-        // enforce_referential_integrity_on_write: false
-		  @Autowired
-		  private CqlTranslatorOptions cqlTranslatorOptions;
     @Test
     public void testExpressionEvaluationANCIND01MeasureDomain() throws Exception {
-        RequestDetails theRequest = new SystemRequestDetails();
         DomainResource measure = (DomainResource) measures.get("ANCIND01");
         // Patient First
         uploadTests("test/measure/ANCIND01/charity-otala-1/Patient");
         Map<String, IBaseResource> resources = uploadTests("test/measure/ANCIND01");
         IBaseResource patient = resources.get("charity-otala-1");
-		  // Should not use this find updated cql
-		  // cqlTranslatorOptions.setCompatibilityLevel("1.3");
-		//   Encounter encounter = myDaoRegistry.getResourceDao(Encounter.class).read(resources.get("denom-EXM104-FHIR3-2").getIdElement());
-		//   SearchParameterMap searchMap = new SearchParameterMap();
-		//   searchMap.put("patient", Arrays.asList(Arrays.asList(new ReferenceParam(patient.getIdElement()))));
-		//   TokenParam tkparam = new TokenParam(null, "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.424", false);
-		//   // http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.424
-		//   tkparam.setModifier(TokenParamModifier.IN);
-		//   searchMap.put("type", Arrays.asList(Arrays.asList(tkparam)));
-		//   IBundleProvider bundleProvider = myDaoRegistry.getResourceDao(Encounter.class).search(searchMap);
-		//   bundleProvider.getAllResources();
-        Object ipResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.\"Initial Population\"", patient.getIdElement().getIdPart(), theRequest);
-        Object denomResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Denominator", patient.getIdElement().getIdPart(), theRequest);
-        Object numerResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Numerator", patient.getIdElement().getIdPart(), theRequest);
+        Object ipResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.\"Initial Population\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  assertTrue(ipResult instanceof Boolean);
+		  assertTrue(((Boolean) ipResult).booleanValue());
+        Object denomResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Denominator", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  assertTrue(denomResult instanceof Boolean);
+		  assertTrue(((Boolean) denomResult).booleanValue());
+		  Object numerResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Numerator", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  assertTrue(numerResult instanceof Boolean);
+		  assertTrue(((Boolean) numerResult).booleanValue());
     }
+
+    @Test
+    public void testOpioidCdsPlanDefinitionDomain() throws Exception {
+        DomainResource plandefinition = (DomainResource) plandefinitions.get("opioidcds-10");
+        // Patient First
+        uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
+        Map<String, IBaseResource> resources = uploadTests("test/plandefinition/Rec10");
+        IBaseResource patient = resources.get("example-rec-10-no-screenings");
+		  Object isFormerSmoker = expressionEvaluation.evaluateInContext(plandefinition, "LungCancerScreening.\"Is former smoker who quit within past 15 years\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  assertTrue(isFormerSmoker instanceof Boolean);
+		  assertTrue(((Boolean) isFormerSmoker).booleanValue());
+		  
+        Object isCurrentSmoker = expressionEvaluation.evaluateInContext(plandefinition, "LungCancerScreening.\"Is current smoker\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  assertTrue(isCurrentSmoker instanceof Boolean);
+		  assertTrue((!(Boolean) isCurrentSmoker));
+        System.out.println("x");
+        }
 
     private Map<String, IBaseResource> uploadTests(String testDirectory) throws URISyntaxException, IOException {
             URL url = ExpressionEvaluationIT.class.getResource(testDirectory);
@@ -127,9 +135,4 @@ public class ExpressionEvaluationIT implements IServerSupport {
 				}
             return resources;
     }
-
-    private String getLocalServer() {
-            return "http://localhost:" + port + "/fhir/";
-    }
-    
 }
