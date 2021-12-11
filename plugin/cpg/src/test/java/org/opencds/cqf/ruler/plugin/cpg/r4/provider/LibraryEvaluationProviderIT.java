@@ -60,11 +60,6 @@ public class LibraryEvaluationProviderIT implements ResolutionUtilities {
 	}
 
 	@Test
-	public void testLibraryExecutionProvider() throws Exception {
-		System.out.println("Made it here.");
-	}
-
-	@Test
 	public void testLibraryEvaluationValidationThrows() throws IOException {
 
 		Parameters params = new Parameters();
@@ -119,7 +114,6 @@ public class LibraryEvaluationProviderIT implements ResolutionUtilities {
 			.returnResourceType(Bundle.class)
 			.execute();
 
-		System.out.println(fhirContext.newJsonParser().setPrettyPrint(true).encodeResourceToString(returnBundle));
 		assertNotNull(returnBundle);
 	}
 
