@@ -1,0 +1,114 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113762.1.4.1116.89",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1116.89",
+  "name": "LungCancer",
+  "title": "Lung Cancer",
+  "status": "active",
+  "publisher": "American Society of Clinical Oncology",
+  "description" : "This value set indicates the possible ICD9/ICD10 Lung Cancer codes.",
+  "compose": {
+    "include": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-9-cm",
+        "version": "2013",
+        "concept": [
+          {
+            "code": "162.2",
+            "display": "Malignant neoplasm of main bronchus"
+          },
+          {
+            "code": "162.3",
+            "display": "Malignant neoplasm of upper lobe, bronchus or lung"
+          },
+          {
+            "code": "162.4",
+            "display": "Malignant neoplasm of middle lobe, bronchus or lung"
+          },
+          {
+            "code": "162.5",
+            "display": "Malignant neoplasm of lower lobe, bronchus or lung"
+          },
+          {
+            "code": "162.8",
+            "display": "Malignant neoplasm of other parts of bronchus or lung"
+          },
+          {
+            "code": "162.9",
+            "display": "Malignant neoplasm of bronchus and lung, unspecified"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "version": "2020",
+        "concept": [
+          {
+            "code": "C34.00",
+            "display": "Malignant neoplasm of unspecified main bronchus"
+          },
+          {
+            "code": "C34.01",
+            "display": "Malignant neoplasm of right main bronchus"
+          },
+          {
+            "code": "C34.02",
+            "display": "Malignant neoplasm of left main bronchus"
+          },
+          {
+            "code": "C34.10",
+            "display": "Malignant neoplasm of upper lobe, unspecified bronchus or lung"
+          },
+          {
+            "code": "C34.11",
+            "display": "Malignant neoplasm of upper lobe, right bronchus or lung"
+          },
+          {
+            "code": "C34.12",
+            "display": "Malignant neoplasm of upper lobe, left bronchus or lung"
+          },
+          {
+            "code": "C34.2",
+            "display": "Malignant neoplasm of middle lobe, bronchus or lung"
+          },
+          {
+            "code": "C34.30",
+            "display": "Malignant neoplasm of lower lobe, unspecified bronchus or lung"
+          },
+          {
+            "code": "C34.31",
+            "display": "Malignant neoplasm of lower lobe, right bronchus or lung"
+          },
+          {
+            "code": "C34.32",
+            "display": "Malignant neoplasm of lower lobe, left bronchus or lung"
+          },
+          {
+            "code": "C34.80",
+            "display": "Malignant neoplasm of overlapping sites of unspecified bronchus and lung"
+          },
+          {
+            "code": "C34.81",
+            "display": "Malignant neoplasm of overlapping sites of right bronchus and lung"
+          },
+          {
+            "code": "C34.82",
+            "display": "Malignant neoplasm of overlapping sites of left bronchus and lung"
+          },
+          {
+            "code": "C34.90",
+            "display": "Malignant neoplasm of unspecified part of unspecified bronchus or lung"
+          },
+          {
+            "code": "C34.91",
+            "display": "Malignant neoplasm of unspecified part of right bronchus or lung"
+          },
+          {
+            "code": "C34.92",
+            "display": "Malignant neoplasm of unspecified part of left bronchus or lung"
+          }
+        ]
+      }
+    ]
+  }
+}

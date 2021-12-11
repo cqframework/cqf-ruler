@@ -1,0 +1,95 @@
+{
+  "resourceType": "PlanDefinition",
+  "id": "ANCDT01",
+  "url": "http://fhir.org/guides/who/anc-cds/PlanDefinition/ANCDT01",
+  "identifier": [ {
+    "use": "official",
+    "value": "ANC.DT.01"
+  } ],
+  "name": "ANCDT01",
+  "title": "ANC.DT.01 Danger signs",
+  "type": {
+    "coding": [ {
+      "system": "http://terminology.hl7.org/CodeSystem/plan-definition-type",
+      "code": "eca-rule"
+    } ]
+  },
+  "status": "active",
+  "experimental": false,
+  "date": "2021-06-11T22:04:04-06:00",
+  "description": "Before each contact, during the Quick Check, the health worker should check whether the woman has any of the danger signs listed here – if yes, she should be referred to the hospital urgently; if no, the normal contact should be continued as normal",
+  "useContext": [ {
+    "code": {
+      "system": "http://terminology.hl7.org/CodeSystem/usage-context-type",
+      "code": "task",
+      "display": "Workflow Task"
+    },
+    "valueCodeableConcept": {
+      "coding": [ {
+        "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/activity-codes",
+        "code": "ANC.B5",
+        "display": "Quick check"
+      } ]
+    }
+  } ],
+  "library": [ "http://fhir.org/guides/who/anc-cds/Library/ANCDT01" ],
+  "action": [ {
+    "title": "ANC.DT.01 Danger signs",
+    "trigger": [ {
+      "type": "named-event",
+      "name": "ANC.B5 Quick check"
+    } ],
+    "action": [ {
+      "id": "1",
+      "title": "Proceed with ANC contact ",
+      "description": "Proceed with ANC contact ",
+      "textEquivalent": "If no danger signs are present, the health worker can continue with the normal ANC contact",
+      "documentation": [ {
+        "type": "citation",
+        "label": "Pregnancy, childbirth, postpartum and newborn care guide (IMPAC) (2015) (1)"
+      } ],
+      "condition": [ {
+        "kind": "applicability",
+        "expression": {
+          "description": "\"Danger signs\" = \"No danger signs\"",
+          "language": "text/cql-identifier",
+          "expression": "Should Proceed with ANC contact "
+        }
+      } ]
+    }, {
+      "id": "2",
+      "title": "Proceed with ANC contact OR Referral for Central cyanosis",
+      "description": "Proceed with ANC contact OR Referral for Central cyanosis",
+      "textEquivalent": "Bluish discolouration around the mucous membranes in the mouth, lips and tongue.",
+      "documentation": [ {
+        "type": "citation",
+        "label": "Pregnancy, childbirth, postpartum and newborn care guide (IMPAC) (2015) (1)"
+      } ],
+      "condition": [ {
+        "kind": "applicability",
+        "expression": {
+          "description": "\"Danger signs\" = \"Central cyanosis\"",
+          "language": "text/cql-identifier",
+          "expression": "Should Proceed with ANC contact OR Referral for Central cyanosis"
+        }
+      } ]
+    }, {
+      "id": "3",
+      "title": "Proceed with ANC contact OR Referral",
+      "description": "Proceed with ANC contact OR Referral",
+      "textEquivalent": "This is a danger sign that indicates that the woman needs urgent management",
+      "documentation": [ {
+        "type": "citation",
+        "label": "Pregnancy, childbirth, postpartum and newborn care guide (IMPAC) (2015) (1)"
+      } ],
+      "condition": [ {
+        "kind": "applicability",
+        "expression": {
+          "description": "(((((((((((\"Danger signs\" = \"Bleeding vaginally\")\n  OR (\"Danger signs\" = \"Convulsing\"))\n  OR (\"Danger signs\" = \"Fever\"))\n  OR (\"Danger signs\" = \"Severe headache\"))\n  OR (\"Danger signs\" = \"Visual disturbance\"))\n  OR (\"Danger signs\" = \"Imminent delivery\"))\n  OR (\"Danger signs\" = \"Labour\"))\n  OR (\"Danger signs\" = \"Looks very ill\"))\n  OR (\"Danger signs\" = \"Severe vomiting\"))\n  OR (\"Danger signs\" = \"Severe pain\"))\n  OR (\"Danger signs\" = \"Severe abdominal pain\"))\n  OR (\"Danger signs\" = \"Unconscious\")",
+          "language": "text/cql-identifier",
+          "expression": "Should Proceed with ANC contact OR Referral"
+        }
+      } ]
+    } ]
+  } ]
+}

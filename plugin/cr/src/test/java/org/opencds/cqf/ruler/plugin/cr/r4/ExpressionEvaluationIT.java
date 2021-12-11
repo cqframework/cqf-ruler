@@ -95,23 +95,18 @@ public class ExpressionEvaluationIT implements IServerSupport {
 
     @Test
     public void testExpressionEvaluationANCDT01PlanDefinitionDomain() throws Exception {
-        DomainResource plandefinition = (DomainResource) plandefinitions.get("ANCDT01");
+        DomainResource plandefinition = (DomainResource) plandefinitions.get("lcs-cds-patient-view");
         // Patient First
-        uploadTests("test/plandefinition/ANCDT01/charity-with-danger-signs/Patient");
-        Map<String, IBaseResource> resources = uploadTests("test/plandefinition/ANCDT01");
-        IBaseResource patient = resources.get("charity-with-danger-signs");
-        Object dangerSigns = expressionEvaluation.evaluateInContext(plandefinition, "ANCDT01.\"Danger signs\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
-		  //assertTrue(dangerSigns instanceof Boolean);
-		  //assertTrue(((Boolean) dangerSigns).booleanValue());
-        Object ancContactOnly = expressionEvaluation.evaluateInContext(plandefinition, "ANCDT01.\"Should Proceed with ANC contact\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
-        // assertTrue(ancContactOnly instanceof Boolean);
-        //assertTrue(((Boolean) ancContactOnly).booleanValue());
-        Object ancContactOrReferralForCyanosis = expressionEvaluation.evaluateInContext(plandefinition, "ANCDT01.\"Should Proceed with ANC contact OR Referral for Central cyanosis\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
-        // assertTrue(ancContactOrReferralForCyanosis instanceof Boolean);
-        //assertTrue(((Boolean) ancContactOrReferralForCyanosis).booleanValue());
-        Object ancContactOrReferral = expressionEvaluation.evaluateInContext(plandefinition, "ANCDT01.\"Should Proceed with ANC contact OR Referral\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
-        //assertTrue(ancContactOrReferral instanceof Boolean);
-        //assertTrue(((Boolean) ancContactOrReferral).booleanValue());
+        uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
+        Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker");
+        IBaseResource patient = resources.get("Former-Smoker");
+		  Object isFormerSmoker = expressionEvaluation.evaluateInContext(plandefinition, "LungCancerScreening.\"Is former smoker who quit within past 15 years\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  assertTrue(isFormerSmoker instanceof Boolean);
+		  assertTrue(((Boolean) isFormerSmoker).booleanValue());
+		  
+        Object isCurrentSmoker = expressionEvaluation.evaluateInContext(plandefinition, "LungCancerScreening.\"Is current smoker\"", patient.getIdElement().getIdPart(), new SystemRequestDetails());
+		  assertTrue(isCurrentSmoker instanceof Boolean);
+		  assertTrue((!(Boolean) isCurrentSmoker));
         System.out.println("x");
         }
 
@@ -140,9 +135,4 @@ public class ExpressionEvaluationIT implements IServerSupport {
 				}
             return resources;
     }
-
-    private String getLocalServer() {
-            return "http://localhost:" + port + "/fhir/";
-    }
-    
 }

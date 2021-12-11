@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Strings;
-
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -62,18 +60,17 @@ public class ExpressionEvaluation implements CanonicalUtilities {
      * is loaded into the context for the expression
      */
     public Object evaluateInContext(DomainResource instance, String cql, String patientId, RequestDetails theRequest) {
-        Context context = setupContext(instance, cql, patientId, theRequest);
-        return context.resolveExpressionRef("Expression").evaluate(context);
+        return evaluateInContext(instance, cql, patientId, false, theRequest);
     }
 
     public Object evaluateInContext(DomainResource instance, String cql, String patientId, Boolean aliasedExpression, RequestDetails theRequest) {
-        Context context = setupContext(instance, cql, patientId, theRequest);
-        return context.resolveExpressionRef(cql).evaluate(context);
+        Context context = setupContext(instance, cql, patientId, aliasedExpression, theRequest);
+			return context.resolveExpressionRef("Expression").evaluate(context);
     }
 
-    private Context setupContext(DomainResource instance, String cql, String patientId, RequestDetails theRequest) {
+    private Context setupContext(DomainResource instance, String cql, String patientId, Boolean aliasedExpression, RequestDetails theRequest) {
 		JpaFhirDal jpaFhirDal = jpaFhirDalFactory.create(theRequest);
-        Iterable<CanonicalType> libraries = getLibraryReferences(instance, theRequest);
+        List<CanonicalType> libraries = getLibraryReferences(instance, theRequest);
 
         String fhirVersion = this.fhirContext.getVersion().getVersion().getFhirVersionString();
 
@@ -88,10 +85,41 @@ public class ExpressionEvaluation implements CanonicalUtilities {
 					 jpaLibraryContentProviderFactory.create(theRequest)
 		 ))
 	 );
-        String source = String.format(
-                "library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"+ fhirVersion +"' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
-                buildIncludes(tempLibraryLoader, jpaFhirDal, libraries, theRequest), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
+	 String source = "";
+	 if (aliasedExpression) {
+		 if (libraries.size() != 1) {
+			throw new RuntimeException("If an aliased expression is provided, there must be exactly one primary Library");
+		 }
+		 
+			
+		 VersionedIdentifier vi = getVersionedIdentifierFromCanonical(libraries.get(0));
+		 // Still not the best way to build include, but at least checks dal for an existing library
+		 // Check if id works for LibraryRetrieval
+		 org.cqframework.cql.elm.execution.Library executionLibrary = null;
+		 try {
+			  executionLibrary = tempLibraryLoader.load(vi);  
+		 } catch (Exception e) {
+			 // log error
+		 }
+		 if (executionLibrary == null) {
+			Library library = (Library) jpaFhirDal.read(this.getIdElement(libraries.get(0)));
+			vi.setId(library.getName());
+			if (library.getVersion() != null) {
+				vi.setVersion(library.getVersion());
+			}
+		 }
+		source = String.format(
+				  "library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"+ fhirVersion +"' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
+				  buildIncludes(tempLibraryLoader, jpaFhirDal, libraries, theRequest), instance.fhirType(), instance.fhirType(), instance.fhirType(), vi.getId() + ".\"" + cql + "\"");
 
+
+	 } else {
+		source = String.format(
+			"library LocalLibrary using FHIR version '" + fhirVersion + "' include FHIRHelpers version '"+ fhirVersion +"' called FHIRHelpers %s parameter %s %s parameter \"%%context\" %s define Expression: %s",
+			buildIncludes(tempLibraryLoader, jpaFhirDal, libraries, theRequest), instance.fhirType(), instance.fhirType(), instance.fhirType(), cql);
+
+
+	 }
 			LibraryLoader libraryLoader = libraryLoaderFactory.create(
 				new ArrayList<LibraryContentProvider>(
 					Arrays.asList(
@@ -103,7 +131,7 @@ public class ExpressionEvaluation implements CanonicalUtilities {
         return setupContext(instance, patientId, libraryLoader, theRequest);
     }  
 
-    private Iterable<CanonicalType> getLibraryReferences(DomainResource instance, RequestDetails theRequest) {
+    private List<CanonicalType> getLibraryReferences(DomainResource instance, RequestDetails theRequest) {
         List<CanonicalType> references = new ArrayList<>();
 
         if (instance.hasContained()) {
@@ -148,19 +176,8 @@ public class ExpressionEvaluation implements CanonicalUtilities {
     private String buildIncludes(LibraryLoader libraryLoader, JpaFhirDal jpaFhirDal, Iterable<CanonicalType> references, RequestDetails theRequest) {
         StringBuilder builder = new StringBuilder();
         for (CanonicalType reference : references) {
-
-			VersionedIdentifier vi = new VersionedIdentifier();
-			String cqlLibraryName = this.getIdElement(reference).getIdPart();
-			vi.withId(cqlLibraryName);
-			String cqlLibraryVersion = null;
-			if (reference.hasValue() && reference.getValue().split("\\|").length > 1) {
-				 builder.append(reference.getValue().split("\\|")[1]);
-				 cqlLibraryVersion = reference.getValue().split("\\|")[1];
-				 if (!Strings.isNullOrEmpty(cqlLibraryVersion)) {
-					  vi.withVersion(cqlLibraryVersion);
-				 }
-			}
-
+			
+			VersionedIdentifier vi = getVersionedIdentifierFromCanonical(reference);
 			// Still not the best way to build include, but at least checks dal for an existing library
 			// Check if id works for LibraryRetrieval
 			org.cqframework.cql.elm.execution.Library executionLibrary = null;
@@ -171,35 +188,47 @@ public class ExpressionEvaluation implements CanonicalUtilities {
 			}
 			if (executionLibrary != null) {
 			 // log not found so looking in local data
-				 builder.append(buildLibraryIncludeString(cqlLibraryName, cqlLibraryVersion));
+				 builder.append(buildLibraryIncludeString(vi));
 			}
 			// else check local data for Library to get name and version from
 			else {
 				Library library = (Library) jpaFhirDal.read(this.getIdElement(reference));
-				builder.append(buildLibraryIncludeString(library.getName(), library.getVersion()));
+				builder.append(buildLibraryIncludeString(new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion())));
 			}
 		}
 
 		return builder.toString();
   }
 
-  private String buildLibraryIncludeString(String cqlLibraryName, String cqlLibraryVersion) {
+  private VersionedIdentifier getVersionedIdentifierFromCanonical(CanonicalType reference) {
+	VersionedIdentifier vi = new VersionedIdentifier();
+	String cqlLibraryName = this.getIdElement(reference).getIdPart();
+	vi.withId(cqlLibraryName);
+	String cqlLibraryVersion = null;
+	if (reference.hasValue() && reference.getValue().split("\\|").length > 1) {
+		 cqlLibraryVersion = reference.getValue().split("\\|")[1];
+		 vi.withVersion(cqlLibraryVersion);
+	}
+	return vi;
+  }
+
+  private String buildLibraryIncludeString(VersionedIdentifier vi) {
 	  StringBuilder builder = new StringBuilder();
 	  
 	  builder.append("include ");
 	  
 	  // TODO: This assumes the libraries resource id is the same as the library name,
 	  // need to work this out better
-	  builder.append(cqlLibraryName);
+	  builder.append(vi.getId());
 
-	  if (cqlLibraryVersion != null) {
+	  if (vi.getVersion() != null) {
 		  builder.append(" version '");
-		  builder.append(cqlLibraryVersion);
+		  builder.append(vi.getVersion());
 		  builder.append("'");
 	  }
 
 	  builder.append(" called ");
-	  builder.append(cqlLibraryName);
+	  builder.append(vi.getId());
 
 	  builder.append(" ");
 
@@ -240,6 +269,7 @@ public class ExpressionEvaluation implements CanonicalUtilities {
         context.registerLibraryLoader(libraryLoader);
         context.setContextValue("Patient", patientId);
 			TerminologyProvider terminologyProvider = jpaTerminologyProviderFactory.create(theRequest);
+			
 			context.registerTerminologyProvider(terminologyProvider);
 		  DataProvider dataProvider = jpaDataProviderFactory.create(theRequest, terminologyProvider);
         context.registerDataProvider("http://hl7.org/fhir", dataProvider);

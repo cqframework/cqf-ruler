@@ -1,0 +1,18 @@
+{
+  "resourceType": "Procedure",
+  "id": "procedure-Former-Smoker-1",
+  "status": "completed",
+  "code": {
+    "coding": [
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "code": "71250",
+        "display": "Chest CT without contrast"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/Former-Smoker"
+  },
+  "performedDateTime": "2016-05-10"
+}

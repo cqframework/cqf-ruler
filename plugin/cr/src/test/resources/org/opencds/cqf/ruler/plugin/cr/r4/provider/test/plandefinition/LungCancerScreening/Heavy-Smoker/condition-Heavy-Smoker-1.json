@@ -1,0 +1,28 @@
+{
+  "resourceType": "Condition",
+  "id": "example-condition-2",
+  "meta": {
+    "versionId": "3",
+    "lastUpdated": "2020-03-06T10:58:52.871-07:00"
+  },
+  "clinicalStatus": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+        "code": "active"
+      }
+    ]
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-9-cm",
+        "code": "162.5",
+        "display": "Malignant neoplasm of lower lobe, bronchus or lung"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/Heavy-Smoker"
+  }
+}
