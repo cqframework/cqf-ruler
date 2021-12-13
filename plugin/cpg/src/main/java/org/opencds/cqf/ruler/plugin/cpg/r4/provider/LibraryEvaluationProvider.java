@@ -8,12 +8,13 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.UriParam;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Attachment;
+import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
+import org.opencds.cqf.ruler.plugin.cpg.CpgProperties;
 import org.opencds.cqf.ruler.plugin.cql.JpaFhirRetrieveProvider;
-import org.opencds.cqf.ruler.plugin.cpg.helpers.common.LoggingHelper;
-import org.opencds.cqf.ruler.plugin.cpg.helpers.r4.LibraryHelper;
 import org.opencds.cqf.ruler.plugin.cpg.helpers.util.R4ApelonFhirTerminologyProvider;
 import org.opencds.cqf.ruler.plugin.cpg.helpers.util.R4BundleLibraryContentProvider;
 import org.opencds.cqf.ruler.plugin.cpg.helpers.r4.FhirMeasureBundler;
@@ -74,16 +75,19 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 	private DaoRegistry registry;
 
 	@Autowired
+	private CpgProperties cpgProperties;
+
+	@Autowired
 	private LibraryResourceProvider libraryResourceProvider;
 
 	@Autowired
 	TerminologyProvider defaultTerminologyProvider;
 
 	@Autowired
-	private LibraryHelper libraryHelper;
+	private CqlTranslatorOptions cqlTranslatorOptions;
 
 	@Autowired
-	private LoggingHelper loggingHelper;
+	private ModelManager modelManager;
 
 
 	private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> getLibraryResourceProvider() {
@@ -192,14 +196,13 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 		}
 
 
-		ModelManager modelManager = this.libraryHelper.getModelManager();
 		org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider bundleLibraryProvider = new R4BundleLibraryContentProvider(libraryBundle);
 		org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider sourceProvider =  new ca.uhn.fhir.cql.common.provider.LibraryContentProvider<Library, Attachment>(
 			this.getLibraryResourceProvider(), x -> x.getContent(), x -> x.getContentType(), x -> x.getData());
 
 		List<LibraryContentProvider> sourceProviders = Arrays.asList(bundleLibraryProvider, sourceProvider);
 
-		LibraryLoader libraryLoader = new CacheAwareLibraryLoaderDecorator(new TranslatingLibraryLoader(modelManager, sourceProviders, this.libraryHelper.getTranslatorOptions()));
+		LibraryLoader libraryLoader = new CacheAwareLibraryLoaderDecorator(new TranslatingLibraryLoader(modelManager, sourceProviders, cqlTranslatorOptions));
 
 		CqlEngine engine = new CqlEngine(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider);
 
@@ -227,7 +230,7 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 
 		EvaluationResult evalResult = engine.evaluate(libraryIdentifier, null,
 			Pair.of(contextParam != null ? contextParam : "Unspecified", patientId == null ? "null" : patientId),
-			resolvedParameters, loggingHelper.getDebugMap());
+			resolvedParameters, this.getDebugMap());
 
 		List<Resource> results = new ArrayList<>();
 		FhirMeasureBundler bundler = new FhirMeasureBundler();
@@ -398,5 +401,13 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 		}
 
 		return locations;
+	}
+
+	public DebugMap getDebugMap() {
+		DebugMap debugMap = new DebugMap();
+		if (cpgProperties.getLogEnabled()) {
+			debugMap.setIsLoggingEnabled(true);
+		}
+		return debugMap;
 	}
 }

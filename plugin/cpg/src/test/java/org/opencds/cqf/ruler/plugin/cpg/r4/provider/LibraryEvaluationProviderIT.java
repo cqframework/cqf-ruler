@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
         CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cpg.enabled=true",
+														"hapi.fhir.cql.enabled=true",
 														"spring.main.allow-bean-definition-overriding=true",
 														"debug=true",
 														"spring.batch.job.enabled=false",
