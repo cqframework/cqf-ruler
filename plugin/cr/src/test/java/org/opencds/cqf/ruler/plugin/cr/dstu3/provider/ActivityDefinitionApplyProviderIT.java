@@ -25,7 +25,8 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 				"spring.batch.job.enabled=false",
 				"hapi.fhir.fhir_version=dstu3",
 				"hapi.fhir.cr.enabled=true",
-				"hapi.fhir.cql.enabled=true"
+				"hapi.fhir.cql.enabled=true",
+				"hapi.fhir.devtools.enabled=true"
 		})
 public class ActivityDefinitionApplyProviderIT {
 	private IGenericClient ourClient;
