@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cql.CqlConfig;
 import org.opencds.cqf.ruler.plugin.cr.CrConfig;
+import org.opencds.cqf.ruler.plugin.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.plugin.testutility.IServerSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,7 +37,7 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-        CrConfig.class, CqlConfig.class }, properties = {
+        CrConfig.class, CqlConfig.class, DevToolsConfig.class  }, properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.batch.job.enabled=false",
             "hapi.fhir.fhir_version=r4",
@@ -59,16 +60,16 @@ public class ActivityDefinitionApplyProviderIT  implements IServerSupport{
 	@LocalServerPort
 	private int port;
 	
-	private Map<String, IBaseResource> activitydefinitions;
+	private Map<String, IBaseResource> activityDefinitions;
 
 	@BeforeEach
 	public void setup() throws Exception {
-		 activitydefinitions = uploadTests("activitydefinition");
+		 activityDefinitions = uploadTests("activitydefinition");
 	}
 
 	@Test
 	public void testActivityDefinitionApply() throws Exception {
-		 DomainResource activityDefinition = (DomainResource) activitydefinitions.get("opioidcds-risk-assessment-request");
+		 DomainResource activityDefinition = (DomainResource) activityDefinitions.get("opioidcds-risk-assessment-request");
 		 // Patient First
 		 Map<String, IBaseResource> resources = uploadTests("test/activitydefinition/Patient");
 		 IBaseResource patient = resources.get("ExamplePatient");

@@ -22,6 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cql.CqlConfig;
 import org.opencds.cqf.ruler.plugin.cr.CrConfig;
+import org.opencds.cqf.ruler.plugin.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.plugin.devtools.r4.CodeSystemUpdateProvider;
 import org.opencds.cqf.ruler.plugin.testutility.IServerSupport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-        CrConfig.class, CqlConfig.class }, properties = {
+        CrConfig.class, CqlConfig.class, DevToolsConfig.class }, properties = {
             "spring.main.allow-bean-definition-overriding=true",
             "spring.batch.job.enabled=false",
             "hapi.fhir.fhir_version=r4",
@@ -64,7 +65,7 @@ public class ExpressionEvaluationIT implements IServerSupport {
     private Map<String, IBaseResource> libraries;
     private Map<String, IBaseResource> vocabulary;
 	 private Map<String, IBaseResource> measures;
-	 private Map<String, IBaseResource> plandefinitions;
+	 private Map<String, IBaseResource> planDefinitions;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -72,7 +73,7 @@ public class ExpressionEvaluationIT implements IServerSupport {
 		  codeSystemUpdateProvider.updateCodeSystems();
         libraries = uploadTests("library");
 		  measures = uploadTests("measure");
-		  plandefinitions = uploadTests("plandefinition");
+		  planDefinitions = uploadTests("plandefinition");
     }
 
     @Test
@@ -95,16 +96,16 @@ public class ExpressionEvaluationIT implements IServerSupport {
 
     @Test
     public void testExpressionEvaluationANCDT01PlanDefinitionDomain() throws Exception {
-        DomainResource plandefinition = (DomainResource) plandefinitions.get("lcs-cds-patient-view");
+        DomainResource planDefinition = (DomainResource) planDefinitions.get("lcs-cds-patient-view");
         // Patient First
         uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
         Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker");
         IBaseResource patient = resources.get("Former-Smoker");
-		  Object isFormerSmoker = expressionEvaluation.evaluateInContext(plandefinition, "Is former smoker who quit within past 15 years", patient.getIdElement().getIdPart(), true, new SystemRequestDetails());
+		  Object isFormerSmoker = expressionEvaluation.evaluateInContext(planDefinition, "Is former smoker who quit within past 15 years", patient.getIdElement().getIdPart(), true, new SystemRequestDetails());
 		  assertTrue(isFormerSmoker instanceof Boolean);
 		  assertTrue(((Boolean) isFormerSmoker).booleanValue());
 		  
-        Object isCurrentSmoker = expressionEvaluation.evaluateInContext(plandefinition, "Is current smoker", patient.getIdElement().getIdPart(), true, new SystemRequestDetails());
+        Object isCurrentSmoker = expressionEvaluation.evaluateInContext(planDefinition, "Is current smoker", patient.getIdElement().getIdPart(), true, new SystemRequestDetails());
 		  assertTrue(isCurrentSmoker instanceof Boolean);
 		  assertTrue((!(Boolean) isCurrentSmoker));
         }

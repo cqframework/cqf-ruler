@@ -12,6 +12,7 @@ public interface IdUtilities extends ReflectionUtilities {
 	 * Creates the appropriate IIdType for a given ResourceTypeClass
 	 * 
 	 * @param <ResourceType>       an IBase type
+	 * @param <IdType>             an IIdType type
 	 * @param theResourceTypeClass the type of the Resource to create an Id for
 	 * @param theId                the String representation of the Id to generate
 	 * @return the id
@@ -26,9 +27,10 @@ public interface IdUtilities extends ReflectionUtilities {
 	 * Creates the appropriate IIdType for a given BaseTypeClass
 	 * 
 	 * @param <BaseType>       an IBase type
+	 * @param <IdType>         an IIdType type
 	 * @param theBaseTypeClass the BaseTypeClass to use for for determining the FHIR
 	 *                         Version
-	 * @param theResourceType  the type of the Resource to create an Id for
+	 * @param theResourceName  the type of the Resource to create an Id for
 	 * @param theId            the String representation of the Id to generate
 	 * @return the id
 	 */
@@ -41,6 +43,7 @@ public interface IdUtilities extends ReflectionUtilities {
 	/**
 	 * Creates the appropriate IIdType for a given FhirContext
 	 * 
+	 * @param <IdType>        an IIdType type
 	 * @param theFhirContext  the FhirContext to use for Id generation
 	 * @param theResourceType the type of the Resource to create an Id for
 	 * @param theId           the String representation of the Id to generate
@@ -54,6 +57,7 @@ public interface IdUtilities extends ReflectionUtilities {
 	/**
 	 * Creates the appropriate IIdType for a given FhirVersionEnum
 	 * 
+	 * @param <IdType>           an IIdType type
 	 * @param theFhirVersionEnum the FHIR version to generate an Id for
 	 * @param theResourceType    the type of the Resource to create an Id for
 	 * @param theId              the String representation of the Id to generate
@@ -67,6 +71,7 @@ public interface IdUtilities extends ReflectionUtilities {
 	/**
 	 * Creates the appropriate IIdType for a given FhirContext
 	 * 
+	 * @param <IdType>       an IIdType type
 	 * @param theFhirContext the FhirContext to use for Id generation
 	 * @param theId          the String representation of the Id to generate
 	 * @return the id
@@ -78,6 +83,7 @@ public interface IdUtilities extends ReflectionUtilities {
 	/**
 	 * Creates the appropriate IIdType for a given FhirVersionEnum
 	 * 
+	 * @param <IdType>           an IIdType type
 	 * @param theFhirVersionEnum the FHIR version to generate an Id for
 	 * @param theId              the String representation of the Id to generate
 	 * @return the id
