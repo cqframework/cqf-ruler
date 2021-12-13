@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.plugin.cpg.helpers.util;
+package org.opencds.cqf.ruler.plugin.cpg.r4.util;
 
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.r4.model.Attachment;
@@ -35,7 +35,7 @@ public class R4BundleLibraryContentProvider  implements VersionUtilities, org.op
 
     public Library getLibrary(String name, String version) {
         if (bundle != null) {
-            Library theResource = null;
+            Library theResource;
             for (BundleEntryComponent entry : bundle.getEntry()) {
                 if (entry.getResource().fhirType().equals("Library")) {
                     theResource = (Library)entry.getResource();

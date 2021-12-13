@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.plugin.cpg.helpers.r4;
+package org.opencds.cqf.ruler.plugin.cpg.r4.util;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;

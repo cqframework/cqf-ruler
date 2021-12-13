@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.plugin.cpg.helpers.util;
+package org.opencds.cqf.ruler.plugin.cpg.r4.util;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.gclient.IQuery;

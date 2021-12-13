@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.plugin.cpg.r4.provider;
 
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
@@ -15,9 +16,9 @@ import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
 import org.opencds.cqf.ruler.plugin.cpg.CpgProperties;
 import org.opencds.cqf.ruler.plugin.cql.JpaFhirRetrieveProvider;
-import org.opencds.cqf.ruler.plugin.cpg.helpers.util.R4ApelonFhirTerminologyProvider;
-import org.opencds.cqf.ruler.plugin.cpg.helpers.util.R4BundleLibraryContentProvider;
-import org.opencds.cqf.ruler.plugin.cpg.helpers.r4.FhirMeasureBundler;
+import org.opencds.cqf.ruler.plugin.cpg.r4.util.R4ApelonFhirTerminologyProvider;
+import org.opencds.cqf.ruler.plugin.cpg.r4.util.R4BundleLibraryContentProvider;
+import org.opencds.cqf.ruler.plugin.cpg.r4.util.FhirMeasureBundler;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -52,6 +53,7 @@ import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDec
 import org.opencds.cqf.cql.evaluator.engine.execution.TranslatingLibraryLoader;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.ruler.api.OperationProvider;
+import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
 import org.opencds.cqf.ruler.plugin.utility.OperatorUtilities;
 import org.slf4j.Logger;
@@ -81,7 +83,7 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 	private LibraryResourceProvider libraryResourceProvider;
 
 	@Autowired
-	TerminologyProvider defaultTerminologyProvider;
+	JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 
 	@Autowired
 	private CqlTranslatorOptions cqlTranslatorOptions;
@@ -144,7 +146,7 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 				terminologyProvider = new R4FhirTerminologyProvider(client);
 			}
 		} else {
-			terminologyProvider = this.defaultTerminologyProvider;
+			terminologyProvider = jpaTerminologyProviderFactory.create(new SystemRequestDetails());
 		}
 
 		DataProvider dataProvider;
@@ -356,7 +358,7 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 
 		ca.uhn.fhir.rest.api.server.IBundleProvider bundleProvider = this.libraryResourceProvider.getDao().search(map);
 
-		if (bundleProvider.size() == 0) {
+		if (bundleProvider != null && bundleProvider.size() == 0) {
 			return null;
 		}
 		List<IBaseResource> resourceList = bundleProvider.getAllResources();
@@ -369,7 +371,7 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 		map.add("name", new StringParam(name, true));
 		ca.uhn.fhir.rest.api.server.IBundleProvider bundleProvider = this.libraryResourceProvider.getDao().search(map);
 
-		if (bundleProvider.size() == 0) {
+		if (bundleProvider != null && bundleProvider.size() == 0) {
 			return new ArrayList<>();
 		}
 		List<IBaseResource> resourceList = bundleProvider.getAllResources();
