@@ -12,12 +12,19 @@
     ],
     "java.test.defaultConfig": "test-config",
     "cSpell.words": [
+        "activitydefinition",
+        "ANCIND",
         "autoconfigure",
         "jpaserver",
+        "numer",
+        "opioidcds",
+        "otala",
+        "plandefinition",
         "springframework",
         "Versionless"
     ],
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true
+        "source.organizeImports": true,
+		  "editor.formatOnSave": true
     }
 }
