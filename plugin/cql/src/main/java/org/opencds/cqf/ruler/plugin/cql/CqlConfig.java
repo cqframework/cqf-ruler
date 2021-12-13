@@ -61,6 +61,11 @@ public class CqlConfig {
 		return options;
 	}
 
+	@Bean
+	public ModelManager modelManager(
+		Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache) {
+		return new CacheAwareModelManager(globalModelCache);
+	}
 
 	@Bean
 	SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
