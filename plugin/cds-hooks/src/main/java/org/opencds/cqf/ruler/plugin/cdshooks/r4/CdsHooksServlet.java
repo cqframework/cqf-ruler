@@ -7,6 +7,7 @@ import ca.uhn.fhir.cql.common.retrieve.JpaFhirRetrieveProvider;
 import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.starter.AppProperties;
+import ca.uhn.fhir.rest.api.SearchStyleEnum;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,7 +24,6 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.UriType;
-import org.opencds.cqf.cds.providers.ProviderConfiguration;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.execution.Context;
@@ -31,16 +31,22 @@ import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.api.MetadataExtender;
 import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksProperties;
+import org.opencds.cqf.ruler.plugin.cdshooks.discovery.DiscoveryResolutionR4;
+import org.opencds.cqf.ruler.plugin.cdshooks.providers.ProviderConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 import org.opencds.cqf.ruler.plugin.security.SecurityProperties;
-import org.opencds.cqf.cds.discovery.DiscoveryResolutionR4;
 import org.opencds.cqf.ruler.plugin.utility.*;
 
 import javax.servlet.ServletException;
@@ -60,7 +66,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
 	@Autowired
-	CdsHooksProperties cdsHooksProperties;
+	public CdsHooksProperties hooksProperties;
+
 	private FhirContext ourCtx = FhirContext.forR4Cached();
 
 	private static final long serialVersionUID = 1L;
@@ -77,36 +84,41 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
 	private TerminologyProvider serverTerminologyProvider;
 
-	// TODO: Pull this into Plugin from Component
-	//private ProviderConfiguration providerConfiguration;
+	@Autowired
+	private ProviderConfiguration providerConfiguration;
 
+	@Autowired
 	private ModelResolver modelResolver;
 
 	private LibraryHelper libraryHelper;
 
-	private SecurityProperties securityProperties = new SecurityProperties();
-
-	@Autowired
-	private AppProperties appProperties;
+//	private SecurityProperties securityProperties = new SecurityProperties();
 
 	@Override
 	public void init() {
 		// System level providers
 		ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
 
-		// TODO:
-//		this.providerConfiguration = appCtx.getBean(ProviderConfiguration.class);
+		// TODO: Determine how to resolve these darn beans.
+		this.hooksProperties = appCtx.getBean(CdsHooksProperties.class);
+		AutowireCapableBeanFactory factory = appCtx.getAutowireCapableBeanFactory();
+		appCtx.getBean(CdsHooksProperties.class);
+		factory.autowireBean(this.hooksProperties);
+		factory.initializeBean(this.hooksProperties, "setHookProperties");
+		factory.applyBeanPropertyValues(this.hooksProperties, "setHookProperties");
+//		this.providerConfiguration = ProviderConfiguration.DEFAULT_PROVIDER_CONFIGURATION;
+		this.providerConfiguration = appCtx.getBean(ProviderConfiguration.class);
 //		this.planDefinitionProvider = appCtx.getBean(PlanDefinitionApplyProvider.class);
 //		this.libraryResolutionProvider = (LibraryResolutionProvider<org.hl7.fhir.r4.model.Library>)appCtx.getBean(LibraryResolutionProvider.class);
 //		this.fhirRetrieveProvider = appCtx.getBean(JpaFhirRetrieveProvider.class);
 //		this.serverTerminologyProvider = appCtx.getBean(TerminologyProvider.class);
-//		this.modelResolver = appCtx.getBean("r4ModelResolver", ModelResolver.class);
+		this.modelResolver = appCtx.getBean("r4ModelResolver", ModelResolver.class);
 //		this.libraryHelper = appCtx.getBean(LibraryHelper.class);
 	}
 
-//	protected ProviderConfiguration getProviderConfiguration() {
-//		return this.providerConfiguration;
-//	}
+	protected ProviderConfiguration getProviderConfiguration() {
+		return this.providerConfiguration;
+	}
 
 	// CORS Pre-flight
 	@Override
@@ -122,13 +134,23 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
+
+		ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
+
+		this.hooksProperties = appCtx.getBean(CdsHooksProperties.class);
+		AutowireCapableBeanFactory factory = appCtx.getAutowireCapableBeanFactory();
+		appCtx.getBean(CdsHooksProperties.class);
+		factory.autowireBean(this.hooksProperties);
+		factory.initializeBean(this.hooksProperties, "setHookProperties");
+		factory.applyBeanPropertyValues(this.hooksProperties, "setHookProperties");
+
+		//ModelResolver myResolver = ((ApplicationContext) getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT")).getBean("r4ModelResolver", ModelResolver.class);
 		logger.info(request.getRequestURI());
 		if (!request.getRequestURL().toString().endsWith("cds-services/")) {
 			logger.error(request.getRequestURI());
 			throw new ServletException("This servlet is not configured to handle GET requests.");
 		}
 
-		// TODO:
 		this.setAccessControlHeaders(response);
 		response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
 		response.getWriter().println(new GsonBuilder().setPrettyPrinting().create().toJson(getServices()));
@@ -311,15 +333,14 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 //	}
 
 	private JsonObject getServices() {
-		// TODO: Gather Server Base
-		DiscoveryResolutionR4 discoveryResolutionR4 = new DiscoveryResolutionR4(
-			createClient(ourCtx, "http://localhost:8080/fhir"));
-			//FhirContext.forCached(FhirVersionEnum.R4).newRestfulGenericClient("http://localhost:8080/fhir/"));
-		discoveryResolutionR4.setMaxUriLength(5555);
+		// TODO: Discover issue with setting Autowired properties.
+		DiscoveryResolutionR4 discoveryResolutionR4 = new DiscoveryResolutionR4(createClient(ourCtx, this.hooksProperties.getEndpoint()));
 
-			//setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
-		return discoveryResolutionR4.resolve()
-			.getAsJson();
+//		DiscoveryResolutionR4 discoveryResolutionR4 = new DiscoveryResolutionR4(createClient(ourCtx, "http://localhost:8080/fhir/"));
+
+		discoveryResolutionR4.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
+
+		return discoveryResolutionR4.resolve().getAsJson();
 	}
 
 //	private String toJsonResponse(List<CdsCard> cards) {
@@ -337,7 +358,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 //	}
 
 	private void setAccessControlHeaders(HttpServletResponse resp) {
-		// TODO: Fix AppProperties
+		// TODO: Setup CORS AppProperties
 //		if (appProperties.getCors().getAllow_Credentials()) {
 //			resp.setHeader("Access-Control-Allow-Origin", appProperties.getCors().getAllowed_origin().stream().findFirst().get());
 //			resp.setHeader("Access-Control-Allow-Methods",

@@ -166,6 +166,11 @@ hapi:
 ## CR Settings
   cr:
     enabled: true
+
+## CDS Hook Settings
+    cdshooks:
+       enabled: false
+       endpoint: localhost:8080/fhir
         
 #elasticsearch:
 #  debug:

@@ -1,10 +1,5 @@
 hapi:
    fhir:
       cdshooks:
-         enabled: true
-         fhirServer:
-            maxCodesPerQuery: ~
-            expandValueSets: ~
-            searchStyle: ~
-            maxUriLength: ~
-
+         enabled: false
+         endpoint: localhost:8080/fhir
