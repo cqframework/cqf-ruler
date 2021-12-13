@@ -1,15 +1,14 @@
-package org.opencds.cqf.ruler.plugin.cpg.utilities;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.collections4.IterableUtils;
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.cql.engine.execution.Context;
+package org.opencds.cqf.ruler.plugin.utility;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
+import org.apache.commons.collections4.IterableUtils;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.cql.engine.execution.Context;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public interface ExecutionUtilities {
     // Adds the resources returned from the given expressions to a bundle
