@@ -50,21 +50,21 @@
       ],
       "dynamicValue": [
         {
-          "path": "action.description",
+          "path": "%action.description",
           "expression": {
             "language": "text/cql-identifier",
             "expression": "Is Eligible Detail"
           }
         },
         {
-          "path": "action.title",
+          "path": "%action.title",
           "expression": {
             "language": "text/cql-identifier",
             "expression": "Is Eligible Summary"
           }
         },
         {
-          "path": "action.extension",
+          "path": "%action.extension",
           "expression": {
             "language": "text/cql-identifier",
             "expression": "Is Eligible Indicator"
@@ -93,21 +93,21 @@
       ],
       "dynamicValue": [
         {
-          "path": "action.description",
+          "path": "%action.description",
           "expression": {
             "language": "text/cql-identifier",
             "expression": "Exclusion Detail"
           }
         },
         {
-          "path": "action.title",
+          "path": "%action.title",
           "expression": {
             "language": "text/cql-identifier",
             "expression": "Exclusion Summary"
           }
         },
         {
-          "path": "action.extension",
+          "path": "%action.extension",
           "expression": {
             "language": "text/cql-identifier",
             "expression": "Exclusion Indicator"
