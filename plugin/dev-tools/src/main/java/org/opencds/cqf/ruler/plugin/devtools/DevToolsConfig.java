@@ -16,7 +16,7 @@ import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
  * and the r4 {@link org.opencds.cqf.ruler.plugin.devtools.r4.CacheValueSetsProvider CacheValueSetsProvider}
  */
 @Configuration
-@ConditionalOnProperty(prefix = "hapi.fhir.devtools", name ="enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "hapi.fhir.devtools", name ="enabled", havingValue = "true", matchIfMissing = true)
 public class DevToolsConfig {
 
     @Bean

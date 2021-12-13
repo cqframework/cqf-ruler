@@ -42,10 +42,7 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
             "spring.batch.job.enabled=false",
             "hapi.fhir.fhir_version=r4",
 				"hapi.fhir.allow_external_references=true",
-				"hapi.fhir.enforce_referential_integrity_on_write=false",
-            "hapi.fhir.cr.enabled=true",
-            "hapi.fhir.cql.enabled=true",
-				"hapi.fhir.devtools.enabled=true"
+				"hapi.fhir.enforce_referential_integrity_on_write=false"
 })
 public class ActivityDefinitionApplyProviderIT  implements IServerSupport{
 

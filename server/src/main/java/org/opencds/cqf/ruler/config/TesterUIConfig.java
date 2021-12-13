@@ -11,7 +11,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import ca.uhn.fhir.jpa.starter.FhirTesterConfig;
 
 @Configuration
-@ConditionalOnProperty(prefix = "hapi.fhir", name = "tester_enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "hapi.fhir", name = "tester_enabled", havingValue = "true", matchIfMissing = false)
 @Import(FhirTesterConfig.class)
 public class TesterUIConfig {
     @Bean

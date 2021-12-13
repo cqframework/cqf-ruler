@@ -11,7 +11,7 @@ import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
 import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
 
 @Configuration
-@ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class CrConfig {
     @Bean
     public CrProperties crProperties() {

@@ -41,10 +41,7 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 				"spring.batch.job.enabled=false",
 				"hapi.fhir.fhir_version=dstu3",
 				"hapi.fhir.allow_external_references=true",
-				"hapi.fhir.enforce_referential_integrity_on_write=false",
-				"hapi.fhir.cr.enabled=true",
-				"hapi.fhir.cql.enabled=true",
-				"hapi.fhir.devtools.enabled=true"
+				"hapi.fhir.enforce_referential_integrity_on_write=false"
 		})
 public class ExpressionEvaluationIT implements IServerSupport {
 

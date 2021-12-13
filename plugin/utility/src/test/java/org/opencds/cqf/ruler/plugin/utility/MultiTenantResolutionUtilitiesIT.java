@@ -32,8 +32,7 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
                 "spring.main.allow-bean-definition-overriding=true",
                 "spring.batch.job.enabled=false",
                 "spring.datasource.url=jdbc:h2:mem:dbr4-mt",
-                "hapi.fhir.fhir_version=r4",
-                "hapi.fhir.tester_enabled=false",
+                "hapi.fhir.fhir_version=r4"
 
 })
 @TestInstance(Lifecycle.PER_CLASS)

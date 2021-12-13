@@ -397,7 +397,6 @@
 						<compilerArgs>
 							<arg>-Xlint:all</arg>
 							<!-- This fixes a bootstrapclass path warning which the "release" property fixes on Java 9+ -->
-							<arg>-Xlint:-options</arg>
 							<arg>-Xlint:-processing</arg>
 							<arg>-Werror</arg>
 						</compilerArgs>
@@ -435,6 +434,8 @@
 					<version>3.3.1</version>
 					<configuration>
 						<source>8</source>
+						<failOnWarnings>true</failOnWarnings>
+						<failOnErrors>true</failOnErrors>
 					</configuration>
 					<executions>
 						<execution>
