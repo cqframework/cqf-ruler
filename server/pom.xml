@@ -349,7 +349,7 @@
                     <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
-            <plugin>
+            <!-- <plugin>
                 <groupId>org.basepom.maven</groupId>
                 <artifactId>duplicate-finder-maven-plugin</artifactId>
                 <executions>
@@ -364,7 +364,7 @@
                 </executions>
                 <configuration>
                     <failBuildInCaseOfConflict>false</failBuildInCaseOfConflict>
-                    <checkTestClasspath>false</checkTestClasspath>
+                    <checkTestClasspath>false</checkTestClasspath> -->
                     <!--
                     <printEqualFiles>false</printEqualFiles>
                     <failBuildInCaseOfDifferentContentConflict>true</failBuildInCaseOfDifferentContentConflict>
@@ -435,13 +435,13 @@
                         </dependency>
                     </ignoredDependencies>
                     -->
-                    <ignoredResourcePatterns>
+                    <!-- <ignoredResourcePatterns>
                         <ignoredResourcePattern>.*\.txt$</ignoredResourcePattern>
                         <ignoredResourcePattern>.*\.html$</ignoredResourcePattern>
                         <ignoredResourcePattern>config/favicon.ico</ignoredResourcePattern>
                     </ignoredResourcePatterns>
-                </configuration>
-            </plugin>
+                </configuration> -->
+            <!-- </plugin> -->
         </plugins>
     </build>
 

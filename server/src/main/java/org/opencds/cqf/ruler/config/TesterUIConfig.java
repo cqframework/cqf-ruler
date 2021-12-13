@@ -14,20 +14,20 @@ import ca.uhn.fhir.jpa.starter.FhirTesterConfig;
 @ConditionalOnProperty(prefix = "hapi.fhir", name = "tester_enabled", havingValue = "true", matchIfMissing = false)
 @Import(FhirTesterConfig.class)
 public class TesterUIConfig {
-    @Bean
-    public ServletRegistrationBean<DispatcherServlet> overlayRegistrationBean() {
-  
-      AnnotationConfigWebApplicationContext annotationConfigWebApplicationContext = new AnnotationConfigWebApplicationContext();
-      annotationConfigWebApplicationContext.register(FhirTesterConfig.class);
-      
-      DispatcherServlet dispatcherServlet = new DispatcherServlet(annotationConfigWebApplicationContext);
-      dispatcherServlet.setContextClass(AnnotationConfigWebApplicationContext.class);
-      dispatcherServlet.setContextConfigLocation(FhirTesterConfig.class.getName());
-  
-      ServletRegistrationBean<DispatcherServlet> registrationBean = new ServletRegistrationBean<DispatcherServlet>();
-      registrationBean.setServlet(dispatcherServlet);
-      registrationBean.addUrlMappings("/*");
-      registrationBean.setLoadOnStartup(1);
-      return registrationBean;
-    }   
+	@Bean
+	public ServletRegistrationBean<DispatcherServlet> overlayRegistrationBean() {
+
+		AnnotationConfigWebApplicationContext annotationConfigWebApplicationContext = new AnnotationConfigWebApplicationContext();
+		annotationConfigWebApplicationContext.register(FhirTesterConfig.class);
+
+		DispatcherServlet dispatcherServlet = new DispatcherServlet(annotationConfigWebApplicationContext);
+		dispatcherServlet.setContextClass(AnnotationConfigWebApplicationContext.class);
+		dispatcherServlet.setContextConfigLocation(FhirTesterConfig.class.getName());
+
+		ServletRegistrationBean<DispatcherServlet> registrationBean = new ServletRegistrationBean<DispatcherServlet>();
+		registrationBean.setServlet(dispatcherServlet);
+		registrationBean.addUrlMappings("/*");
+		registrationBean.setLoadOnStartup(1);
+		return registrationBean;
+	}
 }

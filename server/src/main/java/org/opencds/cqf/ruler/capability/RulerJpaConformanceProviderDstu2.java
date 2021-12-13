@@ -18,24 +18,25 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 
 public class RulerJpaConformanceProviderDstu2 extends JpaConformanceProviderDstu2 {
 
-    List<MetadataExtender<Conformance>> myExtenders;
+	List<MetadataExtender<Conformance>> myExtenders;
 
-    public RulerJpaConformanceProviderDstu2(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, MetaDt> theSystemDao, DaoConfig theDaoConfig, List<MetadataExtender<Conformance>> theExtenders) {
-        super(theRestfulServer, theSystemDao, theDaoConfig);
-        myExtenders = theExtenders;
-    }
+	public RulerJpaConformanceProviderDstu2(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, MetaDt> theSystemDao,
+			DaoConfig theDaoConfig, List<MetadataExtender<Conformance>> theExtenders) {
+		super(theRestfulServer, theSystemDao, theDaoConfig);
+		myExtenders = theExtenders;
+	}
 
-    @Override
-    @Metadata
-    public Conformance getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
-        Conformance conformance = super.getServerConformance(theRequest, theRequestDetails);
+	@Override
+	@Metadata
+	public Conformance getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
+		Conformance conformance = super.getServerConformance(theRequest, theRequestDetails);
 
-        if (myExtenders != null) {
-            for (MetadataExtender<Conformance> extender : myExtenders) {
-                extender.extend(conformance);
-            }
-        }
+		if (myExtenders != null) {
+			for (MetadataExtender<Conformance> extender : myExtenders) {
+				extender.extend(conformance);
+			}
+		}
 
-        return conformance;
-    } 
+		return conformance;
+	}
 }
