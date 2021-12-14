@@ -1,11 +1,10 @@
 package org.opencds.cqf.ruler.plugin.cpg.r4.provider;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
+
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
@@ -23,19 +22,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
+import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-        CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.cpg.enabled=true",
-														"hapi.fhir.cql.enabled=true",
+        CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4",
 														"spring.main.allow-bean-definition-overriding=true",
 														"debug=true",
-														"spring.batch.job.enabled=false",
-														"hapi.fhir.cql_enabled=true" })
+														"spring.batch.job.enabled=false"})
 public class LibraryEvaluationProviderIT implements ResolutionUtilities {
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;

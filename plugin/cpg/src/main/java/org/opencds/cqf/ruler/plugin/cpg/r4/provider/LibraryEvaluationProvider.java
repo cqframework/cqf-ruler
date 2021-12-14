@@ -1,31 +1,14 @@
 package org.opencds.cqf.ruler.plugin.cpg.r4.provider;
 
-import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
-import ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.StringParam;
-import ca.uhn.fhir.rest.param.TokenParam;
-import ca.uhn.fhir.rest.param.UriParam;
-import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.Attachment;
-import org.opencds.cqf.cql.engine.debug.DebugMap;
-import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
-import org.opencds.cqf.ruler.plugin.cpg.CpgProperties;
-import org.opencds.cqf.ruler.plugin.cql.JpaFhirRetrieveProvider;
-import org.opencds.cqf.ruler.plugin.cpg.r4.util.R4ApelonFhirTerminologyProvider;
-import org.opencds.cqf.ruler.plugin.cpg.r4.util.R4BundleLibraryContentProvider;
-import org.opencds.cqf.ruler.plugin.cpg.r4.util.FhirMeasureBundler;
-import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.tuple.Pair;
-import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
@@ -37,66 +20,72 @@ import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
+import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.CqlEngine;
 import org.opencds.cqf.cql.engine.execution.EvaluationResult;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
-import org.opencds.cqf.cql.engine.fhir.model.FhirModelResolver;
-import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.retrieve.RestFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
-import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDecorator;
-import org.opencds.cqf.cql.evaluator.engine.execution.TranslatingLibraryLoader;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
+import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
 import org.opencds.cqf.ruler.api.OperationProvider;
+import org.opencds.cqf.ruler.plugin.cpg.r4.util.FhirMeasureBundler;
+import org.opencds.cqf.ruler.plugin.cpg.r4.util.R4ApelonFhirTerminologyProvider;
+import org.opencds.cqf.ruler.plugin.cpg.r4.util.R4BundleLibraryContentProvider;
+import org.opencds.cqf.ruler.plugin.cql.CqlProperties;
+import org.opencds.cqf.ruler.plugin.cql.JpaFhirRetrieveProvider;
+import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
 import org.opencds.cqf.ruler.plugin.utility.OperatorUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 
-public class LibraryEvaluationProvider implements LibraryResolutionProvider<Library>, OperationProvider, ClientUtilities, OperatorUtilities {
+public class LibraryEvaluationProvider implements OperationProvider, ClientUtilities, OperatorUtilities {
 
 	private static final Logger log = LoggerFactory.getLogger(LibraryEvaluationProvider.class);
 
 	@Autowired
-	private DaoRegistry registry;
+	private DaoRegistry myDaoRegistry;
 
 	@Autowired
-	private CpgProperties cpgProperties;
+	private CqlProperties myCqlProperties;
 
 	@Autowired
-	private LibraryResourceProvider libraryResourceProvider;
+	JpaTerminologyProviderFactory myJpaTerminologyProviderFactory;
 
 	@Autowired
-	JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
+	JpaLibraryContentProviderFactory myJpaLibraryContentProviderFactory;
 
 	@Autowired
-	private CqlTranslatorOptions cqlTranslatorOptions;
+	LibraryLoaderFactory myLibraryLoaderFactory;
 
 	@Autowired
-	private ModelManager modelManager;
+	ModelResolver myModelResolver;
+
+	@Autowired 
+	FhirContext myFhirContext;
 
 
-	private LibraryResolutionProvider<org.hl7.fhir.r4.model.Library> getLibraryResourceProvider() {
-		return this;
-	}
-
-	@SuppressWarnings({"unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked" })
 	@Operation(name = "$evaluate", idempotent = true, type = Library.class)
 	public Bundle evaluate(@IdParam IdType theId, @OperationParam(name = "patientId") String patientId,
 								  @OperationParam(name = "periodStart") String periodStart,
@@ -107,9 +96,10 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 								  @OperationParam(name = "context") String contextParam,
 								  @OperationParam(name = "executionResults") String executionResults,
 								  @OperationParam(name = "parameters") Parameters parameters,
-								  @OperationParam(name = "additionalData") Bundle additionalData) {
+								  @OperationParam(name = "additionalData") Bundle additionalData,
+								  RequestDetails theRequestDetails) {
 
-		log.info("Lib evaluation stated..");
+		log.info("Library evaluation started..");
 		if (patientId == null && contextParam != null && contextParam.equals("Patient")) {
 			log.error("Patient id null");
 			throw new IllegalArgumentException("Must specify a patientId when executing in Patient context.");
@@ -129,31 +119,30 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 		}
 
 		if (theResource == null) {
-			theResource = this.libraryResourceProvider.getDao().read(theId);
+			theResource = this.resolveById(myDaoRegistry, Library.class, theId, theRequestDetails);
 		}
 
 		VersionedIdentifier libraryIdentifier = new VersionedIdentifier().withId(theResource.getName())
 			.withVersion(theResource.getVersion());
-
-		FhirModelResolver resolver = new R4FhirModelResolver();
+			
 		TerminologyProvider terminologyProvider;
 
 		if (terminologyEndpoint != null) {
-			IGenericClient client = this.createClient(resolver.getFhirContext(), terminologyEndpoint);
+			IGenericClient client = this.createClient(myFhirContext, terminologyEndpoint);
 			if (terminologyEndpoint.getAddress().contains("apelon")) {
 				terminologyProvider = new R4ApelonFhirTerminologyProvider(client);
 			} else {
 				terminologyProvider = new R4FhirTerminologyProvider(client);
 			}
 		} else {
-			terminologyProvider = jpaTerminologyProviderFactory.create(new SystemRequestDetails());
+			terminologyProvider = myJpaTerminologyProviderFactory.create(new SystemRequestDetails());
 		}
 
 		DataProvider dataProvider;
 		if (dataEndpoint != null) {
 			List<RetrieveProvider> retrieveProviderList = new ArrayList<>();
-			IGenericClient client = this.createClient(resolver.getFhirContext(), dataEndpoint);
-			RestFhirRetrieveProvider retriever = new RestFhirRetrieveProvider(new SearchParameterResolver(resolver.getFhirContext()), client);
+			IGenericClient client = this.createClient(myFhirContext, dataEndpoint);
+			RestFhirRetrieveProvider retriever = new RestFhirRetrieveProvider(new SearchParameterResolver(myFhirContext), client);
 			retriever.setTerminologyProvider(terminologyProvider);
 			if (terminologyEndpoint == null ||(terminologyEndpoint != null && !terminologyEndpoint.getAddress().equals(dataEndpoint.getAddress()))) {
 				retriever.setExpandValueSets(true);
@@ -161,22 +150,22 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 			retrieveProviderList.add(retriever);
 
 			if (additionalData != null) {
-				BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(resolver.getFhirContext(), additionalData);
+				BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(myFhirContext, additionalData);
 				bundleProvider.setTerminologyProvider(terminologyProvider);
 				retrieveProviderList.add(bundleProvider);
 				PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(retrieveProviderList);
-				dataProvider = new CompositeDataProvider(resolver, priorityProvider);
+				dataProvider = new CompositeDataProvider(myModelResolver, priorityProvider);
 			}
 			else
 			{
-				dataProvider = new CompositeDataProvider(resolver, retriever);
+				dataProvider = new CompositeDataProvider(myModelResolver, retriever);
 			}
 
 
 		} else {
 			List<RetrieveProvider> retrieveProviderList = new ArrayList<>();
-			JpaFhirRetrieveProvider retriever = new JpaFhirRetrieveProvider(this.registry,
-				new SearchParameterResolver(resolver.getFhirContext()));
+			JpaFhirRetrieveProvider retriever = new JpaFhirRetrieveProvider(this.myDaoRegistry,
+				new SearchParameterResolver(myFhirContext));
 			retriever.setTerminologyProvider(terminologyProvider);
 			// Assume it's a different server, therefore need to expand.
 			if (terminologyEndpoint != null) {
@@ -185,26 +174,25 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 			retrieveProviderList.add(retriever);
 
 			if (additionalData != null) {
-				BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(resolver.getFhirContext(), additionalData);
+				BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(myFhirContext, additionalData);
 				bundleProvider.setTerminologyProvider(terminologyProvider);
 				retrieveProviderList.add(bundleProvider);
 				PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(retrieveProviderList);
-				dataProvider = new CompositeDataProvider(resolver, priorityProvider);
+				dataProvider = new CompositeDataProvider(myModelResolver, priorityProvider);
 			}
 			else
 			{
-				dataProvider = new CompositeDataProvider(resolver, retriever);
+				dataProvider = new CompositeDataProvider(myModelResolver, retriever);
 			}
 		}
 
 
-		org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider bundleLibraryProvider = new R4BundleLibraryContentProvider(libraryBundle);
-		org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider sourceProvider =  new ca.uhn.fhir.cql.common.provider.LibraryContentProvider<Library, Attachment>(
-			this.getLibraryResourceProvider(), x -> x.getContent(), x -> x.getContentType(), x -> x.getData());
+		LibraryContentProvider bundleLibraryProvider = new R4BundleLibraryContentProvider(libraryBundle);
+		LibraryContentProvider jpaLibraryContentProvider = this.myJpaLibraryContentProviderFactory.create(theRequestDetails);
 
-		List<LibraryContentProvider> sourceProviders = Arrays.asList(bundleLibraryProvider, sourceProvider);
 
-		LibraryLoader libraryLoader = new CacheAwareLibraryLoaderDecorator(new TranslatingLibraryLoader(modelManager, sourceProviders, cqlTranslatorOptions));
+		List<LibraryContentProvider> sourceProviders = Arrays.asList(bundleLibraryProvider, jpaLibraryContentProvider);
+		LibraryLoader libraryLoader = this.myLibraryLoaderFactory.create(sourceProviders);
 
 		CqlEngine engine = new CqlEngine(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider);
 
@@ -312,81 +300,6 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 		return type;
 	}
 
-	@Override
-	public void update(Library library) {
-		this.libraryResourceProvider.getDao().update(library);
-	}
-
-	@Override
-	public Library resolveLibraryById(String libraryId, RequestDetails requestDetails) {
-		try {
-			return this.libraryResourceProvider.getDao().read(new IdType(libraryId));
-		} catch (Exception e) {
-			throw new IllegalArgumentException(String.format("Could not resolve library id %s", libraryId));
-		}
-	}
-
-	@Override
-	public Library resolveLibraryByName(String libraryName, String libraryVersion) {
-		Iterable<org.hl7.fhir.r4.model.Library> libraries = getLibrariesByName(libraryName);
-		org.hl7.fhir.r4.model.Library library = LibraryResolutionProvider.selectFromList(libraries, libraryVersion,
-			x -> x.getVersion());
-
-		if (library == null) {
-			throw new IllegalArgumentException(String.format("Could not resolve library name %s", libraryName));
-		}
-
-		return library;
-	}
-
-	@Override
-	public Library resolveLibraryByCanonicalUrl(String url, RequestDetails requestDetails) {
-		Objects.requireNonNull(url, "url must not be null");
-
-		String[] parts = url.split("\\|");
-		String resourceUrl = parts[0];
-		String version = null;
-		if (parts.length > 1) {
-			version = parts[1];
-		}
-
-		SearchParameterMap map = SearchParameterMap.newSynchronous();
-		map.add("url", new UriParam(resourceUrl));
-		if (version != null) {
-			map.add("version", new TokenParam(version));
-		}
-
-		ca.uhn.fhir.rest.api.server.IBundleProvider bundleProvider = this.libraryResourceProvider.getDao().search(map);
-
-		if (bundleProvider != null && bundleProvider.size() == 0) {
-			return null;
-		}
-		List<IBaseResource> resourceList = bundleProvider.getAllResources();
-		return  LibraryResolutionProvider.selectFromList(resolveLibraries(resourceList), version, x -> x.getVersion());
-	}
-
-	private Iterable<org.hl7.fhir.r4.model.Library> getLibrariesByName(String name) {
-		// Search for libraries by name
-		SearchParameterMap map = SearchParameterMap.newSynchronous();
-		map.add("name", new StringParam(name, true));
-		ca.uhn.fhir.rest.api.server.IBundleProvider bundleProvider = this.libraryResourceProvider.getDao().search(map);
-
-		if (bundleProvider != null && bundleProvider.size() == 0) {
-			return new ArrayList<>();
-		}
-		List<IBaseResource> resourceList = bundleProvider.getAllResources();
-		return resolveLibraries(resourceList);
-	}
-
-	private Iterable<org.hl7.fhir.r4.model.Library> resolveLibraries(List<IBaseResource> resourceList) {
-		List<org.hl7.fhir.r4.model.Library> ret = new ArrayList<>();
-		for (IBaseResource res : resourceList) {
-			Class<?> clazz = res.getClass();
-			ret.add((org.hl7.fhir.r4.model.Library) clazz.cast(res));
-		}
-		return ret;
-	}
-
 	// TODO: Merge this into the evaluator
 	@SuppressWarnings("unused")
 	private Map<String, List<Integer>> getLocations(org.hl7.elm.r1.Library library) {
@@ -407,7 +320,7 @@ public class LibraryEvaluationProvider implements LibraryResolutionProvider<Libr
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (cpgProperties.getLogEnabled()) {
+		if (myCqlProperties.getCql_logging_enabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;

@@ -24,7 +24,7 @@ public class R4BundleLibraryContentProvider  implements VersionUtilities, org.op
     @Override
     public InputStream getLibrarySource(VersionedIdentifier versionedIdentifier) {
         Objects.requireNonNull(versionedIdentifier, "versionedIdentifier can not be null.");
-        
+
         Library library = this.getLibrary(versionedIdentifier.getId(), versionedIdentifier.getVersion());
         if (library == null ){
             return null;
