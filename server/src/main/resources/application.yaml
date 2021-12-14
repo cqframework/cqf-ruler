@@ -141,13 +141,11 @@ hapi:
 
 ## RA Settings
     ra:
-      enabled: true
       report:
         endpoint: ''
 
 ## Dev Tools Settings        
     devtools:
-      enabled: true
 
 ## Security settings
     security:
@@ -165,7 +163,6 @@ hapi:
         serviceText: OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)
 ## CR Settings
   cr:
-    enabled: true
         
 #elasticsearch:
 #  debug:

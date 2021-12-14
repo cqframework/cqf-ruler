@@ -26,9 +26,7 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 	"spring.main.allow-bean-definition-overriding=true",
 	"spring.batch.job.enabled=false",
 	"spring.datasource.url=jdbc:h2:mem:dbdstu3-mt",
-	"hapi.fhir.fhir_version=dstu3",
-	"hapi.fhir.tester_enabled=false",
-	"hapi.fhir.security.enabled=true"
+	"hapi.fhir.fhir_version=dstu3"
 })
 public class OAuthProviderIT {
 	private IGenericClient ourClient;

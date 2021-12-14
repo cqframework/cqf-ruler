@@ -1,0 +1,68 @@
+{
+  "resourceType": "ValueSet",
+  "id": "opioid-misuse-assessment-procedure",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-distributablevalueset",
+      "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-publishablevalueset"
+    ]
+  },
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "MD Partners, Inc.",
+        "telecom": [
+          {
+            "system": "email",
+            "value": "info@mdpartners.com"
+          }
+        ]
+      }
+    }
+  ],
+  "url": "http://fhir.org/guides/cdc/opioid-cds/ValueSet/opioid-misuse-assessment-procedure",
+  "name": "Opioid_Misuse_Assessment_Procedure",
+  "title": "ValueSet - Opioid Misuse Assessment Procedure",
+  "status": "active",
+  "experimental": true,
+  "date": "2020-03-26T17:39:09-06:00",
+  "publisher": "Centers for Disease Control and Prevention (CDC)",
+  "description": "Procedure to assess the risk of opioid abuse occurring by a patient",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US"
+        }
+      ]
+    }
+  ],
+  "purpose": "Risk assessment to occur when considering opioid therapy",
+  "copyright": "© CDC 2016+.",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/731000124108",
+        "concept": [
+          {
+            "code": "454281000124100"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-03-26T17:39:09-06:00",
+    "contains": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/731000124108/version/20200301",
+        "code": "454281000124100",
+        "display": "Assessment of risk for opioid abuse (procedure)"
+      }
+    ]
+  }
+}

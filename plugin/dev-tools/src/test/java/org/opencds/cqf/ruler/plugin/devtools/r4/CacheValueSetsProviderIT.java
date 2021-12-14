@@ -37,7 +37,7 @@ import ca.uhn.fhir.rest.param.StringAndListParam;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=r4", "hapi.fhir.devtools.enabled=true", "spring.batch.job.enabled=false", "spring.main.allow-bean-definition-overriding=true"})
+DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=r4", "spring.batch.job.enabled=false", "spring.main.allow-bean-definition-overriding=true"})
 public class CacheValueSetsProviderIT implements IServerSupport, IdUtilities, ClientUtilities {
     @Autowired
     private CacheValueSetsProvider cacheValueSetsProvider;

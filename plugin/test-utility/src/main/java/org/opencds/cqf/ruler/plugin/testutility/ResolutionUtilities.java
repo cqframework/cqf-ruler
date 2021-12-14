@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.google.common.base.Charsets;
+
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -16,7 +17,8 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 
 /**
- * This interface provides test utility functions for resolving FHIR resources from a location. 
+ * This interface provides test utility functions for resolving FHIR resources
+ * from a location.
  * 
  */
 public interface ResolutionUtilities {

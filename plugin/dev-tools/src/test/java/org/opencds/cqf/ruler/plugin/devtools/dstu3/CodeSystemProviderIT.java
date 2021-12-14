@@ -45,7 +45,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=dstu3", "hapi.fhir.devtools.enabled=true", "spring.batch.job.enabled=false", "spring.main.allow-bean-definition-overriding=true"})
+DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=dstu3", "spring.batch.job.enabled=false", "spring.main.allow-bean-definition-overriding=true"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CodeSystemProviderIT implements IServerSupport, IdUtilities, ClientUtilities {
     private Logger log = LoggerFactory.getLogger(CodeSystemProviderIT.class);
