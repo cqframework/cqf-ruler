@@ -11,32 +11,32 @@ import org.cqframework.cql.elm.execution.Library.Usings;
 import org.cqframework.cql.elm.execution.UsingDef;
 
 public interface LibraryUtilities {
-    
-    public final Map<String, String> urlsByModelName = new HashMap<String, String>() {
-        {
-            put("FHIR", "http://hl7.org/fhir");
-            put("QDM", "urn:healthit-gov:qdm:v5_4");
-        }
-    };
 
-    // Returns a list of (Model, Version, Url) for the usings in library. The
-    // "System" using is excluded.
-    public default List<Triple<String, String, String>> getUsingUrlAndVersion(Usings usings) {
-        if (usings == null || usings.getDef() == null) {
-            return Collections.emptyList();
-        }
+	public final Map<String, String> urlsByModelName = new HashMap<String, String>() {
+		{
+			put("FHIR", "http://hl7.org/fhir");
+			put("QDM", "urn:healthit-gov:qdm:v5_4");
+		}
+	};
 
-        List<Triple<String, String, String>> usingDefs = new ArrayList<>();
-        for (UsingDef def : usings.getDef()) {
+	// Returns a list of (Model, Version, Url) for the usings in library. The
+	// "System" using is excluded.
+	public default List<Triple<String, String, String>> getUsingUrlAndVersion(Usings usings) {
+		if (usings == null || usings.getDef() == null) {
+			return Collections.emptyList();
+		}
 
-            if (def.getLocalIdentifier().equals("System"))
-                continue;
+		List<Triple<String, String, String>> usingDefs = new ArrayList<>();
+		for (UsingDef def : usings.getDef()) {
 
-            usingDefs.add(Triple.of(def.getLocalIdentifier(), def.getVersion(),
-                    urlsByModelName.get(def.getLocalIdentifier())));
-        }
+			if (def.getLocalIdentifier().equals("System"))
+				continue;
 
-        return usingDefs;
-    }
-    
+			usingDefs.add(Triple.of(def.getLocalIdentifier(), def.getVersion(),
+					urlsByModelName.get(def.getLocalIdentifier())));
+		}
+
+		return usingDefs;
+	}
+
 }

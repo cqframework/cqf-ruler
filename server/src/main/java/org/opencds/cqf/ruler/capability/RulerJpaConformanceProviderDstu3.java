@@ -19,26 +19,26 @@ import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
 public class RulerJpaConformanceProviderDstu3 extends JpaConformanceProviderDstu3 {
 
-    List<MetadataExtender<CapabilityStatement>> myExtenders;
+	List<MetadataExtender<CapabilityStatement>> myExtenders;
 
-    public RulerJpaConformanceProviderDstu3(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry, 
-    List<MetadataExtender<CapabilityStatement>> theExtenders) {
-        super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry);
-        myExtenders = theExtenders;
+	public RulerJpaConformanceProviderDstu3(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao,
+			DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry,
+			List<MetadataExtender<CapabilityStatement>> theExtenders) {
+		super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry);
+		myExtenders = theExtenders;
 	}
 
+	@Override
+	@Metadata
+	public CapabilityStatement getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
+		CapabilityStatement conformance = super.getServerConformance(theRequest, theRequestDetails);
 
-    @Override
-    @Metadata
-    public CapabilityStatement getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
-        CapabilityStatement conformance = super.getServerConformance(theRequest, theRequestDetails);
+		if (myExtenders != null) {
+			for (MetadataExtender<CapabilityStatement> extender : myExtenders) {
+				extender.extend(conformance);
+			}
+		}
 
-        if (myExtenders != null) {
-            for (MetadataExtender<CapabilityStatement> extender : myExtenders) {
-                extender.extend(conformance);
-            }
-        }
-
-        return conformance;
-    } 
+		return conformance;
+	}
 }

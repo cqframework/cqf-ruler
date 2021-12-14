@@ -18,27 +18,26 @@ import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
 public class RulerJpaCapabilityStatementProvider extends JpaCapabilityStatementProvider {
 
-    private List<MetadataExtender<IBaseConformance>> myExtenders;
+	private List<MetadataExtender<IBaseConformance>> myExtenders;
 
+	public RulerJpaCapabilityStatementProvider(RestfulServer theRestfulServer, IFhirSystemDao<?, ?> theSystemDao,
+			DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry,
+			IValidationSupport theValidationSupport, List<MetadataExtender<IBaseConformance>> theExtenders) {
+		super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry, theValidationSupport);
+		myExtenders = theExtenders;
+	}
 
-    public RulerJpaCapabilityStatementProvider(RestfulServer theRestfulServer, IFhirSystemDao<?, ?> theSystemDao,
-            DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry,
-            IValidationSupport theValidationSupport, List<MetadataExtender<IBaseConformance>> theExtenders) {
-        super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry, theValidationSupport);
-        myExtenders = theExtenders;
-    }
+	@Override
+	@Metadata
+	public IBaseConformance getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
+		IBaseConformance conformance = super.getServerConformance(theRequest, theRequestDetails);
 
-    @Override
-    @Metadata
-    public IBaseConformance getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
-        IBaseConformance conformance = super.getServerConformance(theRequest, theRequestDetails);
+		if (myExtenders != null) {
+			for (MetadataExtender<IBaseConformance> extender : myExtenders) {
+				extender.extend(conformance);
+			}
+		}
 
-        if (myExtenders != null) {
-            for (MetadataExtender<IBaseConformance> extender : myExtenders) {
-                extender.extend(conformance);
-            }
-        }
-
-        return conformance;
-    }   
+		return conformance;
+	}
 }

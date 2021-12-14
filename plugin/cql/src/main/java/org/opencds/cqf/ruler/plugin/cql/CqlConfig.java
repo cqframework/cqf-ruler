@@ -39,7 +39,7 @@ import ca.uhn.fhir.jpa.starter.annotations.OnR5Condition;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 
 @Configuration
-@ConditionalOnProperty(prefix = "hapi.fhir.cql", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "hapi.fhir.cql", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class CqlConfig {
 
 	private static final Logger ourLog = LoggerFactory.getLogger(CqlConfig.class);
