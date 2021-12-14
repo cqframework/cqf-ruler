@@ -3,50 +3,28 @@ package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
-import ca.uhn.fhir.cql.common.retrieve.JpaFhirRetrieveProvider;
 import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.starter.AppProperties;
-import ca.uhn.fhir.rest.api.SearchStyleEnum;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.apache.http.entity.ContentType;
-import org.hl7.fhir.r4.model.CapabilityStatement;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
-import org.hl7.fhir.r4.model.UriType;
-import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
-import org.opencds.cqf.cql.engine.exception.CqlException;
-import org.opencds.cqf.cql.engine.execution.Context;
-import org.opencds.cqf.cql.engine.execution.LibraryLoader;
-import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
+import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.ruler.Application;
-import org.opencds.cqf.ruler.api.MetadataExtender;
 import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksProperties;
 import org.opencds.cqf.ruler.plugin.cdshooks.discovery.DiscoveryResolutionR4;
 import org.opencds.cqf.ruler.plugin.cdshooks.providers.ProviderConfiguration;
+import org.opencds.cqf.ruler.plugin.cql.CqlConfig;
+import org.opencds.cqf.ruler.plugin.cql.JpaFhirRetrieveProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.WebApplicationContext;
-import org.opencds.cqf.ruler.plugin.security.SecurityProperties;
 import org.opencds.cqf.ruler.plugin.utility.*;
 
 import javax.servlet.ServletException;
@@ -57,10 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @WebServlet(name = "cds-services")
 public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
@@ -78,42 +53,71 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	//private org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider planDefinitionProvider;
 	private IFhirResourceDao<PlanDefinition> myPlanDefinitionDao;
 
+//	@Autowired
 	private LibraryResolutionProvider<Library> libraryResolutionProvider;
 
 	private JpaFhirRetrieveProvider fhirRetrieveProvider;
 
+//	@Autowired
 	private TerminologyProvider serverTerminologyProvider;
 
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
 
-	@Autowired
+//	@Autowired
 	private ModelResolver modelResolver;
 
+//	@Autowired
 	private LibraryHelper libraryHelper;
 
-//	private SecurityProperties securityProperties = new SecurityProperties();
+	@Autowired
+	private CqlConfig cqlConfig;
+
+	@Autowired
+	AppProperties myAppProperties;
+
+	@Autowired
+	CdsHooksProperties myHooksProperties;
+
+	@Autowired
+	private DaoRegistry myDaoRegistry;
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void init() {
 		// System level providers
 		ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
 
 		// TODO: Determine how to resolve these darn beans.
-		this.hooksProperties = appCtx.getBean(CdsHooksProperties.class);
-		AutowireCapableBeanFactory factory = appCtx.getAutowireCapableBeanFactory();
-		appCtx.getBean(CdsHooksProperties.class);
-		factory.autowireBean(this.hooksProperties);
-		factory.initializeBean(this.hooksProperties, "setHookProperties");
-		factory.applyBeanPropertyValues(this.hooksProperties, "setHookProperties");
+		this.myAppProperties = appCtx.getBean(AppProperties.class);
+		this.myHooksProperties = appCtx.getBean(CdsHooksProperties.class);
+		this.cqlConfig = appCtx.getBean(CqlConfig.class);
+
 //		this.providerConfiguration = ProviderConfiguration.DEFAULT_PROVIDER_CONFIGURATION;
 		this.providerConfiguration = appCtx.getBean(ProviderConfiguration.class);
+
 //		this.planDefinitionProvider = appCtx.getBean(PlanDefinitionApplyProvider.class);
-//		this.libraryResolutionProvider = (LibraryResolutionProvider<org.hl7.fhir.r4.model.Library>)appCtx.getBean(LibraryResolutionProvider.class);
+
+		this.libraryResolutionProvider = (LibraryResolutionProvider<Library>)appCtx.getBean(LibraryResolutionProvider.class);
+
+		this.serverTerminologyProvider = appCtx.getBean(TerminologyProvider.class);
+
+		//this.modelResolver = appCtx.getBean("r4ModelResolver", ModelResolver.class);
+		this.modelResolver = this.cqlConfig.modelResolverR4();
+
+//		SearchParameterResolver theSearchParameterResolver = appCtx.getBean(SearchParameterResolver.class);
+		SearchParameterResolver theSearchParameterResolver = this.cqlConfig.searchParameterResolver(ourCtx);
+		this.myDaoRegistry = appCtx.getBean(DaoRegistry.class);
+		this.fhirRetrieveProvider = this.cqlConfig.jpaFhirRetrieveProvider(myDaoRegistry, theSearchParameterResolver);
 //		this.fhirRetrieveProvider = appCtx.getBean(JpaFhirRetrieveProvider.class);
-//		this.serverTerminologyProvider = appCtx.getBean(TerminologyProvider.class);
-		this.modelResolver = appCtx.getBean("r4ModelResolver", ModelResolver.class);
-//		this.libraryHelper = appCtx.getBean(LibraryHelper.class);
+
+//		Map<VersionedIdentifier, Model> theModelCache = this.cqlConfig.globalModelCache();
+//		Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> theLibraryCache = this.cqlConfig.globalLibraryCache();
+//		CqlTranslatorOptions theTranslatorOptions = this.cqlConfig.cqlTranslatorOptions(ourCtx, cqlConfig.cqlProperties());
+//		this.libraryHelper = new LibraryHelper(theModelCache, theLibraryCache, theTranslatorOptions);
+		this.libraryHelper = appCtx.getBean(LibraryHelper.class);
+
+		logger.info("Initialized cds-services");
 	}
 
 	protected ProviderConfiguration getProviderConfiguration() {
@@ -135,18 +139,8 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
 
-		ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
-
-		this.hooksProperties = appCtx.getBean(CdsHooksProperties.class);
-		AutowireCapableBeanFactory factory = appCtx.getAutowireCapableBeanFactory();
-		appCtx.getBean(CdsHooksProperties.class);
-		factory.autowireBean(this.hooksProperties);
-		factory.initializeBean(this.hooksProperties, "setHookProperties");
-		factory.applyBeanPropertyValues(this.hooksProperties, "setHookProperties");
-
-		//ModelResolver myResolver = ((ApplicationContext) getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT")).getBean("r4ModelResolver", ModelResolver.class);
 		logger.info(request.getRequestURI());
-		if (!request.getRequestURL().toString().endsWith("cds-services/")) {
+		if (!request.getRequestURL().toString().endsWith("cds-services")) {
 			logger.error(request.getRequestURI());
 			throw new ServletException("This servlet is not configured to handle GET requests.");
 		}
@@ -334,9 +328,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
 	private JsonObject getServices() {
 		// TODO: Discover issue with setting Autowired properties.
-		DiscoveryResolutionR4 discoveryResolutionR4 = new DiscoveryResolutionR4(createClient(ourCtx, this.hooksProperties.getEndpoint()));
-
-//		DiscoveryResolutionR4 discoveryResolutionR4 = new DiscoveryResolutionR4(createClient(ourCtx, "http://localhost:8080/fhir/"));
+		DiscoveryResolutionR4 discoveryResolutionR4 = new DiscoveryResolutionR4(createClient(ourCtx, this.myAppProperties.getServer_address()));
 
 		discoveryResolutionR4.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
 
@@ -358,20 +350,8 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 //	}
 
 	private void setAccessControlHeaders(HttpServletResponse resp) {
-		// TODO: Setup CORS AppProperties
-//		if (appProperties.getCors().getAllow_Credentials()) {
-//			resp.setHeader("Access-Control-Allow-Origin", appProperties.getCors().getAllowed_origin().stream().findFirst().get());
-//			resp.setHeader("Access-Control-Allow-Methods",
-//				String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
-//			resp.setHeader("Access-Control-Allow-Headers", String.join(", ", Arrays.asList("x-fhir-starter", "Origin",
-//				"Accept", "X-Requested-With", "Content-Type", "Authorization", "Cache-Control")));
-//			resp.setHeader("Access-Control-Expose-Headers",
-//				String.join(", ", Arrays.asList("Location", "Content-Location")));
-//			resp.setHeader("Access-Control-Max-Age", "86400");
-//		}
-
-		if (true) {
-			resp.setHeader("Access-Control-Allow-Origin", "*");
+		if (this.myAppProperties.getCors().getAllow_Credentials()) {
+			resp.setHeader("Access-Control-Allow-Origin", this.myAppProperties.getCors().getAllowed_origin().stream().findFirst().get());
 			resp.setHeader("Access-Control-Allow-Methods",
 				String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
 			resp.setHeader("Access-Control-Allow-Headers", String.join(", ", Arrays.asList("x-fhir-starter", "Origin",

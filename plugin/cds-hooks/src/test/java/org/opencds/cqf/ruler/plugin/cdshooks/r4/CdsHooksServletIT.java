@@ -1,16 +1,15 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.CapabilityStatement;
-import org.hl7.fhir.r4.model.Patient;
+import ca.uhn.fhir.jpa.starter.AppProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -34,8 +33,10 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 })
 public class CdsHooksServletIT {
 	private IGenericClient ourClient;
-	private IGenericClient ourClient2;
 	private FhirContext ourCtx;
+
+	@Autowired
+	AppProperties myAppProperties;
 
 	@LocalServerPort
 	private int port;
@@ -46,17 +47,16 @@ public class CdsHooksServletIT {
 		ourCtx = FhirContext.forR4Cached();
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
+
 		String ourServerBase = "http://localhost:" + port + "/fhir/";
-		String ourCdsBase = "http://localhost:" + port + "/cds-services/";
+		String ourCdsBase = "http://localhost:" + port + "/cds-services";
+		myAppProperties.setServer_address(ourServerBase);
 		ourClient = ourCtx.newRestfulGenericClient(ourCdsBase);
-		ourClient2 = ourCtx.newRestfulGenericClient(ourServerBase);
 //		ourClient.registerInterceptor(new LoggingInterceptor(false));
 	}
 
 	@Test
 	public void testCdsHooksConfig() {
-		//Patient p = ourClient.read().resource(Patient.class).withId("123").execute();
-		Bundle p = ourClient2.search().byUrl(ourClient2.getServerBase() + "/Patient").returnBundle(Bundle.class).execute();
-		ourClient.search().byUrl(ourClient.getServerBase()).execute();
+		assertDoesNotThrow((Executable) ourClient.search().byUrl(ourClient.getServerBase()).execute());
 	}
 }

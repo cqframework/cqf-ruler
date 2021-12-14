@@ -68,7 +68,7 @@ public class CqlConfig {
 	}
 
 	@Bean
-	SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
+	public SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
 		return new SearchParameterResolver(fhirContext);
 	}
 
@@ -88,6 +88,12 @@ public class CqlConfig {
 			}
 			return new CompositeDataProvider(modelResolver, provider);
 		};
+	}
+
+	@Bean
+	public JpaFhirRetrieveProvider jpaFhirRetrieveProvider(DaoRegistry daoRegistry,
+											 SearchParameterResolver searchParameterResolver) {
+		return new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver);
 	}
 
 	@Bean
@@ -171,7 +177,7 @@ public class CqlConfig {
 		return new CachingModelResolverDecorator(new Dstu3FhirModelResolver());
 	}
 
-	@Bean
+	@Bean(name = "r4ModelResolver")
 	@Primary
 	@Conditional(OnR4Condition.class)
 	public ModelResolver modelResolverR4() {
