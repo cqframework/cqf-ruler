@@ -286,7 +286,7 @@ public class ExpressionEvaluation implements CanonicalUtilities {
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (cqlProperties.getCql_debug_enabled()) {
+		if (cqlProperties.getCql_logging_enabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;

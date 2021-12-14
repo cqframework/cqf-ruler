@@ -5,9 +5,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import com.google.common.base.Charsets;
 
 import org.apache.commons.io.IOUtils;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -46,6 +48,16 @@ public interface ResolutionUtilities {
 			dao.update(resource);
 			return (ResourceType) resource;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public default Object transactionByLocation(
+		DaoRegistry theDaoRegistry, String theLocation, FhirContext theFhirContext)
+		throws IOException {
+		String json = stringFromResource(theLocation);
+		IBaseBundle resource = (IBaseBundle)theFhirContext.newJsonParser().parseResource(json);
+		Object result = theDaoRegistry.getSystemDao().transaction(new SystemRequestDetails(), resource);
+		return result;
 	}
 
 	/**
