@@ -81,23 +81,22 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 	@Autowired
 	ModelResolver myModelResolver;
 
-	@Autowired 
+	@Autowired
 	FhirContext myFhirContext;
 
-
-	@SuppressWarnings({"unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	@Operation(name = "$evaluate", idempotent = true, type = Library.class)
 	public Bundle evaluate(@IdParam IdType theId, @OperationParam(name = "patientId") String patientId,
-								  @OperationParam(name = "periodStart") String periodStart,
-								  @OperationParam(name = "periodEnd") String periodEnd,
-								  @OperationParam(name = "productLine") String productLine,
-								  @OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint,
-								  @OperationParam(name = "dataEndpoint") Endpoint dataEndpoint,
-								  @OperationParam(name = "context") String contextParam,
-								  @OperationParam(name = "executionResults") String executionResults,
-								  @OperationParam(name = "parameters") Parameters parameters,
-								  @OperationParam(name = "additionalData") Bundle additionalData,
-								  RequestDetails theRequestDetails) {
+			@OperationParam(name = "periodStart") String periodStart,
+			@OperationParam(name = "periodEnd") String periodEnd,
+			@OperationParam(name = "productLine") String productLine,
+			@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint,
+			@OperationParam(name = "dataEndpoint") Endpoint dataEndpoint,
+			@OperationParam(name = "context") String contextParam,
+			@OperationParam(name = "executionResults") String executionResults,
+			@OperationParam(name = "parameters") Parameters parameters,
+			@OperationParam(name = "additionalData") Bundle additionalData,
+			RequestDetails theRequestDetails) {
 
 		log.info("Library evaluation started..");
 		if (patientId == null && contextParam != null && contextParam.equals("Patient")) {
@@ -123,8 +122,8 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 		}
 
 		VersionedIdentifier libraryIdentifier = new VersionedIdentifier().withId(theResource.getName())
-			.withVersion(theResource.getVersion());
-			
+				.withVersion(theResource.getVersion());
+
 		TerminologyProvider terminologyProvider;
 
 		if (terminologyEndpoint != null) {
@@ -142,9 +141,11 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 		if (dataEndpoint != null) {
 			List<RetrieveProvider> retrieveProviderList = new ArrayList<>();
 			IGenericClient client = this.createClient(myFhirContext, dataEndpoint);
-			RestFhirRetrieveProvider retriever = new RestFhirRetrieveProvider(new SearchParameterResolver(myFhirContext), client);
+			RestFhirRetrieveProvider retriever = new RestFhirRetrieveProvider(new SearchParameterResolver(myFhirContext),
+					client);
 			retriever.setTerminologyProvider(terminologyProvider);
-			if (terminologyEndpoint == null ||(terminologyEndpoint != null && !terminologyEndpoint.getAddress().equals(dataEndpoint.getAddress()))) {
+			if (terminologyEndpoint == null || (terminologyEndpoint != null
+					&& !terminologyEndpoint.getAddress().equals(dataEndpoint.getAddress()))) {
 				retriever.setExpandValueSets(true);
 			}
 			retrieveProviderList.add(retriever);
@@ -155,17 +156,14 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 				retrieveProviderList.add(bundleProvider);
 				PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(retrieveProviderList);
 				dataProvider = new CompositeDataProvider(myModelResolver, priorityProvider);
-			}
-			else
-			{
+			} else {
 				dataProvider = new CompositeDataProvider(myModelResolver, retriever);
 			}
-
 
 		} else {
 			List<RetrieveProvider> retrieveProviderList = new ArrayList<>();
 			JpaFhirRetrieveProvider retriever = new JpaFhirRetrieveProvider(this.myDaoRegistry,
-				new SearchParameterResolver(myFhirContext));
+					new SearchParameterResolver(myFhirContext));
 			retriever.setTerminologyProvider(terminologyProvider);
 			// Assume it's a different server, therefore need to expand.
 			if (terminologyEndpoint != null) {
@@ -179,22 +177,21 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 				retrieveProviderList.add(bundleProvider);
 				PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(retrieveProviderList);
 				dataProvider = new CompositeDataProvider(myModelResolver, priorityProvider);
-			}
-			else
-			{
+			} else {
 				dataProvider = new CompositeDataProvider(myModelResolver, retriever);
 			}
 		}
 
-
 		LibraryContentProvider bundleLibraryProvider = new R4BundleLibraryContentProvider(libraryBundle);
-		LibraryContentProvider jpaLibraryContentProvider = this.myJpaLibraryContentProviderFactory.create(theRequestDetails);
+		LibraryContentProvider jpaLibraryContentProvider = this.myJpaLibraryContentProviderFactory
+				.create(theRequestDetails);
 
-
-		List<LibraryContentProvider> sourceProviders = new ArrayList<LibraryContentProvider>(Arrays.asList(bundleLibraryProvider, jpaLibraryContentProvider));
+		List<LibraryContentProvider> sourceProviders = new ArrayList<LibraryContentProvider>(
+				Arrays.asList(bundleLibraryProvider, jpaLibraryContentProvider));
 		LibraryLoader libraryLoader = this.myLibraryLoaderFactory.create(sourceProviders);
 
-		CqlEngine engine = new CqlEngine(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider);
+		CqlEngine engine = new CqlEngine(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider),
+				terminologyProvider);
 
 		Map<String, Object> resolvedParameters = new HashMap<>();
 
@@ -207,11 +204,11 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 		if (periodStart != null && periodEnd != null) {
 			// resolve the measurement period
 			Interval measurementPeriod = new Interval(this.resolveRequestDate(periodStart, true), true,
-				this.resolveRequestDate(periodEnd, false), true);
+					this.resolveRequestDate(periodEnd, false), true);
 
 			resolvedParameters.put("Measurement Period",
-				new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
-					DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
+					new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,
+							DateTime.fromJavaDate((Date) measurementPeriod.getEnd()), true));
 		}
 
 		if (productLine != null) {
@@ -219,8 +216,8 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 		}
 
 		EvaluationResult evalResult = engine.evaluate(libraryIdentifier, null,
-			Pair.of(contextParam != null ? contextParam : "Unspecified", patientId == null ? "null" : patientId),
-			resolvedParameters, this.getDebugMap());
+				Pair.of(contextParam != null ? contextParam : "Unspecified", patientId == null ? "null" : patientId),
+				resolvedParameters, this.getDebugMap());
 
 		List<Resource> results = new ArrayList<>();
 		FhirMeasureBundler bundler = new FhirMeasureBundler();
@@ -248,9 +245,9 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 						if (((List<?>) res).size() > 0 && ((List<?>) res).get(0) instanceof Resource) {
 							if (executionResults != null && executionResults.equals("Summary")) {
 								result.addParameter().setName("value")
-									.setValue(new StringType(((Resource) ((List<?>) res).get(0)).getIdElement()
-										.getResourceType() + "/"
-										+ ((Resource) ((List<?>) res).get(0)).getIdElement().getIdPart()));
+										.setValue(new StringType(((Resource) ((List<?>) res).get(0)).getIdElement()
+												.getResourceType() + "/"
+												+ ((Resource) ((List<?>) res).get(0)).getIdElement().getIdPart()));
 							} else {
 								result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res));
 							}
@@ -262,8 +259,8 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 					} else if (res instanceof Resource) {
 						if (executionResults != null && executionResults.equals("Summary")) {
 							result.addParameter().setName("value")
-								.setValue(new StringType(((Resource) res).getIdElement().getResourceType() + "/"
-									+ ((Resource) res).getIdElement().getIdPart()));
+									.setValue(new StringType(((Resource) res).getIdElement().getResourceType() + "/"
+											+ ((Resource) res).getIdElement().getIdPart()));
 						} else {
 							result.addParameter().setName("value").setResource((Resource) res);
 						}
