@@ -191,7 +191,7 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 		LibraryContentProvider jpaLibraryContentProvider = this.myJpaLibraryContentProviderFactory.create(theRequestDetails);
 
 
-		List<LibraryContentProvider> sourceProviders = Arrays.asList(bundleLibraryProvider, jpaLibraryContentProvider);
+		List<LibraryContentProvider> sourceProviders = new ArrayList<LibraryContentProvider>(Arrays.asList(bundleLibraryProvider, jpaLibraryContentProvider));
 		LibraryLoader libraryLoader = this.myLibraryLoaderFactory.create(sourceProviders);
 
 		CqlEngine engine = new CqlEngine(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider);
