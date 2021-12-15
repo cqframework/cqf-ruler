@@ -141,13 +141,11 @@ hapi:
 
 ## RA Settings
     ra:
-      enabled: true
       report:
         endpoint: ''
 
 ## Dev Tools Settings        
     devtools:
-      enabled: true
 
 ## Security settings
     security:

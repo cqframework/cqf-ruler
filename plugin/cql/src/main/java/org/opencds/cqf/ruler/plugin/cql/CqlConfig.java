@@ -38,7 +38,7 @@ import ca.uhn.fhir.jpa.starter.annotations.OnR5Condition;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 
 @Configuration
-@ConditionalOnProperty(prefix = "hapi.fhir.cql", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "hapi.fhir.cql", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class CqlConfig {
 
 	private static final Logger ourLog = LoggerFactory.getLogger(CqlConfig.class);
@@ -55,7 +55,7 @@ public class CqlConfig {
 		if (fhirContext.getVersion().getVersion().isOlderThan(FhirVersionEnum.R4)
 				&& (options.getCompatibilityLevel() == "1.5" || options.getCompatibilityLevel() == "1.4")) {
 			ourLog.warn(
-					"This server is configured to use CQL version > 1.4 and FHIR version <= DSTU3. Most available CQL content for DSTU3 and below is for CQL versions 1.3 or 1.4. If your CQL content causes translation errors, try setting the CQL compatibility level to 1.3");
+					"This server is configured to use CQL version > 1.4 and FHIR version <= DSTU3. Most available CQL content for DSTU3 and below is for CQL versions 1.3. If your CQL content causes translation errors, try setting the CQL compatibility level to 1.3");
 		}
 
 		return options;
@@ -63,7 +63,7 @@ public class CqlConfig {
 
 	@Bean
 	public ModelManager modelManager(
-			Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache) {
+		Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache) {
 		return new CacheAwareModelManager(globalModelCache);
 	}
 
@@ -84,6 +84,7 @@ public class CqlConfig {
 			JpaFhirRetrieveProvider provider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, rd);
 			if (t != null) {
 				provider.setTerminologyProvider(t);
+				// TODO: Read config...
 				provider.setExpandValueSets(true);
 			}
 			return new CompositeDataProvider(modelResolver, provider);

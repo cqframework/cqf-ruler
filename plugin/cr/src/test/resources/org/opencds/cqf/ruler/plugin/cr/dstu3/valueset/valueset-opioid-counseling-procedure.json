@@ -1,0 +1,68 @@
+{
+  "resourceType": "ValueSet",
+  "id": "opioid-counseling-procedure",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-distributablevalueset",
+      "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-publishablevalueset"
+    ]
+  },
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "MD Partners, Inc.",
+        "telecom": [
+          {
+            "system": "email",
+            "value": "info@mdpartners.com"
+          }
+        ]
+      }
+    }
+  ],
+  "url": "http://fhir.org/guides/cdc/opioid-cds/ValueSet/opioid-counseling-procedure",
+  "name": "Opioid_Counseling_Procedure",
+  "title": "ValueSet - Opioid Counseling Procedure",
+  "status": "active",
+  "experimental": true,
+  "date": "2020-03-26T17:39:10-06:00",
+  "publisher": "Centers for Disease Control and Prevention (CDC)",
+  "description": "Procedure for couseling on opioid use",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US"
+        }
+      ]
+    }
+  ],
+  "purpose": "Identify a procedure for opioid use couseling to the patient",
+  "copyright": "© CDC 2016+.",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/731000124108",
+        "concept": [
+          {
+            "code": "460831000124102"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-03-26T17:39:10-06:00",
+    "contains": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "http://snomed.info/sct/731000124108/version/20200301",
+        "code": "460831000124102",
+        "display": "Counseling about opioid safety (procedure)"
+      }
+    ]
+  }
+}

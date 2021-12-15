@@ -10,7 +10,7 @@ import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
 import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
 
 @Configuration
-@ConditionalOnProperty(prefix = "hapi.fhir.security", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "hapi.fhir.security", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class SecurityConfig {
 
 	@Bean

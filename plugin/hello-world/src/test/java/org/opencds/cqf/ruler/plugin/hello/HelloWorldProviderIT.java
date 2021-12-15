@@ -26,7 +26,6 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
             "spring.batch.job.enabled=false",
             "spring.datasource.url=jdbc:h2:mem:dbr4-mt",
             "hapi.fhir.fhir_version=r4",
-            "hapi.fhir.tester_enabled=false",
             "hello.world.message=Howdy"
 
 })

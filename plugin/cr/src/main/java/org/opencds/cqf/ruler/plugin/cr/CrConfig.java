@@ -11,7 +11,7 @@ import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
 import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
 
 @Configuration
-@ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class CrConfig {
     @Bean
     public CrProperties crProperties() {
@@ -45,5 +45,17 @@ public class CrConfig {
     @Conditional(OnR4Condition.class)
     public org.opencds.cqf.ruler.plugin.cr.r4.ExpressionEvaluation r4ExpressionEvaluation() {
         return new org.opencds.cqf.ruler.plugin.cr.r4.ExpressionEvaluation();
+    }
+
+    @Bean
+    @Conditional(OnDSTU3Condition.class)
+    public org.opencds.cqf.ruler.plugin.cr.dstu3.provider.PlanDefinitionApplyProvider dstu3PlanDefinitionApplyProvider() {
+        return new org.opencds.cqf.ruler.plugin.cr.dstu3.provider.PlanDefinitionApplyProvider();
+    }
+
+    @Bean
+    @Conditional(OnR4Condition.class)
+    public org.opencds.cqf.ruler.plugin.cr.r4.provider.PlanDefinitionApplyProvider r4PlanDefinitionApplyProvider() {
+        return new org.opencds.cqf.ruler.plugin.cr.r4.provider.PlanDefinitionApplyProvider();
     }
 }

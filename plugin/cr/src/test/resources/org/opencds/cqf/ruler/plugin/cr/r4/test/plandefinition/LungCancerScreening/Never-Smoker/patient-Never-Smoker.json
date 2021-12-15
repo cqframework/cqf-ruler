@@ -1,0 +1,24 @@
+{
+  "resourceType": "Patient",
+  "id": "Never-Smoker",
+  "meta": {
+    "versionId": "2",
+    "lastUpdated": "2020-03-04T12:25:25.302-07:00"
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><div class=\"hapiHeaderText\">John <b>ALLBRIGHT </b></div><table class=\"hapiPropertyTable\"><tbody><tr><td>Date of birth</td><td><span>28 September 1939</span></td></tr></tbody></table></div>"
+  },
+  "active": true,
+  "name": [
+    {
+      "text": "John Allbright",
+      "family": "Allbright",
+      "given": [
+        "John"
+      ]
+    }
+  ],
+  "gender": "male",
+  "birthDate": "1939-09-28"
+}

@@ -30,6 +30,7 @@
             "classPaths": [
                 "$Auto",
                 "${workspaceFolder}/plugin/hello-world/target/classes",
+                "${workspaceFolder}/plugin/cpg/target/classes",
                 "${workspaceFolder}/plugin/ra/target/classes",
                 "${workspaceFolder}/plugin/sdc/target/classes",
                 "${workspaceFolder}/plugin/utility/target/classes",

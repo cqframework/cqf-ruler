@@ -4,6 +4,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <classpathModifications>
       <entry path="$PROJECT_DIR$/plugin/cql/target/classes" />
+      <entry path="$PROJECT_DIR$/plugin/cpg/target/classes" />
       <entry path="$PROJECT_DIR$/plugin/cr/target/classes" />
       <entry path="$PROJECT_DIR$/plugin/dev-tools/target/classes" />
       <entry path="$PROJECT_DIR$/plugin/hello-world/target/classes" />

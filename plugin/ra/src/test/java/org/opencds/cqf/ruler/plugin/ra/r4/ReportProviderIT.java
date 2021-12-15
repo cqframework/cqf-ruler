@@ -36,7 +36,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.ra.enabled=true" })
+		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 public class ReportProviderIT implements org.opencds.cqf.ruler.plugin.testutility.ClientUtilities, ResolutionUtilities,
 		org.opencds.cqf.ruler.plugin.utility.ClientUtilities {
 

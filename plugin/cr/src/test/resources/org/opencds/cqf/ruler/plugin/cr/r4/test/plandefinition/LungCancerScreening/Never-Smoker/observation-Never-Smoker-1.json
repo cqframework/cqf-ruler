@@ -1,0 +1,48 @@
+{
+  "resourceType": "Observation",
+  "id": "observation-Never-Smoker-1",
+  "meta": {
+    "versionId": "7",
+    "lastUpdated": "2020-03-06T11:01:09.707-07:00"
+  },
+  "status": "final",
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "72166-2",
+        "display": "Tobacco smoking status"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/Never-Smoker"
+  },
+  "issued": "1963-05-15T00:00:00-07:00",
+  "valueCodeableConcept": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "266919005",
+        "display": "Never smoker"
+      }
+    ]
+  },
+  "component": [
+    {
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "8663-7",
+            "display": "Packs/day"
+          }
+        ]
+      },
+      "valueQuantity": {
+        "value": 0,
+        "unit": "Packs/day"
+      }
+    }
+  ]
+}
