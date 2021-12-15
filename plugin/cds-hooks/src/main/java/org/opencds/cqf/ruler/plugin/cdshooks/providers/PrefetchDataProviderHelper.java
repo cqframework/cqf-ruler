@@ -33,7 +33,7 @@ public class PrefetchDataProviderHelper {
         if (resources == null){
             return prefetchResources;
         }
-        
+
         for (Object resource : resources) {
             if (resource instanceof Resource) {
                 if (prefetchResources.containsKey(((Resource) resource).fhirType())) {

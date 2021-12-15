@@ -36,7 +36,7 @@ public class PrefetchDataProviderDstu2 extends TerminologyAwareRetrieveProvider 
             String templateId, String codePath, Iterable<Code> codes, String valueSet, String datePath,
             String dateLowPath, String dateHighPath, Interval dateRange) {
 
-                
+
         if (codePath == null && (codes != null || valueSet != null)) {
             throw new IllegalArgumentException("A code path must be provided when filtering on codes or a valueset.");
         }

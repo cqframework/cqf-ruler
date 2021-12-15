@@ -30,7 +30,7 @@ public class Stu3EvaluationContext extends EvaluationContext<PlanDefinition> {
         if (resources == null || resources.isEmpty()) {
             return new ArrayList<>();
         }
-        
+
         Bundle bundle = new Bundle();
         for (Object res : resources) {
             bundle.addEntry(new Bundle.BundleEntryComponent().setResource((Resource) res));

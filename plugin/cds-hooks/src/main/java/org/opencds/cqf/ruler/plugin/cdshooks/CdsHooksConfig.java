@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
+import org.springframework.context.annotation.Primary;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 @Configuration
@@ -30,6 +31,7 @@ public class CdsHooksConfig {
 //	}
 
 	@Bean
+	@Primary
 	public CqlConfig cqlConfiguration() { return new CqlConfig(); }
 
 	@Bean

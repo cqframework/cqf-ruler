@@ -180,7 +180,7 @@ public abstract class EvaluationContext<T extends IBaseResource> {
         loggingInterceptor.setLogRequestSummary(true);
         loggingInterceptor.setLogRequestHeaders(true);
         loggingInterceptor.setLogRequestBody(true);
-        
+
         loggingInterceptor.setLogResponseSummary(true);
         loggingInterceptor.setLogResponseHeaders(true);
         loggingInterceptor.setLogResponseBody(true);

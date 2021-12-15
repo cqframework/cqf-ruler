@@ -4,7 +4,7 @@ import ca.uhn.fhir.rest.api.SearchStyleEnum;
 
 public class ProviderConfiguration {
 
-    public static final ProviderConfiguration DEFAULT_PROVIDER_CONFIGURATION = 
+    public static final ProviderConfiguration DEFAULT_PROVIDER_CONFIGURATION =
         new ProviderConfiguration(true, 64, SearchStyleEnum.GET, 8000, false);
 
     private int maxCodesPerQuery;

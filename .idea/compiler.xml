@@ -7,16 +7,17 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="cqf-ruler-plugin-cql" />
-        <module name="cqf-ruler-plugin-sdc" />
         <module name="cqf-ruler-plugin-utility" />
         <module name="cqf-ruler-server" />
         <module name="cqf-ruler-plugin-hello-world" />
         <module name="cqf-ruler-plugin-cds-hooks" />
         <module name="cqf-ruler-external" />
-        <module name="cqf-ruler-plugin-dev-tools" />
         <module name="cqf-ruler-plugin-ra" />
         <module name="cqf-ruler-plugin-cr" />
         <module name="cqf-ruler-plugin-test-utility" />
+        <module name="cqf-ruler-plugin-sdc" />
+        <module name="cqf-ruler-plugin-dev-tools" />
+        <module name="cqf-ruler-plugin-cpg" />
         <module name="cqf-ruler-plugin-security" />
       </profile>
     </annotationProcessing>
@@ -24,17 +25,18 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="cqf-ruler-external" options="-Xlint:none" />
-      <module name="cqf-ruler-plugin-cds-hooks" options="-Xlint:all -Xlint:-options -Xlint:-processing" />
-      <module name="cqf-ruler-plugin-cql" options="-Xlint:all -Xlint:-options -Xlint:-processing" />
-      <module name="cqf-ruler-plugin-cr" options="-Xlint:all -Xlint:-options -Xlint:-processing" />
-      <module name="cqf-ruler-plugin-dev-tools" options="-Xlint:all -Xlint:-options -Xlint:-processing" />
-      <module name="cqf-ruler-plugin-hello-world" options="-Xlint:all -Xlint:-options -Xlint:-processing" />
-      <module name="cqf-ruler-plugin-ra" options="-Xlint:all -Xlint:-options -Xlint:-processing" />
-      <module name="cqf-ruler-plugin-sdc" options="-Xlint:all -Xlint:-options -Xlint:-processing" />
-      <module name="cqf-ruler-plugin-security" options="-Xlint:all -Xlint:-options -Xlint:-processing" />
-      <module name="cqf-ruler-plugin-test-utility" options="-Xlint:all -Xlint:-options -Xlint:-processing" />
-      <module name="cqf-ruler-plugin-utility" options="-Xlint:all -Xlint:-options -Xlint:-processing" />
-      <module name="cqf-ruler-server" options="-Xlint:all -Xlint:-options -Xlint:-processing" />
+      <module name="cqf-ruler-plugin-cds-hooks" options="-Xlint:all -Xlint:-processing" />
+      <module name="cqf-ruler-plugin-cpg" options="-Xlint:all -Xlint:-processing" />
+      <module name="cqf-ruler-plugin-cql" options="-Xlint:all -Xlint:-processing" />
+      <module name="cqf-ruler-plugin-cr" options="-Xlint:all -Xlint:-processing" />
+      <module name="cqf-ruler-plugin-dev-tools" options="-Xlint:all -Xlint:-processing" />
+      <module name="cqf-ruler-plugin-hello-world" options="-Xlint:all -Xlint:-processing" />
+      <module name="cqf-ruler-plugin-ra" options="-Xlint:all -Xlint:-processing" />
+      <module name="cqf-ruler-plugin-sdc" options="-Xlint:all -Xlint:-processing" />
+      <module name="cqf-ruler-plugin-security" options="-Xlint:all -Xlint:-processing" />
+      <module name="cqf-ruler-plugin-test-utility" options="-Xlint:all -Xlint:-processing" />
+      <module name="cqf-ruler-plugin-utility" options="-Xlint:all -Xlint:-processing" />
+      <module name="cqf-ruler-server" options="-Xlint:all -Xlint:-processing" />
     </option>
   </component>
 </project>

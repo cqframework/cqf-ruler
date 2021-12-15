@@ -5,19 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b516bb6a-9180-4295-bb18-8c76510ea111" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plugin/cds-hooks/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksProperties.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/resources/META-INF/spring.factories" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/resources/application.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/test/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServletIT.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/runConfigurations.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigCommon.java" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigCommon.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigDstu2.java" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigDstu2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigDstu3.java" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigDstu3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigR4.java" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigR4.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigR5.java" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigR5.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirTesterConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirTesterConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/evaluation/EvaluationContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/evaluation/EvaluationContext.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/evaluation/Stu3EvaluationContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/evaluation/Stu3EvaluationContext.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PrefetchDataProviderDstu2.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PrefetchDataProviderDstu2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PrefetchDataProviderHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PrefetchDataProviderHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PriorityRetrieveProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PriorityRetrieveProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/ProviderConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/ProviderConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/src/main/java/org/opencds/cqf/ruler/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/org/opencds/cqf/ruler/Server.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -154,6 +162,7 @@
       <workItem from="1639096332380" duration="956000" />
       <workItem from="1639097302980" duration="7179000" />
       <workItem from="1639155795502" duration="2547000" />
+      <workItem from="1639593115581" duration="533000" />
     </task>
     <servers />
   </component>
@@ -578,7 +587,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksConfig.java</url>
-          <line>37</line>
+          <line>39</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -633,22 +642,22 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/server/src/main/java/org/opencds/cqf/ruler/Server.java</url>
-          <line>67</line>
+          <line>66</line>
           <option name="timeStamp" value="32" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/server/src/main/java/org/opencds/cqf/ruler/Server.java</url>
-          <line>71</line>
+          <line>70</line>
           <option name="timeStamp" value="33" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/server/src/main/java/org/opencds/cqf/ruler/Server.java</url>
-          <line>107</line>
+          <line>106</line>
           <option name="timeStamp" value="34" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/server/src/main/java/org/opencds/cqf/ruler/Server.java</url>
-          <line>114</line>
+          <line>113</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -683,12 +692,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksConfig.java</url>
-          <line>35</line>
+          <line>37</line>
           <option name="timeStamp" value="45" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksConfig.java</url>
-          <line>33</line>
+          <line>35</line>
           <option name="timeStamp" value="46" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">

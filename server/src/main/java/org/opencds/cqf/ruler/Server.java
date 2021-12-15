@@ -8,7 +8,6 @@ import javax.servlet.ServletException;
 
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.instance.model.api.IBaseConformance;
-import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.ruler.api.Interceptor;
 import org.opencds.cqf.ruler.api.MetadataExtender;
 import org.opencds.cqf.ruler.api.OperationProvider;

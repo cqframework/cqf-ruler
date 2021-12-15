@@ -11,7 +11,7 @@ import org.opencds.cqf.cql.engine.runtime.Interval;
 public class PriorityRetrieveProvider implements RetrieveProvider {
 
     private List<RetrieveProvider> providers = new ArrayList<>();
-    
+
     public PriorityRetrieveProvider (RetrieveProvider... providers) {
         if (providers != null) {
             for (RetrieveProvider provider : providers) {
@@ -38,5 +38,5 @@ public class PriorityRetrieveProvider implements RetrieveProvider {
 
                 return result;
     }
-    
+
 }
