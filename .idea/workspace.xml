@@ -5,11 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b516bb6a-9180-4295-bb18-8c76510ea111" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/runConfigurations.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigCommon.java" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigCommon.java" afterDir="false" />
@@ -18,19 +13,24 @@
       <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigR4.java" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigR4.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigR5.java" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirServerConfigR5.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirTesterConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/external/hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter/FhirTesterConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/evaluation/EvaluationContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/evaluation/EvaluationContext.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/evaluation/Stu3EvaluationContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/evaluation/Stu3EvaluationContext.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PrefetchDataProviderDstu2.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PrefetchDataProviderDstu2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PrefetchDataProviderHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PrefetchDataProviderHelper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PriorityRetrieveProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/PriorityRetrieveProvider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/ProviderConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/providers/ProviderConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/java/org/opencds/cqf/ruler/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/java/org/opencds/cqf/ruler/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugin/cds-hooks/src/test/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServletIT.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cds-hooks/src/test/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServletIT.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plugin/cr/src/main/java/org/opencds/cqf/ruler/plugin/cr/r4/provider/PlanDefinitionApplyProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/plugin/cr/src/main/java/org/opencds/cqf/ruler/plugin/cr/r4/provider/PlanDefinitionApplyProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -62,7 +62,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/plugin/cds-hooks/target/classes" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/plugin/cr/target/classes" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
@@ -162,7 +162,8 @@
       <workItem from="1639096332380" duration="956000" />
       <workItem from="1639097302980" duration="7179000" />
       <workItem from="1639155795502" duration="2547000" />
-      <workItem from="1639593115581" duration="533000" />
+      <workItem from="1639593115581" duration="2085000" />
+      <workItem from="1639595224496" duration="8247000" />
     </task>
     <servers />
   </component>
@@ -542,77 +543,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/test/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServletIT.java</url>
-          <line>57</line>
+          <line>61</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>314</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>317</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>320</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>321</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>124</line>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>125</line>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>126</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>97</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksConfig.java</url>
-          <line>39</line>
-          <option name="timeStamp" value="13" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>127</line>
-          <option name="timeStamp" value="15" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>131</line>
-          <option name="timeStamp" value="16" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>133</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>123</line>
-          <option name="timeStamp" value="21" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/test/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServletIT.java</url>
-          <line>59</line>
+          <line>63</line>
           <option name="timeStamp" value="22" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -627,17 +563,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/test/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServletIT.java</url>
-          <line>58</line>
+          <line>62</line>
           <option name="timeStamp" value="29" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/test/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServletIT.java</url>
-          <line>48</line>
+          <line>52</line>
           <option name="timeStamp" value="30" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/test/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServletIT.java</url>
-          <line>49</line>
+          <line>53</line>
           <option name="timeStamp" value="31" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -659,11 +595,6 @@
           <url>file://$PROJECT_DIR$/server/src/main/java/org/opencds/cqf/ruler/Server.java</url>
           <line>113</line>
           <option name="timeStamp" value="35" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>94</line>
-          <option name="timeStamp" value="36" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/security/src/main/java/org/opencds/cqf/ruler/plugin/security/r4/OAuthProvider.java</url>
@@ -691,21 +622,6 @@
           <option name="timeStamp" value="41" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksConfig.java</url>
-          <line>37</line>
-          <option name="timeStamp" value="45" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/CdsHooksConfig.java</url>
-          <line>35</line>
-          <option name="timeStamp" value="46" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>351</line>
-          <option name="timeStamp" value="48" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>jar://$MAVEN_REPOSITORY$/org/opencds/cqf/cds/1.3.1-SNAPSHOT/cds-1.3.1-20211102.151216-268-sources.jar!/org/opencds/cqf/cds/discovery/DiscoveryResolutionR4.java</url>
           <line>18</line>
           <option name="timeStamp" value="57" />
@@ -717,23 +633,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/utility/src/main/java/org/opencds/cqf/ruler/plugin/utility/ClientUtilities.java</url>
-          <line>43</line>
-          <option name="timeStamp" value="62" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/utility/src/main/java/org/opencds/cqf/ruler/plugin/utility/ClientUtilities.java</url>
           <line>69</line>
           <option name="timeStamp" value="63" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/utility/src/main/java/org/opencds/cqf/ruler/plugin/utility/ClientUtilities.java</url>
-          <line>70</line>
-          <option name="timeStamp" value="64" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/utility/src/main/java/org/opencds/cqf/ruler/plugin/utility/ClientUtilities.java</url>
-          <line>71</line>
-          <option name="timeStamp" value="65" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
@@ -742,23 +643,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
-          <line>78</line>
-          <option name="timeStamp" value="76" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
-          <line>79</line>
-          <option name="timeStamp" value="77" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
           <line>76</line>
           <option name="timeStamp" value="78" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
-          <line>139</line>
-          <option name="timeStamp" value="81" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
@@ -785,13 +671,130 @@
           <line>83</line>
           <option name="timeStamp" value="86" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
+          <line>84</line>
+          <option name="timeStamp" value="89" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
+          <line>192</line>
+          <option name="timeStamp" value="108" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
+          <line>193</line>
+          <option name="timeStamp" value="109" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
+          <line>194</line>
+          <option name="timeStamp" value="110" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
-          <line>122</line>
-          <properties class="org.opencds.cqf.ruler.plugin.cdshooks.r4.CdsHooksServlet" method="doGet">
-            <option name="EMULATED" value="true" />
-          </properties>
-          <option name="timeStamp" value="20" />
+          <line>251</line>
+          <option name="timeStamp" value="111" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
+          <line>253</line>
+          <option name="timeStamp" value="112" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
+          <line>355</line>
+          <option name="timeStamp" value="113" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
+          <line>358</line>
+          <option name="timeStamp" value="114" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
+          <line>364</line>
+          <option name="timeStamp" value="115" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.java</url>
+          <line>365</line>
+          <option name="timeStamp" value="116" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
+          <line>295</line>
+          <option name="timeStamp" value="118" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
+          <line>304</line>
+          <option name="timeStamp" value="119" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/r4/CdsHooksServlet.class</url>
+          <line>305</line>
+          <option name="timeStamp" value="120" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.java</url>
+          <line>37</line>
+          <option name="timeStamp" value="122" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.java</url>
+          <line>38</line>
+          <option name="timeStamp" value="123" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.java</url>
+          <line>39</line>
+          <option name="timeStamp" value="124" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="125" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.java</url>
+          <line>46</line>
+          <option name="timeStamp" value="126" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/src/main/java/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.java</url>
+          <line>65</line>
+          <option name="timeStamp" value="127" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.class</url>
+          <line>48</line>
+          <option name="timeStamp" value="128" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.class</url>
+          <line>62</line>
+          <option name="timeStamp" value="129" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.class</url>
+          <line>52</line>
+          <option name="timeStamp" value="130" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.class</url>
+          <line>54</line>
+          <option name="timeStamp" value="131" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.class</url>
+          <line>59</line>
+          <option name="timeStamp" value="132" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/plugin/cds-hooks/target/classes/org/opencds/cqf/ruler/plugin/cdshooks/hooks/BaseHookEvaluator.class</url>
+          <line>66</line>
+          <option name="timeStamp" value="133" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$MAVEN_REPOSITORY$/org/opencds/cqf/cds/1.3.1-SNAPSHOT/cds-1.3.1-20211102.151216-268-sources.jar!/org/opencds/cqf/cds/discovery/DiscoveryResolutionR4.java</url>

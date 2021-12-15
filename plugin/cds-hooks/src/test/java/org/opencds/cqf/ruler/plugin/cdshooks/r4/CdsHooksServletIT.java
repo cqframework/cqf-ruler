@@ -12,6 +12,7 @@ import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -34,6 +35,9 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 public class CdsHooksServletIT {
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;
+
+	@Autowired
+	ServletRegistrationBean<CdsHooksServlet> cdsHooksServlet;
 
 	@Autowired
 	AppProperties myAppProperties;

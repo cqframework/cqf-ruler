@@ -66,6 +66,10 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 
 	private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
+	public IFhirResourceDao<PlanDefinition> getDao() {
+		return this.planDefinitionDao;
+	}
+
 	@Operation(name = "$apply", idempotent = true, type = PlanDefinition.class)
 	public CarePlan applyPlanDefinition(RequestDetails theRequest, @IdParam IdType theId,
 			@OperationParam(name = "patient") String patientId,
