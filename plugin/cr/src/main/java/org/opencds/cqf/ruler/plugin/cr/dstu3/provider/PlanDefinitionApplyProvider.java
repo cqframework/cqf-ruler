@@ -24,6 +24,7 @@ import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
+import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.plugin.cr.r4.ExpressionEvaluation;
 import org.opencds.cqf.ruler.plugin.cr.r4.builder.AttachmentBuilder;
 import org.opencds.cqf.ruler.plugin.cr.r4.builder.CarePlanActivityBuilder;
@@ -47,7 +48,7 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class PlanDefinitionApplyProvider implements CanonicalUtilities {
+public class PlanDefinitionApplyProvider implements OperationProvider, CanonicalUtilities {
 
 	@Autowired
 	private ExpressionEvaluation expressionEvaluation;

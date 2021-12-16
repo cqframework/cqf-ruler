@@ -25,6 +25,7 @@ import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.SupplyRequest;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.plugin.cr.dstu3.ExpressionEvaluation;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,7 +39,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 /**
  * Created by Bryn on 1/16/2017.
  */
-public class ActivityDefinitionApplyProvider {
+public class ActivityDefinitionApplyProvider implements OperationProvider {
 
     @Autowired
     private ModelResolver modelResolver;

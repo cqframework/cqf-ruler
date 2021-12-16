@@ -30,6 +30,7 @@ import org.hl7.fhir.r4.model.SupplyRequest;
 import org.hl7.fhir.r4.model.Task;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
+import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.plugin.cr.r4.ExpressionEvaluation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 /**
  * Created by Bryn on 1/16/2017.
  */
-public class ActivityDefinitionApplyProvider {
+public class ActivityDefinitionApplyProvider implements OperationProvider {
 
 	@Autowired
 	private ModelResolver modelResolver;
