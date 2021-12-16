@@ -49,6 +49,7 @@ import org.opencds.cqf.ruler.plugin.cdshooks.response.CdsCard;
 import org.opencds.cqf.ruler.plugin.cql.CqlConfig;
 import org.opencds.cqf.ruler.plugin.cql.JpaFhirRetrieveProvider;
 
+import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.plugin.cr.r4.provider.PlanDefinitionApplyProvider;
 
 import org.opencds.cqf.ruler.plugin.utility.*;
@@ -57,6 +58,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -71,6 +73,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 @WebServlet(name = "cds-services")
 public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
@@ -100,9 +103,13 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	private PlanDefinitionApplyProvider planDefinitionProvider;
 
 //	@Autowired
+	@Lazy
 	private LibraryResolutionProvider<Library> libraryResolutionProvider;
 
 	private JpaFhirRetrieveProvider fhirRetrieveProvider;
+
+	@Autowired
+	JpaTerminologyProviderFactory myJpaTerminologyProviderFactory;
 
 //	@Autowired
 	private TerminologyProvider serverTerminologyProvider;
@@ -110,8 +117,11 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 //	@Autowired
 	private ModelResolver modelResolver;
 
-//	@Autowired
+	@Autowired
 	private LibraryHelper libraryHelper;
+
+//	@Autowired
+	private AtomicReference<JsonArray> services;
 
 
 	@Override
@@ -127,13 +137,18 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 		this.providerConfiguration = appCtx.getBean(ProviderConfiguration.class);
 		this.planDefinitionProvider = appCtx.getBean(PlanDefinitionApplyProvider.class);
 		this.libraryResolutionProvider = (LibraryResolutionProvider<Library>)appCtx.getBean(LibraryResolutionProvider.class);
-		this.serverTerminologyProvider = appCtx.getBean(TerminologyProvider.class);
+
+		this.myJpaTerminologyProviderFactory = appCtx.getBean(JpaTerminologyProviderFactory.class);
+		serverTerminologyProvider = myJpaTerminologyProviderFactory.create(new SystemRequestDetails());
+
 		this.modelResolver = this.cqlConfig.modelResolverR4();
 		this.libraryHelper = appCtx.getBean(LibraryHelper.class);
 
 		SearchParameterResolver theSearchParameterResolver = this.cqlConfig.searchParameterResolver(ourCtx);
 		this.myDaoRegistry = appCtx.getBean(DaoRegistry.class);
 		this.fhirRetrieveProvider = this.cqlConfig.jpaFhirRetrieveProvider(myDaoRegistry, theSearchParameterResolver);
+
+		this.services = appCtx.getBean("globalCdsServiceCache", AtomicReference.class);
 
 		logger.info("Initialized cds-services");
 	}
@@ -223,6 +238,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
 			RequestDetails requestDetails = new SystemRequestDetails();
 			LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(libraryResolutionProvider);
+
 			org.cqframework.cql.elm.execution.Library library = this.libraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader,
 				libraryResolutionProvider, requestDetails);
 
@@ -329,8 +345,8 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 		response.getWriter().println(exceptionAsString);
 	}
 
-	private JsonObject getService(String service) throws InvalidRequestException {
-		JsonArray services = getServices().get("services").getAsJsonArray();
+	private JsonObject getService(String service) {
+		JsonArray services = getServicesArray();
 		List<String> ids = new ArrayList<>();
 		for (JsonElement element : services) {
 			if (element.isJsonObject() && element.getAsJsonObject().has("id")) {
@@ -342,6 +358,16 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 		}
 		throw new InvalidRequestException(
 			"Cannot resolve service: " + service + "\nAvailable services: " + ids.toString());
+	}
+
+	private JsonArray getServicesArray() {
+		JsonArray cachedServices = this.services.get();
+		if (cachedServices == null || cachedServices.size() == 0) {
+			cachedServices = getServices().get("services").getAsJsonArray();
+			services.set(cachedServices);
+		}
+
+		return cachedServices;
 	}
 
 	private JsonObject getServices() {

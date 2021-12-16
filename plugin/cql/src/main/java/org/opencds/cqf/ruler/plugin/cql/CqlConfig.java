@@ -98,7 +98,7 @@ public class CqlConfig {
 	}
 
 	@Bean
-	JpaTerminologyProviderFactory jpaTerminologyProviderFactory(ITermReadSvc theTerminologySvc,
+	public JpaTerminologyProviderFactory jpaTerminologyProviderFactory(ITermReadSvc theTerminologySvc,
 			DaoRegistry theDaoRegistry,
 			IValidationSupport theValidationSupport) {
 		return rd -> new JpaTerminologyProvider(theTerminologySvc, theDaoRegistry, theValidationSupport, rd);
