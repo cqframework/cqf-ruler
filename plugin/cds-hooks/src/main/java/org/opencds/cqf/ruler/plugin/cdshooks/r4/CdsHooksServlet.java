@@ -2,8 +2,8 @@ package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
 import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
+import ca.uhn.fhir.cql.r4.provider.LibraryResolutionProviderImpl;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.jpa.starter.AppProperties;
@@ -21,7 +21,6 @@ import com.google.gson.JsonParser;
 import org.apache.http.entity.ContentType;
 
 import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
 
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
@@ -58,7 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Lazy;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -102,9 +100,8 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 //	@Autowired
 	private PlanDefinitionApplyProvider planDefinitionProvider;
 
-//	@Autowired
-	@Lazy
-	private LibraryResolutionProvider<Library> libraryResolutionProvider;
+	@Autowired
+	private LibraryResolutionProviderImpl libraryResolutionProvider;
 
 	private JpaFhirRetrieveProvider fhirRetrieveProvider;
 
@@ -136,7 +133,8 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
 		this.providerConfiguration = appCtx.getBean(ProviderConfiguration.class);
 		this.planDefinitionProvider = appCtx.getBean(PlanDefinitionApplyProvider.class);
-		this.libraryResolutionProvider = (LibraryResolutionProvider<Library>)appCtx.getBean(LibraryResolutionProvider.class);
+
+		this.libraryResolutionProvider = appCtx.getBean(LibraryResolutionProviderImpl.class);
 
 		this.myJpaTerminologyProviderFactory = appCtx.getBean(JpaTerminologyProviderFactory.class);
 		serverTerminologyProvider = myJpaTerminologyProviderFactory.create(new SystemRequestDetails());
@@ -173,7 +171,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 		throws ServletException, IOException {
 
 		logger.info(request.getRequestURI());
-		if (!request.getRequestURL().toString().endsWith("cds-services")) {
+		if (!request.getRequestURL().toString().endsWith("/cds-services") && !request.getRequestURL().toString().endsWith("/cds-services/")) {
 			logger.error(request.getRequestURI());
 			throw new ServletException("This servlet is not configured to handle GET requests.");
 		}
@@ -393,15 +391,17 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	}
 
 	private void setAccessControlHeaders(HttpServletResponse resp) {
-		if (this.myAppProperties.getCors().getAllow_Credentials()) {
-			resp.setHeader("Access-Control-Allow-Origin", this.myAppProperties.getCors().getAllowed_origin().stream().findFirst().get());
-			resp.setHeader("Access-Control-Allow-Methods",
-				String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
-			resp.setHeader("Access-Control-Allow-Headers", String.join(", ", Arrays.asList("x-fhir-starter", "Origin",
-				"Accept", "X-Requested-With", "Content-Type", "Authorization", "Cache-Control")));
-			resp.setHeader("Access-Control-Expose-Headers",
-				String.join(", ", Arrays.asList("Location", "Content-Location")));
-			resp.setHeader("Access-Control-Max-Age", "86400");
+		if (this.myAppProperties.getCors() != null) {
+			if (this.myAppProperties.getCors().getAllow_Credentials()) {
+				resp.setHeader("Access-Control-Allow-Origin", this.myAppProperties.getCors().getAllowed_origin().stream().findFirst().get());
+				resp.setHeader("Access-Control-Allow-Methods",
+					String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
+				resp.setHeader("Access-Control-Allow-Headers", String.join(", ", Arrays.asList("x-fhir-starter", "Origin",
+					"Accept", "X-Requested-With", "Content-Type", "Authorization", "Cache-Control")));
+				resp.setHeader("Access-Control-Expose-Headers",
+					String.join(", ", Arrays.asList("Location", "Content-Location")));
+				resp.setHeader("Access-Control-Max-Age", "86400");
+			}
 		}
 	}
 

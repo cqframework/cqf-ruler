@@ -1,18 +1,19 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ca.uhn.fhir.jpa.starter.AppProperties;
+import ca.uhn.fhir.parser.DataFormatException;
+import ca.uhn.fhir.rest.client.exceptions.FhirClientConnectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.function.Executable;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -20,7 +21,7 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = { Application.class,
 	CdsHooksConfig.class }, properties = {
 	// Override is currently required when using MDM as the construction of the MDM
 	// beans are ambiguous as they are constructed multiple places. This is evident
@@ -37,13 +38,12 @@ public class CdsHooksServletIT {
 	private FhirContext ourCtx;
 
 	@Autowired
-	ServletRegistrationBean<CdsHooksServlet> cdsHooksServlet;
-
-	@Autowired
 	AppProperties myAppProperties;
 
 	@LocalServerPort
 	private int port;
+
+	String ourCdsBase;
 
 	@BeforeEach
 	void beforeEach() {
@@ -53,14 +53,17 @@ public class CdsHooksServletIT {
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 
 		String ourServerBase = "http://localhost:" + port + "/fhir/";
-		String ourCdsBase = "http://localhost:" + port + "/cds-services";
+		ourCdsBase = "http://localhost:" + port + "/cds-services";
 		myAppProperties.setServer_address(ourServerBase);
+		myAppProperties.setCors(new AppProperties.Cors());
 		ourClient = ourCtx.newRestfulGenericClient(ourCdsBase);
 //		ourClient.registerInterceptor(new LoggingInterceptor(false));
 	}
 
+
 	@Test
-	public void testCdsHooksConfig() {
-		assertDoesNotThrow((Executable) ourClient.search().byUrl(ourClient.getServerBase()).execute());
+	public void testGetCdsServices()  {
+		assertEquals(DataFormatException.class, assertThrows(FhirClientConnectionException.class, () -> ourClient.search().byUrl(ourClient.getServerBase()).execute()).getCause().getClass());
 	}
+
 }
