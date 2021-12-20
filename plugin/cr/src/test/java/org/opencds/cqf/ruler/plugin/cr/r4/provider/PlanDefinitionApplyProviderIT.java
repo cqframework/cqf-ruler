@@ -61,15 +61,13 @@ public class PlanDefinitionApplyProviderIT implements IServerSupport {
 	@Autowired
 	private CodeSystemUpdateProvider codeSystemUpdateProvider;
 
-	private Map<String, IBaseResource> libraries;
-	private Map<String, IBaseResource> vocabulary;
 	private Map<String, IBaseResource> planDefinitions;
 
 	@BeforeEach
 	public void setup() throws Exception {
-		vocabulary = uploadTests("valueset");
+		uploadTests("valueset");
 		codeSystemUpdateProvider.updateCodeSystems();
-		libraries = uploadTests("library");
+		uploadTests("library");
 		planDefinitions = uploadTests("plandefinition");
 	}
 

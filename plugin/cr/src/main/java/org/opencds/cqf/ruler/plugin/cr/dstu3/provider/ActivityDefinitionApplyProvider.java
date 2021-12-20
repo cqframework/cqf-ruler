@@ -116,13 +116,26 @@ public class ActivityDefinitionApplyProvider {
         for (ActivityDefinition.ActivityDefinitionDynamicValueComponent dynamicValue : activityDefinition
                 .getDynamicValue()) {
             if (dynamicValue.getExpression() != null) {
+
+					Boolean aliasedExpression = null;
+					if (dynamicValue.hasLanguage()) {
+						String language = dynamicValue.getLanguage();
+						if (language.equals("text/cql.identifier") || language.equals("text/cql-identifier")
+							|| language.equals("text/cql.name") || language.equals("text/cql-name")) {
+								aliasedExpression = true;
+							} else {
+								aliasedExpression = false;
+							}
+					} else {
+						aliasedExpression = false;
+					}
                 /*
                  * TODO: Passing the activityDefinition as context here because that's what will
                  * have the libraries, but perhaps the "context" here should be the result
                  * resource?
                  */
                 Object value = expressionEvaluation.evaluateInContext(activityDefinition, dynamicValue.getExpression(),
-                        patientId, theRequest);
+                        aliasedExpression, patientId, theRequest);
 
                 // TODO need to verify type... yay
                 if (value instanceof Boolean) {

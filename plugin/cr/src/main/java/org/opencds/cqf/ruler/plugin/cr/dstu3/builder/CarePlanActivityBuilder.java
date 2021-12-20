@@ -3,11 +3,11 @@ package org.opencds.cqf.ruler.plugin.cr.dstu3.builder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hl7.fhir.r4.model.Annotation;
-import org.hl7.fhir.r4.model.CarePlan;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.dstu3.model.Annotation;
+import org.hl7.fhir.dstu3.model.CarePlan;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.Resource;
 
 public class CarePlanActivityBuilder extends BaseBuilder<CarePlan.CarePlanActivityComponent> {
 
