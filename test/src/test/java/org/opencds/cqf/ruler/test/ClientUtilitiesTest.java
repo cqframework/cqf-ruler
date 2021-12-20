@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.plugin.testutility;
+package org.opencds.cqf.ruler.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

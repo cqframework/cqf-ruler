@@ -4,8 +4,7 @@
         {
             "name": "test-config",
             "classPaths": [
-                "${workspaceFolder}/server/target/classes",
-                "${workspaceFolder}/external/target/classes"
+                "${workspaceFolder}/server/target/classes"
             ],
             "vmArgs": ["-XX:TieredStopAtLevel=1", "-Xverify:none", "-Dspring.main.lazy-initialization=true"]
         },

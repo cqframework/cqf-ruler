@@ -10,16 +10,8 @@
 	<modules>
 		<module>external</module>
 		<module>server</module>
-		<module>plugin/hello-world</module>
-		<module>plugin/test-utility</module>
-		<module>plugin/utility</module>
-		<module>plugin/ra</module>
-		<module>plugin/cpg</module>
-		<module>plugin/sdc</module>
-		<module>plugin/dev-tools</module>
-		<module>plugin/cql</module>
-		<module>plugin/cr</module>
-		<module>plugin/security</module>
+		<module>plugin</module>
+		<module>test</module>
 	</modules>
 
 	<name>cqf-ruler</name>
@@ -432,6 +424,19 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<version>3.2.4</version>
+					<executions>
+						<execution>
+							<phase>package</phase>
+							<goals>
+								<goal>shade</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>3.3.2</version>
 					<configuration>
@@ -596,10 +601,6 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

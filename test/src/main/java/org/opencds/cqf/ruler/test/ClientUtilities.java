@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.plugin.testutility;
+package org.opencds.cqf.ruler.test;
 
 /**
  * This interface provides test utility functions for creating IGenericClients

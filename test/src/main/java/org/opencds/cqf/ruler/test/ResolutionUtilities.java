@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.plugin.testutility;
+package org.opencds.cqf.ruler.test;
 
 import java.io.File;
 import java.io.FileInputStream;
