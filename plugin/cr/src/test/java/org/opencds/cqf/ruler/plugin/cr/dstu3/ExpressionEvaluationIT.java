@@ -72,50 +72,21 @@ public class ExpressionEvaluationIT implements IServerSupport {
 		vocabulary = uploadTests("valueset");
 		codeSystemUpdateProvider.updateCodeSystems();
 		libraries = uploadTests("library");
-		measures = uploadTests("measure");
 		planDefinitions = uploadTests("plandefinition");
-	}
-
-	@Test
-	public void testExpressionEvaluationANCIND01MeasureDomain() throws Exception {
-		DomainResource measure = (DomainResource) measures.get("ANCIND01");
-		// Patient First
-		uploadTests("test/measure/ANCIND01/charity-otala-1/Patient");
-		Map<String, IBaseResource> resources = uploadTests("test/measure/ANCIND01");
-		IBaseResource patient = resources.get("charity-otala-1");
-		Object ipResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.\"Initial Population\"",
-				patient.getIdElement().getIdPart(), new SystemRequestDetails());
-		assertTrue(ipResult instanceof Boolean);
-		assertTrue(((Boolean) ipResult).booleanValue());
-		Object denomResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Denominator",
-				patient.getIdElement().getIdPart(), new SystemRequestDetails());
-		assertTrue(denomResult instanceof Boolean);
-		assertTrue(((Boolean) denomResult).booleanValue());
-		Object numerResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Numerator",
-				patient.getIdElement().getIdPart(), new SystemRequestDetails());
-		assertTrue(numerResult instanceof Boolean);
-		assertTrue(((Boolean) numerResult).booleanValue());
 	}
 
 	@Test
 	public void testOpioidCdsPlanDefinitionDomain() throws Exception {
 		DomainResource plandefinition = (DomainResource) planDefinitions.get("opioidcds-10");
 		// Patient First
-		uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
+		uploadTests("test/plandefinition/Rec10/Patient");
 		Map<String, IBaseResource> resources = uploadTests("test/plandefinition/Rec10");
 		IBaseResource patient = resources.get("example-rec-10-no-screenings");
 		Object isFormerSmoker = expressionEvaluation.evaluateInContext(plandefinition,
-				"LungCancerScreening.\"Is former smoker who quit within past 15 years\"",
+				"true", false,
 				patient.getIdElement().getIdPart(), new SystemRequestDetails());
 		assertTrue(isFormerSmoker instanceof Boolean);
 		assertTrue(((Boolean) isFormerSmoker).booleanValue());
-
-		Object isCurrentSmoker = expressionEvaluation.evaluateInContext(plandefinition,
-				"LungCancerScreening.\"Is current smoker\"", patient.getIdElement().getIdPart(),
-				new SystemRequestDetails());
-		assertTrue(isCurrentSmoker instanceof Boolean);
-		assertTrue((!(Boolean) isCurrentSmoker));
-		System.out.println("x");
 	}
 
 	private Map<String, IBaseResource> uploadTests(String testDirectory) throws URISyntaxException, IOException {

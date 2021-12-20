@@ -8,32 +8,32 @@ import java.util.List;
 import java.util.UUID;
 
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
+import org.hl7.fhir.dstu3.model.Base;
+import org.hl7.fhir.dstu3.model.CarePlan;
+import org.hl7.fhir.dstu3.model.DomainResource;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Parameters;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import org.hl7.fhir.dstu3.model.RequestGroup;
+import org.hl7.fhir.dstu3.model.RequestGroup.RequestGroupActionComponent;
+import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.CarePlan;
-import org.hl7.fhir.r4.model.DomainResource;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.PlanDefinition;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.RequestGroup;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.cql.engine.execution.Context;
-import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
-import org.opencds.cqf.ruler.plugin.cr.r4.ExpressionEvaluation;
-import org.opencds.cqf.ruler.plugin.cr.r4.builder.AttachmentBuilder;
-import org.opencds.cqf.ruler.plugin.cr.r4.builder.CarePlanActivityBuilder;
-import org.opencds.cqf.ruler.plugin.cr.r4.builder.CarePlanBuilder;
-import org.opencds.cqf.ruler.plugin.cr.r4.builder.ExtensionBuilder;
-import org.opencds.cqf.ruler.plugin.cr.r4.builder.ReferenceBuilder;
-import org.opencds.cqf.ruler.plugin.cr.r4.builder.RelatedArtifactBuilder;
-import org.opencds.cqf.ruler.plugin.cr.r4.builder.RequestGroupActionBuilder;
-import org.opencds.cqf.ruler.plugin.cr.r4.builder.RequestGroupBuilder;
-import org.opencds.cqf.ruler.plugin.cr.r4.helper.ContainedHelper;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.ExpressionEvaluation;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.builder.AttachmentBuilder;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.builder.CarePlanActivityBuilder;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.builder.CarePlanBuilder;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.builder.ExtensionBuilder;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.builder.ReferenceBuilder;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.builder.RelatedArtifactBuilder;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.builder.RequestGroupActionBuilder;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.builder.RequestGroupBuilder;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.helper.ContainedHelper;
 import org.opencds.cqf.ruler.plugin.utility.CanonicalUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,13 +46,10 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-
 public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 
 	@Autowired
 	private ExpressionEvaluation expressionEvaluation;
-	@Autowired
-	private ModelResolver modelResolver;
 	@Autowired
 	private ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
 
@@ -67,8 +64,8 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 	private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
 
 	@Operation(name = "$apply", idempotent = true, type = PlanDefinition.class)
-	public CarePlan applyPlanDefinition(RequestDetails theRequest, @IdParam IdType theId,
-			@OperationParam(name = "patient") String patientId,
+	public CarePlan applyPlanDefinition(RequestDetails theRequest,
+			@IdParam IdType theId, @OperationParam(name = "patient") String patientId,
 			@OperationParam(name = "encounter") String encounterId,
 			@OperationParam(name = "practitioner") String practitionerId,
 			@OperationParam(name = "organization") String organizationId,
@@ -88,11 +85,11 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 
 		CarePlanBuilder builder = new CarePlanBuilder();
 
-		builder.buildInstantiatesCanonical(planDefinition.getUrl())
+		builder.buildDefinition(new Reference(planDefinition.getIdElement().getIdPart()))
 				.buildSubject(new Reference(patientId)).buildStatus(CarePlan.CarePlanStatus.DRAFT);
 
 		if (encounterId != null)
-			builder.buildEncounter(new Reference(encounterId));
+			builder.buildContext(new Reference(encounterId));
 		if (practitionerId != null)
 			builder.buildAuthor(new Reference(practitionerId));
 		if (organizationId != null)
@@ -106,15 +103,25 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 		Session session = new Session(planDefinition, builder, patientId, encounterId, practitionerId, organizationId,
 				userType, userLanguage, userTaskContext, setting, settingContext, requestGroupBuilder);
 
-		return (CarePlan) ContainedHelper.liftContainedResourcesToParent(resolveActions(session, theRequest));
+		return (CarePlan) ContainedHelper.liftContainedResourcesToParent(resolveActions(theRequest, session));
 	}
 
-	private CarePlan resolveActions(Session session, RequestDetails theRequest) {
+	private CarePlan resolveActions(RequestDetails theRequest, Session session) {
 		for (PlanDefinition.PlanDefinitionActionComponent action : session.getPlanDefinition().getAction()) {
 			// TODO - Apply input/output dataRequirements?
-			if (meetsConditions(session, action, theRequest)) {
-				resolveDefinition(session, action, theRequest);
-				resolveDynamicActions(session, action, theRequest);
+			if (meetsConditions(theRequest, session, action)) {
+				Resource result = resolveDefinition(theRequest, session, action);
+				RequestGroupActionComponent currentActionTarget = null;
+				if (result != null) {
+					currentActionTarget = new RequestGroupActionBuilder()
+							.buildResource(new Reference("#" + result.getId()))
+							.build();
+					session
+							.getRequestGroupBuilder()
+							.buildContained(result)
+							.addAction(currentActionTarget);
+				}
+				resolveDynamicActions(theRequest, session, currentActionTarget, action);
 			}
 		}
 
@@ -130,13 +137,14 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 		return session.getCarePlan();
 	}
 
-	private void resolveDefinition(Session session, PlanDefinition.PlanDefinitionActionComponent action,
-			RequestDetails theRequest) {
+	private Resource resolveDefinition(RequestDetails theRequest, Session session,
+			PlanDefinition.PlanDefinitionActionComponent action) {
+			Resource result = null;
 		if (action.hasDefinition()) {
-			logger.debug("Resolving definition " + action.getDefinitionCanonicalType().getValue());
-			String definition = action.getDefinitionCanonicalType().getValue();
-			if (definition.contains(session.getPlanDefinition().fhirType())) {
-				IdType id = new IdType(definition);
+			logger.debug("Resolving definition " + action.getDefinition().getReference());
+			Reference definition = action.getDefinition();
+			if (definition.getId().contains(session.getPlanDefinition().fhirType())) {
+				IdType id = new IdType(definition.getId());
 				CarePlan plan;
 				try {
 					plan = applyPlanDefinition(theRequest,
@@ -162,9 +170,10 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 									.buildResource(new Reference("#" + plan.getId()))
 									.build());
 
-					for (CanonicalType c : plan.getInstantiatesCanonical()) {
-						session.getCarePlanBuilder().buildInstantiatesCanonical(c.getValueAsString());
+					for (Reference r : plan.getDefinition()) {
+						session.getCarePlanBuilder().buildDefinition(r);
 					}
+					result = plan;
 
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -173,54 +182,62 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 			}
 
 			else {
-				Resource result;
 				try {
-					if (action.getDefinitionCanonicalType().getValue().startsWith("#")) {
-						// result = this.activityDefinitionApplyProvider.resolveActivityDefinition(
-						// (ActivityDefinition) resolveContained(session.getPlanDefinition(),
-						// action.getDefinitionCanonicalType().getValue()),
-						// session.getPatientId(), session.getPractitionerId(),
-						// session.getOrganizationId(), theRequest);
+					if (action.getDefinition().getReferenceElement().getIdPart().startsWith("#")) {
+						result = this.activityDefinitionApplyProvider.resolveActivityDefinition(
+								(ActivityDefinition) resolveContained(session.getPlanDefinition(),
+										action.getDefinition().getReferenceElement().getIdPart()),
+								session.getPatientId(), session.getPractitionerId(), session.getOrganizationId(),
+								theRequest);
 					} else {
-						// result = this.activityDefinitionApplyProvider.apply(
-						// theRequest, new
-						// IdType(CanonicalHelper.getId(action.getDefinitionCanonicalType())),
-						// session.getPatientId(), session.getEncounterId(),
-						// session.getPractitionerId(),
-						// session.getOrganizationId(), null, session.getUserLanguage(),
-						// session.getUserTaskContext(), session.getSetting(),
-						// session.getSettingContext());
+						result = this.activityDefinitionApplyProvider.apply(
+								theRequest,
+								new IdType(action.getDefinition().getReferenceElement().getIdPart()),
+								session.getPatientId(), session.getEncounterId(), session.getPractitionerId(),
+								session.getOrganizationId(), null, session.getUserLanguage(),
+								session.getUserTaskContext(), session.getSetting(), session.getSettingContext());
 					}
 
-					result = null;
 					if (result.getId() == null) {
 						logger.warn("ActivityDefinition %s returned resource with no id, setting one",
-								action.getDefinitionCanonicalType().getId());
+								action.getDefinition().getReferenceElement().getIdPart());
 						result.setId(UUID.randomUUID().toString());
 					}
-
 					session
 							.getRequestGroupBuilder()
 							.buildContained(result)
 							.addAction(new RequestGroupActionBuilder()
 									.buildResource(new Reference("#" + result.getId()))
 									.build());
-
 				} catch (Exception e) {
 					logger.error("ERROR: ActivityDefinition %s could not be applied and threw exception %s",
 							action.getDefinition(), e.toString());
 				}
 			}
 		}
+		return result;
 	}
 
-	private void resolveDynamicActions(Session session, PlanDefinition.PlanDefinitionActionComponent action,
-			RequestDetails theRequest) {
+	private void resolveDynamicActions(RequestDetails theRequest, Session session,
+	RequestGroupActionComponent currentActionTarget, PlanDefinition.PlanDefinitionActionComponent action) {
 		for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue : action.getDynamicValue()) {
 			logger.info("Resolving dynamic value %s %s", dynamicValue.getPath(), dynamicValue.getExpression());
 			if (dynamicValue.hasExpression()) {
+
+				Boolean aliasedExpression = null;
+				if (dynamicValue.hasLanguage()) {
+					String language = dynamicValue.getLanguage();
+					if (language.equals("text/cql.identifier") || language.equals("text/cql-identifier")
+						|| language.equals("text/cql.name") || language.equals("text/cql-name")) {
+							aliasedExpression = true;
+						} else {
+							aliasedExpression = false;
+						}
+				} else {
+					aliasedExpression = false;
+				}
 				Object result = expressionEvaluation.evaluateInContext(session.getPlanDefinition(),
-						dynamicValue.getExpression().getExpression(), session.getPatientId(), theRequest);
+						dynamicValue.getExpression(), aliasedExpression, session.getPatientId(), theRequest);
 
 				if (dynamicValue.hasPath() && dynamicValue.getPath().equals("$this")) {
 					session.setCarePlan((CarePlan) result);
@@ -237,31 +254,35 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 						result = new StringType((String) result);
 					}
 
-					this.modelResolver.setValue(session.getCarePlan(), dynamicValue.getPath(), result);
+					if (currentActionTarget != null) {
+						if (dynamicValue.getPath().contains("%action")) {
+							try {
+								currentActionTarget.setProperty(
+										dynamicValue.getPath().substring(dynamicValue.getPath().lastIndexOf(".") + 1),
+										(Base) result);
+							} catch (Exception e) {
+								throw new RuntimeException(
+										String.format("Could not set path %s to value: %s", dynamicValue.getPath(), result));
+							}
+						}
+					}
 				}
 			}
 		}
 	}
 
-	private Boolean meetsConditions(Session session, PlanDefinition.PlanDefinitionActionComponent action,
-			RequestDetails theRequest) {
-		if (action.hasAction()) {
-			for (PlanDefinition.PlanDefinitionActionComponent containedAction : action.getAction()) {
-				meetsConditions(session, containedAction, theRequest);
-			}
-		}
+	private Boolean meetsConditions(RequestDetails theRequest, Session session,
+			PlanDefinition.PlanDefinitionActionComponent action) {
 		for (PlanDefinition.PlanDefinitionActionConditionComponent condition : action.getCondition()) {
 			// TODO start
 			// TODO stop
-			if (condition.hasExpression() && condition.getExpression().hasDescription()) {
-				logger.info("Resolving condition with description: " + condition.getExpression().getDescription());
+			if (condition.hasDescription()) {
+				logger.info("Resolving condition with description: " + condition.getDescription());
 			}
 			if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
-				if (condition.hasExpression() && condition.getExpression().hasLanguage()
-						&& !condition.getExpression().getLanguage().equals("text/cql")
-						&& !condition.getExpression().getLanguage().equals("text/cql.name")) {
-					logger.warn(
-							"An action language other than CQL was found: " + condition.getExpression().getLanguage());
+				if (!condition.getLanguage().equals("text/cql") && !condition.getLanguage().equals("text/cql.identifier") && !condition.getLanguage().equals("text/cql-identifier")
+						&& !condition.getLanguage().equals("text/cql.name") && !condition.getLanguage().equals("text/cql-name")) {
+					logger.warn("An action language other than CQL was found: " + condition.getLanguage());
 					continue;
 				}
 
@@ -271,14 +292,22 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 				}
 
 				logger.info("Evaluating action condition expression " + condition.getExpression());
-				String cql = condition.getExpression().getExpression();
-				String language = condition.getExpression().getLanguage();
-				Object result;
-				result = (language.equals("text/cql.name"))
-						? expressionEvaluation.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId(),
-								true, theRequest)
-						: expressionEvaluation.evaluateInContext(session.getPlanDefinition(), cql, session.getPatientId(),
-								theRequest);
+
+				Boolean aliasedExpression = null;
+				if (condition.hasLanguage()) {
+					String language = condition.getLanguage();
+					if (language.equals("text/cql.identifier") || language.equals("text/cql-identifier")
+						|| language.equals("text/cql.name") || language.equals("text/cql-name")) {
+							aliasedExpression = true;
+						} else {
+							aliasedExpression = false;
+						}
+				} else {
+					aliasedExpression = false;
+				}
+				String cql = condition.getExpression();
+				Object result = expressionEvaluation.evaluateInContext(session.getPlanDefinition(), cql, aliasedExpression,
+						session.getPatientId(), theRequest);
 
 				if (result == null) {
 					logger.warn("Expression Returned null");
@@ -296,12 +325,13 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 				}
 			}
 		}
+
 		return true;
 	}
 
 	// For library use
-	public CarePlan resolveCdsHooksPlanDefinition(Context context, PlanDefinition planDefinition, String patientId,
-			RequestDetails theRequest) {
+	public CarePlan resolveCdsHooksPlanDefinition(RequestDetails theRequest, Context context,
+			PlanDefinition planDefinition, String patientId) {
 
 		CarePlanBuilder carePlanBuilder = new CarePlanBuilder();
 		RequestGroupBuilder requestGroupBuilder = new RequestGroupBuilder().buildStatus().buildIntent();
@@ -328,8 +358,8 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 			requestGroupBuilder.buildExtension(extensions);
 		}
 
-		resolveActions(planDefinition.getAction(), context, patientId, requestGroupBuilder, new ArrayList<>(),
-				theRequest);
+		resolveActions(theRequest, planDefinition, planDefinition.getAction(), context, patientId, requestGroupBuilder,
+				new ArrayList<>());
 
 		CarePlanActivityBuilder carePlanActivityBuilder = new CarePlanActivityBuilder();
 		carePlanActivityBuilder.buildReferenceTarget(requestGroupBuilder.build());
@@ -338,9 +368,10 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 		return carePlanBuilder.build();
 	}
 
-	private void resolveActions(List<PlanDefinition.PlanDefinitionActionComponent> actions, Context context,
+	private void resolveActions(RequestDetails theRequest, PlanDefinition planDefinition, List<PlanDefinition.PlanDefinitionActionComponent> actions,
+			Context context,
 			String patientId, RequestGroupBuilder requestGroupBuilder,
-			List<RequestGroup.RequestGroupActionComponent> actionComponents, RequestDetails theRequest) {
+			List<RequestGroup.RequestGroupActionComponent> actionComponents) {
 		for (PlanDefinition.PlanDefinitionActionComponent action : actions) {
 			boolean conditionsMet = true;
 			for (PlanDefinition.PlanDefinitionActionConditionComponent condition : action.getCondition()) {
@@ -349,12 +380,20 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 						continue;
 					}
 
-					if (condition.hasExpression() && !condition.getExpression().hasExpression()) {
-						continue;
+					Boolean aliasedExpression = null;
+					if (condition.hasLanguage()) {
+						String language = condition.getLanguage();
+						if (language.equals("text/cql.identifier") || language.equals("text/cql-identifier")
+							|| language.equals("text/cql.name") || language.equals("text/cql-name")) {
+								aliasedExpression = true;
+							} else {
+								aliasedExpression = false;
+							}
+					} else {
+						aliasedExpression = false;
 					}
-
-					Object result = context.resolveExpressionRef(condition.getExpression().getExpression())
-							.getExpression().evaluate(context);
+				Object result = expressionEvaluation.evaluateInContext(planDefinition,
+				condition.getExpression(), aliasedExpression, patientId, theRequest);
 
 					if (!(result instanceof Boolean)) {
 						continue;
@@ -394,30 +433,42 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 
 					// suggestions
 					// TODO - uuid
-					if (action.hasPrefix()) {
-						actionBuilder.buildPrefix(action.getPrefix());
+					if (action.hasLabel()) {
+						actionBuilder.buildLabel(action.getLabel());
 					}
 					if (action.hasType()) {
 						actionBuilder.buildType(action.getType());
 					}
 					if (action.hasDefinition()) {
-						if (action.getDefinitionCanonicalType().getValue().contains("ActivityDefinition")) {
-							ActivityDefinition activityDefinition = this.activityDefinitionDao.read(
-									new IdType("ActivityDefinition", action.getDefinitionCanonicalType().getId()));
+						if (action.getDefinition().getReferenceElement().getResourceType()
+								.equals("ActivityDefinition")) {
+							if (action.getDefinition().getResource() != null) {
+								ActivityDefinition activityDefinition = (ActivityDefinition) action.getDefinition()
+										.getResource();
+								ReferenceBuilder referenceBuilder = new ReferenceBuilder();
+								referenceBuilder.buildDisplay(activityDefinition.getDescription());
+								actionBuilder.buildResource(referenceBuilder.build());
+
+								if (activityDefinition.hasDescription()) {
+									actionBuilder.buildDescripition(activityDefinition.getDescription());
+								}
+							}
+
+							ActivityDefinition activityDefinition = this.activityDefinitionDao
+									.read(action.getDefinition().getReferenceElement());
 							if (activityDefinition.hasDescription()) {
 								actionBuilder.buildDescripition(activityDefinition.getDescription());
 							}
-							// try {
-							// // this.activityDefinitionApplyProvider
-							// // .apply(theRequest, new
-							// IdType(action.getDefinitionCanonicalType().getId()), patientId, null,
-							// // null, null, null, null, null, null, null)
-							// // .setId(UUID.randomUUID().toString());
-							// } catch (FHIRException | ClassNotFoundException | InstantiationException
-							// | IllegalAccessException e) {
-							// throw new RuntimeException("Error applying ActivityDefinition " +
-							// e.getMessage());
-							// }
+
+							try {
+								this.activityDefinitionApplyProvider
+										.apply(theRequest, new IdType(action.getDefinition().getReferenceElement().getIdPart()),
+												patientId, null, null, null, null, null, null, null, null)
+										.setId(UUID.randomUUID().toString());
+							} catch (FHIRException | ClassNotFoundException | InstantiationException
+									| IllegalAccessException e) {
+								throw new RuntimeException("Error applying ActivityDefinition " + e.getMessage());
+							}
 
 							Parameters inParams = new Parameters();
 							inParams.addParameter().setName("patient").setValue(new StringType(patientId));
@@ -441,19 +492,16 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 								.getDynamicValue()) {
 							if (dynamicValue.hasPath() && dynamicValue.hasExpression()) {
 								if (dynamicValue.getPath().endsWith("title")) { // summary
-									String title = (String) context
-											.resolveExpressionRef(dynamicValue.getExpression().getExpression())
+									String title = (String) context.resolveExpressionRef(dynamicValue.getExpression())
 											.evaluate(context);
 									actionBuilder.buildTitle(title);
 								} else if (dynamicValue.getPath().endsWith("description")) { // detail
 									String description = (String) context
-											.resolveExpressionRef(dynamicValue.getExpression().getExpression())
-											.evaluate(context);
+											.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
 									actionBuilder.buildDescripition(description);
 								} else if (dynamicValue.getPath().endsWith("extension")) { // indicator
 									String extension = (String) context
-											.resolveExpressionRef(dynamicValue.getExpression().getExpression())
-											.evaluate(context);
+											.resolveExpressionRef(dynamicValue.getExpression()).evaluate(context);
 									actionBuilder.buildExtension(extension);
 								}
 							}
@@ -465,8 +513,8 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 					}
 
 					if (action.hasAction()) {
-						resolveActions(action.getAction(), context, patientId, requestGroupBuilder, actionComponents,
-								theRequest);
+						resolveActions(theRequest, planDefinition, action.getAction(), context, patientId, requestGroupBuilder,
+								actionComponents);
 					}
 				}
 			}
@@ -499,7 +547,7 @@ class Session {
 	private final String setting;
 	private final String settingContext;
 	private CarePlanBuilder carePlanBuilder;
-	private final String encounterId;
+	private String encounterId;
 	private final RequestGroupBuilder requestGroupBuilder;
 
 	public Session(PlanDefinition planDefinition, CarePlanBuilder builder, String patientId, String encounterId,

@@ -2,8 +2,8 @@ package org.opencds.cqf.ruler.plugin.cr.dstu3.builder;
 
 import java.util.List;
 
-import org.hl7.fhir.r4.model.Attachment;
-import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.dstu3.model.Attachment;
+import org.hl7.fhir.dstu3.model.Extension;
 
 public class AttachmentBuilder extends BaseBuilder<Attachment> {
 

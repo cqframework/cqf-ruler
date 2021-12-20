@@ -1,8 +1,8 @@
 package org.opencds.cqf.ruler.plugin.cr.dstu3.builder;
 
+import org.hl7.fhir.dstu3.model.Attachment;
+import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.r4.model.Attachment;
-import org.hl7.fhir.r4.model.RelatedArtifact;
 
 public class RelatedArtifactBuilder extends BaseBuilder<RelatedArtifact> {
 
