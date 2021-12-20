@@ -42,9 +42,7 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 				"spring.batch.job.enabled=false",
 				"hapi.fhir.fhir_version=r4",
 				"hapi.fhir.allow_external_references=true",
-				"hapi.fhir.enforce_referential_integrity_on_write=false",
-				"hapi.fhir.cr.enabled=true",
-				"hapi.fhir.cql.enabled=true"
+				"hapi.fhir.enforce_referential_integrity_on_write=false"
 		})
 public class PlanDefinitionApplyProviderIT implements IServerSupport {
 
@@ -63,15 +61,13 @@ public class PlanDefinitionApplyProviderIT implements IServerSupport {
 	@Autowired
 	private CodeSystemUpdateProvider codeSystemUpdateProvider;
 
-	private Map<String, IBaseResource> libraries;
-	private Map<String, IBaseResource> vocabulary;
 	private Map<String, IBaseResource> planDefinitions;
 
 	@BeforeEach
 	public void setup() throws Exception {
-		vocabulary = uploadTests("valueset");
+		uploadTests("valueset");
 		codeSystemUpdateProvider.updateCodeSystems();
-		libraries = uploadTests("library");
+		uploadTests("library");
 		planDefinitions = uploadTests("plandefinition");
 	}
 

@@ -1,0 +1,9 @@
+hapi:
+  fhir:
+    cpg:
+      enabled: true
+      log_enabled: false
+      cql_debug_enabled: false
+      use_embedded_translator_content: true
+      cqlTranslatorOptions:
+         analyzeDataRequirements: true

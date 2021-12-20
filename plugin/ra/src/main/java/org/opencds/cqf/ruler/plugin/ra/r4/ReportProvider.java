@@ -50,6 +50,7 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 	 * <a href="https://build.fhir.org/ig/HL7/davinci-ra/index.html">Da Vinci Risk
 	 * Adjustment IG</a>.
 	 * 
+	 * @param requestDetails metadata about the current request being processed. Generally auto-populated by the HAPI FHIR server framework.
 	 * @param periodStart the start of the clinical evaluation period
 	 * @param periodEnd   the end of the clinical evaluation period
 	 * @param subject     a Patient or Patient Group

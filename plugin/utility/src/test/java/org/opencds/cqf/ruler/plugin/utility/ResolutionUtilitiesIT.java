@@ -1,10 +1,12 @@
 package org.opencds.cqf.ruler.plugin.utility;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.hl7.fhir.r4.model.Library;
-import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Patient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -28,8 +30,7 @@ import ca.uhn.fhir.jpa.model.config.PartitionSettings;
 				"spring.main.allow-bean-definition-overriding=true",
 				"spring.batch.job.enabled=false",
 				"spring.datasource.url=jdbc:h2:mem:dbr4-mt",
-				"hapi.fhir.fhir_version=r4",
-				"hapi.fhir.tester_enabled=false",
+				"hapi.fhir.fhir_version=r4"
 
 })
 @TestInstance(Lifecycle.PER_CLASS)
