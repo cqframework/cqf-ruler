@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.plugin.cr.dstu3.builder;
 
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Reference;
 
 public class ReferenceBuilder extends BaseBuilder<Reference> {
 

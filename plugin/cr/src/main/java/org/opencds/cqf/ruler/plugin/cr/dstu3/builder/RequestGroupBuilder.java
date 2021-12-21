@@ -2,10 +2,10 @@ package org.opencds.cqf.ruler.plugin.cr.dstu3.builder;
 
 import java.util.List;
 
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.RequestGroup;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.RequestGroup;
-import org.hl7.fhir.r4.model.Resource;
 
 public class RequestGroupBuilder extends BaseBuilder<RequestGroup> {
 

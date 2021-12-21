@@ -3,15 +3,14 @@ package org.opencds.cqf.ruler.plugin.cr.dstu3.builder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hl7.fhir.dstu3.model.Annotation;
+import org.hl7.fhir.dstu3.model.CarePlan;
+import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.dstu3.model.Period;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.r4.model.Annotation;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.CarePlan;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
 
 public class CarePlanBuilder extends BaseBuilder<CarePlan> {
 
@@ -37,17 +36,17 @@ public class CarePlanBuilder extends BaseBuilder<CarePlan> {
         return this;
     }
 
-    public CarePlanBuilder buildInstantiatesCanonical(List<CanonicalType> references) {
-        complexProperty.setInstantiatesCanonical(references);
+    public CarePlanBuilder buildDefinition(List<Reference> references) {
+        complexProperty.setDefinition(references);
         return this;
     }
 
-    public CarePlanBuilder buildInstantiatesCanonical(String reference) {
-        if (!complexProperty.hasInstantiatesCanonical()) {
-            complexProperty.setInstantiatesCanonical(new ArrayList<>());
+    public CarePlanBuilder buildDefinition(Reference reference) {
+        if (!complexProperty.hasDefinition()) {
+            complexProperty.setDefinition(new ArrayList<>());
         }
 
-        complexProperty.addInstantiatesCanonical(reference);
+        complexProperty.addDefinition(reference);
         return this;
     }
 
@@ -147,8 +146,8 @@ public class CarePlanBuilder extends BaseBuilder<CarePlan> {
         return this;
     }
 
-    public CarePlanBuilder buildEncounter(Reference reference) {
-        complexProperty.setEncounter(reference);
+    public CarePlanBuilder buildContext(Reference reference) {
+        complexProperty.setContext(reference);
         return this;
     }
 
@@ -157,8 +156,17 @@ public class CarePlanBuilder extends BaseBuilder<CarePlan> {
         return this;
     }
 
+    public CarePlanBuilder buildAuthor(List<Reference> references) {
+        complexProperty.setAuthor(references);
+        return this;
+    }
+
     public CarePlanBuilder buildAuthor(Reference reference) {
-        complexProperty.setAuthor(reference);
+        if (!complexProperty.hasAuthor()) {
+            complexProperty.setAuthor(new ArrayList<>());
+        }
+
+        complexProperty.addAuthor(reference);
         return this;
     }
 
