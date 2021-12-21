@@ -1,8 +1,8 @@
 package org.opencds.cqf.ruler.plugin.cr.dstu3.builder;
 
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.StringType;
-import org.hl7.fhir.r4.model.Type;
+import org.hl7.fhir.dstu3.model.Extension;
+import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.dstu3.model.Type;
 
 public class ExtensionBuilder extends BaseBuilder<Extension> {
 

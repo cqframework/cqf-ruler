@@ -246,14 +246,16 @@ public class PlanDefinitionApplyProvider implements OperationProvider, Canonical
 						result = new StringType((String) result);
 					}
 
-					if (dynamicValue.getPath().contains("%action")) {
-						try {
-							currentActionTarget.setProperty(
-									dynamicValue.getPath().substring(dynamicValue.getPath().lastIndexOf("%action") + 1),
-									(Base) result);
-						} catch (Exception e) {
-							throw new RuntimeException(
-									String.format("Could not set path %s to value: %s", dynamicValue.getPath(), result));
+					if (currentActionTarget != null) {
+						if (dynamicValue.getPath().contains("%action")) {
+							try {
+								currentActionTarget.setProperty(
+										dynamicValue.getPath().substring(dynamicValue.getPath().lastIndexOf(".") + 1),
+										(Base) result);
+							} catch (Exception e) {
+								throw new RuntimeException(
+										String.format("Could not set path %s to value: %s", dynamicValue.getPath(), result));
+							}
 						}
 					}
 				}
