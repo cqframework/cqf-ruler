@@ -4,7 +4,8 @@
         {
             "name": "test-config",
             "classPaths": [
-                "${workspaceFolder}/server/target/classes"
+                "${workspaceFolder}/core/target/classes",
+					 "${workspaceFolder}/core/target/test-classes"
             ],
             "vmArgs": ["-XX:TieredStopAtLevel=1", "-Xverify:none", "-Dspring.main.lazy-initialization=true"]
         },
@@ -14,12 +15,14 @@
         "activitydefinition",
         "ANCIND",
         "autoconfigure",
+        "expectedresults",
         "jpaserver",
         "numer",
         "opioidcds",
         "otala",
         "plandefinition",
         "springframework",
+        "Vals",
         "Versionless"
     ],
     "editor.codeActionsOnSave": {

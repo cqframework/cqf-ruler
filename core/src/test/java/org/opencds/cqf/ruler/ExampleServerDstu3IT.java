@@ -47,7 +47,6 @@ import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties =
   {
-    "spring.batch.job.enabled=false",
     "spring.datasource.url=jdbc:h2:mem:dbr3",
     "hapi.fhir.fhir_version=dstu3",
     "hapi.fhir.subscription.websocket_enabled=true",

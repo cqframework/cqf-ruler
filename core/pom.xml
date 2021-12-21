@@ -3,47 +3,34 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
-		<artifactId>cqf-ruler-plugin</artifactId>
+		<artifactId>cqf-ruler</artifactId>
 		<version>0.5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>cqf-ruler-plugin-cpg</artifactId>
+	<artifactId>cqf-ruler-core</artifactId>
+
 	<dependencies>
+		<dependency>
+			<groupId>org.opencds.cqf.ruler</groupId>
+			<artifactId>cqf-ruler-external</artifactId>
+			<version>0.5.0-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-core</artifactId>
-			<version>0.5.0-SNAPSHOT</version>
-			<scope>provided</scope>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>8.0.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-plugin-cql</artifactId>
-			<version>0.5.0-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-plugin-utility</artifactId>
-			<version>0.5.0-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
+
+
+		<!-- The following dependencies are only needed for automated unit tests, you do not neccesarily need them to run the example. -->
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-test</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<scope>test</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

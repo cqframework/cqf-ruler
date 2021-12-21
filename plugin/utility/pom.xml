@@ -11,28 +11,18 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-external</artifactId>
+			<artifactId>cqf-ruler-core</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-server</artifactId>
+			<artifactId>cqf-ruler-test</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
-			<scope>provided</scope>
-			<classifier>classes</classifier>
+			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-plugin-api</artifactId>
-			<version>0.5.0-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-autoconfigure</artifactId>
-			<scope>provided</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
@@ -47,10 +37,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
 		</dependency>
 	</dependencies>
 </project>

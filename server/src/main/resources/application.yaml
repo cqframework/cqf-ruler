@@ -1,5 +1,3 @@
-debug: true
-
 spring:
   main:
     allow-bean-definition-overriding: true
@@ -161,6 +159,7 @@ hapi:
         serviceCode: SMART-on-FHIR
         serviceDisplay: SMART-on-FHIR
         serviceText: OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)
+
 ## CR Settings
   cr:
         
@@ -177,21 +176,6 @@ hapi:
 #  username: SomeUsername
 
 
-
-##################################################
-# OAuth Settings
-##################################################
-# oauth.enabled=false
-# oauth.securityCors=true
-# oauth.securityUrl=http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
-# oauth.securityExtAuthUrl=authorize
-# oauth.securityExtAuthValueUri=http://launch.smarthealthit.org/v/r4/auth/authorize
-# oauth.securityExtTokenUrl=token
-# oauth.securityExtTokenValueUri=http://launch.smarthealthit.org/v/r4/auth/token
-# oauth.serviceSystem=http://hl7.org/fhir/restful-security-service
-# oauth.serviceCode=SMART-on-FHIR
-# oauth.serviceDisplay=SMART-on-FHIR
-# oauth.serviceText=OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)
 
 # questionnaireResponseExtract.enabled=true
 # questionnaireResponseExtract.endpoint=http://localhost:8080/cqf-ruler-r4/fhir
