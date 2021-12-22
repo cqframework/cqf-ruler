@@ -1,6 +1,9 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.providers;
 
 import ca.uhn.fhir.rest.api.SearchStyleEnum;
+import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksProperties;
+import org.opencds.cqf.ruler.plugin.cql.CqlProperties;
+
 
 public class ProviderConfiguration {
 
@@ -20,6 +23,14 @@ public class ProviderConfiguration {
         this.maxUriLength = maxUriLength;
         this.cqlLoggingEnabled = cqlLoggingEnabled;
     }
+
+	 public ProviderConfiguration(CdsHooksProperties cdsProperties, CqlProperties cqlProperties) {
+		 this.expandValueSets = cdsProperties.getFhirServer().getExpandValueSets();
+		 this.maxCodesPerQuery = cdsProperties.getFhirServer().getMaxCodesPerQuery();
+		 this.searchStyle = cdsProperties.getFhirServer().getSearchStyle();
+		 this.maxUriLength = cdsProperties.getPrefetch().getMaxUriLength();
+		 this.cqlLoggingEnabled = cqlProperties.getCql_logging_enabled();
+	 }
 
     public int getMaxCodesPerQuery() {
         return this.maxCodesPerQuery;

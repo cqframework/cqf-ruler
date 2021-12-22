@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.plugin.cdshooks.helpers;
+package org.opencds.cqf.ruler.plugin.cdshooks.r4.helpers;
 
 import org.hl7.fhir.r4.model.CanonicalType;
 

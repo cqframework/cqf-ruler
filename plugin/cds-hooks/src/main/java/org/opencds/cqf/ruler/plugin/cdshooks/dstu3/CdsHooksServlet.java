@@ -1,8 +1,8 @@
-package org.opencds.cqf.ruler.plugin.cdshooks.r4;
+package org.opencds.cqf.ruler.plugin.cdshooks.dstu3;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.cql.r4.provider.LibraryResolutionProviderImpl;
+import ca.uhn.fhir.cql.dstu3.provider.LibraryResolutionProviderImpl;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.jpa.starter.AppProperties;
@@ -19,8 +19,8 @@ import com.google.gson.JsonParser;
 
 import org.apache.http.entity.ContentType;
 
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
 
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
@@ -33,14 +33,14 @@ import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 
 import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksProperties;
-import org.opencds.cqf.ruler.plugin.cdshooks.discovery.DiscoveryResolutionR4;
+import org.opencds.cqf.ruler.plugin.cdshooks.discovery.DiscoveryResolutionStu3;
+import org.opencds.cqf.ruler.plugin.cdshooks.dstu3.helpers.LibraryHelper;
 import org.opencds.cqf.ruler.plugin.cdshooks.evaluation.EvaluationContext;
-import org.opencds.cqf.ruler.plugin.cdshooks.evaluation.R4EvaluationContext;
+import org.opencds.cqf.ruler.plugin.cdshooks.evaluation.Stu3EvaluationContext;
 import org.opencds.cqf.ruler.plugin.cdshooks.hooks.Hook;
 import org.opencds.cqf.ruler.plugin.cdshooks.hooks.HookFactory;
-import org.opencds.cqf.ruler.plugin.cdshooks.hooks.R4HookEvaluator;
+import org.opencds.cqf.ruler.plugin.cdshooks.hooks.Stu3HookEvaluator;
 import org.opencds.cqf.ruler.plugin.cdshooks.providers.ProviderConfiguration;
-import org.opencds.cqf.ruler.plugin.cdshooks.r4.helpers.LibraryHelper;
 import org.opencds.cqf.ruler.plugin.cdshooks.request.Request;
 import org.opencds.cqf.ruler.plugin.cdshooks.request.JsonHelper;
 import org.opencds.cqf.ruler.plugin.cdshooks.response.CdsCard;
@@ -49,8 +49,8 @@ import org.opencds.cqf.ruler.plugin.cql.CqlConfig;
 import org.opencds.cqf.ruler.plugin.cql.JpaFhirRetrieveProvider;
 
 import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
-import org.opencds.cqf.ruler.plugin.cr.r4.provider.PlanDefinitionApplyProvider;
 
+import org.opencds.cqf.ruler.plugin.cr.dstu3.provider.PlanDefinitionApplyProvider;
 import org.opencds.cqf.ruler.plugin.utility.*;
 
 import org.slf4j.Logger;
@@ -73,13 +73,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-//@WebServlet(name = "cds-services-r4")
 public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
-	private FhirContext ourCtx = FhirContext.forR4Cached();
+	private FhirContext ourCtx = FhirContext.forDstu3Cached();
 
-	private FhirVersionEnum version = FhirVersionEnum.R4;
-	private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
+	private FhirVersionEnum version = FhirVersionEnum.DSTU3;
+	private static final Logger logger = LoggerFactory.getLogger(org.opencds.cqf.ruler.plugin.cdshooks.dstu3.CdsHooksServlet.class);
 
 	@Autowired
 	private CqlConfig cqlConfig;
@@ -96,7 +95,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
 
-//	@Autowired
+	//	@Autowired
 	private PlanDefinitionApplyProvider planDefinitionProvider;
 
 	@Autowired
@@ -107,21 +106,21 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	@Autowired
 	JpaTerminologyProviderFactory myJpaTerminologyProviderFactory;
 
-//	@Autowired
+	//	@Autowired
 	private TerminologyProvider serverTerminologyProvider;
 
-//	@Autowired
+	//	@Autowired
 	private ModelResolver modelResolver;
 
 	@Autowired
 	private LibraryHelper libraryHelper;
 
-//	@Autowired
+	//	@Autowired
 	private AtomicReference<JsonArray> services;
 
 
-	@Override
 	@SuppressWarnings("unchecked")
+	@Override
 	public void init() {
 		// System level providers
 		ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
@@ -138,7 +137,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 		this.myJpaTerminologyProviderFactory = appCtx.getBean(JpaTerminologyProviderFactory.class);
 		this.serverTerminologyProvider = myJpaTerminologyProviderFactory.create(new SystemRequestDetails());
 
-		this.modelResolver = this.cqlConfig.modelResolverR4();
+		this.modelResolver = this.cqlConfig.modelResolverDstu3();
 		this.libraryHelper = appCtx.getBean(LibraryHelper.class);
 
 		SearchParameterResolver theSearchParameterResolver = this.cqlConfig.searchParameterResolver(ourCtx);
@@ -168,7 +167,6 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 		throws ServletException, IOException {
-
 		logger.info(request.getRequestURI());
 		if (!request.getRequestURL().toString().endsWith("/cds-services") && !request.getRequestURL().toString().endsWith("/cds-services/")) {
 			logger.error(request.getRequestURI());
@@ -182,25 +180,24 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
 	@Override
 	@SuppressWarnings("deprecation")
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.info(request.getRequestURI());
 
 		try {
 			// validate that we are dealing with JSON
 			if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
-				throw new ServletException(String.format("Invalid content type %s. Please use application/json.",
-					request.getContentType()));
+				throw new ServletException(String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
 			}
+
 
 			String baseUrl = this.myAppProperties.getServer_address();
 			String service = request.getPathInfo().replace("/", "");
 
 			JsonParser parser = new JsonParser();
-			Request cdsHooksRequest = new Request(service, parser.parse(request.getReader()).getAsJsonObject(),
-				JsonHelper.getObjectRequired(getService(service), "prefetch"));
+			JsonObject requestJson = parser.parse(request.getReader()).getAsJsonObject();
+			logger.info(requestJson.toString());
 
-			logger.info(cdsHooksRequest.getRequestJson().toString());
+			Request cdsHooksRequest = new Request(service, requestJson, JsonHelper.getObjectRequired(getService(service), "prefetch"));
 
 			Hook hook = HookFactory.createHook(cdsHooksRequest);
 
@@ -214,13 +211,12 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 			logger.info("cds-hooks local server address: " + baseUrl);
 			logger.info("cds-hooks fhir server address: " + hook.getRequest().getFhirServerUrl());
 
-			PlanDefinition planDefinition = planDefinitionProvider.getDao()
-				.read(new IdType(hook.getRequest().getServiceName()));
+			PlanDefinition planDefinition = planDefinitionProvider.getDao().read(new IdType(hook.getRequest().getServiceName()));
 			AtomicBoolean planDefinitionHookMatchesRequestHook = new AtomicBoolean(false);
 
 			planDefinition.getAction().forEach(action -> {
-				action.getTrigger().forEach(trigger -> {
-					if(hookName.equals(trigger.getName())){
+				action.getTriggerDefinition().forEach(triggerDefn -> {
+					if(hookName.equals(triggerDefn.getEventName())){
 						planDefinitionHookMatchesRequestHook.set(true);
 						return;
 					}
@@ -232,12 +228,11 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 			if(!planDefinitionHookMatchesRequestHook.get()){
 				throw new ServletException("ERROR: Request hook does not match the service called.");
 			}
-
-			RequestDetails requestDetails = new SystemRequestDetails();
 			LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(libraryResolutionProvider);
 
-			org.cqframework.cql.elm.execution.Library library = this.libraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader,
-				libraryResolutionProvider, requestDetails);
+			//todo how to utilize requestDetails
+			RequestDetails requestDetails = new SystemRequestDetails();
+			org.cqframework.cql.elm.execution.Library library = this.libraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider, requestDetails);
 
 			CompositeDataProvider provider = new CompositeDataProvider(this.modelResolver, fhirRetrieveProvider);
 
@@ -252,15 +247,15 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 			context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
 			context.setExpressionCaching(true);
 
-			EvaluationContext<PlanDefinition> evaluationContext = new R4EvaluationContext(hook, version,
-				FhirContext.forCached(FhirVersionEnum.R4).newRestfulGenericClient(baseUrl), serverTerminologyProvider, context, library,
+			EvaluationContext<PlanDefinition> evaluationContext = new Stu3EvaluationContext(hook, version, FhirContext.forCached(FhirVersionEnum.DSTU3).newRestfulGenericClient(baseUrl),
+				serverTerminologyProvider, context, library,
 				planDefinition, this.getProviderConfiguration(), this.modelResolver);
 
 			this.setAccessControlHeaders(response);
 
 			response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
 
-			R4HookEvaluator evaluator = new R4HookEvaluator(this.modelResolver);
+			Stu3HookEvaluator evaluator = new Stu3HookEvaluator(this.modelResolver);
 
 			String jsonResponse = toJsonResponse(evaluator.evaluate(evaluationContext));
 
@@ -298,8 +293,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
 			this.printStackTrack(e, response);
 			logger.error(e.toString());
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e.toString());
 			throw new ServletException("ERROR: Exception in cds-hooks processing.", e);
 		}
@@ -311,8 +305,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 			case 401:
 			case 403:
 				response.getWriter().println("Precondition Failed. Remote FHIR server returned: " + e.getStatusCode());
-				response.getWriter().println(
-					"Ensure that the fhirAuthorization token is set or that the remote server allows unauthenticated access.");
+				response.getWriter().println("Ensure that the fhirAuthorization token is set or that the remote server allows unauthenticated access.");
 				response.setStatus(412);
 				break;
 			case 404:
@@ -343,7 +336,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	}
 
 	private JsonObject getService(String service) {
-		JsonArray services = getServicesArray();
+		JsonArray services =  getServicesArray();
 		List<String> ids = new ArrayList<>();
 		for (JsonElement element : services) {
 			if (element.isJsonObject() && element.getAsJsonObject().has("id")) {
@@ -368,11 +361,11 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	}
 
 	private JsonObject getServices() {
-		DiscoveryResolutionR4 discoveryResolutionR4 = new DiscoveryResolutionR4(createClient(ourCtx, this.myAppProperties.getServer_address()));
+		DiscoveryResolutionStu3 discoveryResolutionStu3 = new DiscoveryResolutionStu3(createClient(ourCtx, this.myAppProperties.getServer_address()));
 
-		discoveryResolutionR4.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
+		discoveryResolutionStu3.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
 
-		return discoveryResolutionR4.resolve().getAsJson();
+		return discoveryResolutionStu3.resolve().getAsJson();
 	}
 
 	private String toJsonResponse(List<CdsCard> cards) {
@@ -412,7 +405,3 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 		return debugMap;
 	}
 }
-
-
-
-

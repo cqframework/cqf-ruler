@@ -3,8 +3,9 @@ hapi:
       cdshooks:
          enabled: true
          fhirserver:
-            maxCodesPerQuery: ~
-            expandedValueSets: ~
-            searchStyle: ~
+            expandValueSets: true
+            maxCodesPerQuery: 64
+            searchStyle: GET
          prefetch:
-            maxUriLength: ~
+            maxUriLength: 8000
+

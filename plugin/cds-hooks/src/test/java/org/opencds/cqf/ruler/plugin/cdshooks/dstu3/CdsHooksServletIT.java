@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.plugin.cdshooks.r4;
+package org.opencds.cqf.ruler.plugin.cdshooks.dstu3;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,13 +10,14 @@ import org.apache.http.impl.client.HttpClients;
 import ca.uhn.fhir.jpa.starter.AppProperties;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.rest.client.exceptions.FhirClientConnectionException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -28,7 +29,6 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 import java.io.IOException;
 
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 	CdsHooksConfig.class }, properties = {
@@ -38,14 +38,13 @@ import java.io.IOException;
 	"spring.main.allow-bean-definition-overriding=true",
 	"spring.batch.job.enabled=false",
 	"spring.datasource.url=jdbc:h2:mem:dbr4-mt",
-	"hapi.fhir.fhir_version=r4",
+	"hapi.fhir.fhir_version=dstu3",
 	"hapi.fhir.tester_enabled=false",
 	"hapi.fhir.cdshooks.enabled=true"
 })
 public class CdsHooksServletIT {
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;
-	private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 
 	@Autowired
 	AppProperties myAppProperties;
@@ -53,17 +52,16 @@ public class CdsHooksServletIT {
 	@LocalServerPort
 	private int port;
 
-	String ourServerBase;
 	String ourCdsBase;
 
 	@BeforeEach
 	void beforeEach() {
 
-		ourCtx = FhirContext.forR4Cached();
+		ourCtx = FhirContext.forDstu3Cached();
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 
-		ourServerBase = "http://localhost:" + port + "/fhir";
+		String ourServerBase = "http://localhost:" + port + "/fhir";
 		ourCdsBase = "http://localhost:" + port + "/cds-services";
 		myAppProperties.setServer_address(ourServerBase);
 		myAppProperties.setCors(new AppProperties.Cors());
@@ -81,5 +79,5 @@ public class CdsHooksServletIT {
 		request.addHeader("Content-Type", "application/json");
 		assertEquals(200, httpClient.execute(request).getStatusLine().getStatusCode());
 	}
-}
 
+}

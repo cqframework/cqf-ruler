@@ -2,7 +2,7 @@ package org.opencds.cqf.ruler.plugin.cdshooks.discovery;
 
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.r4.model.*;
-import org.opencds.cqf.ruler.plugin.cdshooks.helpers.CanonicalHelper;
+import org.opencds.cqf.ruler.plugin.cdshooks.r4.helpers.CanonicalHelper;
 
 import java.util.ArrayList;
 import java.util.List;

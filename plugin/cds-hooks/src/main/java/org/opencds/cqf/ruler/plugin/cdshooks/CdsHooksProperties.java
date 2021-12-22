@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.plugin.cdshooks;
 
+import ca.uhn.fhir.rest.api.SearchStyleEnum;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "hapi.fhir.cdshooks")
@@ -17,21 +18,21 @@ public class CdsHooksProperties {
 		this.fhirServer = fhirServer;
 	}
 	public class FhirServer {
-		private String maxCodesPerQuery;
-		public String getMaxCodesPerQuery() { return maxCodesPerQuery; }
-		public void setMaxCodesPerQuery(String maxCodesPerQuery) {
+		private Integer maxCodesPerQuery;
+		public Integer getMaxCodesPerQuery() { return maxCodesPerQuery; }
+		public void setMaxCodesPerQuery(Integer maxCodesPerQuery) {
 			this.maxCodesPerQuery = maxCodesPerQuery;
 		}
 
-		private Boolean expandedValueSets;
-		public Boolean getExpandedValueSets() { return expandedValueSets; }
-		public void setExpandedValueSets(Boolean expandedValueSets) {
-			this.expandedValueSets = expandedValueSets;
+		private Boolean expandValueSets;
+		public Boolean getExpandValueSets() { return expandValueSets; }
+		public void setExpandValueSets(Boolean expandValueSets) {
+			this.expandValueSets = expandValueSets;
 		}
 
-		private String searchStyle;
-		public String getSearchStyle() { return searchStyle; }
-		public void setSearchStyle(String searchStyle) {
+		private SearchStyleEnum searchStyle;
+		public SearchStyleEnum getSearchStyle() { return searchStyle; }
+		public void setSearchStyle(SearchStyleEnum searchStyle) {
 			this.searchStyle = searchStyle;
 		}
 	}

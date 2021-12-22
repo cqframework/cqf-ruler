@@ -59,7 +59,7 @@ hapi:
 #      - Observation
 #    allow_cascading_deletes: true
 #    allow_contains_searches: true
-#    allow_external_references: true
+    allow_external_references: true
 #    allow_multiple_delete: true
 #    allow_override_default_search_params: true
 #    allow_placeholder_references: true
@@ -167,13 +167,13 @@ hapi:
 
 ## CDS Hook Settings
     cdshooks:
-      enabled: true
-      fhirserver:
-        maxCodesPerQuery: ~
-        expandedValueSets: ~
-        searchStyle: ~
-      prefetch:
-        maxUriLength: ~
+       enabled: true
+       fhirserver:
+          expandValueSets: true
+          maxCodesPerQuery: 64
+          searchStyle: GET
+       prefetch:
+          maxUriLength: 8000
         
 #elasticsearch:
 #  debug:
