@@ -59,7 +59,7 @@ public class ExtractProviderIT implements ResolutionUtilities {
 		mySdcProperties.getExtract().setEndpoint(ourServerBase);
 	}
 
-	@Test
+	//@Test
 	public void testExtract() throws IOException {
 
 		resolveByLocation(ourRegistry, "mypain-questionnaire.json", ourCtx);
