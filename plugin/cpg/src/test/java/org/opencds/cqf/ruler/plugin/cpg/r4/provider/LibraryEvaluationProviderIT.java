@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cpg.CpgConfig;
-import org.opencds.cqf.ruler.plugin.cpg.CpgProperties;
 import org.opencds.cqf.ruler.test.ResolutionUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,9 +40,6 @@ public class LibraryEvaluationProviderIT implements ResolutionUtilities {
 
 	@Autowired
 	private DaoRegistry ourRegistry;
-
-	@Autowired
-	private CpgProperties cpgProperties;
 
 	@LocalServerPort
 	private int port;
@@ -91,7 +87,7 @@ public class LibraryEvaluationProviderIT implements ResolutionUtilities {
 		String bundleTextValueSets = stringFromResource(packagePrefix + "valuesets-ColorectalCancerScreeningsFHIR-bundle.json");
 		FhirContext fhirContext = FhirContext.forR4();
 		Bundle bundleValueSet = (Bundle)fhirContext.newJsonParser().parseResource(bundleTextValueSets);
-		Bundle resultValueSet = ourClient.transaction().withBundle(bundleValueSet).execute();
+		ourClient.transaction().withBundle(bundleValueSet).execute();
 
 		String bundleText = stringFromResource(packagePrefix + "additionalData.json");
 		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleText);

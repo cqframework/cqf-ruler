@@ -343,7 +343,6 @@
 						</overlay>
 					</overlays>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<attachClasses>true</attachClasses>
 				</configuration>
 			</plugin>
 			<!-- <plugin>
@@ -452,7 +451,7 @@
          -->
 
 		<!-- example of how to start the server using spring boot-->
-		<!-- mvn clean package && java -jar target/hapi-fhir-jpaserver.war -->
+		<!-- mvn clean package && java -jar target/cqf-ruler-server.war -->
 
 		<!-- Use the boot profile for development and debugging options when using your IDE -->
 		<profile>
