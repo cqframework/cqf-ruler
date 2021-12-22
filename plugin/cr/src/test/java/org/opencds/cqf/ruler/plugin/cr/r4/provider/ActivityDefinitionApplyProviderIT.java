@@ -24,7 +24,7 @@ import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cql.CqlConfig;
 import org.opencds.cqf.ruler.plugin.cr.CrConfig;
 import org.opencds.cqf.ruler.plugin.devtools.DevToolsConfig;
-import org.opencds.cqf.ruler.plugin.testutility.IServerSupport;
+import org.opencds.cqf.ruler.test.IServerSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;

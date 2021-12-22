@@ -2,18 +2,6 @@
   <configuration default="false" name="Launch Server (Live Reload)" type="Application" factoryName="Application">
     <option name="ALTERNATIVE_JRE_PATH" value="adopt-openjdk-1.8" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-    <classpathModifications>
-      <entry path="$PROJECT_DIR$/plugin/cql/target/classes" />
-      <entry path="$PROJECT_DIR$/plugin/cpg/target/classes" />
-      <entry path="$PROJECT_DIR$/plugin/cr/target/classes" />
-      <entry path="$PROJECT_DIR$/plugin/dev-tools/target/classes" />
-      <entry path="$PROJECT_DIR$/plugin/hello-world/target/classes" />
-      <entry path="$PROJECT_DIR$/plugin/ra/target/classes" />
-      <entry path="$PROJECT_DIR$/plugin/sdc/target/classes" />
-      <entry path="$PROJECT_DIR$/plugin/security/target/classes" />
-      <entry path="$PROJECT_DIR$/plugin/test-utility/target/classes" />
-      <entry path="$PROJECT_DIR$/plugin/utility/target/classes" />
-    </classpathModifications>
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="org.opencds.cqf.ruler.Application" />
     <module name="cqf-ruler-server" />
