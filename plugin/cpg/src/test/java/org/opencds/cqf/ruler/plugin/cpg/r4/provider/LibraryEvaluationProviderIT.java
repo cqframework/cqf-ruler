@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cpg.CpgConfig;
-import org.opencds.cqf.ruler.test.ResolutionUtilities;
+import org.opencds.cqf.ruler.test.ITestSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -34,7 +34,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 														"spring.main.allow-bean-definition-overriding=true",
 														"debug=true",
 														"spring.batch.job.enabled=false"})
-public class LibraryEvaluationProviderIT implements ResolutionUtilities {
+public class LibraryEvaluationProviderIT implements ITestSupport {
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;
 
@@ -65,7 +65,7 @@ public class LibraryEvaluationProviderIT implements ResolutionUtilities {
 		params.addParameter().setName("context").setValue(new StringType("Patient"));
 
 		String packagePrefix = "org.opencds.cqf.ruler.plugin.cpg.r4.provider/";
-		resolveByLocation(ourRegistry, packagePrefix + "ColorectalCancerScreeningsFHIR.json", ourCtx);
+		loadResource(packagePrefix + "ColorectalCancerScreeningsFHIR.json", ourCtx, ourRegistry);
 		Library lib = ourClient.read().resource(Library.class).withId("ColorectalCancerScreeningsFHIR").execute();
 		assertNotNull(lib);
 
@@ -82,7 +82,7 @@ public class LibraryEvaluationProviderIT implements ResolutionUtilities {
 	public void testLibraryEvaluationValidData() throws IOException {
 
 		String packagePrefix = "org.opencds.cqf.ruler.plugin.cpg.r4.provider/";
-		resolveByLocation(ourRegistry, packagePrefix + "ColorectalCancerScreeningsFHIR.json", ourCtx);
+		loadResource(packagePrefix + "ColorectalCancerScreeningsFHIR.json", ourCtx, ourRegistry);
 
 		String bundleTextValueSets = stringFromResource(packagePrefix + "valuesets-ColorectalCancerScreeningsFHIR-bundle.json");
 		FhirContext fhirContext = FhirContext.forR4();

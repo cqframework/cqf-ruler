@@ -171,7 +171,6 @@
                     <regexFlags>
                         <regexFlag>MULTILINE</regexFlag>
                     </regexFlags>
-
                     <replacements>
                         <replacement>
                             <token>^(@SuppressWarnings\(.*?\)\s+)?public class</token>

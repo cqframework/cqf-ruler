@@ -45,10 +45,10 @@ public class JpaLibraryContentProvider
 
 		ContentFunctions cf = cachedContentFunctions.computeIfAbsent(libraryDao.getResourceType(), x -> this.getContentFunctions(this.libraryDao.getContext()));
 		byte[] content = this.getContent(library, cf, "text/cql");
-		if (content != null) {
-			return new ByteArrayInputStream(content);
+		if (content == null) {
+			return null;
 		}
 
-		return null;
+		return new ByteArrayInputStream(content);
 	}
 }

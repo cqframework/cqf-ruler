@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.opencds.cqf.ruler.test.IServerSupport;
+import org.opencds.cqf.ruler.test.ITestSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -55,7 +55,7 @@ import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
   })
 
 
-public class ExampleServerDstu3IT implements IServerSupport {
+public class ExampleServerDstu3IT implements ITestSupport {
 
   private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerDstu2IT.class);
   private IGenericClient ourClient;

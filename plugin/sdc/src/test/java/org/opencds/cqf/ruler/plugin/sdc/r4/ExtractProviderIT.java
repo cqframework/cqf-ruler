@@ -15,7 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.sdc.SDCConfig;
 import org.opencds.cqf.ruler.plugin.sdc.SDCProperties;
-import org.opencds.cqf.ruler.test.ResolutionUtilities;
+import org.opencds.cqf.ruler.test.ITestSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -34,7 +34,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 		SDCConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
-public class ExtractProviderIT implements ResolutionUtilities {
+public class ExtractProviderIT implements ITestSupport {
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;
 
@@ -63,7 +63,7 @@ public class ExtractProviderIT implements ResolutionUtilities {
 	public void testExtract() throws IOException {
 
 		/* cSpell:ignore mypain */
-		resolveByLocation(ourRegistry, "mypain-questionnaire.json", ourCtx);
+		loadResource("mypain-questionnaire.json", ourCtx, ourRegistry);
 
 		QuestionnaireResponse test = (QuestionnaireResponse) ourCtx.newJsonParser()
 				.parseResource(stringFromResource("mypain-questionnaire-response.json"));
