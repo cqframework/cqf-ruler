@@ -16,11 +16,11 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
-public class RulerJpaCapabilityStatementProvider extends JpaCapabilityStatementProvider {
+public class ExtensibleJpaCapabilityStatementProvider extends JpaCapabilityStatementProvider {
 
 	private List<MetadataExtender<IBaseConformance>> myExtenders;
 
-	public RulerJpaCapabilityStatementProvider(RestfulServer theRestfulServer, IFhirSystemDao<?, ?> theSystemDao,
+	public ExtensibleJpaCapabilityStatementProvider(RestfulServer theRestfulServer, IFhirSystemDao<?, ?> theSystemDao,
 			DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry,
 			IValidationSupport theValidationSupport, List<MetadataExtender<IBaseConformance>> theExtenders) {
 		super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry, theValidationSupport);

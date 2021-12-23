@@ -62,6 +62,7 @@ public class ExtractProviderIT implements ResolutionUtilities {
 	//@Test
 	public void testExtract() throws IOException {
 
+		/* cSpell:ignore mypain */
 		resolveByLocation(ourRegistry, "mypain-questionnaire.json", ourCtx);
 
 		QuestionnaireResponse test = (QuestionnaireResponse) ourCtx.newJsonParser()

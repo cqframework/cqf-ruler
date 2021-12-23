@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler;
+package org.opencds.cqf.ruler.config;
 
 import org.slf4j.Logger;
 import org.springframework.beans.BeansException;
@@ -8,10 +8,12 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 
 /**
- * This class is just for debugging Spring config.
+ * This class is just for debugging Spring config. Is spring debug is enabled it
+ * will print all the beans
+ * in the current application context and the config class it came from.
  */
-// @Component
 class BeanFinder implements BeanDefinitionRegistryPostProcessor {
+
 	private final static Logger log = org.slf4j.LoggerFactory.getLogger(BeanFinder.class);
 
 	@Override
@@ -25,7 +27,7 @@ class BeanFinder implements BeanDefinitionRegistryPostProcessor {
 			BeanDefinition javaConfigBeanDefinition = registry.getBeanDefinition(bean);
 			String description = javaConfigBeanDefinition.getResourceDescription();
 
-			log.error("Bean: {} - Description: {}", bean, description);
+			log.info("Bean: {} - Description: {}", bean, description);
 		}
 	}
 }

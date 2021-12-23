@@ -16,11 +16,11 @@ import ca.uhn.fhir.rest.annotation.Metadata;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
 
-public class RulerJpaConformanceProviderDstu2 extends JpaConformanceProviderDstu2 {
+public class ExtensibleJpaConformanceProviderDstu2 extends JpaConformanceProviderDstu2 {
 
 	List<MetadataExtender<Conformance>> myExtenders;
 
-	public RulerJpaConformanceProviderDstu2(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, MetaDt> theSystemDao,
+	public ExtensibleJpaConformanceProviderDstu2(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, MetaDt> theSystemDao,
 			DaoConfig theDaoConfig, List<MetadataExtender<Conformance>> theExtenders) {
 		super(theRestfulServer, theSystemDao, theDaoConfig);
 		myExtenders = theExtenders;

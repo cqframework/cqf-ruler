@@ -1,32 +1,31 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic",
-    "java.test.config": [
-        {
-            "name": "test-config",
-            "classPaths": [
-                "${workspaceFolder}/core/target/classes",
-					 "${workspaceFolder}/core/target/test-classes"
-            ],
-            "vmArgs": ["-XX:TieredStopAtLevel=1", "-Xverify:none", "-Dspring.main.lazy-initialization=true"]
-        },
-    ],
-    "java.test.defaultConfig": "test-config",
-    "cSpell.words": [
-        "activitydefinition",
-        "ANCIND",
-        "autoconfigure",
-        "expectedresults",
-        "jpaserver",
-        "numer",
-        "opioidcds",
-        "otala",
-        "plandefinition",
-        "springframework",
-        "Vals",
-        "Versionless"
-    ],
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": true,
-		  "editor.formatOnSave": true
-    }
+	"java.configuration.updateBuildConfiguration": "automatic",
+	"java.test.config": [
+		{
+			"name": "test-config",
+			"classPaths": [
+				"${workspaceFolder}/core/target/classes"
+			],
+			"vmArgs": [
+				"-XX:TieredStopAtLevel=1",
+				"-Xverify:none",
+				"-Dspring.main.lazy-initialization=true"
+			]
+		},
+	],
+	"java.test.defaultConfig": "test-config",
+	"cSpell.enabledLanguageIds": [
+		"java",
+		"json",
+		"xml"
+	],
+	"cSpell.ignorePaths": [
+		".git/objects",
+		".vscode",
+		"**/pom.xml"
+	],
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": true,
+		"editor.formatOnSave": true
+	}
 }

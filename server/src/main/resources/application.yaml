@@ -1,4 +1,5 @@
 spring:
+  debug: true
   main:
     allow-bean-definition-overriding: true
   datasource:

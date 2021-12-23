@@ -156,7 +156,7 @@ public class CodeSystemUpdateProvider implements OperationProvider, IdUtilities 
 	 * @return The CodeSystem that matches the url parameter or a new CodeSystem
 	 *         with the url and id populated
 	 */
-	@SuppressWarnings("cast")
+	// @SuppressWarnings("cast")
 	private CodeSystem getCodeSystemByUrl(String url) {
 		IBundleProvider bundleProvider = this.myCodeSystemDaoDSTU3
 				.search(SearchParameterMap.newSynchronous().add(CodeSystem.SP_URL, new UriParam(url)));

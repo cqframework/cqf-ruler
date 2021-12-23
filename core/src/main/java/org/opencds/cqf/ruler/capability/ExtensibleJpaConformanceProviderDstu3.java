@@ -17,11 +17,11 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
-public class RulerJpaConformanceProviderDstu3 extends JpaConformanceProviderDstu3 {
+public class ExtensibleJpaConformanceProviderDstu3 extends JpaConformanceProviderDstu3 {
 
 	List<MetadataExtender<CapabilityStatement>> myExtenders;
 
-	public RulerJpaConformanceProviderDstu3(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao,
+	public ExtensibleJpaConformanceProviderDstu3(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao,
 			DaoConfig theDaoConfig, ISearchParamRegistry theSearchParamRegistry,
 			List<MetadataExtender<CapabilityStatement>> theExtenders) {
 		super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry);
