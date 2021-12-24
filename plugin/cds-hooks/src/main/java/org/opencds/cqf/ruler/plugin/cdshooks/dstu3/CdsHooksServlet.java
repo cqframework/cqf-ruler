@@ -75,6 +75,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
+	private static final long serialVersionUID = 1L;
 	private FhirContext ourCtx = FhirContext.forDstu3Cached();
 
 	private FhirVersionEnum version = FhirVersionEnum.DSTU3;

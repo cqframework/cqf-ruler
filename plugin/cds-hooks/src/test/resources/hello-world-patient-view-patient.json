@@ -1,0 +1,6 @@
+{
+    "resourceType": "Patient",
+    "id": "patient-hello-world-patient-view",
+    "gender": "female",
+    "birthDate": "1982-01-07"
+}

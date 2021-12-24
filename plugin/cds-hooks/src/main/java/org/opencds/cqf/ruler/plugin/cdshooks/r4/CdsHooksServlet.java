@@ -73,9 +73,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 
-//@WebServlet(name = "cds-services-r4")
 public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
+	private static final long serialVersionUID = 1L;
 	private FhirContext ourCtx = FhirContext.forR4Cached();
 
 	private FhirVersionEnum version = FhirVersionEnum.R4;

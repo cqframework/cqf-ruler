@@ -37,9 +37,6 @@ public class CdsHooksConfig {
 	@Primary
 	public CqlConfig cqlConfiguration() { return new CqlConfig(); }
 
-//	@Bean
-//	public ProviderConfiguration providerConfiguration() { return ProviderConfiguration.DEFAULT_PROVIDER_CONFIGURATION; }
-
 	@Bean
 	public ProviderConfiguration providerConfiguration(CdsHooksProperties cdsProperties, CqlProperties cqlProperties)
 	{ return new ProviderConfiguration(cdsProperties, cqlProperties); }

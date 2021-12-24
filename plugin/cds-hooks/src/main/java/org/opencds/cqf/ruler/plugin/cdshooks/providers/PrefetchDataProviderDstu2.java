@@ -84,7 +84,7 @@ public class PrefetchDataProviderDstu2 extends TerminologyAwareRetrieveProvider 
                     }
                     // TODO - add precision to includes evaluator
                     else if (dateInterval != null
-                            && !((Boolean) IncludesEvaluator.includes(dateRange, dateInterval, precision))) {
+                            && !(IncludesEvaluator.includes(dateRange, dateInterval, precision))) {
                         includeResource = false;
                     }
                 } else {
@@ -106,7 +106,7 @@ public class PrefetchDataProviderDstu2 extends TerminologyAwareRetrieveProvider 
                     Interval interval = new Interval(lowDate, true, highDate, true);
 
                     // TODO - add precision to includes evaluator
-                    if (!(Boolean) IncludesEvaluator.includes(dateRange, interval, precision)) {
+                    if (!IncludesEvaluator.includes(dateRange, interval, precision)) {
                         includeResource = false;
                     }
                 }

@@ -159,7 +159,7 @@ public class R4HookEvaluator extends BaseHookEvaluator<PlanDefinition> {
                                     actionBuilder.buildExtension(extension);
                                 } else {
                                     if (resource != null) {
-                                        Object value = (Object) context.resolveExpressionRef(dynamicValue.getExpression().getExpression()).evaluate(context);
+                                        Object value = context.resolveExpressionRef(dynamicValue.getExpression().getExpression()).evaluate(context);
 
                                         // TODO need to verify type... yay
                                         if (value instanceof Boolean) {

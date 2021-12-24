@@ -1,22 +1,32 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import ca.uhn.fhir.jpa.starter.AppProperties;
-import ca.uhn.fhir.parser.DataFormatException;
-import ca.uhn.fhir.rest.client.exceptions.FhirClientConnectionException;
+import org.apache.http.util.EntityUtils;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.PlanDefinition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opencds.cqf.ruler.plugin.testutility.ResolutionUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -40,15 +50,20 @@ import java.io.IOException;
 	"spring.datasource.url=jdbc:h2:mem:dbr4-mt",
 	"hapi.fhir.fhir_version=r4",
 	"hapi.fhir.tester_enabled=false",
+	"hapi.fhir.allow_external_references=true",
 	"hapi.fhir.cdshooks.enabled=true"
 })
-public class CdsHooksServletIT {
+public class CdsHooksServletIT implements org.opencds.cqf.ruler.plugin.testutility.ClientUtilities, ResolutionUtilities,
+	org.opencds.cqf.ruler.plugin.utility.ClientUtilities  {
+
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;
-	private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 
 	@Autowired
 	AppProperties myAppProperties;
+
+	@Autowired
+	private DaoRegistry ourRegistry;
 
 	@LocalServerPort
 	private int port;
@@ -59,7 +74,7 @@ public class CdsHooksServletIT {
 	@BeforeEach
 	void beforeEach() {
 
-		ourCtx = FhirContext.forR4Cached();
+		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 
@@ -67,19 +82,83 @@ public class CdsHooksServletIT {
 		ourCdsBase = "http://localhost:" + port + "/cds-services";
 		myAppProperties.setServer_address(ourServerBase);
 		myAppProperties.setCors(new AppProperties.Cors());
-		ourClient = ourCtx.newRestfulGenericClient(ourCdsBase);
+		myAppProperties.setAllow_external_references(true);
+		ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
 //		ourClient.registerInterceptor(new LoggingInterceptor(false));
 	}
 
 
 	@Test
 	public void testGetCdsServices() throws IOException {
-		assertEquals(DataFormatException.class,
-			assertThrows(FhirClientConnectionException.class, () -> ourClient.search().byUrl(ourClient.getServerBase()).execute()).getCause().getClass());
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpGet request = new HttpGet(ourCdsBase);
 		request.addHeader("Content-Type", "application/json");
 		assertEquals(200, httpClient.execute(request).getStatusLine().getStatusCode());
 	}
+
+	@Test
+	// TODO: Debug delay in Client.search().
+	public void testCdsServicesRequest() throws IOException {
+		// Server Load
+		transactionByLocation(ourRegistry, "Screening-bundle-r4.json", ourCtx);
+		Patient ourPatient = ourClient.read().resource(Patient.class).withId("HighRiskIDUPatient").execute();
+		assertNotNull(ourPatient);
+		assertEquals("HighRiskIDUPatient", ourPatient.getIdElement().getIdPart());
+		PlanDefinition ourPlanDefinition = ourClient.read().resource(PlanDefinition.class).withId("plandefinition-Screening").execute();
+		assertNotNull(ourPlanDefinition);
+		Bundle getPlanDefinitions = ourClient.search().forResource(PlanDefinition.class).returnBundle(Bundle.class).execute();
+		assertTrue(getPlanDefinitions.hasEntry());
+
+		// Update fhirServer Base
+		String jsonHooksRequest = stringFromResource("request-HighRiskIDUPatient.json");
+		Gson gsonRequest = new Gson();
+		JsonObject jsonRequestObject = gsonRequest.fromJson(jsonHooksRequest, JsonObject.class);
+		jsonRequestObject.addProperty("fhirServer", ourServerBase);
+
+		// Setup Client
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		HttpPost request = new HttpPost(ourCdsBase + "/plandefinition-Screening");
+		request.setEntity(new StringEntity(jsonRequestObject.toString()));
+		request.addHeader("Content-Type", "application/json");
+
+		CloseableHttpResponse response = httpClient.execute(request);
+		String result = EntityUtils.toString(response.getEntity());
+
+		Gson gsonResponse = new Gson();
+		JsonObject jsonResponseObject = gsonResponse.fromJson(result, JsonObject.class);
+
+		// Ensure Cards
+		assertNotNull(jsonResponseObject.get("cards"));
+		JsonArray cards = jsonResponseObject.get("cards").getAsJsonArray();
+
+		// Ensure Patient Detail
+		assertNotNull(cards.get(0).getAsJsonObject().get("detail"));
+		String patientName = cards.get(0).getAsJsonObject().get("detail").getAsString();
+		assertEquals("Ashley Madelyn", patientName);
+
+		// Ensure Summary
+		assertNotNull(cards.get(1));
+		assertNotNull(cards.get(1).getAsJsonObject().get("summary"));
+		String recommendation = cards.get(1).getAsJsonObject().get("summary").getAsString();
+		assertEquals("HIV Screening Recommended due to patient being at High Risk for HIV and over three months have passed since previous screening.", recommendation);
+
+		// Ensure Activity Definition / Suggestions
+		assertNotNull(cards.get(1).getAsJsonObject().get("suggestions"));
+		JsonArray suggestions = cards.get(1).getAsJsonObject().get("suggestions").getAsJsonArray();
+		assertNotNull(suggestions.get(0));
+		assertNotNull(suggestions.get(0).getAsJsonObject().get("actions"));
+		JsonArray actions = suggestions.get(0).getAsJsonObject().get("actions").getAsJsonArray();
+		assertNotNull(actions.get(0));
+		assertNotNull(actions.get(0).getAsJsonObject().get("resource"));
+		JsonObject suggestionsActivityResource = actions.get(0).getAsJsonObject().get("resource").getAsJsonObject();
+		assertNotNull(suggestionsActivityResource.get("resourceType"));
+		assertEquals("ServiceRequest", suggestionsActivityResource.get("resourceType").getAsString());
+		assertNotNull(suggestionsActivityResource.get("subject"));
+		String expectedPatientID = ourPatient.getIdElement().getIdPart();
+		String actualPatientID = suggestionsActivityResource.get("subject").getAsJsonObject().get("reference").getAsString();
+		assertEquals("Patient/" + expectedPatientID, actualPatientID);
+	}
+
+
 }
 

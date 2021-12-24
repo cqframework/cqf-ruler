@@ -4,6 +4,7 @@ import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.runtime.CqlList;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 
+@SuppressWarnings("overrides")
 public class Retrieve {
 
     private String context;

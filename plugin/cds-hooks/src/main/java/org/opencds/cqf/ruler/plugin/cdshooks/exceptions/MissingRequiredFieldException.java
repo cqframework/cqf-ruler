@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.exceptions;
 
+@SuppressWarnings("serial")
 public class MissingRequiredFieldException extends RuntimeException {
 
     private String message;

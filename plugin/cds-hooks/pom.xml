@@ -1,37 +1,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.opencds.cqf.ruler</groupId>
-        <artifactId>cqf-ruler</artifactId>
-        <version>0.5.0-SNAPSHOT</version>
-        <relativePath>../..</relativePath>
-    </parent>
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.opencds.cqf.ruler</groupId>
+		<artifactId>cqf-ruler</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+		<relativePath>../..</relativePath>
+	</parent>
 
     <artifactId>cqf-ruler-plugin-cds-hooks</artifactId>
     <dependencies>
-        <dependency>
-            <groupId>org.opencds.cqf.ruler</groupId>
-            <artifactId>cqf-ruler-external</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opencds.cqf.ruler</groupId>
-            <artifactId>cqf-ruler-server</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
-            <classifier>classes</classifier>
-            <scope>provided</scope>
-        </dependency>
 		 <dependency>
 			 <groupId>org.opencds.cqf.ruler</groupId>
-			 <artifactId>cqf-ruler-plugin-security</artifactId>
+			 <artifactId>cqf-ruler-external</artifactId>
 			 <version>0.5.0-SNAPSHOT</version>
 			 <scope>provided</scope>
 		 </dependency>
 		 <dependency>
 			 <groupId>org.opencds.cqf.ruler</groupId>
-			 <artifactId>cqf-ruler-plugin-utility</artifactId>
+			 <artifactId>cqf-ruler-server</artifactId>
+			 <version>0.5.0-SNAPSHOT</version>
+			 <classifier>classes</classifier>
+			 <scope>provided</scope>
+		 </dependency>
+		 <dependency>
+			 <groupId>org.opencds.cqf.ruler</groupId>
+			 <artifactId>cqf-ruler-plugin-security</artifactId>
 			 <version>0.5.0-SNAPSHOT</version>
 			 <scope>provided</scope>
 		 </dependency>
@@ -47,31 +41,43 @@
 			 <version>0.5.0-SNAPSHOT</version>
 			 <scope>provided</scope>
 		 </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-		 <!-- No Bueno - NoClassDefinition Exceptions at Runtime -->
-<!--		 <dependency>-->
-<!--			 <groupId>org.opencds.cqf</groupId>-->
-<!--			 <artifactId>cds</artifactId>-->
-<!--			 <version>1.3.1-SNAPSHOT</version>-->
-<!--		 </dependency>-->
+		 <dependency>
+			 <groupId>org.opencds.cqf.ruler</groupId>
+			 <artifactId>cqf-ruler-plugin-utility</artifactId>
+			 <version>0.5.0-SNAPSHOT</version>
+			 <scope>provided</scope>
+		 </dependency>
+		 <dependency>
+			 <groupId>org.opencds.cqf.ruler</groupId>
+			 <artifactId>cqf-ruler-test</artifactId>
+			 <version>0.5.0-SNAPSHOT</version>
+			 <scope>test</scope>
+		 </dependency>
+		 <dependency>
+			 <groupId>org.junit.jupiter</groupId>
+			 <artifactId>junit-jupiter-api</artifactId>
+			 <scope>test</scope>
+		 </dependency>
+		 <dependency>
+			 <groupId>org.junit.jupiter</groupId>
+			 <artifactId>junit-jupiter-engine</artifactId>
+			 <scope>test</scope>
+		 </dependency>
+		 <dependency>
+			 <groupId>org.springframework.boot</groupId>
+			 <artifactId>spring-boot-starter-test</artifactId>
+			 <scope>test</scope>
+		 </dependency>
+		 <dependency>
+			 <groupId>org.springframework.boot</groupId>
+			 <artifactId>spring-boot-autoconfigure</artifactId>
+			 <scope>provided</scope>
+		 </dependency>
+		 <dependency>
+			 <groupId>org.opencds.cqf.ruler</groupId>
+			 <artifactId>cqf-ruler-plugin-test-utility</artifactId>
+			 <version>0.5.0-SNAPSHOT</version>
+			 <scope>test</scope>
+		 </dependency>
 	 </dependencies>
 </project>

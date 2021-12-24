@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.plugin.cdshooks.discovery;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@SuppressWarnings("serial")
 public class PrefetchUrlList extends CopyOnWriteArrayList<String> {
 
     @Override
