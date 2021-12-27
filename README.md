@@ -31,22 +31,23 @@ This project includes the `hapi-fhir-jpaserver-starter` project as a submodule a
 
 `git clone --recurse-submodules https://github.com/DBCG/cqf-ruler.git`
 
+or if you've already checked out the repo, use
+
+`git submodule update --init --recursive`
+
 #### Java
 
 Go to [http://www.oracle.com/technetwork/java/javase/downloads/](
 http://www.oracle.com/technetwork/java/javase/downloads/) and download the
 latest (version 11 or higher) JDK for your platform, and install it.
 
-#### Apache Maven 3.5.3
+#### Apache Maven
 
-Go to [https://maven.apache.org](https://maven.apache.org), visit the main
-"Download" page, and under "Files" download the 3.5.3 binary.  Then unpack that archive file and follow the installation
-instructions in its README.txt.  The end result of this should be that the
-binary "mvn" is now in your path.
+This project uses the [Maven wrapper](https://github.com/apache/maven-wrapper) to ensure the correct verison of Maven is available on your machine. Use `./mvnw` to invoke it.
 
 ### Build
 
-`mvn package`
+`./mvnw package`
 
 Visit the [wiki](https://github.com/DBCG/cqf-ruler/wiki) for more documentation.
 
@@ -65,21 +66,20 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.opencds.cqf.ruler.plugin.example.ExampleConfig
 ```
 
-Any Beans defined in that root plugin config that implement one the cqf-ruler plugin apis will be loaded by the cqf-ruler on startup. There's full plugin example [here](plugin/hello-world).
+Any Beans defined in that root plugin config that implement one the cqf-ruler plugin apis will be loaded by the cqf-ruler on startup. There's a full plugin example [here](plugin/hello-world).
 
-Plugins should reference the `cqf-ruler-server` project using the `provided` scope. This tells Maven that the `cqf-ruler-server` classes will be available at runtime, and not to include those dependencies in the plugin jar.
+Plugins should reference the `cqf-ruler-core` project using the `provided` scope. This tells Maven that the `cqf-ruler-core` classes will be available at runtime, and not to include those dependencies in the plugin jar.
 
 ```xml
 <dependency>
     <groupId>org.opencds.cqf.ruler</groupId>
-    <artifactId>cqf-ruler-server</artifactId>
+    <artifactId>cqf-ruler-core</artifactId>
     <version>0.5.0-SNAPSHOT</version>
-    <classifier>classes</classifier>
     <scope>provided</scope>
 </dependency>
 ```
 
-Any other dependencies also required by the base `cqf-ruler-server` may also be listed in `provided` scope
+Any other dependencies also required by the base `cqf-ruler-core` may also be listed in `provided` scope
 
 #### Plugin API
 
