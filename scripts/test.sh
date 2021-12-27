@@ -4,11 +4,11 @@
 set -euxo pipefail
 bash -n "$0"
 
-CMD="mvn verify -T 4 -B -V -P ci"
+CMD="mvn verify -T 4 -B -V"
 
 if [[ ! -z "$TRAVIS_TAG" ]]
 then
-    CMD="$CMD,release"
+    CMD="$CMD -P release"
 fi
 
 eval $CMD

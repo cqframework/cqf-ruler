@@ -24,7 +24,7 @@ fi
 # Import maven settings
 cp .travis.settings.xml $HOME/.m2/settings.xml
 
-CMD="mvn deploy -DskipTests=true -Dmaven.test.skip=true -T 4 -B -P ci"
+CMD="mvn deploy -DskipTests=true -Dmaven.test.skip=true -T 4 -B"
 
 # Import signing key and publish a release on a tag
 if [[ ! -z "$TRAVIS_TAG" ]]
