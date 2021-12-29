@@ -105,7 +105,7 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 			case R4:
 				return getCodes((org.hl7.fhir.r4.model.ValueSet) vs);
 			case R5:
-				return getCodes((org.hl7.fhir.dstu3.model.ValueSet) vs);
+				return getCodes((org.hl7.fhir.r5.model.ValueSet) vs);
 			default:
 				throw new IllegalArgumentException(String.format("expand does not support FHIR version %s",
 						vs.getStructureFhirVersionEnum().getFhirVersionString()));
@@ -133,9 +133,9 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 
 		// If expansion was successful, use the codes.
 		if (theValueSet.hasExpansion() && theValueSet.getExpansion().hasContains()) {
-			for (org.hl7.fhir.dstu3.model.ValueSet.ValueSetExpansionContainsComponent vsecc : theValueSet.getExpansion()
+			for (org.hl7.fhir.dstu3.model.ValueSet.ValueSetExpansionContainsComponent vse : theValueSet.getExpansion()
 					.getContains()) {
-				codes.add(new Code().withCode(vsecc.getCode()).withSystem(vsecc.getSystem()));
+				codes.add(new Code().withCode(vse.getCode()).withSystem(vse.getSystem()));
 			}
 		}
 		// If not, best-effort based on codes. Should probably make this configurable to
@@ -165,9 +165,9 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 
 		// If expansion was successful, use the codes.
 		if (theValueSet.hasExpansion() && theValueSet.getExpansion().hasContains()) {
-			for (org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent vsecc : theValueSet.getExpansion()
+			for (org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent vse : theValueSet.getExpansion()
 					.getContains()) {
-				codes.add(new Code().withCode(vsecc.getCode()).withSystem(vsecc.getSystem()));
+				codes.add(new Code().withCode(vse.getCode()).withSystem(vse.getSystem()));
 			}
 		}
 		// If not, best-effort based on codes. Should probably make this configurable to
@@ -196,9 +196,9 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 
 		// If expansion was successful, use the codes.
 		if (theValueSet.hasExpansion() && theValueSet.getExpansion().hasContains()) {
-			for (org.hl7.fhir.r5.model.ValueSet.ValueSetExpansionContainsComponent vsecc : theValueSet.getExpansion()
+			for (org.hl7.fhir.r5.model.ValueSet.ValueSetExpansionContainsComponent vse : theValueSet.getExpansion()
 					.getContains()) {
-				codes.add(new Code().withCode(vsecc.getCode()).withSystem(vsecc.getSystem()));
+				codes.add(new Code().withCode(vse.getCode()).withSystem(vse.getSystem()));
 			}
 		}
 		// If not, best-effort based on codes. Should probably make this configurable to

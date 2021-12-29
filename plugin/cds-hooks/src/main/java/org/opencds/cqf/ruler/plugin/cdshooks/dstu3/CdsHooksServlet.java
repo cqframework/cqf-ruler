@@ -1,68 +1,5 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.dstu3;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.cql.dstu3.provider.LibraryResolutionProviderImpl;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
-import ca.uhn.fhir.jpa.starter.AppProperties;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import org.apache.http.entity.ContentType;
-
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.PlanDefinition;
-
-import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
-import org.opencds.cqf.cql.engine.debug.DebugMap;
-import org.opencds.cqf.cql.engine.exception.CqlException;
-import org.opencds.cqf.cql.engine.execution.Context;
-import org.opencds.cqf.cql.engine.execution.LibraryLoader;
-import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
-import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
-import org.opencds.cqf.cql.engine.model.ModelResolver;
-import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-
-import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksProperties;
-import org.opencds.cqf.ruler.plugin.cdshooks.discovery.DiscoveryResolutionStu3;
-import org.opencds.cqf.ruler.plugin.cdshooks.dstu3.helpers.LibraryHelper;
-import org.opencds.cqf.ruler.plugin.cdshooks.evaluation.EvaluationContext;
-import org.opencds.cqf.ruler.plugin.cdshooks.evaluation.Stu3EvaluationContext;
-import org.opencds.cqf.ruler.plugin.cdshooks.hooks.Hook;
-import org.opencds.cqf.ruler.plugin.cdshooks.hooks.HookFactory;
-import org.opencds.cqf.ruler.plugin.cdshooks.hooks.Stu3HookEvaluator;
-import org.opencds.cqf.ruler.plugin.cdshooks.providers.ProviderConfiguration;
-import org.opencds.cqf.ruler.plugin.cdshooks.request.Request;
-import org.opencds.cqf.ruler.plugin.cdshooks.request.JsonHelper;
-import org.opencds.cqf.ruler.plugin.cdshooks.response.CdsCard;
-
-import org.opencds.cqf.ruler.plugin.cql.CqlConfig;
-import org.opencds.cqf.ruler.plugin.cql.JpaFhirRetrieveProvider;
-
-import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
-
-import org.opencds.cqf.ruler.plugin.cr.dstu3.provider.PlanDefinitionApplyProvider;
-import org.opencds.cqf.ruler.plugin.utility.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -72,83 +9,101 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.apache.http.entity.ContentType;
+import org.cqframework.cql.elm.execution.VersionedIdentifier;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Library;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.opencds.cqf.cql.engine.debug.DebugMap;
+import org.opencds.cqf.cql.engine.exception.CqlException;
+import org.opencds.cqf.cql.engine.execution.Context;
+import org.opencds.cqf.cql.engine.execution.LibraryLoader;
+import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.ruler.plugin.cdshooks.discovery.DiscoveryResolutionStu3;
+import org.opencds.cqf.ruler.plugin.cdshooks.evaluation.EvaluationContext;
+import org.opencds.cqf.ruler.plugin.cdshooks.evaluation.Stu3EvaluationContext;
+import org.opencds.cqf.ruler.plugin.cdshooks.hooks.Hook;
+import org.opencds.cqf.ruler.plugin.cdshooks.hooks.HookFactory;
+import org.opencds.cqf.ruler.plugin.cdshooks.hooks.Stu3HookEvaluator;
+import org.opencds.cqf.ruler.plugin.cdshooks.providers.ProviderConfiguration;
+import org.opencds.cqf.ruler.plugin.cdshooks.request.JsonHelper;
+import org.opencds.cqf.ruler.plugin.cdshooks.request.Request;
+import org.opencds.cqf.ruler.plugin.cdshooks.response.CdsCard;
+import org.opencds.cqf.ruler.plugin.cql.CqlConfig;
+import org.opencds.cqf.ruler.plugin.cql.JpaDataProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.LibraryLoaderFactory;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.provider.PlanDefinitionApplyProvider;
+import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
+import org.opencds.cqf.ruler.plugin.utility.ResolutionUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+import ca.uhn.fhir.jpa.starter.AppProperties;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
+
+public class CdsHooksServlet extends HttpServlet implements ClientUtilities, ResolutionUtilities {
 
 	private static final long serialVersionUID = 1L;
-	private FhirContext ourCtx = FhirContext.forDstu3Cached();
 
 	private FhirVersionEnum version = FhirVersionEnum.DSTU3;
-	private static final Logger logger = LoggerFactory.getLogger(org.opencds.cqf.ruler.plugin.cdshooks.dstu3.CdsHooksServlet.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(org.opencds.cqf.ruler.plugin.cdshooks.dstu3.CdsHooksServlet.class);
 
 	@Autowired
 	private CqlConfig cqlConfig;
 
 	@Autowired
+	private DaoRegistry daoRegistry;
+
+	@Autowired
 	private AppProperties myAppProperties;
 
 	@Autowired
-	private CdsHooksProperties myHooksProperties;
-
+	private LibraryLoaderFactory libraryLoaderFactory;
 	@Autowired
-	private DaoRegistry myDaoRegistry;
+	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
 
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
 
-	//	@Autowired
+	@Autowired
 	private PlanDefinitionApplyProvider planDefinitionProvider;
 
 	@Autowired
-	private LibraryResolutionProviderImpl libraryResolutionProvider;
-
-	private JpaFhirRetrieveProvider fhirRetrieveProvider;
+	private JpaDataProviderFactory fhirRetrieveProviderFactory;
 
 	@Autowired
 	JpaTerminologyProviderFactory myJpaTerminologyProviderFactory;
 
-	//	@Autowired
-	private TerminologyProvider serverTerminologyProvider;
-
-	//	@Autowired
+	@Autowired
 	private ModelResolver modelResolver;
 
 	@Autowired
-	private LibraryHelper libraryHelper;
-
-	//	@Autowired
 	private AtomicReference<JsonArray> services;
-
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void init() {
-		// System level providers
-		ApplicationContext appCtx = (ApplicationContext) getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
-
-		this.myAppProperties = appCtx.getBean(AppProperties.class);
-		this.myHooksProperties = appCtx.getBean(CdsHooksProperties.class);
-		this.cqlConfig = appCtx.getBean(CqlConfig.class);
-
-		this.providerConfiguration = appCtx.getBean(ProviderConfiguration.class);
-		this.planDefinitionProvider = appCtx.getBean(PlanDefinitionApplyProvider.class);
-
-		this.libraryResolutionProvider = appCtx.getBean(LibraryResolutionProviderImpl.class);
-
-		this.myJpaTerminologyProviderFactory = appCtx.getBean(JpaTerminologyProviderFactory.class);
-		this.serverTerminologyProvider = myJpaTerminologyProviderFactory.create(new SystemRequestDetails());
-
-		this.modelResolver = this.cqlConfig.modelResolverDstu3();
-		this.libraryHelper = appCtx.getBean(LibraryHelper.class);
-
-		SearchParameterResolver theSearchParameterResolver = this.cqlConfig.searchParameterResolver(ourCtx);
-		this.myDaoRegistry = appCtx.getBean(DaoRegistry.class);
-		this.fhirRetrieveProvider = this.cqlConfig.jpaFhirRetrieveProvider(myDaoRegistry, theSearchParameterResolver);
-
-		this.services = appCtx.getBean("globalCdsServiceCache", AtomicReference.class);
-
-		logger.info("Initialized cds-services");
-	}
 
 	protected ProviderConfiguration getProviderConfiguration() {
 		return this.providerConfiguration;
@@ -167,9 +122,10 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-		throws ServletException, IOException {
+			throws ServletException, IOException {
 		logger.info(request.getRequestURI());
-		if (!request.getRequestURL().toString().endsWith("/cds-services") && !request.getRequestURL().toString().endsWith("/cds-services/")) {
+		if (!request.getRequestURL().toString().endsWith("/cds-services")
+				&& !request.getRequestURL().toString().endsWith("/cds-services/")) {
 			logger.error(request.getRequestURI());
 			throw new ServletException("This servlet is not configured to handle GET requests.");
 		}
@@ -181,15 +137,16 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
 	@Override
 	@SuppressWarnings("deprecation")
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		logger.info(request.getRequestURI());
 
 		try {
 			// validate that we are dealing with JSON
 			if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
-				throw new ServletException(String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
+				throw new ServletException(
+						String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
 			}
-
 
 			String baseUrl = this.myAppProperties.getServer_address();
 			String service = request.getPathInfo().replace("/", "");
@@ -198,7 +155,8 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 			JsonObject requestJson = parser.parse(request.getReader()).getAsJsonObject();
 			logger.info(requestJson.toString());
 
-			Request cdsHooksRequest = new Request(service, requestJson, JsonHelper.getObjectRequired(getService(service), "prefetch"));
+			Request cdsHooksRequest = new Request(service, requestJson,
+					JsonHelper.getObjectRequired(getService(service), "prefetch"));
 
 			Hook hook = HookFactory.createHook(cdsHooksRequest);
 
@@ -212,45 +170,55 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 			logger.info("cds-hooks local server address: " + baseUrl);
 			logger.info("cds-hooks fhir server address: " + hook.getRequest().getFhirServerUrl());
 
-			PlanDefinition planDefinition = planDefinitionProvider.getDao().read(new IdType(hook.getRequest().getServiceName()));
+			PlanDefinition planDefinition = planDefinitionProvider.getDao()
+					.read(new IdType(hook.getRequest().getServiceName()));
 			AtomicBoolean planDefinitionHookMatchesRequestHook = new AtomicBoolean(false);
 
 			planDefinition.getAction().forEach(action -> {
 				action.getTriggerDefinition().forEach(triggerDefn -> {
-					if(hookName.equals(triggerDefn.getEventName())){
+					if (hookName.equals(triggerDefn.getEventName())) {
 						planDefinitionHookMatchesRequestHook.set(true);
 						return;
 					}
 				});
-				if(planDefinitionHookMatchesRequestHook.get()){
+				if (planDefinitionHookMatchesRequestHook.get()) {
 					return;
 				}
 			});
-			if(!planDefinitionHookMatchesRequestHook.get()){
+			if (!planDefinitionHookMatchesRequestHook.get()) {
 				throw new ServletException("ERROR: Request hook does not match the service called.");
 			}
-			LibraryLoader libraryLoader = this.libraryHelper.createLibraryLoader(libraryResolutionProvider);
 
-			//todo how to utilize requestDetails
+			// No tenant information available, so create local system request
 			RequestDetails requestDetails = new SystemRequestDetails();
-			org.cqframework.cql.elm.execution.Library library = this.libraryHelper.resolvePrimaryLibrary(planDefinition, libraryLoader, libraryResolutionProvider, requestDetails);
 
-			CompositeDataProvider provider = new CompositeDataProvider(this.modelResolver, fhirRetrieveProvider);
+			LibraryLoader libraryLoader = libraryLoaderFactory.create(
+				new ArrayList<LibraryContentProvider>(
+						Arrays.asList(
+								jpaLibraryContentProviderFactory.create(requestDetails))));
+
+			Library primaryLibrary = this.resolveByCanonicalUrl(daoRegistry, Library.class, planDefinition.getLibrary().get(0).getReference());
+
+			org.cqframework.cql.elm.execution.Library library = libraryLoader.load(
+									new VersionedIdentifier().withId(primaryLibrary.getName()).withVersion(primaryLibrary.getVersion()));
 
 			Context context = new Context(library);
 
 			context.setDebugMap(this.getDebugMap());
-
-			context.registerDataProvider("http://hl7.org/fhir", provider); // TODO make sure tooling handles remote
 			// provider case
+			// No tenant information available for cds-hooks
+			TerminologyProvider serverTerminologyProvider = myJpaTerminologyProviderFactory.create(requestDetails);
+
+			context.registerDataProvider("http://hl7.org/fhir", fhirRetrieveProviderFactory.create(requestDetails, serverTerminologyProvider)); // TODO make sure tooling handles remote
 			context.registerTerminologyProvider(serverTerminologyProvider);
 			context.registerLibraryLoader(libraryLoader);
 			context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
 			context.setExpressionCaching(true);
 
-			EvaluationContext<PlanDefinition> evaluationContext = new Stu3EvaluationContext(hook, version, FhirContext.forCached(FhirVersionEnum.DSTU3).newRestfulGenericClient(baseUrl),
-				serverTerminologyProvider, context, library,
-				planDefinition, this.getProviderConfiguration(), this.modelResolver);
+			EvaluationContext<PlanDefinition> evaluationContext = new Stu3EvaluationContext(hook, version,
+					FhirContext.forCached(FhirVersionEnum.DSTU3).newRestfulGenericClient(baseUrl),
+					serverTerminologyProvider, context, library,
+					planDefinition, this.getProviderConfiguration(), this.modelResolver);
 
 			this.setAccessControlHeaders(response);
 
@@ -282,8 +250,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 
 			this.printStackTrack(e, response);
 			logger.error(e.toString());
-		}
-		catch (CqlException e) {
+		} catch (CqlException e) {
 			this.setAccessControlHeaders(response);
 			response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
 			response.getWriter().println("ERROR: Exception in CQL Execution.");
@@ -301,12 +268,13 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	}
 
 	private void handleServerResponseException(BaseServerResponseException e, HttpServletResponse response)
-		throws IOException {
+			throws IOException {
 		switch (e.getStatusCode()) {
 			case 401:
 			case 403:
 				response.getWriter().println("Precondition Failed. Remote FHIR server returned: " + e.getStatusCode());
-				response.getWriter().println("Ensure that the fhirAuthorization token is set or that the remote server allows unauthenticated access.");
+				response.getWriter().println(
+						"Ensure that the fhirAuthorization token is set or that the remote server allows unauthenticated access.");
 				response.setStatus(412);
 				break;
 			case 404:
@@ -337,7 +305,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	}
 
 	private JsonObject getService(String service) {
-		JsonArray services =  getServicesArray();
+		JsonArray services = getServicesArray();
 		List<String> ids = new ArrayList<>();
 		for (JsonElement element : services) {
 			if (element.isJsonObject() && element.getAsJsonObject().has("id")) {
@@ -348,7 +316,7 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 			}
 		}
 		throw new InvalidRequestException(
-			"Cannot resolve service: " + service + "\nAvailable services: " + ids.toString());
+				"Cannot resolve service: " + service + "\nAvailable services: " + ids.toString());
 	}
 
 	private JsonArray getServicesArray() {
@@ -362,12 +330,13 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	}
 
 	private JsonObject getServices() {
-		DiscoveryResolutionStu3 discoveryResolutionStu3 = new DiscoveryResolutionStu3(createClient(ourCtx, this.myAppProperties.getServer_address()));
+		DiscoveryResolutionStu3 discoveryResolutionStu3 = new DiscoveryResolutionStu3(daoRegistry);
 
 		discoveryResolutionStu3.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
 
 		return discoveryResolutionStu3.resolve().getAsJson();
 	}
+
 
 	private String toJsonResponse(List<CdsCard> cards) {
 		JsonObject ret = new JsonObject();
@@ -386,13 +355,14 @@ public class CdsHooksServlet extends HttpServlet implements ClientUtilities {
 	private void setAccessControlHeaders(HttpServletResponse resp) {
 		if (this.myAppProperties.getCors() != null) {
 			if (this.myAppProperties.getCors().getAllow_Credentials()) {
-				resp.setHeader("Access-Control-Allow-Origin", this.myAppProperties.getCors().getAllowed_origin().stream().findFirst().get());
+				resp.setHeader("Access-Control-Allow-Origin",
+						this.myAppProperties.getCors().getAllowed_origin().stream().findFirst().get());
 				resp.setHeader("Access-Control-Allow-Methods",
-					String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
+						String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
 				resp.setHeader("Access-Control-Allow-Headers", String.join(", ", Arrays.asList("x-fhir-starter", "Origin",
-					"Accept", "X-Requested-With", "Content-Type", "Authorization", "Cache-Control")));
+						"Accept", "X-Requested-With", "Content-Type", "Authorization", "Cache-Control")));
 				resp.setHeader("Access-Control-Expose-Headers",
-					String.join(", ", Arrays.asList("Location", "Content-Location")));
+						String.join(", ", Arrays.asList("Location", "Content-Location")));
 				resp.setHeader("Access-Control-Max-Age", "86400");
 			}
 		}

@@ -1,22 +1,21 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import java.io.IOException;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-
-import ca.uhn.fhir.jpa.starter.AppProperties;
 import org.apache.http.util.EntityUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Patient;
@@ -26,17 +25,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksConfig;
-import org.opencds.cqf.ruler.plugin.testutility.ResolutionUtilities;
+import org.opencds.cqf.ruler.plugin.utility.ResolutionUtilities;
+import org.opencds.cqf.ruler.test.ITestSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.starter.AppProperties;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
-
-import java.io.IOException;
 
 
 @ExtendWith(SpringExtension.class)
@@ -51,9 +52,8 @@ import java.io.IOException;
 	"hapi.fhir.fhir_version=r4",
 	"hapi.fhir.tester_enabled=false",
 	"hapi.fhir.allow_external_references=true",
-	"hapi.fhir.cdshooks.enabled=true"
 })
-public class CdsHooksServletIT implements org.opencds.cqf.ruler.plugin.testutility.ClientUtilities, ResolutionUtilities,
+public class CdsHooksServletIT implements ResolutionUtilities, ITestSupport,
 	org.opencds.cqf.ruler.plugin.utility.ClientUtilities  {
 
 	private IGenericClient ourClient;
@@ -100,13 +100,25 @@ public class CdsHooksServletIT implements org.opencds.cqf.ruler.plugin.testutili
 	// TODO: Debug delay in Client.search().
 	public void testCdsServicesRequest() throws IOException {
 		// Server Load
-		transactionByLocation(ourRegistry, "Screening-bundle-r4.json", ourCtx);
+		loadTransaction(ourRegistry, "Screening-bundle-r4.json", ourCtx);
 		Patient ourPatient = ourClient.read().resource(Patient.class).withId("HighRiskIDUPatient").execute();
 		assertNotNull(ourPatient);
 		assertEquals("HighRiskIDUPatient", ourPatient.getIdElement().getIdPart());
 		PlanDefinition ourPlanDefinition = ourClient.read().resource(PlanDefinition.class).withId("plandefinition-Screening").execute();
 		assertNotNull(ourPlanDefinition);
-		Bundle getPlanDefinitions = ourClient.search().forResource(PlanDefinition.class).returnBundle(Bundle.class).execute();
+		Bundle getPlanDefinitions = null;
+		int tries = 0;
+		do {
+			// Can take up to 10 seconds for HAPI to reindex searches
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			tries++;
+			getPlanDefinitions = ourClient.search().forResource(PlanDefinition.class).returnBundle(Bundle.class).execute();
+		} while(getPlanDefinitions.getEntry().size() == 0 && tries < 15);
 		assertTrue(getPlanDefinitions.hasEntry());
 
 		// Update fhirServer Base

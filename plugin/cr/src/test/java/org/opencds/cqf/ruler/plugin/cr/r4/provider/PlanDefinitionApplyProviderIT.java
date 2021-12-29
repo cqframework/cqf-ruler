@@ -2,18 +2,8 @@ package org.opencds.cqf.ruler.plugin.cr.r4.provider;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.apache.commons.io.FilenameUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.CarePlan;
 import org.hl7.fhir.r4.model.DomainResource;
@@ -25,7 +15,7 @@ import org.opencds.cqf.ruler.plugin.cql.CqlConfig;
 import org.opencds.cqf.ruler.plugin.cr.CrConfig;
 import org.opencds.cqf.ruler.plugin.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.plugin.devtools.r4.CodeSystemUpdateProvider;
-import org.opencds.cqf.ruler.plugin.testutility.IServerSupport;
+import org.opencds.cqf.ruler.test.ITestSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -44,7 +34,7 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 				"hapi.fhir.allow_external_references=true",
 				"hapi.fhir.enforce_referential_integrity_on_write=false"
 		})
-public class PlanDefinitionApplyProviderIT implements IServerSupport {
+public class PlanDefinitionApplyProviderIT implements ITestSupport {
 
 	@Autowired
 	private PlanDefinitionApplyProvider planDefinitionApplyProvider;
@@ -65,50 +55,22 @@ public class PlanDefinitionApplyProviderIT implements IServerSupport {
 
 	@BeforeEach
 	public void setup() throws Exception {
-		uploadTests("valueset");
+		uploadTests("valueset", ourCtx, myDaoRegistry);
 		codeSystemUpdateProvider.updateCodeSystems();
-		uploadTests("library");
-		planDefinitions = uploadTests("plandefinition");
+		uploadTests("library", ourCtx, myDaoRegistry);
+		planDefinitions = uploadTests("plandefinition", ourCtx, myDaoRegistry);
 	}
 
 	@Test
 	public void testPlanDefinitionApplyFormerSmoker() throws Exception {
 		DomainResource plandefinition = (DomainResource) planDefinitions.get("lcs-cds-patient-view");
 		// Patient First
-		uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
-		Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker");
+		uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient", ourCtx, myDaoRegistry);
+		Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker", ourCtx, myDaoRegistry);
 		IBaseResource patient = resources.get("Former-Smoker");
 		Object isFormerSmoker = planDefinitionApplyProvider.applyPlanDefinition(new SystemRequestDetails(),
 				plandefinition.getIdElement(), patient.getIdElement().getIdPart(), null, null, null, null, null, null, null,
 				null);
 		assertTrue(isFormerSmoker instanceof CarePlan);
-	}
-
-	private Map<String, IBaseResource> uploadTests(String testDirectory) throws URISyntaxException, IOException {
-		URL url = PlanDefinitionApplyProviderIT.class.getResource(testDirectory);
-		File testDir = new File(url.toURI());
-		return uploadTests(testDir.listFiles());
-	}
-
-	private Map<String, IBaseResource> uploadTests(File[] files) throws IOException {
-		Map<String, IBaseResource> resources = new HashMap<String, IBaseResource>();
-		for (File file : files) {
-			// depth first
-			if (file.isDirectory()) {
-				resources.putAll(uploadTests(file.listFiles()));
-			}
-		}
-		for (File file : files) {
-			if (file.isFile()) {
-				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(new FileInputStream(file.getAbsolutePath())));
-				String resourceString = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-				reader.close();
-				IBaseResource resource = loadResource(FilenameUtils.getExtension(file.getAbsolutePath()), resourceString,
-						ourCtx, myDaoRegistry);
-				resources.put(resource.getIdElement().getIdPart(), resource);
-			}
-		}
-		return resources;
 	}
 }

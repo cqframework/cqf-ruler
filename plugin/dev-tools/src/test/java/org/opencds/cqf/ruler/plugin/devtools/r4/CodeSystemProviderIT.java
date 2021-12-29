@@ -25,9 +25,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.devtools.DevToolsConfig;
-import org.opencds.cqf.ruler.plugin.testutility.IServerSupport;
 import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
 import org.opencds.cqf.ruler.plugin.utility.IdUtilities;
+import org.opencds.cqf.ruler.test.ITestSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ import ca.uhn.fhir.rest.param.UriParam;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=r4", "spring.batch.job.enabled=false", "spring.main.allow-bean-definition-overriding=true"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class CodeSystemProviderIT implements IServerSupport, IdUtilities, ClientUtilities {
+public class CodeSystemProviderIT implements ITestSupport, IdUtilities, ClientUtilities {
     private Logger log = LoggerFactory.getLogger(CodeSystemProviderIT.class);
 
     @Autowired

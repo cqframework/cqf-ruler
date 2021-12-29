@@ -29,6 +29,4 @@ public class SDCConfig {
     public OperationProvider dstu3ExtractProvider() {
         return new org.opencds.cqf.ruler.plugin.sdc.dstu3.ExtractProvider();
     }
-
-    // TODO: OAuth meta-data extenders
 }

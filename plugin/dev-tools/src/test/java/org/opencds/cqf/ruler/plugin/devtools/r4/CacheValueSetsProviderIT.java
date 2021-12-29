@@ -21,9 +21,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.devtools.DevToolsConfig;
-import org.opencds.cqf.ruler.plugin.testutility.IServerSupport;
 import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
 import org.opencds.cqf.ruler.plugin.utility.IdUtilities;
+import org.opencds.cqf.ruler.test.ITestSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -38,7 +38,7 @@ import ca.uhn.fhir.rest.param.StringAndListParam;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=r4", "spring.batch.job.enabled=false", "spring.main.allow-bean-definition-overriding=true"})
-public class CacheValueSetsProviderIT implements IServerSupport, IdUtilities, ClientUtilities {
+public class CacheValueSetsProviderIT implements ITestSupport, IdUtilities, ClientUtilities {
     @Autowired
     private CacheValueSetsProvider cacheValueSetsProvider;
 

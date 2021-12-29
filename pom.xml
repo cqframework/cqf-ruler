@@ -9,18 +9,10 @@
 
 	<modules>
 		<module>external</module>
+		<module>test</module>
+		<module>core</module>
+		<module>plugin</module>
 		<module>server</module>
-		<module>plugin/hello-world</module>
-		<module>plugin/test-utility</module>
-		<module>plugin/utility</module>
-		<module>plugin/ra</module>
-		<module>plugin/cpg</module>
-		<module>plugin/sdc</module>
-		<module>plugin/dev-tools</module>
-		<module>plugin/cql</module>
-		<module>plugin/cr</module>
-		<module>plugin/security</module>
-		<module>plugin/cds-hooks</module>
 	</modules>
 
 	<name>cqf-ruler</name>
@@ -432,6 +424,19 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<version>3.2.4</version>
+					<executions>
+						<execution>
+							<phase>package</phase>
+							<goals>
+								<goal>shade</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>3.3.2</version>
 					<configuration>
@@ -599,10 +604,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 			</plugin>
 			<plugin>
@@ -612,6 +613,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
@@ -633,21 +642,6 @@
 						</plugin>
 					</plugins>
 				</pluginManagement>
-			</build>
-		</profile>
-		<profile>
-			<id>ci</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-deploy-plugin</artifactId>
-					</plugin>
-				</plugins>
 			</build>
 		</profile>
 		<profile>
