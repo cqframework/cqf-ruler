@@ -1,26 +1,27 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.hooks;
 
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
-import org.opencds.cqf.ruler.plugin.cdshooks.evaluation.EvaluationContext;
-import org.opencds.cqf.ruler.plugin.cdshooks.providers.PrefetchDataProviderDstu2;
-import org.opencds.cqf.ruler.plugin.cdshooks.providers.PrefetchDataProviderR4;
-import org.opencds.cqf.ruler.plugin.cdshooks.providers.PrefetchDataProviderStu3;
-import org.opencds.cqf.ruler.plugin.cdshooks.providers.PriorityRetrieveProvider;
-import org.opencds.cqf.ruler.plugin.cdshooks.response.CdsCard;
 import org.cqframework.cql.elm.execution.ListTypeSpecifier;
 import org.cqframework.cql.elm.execution.ParameterDef;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.execution.Context;
-import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.fhir.retrieve.RestFhirRetrieveProvider;
-import org.opencds.cqf.cql.engine.retrieve.TerminologyAwareRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.retrieve.TerminologyAwareRetrieveProvider;
+import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
+import org.opencds.cqf.ruler.plugin.cdshooks.evaluation.EvaluationContext;
+import org.opencds.cqf.ruler.plugin.cdshooks.providers.PrefetchDataProviderDstu2;
+import org.opencds.cqf.ruler.plugin.cdshooks.providers.PrefetchDataProviderR4;
+import org.opencds.cqf.ruler.plugin.cdshooks.providers.PrefetchDataProviderStu3;
+import org.opencds.cqf.ruler.plugin.cdshooks.response.CdsCard;
 
-import java.io.IOException;
-import java.util.List;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 
 public abstract class BaseHookEvaluator<P extends IBaseResource> {
@@ -65,7 +66,7 @@ public abstract class BaseHookEvaluator<P extends IBaseResource> {
         // TODO: Get the "system" terminology provider.
         prefetchRetriever.setTerminologyProvider(context.getContext().resolveTerminologyProvider());
 
-        PriorityRetrieveProvider priorityRetrieveProvider = new PriorityRetrieveProvider(prefetchRetriever, remoteRetriever);
+        PriorityRetrieveProvider priorityRetrieveProvider = new PriorityRetrieveProvider(Arrays.asList(prefetchRetriever, remoteRetriever));
         context.getContext().registerDataProvider("http://hl7.org/fhir",
                 new CompositeDataProvider(this.modelResolver, priorityRetrieveProvider));
         context.getContext().registerTerminologyProvider(prefetchRetriever.getTerminologyProvider());
