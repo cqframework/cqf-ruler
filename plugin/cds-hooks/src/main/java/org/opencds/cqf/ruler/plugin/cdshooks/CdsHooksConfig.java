@@ -13,7 +13,6 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
 import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
@@ -41,13 +40,6 @@ public class CdsHooksConfig {
 	}
 
 	@Bean
-	@Primary
-	@Conditional(OnDSTU3Condition.class)
-	public ca.uhn.fhir.cql.dstu3.provider.LibraryResolutionProviderImpl libraryResolutionProviderDstu3() {
-		return new ca.uhn.fhir.cql.dstu3.provider.LibraryResolutionProviderImpl();
-	}
-
-	@Bean
 	@Conditional(OnDSTU3Condition.class)
 	public ServletRegistrationBean<org.opencds.cqf.ruler.plugin.cdshooks.dstu3.CdsHooksServlet> cdsHooksRegistrationBeanDstu3() {
 		org.opencds.cqf.ruler.plugin.cdshooks.dstu3.CdsHooksServlet cdsHooksServlet = new org.opencds.cqf.ruler.plugin.cdshooks.dstu3.CdsHooksServlet();
@@ -58,13 +50,6 @@ public class CdsHooksConfig {
 		registrationBean.addUrlMappings("/cds-services/*");
 		registrationBean.setLoadOnStartup(1);
 		return registrationBean;
-	}
-
-	@Bean
-	@Primary
-	@Conditional(OnR4Condition.class)
-	public ca.uhn.fhir.cql.r4.provider.LibraryResolutionProviderImpl libraryResolutionProviderR4() {
-		return new ca.uhn.fhir.cql.r4.provider.LibraryResolutionProviderImpl();
 	}
 
 	@Bean
