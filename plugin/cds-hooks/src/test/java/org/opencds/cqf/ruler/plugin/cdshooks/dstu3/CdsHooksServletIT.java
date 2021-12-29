@@ -99,7 +99,7 @@ public class CdsHooksServletIT implements ResolutionUtilities,
 	// TODO: Add Opioid Tests once $apply-cql is implemented.
 	public void testCdsServicesRequest() throws IOException {
 		// Server Load
-		loadTransaction(ourRegistry, "HelloWorldPatientView-bundle.json", ourCtx);
+		loadTransaction("HelloWorldPatientView-bundle.json", ourCtx, ourRegistry);
 		loadResource("hello-world-patient-view-patient.json", ourCtx, ourRegistry);
 		Patient ourPatient = ourClient.read().resource(Patient.class).withId("patient-hello-world-patient-view").execute();
 		assertNotNull(ourPatient);

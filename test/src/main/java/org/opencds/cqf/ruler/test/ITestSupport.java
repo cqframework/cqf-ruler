@@ -29,6 +29,15 @@ import ca.uhn.fhir.parser.IParser;
 
 public interface ITestSupport {
 
+	@SuppressWarnings("unchecked")
+	public default Object loadTransaction(String theLocation, FhirContext theFhirContext, DaoRegistry theDaoRegistry)
+		throws IOException {
+		String json = stringFromResource(theLocation);
+		IBaseBundle resource = (IBaseBundle)theFhirContext.newJsonParser().parseResource(json);
+		Object result = theDaoRegistry.getSystemDao().transaction(new SystemRequestDetails(), resource);
+		return result;
+	}
+
 	default IBaseResource loadResource(String theLocation, FhirContext theFhirContext, DaoRegistry theDaoRegistry)
 			throws IOException {
 		String json = stringFromResource(theLocation);
@@ -101,15 +110,5 @@ public interface ITestSupport {
 			}
 		}
 		return resources;
-	}
-
-	@SuppressWarnings("unchecked")
-	public default Object loadTransaction(
-		DaoRegistry theDaoRegistry, String theLocation, FhirContext theFhirContext)
-		throws IOException {
-		String json = stringFromResource(theLocation);
-		IBaseBundle resource = (IBaseBundle)theFhirContext.newJsonParser().parseResource(json);
-		Object result = theDaoRegistry.getSystemDao().transaction(new SystemRequestDetails(), resource);
-		return result;
 	}
 }

@@ -100,7 +100,7 @@ public class CdsHooksServletIT implements ResolutionUtilities, ITestSupport,
 	// TODO: Debug delay in Client.search().
 	public void testCdsServicesRequest() throws IOException {
 		// Server Load
-		loadTransaction(ourRegistry, "Screening-bundle-r4.json", ourCtx);
+		loadTransaction("Screening-bundle-r4.json", ourCtx, ourRegistry);
 		Patient ourPatient = ourClient.read().resource(Patient.class).withId("HighRiskIDUPatient").execute();
 		assertNotNull(ourPatient);
 		assertEquals("HighRiskIDUPatient", ourPatient.getIdElement().getIdPart());
