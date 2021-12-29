@@ -68,7 +68,7 @@ public class CqlConfig {
 	}
 
 	@Bean
-	SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
+	public SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
 		return new SearchParameterResolver(fhirContext);
 	}
 
@@ -92,7 +92,13 @@ public class CqlConfig {
 	}
 
 	@Bean
-	JpaTerminologyProviderFactory jpaTerminologyProviderFactory(ITermReadSvc theTerminologySvc,
+	public JpaFhirRetrieveProvider jpaFhirRetrieveProvider(DaoRegistry daoRegistry,
+											 SearchParameterResolver searchParameterResolver) {
+		return new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver);
+	}
+
+	@Bean
+	public JpaTerminologyProviderFactory jpaTerminologyProviderFactory(ITermReadSvc theTerminologySvc,
 			DaoRegistry theDaoRegistry,
 			IValidationSupport theValidationSupport) {
 		return rd -> new JpaTerminologyProvider(theTerminologySvc, theDaoRegistry, theValidationSupport, rd);
@@ -172,7 +178,7 @@ public class CqlConfig {
 		return new CachingModelResolverDecorator(new Dstu3FhirModelResolver());
 	}
 
-	@Bean
+	@Bean(name = "r4ModelResolver")
 	@Primary
 	@Conditional(OnR4Condition.class)
 	public ModelResolver modelResolverR4() {

@@ -1,0 +1,11 @@
+hapi:
+   fhir:
+      cdshooks:
+         enabled: true
+         fhirserver:
+            expandValueSets: true
+            maxCodesPerQuery: 64
+            searchStyle: GET
+         prefetch:
+            maxUriLength: 8000
+

@@ -1,0 +1,378 @@
+package org.opencds.cqf.ruler.plugin.cdshooks.dstu3;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.apache.http.entity.ContentType;
+import org.cqframework.cql.elm.execution.VersionedIdentifier;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Library;
+import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.opencds.cqf.cql.engine.debug.DebugMap;
+import org.opencds.cqf.cql.engine.exception.CqlException;
+import org.opencds.cqf.cql.engine.execution.Context;
+import org.opencds.cqf.cql.engine.execution.LibraryLoader;
+import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
+import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.ruler.plugin.cdshooks.discovery.DiscoveryResolutionStu3;
+import org.opencds.cqf.ruler.plugin.cdshooks.evaluation.EvaluationContext;
+import org.opencds.cqf.ruler.plugin.cdshooks.evaluation.Stu3EvaluationContext;
+import org.opencds.cqf.ruler.plugin.cdshooks.hooks.Hook;
+import org.opencds.cqf.ruler.plugin.cdshooks.hooks.HookFactory;
+import org.opencds.cqf.ruler.plugin.cdshooks.hooks.Stu3HookEvaluator;
+import org.opencds.cqf.ruler.plugin.cdshooks.providers.ProviderConfiguration;
+import org.opencds.cqf.ruler.plugin.cdshooks.request.JsonHelper;
+import org.opencds.cqf.ruler.plugin.cdshooks.request.Request;
+import org.opencds.cqf.ruler.plugin.cdshooks.response.CdsCard;
+import org.opencds.cqf.ruler.plugin.cql.CqlConfig;
+import org.opencds.cqf.ruler.plugin.cql.JpaDataProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
+import org.opencds.cqf.ruler.plugin.cql.LibraryLoaderFactory;
+import org.opencds.cqf.ruler.plugin.cr.dstu3.provider.PlanDefinitionApplyProvider;
+import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
+import org.opencds.cqf.ruler.plugin.utility.ResolutionUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
+import ca.uhn.fhir.jpa.starter.AppProperties;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
+
+public class CdsHooksServlet extends HttpServlet implements ClientUtilities, ResolutionUtilities {
+
+	private static final long serialVersionUID = 1L;
+
+	private FhirVersionEnum version = FhirVersionEnum.DSTU3;
+	private static final Logger logger = LoggerFactory
+			.getLogger(org.opencds.cqf.ruler.plugin.cdshooks.dstu3.CdsHooksServlet.class);
+
+	@Autowired
+	private CqlConfig cqlConfig;
+
+	@Autowired
+	private DaoRegistry daoRegistry;
+
+	@Autowired
+	private AppProperties myAppProperties;
+
+	@Autowired
+	private LibraryLoaderFactory libraryLoaderFactory;
+	@Autowired
+	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
+
+	@Autowired
+	private ProviderConfiguration providerConfiguration;
+
+	@Autowired
+	private PlanDefinitionApplyProvider planDefinitionProvider;
+
+	@Autowired
+	private JpaDataProviderFactory fhirRetrieveProviderFactory;
+
+	@Autowired
+	JpaTerminologyProviderFactory myJpaTerminologyProviderFactory;
+
+	@Autowired
+	private ModelResolver modelResolver;
+
+	@Autowired
+	private AtomicReference<JsonArray> services;
+
+	protected ProviderConfiguration getProviderConfiguration() {
+		return this.providerConfiguration;
+	}
+
+	// CORS Pre-flight
+	@Override
+	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		setAccessControlHeaders(resp);
+
+		resp.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
+		resp.setHeader("X-Content-Type-Options", "nosniff");
+
+		resp.setStatus(HttpServletResponse.SC_OK);
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		logger.info(request.getRequestURI());
+		if (!request.getRequestURL().toString().endsWith("/cds-services")
+				&& !request.getRequestURL().toString().endsWith("/cds-services/")) {
+			logger.error(request.getRequestURI());
+			throw new ServletException("This servlet is not configured to handle GET requests.");
+		}
+
+		this.setAccessControlHeaders(response);
+		response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
+		response.getWriter().println(new GsonBuilder().setPrettyPrinting().create().toJson(getServices()));
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		logger.info(request.getRequestURI());
+
+		try {
+			// validate that we are dealing with JSON
+			if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
+				throw new ServletException(
+						String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
+			}
+
+			String baseUrl = this.myAppProperties.getServer_address();
+			String service = request.getPathInfo().replace("/", "");
+
+			JsonParser parser = new JsonParser();
+			JsonObject requestJson = parser.parse(request.getReader()).getAsJsonObject();
+			logger.info(requestJson.toString());
+
+			Request cdsHooksRequest = new Request(service, requestJson,
+					JsonHelper.getObjectRequired(getService(service), "prefetch"));
+
+			Hook hook = HookFactory.createHook(cdsHooksRequest);
+
+			String hookName = hook.getRequest().getHook();
+			logger.info("cds-hooks hook: " + hookName);
+			logger.info("cds-hooks hook instance: " + hook.getRequest().getHookInstance());
+			logger.info("cds-hooks maxCodesPerQuery: " + this.getProviderConfiguration().getMaxCodesPerQuery());
+			logger.info("cds-hooks expandValueSets: " + this.getProviderConfiguration().getExpandValueSets());
+			logger.info("cds-hooks searchStyle: " + this.getProviderConfiguration().getSearchStyle());
+			logger.info("cds-hooks prefetch maxUriLength: " + this.getProviderConfiguration().getMaxUriLength());
+			logger.info("cds-hooks local server address: " + baseUrl);
+			logger.info("cds-hooks fhir server address: " + hook.getRequest().getFhirServerUrl());
+
+			PlanDefinition planDefinition = planDefinitionProvider.getDao()
+					.read(new IdType(hook.getRequest().getServiceName()));
+			AtomicBoolean planDefinitionHookMatchesRequestHook = new AtomicBoolean(false);
+
+			planDefinition.getAction().forEach(action -> {
+				action.getTriggerDefinition().forEach(triggerDefn -> {
+					if (hookName.equals(triggerDefn.getEventName())) {
+						planDefinitionHookMatchesRequestHook.set(true);
+						return;
+					}
+				});
+				if (planDefinitionHookMatchesRequestHook.get()) {
+					return;
+				}
+			});
+			if (!planDefinitionHookMatchesRequestHook.get()) {
+				throw new ServletException("ERROR: Request hook does not match the service called.");
+			}
+
+			// No tenant information available, so create local system request
+			RequestDetails requestDetails = new SystemRequestDetails();
+
+			LibraryLoader libraryLoader = libraryLoaderFactory.create(
+				new ArrayList<LibraryContentProvider>(
+						Arrays.asList(
+								jpaLibraryContentProviderFactory.create(requestDetails))));
+
+			Library primaryLibrary = this.resolveByCanonicalUrl(daoRegistry, Library.class, planDefinition.getLibrary().get(0).getReference());
+
+			org.cqframework.cql.elm.execution.Library library = libraryLoader.load(
+									new VersionedIdentifier().withId(primaryLibrary.getName()).withVersion(primaryLibrary.getVersion()));
+
+			Context context = new Context(library);
+
+			context.setDebugMap(this.getDebugMap());
+			// provider case
+			// No tenant information available for cds-hooks
+			TerminologyProvider serverTerminologyProvider = myJpaTerminologyProviderFactory.create(requestDetails);
+
+			context.registerDataProvider("http://hl7.org/fhir", fhirRetrieveProviderFactory.create(requestDetails, serverTerminologyProvider)); // TODO make sure tooling handles remote
+			context.registerTerminologyProvider(serverTerminologyProvider);
+			context.registerLibraryLoader(libraryLoader);
+			context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
+			context.setExpressionCaching(true);
+
+			EvaluationContext<PlanDefinition> evaluationContext = new Stu3EvaluationContext(hook, version,
+					FhirContext.forCached(FhirVersionEnum.DSTU3).newRestfulGenericClient(baseUrl),
+					serverTerminologyProvider, context, library,
+					planDefinition, this.getProviderConfiguration(), this.modelResolver);
+
+			this.setAccessControlHeaders(response);
+
+			response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
+
+			Stu3HookEvaluator evaluator = new Stu3HookEvaluator(this.modelResolver);
+
+			String jsonResponse = toJsonResponse(evaluator.evaluate(evaluationContext));
+
+			logger.info(jsonResponse);
+
+			response.getWriter().println(jsonResponse);
+		} catch (BaseServerResponseException e) {
+			this.setAccessControlHeaders(response);
+			response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
+			response.getWriter().println("ERROR: Exception connecting to remote server.");
+			this.printMessageAndCause(e, response);
+			this.handleServerResponseException(e, response);
+			this.printStackTrack(e, response);
+			logger.error(e.toString());
+		} catch (DataProviderException e) {
+			this.setAccessControlHeaders(response);
+			response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
+			response.getWriter().println("ERROR: Exception in DataProvider.");
+			this.printMessageAndCause(e, response);
+			if (e.getCause() != null && (e.getCause() instanceof BaseServerResponseException)) {
+				this.handleServerResponseException((BaseServerResponseException) e.getCause(), response);
+			}
+
+			this.printStackTrack(e, response);
+			logger.error(e.toString());
+		} catch (CqlException e) {
+			this.setAccessControlHeaders(response);
+			response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
+			response.getWriter().println("ERROR: Exception in CQL Execution.");
+			this.printMessageAndCause(e, response);
+			if (e.getCause() != null && (e.getCause() instanceof BaseServerResponseException)) {
+				this.handleServerResponseException((BaseServerResponseException) e.getCause(), response);
+			}
+
+			this.printStackTrack(e, response);
+			logger.error(e.toString());
+		} catch (Exception e) {
+			logger.error(e.toString());
+			throw new ServletException("ERROR: Exception in cds-hooks processing.", e);
+		}
+	}
+
+	private void handleServerResponseException(BaseServerResponseException e, HttpServletResponse response)
+			throws IOException {
+		switch (e.getStatusCode()) {
+			case 401:
+			case 403:
+				response.getWriter().println("Precondition Failed. Remote FHIR server returned: " + e.getStatusCode());
+				response.getWriter().println(
+						"Ensure that the fhirAuthorization token is set or that the remote server allows unauthenticated access.");
+				response.setStatus(412);
+				break;
+			case 404:
+				response.getWriter().println("Precondition Failed. Remote FHIR server returned: " + e.getStatusCode());
+				response.getWriter().println("Ensure the resource exists on the remote server.");
+				response.setStatus(412);
+				break;
+			default:
+				response.getWriter().println("Unhandled Error in Remote FHIR server: " + e.getStatusCode());
+		}
+	}
+
+	private void printMessageAndCause(Exception e, HttpServletResponse response) throws IOException {
+		if (e.getMessage() != null) {
+			response.getWriter().println(e.getMessage());
+		}
+
+		if (e.getCause() != null && e.getCause().getMessage() != null) {
+			response.getWriter().println(e.getCause().getMessage());
+		}
+	}
+
+	private void printStackTrack(Exception e, HttpServletResponse response) throws IOException {
+		StringWriter sw = new StringWriter();
+		e.printStackTrace(new PrintWriter(sw));
+		String exceptionAsString = sw.toString();
+		response.getWriter().println(exceptionAsString);
+	}
+
+	private JsonObject getService(String service) {
+		JsonArray services = getServicesArray();
+		List<String> ids = new ArrayList<>();
+		for (JsonElement element : services) {
+			if (element.isJsonObject() && element.getAsJsonObject().has("id")) {
+				ids.add(element.getAsJsonObject().get("id").getAsString());
+				if (element.isJsonObject() && element.getAsJsonObject().get("id").getAsString().equals(service)) {
+					return element.getAsJsonObject();
+				}
+			}
+		}
+		throw new InvalidRequestException(
+				"Cannot resolve service: " + service + "\nAvailable services: " + ids.toString());
+	}
+
+	private JsonArray getServicesArray() {
+		JsonArray cachedServices = this.services.get();
+		if (cachedServices == null || cachedServices.size() == 0) {
+			cachedServices = getServices().get("services").getAsJsonArray();
+			services.set(cachedServices);
+		}
+
+		return cachedServices;
+	}
+
+	private JsonObject getServices() {
+		DiscoveryResolutionStu3 discoveryResolutionStu3 = new DiscoveryResolutionStu3(daoRegistry);
+
+		discoveryResolutionStu3.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
+
+		return discoveryResolutionStu3.resolve().getAsJson();
+	}
+
+
+	private String toJsonResponse(List<CdsCard> cards) {
+		JsonObject ret = new JsonObject();
+		JsonArray cardArray = new JsonArray();
+
+		for (CdsCard card : cards) {
+			cardArray.add(card.toJson());
+		}
+
+		ret.add("cards", cardArray);
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		return gson.toJson(ret);
+	}
+
+	private void setAccessControlHeaders(HttpServletResponse resp) {
+		if (this.myAppProperties.getCors() != null) {
+			if (this.myAppProperties.getCors().getAllow_Credentials()) {
+				resp.setHeader("Access-Control-Allow-Origin",
+						this.myAppProperties.getCors().getAllowed_origin().stream().findFirst().get());
+				resp.setHeader("Access-Control-Allow-Methods",
+						String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
+				resp.setHeader("Access-Control-Allow-Headers", String.join(", ", Arrays.asList("x-fhir-starter", "Origin",
+						"Accept", "X-Requested-With", "Content-Type", "Authorization", "Cache-Control")));
+				resp.setHeader("Access-Control-Expose-Headers",
+						String.join(", ", Arrays.asList("Location", "Content-Location")));
+				resp.setHeader("Access-Control-Max-Age", "86400");
+			}
+		}
+	}
+
+	public DebugMap getDebugMap() {
+		DebugMap debugMap = new DebugMap();
+		if (cqlConfig.cqlProperties().getCql_logging_enabled()) {
+			debugMap.setIsLoggingEnabled(true);
+		}
+		return debugMap;
+	}
+}

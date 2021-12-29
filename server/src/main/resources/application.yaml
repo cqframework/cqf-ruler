@@ -41,7 +41,7 @@ hapi:
 ### alternatively, it may be set using the X-Forwarded-Proto header.
 #   use_apache_address_strategy_https: false
 ### enable to set the Server URL
-#    server_address: http://hapi.fhir.org/baseR4
+    server_address: 'http://localhost:8080/fhir'
 #    defer_indexing_for_codesystems_of_size: 101
 #    implementationguides:
 ###    example from registry (packages.fhir.org)
@@ -58,7 +58,7 @@ hapi:
 #      - Observation
 #    allow_cascading_deletes: true
 #    allow_contains_searches: true
-#    allow_external_references: true
+    allow_external_references: true
 #    allow_multiple_delete: true
 #    allow_override_default_search_params: true
 #    allow_placeholder_references: true
@@ -162,7 +162,18 @@ hapi:
         serviceText: OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)
 
 ## CR Settings
-  cr:
+    cr:
+      enabled: true
+
+## CDS Hook Settings
+    cdshooks:
+       enabled: true
+       fhirserver:
+          expandValueSets: true
+          maxCodesPerQuery: 64
+          searchStyle: GET
+       prefetch:
+          maxUriLength: 8000
         
 #elasticsearch:
 #  debug:

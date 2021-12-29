@@ -24,10 +24,6 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 public class R4ApelonFhirTerminologyProvider extends R4FhirTerminologyProvider {
     private Map<String, List<Code>> cache = new HashMap<>();
 
-    public R4ApelonFhirTerminologyProvider() {
-        super();
-    }
-
     public R4ApelonFhirTerminologyProvider(IGenericClient fhirClient) {
         super(fhirClient);
     }

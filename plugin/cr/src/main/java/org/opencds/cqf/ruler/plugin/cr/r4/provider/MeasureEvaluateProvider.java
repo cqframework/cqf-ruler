@@ -16,8 +16,6 @@ import org.opencds.cqf.ruler.plugin.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.plugin.cql.JpaTerminologyProviderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
@@ -29,7 +27,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class MeasureEvaluateProvider implements OperationProvider {
 
-	private static final Logger logger = LoggerFactory.getLogger(MeasureEvaluateProvider.class);
+	// private static final Logger logger = LoggerFactory.getLogger(MeasureEvaluateProvider.class);
 
 	@Autowired
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;

@@ -24,6 +24,7 @@ import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
+import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.plugin.cr.dstu3.ExpressionEvaluation;
 import org.opencds.cqf.ruler.plugin.cr.dstu3.builder.AttachmentBuilder;
 import org.opencds.cqf.ruler.plugin.cr.dstu3.builder.CarePlanActivityBuilder;
@@ -46,7 +47,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-public class PlanDefinitionApplyProvider implements CanonicalUtilities {
+public class PlanDefinitionApplyProvider implements OperationProvider, CanonicalUtilities {
 
 	@Autowired
 	private ExpressionEvaluation expressionEvaluation;
@@ -62,6 +63,8 @@ public class PlanDefinitionApplyProvider implements CanonicalUtilities {
 	private FhirContext fhirContext;
 
 	private static final Logger logger = LoggerFactory.getLogger(PlanDefinitionApplyProvider.class);
+
+	public IFhirResourceDao<PlanDefinition> getDao() { return this.planDefinitionDao; }
 
 	@Operation(name = "$apply", idempotent = true, type = PlanDefinition.class)
 	public CarePlan applyPlanDefinition(RequestDetails theRequest,

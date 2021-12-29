@@ -1,0 +1,23 @@
+{
+    "hookInstance": "test",
+      "fhirServer": "http://localhost:8080/fhir",
+      "hook": "patient-view",
+      "context": {
+          "userId": "Practitioner/example",
+          "patientId": "Patient/patient-hello-world-patient-view"
+      },
+    "prefetch": {
+      "item1": {
+        "response": {
+          "status": "200 OK"
+        },
+        "resource": {
+          "resourceType": "Patient",
+          "id": "patient-hello-world-patient-view",
+          "gender": "female",
+          "birthDate": "1982-01-07"
+        }
+      }
+    }
+  }
+  

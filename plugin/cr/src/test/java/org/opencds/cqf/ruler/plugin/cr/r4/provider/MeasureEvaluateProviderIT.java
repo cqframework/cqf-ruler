@@ -1,8 +1,5 @@
 package org.opencds.cqf.ruler.plugin.cr.r4.provider;
 
-import java.util.Map;
-
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,8 +28,8 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 		})
 public class MeasureEvaluateProviderIT implements ITestSupport {
 
-	@Autowired
-	private MeasureEvaluateProvider measureEvaluateProvider;
+	// @Autowired
+	// private MeasureEvaluateProvider measureEvaluateProvider;
 
 	@Autowired
 	private FhirContext ourCtx;
@@ -57,8 +54,8 @@ public class MeasureEvaluateProviderIT implements ITestSupport {
 	public void testMeasureEvaluate() throws Exception {
 		// Patient First
 		uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient", ourCtx, myDaoRegistry);
-		Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker", ourCtx, myDaoRegistry);
-		IBaseResource patient = resources.get("Former-Smoker");
+		// Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker", ourCtx, myDaoRegistry);
+		// IBaseResource patient = resources.get("Former-Smoker");
 		// MeasureReport report = measureEvaluateProvider.evaluateMeasure(requestDetails, theId, periodStart, periodEnd, reportType, subject, practitioner, lastReceivedOn, productLine);
 	}
 }
