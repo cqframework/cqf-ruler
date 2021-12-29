@@ -32,6 +32,24 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
+				<configuration>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/*</exclude>
+							</excludes>
+						</filter>
+					</filters>
+					<artifactSet>
+						<!-- These are dependencies included in the base project, so never need to be included by plugins -->
+						<excludes>
+							<exclude>ca.uhn.hapi.fhir:*</exclude>
+							<exclude>org.slf4j:*</exclude>
+							<!-- <exclude>com.fasterxml.jackson.module:jackson-module-scala_2.11:*</exclude> -->
+						</excludes>
+					</artifactSet>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
