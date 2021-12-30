@@ -3,9 +3,6 @@
 	"java.test.config": [
 		{
 			"name": "test-config",
-			"classPaths": [
-				"${workspaceFolder}/core/target/classes"
-			],
 			"vmArgs": [
 				"-XX:TieredStopAtLevel=1",
 				"-Xverify:none",

@@ -586,13 +586,14 @@
 					<version>0.8.7</version>
 					<executions>
 						<execution>
+							<id>default-prepare-agent</id>
 							<goals>
 								<goal>prepare-agent</goal>
 							</goals>
 						</execution>
 						<execution>
 							<id>report</id>
-							<phase>prepare-package</phase>
+							<phase>post-integration-test</phase>
 							<goals>
 								<goal>report</goal>
 							</goals>
@@ -631,6 +632,7 @@
 					<artifactId>maven-failsafe-plugin</artifactId>
 					<version>3.0.0-M5</version>
 					<configuration>
+						<argLine>${argLine} -Xmx2048m</argLine>
 						<redirectTestOutputToFile>true</redirectTestOutputToFile>
 					</configuration>
 					<executions>
@@ -647,7 +649,7 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>3.0.0-M5</version>
 					<configuration>
-						<argLine>-Xmx2048m</argLine>
+						<argLine>${argLine} -Xmx2048m</argLine>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -659,6 +661,16 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
 					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.10.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-project-info-reports-plugin</artifactId>
+					<version>3.1.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -739,12 +751,44 @@
 	<reporting>
 		<plugins>
 			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<analysisCache>true</analysisCache>
+					<!-- printFailingErrors is pretty useful -->
+					<printFailingErrors>true</printFailingErrors>
+					<!-- TODO: Gradually raise to 5 -->
+					<failurePriority>5</failurePriority>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
+				<configuration>
+					<effort>Max</effort>
+					<!-- TODO: Gradually migrate this down to Medium and then Low-->
+					<threshold>Low</threshold>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</reporting>
