@@ -20,7 +20,8 @@
 	"cSpell.ignorePaths": [
 		".git/objects",
 		".vscode",
-		"**/pom.xml"
+		"**/pom.xml",
+		"checkstyle.xml"
 	],
 	"editor.codeActionsOnSave": {
 		"source.organizeImports": true,
@@ -31,10 +32,11 @@
 		"reindex"
 	],
 	"java.checkstyle.configuration": "${workspaceFolder}/src/checkstyle/checkstyle.xml",
+	"java.checkstyle.version": "9.21",
 	"files.exclude": {
 		"**/.classpath": true,
 		"**/.project": true,
 		"**/.settings": true,
 		"**/.factorypath": true
-	 }
+	}
 }

@@ -8,7 +8,13 @@
 	<property name="severity" value="error"/>
 
 	<property name="charset" value="UTF-8"/>
-	<property name="fileExtensions" value="java, properties, xml, js, json"/>
+	<property name="fileExtensions" value="java, properties, xml, js, json, yaml"/>
+
+	<!-- <module name="LineLength">
+		<property name="fileExtensions" value="java"/>
+		<property name="max" value="160"/>
+		<property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+	</module> -->
 
 	<module name="TreeWalker">
 		<module name="TodoComment">

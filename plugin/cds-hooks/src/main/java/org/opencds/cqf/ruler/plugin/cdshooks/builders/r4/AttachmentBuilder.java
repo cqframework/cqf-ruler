@@ -1,10 +1,9 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.builders.r4;
 
-import org.opencds.cqf.ruler.plugin.cdshooks.builders.BaseBuilder;
+import java.util.List;
 import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Extension;
-
-import java.util.List;
+import org.opencds.cqf.ruler.plugin.cdshooks.builders.BaseBuilder;
 
 public class AttachmentBuilder extends BaseBuilder<Attachment> {
 

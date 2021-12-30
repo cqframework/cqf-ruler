@@ -14,7 +14,7 @@ import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class JpaLibraryContentProvider
-	implements LibraryContentProvider, ResolutionUtilities, LibraryUtilities {
+		implements LibraryContentProvider, ResolutionUtilities, LibraryUtilities {
 	private static Map<Class<? extends IBaseResource>, ContentFunctions> cachedContentFunctions = new HashMap<>();
 
 	protected final IFhirResourceDao<?> libraryDao;
@@ -24,7 +24,6 @@ public class JpaLibraryContentProvider
 		this(libraryDao, null);
 	}
 
-
 	public JpaLibraryContentProvider(IFhirResourceDao<?> libraryDao, RequestDetails requestDetails) {
 		this.libraryDao = libraryDao;
 		this.requestDetails = requestDetails;
@@ -33,17 +32,20 @@ public class JpaLibraryContentProvider
 	@Override
 	public InputStream getLibraryContent(org.hl7.elm.r1.VersionedIdentifier libraryIdentifier,
 			LibraryContentType libraryContentType) {
-		// TODO: Support loading ELM - For now consider that the LibraryLoader has some caching built in
+		// TODO: Support loading ELM - For now consider that the LibraryLoader has some
+		// caching built in
 		if (libraryContentType != LibraryContentType.CQL) {
 			return null;
 		}
 
-		IBaseResource library = this.resolveByNameAndVersion(this.libraryDao, libraryIdentifier.getId(), libraryIdentifier.getVersion(), this.requestDetails);
+		IBaseResource library = this.resolveByNameAndVersion(this.libraryDao, libraryIdentifier.getId(),
+				libraryIdentifier.getVersion(), this.requestDetails);
 		if (library == null) {
 			return null;
 		}
 
-		ContentFunctions cf = cachedContentFunctions.computeIfAbsent(libraryDao.getResourceType(), x -> this.getContentFunctions(this.libraryDao.getContext()));
+		ContentFunctions cf = cachedContentFunctions.computeIfAbsent(libraryDao.getResourceType(),
+				x -> this.getContentFunctions(this.libraryDao.getContext()));
 		byte[] content = this.getContent(library, cf, "text/cql");
 		if (content == null) {
 			return null;
