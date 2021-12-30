@@ -9,15 +9,15 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 
 public interface CanonicalUtilities extends IdUtilities {
 
-	public interface CanonicalParts<IdType extends IIdType> {
-		public String getVersion();
+	interface CanonicalParts<IdType extends IIdType> {
+		String getVersion();
 
-		public String getUrl();
+		String getUrl();
 
-		public IdType getId();
+		IdType getId();
 	}
 
-	public default <CanonicalType extends IPrimitiveType<String>> String getId(CanonicalType canonicalType) {
+	default <CanonicalType extends IPrimitiveType<String>> String getId(CanonicalType canonicalType) {
 		if (canonicalType == null || !canonicalType.hasValue()) {
 			throw new IllegalArgumentException("CanonicalType must have a value for id extraction");
 		}
@@ -26,7 +26,7 @@ public interface CanonicalUtilities extends IdUtilities {
 	}
 
 	@SuppressWarnings("unchecked")
-	public default <CanonicalType extends IPrimitiveType<String>, IdType extends IIdType> IdType getIdElement(
+	default <CanonicalType extends IPrimitiveType<String>, IdType extends IIdType> IdType getIdElement(
 			CanonicalType canonicalType) {
 		if (canonicalType == null || !canonicalType.hasValue()) {
 			throw new IllegalArgumentException("CanonicalType must have a value for id extraction");
@@ -38,7 +38,7 @@ public interface CanonicalUtilities extends IdUtilities {
 		return (IdType) this.createId(canonicalType.getClass(), resourceName, id);
 	}
 
-	public default <CanonicalType extends IPrimitiveType<String>> String getResourceName(CanonicalType canonicalType) {
+	default <CanonicalType extends IPrimitiveType<String>> String getResourceName(CanonicalType canonicalType) {
 		if (canonicalType == null || !canonicalType.hasValue()) {
 			throw new IllegalArgumentException("CanonicalType must have a value for id extraction");
 		}
@@ -46,7 +46,7 @@ public interface CanonicalUtilities extends IdUtilities {
 		return this.getResourceName(canonicalType.getValue());
 	}
 
-	public default String getResourceName(String theCanonical) {
+	default String getResourceName(String theCanonical) {
 		Objects.requireNonNull("theCanonical must not be null");
 		if (!theCanonical.contains("/")) {
 			return null;
@@ -56,7 +56,7 @@ public interface CanonicalUtilities extends IdUtilities {
 		return theCanonical.contains("/") ? theCanonical.substring(theCanonical.lastIndexOf("/") + 1) : theCanonical;
 	}
 
-	public default String getId(String theCanonical) {
+	default String getId(String theCanonical) {
 		if (!theCanonical.contains("/")) {
 			return null;
 		}
@@ -64,7 +64,7 @@ public interface CanonicalUtilities extends IdUtilities {
 		return theCanonical.contains("/") ? theCanonical.substring(theCanonical.lastIndexOf("/") + 1) : theCanonical;
 	}
 
-	public default String getVersion(String theCanonical) {
+	default String getVersion(String theCanonical) {
 		if (!theCanonical.contains("|")) {
 			return null;
 		}
@@ -77,7 +77,7 @@ public interface CanonicalUtilities extends IdUtilities {
 		return urlParts[1];
 	}
 
-	public default String getUrl(String theCanonical) {
+	default String getUrl(String theCanonical) {
 		if (!theCanonical.contains("|")) {
 			return theCanonical;
 		}
@@ -86,7 +86,7 @@ public interface CanonicalUtilities extends IdUtilities {
 		return urlParts[0];
 	}
 
-	public default <CanonicalType extends IPrimitiveType<String>, IdType extends IIdType> CanonicalParts<IdType> getCanonicalParts(
+	default <CanonicalType extends IPrimitiveType<String>, IdType extends IIdType> CanonicalParts<IdType> getCanonicalParts(
 			CanonicalType theCanonicalType) {
 		Objects.requireNonNull("canonicalUrl must not be null");
 
@@ -111,7 +111,7 @@ public interface CanonicalUtilities extends IdUtilities {
 		};
 	}
 
-	public default <IdType extends IIdType> CanonicalParts<IdType> getCanonicalParts(FhirVersionEnum theFhirVersionEnum,
+	default <IdType extends IIdType> CanonicalParts<IdType> getCanonicalParts(FhirVersionEnum theFhirVersionEnum,
 			String theCanonical) {
 		Objects.requireNonNull("canonicalUrl must not be null");
 

@@ -16,7 +16,7 @@ public interface VersionUtilities {
      * @param version2 the second version to compare
      * @return 0 if versions are equal, 1 if version1 is greater than version2, and -1 otherwise
      */
-    public default int compareVersions(String version1, String version2) {
+    default int compareVersions(String version1, String version2) {
         // Treat null as MAX VERSION
         if (version1 == null && version2 == null) {
             return 0;
@@ -36,8 +36,8 @@ public interface VersionUtilities {
         int length = Math.max(string1Vals.length, string2Vals.length);
 
         for (int i = 0; i < length; i++) {
-            Integer v1 = (i < string1Vals.length) ? Integer.parseInt(string1Vals[i]) : 0;
-            Integer v2 = (i < string2Vals.length) ? Integer.parseInt(string2Vals[i]) : 0;
+            Integer v1 = i < string1Vals.length ? Integer.parseInt(string1Vals[i]) : 0;
+            Integer v2 = i < string2Vals.length ? Integer.parseInt(string2Vals[i]) : 0;
 
             // Making sure Version1 bigger than version2
             if (v1 > v2) {
@@ -64,13 +64,13 @@ public interface VersionUtilities {
      * @return the Resource with a matching version, or the highest version
      *         otherwise.
      */
-    public default <ResourceType extends IBaseResource> ResourceType selectFromList(List<ResourceType> theResources, String theVersion,
+    default <ResourceType extends IBaseResource> ResourceType selectFromList(List<ResourceType> theResources, String theVersion,
             Function<ResourceType, String> theGetVersion) {
         ResourceType library = null;
         ResourceType maxVersion = null;
         for (ResourceType l : theResources) {
             String currentVersion = theGetVersion.apply(l);
-            if ((theVersion == null && currentVersion == null) || (theVersion != null &&  currentVersion != null && currentVersion.equals(theVersion))) {
+            if (theVersion == null && currentVersion == null || theVersion != null && theVersion.equals(currentVersion)) {
                 library = l;
             }
 

@@ -31,5 +31,6 @@
 	"cSpell.words": [
 		"Gson",
 		"reindex"
-	]
+	],
+	"java.checkstyle.configuration": "${workspaceFolder}/src/checkstyle/checkstyle.xml"
 }

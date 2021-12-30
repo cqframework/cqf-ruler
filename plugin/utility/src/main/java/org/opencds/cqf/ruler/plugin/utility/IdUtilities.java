@@ -17,7 +17,7 @@ public interface IdUtilities extends ReflectionUtilities {
 	 * @param theId                the String representation of the Id to generate
 	 * @return the id
 	 */
-	public default <ResourceType extends IBaseResource, IdType extends IIdType> IdType createId(
+	default <ResourceType extends IBaseResource, IdType extends IIdType> IdType createId(
 			Class<? extends ResourceType> theResourceTypeClass, String theId) {
 		FhirVersionEnum versionEnum = this.getFhirVersion(theResourceTypeClass);
 		return createId(versionEnum, theResourceTypeClass.getSimpleName(), theId);
@@ -34,7 +34,7 @@ public interface IdUtilities extends ReflectionUtilities {
 	 * @param theId            the String representation of the Id to generate
 	 * @return the id
 	 */
-	public default <BaseType extends IBase, IdType extends IIdType> IdType createId(
+	default <BaseType extends IBase, IdType extends IIdType> IdType createId(
 			Class<? extends BaseType> theBaseTypeClass, String theResourceName, String theId) {
 		FhirVersionEnum versionEnum = this.getFhirVersion(theBaseTypeClass);
 		return createId(versionEnum, theResourceName, theId);
@@ -49,7 +49,7 @@ public interface IdUtilities extends ReflectionUtilities {
 	 * @param theId           the String representation of the Id to generate
 	 * @return the id
 	 */
-	public default <IdType extends IIdType> IdType createId(FhirContext theFhirContext, String theResourceType,
+	default <IdType extends IIdType> IdType createId(FhirContext theFhirContext, String theResourceType,
 			String theId) {
 		return createId(theFhirContext.getVersion().getVersion(), theResourceType, theId);
 	}
@@ -63,7 +63,7 @@ public interface IdUtilities extends ReflectionUtilities {
 	 * @param theId              the String representation of the Id to generate
 	 * @return the id
 	 */
-	public default <IdType extends IIdType> IdType createId(FhirVersionEnum theFhirVersionEnum, String theResourceType,
+	default <IdType extends IIdType> IdType createId(FhirVersionEnum theFhirVersionEnum, String theResourceType,
 			String theId) {
 		return createId(theFhirVersionEnum, theResourceType + "/" + theId);
 	}
@@ -76,7 +76,7 @@ public interface IdUtilities extends ReflectionUtilities {
 	 * @param theId          the String representation of the Id to generate
 	 * @return the id
 	 */
-	public default <IdType extends IIdType> IdType createId(FhirContext theFhirContext, String theId) {
+	default <IdType extends IIdType> IdType createId(FhirContext theFhirContext, String theId) {
 		return createId(theFhirContext.getVersion().getVersion(), theId);
 	}
 
@@ -89,7 +89,7 @@ public interface IdUtilities extends ReflectionUtilities {
 	 * @return the id
 	 */
 	@SuppressWarnings("unchecked")
-	public default <IdType extends IIdType> IdType createId(FhirVersionEnum theFhirVersionEnum, String theId) {
+	default <IdType extends IIdType> IdType createId(FhirVersionEnum theFhirVersionEnum, String theId) {
 		switch (theFhirVersionEnum) {
 			case DSTU2:
 				return (IdType) new ca.uhn.fhir.model.primitive.IdDt(theId);

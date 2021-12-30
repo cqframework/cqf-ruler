@@ -38,7 +38,7 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 
 	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, DaoRegistry theDaoRegistry,
 			IValidationSupport theValidationSupport) {
-				this(theTerminologySvc, theDaoRegistry, theValidationSupport, null);
+		this(theTerminologySvc, theDaoRegistry, theValidationSupport, null);
 	}
 
 	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, DaoRegistry theDaoRegistry,
@@ -62,23 +62,34 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 		return false;
 	}
 
+	protected Boolean hasUrlId(ValueSetInfo valueSet) {
+		return valueSet.getId().startsWith("http://") || valueSet.getId().startsWith("https://");
+	}
+
+	protected Boolean hasVersion(ValueSetInfo valueSet) {
+		return valueSet.getVersion() != null;
+	}
+
+	protected Boolean hasVersionedCodeSystem(ValueSetInfo valueSet) {
+		return valueSet.getCodeSystems() != null && valueSet.getCodeSystems().size() > 1
+				|| valueSet.getCodeSystems() != null && valueSet.getCodeSystems().stream().anyMatch(x -> x.getVersion() != null);
+	}
+
 	@Override
 	public Iterable<Code> expand(ValueSetInfo valueSet) throws ResourceNotFoundException {
 		// This could possibly be refactored into a single call to the underlying HAPI
 		// Terminology service. Need to think through that..,
 		IBaseResource vs;
-		if (valueSet.getId().startsWith("http://") || valueSet.getId().startsWith("https://")) {
-			if (valueSet.getVersion() != null
-					|| (valueSet.getCodeSystems() != null && valueSet.getCodeSystems().size() > 0)) {
-				if (!(valueSet.getCodeSystems().size() == 1 && valueSet.getCodeSystems().get(0).getVersion() == null)) {
-					throw new UnsupportedOperationException(String.format(
-							"Could not expand value set %s; version and code system bindings are not supported at this time.",
-							valueSet.getId()));
-				}
+		if (hasUrlId(valueSet)) {
+			if (hasVersion(valueSet) || hasVersionedCodeSystem(valueSet)) {
+				throw new UnsupportedOperationException(String.format(
+						"Could not expand value set %s; version and code system bindings are not supported at this time.",
+						valueSet.getId()));
 			}
 
 			IBundleProvider bundleProvider = myValueSetDao
-					.search(SearchParameterMap.newSynchronous().add("url", new UriParam(valueSet.getId())), myRequestDetails);
+					.search(SearchParameterMap.newSynchronous().add("url", new UriParam(valueSet.getId())),
+							myRequestDetails);
 			List<IBaseResource> valueSets = bundleProvider.getAllResources();
 			if (valueSets.isEmpty()) {
 				throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));
@@ -88,7 +99,8 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 				throw new IllegalArgumentException("Found more than 1 ValueSet with url: " + valueSet.getId());
 			}
 		} else {
-			vs = myValueSetDao.read(this.createId(this.myTerminologySvc.getFhirContext(), valueSet.getId()), myRequestDetails);
+			vs = myValueSetDao.read(this.createId(this.myTerminologySvc.getFhirContext(), valueSet.getId()),
+					myRequestDetails);
 			if (vs == null) {
 				throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));
 			}

@@ -29,7 +29,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theId          the Id of the Resource to resolve
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
 			IIdType theId) {
 		return this.resolveById(theDaoRegistry, theId, null);
 	}
@@ -45,7 +45,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @return the Resource matching the criteria
 	 */
 	@SuppressWarnings("unchecked")
-	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
 			IIdType theId, RequestDetails theRequestDetails) {
 		if (theId.getResourceType() == null) {
 			throw new IllegalArgumentException("theId does not have a resourceType set.");
@@ -63,7 +63,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theId           the Id of the Resource to resolve
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, IIdType theId) {
 		return this.resolveById(theDaoRegistry.getResourceDao(theResourceType), theId, null);
 	}
@@ -77,7 +77,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theId           the Id of the Resource to resolve
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theId) {
 		return this.resolveById(theDaoRegistry.getResourceDao(theResourceType), theId, null);
 	}
@@ -93,7 +93,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, IIdType theId, RequestDetails theRequestDetails) {
 		return this.resolveById(theDaoRegistry.getResourceDao(theResourceType), theId, theRequestDetails);
 	}
@@ -109,7 +109,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveById(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theId, RequestDetails theRequestDetails) {
 		return this.resolveById(theDaoRegistry.getResourceDao(theResourceType), theId, theRequestDetails);
 	}
@@ -122,7 +122,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theId          the Id of the Resource to resolve.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveById(
+	default <ResourceType extends IBaseResource> ResourceType resolveById(
 			IFhirResourceDao<ResourceType> theResourceDao, IIdType theId) {
 		return this.resolveById(theResourceDao, theId, null);
 	}
@@ -135,7 +135,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theId          the Id of the Resource to resolve.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveById(
+	default <ResourceType extends IBaseResource> ResourceType resolveById(
 			IFhirResourceDao<ResourceType> theResourceDao, String theId) {
 		return this.resolveById(theResourceDao, theId, null);
 	}
@@ -150,7 +150,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveById(
+	default <ResourceType extends IBaseResource> ResourceType resolveById(
 			IFhirResourceDao<ResourceType> theResourceDao, String theId, RequestDetails theRequestDetails) {
 		IIdType id = this.createId(theResourceDao.getContext(), theId);
 		return this.resolveById(theResourceDao, id, theRequestDetails);
@@ -166,7 +166,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveById(
+	default <ResourceType extends IBaseResource> ResourceType resolveById(
 			IFhirResourceDao<ResourceType> theResourceDao, IIdType theId, RequestDetails theRequestDetails) {
 		return theResourceDao.read(theId, theRequestDetails);
 	}
@@ -181,7 +181,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theName         the name of the Resource
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByName(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveByName(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theName) {
 		return resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), theName, null, null);
 	}
@@ -198,7 +198,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theName           the name of the Resource
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByName(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveByName(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theName, RequestDetails theRequestDetails) {
 		return resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), theName, null,
 				theRequestDetails);
@@ -213,7 +213,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theName        the name of the Resource
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByName(
+	default <ResourceType extends IBaseResource> ResourceType resolveByName(
 			IFhirResourceDao<ResourceType> theResourceDao, String theName) {
 		return resolveByNameAndVersion(theResourceDao, theName, null, null);
 	}
@@ -229,7 +229,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theName           the name of the Resource
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByName(
+	default <ResourceType extends IBaseResource> ResourceType resolveByName(
 			IFhirResourceDao<ResourceType> theResourceDao, String theName, RequestDetails theRequestDetails) {
 		return resolveByNameAndVersion(theResourceDao, theName, null, theRequestDetails);
 	}
@@ -245,7 +245,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theVersion      the business version of the Resource
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByNameAndVersion(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveByNameAndVersion(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theName, String theVersion) {
 		return this.resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), theName, theVersion, null);
 	}
@@ -263,7 +263,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByNameAndVersion(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveByNameAndVersion(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theName, String theVersion, RequestDetails theRequestDetails) {
 		return this.resolveByNameAndVersion(theDaoRegistry.getResourceDao(theResourceType), theName, theVersion,
 				theRequestDetails);
@@ -279,7 +279,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theVersion     the business version of the Resource
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByNameAndVersion(
+	default <ResourceType extends IBaseResource> ResourceType resolveByNameAndVersion(
 			IFhirResourceDao<ResourceType> theResourceDao, String theName, String theVersion) {
 		return this.resolveByNameAndVersion(theResourceDao, theName, theVersion, null);
 	}
@@ -296,7 +296,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByNameAndVersion(
+	default <ResourceType extends IBaseResource> ResourceType resolveByNameAndVersion(
 			IFhirResourceDao<ResourceType> theResourceDao, String theName, String theVersion,
 			RequestDetails theRequestDetails) {
 		@SuppressWarnings("unchecked")
@@ -318,7 +318,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theUrl          the url of the Resource to resolve
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theUrl) {
 		return this.resolveByCanonicalUrl(theDaoRegistry.getResourceDao(theResourceType), theUrl, null);
 	}
@@ -337,7 +337,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, String theUrl, RequestDetails theRequestDetails) {
 		return this.resolveByCanonicalUrl(theDaoRegistry.getResourceDao(theResourceType), theUrl, theRequestDetails);
 	}
@@ -353,7 +353,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theUrl         the url of the Resource to resolve
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
+	default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
 			IFhirResourceDao<ResourceType> theResourceDao, String theUrl) {
 		return this.resolveByCanonicalUrl(theResourceDao, theUrl, null);
 	}
@@ -371,7 +371,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
+	default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
 			IFhirResourceDao<ResourceType> theResourceDao, String theUrl, RequestDetails theRequestDetails) {
 
 		String url = this.getUrl(theUrl);
@@ -396,7 +396,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theUrl          the url of the Resource to resolve
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, IPrimitiveType<String> theUrl) {
 		return this.resolveByCanonicalUrl(theDaoRegistry.getResourceDao(theResourceType), theUrl.getValue(), null);
 	}
@@ -415,7 +415,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(DaoRegistry theDaoRegistry,
+	default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(DaoRegistry theDaoRegistry,
 			Class<ResourceType> theResourceType, IPrimitiveType<String> theUrl, RequestDetails theRequestDetails) {
 		return this.resolveByCanonicalUrl(theDaoRegistry.getResourceDao(theResourceType), theUrl.getValue(),
 				theRequestDetails);
@@ -432,7 +432,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 * @param theUrl         the url of the Resource to resolve
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
+	default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
 			IFhirResourceDao<ResourceType> theResourceDao, IPrimitiveType<String> theUrl) {
 		return this.resolveByCanonicalUrl(theResourceDao, theUrl.getValue(), null);
 	}
@@ -450,7 +450,7 @@ public interface ResolutionUtilities extends CanonicalUtilities, VersionUtilitie
 	 *                          parameter to select a tenant.
 	 * @return the Resource matching the criteria
 	 */
-	public default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
+	default <ResourceType extends IBaseResource> ResourceType resolveByCanonicalUrl(
 			IFhirResourceDao<ResourceType> theResourceDao, IPrimitiveType<String> theUrl,
 			RequestDetails theRequestDetails) {
 		return this.resolveByCanonicalUrl(theResourceDao, theUrl.getValue(), theRequestDetails);

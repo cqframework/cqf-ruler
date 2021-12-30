@@ -11,8 +11,7 @@ import org.cqframework.cql.elm.execution.Library.Usings;
 import org.cqframework.cql.elm.execution.UsingDef;
 
 public interface LibraryUtilities {
-
-	public final Map<String, String> urlsByModelName = new HashMap<String, String>() {
+	Map<String, String> urlsByModelName = new HashMap<String, String>() {
 		{
 			put("FHIR", "http://hl7.org/fhir");
 			put("QDM", "urn:healthit-gov:qdm:v5_4");
@@ -21,7 +20,7 @@ public interface LibraryUtilities {
 
 	// Returns a list of (Model, Version, Url) for the usings in library. The
 	// "System" using is excluded.
-	public default List<Triple<String, String, String>> getUsingUrlAndVersion(Usings usings) {
+	default List<Triple<String, String, String>> getUsingUrlAndVersion(Usings usings) {
 		if (usings == null || usings.getDef() == null) {
 			return Collections.emptyList();
 		}

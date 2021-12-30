@@ -12,7 +12,7 @@ import ca.uhn.fhir.context.FhirContext;
 
 public interface LibraryUtilities extends ReflectionUtilities {
 
-	public default byte[] getContent(IBaseResource library, ContentFunctions contentFunctions, String contentType) {
+	default byte[] getContent(IBaseResource library, ContentFunctions contentFunctions, String contentType) {
 		Objects.requireNonNull(library, "library can not be null");
 		Objects.requireNonNull(contentFunctions, "contentFunctions can not be null");
 		if (!library.fhirType().equals("Library")) {
@@ -32,16 +32,16 @@ public interface LibraryUtilities extends ReflectionUtilities {
 		return null;
 	}
 
-	public default byte[] getContent(IBaseResource library, String contentType) {
+	default byte[] getContent(IBaseResource library, String contentType) {
 		ContentFunctions contentFunctions = this.getContentFunctions(library);
 		return this.getContent(library, contentFunctions, contentType);
 	}
 
-	public default ContentFunctions getContentFunctions(IBaseResource library) {
+	default ContentFunctions getContentFunctions(IBaseResource library) {
 		return this.getContentFunctions(FhirContext.forCached(library.getStructureFhirVersionEnum()));
 	}
 
-	public default ContentFunctions getContentFunctions(FhirContext fhirContext) {
+	default ContentFunctions getContentFunctions(FhirContext fhirContext) {
 		Function<IBase, List<IBase>> attachments = this
 				.getFunction(fhirContext.getResourceDefinition("Library").getImplementingClass(), "content");
 		Function<IBase, String> contentType = this.getPrimitiveFunction(

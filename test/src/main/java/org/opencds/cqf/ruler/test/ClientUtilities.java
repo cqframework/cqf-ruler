@@ -6,7 +6,7 @@ package org.opencds.cqf.ruler.test;
  * setting up authentication
  */
 public interface ClientUtilities {
-	public static String SERVER_URL = "http://localhost:%d/fhir";
+	String SERVER_URL = "http://localhost:%d/fhir";
 
 	/**
 	 * Creates an client url given a url template and port
@@ -15,7 +15,7 @@ public interface ClientUtilities {
 	 * @param thePort        the port to use
 	 * @return String for the client url
 	 */
-	public default String getClientUrl(String theUrlTemplate, Integer thePort) {
+	default String getClientUrl(String theUrlTemplate, Integer thePort) {
 		return String.format(theUrlTemplate, thePort);
 	}
 
@@ -25,7 +25,7 @@ public interface ClientUtilities {
 	 * @param thePort the port to use
 	 * @return String for the client url
 	 */
-	public default String getClientUrl(Integer thePort) {
+	default String getClientUrl(Integer thePort) {
 		return getClientUrl(SERVER_URL, thePort);
 	}
 }

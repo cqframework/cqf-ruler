@@ -28,7 +28,7 @@ public interface ReflectionUtilities {
 	 * @param theBaseTypeClass the class of the resource to get the version for
 	 * @return the FhirVersionEnum corresponding to the theBaseTypeClass
 	 */
-	public default <BaseType extends IBase> FhirVersionEnum getFhirVersion(
+	default <BaseType extends IBase> FhirVersionEnum getFhirVersion(
 			final Class<? extends BaseType> theBaseTypeClass) {
 		String packageName = theBaseTypeClass.getPackage().getName();
 		if (packageName.contains("r5")) {
@@ -58,7 +58,7 @@ public interface ReflectionUtilities {
 	 *                             BaseType to generate an accessor for
 	 * @return an IAccessor for the given child and the BaseType
 	 */
-	public default <BaseType extends IBase> IAccessor getAccessor(
+	default <BaseType extends IBase> IAccessor getAccessor(
 			final Class<? extends BaseType> theBaseTypeClass, String theChildName) {
 		FhirContext fhirContext = FhirContext.forCached(this.getFhirVersion(theBaseTypeClass));
 		if (theBaseTypeClass.isInstance(IBaseResource.class)) {
@@ -84,7 +84,7 @@ public interface ReflectionUtilities {
 	 *         BaseType
 	 */
 	@SuppressWarnings("unchecked")
-	public default <BaseType extends IBase, ReturnType> Function<BaseType, ReturnType> getPrimitiveFunction(
+	default <BaseType extends IBase, ReturnType> Function<BaseType, ReturnType> getPrimitiveFunction(
 			final Class<? extends BaseType> theBaseTypeClass, String theChildName) {
 		IAccessor accessor = this.getAccessor(theBaseTypeClass, theChildName);
 		return r -> {
@@ -109,7 +109,7 @@ public interface ReflectionUtilities {
 	 *         BaseType
 	 */
 	@SuppressWarnings("unchecked")
-	public default <BaseType extends IBase, ReturnType extends List<? extends IBase>> Function<BaseType, ReturnType> getFunction(
+	default <BaseType extends IBase, ReturnType extends List<? extends IBase>> Function<BaseType, ReturnType> getFunction(
 			final Class<? extends BaseType> theBaseTypeClass, String theChildName) {
 		IAccessor accessor = this.getAccessor(theBaseTypeClass, theChildName);
 		return r -> {
@@ -125,7 +125,7 @@ public interface ReflectionUtilities {
 	 * @param theBaseTypeClass the class of a the IBase type
 	 * @return a function for accessing the "version" property of the BaseType
 	 */
-	public default <BaseType extends IBase> Function<BaseType, String> getVersionFunction(
+	default <BaseType extends IBase> Function<BaseType, String> getVersionFunction(
 			final Class<? extends BaseType> theBaseTypeClass) {
 		return this.getPrimitiveFunction(theBaseTypeClass, "version");
 	}
@@ -137,7 +137,7 @@ public interface ReflectionUtilities {
 	 * @param theBaseTypeClass the class of a the IBase type
 	 * @return a function for accessing the "url" property of the BaseType
 	 */
-	public default <BaseType extends IBase> Function<BaseType, String> getUrlFunction(
+	default <BaseType extends IBase> Function<BaseType, String> getUrlFunction(
 			final Class<? extends BaseType> theBaseTypeClass) {
 		return this.getPrimitiveFunction(theBaseTypeClass, "url");
 	}
@@ -149,7 +149,7 @@ public interface ReflectionUtilities {
 	 * @param theBaseTypeClass the class of a the IBase type
 	 * @return a function for accessing the "name" property of the BaseType
 	 */
-	public default <BaseType extends IBase> Function<BaseType, String> getNameFunction(
+	default <BaseType extends IBase> Function<BaseType, String> getNameFunction(
 			final Class<? extends BaseType> theBaseTypeClass) {
 		return this.getPrimitiveFunction(theBaseTypeClass, "name");
 	}

@@ -28,12 +28,11 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.parser.IParser;
 
 public interface ITestSupport {
-
 	@SuppressWarnings("unchecked")
-	public default Object loadTransaction(String theLocation, FhirContext theFhirContext, DaoRegistry theDaoRegistry)
-		throws IOException {
+	default Object loadTransaction(String theLocation, FhirContext theFhirContext, DaoRegistry theDaoRegistry)
+			throws IOException {
 		String json = stringFromResource(theLocation);
-		IBaseBundle resource = (IBaseBundle)theFhirContext.newJsonParser().parseResource(json);
+		IBaseBundle resource = (IBaseBundle) theFhirContext.newJsonParser().parseResource(json);
 		Object result = theDaoRegistry.getSystemDao().transaction(new SystemRequestDetails(), resource);
 		return result;
 	}
@@ -84,13 +83,15 @@ public interface ITestSupport {
 		return IOUtils.toString(is, Charsets.UTF_8);
 	}
 
-	public default Map<String, IBaseResource> uploadTests(String testDirectory, FhirContext fhirContext, DaoRegistry daoRegistry) throws URISyntaxException, IOException {
+	default Map<String, IBaseResource> uploadTests(String testDirectory, FhirContext fhirContext,
+			DaoRegistry daoRegistry) throws URISyntaxException, IOException {
 		URL url = this.getClass().getResource(testDirectory);
 		File testDir = new File(url.toURI());
 		return uploadTests(testDir.listFiles(), fhirContext, daoRegistry);
 	}
 
-	public default Map<String, IBaseResource> uploadTests(File[] files, FhirContext fhirContext, DaoRegistry daoRegistry) throws IOException {
+	default Map<String, IBaseResource> uploadTests(File[] files, FhirContext fhirContext, DaoRegistry daoRegistry)
+			throws IOException {
 		Map<String, IBaseResource> resources = new HashMap<String, IBaseResource>();
 		for (File file : files) {
 			// depth first
@@ -101,7 +102,7 @@ public interface ITestSupport {
 		for (File file : files) {
 			if (file.isFile()) {
 				BufferedReader reader = new BufferedReader(
-						new InputStreamReader(new FileInputStream(file.getAbsolutePath())));
+						new InputStreamReader(new FileInputStream(file.getAbsolutePath()), "UTF-8"));
 				String resourceString = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 				reader.close();
 				IBaseResource resource = loadResource(FilenameUtils.getExtension(file.getAbsolutePath()), resourceString,
