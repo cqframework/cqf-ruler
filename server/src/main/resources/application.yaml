@@ -145,6 +145,13 @@ hapi:
       report:
         endpoint: ''
 
+    sdc:
+       enabled: true
+       extract:
+          endpoint: 'http://localhost:8080/fhir/'
+          username: ''
+          password: ''
+
 ## Dev Tools Settings        
     devtools:
       enabled: true

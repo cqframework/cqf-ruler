@@ -16,7 +16,6 @@ import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.plugin.sdc.SDCConfig;
 import org.opencds.cqf.ruler.plugin.sdc.SDCProperties;
 import org.opencds.cqf.ruler.plugin.testutility.ResolutionUtilities;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -33,73 +32,89 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-        SDCConfig.class }, properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.sdc.enabled=true" })
+@SpringBootTest(
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    classes = {Application.class, SDCConfig.class},
+    properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.sdc.enabled=true"})
 public class ExtractProviderIT implements ResolutionUtilities {
-    private IGenericClient ourClient;
-    private FhirContext ourCtx;
-    
-    @Autowired
-    private DaoRegistry ourRegistry;
+  private IGenericClient ourClient;
+  private FhirContext ourCtx;
 
-    @Autowired
-    private SDCProperties mySdcProperties;
+  @Autowired private DaoRegistry ourRegistry;
 
-    @LocalServerPort
-    private int port;
+  @Autowired private SDCProperties mySdcProperties;
 
-    @BeforeEach
-	void beforeEach() {
+  @LocalServerPort private int port;
 
-		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
-		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
-		String ourServerBase = "http://localhost:" + port + "/fhir/";
-		ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
+  @BeforeEach
+  void beforeEach() {
 
-        mySdcProperties.getExtract().setEndpoint(ourServerBase);
-	}
+    ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
+    ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
+    ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
+    String ourServerBase = "http://localhost:" + port + "/fhir/";
+    ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
 
-    @Test
-    public void testExtract() throws IOException {
+    mySdcProperties.getExtract().setEndpoint(ourServerBase);
+  }
 
-        resolveByLocation(ourRegistry, "mypain-questionnaire.json", ourCtx);
+  @Test
+  public void testExtract() throws IOException {
+    // TODO: Check if needed resources exist on the server before executing the test.
+    // If they aren't, post them.
 
-        QuestionnaireResponse test = (QuestionnaireResponse)ourCtx.newJsonParser().parseResource(stringFromResource("mypain-questionnaire-response.json"));
+    QuestionnaireResponse test =
+        (QuestionnaireResponse)
+            ourCtx
+                .newJsonParser()
+                .parseResource(stringFromResource("mypain-questionnaire-response.json"));
 
-        Parameters params = new Parameters();
-        params.addParameter().setName("questionnaireResponse").setResource(test);
+    Parameters params = new Parameters();
+    params.addParameter().setName("questionnaireResponse").setResource(test);
 
-        Bundle actual = ourClient.operation().onType(QuestionnaireResponse.class).named("$extract")
+    Bundle actual =
+        ourClient
+            .operation()
+            .onType(QuestionnaireResponse.class)
+            .named("$extract")
             .withParameters(params)
             .returnResourceType(Bundle.class)
             .execute();
 
-        assertNotNull(actual);
+    assertNotNull(actual);
 
-        // Expecting one observation per item
-        assertEquals(5, actual.getEntry().size());
+    // Expecting one observation per item
+    assertEquals(5, actual.getEntry().size());
 
-        // Ensure the Observations were saved to the local server
-        Observation obs = ourClient.read().resource(Observation.class).withId("IdFromBundle").execute();
+    // Ensure the Observations were saved to the local server
+    Observation obs = ourClient.read().resource(Observation.class).withId("IdFromBundle").execute();
 
-        assertNotNull(obs);
+    assertNotNull(obs);
 
-        // Check other observation properties
-    }
+    // Check other observation properties
+  }
 
-    @Test
-    public void testExtract_noQuestionnaireReference_throwsException() throws IOException {
-        QuestionnaireResponse test = (QuestionnaireResponse)ourCtx.newJsonParser().parseResource(stringFromResource("mypain-questionnaire-response-no-url.json"));
+  @Test
+  public void testExtract_noQuestionnaireReference_throwsException() throws IOException {
+    QuestionnaireResponse test =
+        (QuestionnaireResponse)
+            ourCtx
+                .newJsonParser()
+                .parseResource(stringFromResource("mypain-questionnaire-response-no-url.json"));
 
-        Parameters params = new Parameters();
-        params.addParameter().setName("questionnaireResponse").setResource(test);
+    Parameters params = new Parameters();
+    params.addParameter().setName("questionnaireResponse").setResource(test);
 
-        assertThrows(InternalErrorException.class, () -> {
-            ourClient.operation().onType(QuestionnaireResponse.class).named("$extract")
-            .withParameters(params)
-            .returnResourceType(Bundle.class)
-            .execute();
+    assertThrows(
+        InternalErrorException.class,
+        () -> {
+          ourClient
+              .operation()
+              .onType(QuestionnaireResponse.class)
+              .named("$extract")
+              .withParameters(params)
+              .returnResourceType(Bundle.class)
+              .execute();
         });
-    }
+  }
 }

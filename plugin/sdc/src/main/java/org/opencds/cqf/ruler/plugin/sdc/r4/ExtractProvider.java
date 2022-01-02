@@ -1,13 +1,10 @@
 package org.opencds.cqf.ruler.plugin.sdc.r4;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -25,48 +22,66 @@ import org.opencds.cqf.ruler.plugin.sdc.SDCProperties;
 import org.opencds.cqf.ruler.plugin.utility.ClientUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+
 public class ExtractProvider implements OperationProvider, ClientUtilities {
 
   /*
-   https://build.fhir.org/ig/HL7/sdc/OperationDefinition-QuestionnaireResponse-extract.html
-
-   Use	Name                    Cardinality	  Type
-   IN	questionnaire-response	0..1	      Resource
-   The QuestionnaireResponse to extract data from. Used when the operation is invoked at the 'type' level.
-
-   OUT	return	                0..1	      Resource
-   The resulting FHIR resource produced after extracting data.
-   This will either be a single resource or a Transaction Bundle that contains multiple resources.
-   The operations in the Bundle might be creates, updates and/or conditional versions of both depending on the nature of the extraction mappings.
-
-   OUT	issues	              0..1	          OperationOutcome
-   A list of hints and warnings about problems encountered while extracting the resource(s) from the QuestionnaireResponse.
-   If there was nothing to extract, a 'success' OperationOutcome is returned with a warning and/or information messages.
-   In situations where the input is invalid or the operation otherwise fails to complete successfully,
-   a normal 'erroneous' OperationOutcome would be returned (as happens with all operations) indicating what the issue was.
+   * https://build.fhir.org/ig/HL7/sdc/OperationDefinition-QuestionnaireResponse-
+   * extract.html
+   *
+   * Use Name Cardinality Type
+   * IN questionnaire-response 0..1 Resource
+   * The QuestionnaireResponse to extract data from. Used when the operation is
+   * invoked at the 'type' level.
+   *
+   * OUT return 0..1 Resource
+   * The resulting FHIR resource produced after extracting data.
+   * This will either be a single resource or a Transaction Bundle that contains
+   * multiple resources.
+   * The operations in the Bundle might be creates, updates and/or conditional
+   * versions of both depending on the nature of the extraction mappings.
+   *
+   * OUT issues 0..1 OperationOutcome
+   * A list of hints and warnings about problems encountered while extracting
+   * the resource(s) from the QuestionnaireResponse. If there was nothing to
+   * extract, a 'success' OperationOutcome is returned with a warning and/or
+   * information messages. In situations where the input is invalid or the
+   * operation otherwise fails to complete successfully, a normal 'erroneous'
+   * OperationOutcome would be returned (as happens with all operations)
+   * indicating what the issue was.
    */
 
   @Autowired private FhirContext myFhirContext;
 
   @Autowired private SDCProperties mySdcProperties;
 
-  @Operation(name = "$extract", idempotent = false, type = QuestionnaireResponse.class)
-  public Bundle extractObservationFromQuestionnaireResponse(
-      @OperationParam(name = "questionnaireResponse") QuestionnaireResponse questionnaireResponse) {
+  @Operation(name = "$extract", idempotent = false,
+             type = QuestionnaireResponse.class)
+  public Bundle
+  extractObservationFromQuestionnaireResponse(
+      @OperationParam(name = "questionnaireResponse")
+      QuestionnaireResponse questionnaireResponse) {
     if (questionnaireResponse == null) {
       throw new IllegalArgumentException(
           "Unable to perform operation $extract.  The QuestionnaireResponse was null");
     }
-    Bundle observationsFromQuestionnaireResponse = createObservationBundle(questionnaireResponse);
+    Bundle observationsFromQuestionnaireResponse =
+        createObservationBundle(questionnaireResponse);
     return sendObservationBundle(observationsFromQuestionnaireResponse);
   }
 
-  private Bundle createObservationBundle(QuestionnaireResponse questionnaireResponse) {
+  private Bundle
+  createObservationBundle(QuestionnaireResponse questionnaireResponse) {
     Bundle newBundle = new Bundle();
     Date authored = questionnaireResponse.getAuthored();
 
     Identifier bundleId = new Identifier();
-    bundleId.setValue("QuestionnaireResponse/" + questionnaireResponse.getIdElement().getIdPart());
+    bundleId.setValue("QuestionnaireResponse/" +
+                      questionnaireResponse.getIdElement().getIdPart());
     newBundle.setType(Bundle.BundleType.TRANSACTION);
     newBundle.setIdentifier(bundleId);
 
@@ -75,67 +90,49 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
       throw new IllegalArgumentException(
           "The QuestionnaireResponse must have the source Questionnaire specified to do extraction");
     }
-    Map<String, Coding> questionnaireCodeMap = getQuestionnaireCodeMap(questionnaireCanonical);
+    Map<String, Coding> questionnaireCodeMap =
+        getQuestionnaireCodeMap(questionnaireCanonical);
 
-    questionnaireResponse.getItem().stream()
-        .forEach(
-            item -> {
-              processItems(item, authored, questionnaireResponse, newBundle, questionnaireCodeMap);
-            });
+    questionnaireResponse.getItem().stream().forEach(item -> {
+      processItems(item, authored, questionnaireResponse, newBundle,
+                   questionnaireCodeMap);
+    });
     return newBundle;
   }
 
-  private void processItems(
-      QuestionnaireResponse.QuestionnaireResponseItemComponent item,
-      Date authored,
-      QuestionnaireResponse questionnaireResponse,
-      Bundle newBundle,
-      Map<String, Coding> questionnaireCodeMap) {
+  private void
+  processItems(QuestionnaireResponse.QuestionnaireResponseItemComponent item,
+               Date authored, QuestionnaireResponse questionnaireResponse,
+               Bundle newBundle, Map<String, Coding> questionnaireCodeMap) {
     if (item.hasAnswer()) {
-      item.getAnswer()
-          .forEach(
-              answer -> {
-                Bundle.BundleEntryComponent newBundleEntryComponent =
-                    createObservationFromItemAnswer(
-                        answer,
-                        item.getLinkId(),
-                        authored,
-                        questionnaireResponse,
-                        questionnaireCodeMap);
-                if (null != newBundleEntryComponent) {
-                  newBundle.addEntry(newBundleEntryComponent);
-                }
-                if (answer.hasItem()) {
-                  answer
-                      .getItem()
-                      .forEach(
-                          answerItem -> {
-                            processItems(
-                                answerItem,
-                                authored,
-                                questionnaireResponse,
-                                newBundle,
-                                questionnaireCodeMap);
-                          });
-                }
-              });
+      item.getAnswer().forEach(answer -> {
+        Bundle.BundleEntryComponent newBundleEntryComponent =
+            createObservationFromItemAnswer(answer, item.getLinkId(), authored,
+                                            questionnaireResponse,
+                                            questionnaireCodeMap);
+        if (null != newBundleEntryComponent) {
+          newBundle.addEntry(newBundleEntryComponent);
+        }
+        if (answer.hasItem()) {
+          answer.getItem().forEach(answerItem -> {
+            processItems(answerItem, authored, questionnaireResponse, newBundle,
+                         questionnaireCodeMap);
+          });
+        }
+      });
     }
 
     if (item.hasItem()) {
-      item.getItem()
-          .forEach(
-              itemItem -> {
-                processItems(
-                    itemItem, authored, questionnaireResponse, newBundle, questionnaireCodeMap);
-              });
+      item.getItem().forEach(itemItem -> {
+        processItems(itemItem, authored, questionnaireResponse, newBundle,
+                     questionnaireCodeMap);
+      });
     }
   }
 
   private Bundle.BundleEntryComponent createObservationFromItemAnswer(
       QuestionnaireResponse.QuestionnaireResponseItemAnswerComponent answer,
-      String linkId,
-      Date authored,
-      QuestionnaireResponse questionnaireResponse,
+      String linkId, Date authored, QuestionnaireResponse questionnaireResponse,
       Map<String, Coding> questionnaireCodeMap) {
     Observation obs = new Observation();
     obs.setEffective(new DateTimeType(authored));
@@ -144,32 +141,41 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
     Coding qrCategoryCoding = new Coding();
     qrCategoryCoding.setCode("survey");
     qrCategoryCoding.setSystem("http://hl7.org/fhir/observation-category");
-    obs.setCategory(Collections.singletonList(new CodeableConcept().addCoding(qrCategoryCoding)));
-    obs.setCode(new CodeableConcept().addCoding(questionnaireCodeMap.get(linkId)));
-    obs.setId("qr" + questionnaireResponse.getIdElement().getIdPart() + "." + linkId);
+    obs.setCategory(Collections.singletonList(
+        new CodeableConcept().addCoding(qrCategoryCoding)));
+    obs.setCode(
+        new CodeableConcept().addCoding(questionnaireCodeMap.get(linkId)));
+    obs.setId("qr" + questionnaireResponse.getIdElement().getIdPart() + "." +
+              linkId);
     switch (answer.getValue().fhirType()) {
-      case "string":
-        obs.setValue(new StringType(answer.getValueStringType().getValue()));
-        break;
-      case "Coding":
-        obs.setValue(new CodeableConcept().addCoding(answer.getValueCoding()));
-        break;
-      case "boolean":
-        obs.setValue(new BooleanType(answer.getValueBooleanType().booleanValue()));
-        break;
+    case "string":
+      obs.setValue(new StringType(answer.getValueStringType().getValue()));
+      break;
+    case "Coding":
+      obs.setValue(new CodeableConcept().addCoding(answer.getValueCoding()));
+      break;
+    case "boolean":
+      obs.setValue(
+          new BooleanType(answer.getValueBooleanType().booleanValue()));
+      break;
     }
     Reference questionnaireResponseReference = new Reference();
     questionnaireResponseReference.setReference(
-        "QuestionnaireResponse" + "/" + questionnaireResponse.getIdElement().getIdPart());
-    obs.setDerivedFrom(Collections.singletonList(questionnaireResponseReference));
+        "QuestionnaireResponse"
+        + "/" + questionnaireResponse.getIdElement().getIdPart());
+    obs.setDerivedFrom(
+        Collections.singletonList(questionnaireResponseReference));
     Extension linkIdExtension = new Extension();
-    linkIdExtension.setUrl("http://hl7.org/fhir/uv/sdc/StructureDefinition/derivedFromLinkId");
+    linkIdExtension.setUrl(
+        "http://hl7.org/fhir/uv/sdc/StructureDefinition/derivedFromLinkId");
     Extension innerLinkIdExtension = new Extension();
     innerLinkIdExtension.setUrl("text");
     innerLinkIdExtension.setValue(new StringType(linkId));
-    linkIdExtension.setExtension(Collections.singletonList(innerLinkIdExtension));
+    linkIdExtension.setExtension(
+        Collections.singletonList(innerLinkIdExtension));
     obs.addExtension(linkIdExtension);
-    Bundle.BundleEntryRequestComponent berc = new Bundle.BundleEntryRequestComponent();
+    Bundle.BundleEntryRequestComponent berc =
+        new Bundle.BundleEntryRequestComponent();
     berc.setMethod(Bundle.HTTPVerb.PUT);
     berc.setUrl("Observation/" + obs.getId());
 
@@ -179,7 +185,8 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
     return bec;
   }
 
-  private Bundle sendObservationBundle(Bundle observationsBundle) throws IllegalArgumentException {
+  private Bundle sendObservationBundle(Bundle observationsBundle)
+      throws IllegalArgumentException {
     String url = mySdcProperties.getExtract().getEndpoint();
     if (null == url || url.length() < 1) {
       throw new IllegalArgumentException(
@@ -205,62 +212,76 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
     IGenericClient client = this.createClient(myFhirContext, url);
     this.registerBasicAuth(client, user, password);
 
-    // See if we can find Questionnaires that fit the user's criteria..
-    // This will fail and give an incredibly non-descriptive (unrelated) error when:
-    // No Questionnaires exist OR
-    // No Questionnaires meet the criteria of URL.matches().value(questionnaireUrl)
     Bundle results =
-        (Bundle) client
-                .search()
-                .forResource(Questionnaire.class)
-                .where(Questionnaire.URL.matches().value(questionnaireUrl))
-                .execute();
+        (Bundle)client.search()
+            .forResource(Questionnaire.class)
+            .where(Questionnaire.URL.matches().value(questionnaireUrl))
+            .execute();
 
-    // If no results are found, try and help the user out a bit...
-
-    // Because an error ends up being thrown at a non-surface level, this seems like a huge pain
-    // to get a descriptive error output. But I feel we definitely should.
-
-//    if (results.isEmpty()) {
-//      System.out.println(
-//          "[Read me] When filtering existing Questionnaires by Questionnaire.URL == "
-//              + questionnaireUrl
-//              + ", I wasn't able to find one.");
-//      Bundle questionnaires = (Bundle) client.search().forResource(Questionnaire.class).execute();
-//      if (questionnaires.isEmpty()) {
-//        System.out.println(
-//            "[Read me] This is most probably due to the current database not containing any Questionnaires.");
-//      }
-//
-//      throw new InternalError(
-//          "Could not find existing Questionnaire with matching url " + questionnaireUrl);
-//    }
-    Questionnaire questionnaire = (Questionnaire) results.getEntry().get(0).getResource();
+    Questionnaire questionnaire =
+        (Questionnaire)results.getEntry().get(0).getResource();
 
     return createCodeMap(questionnaire);
+
+    // // See if we can find Questionnaires that fit the user's criteria..
+    // // This will fail and give an incredibly non-descriptive (unrelated)
+    // error when:
+    // // No Questionnaires exist OR
+    // // No Questionnaires meet the criteria of
+    // URL.matches().value(questionnaireUrl)
+    // Bundle results =
+    // (Bundle)
+    // client
+    // .search()
+    // .forResource(Questionnaire.class)
+    // // .where(Questionnaire.URL.matches().value(questionnaireUrl))
+    // .execute();
+
+    // // If no results are found, try and help the user out a bit...
+
+    // // Because an error ends up being thrown at a non-surface level, this
+    // seems like a huge pain
+    // // to get a descriptive error output. But I feel we definitely should.
+
+    // // if (results.isEmpty()) {
+    // // System.out.println(
+    // // "[Read me] When filtering existing Questionnaires by Questionnaire.URL
+    // ==
+    // "
+    // // + questionnaireUrl
+    // // + ", I wasn't able to find one.");
+    // // Bundle questionnaires = (Bundle)
+    // // client.search().forResource(Questionnaire.class).execute();
+    // // if (questionnaires.isEmpty()) {
+    // // System.out.println(
+    // // "[Read me] This is most probably due to the current database not
+    // containing any
+    // // Questionnaires.");
+    // // }
+    // //
+    // // throw new InternalError(
+    // // "Could not find existing Questionnaire with matching url " +
+    // questionnaireUrl);
+    // // }
+    // Questionnaire questionnaire = (Questionnaire)
+    // results.getEntry().get(0).getResource();
   }
 
   // this is based on "if a questionnaire.item has items then this item is a
   // header and will not have a specific code to be used with an answer"
   private Map<String, Coding> createCodeMap(Questionnaire questionnaire) {
     Map<String, Coding> questionnaireCodeMap = new HashMap<>();
-    questionnaire
-        .getItem()
-        .forEach(
-            (item) -> {
-              processQuestionnaireItems(item, questionnaireCodeMap);
-            });
+    questionnaire.getItem().forEach(
+        (item) -> { processQuestionnaireItems(item, questionnaireCodeMap); });
     return questionnaireCodeMap;
   }
 
-  private void processQuestionnaireItems(
-      Questionnaire.QuestionnaireItemComponent item, Map<String, Coding> questionnaireCodeMap) {
+  private void
+  processQuestionnaireItems(Questionnaire.QuestionnaireItemComponent item,
+                            Map<String, Coding> questionnaireCodeMap) {
     if (item.hasItem()) {
-      item.getItem()
-          .forEach(
-              qItem -> {
-                processQuestionnaireItems(qItem, questionnaireCodeMap);
-              });
+      item.getItem().forEach(
+          qItem -> { processQuestionnaireItems(qItem, questionnaireCodeMap); });
     } else {
       questionnaireCodeMap.put(item.getLinkId(), item.getCodeFirstRep());
     }
