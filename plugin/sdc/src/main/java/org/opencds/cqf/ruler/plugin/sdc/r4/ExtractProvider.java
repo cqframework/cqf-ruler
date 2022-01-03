@@ -55,33 +55,30 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
    * indicating what the issue was.
    */
 
-  @Autowired private FhirContext myFhirContext;
+  @Autowired
+  private FhirContext myFhirContext;
 
-  @Autowired private SDCProperties mySdcProperties;
+  @Autowired
+  private SDCProperties mySdcProperties;
 
-  @Operation(name = "$extract", idempotent = false,
-             type = QuestionnaireResponse.class)
-  public Bundle
-  extractObservationFromQuestionnaireResponse(
-      @OperationParam(name = "questionnaireResponse")
-      QuestionnaireResponse questionnaireResponse) {
+  @Operation(name = "$extract", idempotent = false, type = QuestionnaireResponse.class)
+  public Bundle extractObservationFromQuestionnaireResponse(
+      @OperationParam(name = "questionnaireResponse") QuestionnaireResponse questionnaireResponse) {
     if (questionnaireResponse == null) {
       throw new IllegalArgumentException(
           "Unable to perform operation $extract.  The QuestionnaireResponse was null");
     }
-    Bundle observationsFromQuestionnaireResponse =
-        createObservationBundle(questionnaireResponse);
+    Bundle observationsFromQuestionnaireResponse = createObservationBundle(questionnaireResponse);
     return sendObservationBundle(observationsFromQuestionnaireResponse);
   }
 
-  private Bundle
-  createObservationBundle(QuestionnaireResponse questionnaireResponse) {
+  private Bundle createObservationBundle(QuestionnaireResponse questionnaireResponse) {
     Bundle newBundle = new Bundle();
     Date authored = questionnaireResponse.getAuthored();
 
     Identifier bundleId = new Identifier();
     bundleId.setValue("QuestionnaireResponse/" +
-                      questionnaireResponse.getIdElement().getIdPart());
+        questionnaireResponse.getIdElement().getIdPart());
     newBundle.setType(Bundle.BundleType.TRANSACTION);
     newBundle.setIdentifier(bundleId);
 
@@ -90,33 +87,31 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
       throw new IllegalArgumentException(
           "The QuestionnaireResponse must have the source Questionnaire specified to do extraction");
     }
-    Map<String, Coding> questionnaireCodeMap =
-        getQuestionnaireCodeMap(questionnaireCanonical);
+    Map<String, Coding> questionnaireCodeMap = getQuestionnaireCodeMap(questionnaireCanonical);
 
     questionnaireResponse.getItem().stream().forEach(item -> {
       processItems(item, authored, questionnaireResponse, newBundle,
-                   questionnaireCodeMap);
+          questionnaireCodeMap);
     });
     return newBundle;
   }
 
-  private void
-  processItems(QuestionnaireResponse.QuestionnaireResponseItemComponent item,
-               Date authored, QuestionnaireResponse questionnaireResponse,
-               Bundle newBundle, Map<String, Coding> questionnaireCodeMap) {
+  private void processItems(QuestionnaireResponse.QuestionnaireResponseItemComponent item,
+      Date authored, QuestionnaireResponse questionnaireResponse,
+      Bundle newBundle, Map<String, Coding> questionnaireCodeMap) {
     if (item.hasAnswer()) {
       item.getAnswer().forEach(answer -> {
-        Bundle.BundleEntryComponent newBundleEntryComponent =
-            createObservationFromItemAnswer(answer, item.getLinkId(), authored,
-                                            questionnaireResponse,
-                                            questionnaireCodeMap);
+        Bundle.BundleEntryComponent newBundleEntryComponent = createObservationFromItemAnswer(answer, item.getLinkId(),
+            authored,
+            questionnaireResponse,
+            questionnaireCodeMap);
         if (null != newBundleEntryComponent) {
           newBundle.addEntry(newBundleEntryComponent);
         }
         if (answer.hasItem()) {
           answer.getItem().forEach(answerItem -> {
             processItems(answerItem, authored, questionnaireResponse, newBundle,
-                         questionnaireCodeMap);
+                questionnaireCodeMap);
           });
         }
       });
@@ -125,7 +120,7 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
     if (item.hasItem()) {
       item.getItem().forEach(itemItem -> {
         processItems(itemItem, authored, questionnaireResponse, newBundle,
-                     questionnaireCodeMap);
+            questionnaireCodeMap);
       });
     }
   }
@@ -146,23 +141,23 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
     obs.setCode(
         new CodeableConcept().addCoding(questionnaireCodeMap.get(linkId)));
     obs.setId("qr" + questionnaireResponse.getIdElement().getIdPart() + "." +
-              linkId);
+        linkId);
     switch (answer.getValue().fhirType()) {
-    case "string":
-      obs.setValue(new StringType(answer.getValueStringType().getValue()));
-      break;
-    case "Coding":
-      obs.setValue(new CodeableConcept().addCoding(answer.getValueCoding()));
-      break;
-    case "boolean":
-      obs.setValue(
-          new BooleanType(answer.getValueBooleanType().booleanValue()));
-      break;
+      case "string":
+        obs.setValue(new StringType(answer.getValueStringType().getValue()));
+        break;
+      case "Coding":
+        obs.setValue(new CodeableConcept().addCoding(answer.getValueCoding()));
+        break;
+      case "boolean":
+        obs.setValue(
+            new BooleanType(answer.getValueBooleanType().booleanValue()));
+        break;
     }
     Reference questionnaireResponseReference = new Reference();
     questionnaireResponseReference.setReference(
         "QuestionnaireResponse"
-        + "/" + questionnaireResponse.getIdElement().getIdPart());
+            + "/" + questionnaireResponse.getIdElement().getIdPart());
     obs.setDerivedFrom(
         Collections.singletonList(questionnaireResponseReference));
     Extension linkIdExtension = new Extension();
@@ -174,8 +169,7 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
     linkIdExtension.setExtension(
         Collections.singletonList(innerLinkIdExtension));
     obs.addExtension(linkIdExtension);
-    Bundle.BundleEntryRequestComponent berc =
-        new Bundle.BundleEntryRequestComponent();
+    Bundle.BundleEntryRequestComponent berc = new Bundle.BundleEntryRequestComponent();
     berc.setMethod(Bundle.HTTPVerb.PUT);
     berc.setUrl("Observation/" + obs.getId());
 
@@ -212,14 +206,12 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
     IGenericClient client = this.createClient(myFhirContext, url);
     this.registerBasicAuth(client, user, password);
 
-    Bundle results =
-        (Bundle)client.search()
-            .forResource(Questionnaire.class)
-            .where(Questionnaire.URL.matches().value(questionnaireUrl))
-            .execute();
+    Bundle results = (Bundle) client.search()
+        .forResource(Questionnaire.class)
+        .where(Questionnaire.URL.matches().value(questionnaireUrl))
+        .execute();
 
-    Questionnaire questionnaire =
-        (Questionnaire)results.getEntry().get(0).getResource();
+    Questionnaire questionnaire = (Questionnaire) results.getEntry().get(0).getResource();
 
     return createCodeMap(questionnaire);
 
@@ -272,16 +264,19 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
   private Map<String, Coding> createCodeMap(Questionnaire questionnaire) {
     Map<String, Coding> questionnaireCodeMap = new HashMap<>();
     questionnaire.getItem().forEach(
-        (item) -> { processQuestionnaireItems(item, questionnaireCodeMap); });
+        (item) -> {
+          processQuestionnaireItems(item, questionnaireCodeMap);
+        });
     return questionnaireCodeMap;
   }
 
-  private void
-  processQuestionnaireItems(Questionnaire.QuestionnaireItemComponent item,
-                            Map<String, Coding> questionnaireCodeMap) {
+  private void processQuestionnaireItems(Questionnaire.QuestionnaireItemComponent item,
+      Map<String, Coding> questionnaireCodeMap) {
     if (item.hasItem()) {
       item.getItem().forEach(
-          qItem -> { processQuestionnaireItems(qItem, questionnaireCodeMap); });
+          qItem -> {
+            processQuestionnaireItems(qItem, questionnaireCodeMap);
+          });
     } else {
       questionnaireCodeMap.put(item.getLinkId(), item.getCodeFirstRep());
     }
