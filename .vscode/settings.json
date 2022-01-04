@@ -31,7 +31,7 @@
 		"Gson",
 		"reindex"
 	],
-	"java.checkstyle.configuration": "${workspaceFolder}/src/checkstyle/checkstyle.xml",
+	"java.checkstyle.configuration": "${workspaceFolder}/config/checkstyle/checkstyle.xml",
 	"java.checkstyle.version": "9.21",
 	"files.exclude": {
 		"**/.classpath": true,
