@@ -6,7 +6,7 @@ cqf-ruler plugins rely heavily on Spring auto-configuration. On startup the serv
 
 ```ini
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.opencds.cqf.ruler.plugin.hello.HelloWorldConfig
+org.opencds.cqf.ruler.hello.HelloWorldConfig
 ```
 
 This tells Spring to load the config described in the HelloWorldConfig class. The cqf-ruler then loads and registers Providers, Interceptors, and Metadata extenders as built by the Spring config. It's possible to create other Beans as well.

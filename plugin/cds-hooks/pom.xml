@@ -7,26 +7,26 @@
 		<version>0.5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>cqf-ruler-plugin-cds-hooks</artifactId>
+	<artifactId>cqf-ruler-cds-hooks</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-plugin-security</artifactId>
+			<artifactId>cqf-ruler-security</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-plugin-cql</artifactId>
+			<artifactId>cqf-ruler-cql</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-plugin-cr</artifactId>
+			<artifactId>cqf-ruler-cr</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-plugin-utility</artifactId>
+			<artifactId>cqf-ruler-utility</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

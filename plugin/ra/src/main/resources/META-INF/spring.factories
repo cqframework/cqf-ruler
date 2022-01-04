@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.opencds.cqf.ruler.plugin.ra.RAConfig
+org.opencds.cqf.ruler.ra.RAConfig

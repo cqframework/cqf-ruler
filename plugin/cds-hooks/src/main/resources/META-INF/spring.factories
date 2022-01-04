@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksConfig
+org.opencds.cqf.ruler.cdshooks.CdsHooksConfig

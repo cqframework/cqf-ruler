@@ -7,11 +7,11 @@
 		<version>0.5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>cqf-ruler-plugin-ra</artifactId>
+	<artifactId>cqf-ruler-ra</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-plugin-utility</artifactId>
+			<artifactId>cqf-ruler-utility</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

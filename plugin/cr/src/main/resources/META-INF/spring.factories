@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.opencds.cqf.ruler.plugin.cr.CrConfig
+org.opencds.cqf.ruler.cr.CrConfig

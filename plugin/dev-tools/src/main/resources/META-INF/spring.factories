@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.opencds.cqf.ruler.plugin.devtools.DevToolsConfig
+org.opencds.cqf.ruler.devtools.DevToolsConfig

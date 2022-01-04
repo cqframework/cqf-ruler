@@ -63,7 +63,7 @@ Plugins use Spring Boot [autoconfiguration](https://docs.spring.io/spring-boot/d
 
 ```ini
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.opencds.cqf.ruler.plugin.example.ExampleConfig
+org.opencds.cqf.ruler.example.ExampleConfig
 ```
 
 Any Beans defined in that root plugin config that implement one the cqf-ruler plugin apis will be loaded by the cqf-ruler on startup. There's a full plugin example [here](plugin/hello-world).

@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.opencds.cqf.ruler.plugin.hello.HelloWorldConfig
+org.opencds.cqf.ruler.hello.HelloWorldConfig

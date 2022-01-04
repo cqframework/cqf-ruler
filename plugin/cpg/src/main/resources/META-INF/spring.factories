@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.opencds.cqf.ruler.plugin.cpg.CpgConfig
+org.opencds.cqf.ruler.cpg.CpgConfig
