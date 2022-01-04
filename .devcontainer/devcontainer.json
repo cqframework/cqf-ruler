@@ -2,7 +2,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.209.6/containers/debian
 {
 	"name": "Debian",
-	"image": "mcr.microsoft.com/vscode/devcontainers/base:11-bullseye",
+	"image": "mcr.microsoft.com/vscode/devcontainers/java:11-bullseye",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"java.help.showReleaseNotes": false
@@ -10,14 +10,14 @@
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
-		"vscjava.vscode-java-pack",
+		"shengchen.vscode-checkstyle",
+		"sonarsource.sonarlint-vscode",
+		"redhat.fabric8-analytics",
 		"editorconfig.editorconfig",
 		"streetsidesoftware.code-spell-checker",
 		"streetsidesoftware.code-spell-checker-scientific-terms",
 		"streetsidesoftware.code-spell-checker-medical-terms",
-		"shengchen.vscode-checkstyle",
-		"sonarsource.sonarlint-vscode",
-		"redhat.fabric8-analytics"
+		"vscjava.vscode-java-pack",
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
