@@ -16,6 +16,10 @@ import org.opencds.cqf.cql.evaluator.cql2elm.model.CacheAwareModelManager;
 import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDecorator;
 import org.opencds.cqf.cql.evaluator.engine.execution.TranslatingLibraryLoader;
 import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
+import org.opencds.cqf.ruler.external.annotations.OnDSTU2Condition;
+import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
+import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
+import org.opencds.cqf.ruler.external.annotations.OnR5Condition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,10 +35,6 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
-import ca.uhn.fhir.jpa.starter.annotations.OnDSTU2Condition;
-import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
-import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
-import ca.uhn.fhir.jpa.starter.annotations.OnR5Condition;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 
 @Configuration

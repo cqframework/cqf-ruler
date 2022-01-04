@@ -12,10 +12,13 @@
 		},
 	],
 	"java.test.defaultConfig": "test-config",
+	"java.checkstyle.configuration": "${workspaceFolder}/config/checkstyle/checkstyle.xml",
+	"java.checkstyle.version": "9.21",
 	"cSpell.enabledLanguageIds": [
 		"java",
 		"json",
-		"xml"
+		"xml",
+		"md"
 	],
 	"cSpell.ignorePaths": [
 		".git/objects",
@@ -31,8 +34,6 @@
 		"Gson",
 		"reindex"
 	],
-	"java.checkstyle.configuration": "${workspaceFolder}/config/checkstyle/checkstyle.xml",
-	"java.checkstyle.version": "9.21",
 	"files.exclude": {
 		"**/.classpath": true,
 		"**/.project": true,

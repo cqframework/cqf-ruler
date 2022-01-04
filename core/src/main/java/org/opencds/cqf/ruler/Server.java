@@ -1,17 +1,11 @@
 package org.opencds.cqf.ruler;
 
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.context.support.IValidationSupport;
-import ca.uhn.fhir.jpa.api.config.DaoConfig;
-import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.starter.AppProperties;
-import ca.uhn.fhir.jpa.starter.BaseJpaRestfulServer;
-import ca.uhn.fhir.model.dstu2.resource.Conformance;
-import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.servlet.ServletException;
+
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.instance.model.api.IBaseConformance;
 import org.opencds.cqf.ruler.api.Interceptor;
@@ -20,10 +14,19 @@ import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.capability.ExtensibleJpaCapabilityStatementProvider;
 import org.opencds.cqf.ruler.capability.ExtensibleJpaConformanceProviderDstu2;
 import org.opencds.cqf.ruler.capability.ExtensibleJpaConformanceProviderDstu3;
+import org.opencds.cqf.ruler.external.AppProperties;
+import org.opencds.cqf.ruler.external.BaseJpaRestfulServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.context.support.IValidationSupport;
+import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
+import ca.uhn.fhir.model.dstu2.resource.Conformance;
+import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
 public class Server extends BaseJpaRestfulServer {
 

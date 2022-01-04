@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
+import org.opencds.cqf.ruler.external.AppProperties;
 import org.opencds.cqf.ruler.plugin.cdshooks.CdsHooksConfig;
 import org.opencds.cqf.ruler.plugin.utility.ResolutionUtilities;
 import org.opencds.cqf.ruler.test.ITestSupport;
@@ -35,7 +36,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.starter.AppProperties;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 

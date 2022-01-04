@@ -1,14 +1,14 @@
 package org.opencds.cqf.ruler.plugin.cr;
 
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
+import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
+import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
-import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true", matchIfMissing = true)

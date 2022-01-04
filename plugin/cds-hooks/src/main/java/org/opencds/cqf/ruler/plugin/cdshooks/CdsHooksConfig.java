@@ -4,6 +4,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.gson.JsonArray;
 
+import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
+import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.plugin.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.plugin.cql.CqlProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +15,6 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-
-import ca.uhn.fhir.jpa.starter.annotations.OnDSTU3Condition;
-import ca.uhn.fhir.jpa.starter.annotations.OnR4Condition;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cdshooks", name = "enabled", havingValue = "true", matchIfMissing = true)

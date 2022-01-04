@@ -2,6 +2,11 @@ package org.opencds.cqf.ruler;
 
 import org.opencds.cqf.ruler.config.BeanFinderConfig;
 import org.opencds.cqf.ruler.config.TesterUIConfig;
+import org.opencds.cqf.ruler.external.FhirTesterConfig;
+import org.opencds.cqf.ruler.external.annotations.OnEitherVersion;
+import org.opencds.cqf.ruler.external.cql.StarterCqlDstu3Config;
+import org.opencds.cqf.ruler.external.cql.StarterCqlR4Config;
+import org.opencds.cqf.ruler.external.mdm.MdmConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
@@ -20,20 +25,15 @@ import org.springframework.context.annotation.Import;
 import ca.uhn.fhir.cql.config.BaseCqlConfig;
 import ca.uhn.fhir.cql.config.CqlDstu3Config;
 import ca.uhn.fhir.cql.config.CqlR4Config;
-import ca.uhn.fhir.jpa.starter.FhirTesterConfig;
-import ca.uhn.fhir.jpa.starter.annotations.OnEitherVersion;
-import ca.uhn.fhir.jpa.starter.cql.StarterCqlDstu3Config;
-import ca.uhn.fhir.jpa.starter.cql.StarterCqlR4Config;
-import ca.uhn.fhir.jpa.starter.mdm.MdmConfig;
 import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
 import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
 
 @ServletComponentScan(basePackageClasses = Application.class)
-@ComponentScan(basePackageClasses = { ca.uhn.fhir.jpa.starter.Application.class,
+@ComponentScan(basePackageClasses = { org.opencds.cqf.ruler.external.Application.class,
 		Application.class }, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {
-				FhirTesterConfig.class, ca.uhn.fhir.jpa.starter.Application.class, StarterCqlR4Config.class,
+				FhirTesterConfig.class, org.opencds.cqf.ruler.external.Application.class, StarterCqlR4Config.class,
 				StarterCqlDstu3Config.class, CqlR4Config.class, CqlDstu3Config.class, BaseCqlConfig.class }))
 @SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class })
 @Import({ SubscriptionSubmitterConfig.class, SubscriptionProcessorConfig.class, SubscriptionChannelConfig.class,

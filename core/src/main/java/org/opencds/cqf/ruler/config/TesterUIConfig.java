@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.config;
 
+import org.opencds.cqf.ruler.external.FhirTesterConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -7,8 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
-
-import ca.uhn.fhir.jpa.starter.FhirTesterConfig;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir", name = "tester_enabled", havingValue = "true", matchIfMissing = false)
