@@ -59,22 +59,26 @@ public class ExtractProviderIT implements ITestSupport {
 		mySdcProperties.getExtract().setEndpoint(ourServerBase);
 	}
 
-	//@Test
+	@Test
 	public void testExtract() throws IOException {
+		// TODO: Check if needed resources exist on the server before the test.
+		// If they aren't, load them into memory for one-off use.
 
-		/* cSpell:ignore mypain */
-		loadResource("mypain-questionnaire.json", ourCtx, ourRegistry);
-
-		QuestionnaireResponse test = (QuestionnaireResponse) ourCtx.newJsonParser()
+		QuestionnaireResponse test = (QuestionnaireResponse) ourCtx
+				.newJsonParser()
 				.parseResource(stringFromResource("mypain-questionnaire-response.json"));
 
 		Parameters params = new Parameters();
 		params.addParameter().setName("questionnaireResponse").setResource(test);
 
-		Bundle actual = ourClient.operation().onType(QuestionnaireResponse.class).named("$extract")
+		Bundle actual = ourClient
+				.operation()
+				.onType(QuestionnaireResponse.class)
+				.named("$extract")
 				.withParameters(params)
 				.returnResourceType(Bundle.class)
 				.execute();
+
 
 		assertNotNull(actual);
 

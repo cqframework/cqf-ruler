@@ -206,57 +206,19 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
     IGenericClient client = this.createClient(myFhirContext, url);
     this.registerBasicAuth(client, user, password);
 
-    Bundle results = (Bundle) client.search()
-        .forResource(Questionnaire.class)
-        .where(Questionnaire.URL.matches().value(questionnaireUrl))
-        .execute();
+		Bundle results = (Bundle) client.search()
+			.forResource(Questionnaire.class)
+			.where(Questionnaire.URL.matches().value(questionnaireUrl))
+			.execute();
 
-    Questionnaire questionnaire = (Questionnaire) results.getEntry().get(0).getResource();
 
-    return createCodeMap(questionnaire);
+		if (results.getEntry().isEmpty()) {
+			throw new IllegalArgumentException(
+				"Unable to find resource by URL " + questionnaireUrl);
+		}
 
-    // // See if we can find Questionnaires that fit the user's criteria..
-    // // This will fail and give an incredibly non-descriptive (unrelated)
-    // error when:
-    // // No Questionnaires exist OR
-    // // No Questionnaires meet the criteria of
-    // URL.matches().value(questionnaireUrl)
-    // Bundle results =
-    // (Bundle)
-    // client
-    // .search()
-    // .forResource(Questionnaire.class)
-    // // .where(Questionnaire.URL.matches().value(questionnaireUrl))
-    // .execute();
-
-    // // If no results are found, try and help the user out a bit...
-
-    // // Because an error ends up being thrown at a non-surface level, this
-    // seems like a huge pain
-    // // to get a descriptive error output. But I feel we definitely should.
-
-    // // if (results.isEmpty()) {
-    // // System.out.println(
-    // // "[Read me] When filtering existing Questionnaires by Questionnaire.URL
-    // ==
-    // "
-    // // + questionnaireUrl
-    // // + ", I wasn't able to find one.");
-    // // Bundle questionnaires = (Bundle)
-    // // client.search().forResource(Questionnaire.class).execute();
-    // // if (questionnaires.isEmpty()) {
-    // // System.out.println(
-    // // "[Read me] This is most probably due to the current database not
-    // containing any
-    // // Questionnaires.");
-    // // }
-    // //
-    // // throw new InternalError(
-    // // "Could not find existing Questionnaire with matching url " +
-    // questionnaireUrl);
-    // // }
-    // Questionnaire questionnaire = (Questionnaire)
-    // results.getEntry().get(0).getResource();
+		Questionnaire questionnaire = (Questionnaire) results.getEntry().get(0).getResource();
+		return createCodeMap(questionnaire);
   }
 
   // this is based on "if a questionnaire.item has items then this item is a
