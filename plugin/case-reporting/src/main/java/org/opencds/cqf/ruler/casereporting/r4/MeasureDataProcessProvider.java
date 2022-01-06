@@ -7,6 +7,7 @@ import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Composition;
@@ -28,9 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class MeasureDataProcessor implements OperationProvider, ClientUtilities, OperatorUtilities {
+public class MeasureDataProcessProvider implements OperationProvider, ClientUtilities, OperatorUtilities {
 
-	private static final Logger logger = LoggerFactory.getLogger(MeasureDataProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(MeasureDataProcessProvider.class);
 
 	@Autowired
 	private DaoRegistry myDaoRegistry;
@@ -39,9 +40,9 @@ public class MeasureDataProcessor implements OperationProvider, ClientUtilities,
 	private MeasureResourceProvider measureResourceProvider;
 
 	@Operation(name = "$extract-line-list-data", idempotent = true, type = MeasureReport.class)
-	public Bundle extractLineListData(
-		@OperationParam(name = "measureReport", min = 0, max = 1, type = MeasureReport.class) MeasureReport measureReport,
-		@OperationParam(name = "subjectList") List<String> subjectList) {
+	public Bundle extractLineListData(RequestDetails details,
+												 @OperationParam(name = "measureReport", min = 0, max = 1, type = MeasureReport.class) MeasureReport measureReport,
+												 @OperationParam(name = "subjectList") List<String> subjectList) {
 		IVersionSpecificBundleFactory bundleFactory = measureResourceProvider.getContext().newBundleFactory();
 
 		Map<String, Reference> populationSubjectListReferenceMap = new HashMap<String, Reference>();

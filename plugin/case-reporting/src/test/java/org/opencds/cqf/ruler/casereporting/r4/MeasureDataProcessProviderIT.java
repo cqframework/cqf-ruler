@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.MeasureReport;
@@ -33,7 +31,7 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 	"spring.main.allow-bean-definition-overriding=true",
 	"debug=true",
 	"spring.batch.job.enabled=false"})
-public class MeasureDataProcessorIT implements ITestSupport {
+public class MeasureDataProcessProviderIT implements ITestSupport {
 	private IGenericClient ourClient;
 	private FhirContext ourCtx;
 
@@ -54,7 +52,6 @@ public class MeasureDataProcessorIT implements ITestSupport {
 
 	}
 
-
 	@Test
 	public void testMeasureReportExtractLineListData() throws IOException {
 
@@ -67,20 +64,9 @@ public class MeasureDataProcessorIT implements ITestSupport {
 		loadResource( packagePrefix + "Group-ra-group02.json", ourCtx, ourRegistry);
 		loadResource(  packagePrefix + "MeasureReport-ra-measurereport01.json", ourCtx, ourRegistry);
 
-
-//		String bundleTextValueSets = stringFromResource(packagePrefix + "valuesets-ColorectalCancerScreeningsFHIR-bundle.json");
-//		FhirContext fhirContext = FhirContext.forR4();
-//		Bundle bundleValueSet = (Bundle)fhirContext.newJsonParser().parseResource(bundleTextValueSets);
-//		ourClient.transaction().withBundle(bundleValueSet).execute();
-
-//		String bundleText = stringFromResource(packagePrefix + "additionalData.json");
-//		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleText);
 		MeasureReport measureReport = ourClient.read().resource(MeasureReport.class).withId("ra-measurereport01").execute();
 
-//		assertNotNull(bundle);
 		assertNotNull(measureReport);
-
-		List<String> subjectList = new ArrayList<>();
 
 		Parameters params = new Parameters();
 		params.addParameter().setName("measureReport").setResource(measureReport);
