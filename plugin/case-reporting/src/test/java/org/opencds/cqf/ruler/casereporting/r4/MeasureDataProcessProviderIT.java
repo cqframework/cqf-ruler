@@ -1,7 +1,6 @@
 package org.opencds.cqf.ruler.casereporting.r4;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
