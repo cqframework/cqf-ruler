@@ -1,25 +1,9 @@
 package org.opencds.cqf.dstu3.providers;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
+import ca.uhn.fhir.cql.dstu3.helper.LibraryHelper;
 import com.google.common.base.Strings;
 import com.vladsch.flexmark.ext.autolink.AutolinkExtension;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
@@ -31,7 +15,6 @@ import com.vladsch.flexmark.parser.ParserEmulationProfile;
 import com.vladsch.flexmark.util.ast.KeepType;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslator;
@@ -39,38 +22,19 @@ import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
-import org.cqframework.cql.elm.execution.CodeDef;
-import org.cqframework.cql.elm.execution.CodeSystemDef;
-import org.cqframework.cql.elm.execution.ExpressionDef;
-import org.cqframework.cql.elm.execution.FunctionDef;
-import org.cqframework.cql.elm.execution.IncludeDef;
 import org.cqframework.cql.elm.execution.Library;
-import org.cqframework.cql.elm.execution.ValueSetDef;
-import org.cqframework.cql.elm.execution.VersionedIdentifier;
+import org.cqframework.cql.elm.execution.*;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.hl7.elm.r1.ValueSetRef;
 import org.hl7.fhir.convertors.VersionConvertor_30_50;
-import org.hl7.fhir.convertors.VersionConvertor_40_50;
 import org.hl7.fhir.convertors.advisors.impl.BaseAdvisor_30_50;
-import org.hl7.fhir.convertors.conv30_50.VersionConvertor_30_50;
-import org.hl7.fhir.dstu3.model.Attachment;
-import org.hl7.fhir.dstu3.model.Base64BinaryType;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.DataRequirement;
+import org.hl7.fhir.dstu3.model.*;
 import org.hl7.fhir.dstu3.model.DataRequirement.DataRequirementCodeFilterComponent;
-import org.hl7.fhir.dstu3.model.MarkdownType;
-import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupPopulationComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureGroupStratifierComponent;
 import org.hl7.fhir.dstu3.model.Measure.MeasureSupplementalDataComponent;
-import org.hl7.fhir.dstu3.model.ParameterDefinition;
-import org.hl7.fhir.dstu3.model.Reference;
-import org.hl7.fhir.dstu3.model.RelatedArtifact;
-import org.hl7.fhir.dstu3.model.StringType;
-import org.hl7.fhir.dstu3.model.Type;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.providers.CommonDataRequirementsProvider;
@@ -85,12 +49,16 @@ import org.opencds.cqf.tooling.measure.stu3.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.stu3.CqfMeasure;
 import org.opencds.cqf.tooling.measure.stu3.TerminologyRef;
 import org.opencds.cqf.tooling.measure.stu3.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.tooling.measure.stu3.VersionedTerminologyRef;
 import org.springframework.stereotype.Component;
 
-import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
-import ca.uhn.fhir.cql.dstu3.helper.LibraryHelper;
-
-import org.opencds.cqf.tooling.measure.stu3.VersionedTerminologyRef;
+import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Component
 public class DataRequirementsProvider {
@@ -114,13 +82,23 @@ public class DataRequirementsProvider {
     }
 
     public org.hl7.fhir.dstu3.model.Library getModuleDefinitionLibrary(org.hl7.fhir.dstu3.model.Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-        VersionConvertor_30_50 versionConvertor_30_50 = new VersionConvertor_30_50(new BaseAdvisor_30_50());
-        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) versionConvertor_30_50.convertResource(measure);
+        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_30_50.convertResource(measure);
 
         org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(measureR5, libraryManager, translatedLibrary, options);
-        org.hl7.fhir.dstu3.model.Library libraryDstu3 = (org.hl7.fhir.dstu3.model.Library) versionConvertor_30_50.convertResource(libraryR5);
+        org.hl7.fhir.dstu3.model.Library libraryDstu3 = (org.hl7.fhir.dstu3.model.Library) VersionConvertor_30_50.convertResource(libraryR5);
+        libraryDstu3 = this.addDataRequirementFhirQueries(libraryDstu3);
         return libraryDstu3;
     }
+
+
+//    {
+//        VersionConvertor_30_50 versionConvertor_30_50 = new VersionConvertor_30_50(new BaseAdvisor_30_50());
+//        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) versionConvertor_30_50.convertResource(measure);
+//
+//        org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(measureR5, libraryManager, translatedLibrary, options);
+//        org.hl7.fhir.dstu3.model.Library libraryDstu3 = (org.hl7.fhir.dstu3.model.Library) versionConvertor_30_50.convertResource(libraryR5);
+//        return libraryDstu3;
+//    }
 
     public org.hl7.fhir.dstu3.model.Library addDataRequirementFhirQueries(org.hl7.fhir.dstu3.model.Library library) {
         List<org.hl7.fhir.dstu3.model.DataRequirement> dataReqs = library.getDataRequirement();

@@ -1,25 +1,9 @@
 package org.opencds.cqf.r4.providers;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
+import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import com.google.common.base.Strings;
@@ -33,7 +17,6 @@ import com.vladsch.flexmark.parser.ParserEmulationProfile;
 import com.vladsch.flexmark.util.ast.KeepType;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslator;
@@ -41,30 +24,15 @@ import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
-import org.cqframework.cql.elm.execution.CodeDef;
-import org.cqframework.cql.elm.execution.CodeSystemDef;
-import org.cqframework.cql.elm.execution.ExpressionDef;
-import org.cqframework.cql.elm.execution.FunctionDef;
-import org.cqframework.cql.elm.execution.IncludeDef;
 import org.cqframework.cql.elm.execution.Library;
-import org.cqframework.cql.elm.execution.ValueSetDef;
-import org.cqframework.cql.elm.execution.VersionedIdentifier;
+import org.cqframework.cql.elm.execution.*;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor;
 import org.cqframework.cql.tools.formatter.CqlFormatterVisitor.FormatResult;
 import org.hl7.elm.r1.ValueSetRef;
 import org.hl7.fhir.convertors.advisors.impl.BaseAdvisor_40_50;
-import org.hl7.fhir.convertors.conv40_50.VersionConvertor_40_50;
-import org.hl7.fhir.r4.model.Attachment;
-import org.hl7.fhir.r4.model.Base64BinaryType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.DataRequirement;
+import org.hl7.fhir.convertors.VersionConvertor_40_50;
 import org.hl7.fhir.r4.model.Expression;
-import org.hl7.fhir.r4.model.MarkdownType;
-import org.hl7.fhir.r4.model.Measure;
-import org.hl7.fhir.r4.model.ParameterDefinition;
-import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.helpers.TranslatorHelper;
 import org.opencds.cqf.common.providers.CommonDataRequirementsProvider;
@@ -75,19 +43,26 @@ import org.opencds.cqf.cql.engine.fhir.retrieve.FhirQueryGeneratorFactory;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.fhir.terminology.FhirTerminologyProviderFactory;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.r4.helpers.CanonicalHelper;
 import org.opencds.cqf.tooling.measure.r4.CodeTerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.CqfMeasure;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef;
 import org.opencds.cqf.tooling.measure.r4.TerminologyRef.TerminologyRefType;
+import org.opencds.cqf.tooling.measure.r4.VersionedTerminologyRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import ca.uhn.fhir.cql.common.provider.LibraryResolutionProvider;
-import ca.uhn.fhir.cql.r4.helper.LibraryHelper;
+import javax.inject.Inject;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
-import org.opencds.cqf.tooling.measure.r4.VersionedTerminologyRef;
-import org.opencds.cqf.r4.helpers.CanonicalHelper;
+
+//import org.hl7.fhir.convertors.VersionConvertor_40_50;
 
 @Component
 public class DataRequirementsProvider {
@@ -106,10 +81,12 @@ public class DataRequirementsProvider {
     }
 
     public Measure createMeasure(Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-        VersionConvertor_40_50 versionConvertor_40_50 = new VersionConvertor_40_50(new BaseAdvisor_40_50());
-        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) versionConvertor_40_50.convertResource(measure);
-        org.hl7.fhir.r5.model.Measure convertedMeasure = dataRequirementsProvider.createMeasure(measureR5, libraryManager, translatedLibrary, options);
-        org.hl7.fhir.r4.model.Measure measureR4 = (org.hl7.fhir.r4.model.Measure) versionConvertor_40_50.convertResource(convertedMeasure);
+        org.hl7.fhir.r4.model.Library libraryR4 = getModuleDefinitionLibrary(measure, libraryManager, translatedLibrary, options);
+        libraryR4 = this.addDataRequirementFhirQueries(libraryR4);
+        org.hl7.fhir.r5.model.Library libraryR5 = (org.hl7.fhir.r5.model.Library) VersionConvertor_40_50.convertResource(libraryR4);
+        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(measure);
+        org.hl7.fhir.r5.model.Measure convertedMeasure = dataRequirementsProvider.createMeasure(measureR5, libraryR5);
+        org.hl7.fhir.r4.model.Measure measureR4 = (org.hl7.fhir.r4.model.Measure) VersionConvertor_40_50.convertResource(convertedMeasure);
 
         return measureR4;
     }
@@ -122,10 +99,11 @@ public class DataRequirementsProvider {
     }
 
     public org.hl7.fhir.r4.model.Library getModuleDefinitionLibrary(Measure measure, LibraryManager libraryManager, TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
-        VersionConvertor_40_50 versionConvertor_40_50 = new VersionConvertor_40_50(new BaseAdvisor_40_50());
-        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) versionConvertor_40_50.convertResource(measure);
+        org.hl7.fhir.r5.model.Measure measureR5 = (org.hl7.fhir.r5.model.Measure) VersionConvertor_40_50.convertResource(measure);
         org.hl7.fhir.r5.model.Library libraryR5 = dataRequirementsProvider.getModuleDefinitionLibrary(measureR5, libraryManager, translatedLibrary, options);
-        org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) versionConvertor_40_50.convertResource(libraryR5);
+        org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) VersionConvertor_40_50.convertResource(libraryR5);
+        libraryR4 = this.addDataRequirementFhirQueries(libraryR4);
+
         return libraryR4;
     }
 

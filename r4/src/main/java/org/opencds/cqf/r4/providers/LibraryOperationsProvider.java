@@ -327,7 +327,7 @@ public class LibraryOperationsProvider implements LibraryResolutionProvider<org.
                     String resourceString = relatedArtifact.getResource();
                     if (resourceString.startsWith("Library/") || resourceString.contains("/Library/")) {
                         try {
-                            Library lib = resolveLibraryById(CanonicalUtils.getId(resourceString));
+                            Library lib = resolveLibraryById(CanonicalUtils.getId(resourceString), null);
                             if (!resources.containsKey(lib.getId())) {
                                 resources.put(lib.getId(), lib);
                                 queue.add(lib);
