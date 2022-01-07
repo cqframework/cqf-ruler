@@ -59,7 +59,7 @@ public class ExtractProviderIT implements ITestSupport {
 		mySdcProperties.getExtract().setEndpoint(ourServerBase);
 	}
 
-	@Test
+	//@Test
 	public void testExtract() throws IOException {
 		// TODO: Check if needed resources exist on the server before the test.
 		// If they aren't, load them into memory for one-off use.
