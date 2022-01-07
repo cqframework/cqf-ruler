@@ -62,6 +62,13 @@ The cqf-ruler will be available at `http://localhost:8080/cqf-ruler-dstu3/`
 
 The cqf-ruler will be available at `http://localhost:8080/cqf-ruler-r4/`
 
+## Coding Conventions
+
+The CQF Project has adopted an over-arching goal to contribute back to HAPI.
+To this end:
+-   The CQF Ruler project has adopted the HAPI Coding Conventions: https://github.com/hapifhir/hapi-fhir/wiki/Contributing
+-   Plugins should generally use the "hapi.fhir" prefix for configuration properties
+
 ## Commit Policy
 
 All new development takes place on `<feature>` branches off `master`. Once feature development on the branch is complete, the feature branch is submitted to `master` as a PR. The PR is reviewed by maintainers and regression testing by the CI build occurs.
@@ -69,6 +76,26 @@ All new development takes place on `<feature>` branches off `master`. Once featu
 Changes to the `master` branch must be done through an approved PR. Delete branches after merging to keep the repository clean.
 
 Merges to `master` trigger a deployment to the Maven Snapshots repositories. Once ready for a release, the `master` branch is updated with the correct version number and is tagged. Tags trigger a full release to Maven Central and a corresponding release to Github. Releases SHALL NOT have a SNAPSHOT version, nor any SNAPSHOT dependencies.
+
+## Release Process
+To release a new version of CQF Ruler:
+- Ensure target versions/releases of:
+   - [ ] HAPI
+   - [ ] CQFTooling
+   - [ ] CDSHooks
+- [ ] Update master to be a release version (and all the reviews, bug fixes, etc. that that requires)
+   - [ ] Regression test each of the operations of all the plugins
+- [ ] Passed Travis Build = ready for release
+- [ ] Create a Github Release (which creates a tag at the current commit of master)
+   - [ ] Choose the "Auto-generate release notes" option
+- Travis does the release to Maven, ensure binaries are published to the binaries repository:
+   - [ ]  r4: (https://oss.sonatype.org/#view-repositories;public~browsestorage~org/opencds/cqf/cqf-ruler-r4)
+   - [ ] stu3: (https://oss.sonatype.org/#view-repositories;public~browsestorage~org/opencds/cqf/cqf-ruler-dstu3)
+- Travis does the release of the image to DockerHub
+   - [ ] Ensure the image is published to DockerHub (https://hub.docker.com/r/contentgroup/cqf-ruler)
+- [ ] Update master to vNext-SNAPSHOT
+- [ ] Ensure all issues included in the release are Closed
+
 
 ## Getting Help
 

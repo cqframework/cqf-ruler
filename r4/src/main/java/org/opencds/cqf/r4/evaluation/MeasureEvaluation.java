@@ -8,21 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.elm.execution.ExpressionDef;
 import org.cqframework.cql.elm.execution.FunctionDef;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.IntegerType;
-import org.hl7.fhir.r4.model.ListResource;
-import org.hl7.fhir.r4.model.Measure;
-import org.hl7.fhir.r4.model.MeasureReport;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Quantity;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.r4.model.*;
 import org.opencds.cqf.common.evaluation.MeasurePopulationType;
 import org.opencds.cqf.common.evaluation.MeasureScoring;
 import org.opencds.cqf.cql.engine.data.DataProvider;
@@ -99,6 +85,14 @@ public class MeasureEvaluation {
         List<IBaseResource> patientList = patientProvider.getAllResources();
         patientList.forEach(x -> patients.add((Patient) x));
         return patients;
+    }
+
+    private List<Coverage> getAllCoverages() {
+        List<Coverage> coverages = new ArrayList<>();
+        IBundleProvider coverageProvider = registry.getResourceDao("Coverage").search(SearchParameterMap.newSynchronous());
+        List<IBaseResource> coverageList = coverageProvider.getAllResources();
+        coverageList.forEach(x -> coverages.add((Coverage) x));
+        return coverages;
     }
 
     public MeasureReport evaluatePopulationMeasure(Measure measure, Context context) {
@@ -633,28 +627,46 @@ public class MeasureEvaluation {
     private MeasureReport processAccumulators(MeasureReport report, HashMap<String, HashMap<String, Integer>> sdeAccumulators,
                                               List<Measure.MeasureSupplementalDataComponent> sde, boolean isSingle, List<Patient> patients){
         List<Reference> newRefList = new ArrayList<>();
-        sdeAccumulators.forEach((sdeKey, sdeAccumulator) -> {
-            sdeAccumulator.forEach((sdeAccumulatorKey, sdeAccumulatorValue)->{
+        //sdeAccumulators.forEach((sdeKey, sdeAccumulator) -> {
+        //sdeAccumulator.forEach((sdeAccumulatorKey, sdeAccumulatorValue)->{
+        for (Map.Entry<String, HashMap<String, Integer>> sdeAccumulator : sdeAccumulators.entrySet()){
+            for (Map.Entry<String, Integer> sdeAccumulatorValue : sdeAccumulator.getValue().entrySet()){
                 Observation obs = new Observation();
                 obs.setStatus(Observation.ObservationStatus.FINAL);
                 obs.setId(UUID.randomUUID().toString());
                 Coding valueCoding = new Coding();
-                if(sdeKey.equalsIgnoreCase("sde-sex")){
-                    valueCoding.setCode(sdeAccumulatorKey);
-                }else {
-                    String coreCategory = sdeKey.substring(sdeKey.lastIndexOf('-') >= 0 ? sdeKey.lastIndexOf('-') : 0);
-                    patients.forEach((pt)-> {
-                        pt.getExtension().forEach((ptExt) -> {
+                if (sdeAccumulator.getKey().equalsIgnoreCase("sde-sex")) {
+                    valueCoding.setCode(sdeAccumulatorValue.getKey());
+                } else if (sdeAccumulator.getKey().equalsIgnoreCase("sde-payer")) {
+                    for (Patient pt : patients){
+                        List<Coverage> coverages = getAllCoverages();
+                        String patientId = pt.getId().split("/")[1];
+                        if (null != coverages) {
+                            Coverage coverage = coverages.stream().filter(coverageItem -> coverageItem.getBeneficiary().getReference().contains(patientId)).findFirst().orElse(null);
+                            if (null != coverage) {
+                                Coding coverageCoding = coverage.getType().getCoding().stream().filter(coding -> coding.getCode().contains(sdeAccumulatorValue.getKey())).findFirst().orElse(null);
+                                if (null != coverageCoding) {
+                                    valueCoding.setSystem(coverageCoding.getSystem());
+                                    valueCoding.setCode(coverageCoding.getCode());
+                                    valueCoding.setDisplay(coverageCoding.getDisplay());
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    String coreCategory = sdeAccumulator.getKey().substring(sdeAccumulator.getKey().lastIndexOf('-') >= 0 ? sdeAccumulator.getKey().lastIndexOf('-') : 0);
+                    for (Patient pt : patients){
+                        for (Extension ptExt : pt.getExtension()){
                             if (ptExt.getUrl().contains(coreCategory)) {
                                 String code = ((Coding) ptExt.getExtension().get(0).getValue()).getCode();
-                                if(code.equalsIgnoreCase(sdeAccumulatorKey)) {
+                                if(code.equalsIgnoreCase(sdeAccumulatorValue.getKey())) {
                                     valueCoding.setSystem(((Coding) ptExt.getExtension().get(0).getValue()).getSystem());
                                     valueCoding.setCode(code);
                                     valueCoding.setDisplay(((Coding) ptExt.getExtension().get(0).getValue()).getDisplay());
                                 }
                             }
-                        });
-                    });
+                        }
+                    }
                 }
                 CodeableConcept obsCodeableConcept = new CodeableConcept();
                 Extension obsExtension = new Extension().setUrl("http://hl7.org/fhir/StructureDefinition/cqf-measureInfo");
@@ -664,23 +676,23 @@ public class MeasureEvaluation {
                 obsExtension.addExtension(extExtMeasure);
                 Extension extExtPop = new Extension()
                         .setUrl("populationId")
-                        .setValue(new StringType(sdeKey));
+                        .setValue(new StringType(sdeAccumulator.getKey()));
                 obsExtension.addExtension(extExtPop);
                 obs.addExtension(obsExtension);
-                obs.setValue(new IntegerType(sdeAccumulatorValue));
+                obs.setValue(new IntegerType(sdeAccumulatorValue.getValue()));
                 if(!isSingle) {
-                    valueCoding.setCode(sdeAccumulatorKey);
+                    valueCoding.setCode(sdeAccumulatorValue.getKey());
                     obsCodeableConcept.setCoding(Collections.singletonList(valueCoding));
                     obs.setCode(obsCodeableConcept);
                 }else{
-                    obs.setCode(new CodeableConcept().setText(sdeKey));
+                    obs.setCode(new CodeableConcept().setText(sdeAccumulator.getKey()));
                     obsCodeableConcept.setCoding(Collections.singletonList(valueCoding));
                     obs.setValue(obsCodeableConcept);
                 }
                 newRefList.add(new Reference("#" + obs.getId()));
                 report.addContained(obs);
-            });
-        });
+            }
+        }
         newRefList.addAll(report.getEvaluatedResource());
         report.setEvaluatedResource(newRefList);
         return report;

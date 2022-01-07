@@ -780,8 +780,9 @@ public class MeasureOperationsProvider {
 
         IFhirResourceDao<MeasureReport> measureReportDao = this.registry.getResourceDao(MeasureReport.class);
         measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
-            MeasureReport measureReport = (MeasureReport)baseResource;
-            if (measureReport.getPeriod().getStart().before(periodStart) || measureReport.getPeriod().getStart().after(periodEnd)) {
+            MeasureReport measureReport = (MeasureReport)baseResource;        
+
+            if (measureReport.getPeriod().getEnd().before(periodStart) || measureReport.getPeriod().getStart().after(periodEnd)) {
                 return;
             }
 

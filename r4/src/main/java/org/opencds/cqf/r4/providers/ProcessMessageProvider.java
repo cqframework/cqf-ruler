@@ -53,10 +53,10 @@ public class ProcessMessageProvider {
         this.registry = registry;
     }
 
-	@SuppressWarnings("unchecked") 
+	@SuppressWarnings("unchecked")
     @Operation(name = "$process-message-bundle", idempotent = false)
 	public Bundle processMessageBundle(HttpServletRequest theServletRequest, RequestDetails theRequestDetails,
-			@OperationParam(name = "content", min = 1, max = 1) @Description(formalDefinition = "The message to process (or, if using asynchronous messaging, it may be a response message to accept)") Bundle theMessageToProcess) {
+			@OperationParam(name = "content", min = 1, max = 1) @Description(shortDefinition = "The message to process (or, if using asynchronous messaging, it may be a response message to accept)") Bundle theMessageToProcess) {
 		logger.info("Validating the Bundle");
 		Bundle bundle = theMessageToProcess;
 		boolean errorExists = false;

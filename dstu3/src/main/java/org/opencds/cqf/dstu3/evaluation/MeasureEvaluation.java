@@ -667,7 +667,7 @@ public class MeasureEvaluation {
                         .setValue(new StringType(sdeKey));
                 obsExtension.addExtension(extExtPop);
                 obs.addExtension(obsExtension);
-                obs.setValue(new IntegerType(sdeAccumulatorValue));
+                obs.setValue(new StringType(String.valueOf(sdeAccumulatorValue)));
                 if(!isSingle) {
                     valueCoding.setCode(sdeAccumulatorKey);
                     obsCodeableConcept.setCoding(Collections.singletonList(valueCoding));
