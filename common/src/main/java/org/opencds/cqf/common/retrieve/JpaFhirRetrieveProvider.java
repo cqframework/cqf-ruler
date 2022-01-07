@@ -33,8 +33,8 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider {
     DaoRegistry registry;
 
     @Inject
-    public JpaFhirRetrieveProvider(DaoRegistry registry, SearchParameterResolver searchParameterResolver, FhirContext fhirContext) {
-        super(searchParameterResolver, fhirContext);
+    public JpaFhirRetrieveProvider(DaoRegistry registry, SearchParameterResolver searchParameterResolver) {
+        super(searchParameterResolver);
         this.registry = registry;
     }
 
