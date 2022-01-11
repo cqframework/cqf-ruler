@@ -241,7 +241,7 @@ public class MeasureEvaluation {
             if (report.getType() == MeasureReport.MeasureReportType.SUBJECTLIST && patientPopulation != null && populationCount > 0) {
                 ListResource SUBJECTLIST = new ListResource();
                 SUBJECTLIST.setId(UUID.randomUUID().toString());
-                populationReport.setSubjectResults(new Reference().setReference("#" + SUBJECTLIST.getId()));
+                populationReport.setSubjectResults(new Reference().setReferenceElement(new IdType("List", "#" + SUBJECTLIST.getId())));
                 for (Patient patient : patientPopulation) {
                     ListResource.ListEntryComponent entry = new ListResource.ListEntryComponent()
                             .setItem(new Reference()
