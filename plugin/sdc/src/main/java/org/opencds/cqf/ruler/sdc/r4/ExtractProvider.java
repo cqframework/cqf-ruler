@@ -194,32 +194,27 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
     return client.transaction().withBundle(observationsBundle).execute();
   }
 
-  private Map<String, Coding> getQuestionnaireCodeMap(String questionnaireUrl) {
-    String url = mySdcProperties.getExtract().getEndpoint();
-    if (null == url || url.length() < 1) {
-      throw new IllegalArgumentException(
-          "Unable to GET Questionnaire.  No observation.endpoint defined in sdc properties.");
-    }
-    String user = mySdcProperties.getExtract().getUsername();
-    String password = mySdcProperties.getExtract().getPassword();
-
-    IGenericClient client = this.createClient(myFhirContext, url);
-    this.registerBasicAuth(client, user, password);
-
-		Bundle results = (Bundle) client.search()
-			.forResource(Questionnaire.class)
-			.where(Questionnaire.URL.matches().value(questionnaireUrl))
-			.execute();
-
-
-		if (results.getEntry().isEmpty()) {
+	private Map<String, Coding> getQuestionnaireCodeMap(String questionnaireUrl) {
+		String url = mySdcProperties.getExtract().getEndpoint();
+		if (null == url || url.length() < 1) {
 			throw new IllegalArgumentException(
-				"Unable to find resource by URL " + questionnaireUrl);
+					"Unable to GET Questionnaire.  No observation.endpoint defined in sdc properties.");
+		}
+		String user = mySdcProperties.getExtract().getUsername();
+		String password = mySdcProperties.getExtract().getPassword();
+
+		IGenericClient client = this.createClient(myFhirContext, url);
+		this.registerBasicAuth(client, user, password);
+
+		Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl(questionnaireUrl).execute();
+
+		if (questionnaire == null) {
+			throw new IllegalArgumentException(
+					"Unable to find resource by URL " + questionnaireUrl);
 		}
 
-		Questionnaire questionnaire = (Questionnaire) results.getEntry().get(0).getResource();
 		return createCodeMap(questionnaire);
-  }
+	}
 
   // this is based on "if a questionnaire.item has items then this item is a
   // header and will not have a specific code to be used with an answer"

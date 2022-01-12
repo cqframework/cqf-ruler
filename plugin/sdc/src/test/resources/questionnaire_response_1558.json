@@ -15,7 +15,7 @@
       }
     ]
   },
-  "questionnaire": "http://localhost:8080/fhir/Questionnaire/2",
+  "questionnaire": "Questionnaire/mypain-questionnaire",
   "status": "completed",
   "subject": {
     "reference": "Patient/sharondecision",
