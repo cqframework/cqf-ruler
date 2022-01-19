@@ -258,6 +258,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
+			<artifactId>cqf-ruler-quality-measure</artifactId>
+			<version>0.5.0-SNAPSHOT</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-cql</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
 			<scope>runtime</scope>
