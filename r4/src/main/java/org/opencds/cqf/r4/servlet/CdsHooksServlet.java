@@ -163,6 +163,7 @@ public class CdsHooksServlet extends HttpServlet {
             logger.info("cds-hooks prefetch maxUriLength: " + this.getProviderConfiguration().getMaxUriLength());
             logger.info("cds-hooks local server address: " + baseUrl);
             logger.info("cds-hooks fhir server address: " + hook.getRequest().getFhirServerUrl());
+            logger.info("cds-hooks cql_logging_enabled: " + this.getProviderConfiguration().getCqlLoggingEnabled());
 
             PlanDefinition planDefinition = planDefinitionProvider.getDao()
                     .read(new IdType(hook.getRequest().getServiceName()));
