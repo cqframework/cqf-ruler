@@ -28,4 +28,16 @@ public class SDCConfig {
     public OperationProvider dstu3ExtractProvider() {
         return new org.opencds.cqf.ruler.sdc.dstu3.ExtractProvider();
     }
+
+	 @Bean
+    @Conditional(OnR4Condition.class)
+    public OperationProvider r4TransformProvider() {
+        return new org.opencds.cqf.ruler.sdc.r4.TransformProvider();
+    }
+
+	 @Bean
+    @Conditional(OnDSTU3Condition.class)
+    public OperationProvider dstu3TransformProvider() {
+        return new org.opencds.cqf.ruler.sdc.dstu3.TransformProvider();
+    }
 }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Parameters;
@@ -25,7 +26,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
@@ -39,7 +39,7 @@ public class ExtractProviderIT implements ITestSupport {
 	private FhirContext ourCtx;
 
 	@Autowired
-	private DaoRegistry ourRegistry;
+	private DaoRegistry daoRegistry;
 
 	@Autowired
 	private SDCProperties mySdcProperties;
@@ -59,19 +59,23 @@ public class ExtractProviderIT implements ITestSupport {
 		mySdcProperties.getExtract().setEndpoint(ourServerBase);
 	}
 
-	//@Test
-	public void testExtract() throws IOException {
+	@Test
+	public void testExtract() throws IOException, URISyntaxException {
+		String examplePatient = "example_patient.json";
+		String exampleQuestionnaire = "questionnaire_1559.json";
+		String exampleQR = "questionnaire_response_1558.json";
 
-		/* cSpell:ignore mypain */
-		loadResource("mypain-questionnaire.json", ourCtx, ourRegistry);
-
-		QuestionnaireResponse test = (QuestionnaireResponse) ourCtx.newJsonParser()
-				.parseResource(stringFromResource("mypain-questionnaire-response.json"));
-
+		loadResource(examplePatient, ourCtx, daoRegistry);
+		loadResource(exampleQuestionnaire, ourCtx, daoRegistry);
+		QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) loadResource(exampleQR, ourCtx, daoRegistry);		
+		
 		Parameters params = new Parameters();
-		params.addParameter().setName("questionnaireResponse").setResource(test);
+		params.addParameter().setName("questionnaireResponse").setResource(questionnaireResponse);
 
-		Bundle actual = ourClient.operation().onType(QuestionnaireResponse.class).named("$extract")
+		Bundle actual = ourClient
+				.operation()
+				.onType(QuestionnaireResponse.class)
+				.named("$extract")
 				.withParameters(params)
 				.returnResourceType(Bundle.class)
 				.execute();
@@ -82,11 +86,9 @@ public class ExtractProviderIT implements ITestSupport {
 		assertEquals(5, actual.getEntry().size());
 
 		// Ensure the Observations were saved to the local server
-		Observation obs = ourClient.read().resource(Observation.class).withId("IdFromBundle").execute();
-
-		assertNotNull(obs);
-
-		// Check other observation properties
+		for (Bundle.BundleEntryComponent bec : actual.getEntry()) {
+				assertEquals("201 Created", bec.getResponse().getStatus());
+		}
 	}
 
 	@Test

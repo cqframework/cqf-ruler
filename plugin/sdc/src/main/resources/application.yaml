@@ -3,7 +3,7 @@ hapi:
     sdc:
       enabled: true
       extract:
-        endpoint: ''
+        endpoint: 'http://localhost:8080/fhir/'
         username: ''
         password: ''
 

@@ -55,4 +55,54 @@ public class SDCProperties {
             this.password = password;
         }
     }
+
+	 private Transform transform = new Transform();
+
+	 public Transform getTransform() {
+		 return transform;
+	 }
+
+	 public void setTransform(Transform newTransform) {
+		 transform = newTransform;
+	 }
+
+	 public static class Transform {
+
+		 private String replaceCode;
+		 private String username;
+		 private String password;
+		 private String endpoint;
+
+		 public String getReplaceCode() {
+			 return replaceCode;
+		 }
+
+		 public void setReplaceCode(String newReplaceCode) {
+			 replaceCode = newReplaceCode;
+		 }
+
+		 public String getUsername() {
+			 return username;
+		 }
+
+		 public void setUsername(String newUsername) {
+			 username = newUsername;
+		 }
+
+		 public String getPassword() {
+			 return password;
+		 }
+
+		 public void setPassword(String newPassword) {
+			 password = newPassword;
+		 }
+
+		 public String getEndpoint() {
+			 return endpoint;
+		 }
+
+		 public void setEndpoint(String newEndpoint) {
+			 endpoint = newEndpoint;
+		 }
+	 }
 }
