@@ -1,19 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.opencds.cqf.ruler</groupId>
 	<artifactId>cqf-ruler</artifactId>
 	<version>0.5.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-
-	<modules>
-		<module>external</module>
-		<module>test</module>
-		<module>core</module>
-		<module>plugin</module>
-		<module>server</module>
-	</modules>
 
 	<name>cqf-ruler</name>
 	<description>CQL Ruler</description>
@@ -39,67 +31,53 @@
 		</developer>
 	</developers>
 
+	<modules>
+		<module>external</module>
+		<module>test</module>
+		<module>core</module>
+		<module>plugin</module>
+		<module>server</module>
+	</modules>
+
 	<scm>
 		<connection>scm:git:git://github.com/DBCG/cqf-ruler.git</connection>
 		<developerConnection>scm:git:ssh://github.com:DBCG/cqf-ruler.git</developerConnection>
 		<url>https://github.com/DBCG/cqf-ruler/tree/master</url>
 	</scm>
-
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-		<!-- Dependency Versions -->
-		<fhir_core_version>5.3.11</fhir_core_version>
-		<hapi_version>5.5.3</hapi_version>
-		<hapi_jpastarter_version>image/v5.5.1</hapi_jpastarter_version>
-		<javax.version>8.0.1</javax.version>
-		<flexmark_version>0.62.2</flexmark_version>
-		<spring_boot_version>2.5.6</spring_boot_version>
-		<spring_version>5.3.12</spring_version>
-
-		<!-- CQL Support -->
-		<cql-engine.version>1.5.4</cql-engine.version>
-		<cql-evaluator.version>1.4.2</cql-evaluator.version>
-		<cqframework.version>1.5.6</cqframework.version>
-		<cqf-tooling.version>1.4.0</cqf-tooling.version>
-	</properties>
 	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
 
 		<repository>
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
-	</distributionManagement>
-	<repositories>
-		<repository>
-			<id>oss-sonatype</id>
+		<snapshotRepository>
+			<id>ossrh</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>oss-sonatype-public</id>
-			<url>https://oss.sonatype.org/content/groups/public/</url>
-		</repository>
-	</repositories>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<properties>
+		<cqf-tooling.version>1.4.0</cqf-tooling.version>
+		<cqframework.version>1.5.6</cqframework.version>
+
+		<!-- CQL Support -->
+		<cql-engine.version>1.5.4</cql-engine.version>
+		<cql-evaluator.version>1.4.2</cql-evaluator.version>
+
+		<!-- Dependency Versions -->
+		<fhir_core_version>5.3.11</fhir_core_version>
+		<flexmark_version>0.62.2</flexmark_version>
+		<hapi_jpastarter_version>image/v5.5.1</hapi_jpastarter_version>
+		<hapi_version>5.5.3</hapi_version>
+		<javax.version>8.0.1</javax.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<spring_boot_version>2.5.6</spring_boot_version>
+		<spring_version>5.3.12</spring_version>
+	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<!-- Import dependency management from Spring Boot -->
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>${spring_boot_version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
 
 			<!-- <dependency>
                 <groupId>ca.uhn.hapi.fhir</groupId>
@@ -124,13 +102,19 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-
+			<dependency>
+				<!-- Import dependency management from Spring Boot -->
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring_boot_version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-test-utilities</artifactId>
+				<artifactId>hapi-fhir-jpaserver-cql</artifactId>
 				<version>${hapi_version}</version>
-				<scope>test</scope>
 			</dependency>
 
 			<dependency>
@@ -148,45 +132,122 @@
 			</dependency>
 
 			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-jpaserver-cql</artifactId>
-				<version>${hapi_version}</version>
+				<groupId>com.vladsch.flexmark</groupId>
+				<artifactId>flexmark</artifactId>
+				<version>${flexmark_version}</version>
+			</dependency>
+			<!-- <dependency>
+                <groupId>com.vladsch.flexmark</groupId>
+                <artifactId>flexmark-ext</artifactId>
+                <version>.11_1</version>
+            </dependency> -->
+			<dependency>
+				<groupId>com.vladsch.flexmark</groupId>
+				<artifactId>flexmark-ext-autolink</artifactId>
+				<version>${flexmark_version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.engine</artifactId>
-				<version>${cql-evaluator.version}</version>
+				<groupId>com.vladsch.flexmark</groupId>
+				<artifactId>flexmark-ext-gfm-strikethrough</artifactId>
+				<version>${flexmark_version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.fhir</artifactId>
-				<version>${cql-evaluator.version}</version>
+				<groupId>com.vladsch.flexmark</groupId>
+				<artifactId>flexmark-ext-gfm-tasklist</artifactId>
+				<version>${flexmark_version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vladsch.flexmark</groupId>
+				<artifactId>flexmark-ext-tables</artifactId>
+				<version>${flexmark_version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vladsch.flexmark</groupId>
+				<artifactId>flexmark-profile-pegdown</artifactId>
+				<version>${flexmark_version}</version>
+			</dependency>
+
+			<!-- odds and ends not captured by the hapi poms-->
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.11.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.activitydefinition</artifactId>
-				<version>${cql-evaluator.version}</version>
+				<groupId>commons-validator</groupId>
+				<artifactId>commons-validator</artifactId>
+				<version>1.7</version>
+			</dependency>
+
+			<dependency>
+				<groupId>info.cqframework</groupId>
+				<artifactId>cql</artifactId>
+				<version>${cqframework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>info.cqframework</groupId>
+				<artifactId>cql-formatter</artifactId>
+				<version>${cqframework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>info.cqframework</groupId>
+				<artifactId>cql-to-elm</artifactId>
+				<version>${cqframework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>info.cqframework</groupId>
+				<artifactId>elm</artifactId>
+				<version>${cqframework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>info.cqframework</groupId>
+				<artifactId>model</artifactId>
+				<version>${cqframework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>info.cqframework</groupId>
+				<artifactId>qdm</artifactId>
+				<version>${cqframework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>info.cqframework</groupId>
+				<artifactId>quick</artifactId>
+				<version>${cqframework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax</groupId>
+				<artifactId>javaee-api</artifactId>
+				<version>${javax.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.expression</artifactId>
-				<version>${cql-evaluator.version}</version>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>2.17.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>2.17.1</version>
 			</dependency>
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.plandefinition</artifactId>
-				<version>${cql-evaluator.version}</version>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-to-slf4j</artifactId>
+				<version>2.17.1</version>
 			</dependency>
+
 			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.spring</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.library</artifactId>
-				<version>${cql-evaluator.version}</version>
+				<groupId>org.opencds.cqf</groupId>
+				<artifactId>cds</artifactId>
+				<version>${cds-hooks.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.opencds.cqf</groupId>
@@ -207,134 +268,39 @@
 			</dependency>
 
 			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>cql-to-elm</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>cql-formatter</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>qdm</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>quick</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>cql</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>model</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>info.cqframework</groupId>
-				<artifactId>elm</artifactId>
-				<version>${cqframework.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.opencds.cqf</groupId>
-				<artifactId>cds</artifactId>
-				<version>${cds-hooks.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.vladsch.flexmark</groupId>
-				<artifactId>flexmark</artifactId>
-				<version>${flexmark_version}</version>
+				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.activitydefinition</artifactId>
+				<version>${cql-evaluator.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.vladsch.flexmark</groupId>
-				<artifactId>flexmark-ext-tables</artifactId>
-				<version>${flexmark_version}</version>
+				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.engine</artifactId>
+				<version>${cql-evaluator.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.vladsch.flexmark</groupId>
-				<artifactId>flexmark-ext-gfm-strikethrough</artifactId>
-				<version>${flexmark_version}</version>
+				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.expression</artifactId>
+				<version>${cql-evaluator.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.vladsch.flexmark</groupId>
-				<artifactId>flexmark-profile-pegdown</artifactId>
-				<version>${flexmark_version}</version>
-			</dependency>
-			<!-- <dependency>
-                <groupId>com.vladsch.flexmark</groupId>
-                <artifactId>flexmark-ext</artifactId>
-                <version>.11_1</version>
-            </dependency> -->
-			<dependency>
-				<groupId>com.vladsch.flexmark</groupId>
-				<artifactId>flexmark-ext-autolink</artifactId>
-				<version>${flexmark_version}</version>
+				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.fhir</artifactId>
+				<version>${cql-evaluator.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.vladsch.flexmark</groupId>
-				<artifactId>flexmark-ext-gfm-tasklist</artifactId>
-				<version>${flexmark_version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>javax</groupId>
-				<artifactId>javaee-api</artifactId>
-				<version>${javax.version}</version>
-			</dependency>
-
-			<!-- odds and ends not captured by the hapi poms-->
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>2.11.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>commons-validator</groupId>
-				<artifactId>commons-validator</artifactId>
-				<version>1.7</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.yaml</groupId>
-				<artifactId>snakeyaml</artifactId>
-				<version>1.28</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.webjars</groupId>
-				<artifactId>bootstrap</artifactId>
-				<version>5.0.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>2.17.1</version>
+				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.library</artifactId>
+				<version>${cql-evaluator.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-api</artifactId>
-				<version>2.17.1</version>
+				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.plandefinition</artifactId>
+				<version>${cql-evaluator.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-to-slf4j</artifactId>
-				<version>2.17.1</version>
+				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.spring</artifactId>
+				<version>${cql-evaluator.version}</version>
 			</dependency>
 
 			<dependency>
@@ -351,6 +317,13 @@
 
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-devtools</artifactId>
+				<version>${spring_boot_version}</version>
+				<optional>true</optional>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter</artifactId>
 				<version>${spring_boot_version}</version>
 			</dependency>
@@ -362,10 +335,22 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-devtools</artifactId>
-				<version>${spring_boot_version}</version>
-				<optional>true</optional>
+				<groupId>org.webjars</groupId>
+				<artifactId>bootstrap</artifactId>
+				<version>5.0.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>1.28</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ca.uhn.hapi.fhir</groupId>
+				<artifactId>hapi-fhir-test-utilities</artifactId>
+				<version>${hapi_version}</version>
+				<scope>test</scope>
 			</dependency>
 
 			<dependency>
@@ -376,6 +361,19 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>oss-sonatype</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
+		<repository>
+			<id>oss-sonatype-public</id>
+			<url>https://oss.sonatype.org/content/groups/public/</url>
+		</repository>
+	</repositories>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -399,6 +397,11 @@
 					<groupId>com.github.spotbugs</groupId>
 					<artifactId>spotbugs-maven-plugin</artifactId>
 					<version>4.5.0.0</version>
+					<configuration>
+						<effort>Max</effort>
+						<!-- TODO: Gradually migrate this down to Medium and then Low-->
+						<threshold>High</threshold>
+					</configuration>
 					<dependencies>
 						<!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
 						<dependency>
@@ -407,11 +410,14 @@
 							<version>4.5.2</version>
 						</dependency>
 					</dependencies>
-					<configuration>
-						<effort>Max</effort>
-						<!-- TODO: Gradually migrate this down to Medium and then Low-->
-						<threshold>High</threshold>
-					</configuration>
+					<executions>
+						<execution>
+							<!-- <phase>verify</phase> -->
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -448,10 +454,10 @@
 					<version>3.2.4</version>
 					<executions>
 						<execution>
-							<phase>package</phase>
 							<goals>
 								<goal>shade</goal>
 							</goals>
+							<phase>package</phase>
 						</execution>
 					</executions>
 				</plugin>
@@ -506,10 +512,10 @@
 					<executions>
 						<execution>
 							<id>sign-artifacts</id>
-							<phase>deploy</phase>
 							<goals>
 								<goal>sign</goal>
 							</goals>
+							<phase>deploy</phase>
 						</execution>
 					</executions>
 				</plugin>
@@ -530,18 +536,18 @@
 					<version>3.0.0</version>
 					<executions>
 						<execution>
-							<id>enforce-no-snapshots</id>
 							<goals>
 								<goal>enforce</goal>
 							</goals>
 							<configuration>
 								<rules>
-									<requireReleaseVersion>
-										<message>No Snapshot Versions Allowed!</message>
-									</requireReleaseVersion>
-									<requireReleaseDeps>
-										<message>No Snapshot Dependencies Allowed!</message>
-									</requireReleaseDeps>
+									<requireJavaVersion>
+										<version>[9,)</version>
+									</requireJavaVersion>
+									<!-- <DependencyConvergence /> -->
+									<requireMavenVersion>
+										<version>[3.6.3,)</version>
+									</requireMavenVersion>
 								</rules>
 								<fail>true</fail>
 							</configuration>
@@ -563,6 +569,9 @@
 						<execution>
 							<?m2e ignore?>
 							<id>validate</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
 							<phase>generate-sources</phase>
 							<configuration>
 								<!-- <configLocation>google_checks.xml</configLocation> -->
@@ -573,9 +582,6 @@
 								<failOnViolation>true</failOnViolation>
 								<failsOnError>false</failsOnError>
 							</configuration>
-							<goals>
-								<goal>check</goal>
-							</goals>
 						</execution>
 					</executions>
 				</plugin>
@@ -583,28 +589,6 @@
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>0.8.7</version>
-					<executions>
-						<execution>
-							<id>default-prepare-agent</id>
-							<goals>
-								<goal>prepare-agent</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>report</id>
-							<phase>post-integration-test</phase>
-							<goals>
-								<goal>report</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>verify</id>
-							<phase>verify</phase>
-							<goals>
-								<goal>check</goal>
-							</goals>
-						</execution>
-					</executions>
 					<configuration>
 						<rules>
 							<rule>
@@ -620,6 +604,28 @@
 							</rule>
 						</rules>
 					</configuration>
+					<executions>
+						<execution>
+							<id>default-prepare-agent</id>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>report</id>
+							<goals>
+								<goal>report</goal>
+							</goals>
+							<phase>post-integration-test</phase>
+						</execution>
+						<execution>
+							<id>verify</id>
+							<goals>
+								<goal>check</goal>
+							</goals>
+							<phase>verify</phase>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.basepom.maven</groupId>
@@ -675,13 +681,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-pmd-plugin</artifactId>
 					<version>3.15.0</version>
-					<dependencies>
-						<dependency>
-							<groupId>org.ow2.asm</groupId>
-							<artifactId>asm</artifactId>
-							<version>9.2</version>
-						</dependency>
-					</dependencies>
 					<configuration>
 						<analysisCache>true</analysisCache>
 						<!-- printFailingErrors is pretty useful -->
@@ -689,6 +688,13 @@
 						<!-- TODO: Gradually raise to 5 -->
 						<failurePriority>2</failurePriority>
 					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.ow2.asm</groupId>
+							<artifactId>asm</artifactId>
+							<version>9.2</version>
+						</dependency>
+					</dependencies>
 					<executions>
 						<execution>
 							<goals>
@@ -702,20 +708,35 @@
 					<artifactId>maven-jxr-plugin</artifactId>
 					<version>3.1.1</version>
 				</plugin>
+
+				<plugin>
+					<groupId>com.github.ekryd.sortpom</groupId>
+					<artifactId>sortpom-maven-plugin</artifactId>
+					<version>3.0.1</version>
+					<configuration>
+						<encoding>${project.build.sourceEncoding}</encoding>
+						<keepBlankLines>true</keepBlankLines>
+						<nrOfIndentSpace>-1</nrOfIndentSpace>
+						<sortProperties>true</sortProperties>
+						<sortDependencies>scope,groupId,artifactId</sortDependencies>
+						<createBackupFile>false</createBackupFile>
+						<expandEmptyElements>false</expandEmptyElements>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>sort</goal>
+							</goals>
+							<phase>verify</phase>
+						</execution>
+					</executions>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<!-- <phase>verify</phase> -->
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -745,6 +766,10 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 			</plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 	<reporting>
@@ -756,13 +781,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<configuration>
-					<analysisCache>true</analysisCache>
-					<!-- printFailingErrors is pretty useful -->
-					<printFailingErrors>true</printFailingErrors>
-					<!-- TODO: Gradually raise to 5 -->
-					<failurePriority>5</failurePriority>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -775,11 +793,6 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<configuration>
-					<effort>Max</effort>
-					<!-- TODO: Gradually migrate this down to Medium and then Low-->
-					<threshold>Low</threshold>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -818,6 +831,16 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-enforcer-plugin</artifactId>
+						<configuration>
+							<rules>
+								<requireReleaseVersion>
+									<message>No Snapshot Versions Allowed!</message>
+								</requireReleaseVersion>
+								<requireReleaseDeps>
+									<message>No Snapshot Dependencies Allowed!</message>
+								</requireReleaseDeps>
+							</rules>
+						</configuration>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
