@@ -122,7 +122,7 @@ Behavior specific utilities allow the reuse of behavior across many different cl
 
 ### Class Specific Utilities
 
-Utility or Helper methods that are associated with a single class should go into a class that has the pluralized name of the associated class. For example, utilities for `Client` should go into the `Clients` class. The ensures that the utility class is focused on one aspect and allows for more readable code:
+Utility or Helper methods that are associated with a single class should go into a class that has the pluralized name of the associated class. For example, utilities for `Client` should go into the `Clients` class. This ensures that the utility class is focused on one class and allows for more readable code:
 
 `Clients.forUrl("test.com")`
 
