@@ -21,7 +21,6 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.opencds.cqf.ruler.utility.Searches;
@@ -33,8 +32,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=r4", "spring.batch.job.enabled=false", "spring.main.allow-bean-definition-overriding=true"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CodeSystemProviderIT.class,
+DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=r4" })
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CodeSystemProviderIT extends RestIntegrationTest  {
     private Logger log = LoggerFactory.getLogger(CodeSystemProviderIT.class);

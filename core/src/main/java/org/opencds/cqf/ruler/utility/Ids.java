@@ -76,16 +76,16 @@ public class Ids {
 	 * @param <IdType>           an IIdType type
 	 * @param theFhirVersionEnum the FHIR version to generate an Id for
 	 * @param theResourceType    the type of the Resource to create an Id for
-	 * @param theId              the String representation of the Id to generate
+	 * @param theIdPart              the String representation of the Id to generate
 	 * @return the id
 	 */
 	public static <IdType extends IIdType> IdType newId(FhirVersionEnum theFhirVersionEnum, String theResourceType,
-			String theId) {
+			String theIdPart) {
 		checkNotNull(theFhirVersionEnum);
 		checkNotNull(theResourceType);
-		checkNotNull(theId);
+		checkNotNull(theIdPart);
 
-		return newId(theFhirVersionEnum, theResourceType + "/" + theId);
+		return newId(theFhirVersionEnum, theResourceType + "/" + theIdPart);
 	}
 
 	/**

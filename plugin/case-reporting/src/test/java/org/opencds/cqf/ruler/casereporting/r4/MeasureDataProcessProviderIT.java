@@ -8,17 +8,13 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.junit.jupiter.api.Test;
-import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.casereporting.CaseReportingConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-		CaseReportingConfig.class }, properties = { "hapi.fhir.fhir_version=r4",
-				"spring.main.allow-bean-definition-overriding=true",
-				"debug=true",
-				"spring.batch.job.enabled=false" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { MeasureDataProcessProviderIT.class,
+		CaseReportingConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 public class MeasureDataProcessProviderIT extends RestIntegrationTest {
 	@Test
 	public void testMeasureReportExtractLineListData() throws IOException {

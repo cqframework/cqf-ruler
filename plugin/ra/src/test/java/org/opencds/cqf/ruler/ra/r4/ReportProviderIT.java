@@ -14,21 +14,17 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.ra.RAConfig;
 import org.opencds.cqf.ruler.ra.RAProperties;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.opencds.cqf.ruler.test.Urls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
-
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {  ReportProviderIT.class,
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 public class ReportProviderIT extends RestIntegrationTest {
 	@Autowired

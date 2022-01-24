@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
@@ -10,7 +11,6 @@ import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.devtools.DevToolsConfig;
@@ -21,13 +21,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ActivityDefinitionApplyProviderIT.class,
 		CrConfig.class, CqlConfig.class, DevToolsConfig.class }, properties = {
-				"spring.main.allow-bean-definition-overriding=true",
-				"spring.batch.job.enabled=false",
 				"hapi.fhir.fhir_version=dstu3",
-				"hapi.fhir.allow_external_references=true",
-				"hapi.fhir.enforce_referential_integrity_on_write=false"
 		})
 public class ActivityDefinitionApplyProviderIT extends RestIntegrationTest {
 
@@ -51,6 +47,6 @@ public class ActivityDefinitionApplyProviderIT extends RestIntegrationTest {
 				activityDefinition.getIdElement(), patient.getIdElement().getIdPart(), null, null, null, null, null, null,
 				null, null);
 		assertTrue(applyResult instanceof ProcedureRequest);
-		assertTrue(((ProcedureRequest) applyResult).getCode().getCoding().get(0).getCode().equals("454281000124100"));
+		assertEquals("454281000124100", ((ProcedureRequest) applyResult).getCode().getCoding().get(0).getCode());
 	}
 }

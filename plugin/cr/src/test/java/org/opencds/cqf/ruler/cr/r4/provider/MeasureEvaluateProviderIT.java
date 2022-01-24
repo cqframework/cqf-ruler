@@ -2,7 +2,6 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.devtools.DevToolsConfig;
@@ -11,14 +10,9 @@ import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { MeasureEvaluateProviderIT.class,
 		CrConfig.class, CqlConfig.class, DevToolsConfig.class }, properties = {
-				"spring.main.allow-bean-definition-overriding=true",
-				"spring.batch.job.enabled=false",
 				"hapi.fhir.fhir_version=r4",
-				"hapi.fhir.allow_external_references=true",
-				"hapi.fhir.enforce_referential_integrity_on_write=false"
 		})
 public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 

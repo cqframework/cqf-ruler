@@ -11,7 +11,6 @@ import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.Test;
-import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,11 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4",
-				"spring.main.allow-bean-definition-overriding=true",
-				"debug=true",
-				"spring.batch.job.enabled=false" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { LibraryEvaluationProviderIT.class,
+		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 public class LibraryEvaluationProviderIT extends RestIntegrationTest {
 	@Test
 	public void testLibraryEvaluationValidationThrows() throws IOException {

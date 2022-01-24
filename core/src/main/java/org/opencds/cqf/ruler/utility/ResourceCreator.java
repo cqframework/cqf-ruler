@@ -17,13 +17,7 @@ public interface ResourceCreator extends FhirContextUser {
 		return (T) newResource;
 	}
 
-	@SuppressWarnings("unchecked")
-	default <T extends IBaseResource, I extends IIdType> T newResource(Class<T> theResourceClass, String theIdPart) {
-		checkNotNull(theResourceClass, "theResourceClass is required");
-		checkNotNull(theIdPart, "theIdPart is required");
-
-		IBaseResource newResource = this.getFhirContext().getResourceDefinition(theResourceClass).newInstance();
-		newResource.setId((I) Ids.newId(theResourceClass, theIdPart));
-		return (T) newResource;
+	default <T extends IBaseResource> T newResource(Class<T> theResourceClass, String theIdPart) {
+		return Resources.newResource(theResourceClass, theIdPart);
 	}
 }
