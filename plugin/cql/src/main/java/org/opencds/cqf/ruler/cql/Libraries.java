@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.ruler.common.utility.Reflections;
+import org.opencds.cqf.ruler.utility.Reflections;
 
 import ca.uhn.fhir.context.FhirContext;
 

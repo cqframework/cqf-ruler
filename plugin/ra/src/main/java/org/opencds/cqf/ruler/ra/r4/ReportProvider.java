@@ -22,10 +22,10 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
-import org.opencds.cqf.ruler.common.provider.DaoRegistryOperationProvider;
-import org.opencds.cqf.ruler.common.utility.IdCreator;
-import org.opencds.cqf.ruler.common.utility.Operations;
-import org.opencds.cqf.ruler.common.utility.Searches;
+import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.utility.IdCreator;
+import org.opencds.cqf.ruler.utility.Operations;
+import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

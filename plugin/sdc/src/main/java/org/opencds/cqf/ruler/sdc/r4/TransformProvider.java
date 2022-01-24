@@ -9,8 +9,8 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ConceptMap;
 import org.hl7.fhir.r4.model.Observation;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.common.utility.Clients;
 import org.opencds.cqf.ruler.sdc.SDCProperties;
+import org.opencds.cqf.ruler.utility.Clients;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;

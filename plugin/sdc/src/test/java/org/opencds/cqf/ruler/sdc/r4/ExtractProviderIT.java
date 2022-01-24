@@ -12,59 +12,27 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.QuestionnaireResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.sdc.SDCConfig;
 import org.opencds.cqf.ruler.sdc.SDCProperties;
-import org.opencds.cqf.ruler.test.ResourceLoader;
+import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
-@ExtendWith(SpringExtension.class)
+
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 		SDCConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
-public class ExtractProviderIT implements ResourceLoader {
-	private IGenericClient ourClient;
-
-	@Autowired
-	private FhirContext ourCtx;
-
-	@Autowired
-	DaoRegistry myDaoRegistry;
-
-	@LocalServerPort
-	private int port;
-
-	@Override
-	public FhirContext getFhirContext() {
-		return ourCtx;
-	}
-
-	@Override
-	public DaoRegistry getDaoRegistry() {
-		return myDaoRegistry;
-	}
-
+public class ExtractProviderIT extends RestIntegrationTest {
 	@Autowired
 	private SDCProperties mySdcProperties;
 
 	@BeforeEach
 	void beforeEach() {
-		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
-		String ourServerBase = "http://localhost:" + port + "/fhir/";
-		ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
-
+		String ourServerBase = "http://localhost:" + getPort() + "/fhir/";
 		mySdcProperties.getExtract().setEndpoint(ourServerBase);
 	}
 
@@ -81,7 +49,7 @@ public class ExtractProviderIT implements ResourceLoader {
 		Parameters params = new Parameters();
 		params.addParameter().setName("questionnaireResponse").setResource(questionnaireResponse);
 
-		Bundle actual = ourClient
+		Bundle actual = getClient()
 				.operation()
 				.onType(QuestionnaireResponse.class)
 				.named("$extract")
@@ -102,14 +70,14 @@ public class ExtractProviderIT implements ResourceLoader {
 
 	@Test
 	public void testExtract_noQuestionnaireReference_throwsException() throws IOException {
-		QuestionnaireResponse test = (QuestionnaireResponse) ourCtx.newJsonParser()
+		QuestionnaireResponse test = (QuestionnaireResponse) getFhirContext().newJsonParser()
 				.parseResource(stringFromResource("mypain-questionnaire-response-no-url.json"));
 
 		Parameters params = new Parameters();
 		params.addParameter().setName("questionnaireResponse").setResource(test);
 
 		assertThrows(InternalErrorException.class, () -> {
-			ourClient.operation().onType(QuestionnaireResponse.class).named("$extract")
+			getClient().operation().onType(QuestionnaireResponse.class).named("$extract")
 					.withParameters(params)
 					.returnResourceType(Bundle.class)
 					.execute();

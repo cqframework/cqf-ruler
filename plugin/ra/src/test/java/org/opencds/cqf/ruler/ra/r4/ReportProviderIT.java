@@ -14,63 +14,29 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
-import org.opencds.cqf.ruler.common.utility.Clients;
 import org.opencds.cqf.ruler.ra.RAConfig;
 import org.opencds.cqf.ruler.ra.RAProperties;
-import org.opencds.cqf.ruler.test.ResourceLoader;
+import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.opencds.cqf.ruler.test.Urls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
-@ExtendWith(SpringExtension.class)
+
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
-public class ReportProviderIT implements ResourceLoader {
-
-	private IGenericClient ourClient;
-
-	@Autowired
-	private FhirContext ourCtx;
-
-	@Autowired
-	DaoRegistry myDaoRegistry;
-
-	@LocalServerPort
-	private int port;
-
-	@Override
-	public FhirContext getFhirContext() {
-		return ourCtx;
-	}
-
-	@Override
-	public DaoRegistry getDaoRegistry() {
-		return myDaoRegistry;
-	}
-
+public class ReportProviderIT extends RestIntegrationTest {
 	@Autowired
 	private RAProperties myRaProperties;
 
-
 	@BeforeEach
 	void beforeEach() {
-		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
-		String ourServerBase = Urls.getUrl(myRaProperties.getReport().getEndpoint(), port);
-		ourClient = Clients.forUrl(ourCtx, ourServerBase);
+		String ourServerBase = Urls.getUrl(myRaProperties.getReport().getEndpoint(), getPort());
 		myRaProperties.getReport().setEndpoint(ourServerBase);
 	}
 
@@ -82,7 +48,7 @@ public class ReportProviderIT implements ResourceLoader {
 		params.addParameter().setName("subject").setValue(new StringType("Patient/testReport01"));
 
 		assertThrows(InternalErrorException.class, () -> {
-			ourClient.operation().onType(MeasureReport.class).named("$report")
+			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
 					.execute();
@@ -97,7 +63,7 @@ public class ReportProviderIT implements ResourceLoader {
 		params.addParameter().setName("subject").setValue(new StringType("Patient/testReport01"));
 
 		assertThrows(InternalErrorException.class, () -> {
-			ourClient.operation().onType(MeasureReport.class).named("$report")
+			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
 					.execute();
@@ -112,7 +78,7 @@ public class ReportProviderIT implements ResourceLoader {
 		params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
 
 		assertThrows(InternalErrorException.class, () -> {
-			ourClient.operation().onType(MeasureReport.class).named("$report")
+			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
 					.execute();
@@ -127,7 +93,7 @@ public class ReportProviderIT implements ResourceLoader {
 		params.addParameter().setName("periodEnd").setValue(new StringType("2020-12-31"));
 
 		assertThrows(InternalErrorException.class, () -> {
-			ourClient.operation().onType(MeasureReport.class).named("$report")
+			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
 					.execute();
@@ -145,7 +111,7 @@ public class ReportProviderIT implements ResourceLoader {
 		loadResource("Patient-ra-patient01.json");
 
 		assertDoesNotThrow(() -> {
-			ourClient.operation().onType(MeasureReport.class).named("$report")
+			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
 					.execute();
@@ -164,7 +130,7 @@ public class ReportProviderIT implements ResourceLoader {
 		loadResource("Group-ra-group01.json");
 
 		assertDoesNotThrow(() -> {
-			ourClient.operation().onType(MeasureReport.class).named("$report")
+			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
 					.execute();
@@ -180,7 +146,7 @@ public class ReportProviderIT implements ResourceLoader {
 		params.addParameter().setName("subject").setValue(new StringType("ra-patient01"));
 
 		assertThrows(InternalErrorException.class, () -> {
-			ourClient.operation().onType(MeasureReport.class).named("$report")
+			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
 					.execute();
@@ -196,7 +162,7 @@ public class ReportProviderIT implements ResourceLoader {
 		params.addParameter().setName("subject").setValue(new StringType("Patient/bad-patient"));
 
 		assertThrows(ResourceNotFoundException.class, () -> {
-			ourClient.operation().onType(MeasureReport.class).named("$report")
+			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
 					.execute();
@@ -212,7 +178,7 @@ public class ReportProviderIT implements ResourceLoader {
 		params.addParameter().setName("subject").setValue(new StringType("Group/bad-group"));
 
 		assertThrows(ResourceNotFoundException.class, () -> {
-			ourClient.operation().onType(MeasureReport.class).named("$report")
+			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
 					.execute();
@@ -229,11 +195,11 @@ public class ReportProviderIT implements ResourceLoader {
 		params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
 		params.addParameter().setName("subject").setValue(new StringType("Group/ra-group00"));
 		loadResource("Group-ra-group00.json");
-		Group group = ourClient.read().resource(Group.class).withId("ra-group00").execute();
+		Group group = getClient().read().resource(Group.class).withId("ra-group00").execute();
 		assertNotNull(group);
 
 		assertThrows(ResourceNotFoundException.class, () -> {
-			ourClient.operation().onType(MeasureReport.class).named("$report")
+			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
 					.execute();
@@ -253,7 +219,7 @@ public class ReportProviderIT implements ResourceLoader {
 		loadResource("Group-ra-group02.json");
 
 		assertDoesNotThrow(() -> {
-			ourClient.operation().onType(MeasureReport.class).named("$report")
+			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
 					.execute();
@@ -288,7 +254,7 @@ public class ReportProviderIT implements ResourceLoader {
 		loadResource("Encounter-ra-encounter43pat01.json");
 		loadResource("Encounter-ra-encounter44pat01.json");
 		loadResource("MeasureReport-ra-measurereport01.json");
-		Parameters actual = ourClient.operation().onType(MeasureReport.class).named("$report")
+		Parameters actual = getClient().operation().onType(MeasureReport.class).named("$report")
 				.withParameters(params)
 				.returnResourceType(Parameters.class)
 				.execute();
@@ -333,7 +299,7 @@ public class ReportProviderIT implements ResourceLoader {
 		// this is not an evaluatedResource of the report
 		loadResource("Encounter-ra-encounter45pat01.json");
 
-		Parameters actual = ourClient.operation().onType(MeasureReport.class).named("$report")
+		Parameters actual = getClient().operation().onType(MeasureReport.class).named("$report")
 				.withParameters(params)
 				.returnResourceType(Parameters.class)
 				.execute();

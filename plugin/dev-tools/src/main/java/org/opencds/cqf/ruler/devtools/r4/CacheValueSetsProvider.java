@@ -14,7 +14,7 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.common.utility.Clients;
+import org.opencds.cqf.ruler.utility.Clients;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;

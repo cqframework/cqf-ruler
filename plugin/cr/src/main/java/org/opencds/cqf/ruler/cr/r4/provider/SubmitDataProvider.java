@@ -8,7 +8,7 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Resource;
-import org.opencds.cqf.ruler.common.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;

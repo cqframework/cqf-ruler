@@ -7,20 +7,18 @@ import com.google.common.collect.Lists;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.opencds.cqf.ruler.common.utility.IdCreator;
-import org.opencds.cqf.ruler.common.utility.ResourceCreator;
 import org.opencds.cqf.ruler.test.DaoIntegrationTest;
 import org.opencds.cqf.ruler.test.DaoOnlyConfig;
+import org.opencds.cqf.ruler.utility.IdCreator;
+import org.opencds.cqf.ruler.utility.ResourceCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
-@ExtendWith(SpringExtension.class)
+
 @SpringBootTest(classes = { DaoOnlyConfig.class }, properties = {
 				"scheduling_disabled=true",
             "spring.main.allow-bean-definition-overriding=true",

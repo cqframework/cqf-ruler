@@ -35,7 +35,6 @@
 		<module>external</module>
 		<module>test</module>
 		<module>core</module>
-		<module>common</module>
 		<module>plugin</module>
 		<module>server</module>
 	</modules>
