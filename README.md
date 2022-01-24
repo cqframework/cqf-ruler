@@ -110,9 +110,9 @@ To this end:
 * The CQF Ruler project has adopted the HAPI Coding Conventions: <https://github.com/hapifhir/hapi-fhir/wiki/Contributing>
 * Plugins should generally use the "hapi.fhir" prefix for configuration properties
 
-## Utility Guidelines
+### Utility Guidelines
 
-### Types of Utilities
+#### Types of Utilities
 
 In general, reusable utilities are separated along two different dimensions, Classes and Behaviors.
 
@@ -120,7 +120,7 @@ Class specific utilities are functions that are associated with specific class o
 
 Behavior specific utilities allow the reuse of behavior across many different classes.
 
-### Class Specific Utilities
+#### Class Specific Utilities
 
 Utility or Helper methods that are associated with a single class should go into a class that has the pluralized name of the associated class. For example, utilities for `Client` should go into the `Clients` class. The ensures that the utility class is focused on one aspect and allows for more readable code:
 
@@ -143,7 +143,7 @@ Examples
 * Factory functions
 * Adding behavior to a class you can't extend
 
-### Behavior Specific Utilities
+#### Behavior Specific Utilities
 
 If there is behavior you'd like to share across many classes, model that as an interface and use a name that follows the pattern `"ThingDoer"`. For example, all the classes that access a database might be `DatabaseReader`. Use `default` interface implementations to write logic that can be shared many places. The interfaces themselves shouldn't have mutable state (again `static final` is ok). If it's necessary for the for shared logic to have access to state, model that as an method without a default implementation. For example:
 
