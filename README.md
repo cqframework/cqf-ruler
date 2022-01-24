@@ -59,7 +59,7 @@ To run the cqf-ruler directory from this project use:
 
 ### Module Structure
 
-The cqf-ruler uses the hapi-fhir-jpaserver-starter project as a base. On top of that, it adds an extensible API and utility functions to allow creating plugins which contain functionality for a specific IG. This diagram shows how it's structured
+The cqf-ruler uses the hapi-fhir-jpaserver-starter project as a base. On top of that, it adds an extensiblity API and utility functions to allow creating plugins which contain functionality for a specific IG. This diagram shows how it's structured
 
 ![Module Diagram](docs/diagrams/modules.drawio.svg)
 
@@ -122,7 +122,7 @@ Behavior specific utilities allow the reuse of behavior across many different cl
 
 #### Class Specific Utilities
 
-Utility or Helper methods that are associated with a single class should go into a class that has the pluralized name of the associated class. For example, utilities for `Client` should go into the `Clients` class. The ensures that the utility class is focused on one aspect and allows for more readable code:
+Utility or Helper methods that are associated with a single class should go into a class that has the pluralized name of the associated class. For example, utilities for `Client` should go into the `Clients` class. This ensures that the utility class is focused on one class and allows for more readable code:
 
 `Clients.forUrl("test.com")`
 
