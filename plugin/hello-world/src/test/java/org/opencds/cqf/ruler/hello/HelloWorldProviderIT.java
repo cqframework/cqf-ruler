@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -31,15 +32,15 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 })
 public class HelloWorldProviderIT {
     private IGenericClient ourClient;
-    private FhirContext ourCtx;
+
+	 @Autowired
+	 FhirContext ourCtx;
 
     @LocalServerPort
     private int port;
 
     @BeforeEach
 	void beforeEach() {
-
-		ourCtx = FhirContext.forR4Cached();
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";

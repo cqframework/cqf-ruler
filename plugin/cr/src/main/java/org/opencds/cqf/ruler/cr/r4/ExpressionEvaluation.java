@@ -22,6 +22,7 @@ import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.ruler.common.utility.Canonicals;
 import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaFhirDal;
@@ -29,13 +30,12 @@ import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
-import org.opencds.cqf.ruler.utility.CanonicalUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class ExpressionEvaluation implements CanonicalUtilities {
+public class ExpressionEvaluation {
 
 	@Autowired
 	private LibraryLoaderFactory libraryLoaderFactory;
@@ -104,7 +104,7 @@ public class ExpressionEvaluation implements CanonicalUtilities {
 				// log error
 			}
 			if (executionLibrary == null) {
-				Library library = (Library) jpaFhirDal.read(this.getIdElement(libraries.get(0)));
+				Library library = (Library) jpaFhirDal.read(Canonicals.getIdElement(libraries.get(0)));
 				vi.setId(library.getName());
 				if (library.getVersion() != null) {
 					vi.setVersion(library.getVersion());
@@ -198,7 +198,7 @@ public class ExpressionEvaluation implements CanonicalUtilities {
 			}
 			// else check local data for Library to get name and version from
 			else {
-				Library library = (Library) jpaFhirDal.read(this.getIdElement(reference));
+				Library library = (Library) jpaFhirDal.read(Canonicals.getIdElement(reference));
 				builder.append(buildLibraryIncludeString(
 						new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion())));
 			}
@@ -209,7 +209,7 @@ public class ExpressionEvaluation implements CanonicalUtilities {
 
 	private VersionedIdentifier getVersionedIdentifierFromCanonical(CanonicalType reference) {
 		VersionedIdentifier vi = new VersionedIdentifier();
-		String cqlLibraryName = this.getIdElement(reference).getIdPart();
+		String cqlLibraryName = Canonicals.getIdElement(reference).getIdPart();
 		vi.withId(cqlLibraryName);
 		String cqlLibraryVersion = null;
 		if (reference.hasValue() && reference.getValue().split("\\|").length > 1) {

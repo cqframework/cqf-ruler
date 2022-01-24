@@ -14,7 +14,7 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.utility.ClientUtilities;
+import org.opencds.cqf.ruler.common.utility.Clients;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -37,7 +37,7 @@ import ca.uhn.fhir.rest.param.StringParam;
  * that supports caching {@link ValueSet ValueSets } and ensuring expansion of
  * those {@link ValueSet ValueSets }
  */
-public class CacheValueSetsProvider implements OperationProvider, ClientUtilities {
+public class CacheValueSetsProvider implements OperationProvider {
 
 	@Autowired
 	private IFhirSystemDao<Bundle, ?> systemDao;
@@ -77,7 +77,7 @@ public class CacheValueSetsProvider implements OperationProvider, ClientUtilitie
 			return createErrorOutcome("Could not find Endpoint/" + endpointId + "\n" + e);
 		}
 
-		IGenericClient client = this.createClient(ourCtx, endpoint);
+		IGenericClient client = Clients.forEndpoint(ourCtx, endpoint);
 
 		if (userName != null || password != null) {
 			if (userName == null) {

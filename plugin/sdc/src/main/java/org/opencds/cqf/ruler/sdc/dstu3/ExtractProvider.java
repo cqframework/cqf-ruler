@@ -18,8 +18,8 @@ import org.hl7.fhir.dstu3.model.QuestionnaireResponse;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.opencds.cqf.ruler.api.OperationProvider;
+import org.opencds.cqf.ruler.common.utility.Clients;
 import org.opencds.cqf.ruler.sdc.SDCProperties;
-import org.opencds.cqf.ruler.utility.ClientUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -27,7 +27,7 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
-public class ExtractProvider implements OperationProvider, ClientUtilities {
+public class ExtractProvider implements OperationProvider {
 
     @Autowired
     private FhirContext myFhirContext;
@@ -139,8 +139,8 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
         String user = mySdcProperties.getExtract().getUsername();
         String password = mySdcProperties.getExtract().getPassword();
 
-        IGenericClient client = this.createClient(myFhirContext, url);
-        this.registerBasicAuth(client, user, password);
+        IGenericClient client = Clients.forUrl(myFhirContext, url);
+        Clients.registerBasicAuth(client, user, password);
         Bundle outcomeBundle = client.transaction()
                 .withBundle(observationsBundle)
                 .execute();
@@ -155,8 +155,8 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
         String user = mySdcProperties.getExtract().getUsername();
         String password =  mySdcProperties.getExtract().getPassword();
 
-        IGenericClient client = this.createClient(myFhirContext, url);
-        this.registerBasicAuth(client, user, password);
+        IGenericClient client = Clients.forUrl(myFhirContext, url);
+        Clients.registerBasicAuth(client, user, password);
         Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl (questionnaireUrl).execute();
 
         return createCodeMap(questionnaire);

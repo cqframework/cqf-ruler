@@ -14,14 +14,11 @@ import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.devtools.r4.CodeSystemUpdateProvider;
-import org.opencds.cqf.ruler.test.ITestSupport;
+import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
 @ExtendWith(SpringExtension.class)
@@ -33,19 +30,10 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 				"hapi.fhir.allow_external_references=true",
 				"hapi.fhir.enforce_referential_integrity_on_write=false"
 		})
-public class ExpressionEvaluationIT implements ITestSupport {
+public class ExpressionEvaluationIT extends RestIntegrationTest {
 
 	@Autowired
 	private ExpressionEvaluation expressionEvaluation;
-
-	@Autowired
-	private FhirContext ourCtx;
-
-	@Autowired
-	private DaoRegistry myDaoRegistry;
-
-	@LocalServerPort
-	private int port;
 
 	@Autowired
 	private CodeSystemUpdateProvider codeSystemUpdateProvider;
@@ -55,19 +43,19 @@ public class ExpressionEvaluationIT implements ITestSupport {
 
 	@BeforeEach
 	public void setup() throws Exception {
-		uploadTests("valueset", ourCtx, myDaoRegistry);
+		uploadTests("valueset");
 		codeSystemUpdateProvider.updateCodeSystems();
-		uploadTests("library", ourCtx, myDaoRegistry);
-		measures = uploadTests("measure", ourCtx, myDaoRegistry);
-		planDefinitions = uploadTests("plandefinition", ourCtx, myDaoRegistry);
+		uploadTests("library");
+		measures = uploadTests("measure");
+		planDefinitions = uploadTests("plandefinition");
 	}
 
 	@Test
 	public void testExpressionEvaluationANCIND01MeasureDomain() throws Exception {
 		DomainResource measure = (DomainResource) measures.get("ANCIND01");
 		// Patient First
-		uploadTests("test/measure/ANCIND01/charity-otala-1/Patient", ourCtx, myDaoRegistry);
-		Map<String, IBaseResource> resources = uploadTests("test/measure/ANCIND01", ourCtx, myDaoRegistry);
+		uploadTests("test/measure/ANCIND01/charity-otala-1/Patient");
+		Map<String, IBaseResource> resources = uploadTests("test/measure/ANCIND01");
 		IBaseResource patient = resources.get("charity-otala-1");
 		Object ipResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.\"Initial Population\"",
 				patient.getIdElement().getIdPart(), new SystemRequestDetails());
@@ -87,9 +75,8 @@ public class ExpressionEvaluationIT implements ITestSupport {
 	public void testExpressionEvaluationANCDT01PlanDefinitionDomain() throws Exception {
 		DomainResource planDefinition = (DomainResource) planDefinitions.get("lcs-cds-patient-view");
 		// Patient First
-		uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient", ourCtx, myDaoRegistry);
-		Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker",
-				ourCtx, myDaoRegistry);
+		uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
+		Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker");
 		IBaseResource patient = resources.get("Former-Smoker");
 		Object isFormerSmoker = expressionEvaluation.evaluateInContext(planDefinition,
 				"Is former smoker who quit within past 15 years", patient.getIdElement().getIdPart(), true,

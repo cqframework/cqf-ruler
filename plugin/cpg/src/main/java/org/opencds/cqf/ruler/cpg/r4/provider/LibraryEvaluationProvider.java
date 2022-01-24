@@ -35,7 +35,9 @@ import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
-import org.opencds.cqf.ruler.api.OperationProvider;
+import org.opencds.cqf.ruler.common.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.common.utility.Clients;
+import org.opencds.cqf.ruler.common.utility.Operations;
 import org.opencds.cqf.ruler.cpg.r4.util.FhirMeasureBundler;
 import org.opencds.cqf.ruler.cpg.r4.util.R4ApelonFhirTerminologyProvider;
 import org.opencds.cqf.ruler.cpg.r4.util.R4BundleLibraryContentProvider;
@@ -44,14 +46,10 @@ import org.opencds.cqf.ruler.cql.JpaFhirRetrieveProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
-import org.opencds.cqf.ruler.utility.ClientUtilities;
-import org.opencds.cqf.ruler.utility.OperatorUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -59,12 +57,9 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
-public class LibraryEvaluationProvider implements OperationProvider, ClientUtilities, OperatorUtilities {
+public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 
 	private static final Logger log = LoggerFactory.getLogger(LibraryEvaluationProvider.class);
-
-	@Autowired
-	private DaoRegistry myDaoRegistry;
 
 	@Autowired
 	private CqlProperties myCqlProperties;
@@ -80,9 +75,6 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 
 	@Autowired
 	ModelResolver myModelResolver;
-
-	@Autowired
-	FhirContext myFhirContext;
 
 	@SuppressWarnings({ "unchecked" })
 	@Operation(name = "$evaluate", idempotent = true, type = Library.class)
@@ -118,7 +110,7 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 		}
 
 		if (theResource == null) {
-			theResource = this.resolveById(myDaoRegistry, Library.class, theId, theRequestDetails);
+			theResource = read(theId, theRequestDetails);
 		}
 
 		VersionedIdentifier libraryIdentifier = new VersionedIdentifier().withId(theResource.getName())
@@ -127,7 +119,7 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 		TerminologyProvider terminologyProvider;
 
 		if (terminologyEndpoint != null) {
-			IGenericClient client = this.createClient(myFhirContext, terminologyEndpoint);
+			IGenericClient client = Clients.forEndpoint(getFhirContext(), terminologyEndpoint);
 			if (terminologyEndpoint.getAddress().contains("apelon")) {
 				terminologyProvider = new R4ApelonFhirTerminologyProvider(client);
 			} else {
@@ -140,8 +132,8 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 		DataProvider dataProvider;
 		if (dataEndpoint != null) {
 			List<RetrieveProvider> retrieveProviderList = new ArrayList<>();
-			IGenericClient client = this.createClient(myFhirContext, dataEndpoint);
-			RestFhirRetrieveProvider retriever = new RestFhirRetrieveProvider(new SearchParameterResolver(myFhirContext),
+			IGenericClient client = Clients.forEndpoint(dataEndpoint);
+			RestFhirRetrieveProvider retriever = new RestFhirRetrieveProvider(new SearchParameterResolver(getFhirContext()),
 					client);
 			retriever.setTerminologyProvider(terminologyProvider);
 			if (terminologyEndpoint == null || (terminologyEndpoint != null
@@ -151,7 +143,7 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 			retrieveProviderList.add(retriever);
 
 			if (additionalData != null) {
-				BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(myFhirContext, additionalData);
+				BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(getFhirContext(), additionalData);
 				bundleProvider.setTerminologyProvider(terminologyProvider);
 				retrieveProviderList.add(bundleProvider);
 				PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(retrieveProviderList);
@@ -162,8 +154,8 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 
 		} else {
 			List<RetrieveProvider> retrieveProviderList = new ArrayList<>();
-			JpaFhirRetrieveProvider retriever = new JpaFhirRetrieveProvider(this.myDaoRegistry,
-					new SearchParameterResolver(myFhirContext));
+			JpaFhirRetrieveProvider retriever = new JpaFhirRetrieveProvider(getDaoRegistry(),
+					new SearchParameterResolver(getFhirContext()));
 			retriever.setTerminologyProvider(terminologyProvider);
 			// Assume it's a different server, therefore need to expand.
 			if (terminologyEndpoint != null) {
@@ -172,7 +164,7 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 			retrieveProviderList.add(retriever);
 
 			if (additionalData != null) {
-				BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(myFhirContext, additionalData);
+				BundleRetrieveProvider bundleProvider = new BundleRetrieveProvider(getFhirContext(), additionalData);
 				bundleProvider.setTerminologyProvider(terminologyProvider);
 				retrieveProviderList.add(bundleProvider);
 				PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(retrieveProviderList);
@@ -203,8 +195,8 @@ public class LibraryEvaluationProvider implements OperationProvider, ClientUtili
 
 		if (periodStart != null && periodEnd != null) {
 			// resolve the measurement period
-			Interval measurementPeriod = new Interval(this.resolveRequestDate(periodStart, true), true,
-					this.resolveRequestDate(periodEnd, false), true);
+			Interval measurementPeriod = new Interval(Operations.resolveRequestDate(periodStart, true), true,
+					Operations.resolveRequestDate(periodEnd, false), true);
 
 			resolvedParameters.put("Measurement Period",
 					new Interval(DateTime.fromJavaDate((Date) measurementPeriod.getStart()), true,

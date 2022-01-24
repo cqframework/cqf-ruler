@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.sdc.SDCConfig;
 import org.opencds.cqf.ruler.sdc.SDCProperties;
-import org.opencds.cqf.ruler.test.ITestSupport;
+import org.opencds.cqf.ruler.test.ResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -24,7 +24,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
@@ -34,23 +33,33 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 		SDCConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
-public class ExtractProviderIT implements ITestSupport {
+public class ExtractProviderIT implements ResourceLoader {
 	private IGenericClient ourClient;
+
+	@Autowired
 	private FhirContext ourCtx;
 
 	@Autowired
-	private DaoRegistry daoRegistry;
-
-	@Autowired
-	private SDCProperties mySdcProperties;
+	DaoRegistry myDaoRegistry;
 
 	@LocalServerPort
 	private int port;
 
+	@Override
+	public FhirContext getFhirContext() {
+		return ourCtx;
+	}
+
+	@Override
+	public DaoRegistry getDaoRegistry() {
+		return myDaoRegistry;
+	}
+
+	@Autowired
+	private SDCProperties mySdcProperties;
+
 	@BeforeEach
 	void beforeEach() {
-
-		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";
@@ -65,9 +74,9 @@ public class ExtractProviderIT implements ITestSupport {
 		String exampleQuestionnaire = "questionnaire_1559.json";
 		String exampleQR = "questionnaire_response_1558.json";
 
-		loadResource(examplePatient, ourCtx, daoRegistry);
-		loadResource(exampleQuestionnaire, ourCtx, daoRegistry);
-		QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) loadResource(exampleQR, ourCtx, daoRegistry);		
+		loadResource(examplePatient);
+		loadResource(exampleQuestionnaire);
+		QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) loadResource(exampleQR);		
 		
 		Parameters params = new Parameters();
 		params.addParameter().setName("questionnaireResponse").setResource(questionnaireResponse);

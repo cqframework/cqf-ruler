@@ -8,7 +8,7 @@ import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.junit.jupiter.api.Test;
 
-public class LibraryUtilitiesTest implements LibraryUtilities {
+public class LibraryUtilitiesTest implements Libraries {
 
 	@Test
 	public void libraryNoContentReturnsNull() {

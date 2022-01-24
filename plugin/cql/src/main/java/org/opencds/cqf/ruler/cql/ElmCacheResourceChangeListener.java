@@ -9,13 +9,13 @@ import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.opencds.cqf.ruler.utility.ReflectionUtilities;
+import org.opencds.cqf.ruler.common.utility.Reflections;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.cache.IResourceChangeEvent;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListener;
 
-public class ElmCacheResourceChangeListener implements IResourceChangeListener, ReflectionUtilities {
+public class ElmCacheResourceChangeListener implements IResourceChangeListener {
 
     private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory
             .getLogger(ElmCacheResourceChangeListener.class);
@@ -29,8 +29,8 @@ public class ElmCacheResourceChangeListener implements IResourceChangeListener, 
             Map<VersionedIdentifier, Library> theGlobalLibraryCache) {
         this.myLibraryDao = theLibraryDao;
         this.myGlobalLibraryCache = theGlobalLibraryCache;
-        this.myNameFunction = this.getNameFunction(theLibraryDao.getResourceType());
-        this.myVersionFunction = this.getVersionFunction(theLibraryDao.getResourceType());
+        this.myNameFunction = Reflections.getNameFunction(theLibraryDao.getResourceType());
+        this.myVersionFunction = Reflections.getVersionFunction(theLibraryDao.getResourceType());
     }
 
     @Override

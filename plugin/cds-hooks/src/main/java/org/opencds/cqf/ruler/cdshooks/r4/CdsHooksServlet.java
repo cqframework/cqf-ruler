@@ -34,7 +34,6 @@ import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
-import org.opencds.cqf.ruler.external.AppProperties;
 import org.opencds.cqf.ruler.cdshooks.discovery.DiscoveryResolutionR4;
 import org.opencds.cqf.ruler.cdshooks.evaluation.EvaluationContext;
 import org.opencds.cqf.ruler.cdshooks.evaluation.R4EvaluationContext;
@@ -45,14 +44,14 @@ import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.request.JsonHelper;
 import org.opencds.cqf.ruler.cdshooks.request.Request;
 import org.opencds.cqf.ruler.cdshooks.response.CdsCard;
+import org.opencds.cqf.ruler.common.utility.ResolutionUtilities;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.cr.r4.provider.PlanDefinitionApplyProvider;
-import org.opencds.cqf.ruler.utility.ClientUtilities;
-import org.opencds.cqf.ruler.utility.ResolutionUtilities;
+import org.opencds.cqf.ruler.external.AppProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +64,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 
-public class CdsHooksServlet extends HttpServlet implements ClientUtilities, ResolutionUtilities {
+public class CdsHooksServlet extends HttpServlet implements ResolutionUtilities {
 
 	private static final long serialVersionUID = 1L;
 

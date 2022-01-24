@@ -15,14 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
-import org.opencds.cqf.ruler.test.ITestSupport;
+import org.opencds.cqf.ruler.test.ResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
@@ -34,25 +33,34 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 														"spring.main.allow-bean-definition-overriding=true",
 														"debug=true",
 														"spring.batch.job.enabled=false"})
-public class LibraryEvaluationProviderIT implements ITestSupport {
+public class LibraryEvaluationProviderIT implements ResourceLoader {
 	private IGenericClient ourClient;
+
+	@Autowired
 	private FhirContext ourCtx;
 
 	@Autowired
-	private DaoRegistry ourRegistry;
+	DaoRegistry myDaoRegistry;
 
 	@LocalServerPort
 	private int port;
 
+	@Override
+	public FhirContext getFhirContext() {
+		return ourCtx;
+	}
+
+	@Override
+	public DaoRegistry getDaoRegistry() {
+		return myDaoRegistry;
+	}
+
 	@BeforeEach
 	void beforeEach() {
-
-		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";
 		ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
-
 	}
 
 	@Test
@@ -65,7 +73,7 @@ public class LibraryEvaluationProviderIT implements ITestSupport {
 		params.addParameter().setName("context").setValue(new StringType("Patient"));
 
 		String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
-		loadResource(packagePrefix + "ColorectalCancerScreeningsFHIR.json", ourCtx, ourRegistry);
+		loadResource(packagePrefix + "ColorectalCancerScreeningsFHIR.json");
 		Library lib = ourClient.read().resource(Library.class).withId("ColorectalCancerScreeningsFHIR").execute();
 		assertNotNull(lib);
 
@@ -82,7 +90,7 @@ public class LibraryEvaluationProviderIT implements ITestSupport {
 	public void testLibraryEvaluationValidData() throws IOException {
 
 		String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
-		loadResource(packagePrefix + "ColorectalCancerScreeningsFHIR.json", ourCtx, ourRegistry);
+		loadResource(packagePrefix + "ColorectalCancerScreeningsFHIR.json");
 
 		String bundleTextValueSets = stringFromResource(packagePrefix + "valuesets-ColorectalCancerScreeningsFHIR-bundle.json");
 		FhirContext fhirContext = FhirContext.forR4();

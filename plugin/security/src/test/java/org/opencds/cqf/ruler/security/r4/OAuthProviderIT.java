@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.security.SecurityConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -30,6 +31,8 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 })
 public class OAuthProviderIT {
 	private IGenericClient ourClient;
+
+	@Autowired
 	private FhirContext ourCtx;
 
 	@LocalServerPort
@@ -37,8 +40,6 @@ public class OAuthProviderIT {
 
 	@BeforeEach
 	void beforeEach() {
-
-		ourCtx = FhirContext.forR4Cached();
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		String ourServerBase = "http://localhost:" + port + "/fhir/";

@@ -8,14 +8,10 @@ import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.devtools.r4.CodeSystemUpdateProvider;
-import org.opencds.cqf.ruler.test.ITestSupport;
+import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
@@ -26,36 +22,31 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 				"hapi.fhir.allow_external_references=true",
 				"hapi.fhir.enforce_referential_integrity_on_write=false"
 		})
-public class MeasureEvaluateProviderIT implements ITestSupport {
+public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	// @Autowired
 	// private MeasureEvaluateProvider measureEvaluateProvider;
-
-	@Autowired
-	private FhirContext ourCtx;
-
-	@Autowired
-	private DaoRegistry myDaoRegistry;
-
-	@LocalServerPort
-	private int port;
 
 	@Autowired
 	private CodeSystemUpdateProvider codeSystemUpdateProvider;
 
 	@BeforeEach
 	public void setup() throws Exception {
-		uploadTests("valueset", ourCtx, myDaoRegistry);
+		uploadTests("valueset");
 		codeSystemUpdateProvider.updateCodeSystems();
-		uploadTests("library", ourCtx, myDaoRegistry);
+		uploadTests("library");
 	}
 
 	@Test
 	public void testMeasureEvaluate() throws Exception {
 		// Patient First
-		uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient", ourCtx, myDaoRegistry);
-		// Map<String, IBaseResource> resources = uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker", ourCtx, myDaoRegistry);
+		uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
+		// Map<String, IBaseResource> resources =
+		// uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker", ourCtx,
+		// myDaoRegistry);
 		// IBaseResource patient = resources.get("Former-Smoker");
-		// MeasureReport report = measureEvaluateProvider.evaluateMeasure(requestDetails, theId, periodStart, periodEnd, reportType, subject, practitioner, lastReceivedOn, productLine);
+		// MeasureReport report =
+		// measureEvaluateProvider.evaluateMeasure(requestDetails, theId, periodStart,
+		// periodEnd, reportType, subject, practitioner, lastReceivedOn, productLine);
 	}
 }

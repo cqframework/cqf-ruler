@@ -8,7 +8,7 @@ import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.CodeSystemInfo;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.ValueSetInfo;
-import org.opencds.cqf.ruler.utility.IdUtilities;
+import org.opencds.cqf.ruler.common.utility.Ids;
 
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.context.support.IValidationSupport.LookupCodeResult;
@@ -28,7 +28,7 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
  * interface, which is used for Terminology operations
  * in CQL
  */
-public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities {
+public class JpaTerminologyProvider implements TerminologyProvider {
 
 	private final ITermReadSvc myTerminologySvc;
 	private final DaoRegistry myDaoRegistry;
@@ -99,7 +99,7 @@ public class JpaTerminologyProvider implements TerminologyProvider, IdUtilities 
 				throw new IllegalArgumentException("Found more than 1 ValueSet with url: " + valueSet.getId());
 			}
 		} else {
-			vs = myValueSetDao.read(this.createId(this.myTerminologySvc.getFhirContext(), valueSet.getId()),
+			vs = myValueSetDao.read(Ids.newId(this.myTerminologySvc.getFhirContext(), valueSet.getId()),
 					myRequestDetails);
 			if (vs == null) {
 				throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));

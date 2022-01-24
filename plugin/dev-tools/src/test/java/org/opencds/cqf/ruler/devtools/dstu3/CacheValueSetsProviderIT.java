@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.devtools.dstu3;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
@@ -21,16 +22,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.devtools.DevToolsConfig;
-import org.opencds.cqf.ruler.utility.ClientUtilities;
-import org.opencds.cqf.ruler.utility.IdUtilities;
-import org.opencds.cqf.ruler.test.ITestSupport;
+import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.api.QualifiedParamList;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringAndListParam;
@@ -38,18 +34,9 @@ import ca.uhn.fhir.rest.param.StringAndListParam;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 DevToolsConfig.class }, properties ={"hapi.fhir.fhir_version=dstu3", "spring.batch.job.enabled=false", "spring.main.allow-bean-definition-overriding=true"})
-public class CacheValueSetsProviderIT implements ITestSupport, IdUtilities, ClientUtilities {
+public class CacheValueSetsProviderIT extends RestIntegrationTest {
     @Autowired
     private CacheValueSetsProvider cacheValueSetsProvider;
-
-    @Autowired
-    private FhirContext ourCtx;
-    
-    @Autowired
-    private DaoRegistry myDaoRegistry;
-    
-    @LocalServerPort
-    private int port;
 
     @Test
     public void testCacheValueSetsEndpointDNE() throws Exception {
@@ -94,7 +81,7 @@ public class CacheValueSetsProviderIT implements ITestSupport, IdUtilities, Clie
     public void testCacheValueSetsValueSetDNE() throws Exception {
         Endpoint endpoint = uploadLocalServerEndpoint();
         StringAndListParam stringAndListParam = new StringAndListParam();
-        stringAndListParam.setValuesAsQueryTokens(ourCtx, "valueset", Arrays.asList(QualifiedParamList.singleton("dne")));
+        stringAndListParam.setValuesAsQueryTokens(getFhirContext(), "valueset", Arrays.asList(QualifiedParamList.singleton("dne")));
         RequestDetails details = Mockito.mock(RequestDetails.class);
         Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, endpoint.getIdElement(), stringAndListParam, null, null);
         validateOutcome(outcomeResource, "HTTP 404 : Resource ValueSet/" + "dne" + " is not known");
@@ -104,7 +91,7 @@ public class CacheValueSetsProviderIT implements ITestSupport, IdUtilities, Clie
     public void testCacheValueSetsValueSetNull() throws Exception {
         Endpoint endpoint = uploadLocalServerEndpoint();
         StringAndListParam stringAndListParam = new StringAndListParam();
-        stringAndListParam.setValuesAsQueryTokens(ourCtx, "valueset", Arrays.asList(QualifiedParamList.singleton(new ValueSet().getId())));
+        stringAndListParam.setValuesAsQueryTokens(getFhirContext(), "valueset", Arrays.asList(QualifiedParamList.singleton(new ValueSet().getId())));
         RequestDetails details = Mockito.mock(RequestDetails.class);
         Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, endpoint.getIdElement(), stringAndListParam, null, null);
         validateOutcome(outcomeResource, "HTTP 404 : Resource ValueSet/" + new ValueSet().getIdElement().getIdPart() + " is not known");
@@ -120,10 +107,10 @@ public class CacheValueSetsProviderIT implements ITestSupport, IdUtilities, Clie
         Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, endpoint.getIdElement(), stringAndListParam, null, null);
         assertTrue(outcomeResource instanceof Bundle);
         Bundle resultBundle = (Bundle) outcomeResource;
-        assertTrue(resultBundle.getEntry().size() == 1);
+        assertEquals(1, resultBundle.getEntry().size());
         BundleEntryComponent entry = resultBundle.getEntry().get(0);
         assertTrue(entry.getResponse().getLocation().startsWith("ValueSet/" + vs.getIdElement().getIdPart()));
-        assertTrue(entry.getResponse().getStatus().equals("200 OK"));
+        assertEquals("200 OK", entry.getResponse().getStatus());
         // ValueSet resultingValueSet = createClient(ourCtx, endpoint).read().resource(ValueSet.class).withId(vs.getIdElement()).execute();
         // resultingValueSet not returning with a version
         // assertTrue(resultingValueSet.getVersion().endsWith("-cached"));
@@ -164,10 +151,10 @@ public class CacheValueSetsProviderIT implements ITestSupport, IdUtilities, Clie
         Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, endpoint.getIdElement(), stringAndListParam, null, null);
         assertTrue(outcomeResource instanceof Bundle);
         Bundle resultBundle = (Bundle) outcomeResource;
-        assertTrue(resultBundle.getEntry().size() == 1);
+        assertEquals(1, resultBundle.getEntry().size());
         BundleEntryComponent entry = resultBundle.getEntry().get(0);
         assertTrue(entry.getResponse().getLocation().startsWith("ValueSet/" + vs.getIdElement().getIdPart()));
-        assertTrue(entry.getResponse().getStatus().equals("200 OK"));
+        assertEquals("200 OK", entry.getResponse().getStatus());
         // ValueSet resultingValueSet = myDaoRegistry.getResourceDao(ValueSet.class).read(vs.getIdElement());
         // resultingValueSet not returning with a version
         // assertTrue(resultingValueSet.getVersion().endsWith("-cached"));
@@ -180,7 +167,7 @@ public class CacheValueSetsProviderIT implements ITestSupport, IdUtilities, Clie
 
     private StringAndListParam getStringAndListParamFromValueSet(ValueSet vs) throws IOException {
         StringAndListParam stringAndListParam = new StringAndListParam();
-        stringAndListParam.setValuesAsQueryTokens(ourCtx, "valueset", Arrays.asList(QualifiedParamList.singleton(vs.getIdElement().getIdPart())));
+        stringAndListParam.setValuesAsQueryTokens(getFhirContext(), "valueset", Arrays.asList(QualifiedParamList.singleton(vs.getIdElement().getIdPart())));
         return stringAndListParam;
     }
 
@@ -188,7 +175,7 @@ public class CacheValueSetsProviderIT implements ITestSupport, IdUtilities, Clie
         assertTrue(outcomeResource instanceof OperationOutcome);
         OperationOutcome outcome = (OperationOutcome) outcomeResource;
         for (OperationOutcomeIssueComponent issue : outcome.getIssue()) {
-            assertTrue(issue.getSeverity().equals(OperationOutcome.IssueSeverity.ERROR));
+            assertEquals(OperationOutcome.IssueSeverity.ERROR, issue.getSeverity());
             assertTrue(issue.getDetails().getCodingFirstRep().getDisplay().startsWith(detailMessage));
         }
     }
@@ -197,7 +184,7 @@ public class CacheValueSetsProviderIT implements ITestSupport, IdUtilities, Clie
         BufferedReader reader = new BufferedReader(new InputStreamReader(CacheValueSetsProvider.class.getResourceAsStream(location)));
         String resourceString = reader.lines().collect(Collectors.joining(System.lineSeparator()));
         reader.close();
-        return (ValueSet) loadResource("json", resourceString, ourCtx, myDaoRegistry);
+        return (ValueSet) loadResource("json", resourceString);
     }
 
     private Endpoint uploadLocalServerEndpoint() throws IOException {
@@ -205,9 +192,9 @@ public class CacheValueSetsProviderIT implements ITestSupport, IdUtilities, Clie
         String resourceString = reader.lines().collect(Collectors.joining(System.lineSeparator()));
         reader.close();
         // Don't want to update during loading because need to setAddress first
-        Endpoint endpoint = (Endpoint) loadResource("json", resourceString, ourCtx, null);
-        endpoint.setAddress("http://localhost:" + port + "/fhir/");
-        myDaoRegistry.getResourceDao(Endpoint.class).update(endpoint);
-        return endpoint;
+        Endpoint endpoint = (Endpoint) loadResource("json", resourceString);
+        endpoint.setAddress("http://localhost:" + getPort() + "/fhir/");
+		  create(endpoint);
+		  return endpoint;
     }
 }

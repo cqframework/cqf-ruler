@@ -16,9 +16,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
+import org.opencds.cqf.ruler.common.utility.Clients;
 import org.opencds.cqf.ruler.ra.RAConfig;
 import org.opencds.cqf.ruler.ra.RAProperties;
-import org.opencds.cqf.ruler.test.ITestSupport;
+import org.opencds.cqf.ruler.test.ResourceLoader;
+import org.opencds.cqf.ruler.test.Urls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -26,7 +28,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
@@ -37,29 +38,39 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
-public class ReportProviderIT implements org.opencds.cqf.ruler.test.ClientUtilities,
-		org.opencds.cqf.ruler.utility.ClientUtilities, ITestSupport {
+public class ReportProviderIT implements ResourceLoader {
 
 	private IGenericClient ourClient;
+
+	@Autowired
 	private FhirContext ourCtx;
 
 	@Autowired
-	private DaoRegistry ourRegistry;
-
-	@Autowired
-	private RAProperties myRaProperties;
+	DaoRegistry myDaoRegistry;
 
 	@LocalServerPort
 	private int port;
 
+	@Override
+	public FhirContext getFhirContext() {
+		return ourCtx;
+	}
+
+	@Override
+	public DaoRegistry getDaoRegistry() {
+		return myDaoRegistry;
+	}
+
+	@Autowired
+	private RAProperties myRaProperties;
+
+
 	@BeforeEach
 	void beforeEach() {
-
-		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
 		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
-		String ourServerBase = getClientUrl(myRaProperties.getReport().getEndpoint(), port);
-		ourClient = createClient(ourCtx, ourServerBase);
+		String ourServerBase = Urls.getUrl(myRaProperties.getReport().getEndpoint(), port);
+		ourClient = Clients.forUrl(ourCtx, ourServerBase);
 		myRaProperties.getReport().setEndpoint(ourServerBase);
 	}
 
@@ -131,7 +142,7 @@ public class ReportProviderIT implements org.opencds.cqf.ruler.test.ClientUtilit
 		params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
 		params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
 		params.addParameter().setName("subject").setValue(new StringType("Patient/ra-patient01"));
-		loadResource("Patient-ra-patient01.json", ourCtx,ourRegistry);
+		loadResource("Patient-ra-patient01.json");
 
 		assertDoesNotThrow(() -> {
 			ourClient.operation().onType(MeasureReport.class).named("$report")
@@ -149,8 +160,8 @@ public class ReportProviderIT implements org.opencds.cqf.ruler.test.ClientUtilit
 		params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
 		params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
 		params.addParameter().setName("subject").setValue(new StringType("Group/ra-group01"));
-		loadResource("Patient-ra-patient01.json", ourCtx, ourRegistry);
-		loadResource("Group-ra-group01.json", ourCtx, ourRegistry);
+		loadResource("Patient-ra-patient01.json");
+		loadResource("Group-ra-group01.json");
 
 		assertDoesNotThrow(() -> {
 			ourClient.operation().onType(MeasureReport.class).named("$report")
@@ -217,7 +228,7 @@ public class ReportProviderIT implements org.opencds.cqf.ruler.test.ClientUtilit
 		params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
 		params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
 		params.addParameter().setName("subject").setValue(new StringType("Group/ra-group00"));
-		loadResource("Group-ra-group00.json", ourCtx, ourRegistry);
+		loadResource("Group-ra-group00.json");
 		Group group = ourClient.read().resource(Group.class).withId("ra-group00").execute();
 		assertNotNull(group);
 
@@ -237,9 +248,9 @@ public class ReportProviderIT implements org.opencds.cqf.ruler.test.ClientUtilit
 		params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
 		params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
 		params.addParameter().setName("subject").setValue(new StringType("Group/ra-group02"));
-		loadResource("Patient-ra-patient02.json", ourCtx,ourRegistry);
-		loadResource("Patient-ra-patient03.json", ourCtx, ourRegistry);
-		loadResource("Group-ra-group02.json", ourCtx, ourRegistry);
+		loadResource("Patient-ra-patient02.json");
+		loadResource("Patient-ra-patient03.json");
+		loadResource("Group-ra-group02.json");
 
 		assertDoesNotThrow(() -> {
 			ourClient.operation().onType(MeasureReport.class).named("$report")
@@ -256,27 +267,27 @@ public class ReportProviderIT implements org.opencds.cqf.ruler.test.ClientUtilit
 		params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
 		params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
 		params.addParameter().setName("subject").setValue(new StringType("Patient/ra-patient01"));
-		loadResource("Patient-ra-patient01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition02pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition03pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition08pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition09pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition10pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition11pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition17pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition18pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition33pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition43pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition44pat01.json", ourCtx, ourRegistry);
-		loadResource("Observation-ra-obs21pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter02pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter03pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter08pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter09pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter11pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter43pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter44pat01.json", ourCtx, ourRegistry);
-		loadResource("MeasureReport-ra-measurereport01.json", ourCtx, ourRegistry);
+		loadResource("Patient-ra-patient01.json");
+		loadResource("Condition-ra-condition02pat01.json");
+		loadResource("Condition-ra-condition03pat01.json");
+		loadResource("Condition-ra-condition08pat01.json");
+		loadResource("Condition-ra-condition09pat01.json");
+		loadResource("Condition-ra-condition10pat01.json");
+		loadResource("Condition-ra-condition11pat01.json");
+		loadResource("Condition-ra-condition17pat01.json");
+		loadResource("Condition-ra-condition18pat01.json");
+		loadResource("Condition-ra-condition33pat01.json");
+		loadResource("Condition-ra-condition43pat01.json");
+		loadResource("Condition-ra-condition44pat01.json");
+		loadResource("Observation-ra-obs21pat01.json");
+		loadResource("Encounter-ra-encounter02pat01.json");
+		loadResource("Encounter-ra-encounter03pat01.json");
+		loadResource("Encounter-ra-encounter08pat01.json");
+		loadResource("Encounter-ra-encounter09pat01.json");
+		loadResource("Encounter-ra-encounter11pat01.json");
+		loadResource("Encounter-ra-encounter43pat01.json");
+		loadResource("Encounter-ra-encounter44pat01.json");
+		loadResource("MeasureReport-ra-measurereport01.json");
 		Parameters actual = ourClient.operation().onType(MeasureReport.class).named("$report")
 				.withParameters(params)
 				.returnResourceType(Parameters.class)
@@ -298,29 +309,29 @@ public class ReportProviderIT implements org.opencds.cqf.ruler.test.ClientUtilit
 		params.addParameter().setName("periodStart").setValue(new StringType("2021-01-01"));
 		params.addParameter().setName("periodEnd").setValue(new StringType("2021-12-31"));
 		params.addParameter().setName("subject").setValue(new StringType("Patient/ra-patient01"));
-		loadResource("Patient-ra-patient01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition02pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition03pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition08pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition09pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition10pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition11pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition17pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition18pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition33pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition43pat01.json", ourCtx, ourRegistry);
-		loadResource("Condition-ra-condition44pat01.json", ourCtx, ourRegistry);
-		loadResource("Observation-ra-obs21pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter02pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter03pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter08pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter09pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter11pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter43pat01.json", ourCtx, ourRegistry);
-		loadResource("Encounter-ra-encounter44pat01.json", ourCtx, ourRegistry);
-		loadResource("MeasureReport-ra-measurereport01.json", ourCtx, ourRegistry);
+		loadResource("Patient-ra-patient01.json");
+		loadResource("Condition-ra-condition02pat01.json");
+		loadResource("Condition-ra-condition03pat01.json");
+		loadResource("Condition-ra-condition08pat01.json");
+		loadResource("Condition-ra-condition09pat01.json");
+		loadResource("Condition-ra-condition10pat01.json");
+		loadResource("Condition-ra-condition11pat01.json");
+		loadResource("Condition-ra-condition17pat01.json");
+		loadResource("Condition-ra-condition18pat01.json");
+		loadResource("Condition-ra-condition33pat01.json");
+		loadResource("Condition-ra-condition43pat01.json");
+		loadResource("Condition-ra-condition44pat01.json");
+		loadResource("Observation-ra-obs21pat01.json");
+		loadResource("Encounter-ra-encounter02pat01.json");
+		loadResource("Encounter-ra-encounter03pat01.json");
+		loadResource("Encounter-ra-encounter08pat01.json");
+		loadResource("Encounter-ra-encounter09pat01.json");
+		loadResource("Encounter-ra-encounter11pat01.json");
+		loadResource("Encounter-ra-encounter43pat01.json");
+		loadResource("Encounter-ra-encounter44pat01.json");
+		loadResource("MeasureReport-ra-measurereport01.json");
 		// this is not an evaluatedResource of the report
-		loadResource("Encounter-ra-encounter45pat01.json", ourCtx, ourRegistry);
+		loadResource("Encounter-ra-encounter45pat01.json");
 
 		Parameters actual = ourClient.operation().onType(MeasureReport.class).named("$report")
 				.withParameters(params)

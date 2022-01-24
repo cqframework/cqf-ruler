@@ -8,13 +8,13 @@ import java.util.Map;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentType;
-import org.opencds.cqf.ruler.utility.ResolutionUtilities;
+import org.opencds.cqf.ruler.common.utility.ResolutionUtilities;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class JpaLibraryContentProvider
-		implements LibraryContentProvider, ResolutionUtilities, LibraryUtilities {
+		implements LibraryContentProvider, ResolutionUtilities, Libraries {
 	private static Map<Class<? extends IBaseResource>, ContentFunctions> cachedContentFunctions = new HashMap<>();
 
 	protected final IFhirResourceDao<?> libraryDao;
