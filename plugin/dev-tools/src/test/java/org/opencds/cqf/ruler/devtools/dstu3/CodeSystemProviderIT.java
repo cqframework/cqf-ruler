@@ -158,13 +158,6 @@ public class CodeSystemProviderIT extends RestIntegrationTest {
 		log.info("Finished Test DSTU3 Update Code Systems");
 	}
 
-	// Old way
-	// private IBundleProvider performCodeSystemSearchByUrl(String rxNormUrl) {
-	// 	return this.myDaoRegistry.getResourceDao(CodeSystem.class)
-	// 			.search(SearchParameterMap.newSynchronous().add(CodeSystem.SP_URL, new UriParam(rxNormUrl)));
-	// }
-
-	// New way
 	private IBundleProvider performCodeSystemSearchByUrl(String rxNormUrl) {
 		return search(CodeSystem.class, Searches.byUrl(rxNormUrl));
 	}

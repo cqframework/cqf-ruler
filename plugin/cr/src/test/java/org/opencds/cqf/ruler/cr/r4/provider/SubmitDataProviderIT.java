@@ -18,11 +18,7 @@ import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
-
-
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { DaoOnlyConfig.class }, properties = {
@@ -35,25 +31,9 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 })
 @EnableAutoConfiguration(exclude=QuartzAutoConfiguration.class)
 public class SubmitDataProviderIT extends DaoIntegrationTest implements IdCreator, ResourceCreator {
-
-	@Autowired
-	DaoRegistry myDaoRegistry;
-
-	@Autowired 
-	FhirContext myFhirContext;
-
+	
 	@Autowired
 	SubmitDataProvider mySubmitDataProvider;
-
-	@Override
-	public DaoRegistry getDaoRegistry() {
-		return myDaoRegistry;
-	}
-
-	@Override
-	public FhirContext getFhirContext() {
-		return myFhirContext;
-	}
 
 	@Test
 	public void testSubmitData() {
