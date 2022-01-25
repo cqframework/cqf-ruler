@@ -49,8 +49,12 @@ public class VersionsTest {
         Library lib = Versions.selectByVersion(libraries, "1.0.0", getVersion);
         assertEquals("1.0.0", lib.getVersion());
 
-        // Gets max version (null is considering max version)
+        // Gets max version (null version on library is considered max version)
         lib = Versions.selectByVersion(libraries, "2.0.0", getVersion);
         assertNull(lib.getVersion());
+
+			// Null version max version (null input gets max version)
+			lib = Versions.selectByVersion(libraries, null, getVersion);
+			assertNull(lib.getVersion());
     } 
 }

@@ -76,7 +76,6 @@ public class Versions {
 			String theVersion,
 			Function<ResourceType, String> theGetVersion) {
 		checkNotNull(theResources);
-		checkNotNull(theVersion);
 		checkNotNull(theGetVersion);
 
 		ResourceType library = null;
