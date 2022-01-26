@@ -11,6 +11,10 @@ import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.param.UriParam;
 
 public class Searches {
+	private static final String VERSION_SP = "version";
+	private static final String URL_SP = "url";
+	private static final String NAME_SP = "name";
+
 	private Searches() {
 	}
 
@@ -36,18 +40,27 @@ public class Searches {
 	public static SearchParameterMap byName(String theName) {
 		checkNotNull(theName);
 
-		return byParam("name", new StringParam(theName));
+		return byParam(NAME_SP, new StringParam(theName));
 	}
 
-	public static SearchParameterMap byNameAndVersion(String theName, String theVersion) {
+	public static SearchParameterMap byName(String theName, String theVersion) {
 		checkNotNull(theName);
+		checkNotNull(theVersion);
 
-		return byName(theName).add("version", new StringParam(theVersion));
+		return byName(theName).add(VERSION_SP, new StringParam(theVersion));
+	}
+
+	public static SearchParameterMap byUrl(String theUrl, String theVersion) {
+		checkNotNull(theUrl);
+		checkNotNull(theVersion);
+
+		return byParam(URL_SP, new UriParam(theUrl)).add(VERSION_SP, new StringParam(theVersion));
 	}
 
 	public static SearchParameterMap byUrl(String theUrl) {
 		checkNotNull(theUrl);
-		return byParam("url", new UriParam(theUrl));
+
+		return byParam(URL_SP, new UriParam(theUrl));
 	}
 
 	public static SearchParameterMap byCanonical(String theCanonical) {
@@ -56,7 +69,7 @@ public class Searches {
 		SearchParameterMap search = byUrl(Canonicals.getUrl(theCanonical));
 		String version = Canonicals.getVersion(theCanonical);
 		if (version != null) {
-			search.add("version", new StringParam(version));
+			search.add(VERSION_SP, new StringParam(version));
 		}
 
 		return search;

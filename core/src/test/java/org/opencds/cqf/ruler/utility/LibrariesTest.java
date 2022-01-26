@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.cql;
+package org.opencds.cqf.ruler.utility;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -8,13 +8,13 @@ import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.junit.jupiter.api.Test;
 
-public class LibraryUtilitiesTest implements Libraries {
+public class LibrariesTest {
 
 	@Test
 	public void libraryNoContentReturnsNull() {
 		Library library = new Library();
 
-		byte[] content = this.getContent(library, "text/cql");
+		byte[] content = Libraries.getContent(library, "text/cql");
 
 		assertNull(content);
 	}
@@ -25,7 +25,7 @@ public class LibraryUtilitiesTest implements Libraries {
 		library.addContent().setContentType("text/cql").setData("test-data".getBytes());
 
 
-		byte[] content = this.getContent(library, "text/cql");
+		byte[] content = Libraries.getContent(library, "text/cql");
 
 		assertEquals("test-data", new String(content));
 	}
@@ -36,7 +36,7 @@ public class LibraryUtilitiesTest implements Libraries {
 		library.addContent().setContentType("text/cql").setData("test-data".getBytes());
 
 
-		byte[] content = this.getContent(library, "text/elm");
+		byte[] content = Libraries.getContent(library, "text/elm");
 
 		assertNull(content);
 	}
@@ -47,16 +47,34 @@ public class LibraryUtilitiesTest implements Libraries {
 		library.addContent().setContentType("text/cql").setData("test-data".getBytes());
 
 
-		byte[] content = this.getContent(library, "text/cql");
+		byte[] content = Libraries.getContent(library, "text/cql");
 
 		assertEquals("test-data", new String(content));
 	}
 
 	@Test
 	public void notALibraryThrowsException() {
-
+		Measure m = new Measure();
 		assertThrows(IllegalArgumentException.class, () -> {
-			this.getContent(new Measure(), "text/cql");
+			Libraries.getContent(m, "text/cql");
 		});
+	}
+
+	@Test
+	public void libraryWithVersionReturnsVersion() {
+		Library library = new Library().setVersion("1.0.0");
+
+		String version = Libraries.getVersion(library);
+
+		assertEquals("1.0.0", version);
+	}
+
+	@Test
+	public void libraryNoVersionReturnsNull() {
+		Library library = new Library();
+
+		String version = Libraries.getVersion(library);
+
+		assertNull(version);
 	}
 }

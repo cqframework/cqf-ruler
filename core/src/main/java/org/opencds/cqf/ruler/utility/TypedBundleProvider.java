@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.utility;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,5 +67,18 @@ public class TypedBundleProvider<T extends IBaseResource> implements IBundleProv
 			retval.addAll(getResourcesTyped(0, size));
 		}
 		return retval;
+	}
+
+	public T single() {
+		checkState(this.myInnerProvider.size() > 1, "More than one resource found");
+
+		return first();
+	}
+
+
+	public T first() {
+		checkState(this.myInnerProvider.size() == 0, "No resources found");
+
+		return getResourcesTyped(0, 1).get(0);
 	}
 }

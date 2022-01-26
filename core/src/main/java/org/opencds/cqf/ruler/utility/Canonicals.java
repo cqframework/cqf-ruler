@@ -9,20 +9,7 @@ public class Canonicals {
 
 	private Canonicals() {
 	}
-
-	interface CanonicalParts {
-		String getUrl();
-
-		String getIdPart();
-
-		String getResourceType();
-
-		String getVersion();
-
-		String getFragment();
-
-	}
-
+	
 	/**
 	 * Gets the Resource type component of a canonical url
 	 * 
@@ -192,48 +179,22 @@ public class Canonicals {
 		return theCanonical.substring(theCanonical.lastIndexOf("#") + 1);
 	}
 
-	public static <CanonicalType extends IPrimitiveType<String>> CanonicalParts getCanonicalParts(
+	public static <CanonicalType extends IPrimitiveType<String>> CanonicalParts getParts(
 			CanonicalType theCanonicalType) {
 		checkNotNull(theCanonicalType);
 		checkArgument(theCanonicalType.hasValue());
 
-		return getCanonicalParts(theCanonicalType.getValue());
-
+		return getParts(theCanonicalType.getValue());
 	}
 
-	public static CanonicalParts getCanonicalParts(String theCanonical) {
+	public static CanonicalParts getParts(String theCanonical) {
 		checkNotNull(theCanonical);
 
 		String url = getUrl(theCanonical);
-		String resourceType = getResourceType(theCanonical);
 		String id = getIdPart(theCanonical);
+		String resourceType = getResourceType(theCanonical);
 		String version = getVersion(theCanonical);
 		String fragment = getFragment(theCanonical);
-		return new CanonicalParts() {
-			@Override
-			public String getUrl() {
-				return url;
-			}
-
-			@Override
-			public String getResourceType() {
-				return resourceType;
-			}
-
-			@Override
-			public String getIdPart() {
-				return id;
-			}
-
-			@Override
-			public String getVersion() {
-				return version;
-			}
-
-			@Override
-			public String getFragment() {
-				return fragment;
-			}
-		};
+		return new CanonicalParts(url, id, resourceType, version, fragment);
 	}
 }

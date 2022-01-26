@@ -1,8 +1,9 @@
-package org.opencds.cqf.ruler.utility;
+package org.opencds.cqf.ruler.behavior;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.hl7.fhir.instance.model.api.IIdType;
+import org.opencds.cqf.ruler.utility.Ids;
 
 
 public interface IdCreator extends FhirContextUser {

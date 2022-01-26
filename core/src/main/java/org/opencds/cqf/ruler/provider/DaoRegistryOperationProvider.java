@@ -1,8 +1,8 @@
 package org.opencds.cqf.ruler.provider;
 
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.utility.DaoRegistryUser;
-import org.opencds.cqf.ruler.utility.FhirContextUser;
+import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
+import org.opencds.cqf.ruler.behavior.FhirContextUser;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;

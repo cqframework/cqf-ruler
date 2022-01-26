@@ -130,7 +130,7 @@ public class Ids {
 			case R5:
 				return (IdType) new org.hl7.fhir.r5.model.IdType(theId);
 			default:
-				throw new IllegalArgumentException(String.format("createId does not support FHIR version %s",
+				throw new IllegalArgumentException(String.format("newId does not support FHIR version %s",
 						theFhirVersionEnum.getFhirVersionString()));
 		}
 	}

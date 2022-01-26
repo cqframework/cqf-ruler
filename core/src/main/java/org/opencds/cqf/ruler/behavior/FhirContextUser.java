@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.utility;
+package org.opencds.cqf.ruler.behavior;
 
 import ca.uhn.fhir.context.FhirContext;
 

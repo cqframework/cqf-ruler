@@ -17,8 +17,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.ruler.utility.DaoRegistryUser;
-import org.opencds.cqf.ruler.utility.FhirContextUser;
+import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
+import org.opencds.cqf.ruler.behavior.FhirContextUser;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 

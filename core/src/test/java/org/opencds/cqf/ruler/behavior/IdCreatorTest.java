@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.utility;
+package org.opencds.cqf.ruler.behavior;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -23,6 +23,7 @@ import com.google.gson.JsonParser;
 
 import org.apache.http.entity.ContentType;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
+import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
@@ -34,6 +35,7 @@ import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.discovery.DiscoveryResolutionR4;
 import org.opencds.cqf.ruler.cdshooks.evaluation.EvaluationContext;
 import org.opencds.cqf.ruler.cdshooks.evaluation.R4EvaluationContext;
@@ -51,7 +53,7 @@ import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.cr.r4.provider.PlanDefinitionApplyProvider;
 import org.opencds.cqf.ruler.external.AppProperties;
-import org.opencds.cqf.ruler.utility.ResolutionUtilities;
+import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +66,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 
-public class CdsHooksServlet extends HttpServlet implements ResolutionUtilities {
+public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	private static final long serialVersionUID = 1L;
 
@@ -159,14 +161,14 @@ public class CdsHooksServlet extends HttpServlet implements ResolutionUtilities 
 			Hook hook = HookFactory.createHook(cdsHooksRequest);
 
 			String hookName = hook.getRequest().getHook();
-			logger.info("cds-hooks hook: " + hookName);
-			logger.info("cds-hooks hook instance: " + hook.getRequest().getHookInstance());
-			logger.info("cds-hooks maxCodesPerQuery: " + this.getProviderConfiguration().getMaxCodesPerQuery());
-			logger.info("cds-hooks expandValueSets: " + this.getProviderConfiguration().getExpandValueSets());
-			logger.info("cds-hooks searchStyle: " + this.getProviderConfiguration().getSearchStyle());
-			logger.info("cds-hooks prefetch maxUriLength: " + this.getProviderConfiguration().getMaxUriLength());
-			logger.info("cds-hooks local server address: " + baseUrl);
-			logger.info("cds-hooks fhir server address: " + hook.getRequest().getFhirServerUrl());
+			logger.info("cds-hooks hook: {}", hookName);
+			logger.info("cds-hooks hook instance: {}", hook.getRequest().getHookInstance());
+			logger.info("cds-hooks maxCodesPerQuery: {}", this.getProviderConfiguration().getMaxCodesPerQuery());
+			logger.info("cds-hooks expandValueSets: {}", this.getProviderConfiguration().getExpandValueSets());
+			logger.info("cds-hooks searchStyle: {}", this.getProviderConfiguration().getSearchStyle());
+			logger.info("cds-hooks prefetch maxUriLength: {}", this.getProviderConfiguration().getMaxUriLength());
+			logger.info("cds-hooks local server address: {}", baseUrl);
+			logger.info("cds-hooks fhir server address: {}", hook.getRequest().getFhirServerUrl());
 
 			PlanDefinition planDefinition = planDefinitionProvider.getDao()
 					.read(new IdType(hook.getRequest().getServiceName()));
@@ -195,13 +197,13 @@ public class CdsHooksServlet extends HttpServlet implements ResolutionUtilities 
 							Arrays.asList(
 									jpaLibraryContentProviderFactory.create(requestDetails))));
 
-			Library primaryLibrary = this.resolveByCanonicalUrl(daoRegistry, Library.class,
-					planDefinition.getLibrary().get(0), requestDetails);
+			CanonicalType canonical = planDefinition.getLibrary().get(0);
+			Library library = search(Library.class, Searches.byCanonical(canonical)).single();
 
-			org.cqframework.cql.elm.execution.Library library = libraryLoader.load(
-					new VersionedIdentifier().withId(primaryLibrary.getName()).withVersion(primaryLibrary.getVersion()));
+			org.cqframework.cql.elm.execution.Library elm = libraryLoader.load(
+					new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
 
-			Context context = new Context(library);
+			Context context = new Context(elm);
 
 			context.setDebugMap(this.getDebugMap());
 
@@ -220,7 +222,7 @@ public class CdsHooksServlet extends HttpServlet implements ResolutionUtilities 
 
 			EvaluationContext<PlanDefinition> evaluationContext = new R4EvaluationContext(hook, version,
 					FhirContext.forCached(FhirVersionEnum.R4).newRestfulGenericClient(baseUrl), serverTerminologyProvider,
-					context, library,
+					context, elm,
 					planDefinition, this.getProviderConfiguration(), this.modelResolver);
 
 			this.setAccessControlHeaders(response);
@@ -376,5 +378,10 @@ public class CdsHooksServlet extends HttpServlet implements ResolutionUtilities 
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;
+	}
+
+	@Override
+	public DaoRegistry getDaoRegistry() {
+		return this.daoRegistry;
 	}
 }
