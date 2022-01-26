@@ -8,8 +8,6 @@ import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.utility.IdCreator;
 import org.opencds.cqf.ruler.utility.ResourceCreator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
@@ -19,7 +17,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
-@EnableAutoConfiguration(exclude = QuartzAutoConfiguration.class)
+
 @Import(Application.class)
 @TestPropertySource(properties = { 
 	"scheduling_disabled=true",
@@ -27,7 +25,8 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 	"spring.batch.job.enabled=false",
 	"hapi.fhir.allow_external_references=true",
 	"hapi.fhir.enforce_referential_integrity_on_write=false",
-	"spring.datasource.url=jdbc:h2:mem:db" })
+	"spring.datasource.url=jdbc:h2:mem:db",
+	"spring.main.lazy-initialization=true" })
 @TestInstance(Lifecycle.PER_CLASS)
 public class RestIntegrationTest implements ResourceLoader, ResourceCreator, IdCreator {
 

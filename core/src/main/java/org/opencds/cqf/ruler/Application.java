@@ -12,6 +12,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -35,7 +36,7 @@ import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
 		Application.class }, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {
 				FhirTesterConfig.class, org.opencds.cqf.ruler.external.Application.class, StarterCqlR4Config.class,
 				StarterCqlDstu3Config.class, CqlR4Config.class, CqlDstu3Config.class, BaseCqlConfig.class }))
-@SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class })
+@SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class, QuartzAutoConfiguration.class })
 @Import({ SubscriptionSubmitterConfig.class, SubscriptionProcessorConfig.class, SubscriptionChannelConfig.class,
 		WebsocketDispatcherConfig.class, MdmConfig.class, TesterUIConfig.class, BeanFinderConfig.class })
 public class Application extends SpringBootServletInitializer {

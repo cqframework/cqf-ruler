@@ -10,6 +10,7 @@ import org.hl7.fhir.r4.model.ActivityDefinition;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.DomainResource;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.PlanDefinition;
@@ -104,7 +105,7 @@ public class ExpressionEvaluation {
 				// log error
 			}
 			if (executionLibrary == null) {
-				Library library = (Library) jpaFhirDal.read(Canonicals.getIdElement(libraries.get(0)));
+				Library library = (Library) jpaFhirDal.read(new IdType("Library", Canonicals.getIdPart(libraries.get(0))));
 				vi.setId(library.getName());
 				if (library.getVersion() != null) {
 					vi.setVersion(library.getVersion());
@@ -198,7 +199,7 @@ public class ExpressionEvaluation {
 			}
 			// else check local data for Library to get name and version from
 			else {
-				Library library = (Library) jpaFhirDal.read(Canonicals.getIdElement(reference));
+				Library library = (Library) jpaFhirDal.read(new IdType("Library", Canonicals.getIdPart(reference)));
 				builder.append(buildLibraryIncludeString(
 						new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion())));
 			}
@@ -209,7 +210,7 @@ public class ExpressionEvaluation {
 
 	private VersionedIdentifier getVersionedIdentifierFromCanonical(CanonicalType reference) {
 		VersionedIdentifier vi = new VersionedIdentifier();
-		String cqlLibraryName = Canonicals.getIdElement(reference).getIdPart();
+		String cqlLibraryName = Canonicals.getIdPart(reference);
 		vi.withId(cqlLibraryName);
 		String cqlLibraryVersion = null;
 		if (reference.hasValue() && reference.getValue().split("\\|").length > 1) {

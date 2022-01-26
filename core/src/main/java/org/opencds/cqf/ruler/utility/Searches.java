@@ -1,6 +1,9 @@
 package org.opencds.cqf.ruler.utility;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import org.hl7.fhir.instance.model.api.IPrimitiveType;
 
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.model.api.IQueryParameterType;
@@ -27,20 +30,42 @@ public class Searches {
 		checkNotNull(theParamName);
 		checkNotNull(theParam);
 
-		return SearchParameterMap.newSynchronous(theParamName, theParam);
+		return sync().add(theParamName, theParam);
 	}
 
 	public static SearchParameterMap byName(String theName) {
 		checkNotNull(theName);
 
-		return SearchParameterMap.newSynchronous("name", new StringParam(theName));
+		return byParam("name", new StringParam(theName));
+	}
+
+	public static SearchParameterMap byNameAndVersion(String theName, String theVersion) {
+		checkNotNull(theName);
+
+		return byName(theName).add("version", new StringParam(theVersion));
 	}
 
 	public static SearchParameterMap byUrl(String theUrl) {
 		checkNotNull(theUrl);
+		return byParam("url", new UriParam(theUrl));
+	}
 
-		String url = Canonicals.getUrl(theUrl);
+	public static SearchParameterMap byCanonical(String theCanonical) {
+		checkNotNull(theCanonical);
 
-		return SearchParameterMap.newSynchronous("url", new UriParam(url));
+		SearchParameterMap search = byUrl(Canonicals.getUrl(theCanonical));
+		String version = Canonicals.getVersion(theCanonical);
+		if (version != null) {
+			search.add("version", new StringParam(version));
+		}
+
+		return search;
+	}
+
+	public static <C extends IPrimitiveType<String>> SearchParameterMap byCanonical(C theCanonicalType) {
+		checkNotNull(theCanonicalType);
+		checkArgument(theCanonicalType.hasValue());
+
+		return byCanonical(theCanonicalType.getValue());
 	}
 }
