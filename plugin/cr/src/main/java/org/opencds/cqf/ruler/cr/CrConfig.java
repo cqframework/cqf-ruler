@@ -59,10 +59,15 @@ public class CrConfig {
         return new org.opencds.cqf.ruler.cr.r4.provider.PlanDefinitionApplyProvider();
     }
 
-
 	 @Bean
     @Conditional(OnR4Condition.class)
     public org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider r4MeasureEvaluateProvider() {
         return new org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider();
     }
+
+	 @Bean
+	 @Conditional(OnR4Condition.class)
+	 public org.opencds.cqf.ruler.cr.r4.provider.SubmitDataProvider r4SubmitDataProvider() {
+		return new org.opencds.cqf.ruler.cr.r4.provider.SubmitDataProvider();
+  }
 }

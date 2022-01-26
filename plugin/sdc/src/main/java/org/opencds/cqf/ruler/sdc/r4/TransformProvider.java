@@ -10,7 +10,7 @@ import org.hl7.fhir.r4.model.ConceptMap;
 import org.hl7.fhir.r4.model.Observation;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.sdc.SDCProperties;
-import org.opencds.cqf.ruler.utility.ClientUtilities;
+import org.opencds.cqf.ruler.utility.Clients;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -19,7 +19,7 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.util.BundleUtil;
 
-public class TransformProvider implements OperationProvider, ClientUtilities {
+public class TransformProvider implements OperationProvider {
 
     @Autowired
     private FhirContext fhirContext;
@@ -50,7 +50,7 @@ public class TransformProvider implements OperationProvider, ClientUtilities {
         this.password = mySdcProperties.getTransform().getPassword();
         this.endpoint = mySdcProperties.getTransform().getEndpoint();
 
-        IGenericClient client = this.createClient(fhirContext, this.endpoint);
+        IGenericClient client = Clients.forUrl(fhirContext, this.endpoint);
         ConceptMap transformConceptMap = client.read().resource(ConceptMap.class).withUrl(conceptMapURL).execute();
         if (null == transformConceptMap) {
             throw new IllegalArgumentException(

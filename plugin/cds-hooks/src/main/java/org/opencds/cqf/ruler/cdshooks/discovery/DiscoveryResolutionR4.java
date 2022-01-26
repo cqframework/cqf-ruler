@@ -3,20 +3,18 @@ package org.opencds.cqf.ruler.cdshooks.discovery;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.ValueSet;
-import org.opencds.cqf.ruler.utility.ResolutionUtilities;
+import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
+import org.opencds.cqf.ruler.utility.Searches;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
-public class DiscoveryResolutionR4 implements ResolutionUtilities {
+public class DiscoveryResolutionR4 implements DaoRegistryUser {
 
 	private final String PATIENT_ID_CONTEXT = "{{context.patientId}}";
 	private final int DEFAULT_MAX_URI_LENGTH = 8000;
@@ -27,6 +25,11 @@ public class DiscoveryResolutionR4 implements ResolutionUtilities {
 	public DiscoveryResolutionR4(DaoRegistry daoRegistry) {
 		this.daoRegistry = daoRegistry;
 		this.maxUriLength = DEFAULT_MAX_URI_LENGTH;
+	}
+
+	@Override
+	public DaoRegistry getDaoRegistry() {
+		return this.daoRegistry;
 	}
 
 	public int getMaxUriLength() {
@@ -65,13 +68,9 @@ public class DiscoveryResolutionR4 implements ResolutionUtilities {
 		// library
 		Library library = null;
 		if (planDefinition.hasLibrary() && !planDefinition.getLibrary().isEmpty()) {
-			library = resolveLibrary(planDefinition.getLibrary().get(0));
+			library = search(Library.class, Searches.byCanonical(planDefinition.getLibrary().get(0))).single();
 		}
 		return library;
-	}
-
-	public Library resolveLibrary(CanonicalType libraryId) {
-		return this.resolveByCanonicalUrl(daoRegistry, Library.class, libraryId.getValue());
 	}
 
 	public List<String> resolveValueCodingCodes(List<Coding> valueCodings) {
@@ -92,10 +91,7 @@ public class DiscoveryResolutionR4 implements ResolutionUtilities {
 	}
 
 	public List<String> resolveValueSetCodes(String valueSetId) {
-		ValueSet valueSet = this.resolveByCanonicalUrl(daoRegistry, ValueSet.class, valueSetId);
-		if (valueSet == null) {
-			return null;
-		}
+		ValueSet valueSet = search(ValueSet.class, Searches.byCanonical(valueSetId)).single();
 		List<String> result = new ArrayList<>();
 		StringBuilder codes = new StringBuilder();
 		if (valueSet.hasExpansion() && valueSet.getExpansion().hasContains()) {
@@ -192,12 +188,11 @@ public class DiscoveryResolutionR4 implements ResolutionUtilities {
 	}
 
 	public DiscoveryResponse resolve() {
-		List<IBaseResource> planDefinitions = this.daoRegistry.getResourceDao(PlanDefinition.class).search(SearchParameterMap.newSynchronous()).getAllResources();
+		List<PlanDefinition> planDefinitions = search(PlanDefinition.class, Searches.all()).getAllResourcesTyped();
 		DiscoveryResponse response = new DiscoveryResponse();
-		for (IBaseResource resource : planDefinitions) {
-			PlanDefinition planDefinition = (PlanDefinition)resource;
+		for (PlanDefinition resource : planDefinitions) {
 			response.addElement(
-					new DiscoveryElementR4(planDefinition, getPrefetchUrlList(planDefinition)));
+					new DiscoveryElementR4(resource, getPrefetchUrlList(resource)));
 		}
 
 		return response;

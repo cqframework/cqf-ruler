@@ -19,7 +19,7 @@ import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.sdc.SDCProperties;
-import org.opencds.cqf.ruler.utility.ClientUtilities;
+import org.opencds.cqf.ruler.utility.Clients;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -27,7 +27,7 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
-public class ExtractProvider implements OperationProvider, ClientUtilities {
+public class ExtractProvider implements OperationProvider {
 
   /*
    * https://build.fhir.org/ig/HL7/sdc/OperationDefinition-QuestionnaireResponse-
@@ -189,8 +189,8 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
     String user = mySdcProperties.getExtract().getUsername();
     String password = mySdcProperties.getExtract().getPassword();
 
-    IGenericClient client = this.createClient(myFhirContext, url);
-    this.registerBasicAuth(client, user, password);
+    IGenericClient client = Clients.forUrl(myFhirContext, url);
+    Clients.registerBasicAuth(client, user, password);
     return client.transaction().withBundle(observationsBundle).execute();
   }
 
@@ -203,8 +203,8 @@ public class ExtractProvider implements OperationProvider, ClientUtilities {
 		String user = mySdcProperties.getExtract().getUsername();
 		String password = mySdcProperties.getExtract().getPassword();
 
-		IGenericClient client = this.createClient(myFhirContext, url);
-		this.registerBasicAuth(client, user, password);
+		IGenericClient client = Clients.forUrl(myFhirContext, url);
+		Clients.registerBasicAuth(client, user, password);
 
 		Questionnaire questionnaire = client.read().resource(Questionnaire.class).withUrl(questionnaireUrl).execute();
 

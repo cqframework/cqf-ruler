@@ -10,51 +10,17 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
-import org.opencds.cqf.ruler.test.ITestSupport;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-        CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4",
-														"spring.main.allow-bean-definition-overriding=true",
-														"debug=true",
-														"spring.batch.job.enabled=false"})
-public class LibraryEvaluationProviderIT implements ITestSupport {
-	private IGenericClient ourClient;
-	private FhirContext ourCtx;
-
-	@Autowired
-	private DaoRegistry ourRegistry;
-
-	@LocalServerPort
-	private int port;
-
-	@BeforeEach
-	void beforeEach() {
-
-		ourCtx = FhirContext.forCached(FhirVersionEnum.R4);
-		ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-		ourCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
-		String ourServerBase = "http://localhost:" + port + "/fhir/";
-		ourClient = ourCtx.newRestfulGenericClient(ourServerBase);
-
-	}
-
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { LibraryEvaluationProviderIT.class,
+		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+public class LibraryEvaluationProviderIT extends RestIntegrationTest {
 	@Test
 	public void testLibraryEvaluationValidationThrows() throws IOException {
 
@@ -65,16 +31,16 @@ public class LibraryEvaluationProviderIT implements ITestSupport {
 		params.addParameter().setName("context").setValue(new StringType("Patient"));
 
 		String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
-		loadResource(packagePrefix + "ColorectalCancerScreeningsFHIR.json", ourCtx, ourRegistry);
-		Library lib = ourClient.read().resource(Library.class).withId("ColorectalCancerScreeningsFHIR").execute();
+		loadResource(packagePrefix + "ColorectalCancerScreeningsFHIR.json");
+		Library lib = getClient().read().resource(Library.class).withId("ColorectalCancerScreeningsFHIR").execute();
 		assertNotNull(lib);
 
 		assertThrows(InternalErrorException.class, () -> {
-			ourClient.operation().onInstance(new IdType("Library", "ColorectalCancerScreeningsFHIR"))
-				.named("$evaluate")
-				.withParameters(params)
-				.returnResourceType(Bundle.class)
-				.execute();
+			getClient().operation().onInstance(new IdType("Library", "ColorectalCancerScreeningsFHIR"))
+					.named("$evaluate")
+					.withParameters(params)
+					.returnResourceType(Bundle.class)
+					.execute();
 		});
 	}
 
@@ -82,16 +48,17 @@ public class LibraryEvaluationProviderIT implements ITestSupport {
 	public void testLibraryEvaluationValidData() throws IOException {
 
 		String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
-		loadResource(packagePrefix + "ColorectalCancerScreeningsFHIR.json", ourCtx, ourRegistry);
+		loadResource(packagePrefix + "ColorectalCancerScreeningsFHIR.json");
 
-		String bundleTextValueSets = stringFromResource(packagePrefix + "valuesets-ColorectalCancerScreeningsFHIR-bundle.json");
+		String bundleTextValueSets = stringFromResource(
+				packagePrefix + "valuesets-ColorectalCancerScreeningsFHIR-bundle.json");
 		FhirContext fhirContext = FhirContext.forR4();
-		Bundle bundleValueSet = (Bundle)fhirContext.newJsonParser().parseResource(bundleTextValueSets);
-		ourClient.transaction().withBundle(bundleValueSet).execute();
+		Bundle bundleValueSet = (Bundle) fhirContext.newJsonParser().parseResource(bundleTextValueSets);
+		getClient().transaction().withBundle(bundleValueSet).execute();
 
 		String bundleText = stringFromResource(packagePrefix + "additionalData.json");
-		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleText);
-		Library lib = ourClient.read().resource(Library.class).withId("ColorectalCancerScreeningsFHIR").execute();
+		Bundle bundle = (Bundle) fhirContext.newJsonParser().parseResource(bundleText);
+		Library lib = getClient().read().resource(Library.class).withId("ColorectalCancerScreeningsFHIR").execute();
 
 		assertNotNull(bundle);
 		assertNotNull(lib);
@@ -103,12 +70,11 @@ public class LibraryEvaluationProviderIT implements ITestSupport {
 		params.addParameter().setName("context").setValue(new StringType("Patient"));
 		params.addParameter().setName("additionalData").setResource(bundle);
 
-
-		Bundle returnBundle = ourClient.operation().onInstance(new IdType("Library", "ColorectalCancerScreeningsFHIR"))
-			.named("$evaluate")
-			.withParameters(params)
-			.returnResourceType(Bundle.class)
-			.execute();
+		Bundle returnBundle = getClient().operation().onInstance(new IdType("Library", "ColorectalCancerScreeningsFHIR"))
+				.named("$evaluate")
+				.withParameters(params)
+				.returnResourceType(Bundle.class)
+				.execute();
 
 		assertNotNull(returnBundle);
 	}

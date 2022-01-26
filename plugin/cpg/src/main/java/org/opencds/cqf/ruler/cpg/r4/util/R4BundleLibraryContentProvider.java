@@ -10,11 +10,10 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Library;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentType;
-import org.opencds.cqf.ruler.utility.VersionUtilities;
 
 
 // TODO: Add support for ELM
-public class R4BundleLibraryContentProvider  implements VersionUtilities, org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider  {
+public class R4BundleLibraryContentProvider  implements org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider  {
 
     Bundle bundle;
     public R4BundleLibraryContentProvider(Bundle bundle) {

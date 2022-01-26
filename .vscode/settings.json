@@ -18,7 +18,7 @@
 		"java",
 		"json",
 		"xml",
-		"md"
+		"markdown"
 	],
 	"cSpell.ignorePaths": [
 		".git/objects",
@@ -31,6 +31,7 @@
 		"editor.formatOnSave": true
 	},
 	"cSpell.words": [
+		"DEQM",
 		"Gson",
 		"numer",
 		"reindex"

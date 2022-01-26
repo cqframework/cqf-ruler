@@ -1,13 +1,11 @@
 package org.opencds.cqf.ruler.casereporting.r4;
 
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
-import ca.uhn.fhir.model.valueset.BundleTypeEnum;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Composition;
@@ -16,25 +14,22 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.ListResource;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Reference;
-import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.utility.ClientUtilities;
-import org.opencds.cqf.ruler.utility.OperatorUtilities;
+import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class MeasureDataProcessProvider implements OperationProvider, ClientUtilities, OperatorUtilities {
+public class MeasureDataProcessProvider extends DaoRegistryOperationProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(MeasureDataProcessProvider.class);
-
-	@Autowired
-	private DaoRegistry myDaoRegistry;
 
 	@Autowired
 	private MeasureResourceProvider measureResourceProvider;
@@ -61,17 +56,12 @@ public class MeasureDataProcessProvider implements OperationProvider, ClientUtil
 	private void gatherEicrs(IVersionSpecificBundleFactory bundleFactory, Map<String, Reference> populationSubjectListReferenceMap) {
 		Map<String, Bundle> eicrs = new HashMap<String, Bundle>();
 		for (Map.Entry<String, Reference> entry : populationSubjectListReferenceMap.entrySet()) {
-			// IQueryParameterType compositionReferenceParam = new ReferenceParam("subject", entry.getKey());
-			SearchParameterMap map = SearchParameterMap.newSynchronous();//.add("composition", compositionReferenceParam);
-			logger.warn(map.toNormalizedQueryString(measureResourceProvider.getContext()));
-			List<IBaseResource> bundles = myDaoRegistry.getResourceDao(Bundle.class).search(map).getAllResources();
-			for (IBaseResource baseBundle : bundles) {
-				if (baseBundle instanceof Bundle) {
-					Bundle bundle = (Bundle) baseBundle;
+			List<Bundle> bundles = search(Bundle.class, Searches.all()).getAllResourcesTyped();
+			for (Bundle bundle : bundles) {
 					if (bundle.hasEntry() && !bundle.getEntry().isEmpty() && bundle.hasType() && bundle.getType().equals(Bundle.BundleType.DOCUMENT)) {
 						IBaseResource firstEntry = bundle.getEntry().get(0).getResource();
 						if (!(firstEntry instanceof Composition)) {
-							logger.debug(String.format("Any bundle of type document must have the first entry of type Composition, but found: %s", firstEntry.fhirType()));
+							logger.debug("Any bundle of type document must have the first entry of type Composition, but found: {}", firstEntry.fhirType());
 						} else {
 							Composition composition = (Composition) firstEntry;
 							String[] referenceSplit = composition.getSubject().getReference().split("/");
@@ -82,12 +72,9 @@ public class MeasureDataProcessProvider implements OperationProvider, ClientUtil
 							}
 						}
 					}
-				}
 			}
-			// if (bundles != null && !bundles.isEmpty() && bundles.size() == 1) {
-			//     bundleFactory.addResourcesToBundle(Arrays.asList(bundles.get(0)), BundleTypeEnum.COLLECTION, null, null, null);
-			// }
 		}
+
 		bundleFactory.addResourcesToBundle(eicrs.values().stream().collect(Collectors.toList()), BundleTypeEnum.COLLECTION, null, null, null);
 	}
 
@@ -125,11 +112,7 @@ public class MeasureDataProcessProvider implements OperationProvider, ClientUtil
 
 	private List<Reference> getPatientListFromGroup(String subjectGroupRef) {
 		List<Reference> patientList = new ArrayList<>();
-		IBaseResource baseGroup = myDaoRegistry.getResourceDao("Group").read(new IdType(subjectGroupRef));
-		if (baseGroup == null) {
-			throw new RuntimeException("Could not find Group/" + subjectGroupRef);
-		}
-		Group group = (Group) baseGroup;
+		Group group = read(new IdType(subjectGroupRef));
 		group.getMember().forEach(member -> {
 			Reference reference = member.getEntity();
 			if (reference.getReferenceElement().getResourceType().equals("Patient")) {
@@ -149,9 +132,9 @@ public class MeasureDataProcessProvider implements OperationProvider, ClientUtil
 			logger.debug("No subject results found.");
 			return results;
 		}
-		IBaseResource baseList = myDaoRegistry.getResourceDao(subjectResults.getReferenceElement().getResourceType()).read(subjectResults.getReferenceElement());
+		IBaseResource baseList = read(subjectResults.getReferenceElement());
 		if (baseList == null) {
-			logger.debug(String.format("No subject results found for: %s", subjectResults.getReference()));
+			logger.debug("No subject results found for: {}", subjectResults.getReference());
 			return results;
 		}
 		if (!(baseList instanceof ListResource)) {

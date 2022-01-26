@@ -19,7 +19,7 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.ValueSet;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.utility.IdUtilities;
+import org.opencds.cqf.ruler.utility.Ids;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoCodeSystem;
@@ -37,7 +37,7 @@ import ca.uhn.fhir.rest.param.UriParam;
  * to enable {@link ValueSet ValueSet} expansion and validation without complete
  * {@link CodeSystem CodeSystems}.
  */
-public class CodeSystemUpdateProvider implements OperationProvider, IdUtilities {
+public class CodeSystemUpdateProvider implements OperationProvider {
 	@Autowired
 	private IFhirResourceDaoValueSet<ValueSet, Coding, CodeableConcept> myValueSetDaoDSTU3;
 	@Autowired
@@ -166,7 +166,7 @@ public class CodeSystemUpdateProvider implements OperationProvider, IdUtilities 
 		}
 
 		return (CodeSystem) new CodeSystem().setUrl(url)
-				.setId((IIdType) this.createId(CodeSystem.class, UUID.randomUUID().toString()));
+				.setId((IIdType) Ids.newId(CodeSystem.class, UUID.randomUUID().toString()));
 	}
 
 	/***

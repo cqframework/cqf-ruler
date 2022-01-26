@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.ra.r4;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,28 +22,21 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
-import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.utility.OperatorUtilities;
+import org.opencds.cqf.ruler.behavior.IdCreator;
+import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.utility.Operations;
+import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 
-public class ReportProvider implements OperationProvider, OperatorUtilities {
-
-	@Autowired
-	private DaoRegistry myDaoRegistry;
-
+public class ReportProvider extends DaoRegistryOperationProvider implements IdCreator {
 	private static final Logger ourLog = LoggerFactory.getLogger(ReportProvider.class);
-
 	/**
 	 * Implements the <a href=
 	 * "https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-report.html">$report</a>
@@ -50,10 +44,12 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 	 * <a href="https://build.fhir.org/ig/HL7/davinci-ra/index.html">Da Vinci Risk
 	 * Adjustment IG</a>.
 	 * 
-	 * @param requestDetails metadata about the current request being processed. Generally auto-populated by the HAPI FHIR server framework.
-	 * @param periodStart the start of the clinical evaluation period
-	 * @param periodEnd   the end of the clinical evaluation period
-	 * @param subject     a Patient or Patient Group
+	 * @param requestDetails metadata about the current request being processed.
+	 *                       Generally auto-populated by the HAPI FHIR server
+	 *                       framework.
+	 * @param periodStart    the start of the clinical evaluation period
+	 * @param periodEnd      the end of the clinical evaluation period
+	 * @param subject        a Patient or Patient Group
 	 * @return a Parameters with Bundles of MeasureReports and evaluatedResource
 	 *         Resources
 	 */
@@ -66,7 +62,7 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 			@OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
 			@OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {
 
-		Period period = validateParamaters(periodStart, periodEnd, subject);
+		Period period = validateParameters(periodStart, periodEnd, subject);
 		Parameters result = initializeParametersResult(subject);
 		List<Patient> patients = getPatientListFromSubject(subject);
 
@@ -81,15 +77,15 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 		return result;
 	}
 
-	private Period validateParamaters(String periodStart, String periodEnd, String subject) {
+	private Period validateParameters(String periodStart, String periodEnd, String subject) {
 		if (periodStart == null) {
 			throw new IllegalArgumentException("Parameter 'periodStart' is required.");
 		}
 		if (periodEnd == null) {
 			throw new IllegalArgumentException("Parameter 'periodEnd' is required.");
 		}
-		Date periodStartDate = resolveRequestDate(periodStart, true);
-		Date periodEndDate = resolveRequestDate(periodEnd, false);
+		Date periodStartDate = Operations.resolveRequestDate(periodStart, true);
+		Date periodEndDate = Operations.resolveRequestDate(periodEnd, false);
 		if (periodStartDate.after(periodEndDate)) {
 			throw new IllegalArgumentException("Parameter 'periodStart' must be before 'periodEnd'.");
 		}
@@ -112,7 +108,7 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 		return result;
 	}
 
-	private static String PATIENT_REPORT_PROFILE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle";
+	private static final String PATIENT_REPORT_PROFILE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle";
 
 	private Parameters.ParametersParameterComponent patientReport(Patient thePatient, Period thePeriod,
 			String serverBase) {
@@ -121,24 +117,20 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 		final Map<IIdType, IAnyResource> bundleEntries = new HashMap<>();
 		bundleEntries.put(thePatient.getIdElement(), thePatient);
 
-		SearchParameterMap theParams = SearchParameterMap.newSynchronous();
 		ReferenceParam subjectParam = new ReferenceParam(patientId);
-		theParams.add("subject", subjectParam);
-		IFhirResourceDao<MeasureReport> measureReportDao = myDaoRegistry.getResourceDao(MeasureReport.class);
-		measureReportDao.search(theParams).getAllResources().forEach(baseResource -> {
-			MeasureReport measureReport = (MeasureReport) baseResource;
+		search(MeasureReport.class, Searches.byParam("subject", subjectParam)).getAllResourcesTyped()
+				.forEach(measureReport -> {
 
-			if (measureReport.getPeriod().getEnd().before(thePeriod.getStart())
-					|| measureReport.getPeriod().getStart().after(thePeriod.getEnd())) {
-				return;
-			}
+					if (measureReport.getPeriod().getEnd().before(thePeriod.getStart())
+							|| measureReport.getPeriod().getStart().after(thePeriod.getEnd())) {
+						return;
+					}
 
-			bundleEntries.putIfAbsent(measureReport.getIdElement(), measureReport);
+					bundleEntries.putIfAbsent(measureReport.getIdElement(), measureReport);
 
-			getEvaluatedResources(measureReport).forEach(resource -> {
-				bundleEntries.putIfAbsent(resource.getIdElement(), resource);
-			});
-		});
+					getEvaluatedResources(measureReport).forEach(resource ->
+						bundleEntries.putIfAbsent(resource.getIdElement(), resource));
+				});
 
 		Bundle patientReportBundle = new Bundle();
 		patientReportBundle.setMeta(new Meta().addProfile(PATIENT_REPORT_PROFILE_URL));
@@ -148,13 +140,12 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 		patientReportBundle.setIdentifier(
 				new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
 
-		bundleEntries.entrySet().forEach(resource -> {
+		bundleEntries.entrySet().forEach(resource ->
 			patientReportBundle.addEntry(
 					new Bundle.BundleEntryComponent()
 							.setResource((Resource) resource.getValue())
-							.setFullUrl(getFullUrl(serverBase, resource.getValue().fhirType(),
-									resource.getValue().getIdElement().getIdPart())));
-		});
+							.setFullUrl(Operations.getFullUrl(serverBase, resource.getValue().fhirType(),
+									resource.getValue().getIdElement().getIdPart()))));
 
 		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
 		patientParameter.setResource(patientReportBundle);
@@ -169,8 +160,8 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 		List<IAnyResource> resources = new ArrayList<>();
 		for (Reference evaluatedResource : report.getEvaluatedResource()) {
 			IIdType theEvaluatedId = evaluatedResource.getReferenceElement();
-			IBaseResource resourceBase = this.resolveById(myDaoRegistry, theEvaluatedId);
-			if (resourceBase != null && resourceBase instanceof Resource) {
+			IBaseResource resourceBase = read(theEvaluatedId);
+			if (resourceBase instanceof Resource) {
 				Resource resource = (Resource) resourceBase;
 				resources.add(resource);
 			}
@@ -181,40 +172,35 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 
 	// TODO: replace this with version from the evaluator?
 	private Patient ensurePatient(String patientRef) {
-		IBaseResource patient = resolveById(myDaoRegistry, Patient.class, patientRef);
+		Patient patient = read(newId(patientRef));
 		if (patient == null) {
 			throw new RuntimeException("Could not find Patient: " + patientRef);
 		}
-		return (Patient) patient;
+		return patient;
 	}
 
 	// TODO: replace this with version from the evaluator?
 	private List<Patient> getPatientListFromSubject(String subject) {
-		List<Patient> patientList = null;
-
 		if (subject.startsWith("Patient/")) {
 			Patient patient = ensurePatient(subject);
-			patientList = new ArrayList<Patient>();
-			patientList.add(patient);
+			return Collections.singletonList(patient);
 		} else if (subject.startsWith("Group/")) {
-			patientList = getPatientListFromGroup(subject);
-		} else {
-			ourLog.info(String.format("Subject member was not a Patient or a Group, so skipping. \n%s", subject));
+			return getPatientListFromGroup(subject);
 		}
 
-		return patientList;
+		ourLog.info("Subject member was not a Patient or a Group, so skipping. \n{}", subject);
+		return Collections.emptyList();
 	}
 
 	// TODO: replace this with version from the evaluator?
 	private List<Patient> getPatientListFromGroup(String subjectGroupId) {
 		List<Patient> patientList = new ArrayList<>();
 
-		IBaseResource baseGroup = resolveById(myDaoRegistry, Group.class, subjectGroupId);
-		if (baseGroup == null) {
+		Group group = read(newId(subjectGroupId));
+		if (group == null) {
 			throw new RuntimeException("Could not find Group: " + subjectGroupId);
 		}
 
-		Group group = (Group) baseGroup;
 		group.getMember().forEach(member -> {
 			Reference reference = member.getEntity();
 			if (reference.getReferenceElement().getResourceType().equals("Patient")) {
@@ -223,9 +209,8 @@ public class ReportProvider implements OperationProvider, OperatorUtilities {
 			} else if (reference.getReferenceElement().getResourceType().equals("Group")) {
 				patientList.addAll(getPatientListFromGroup(reference.getReference()));
 			} else {
-				ourLog.info(
-						String.format("Group member was not a Patient or a Group, so skipping. \n%s",
-								reference.getReference()));
+				ourLog.info("Group member was not a Patient or a Group, so skipping. \n{}",
+						reference.getReference());
 			}
 		});
 
