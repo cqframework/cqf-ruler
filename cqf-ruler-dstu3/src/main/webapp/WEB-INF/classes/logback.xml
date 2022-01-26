@@ -1,9 +1,11 @@
 <configuration scan="true" scanPeriod="30 seconds">
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- The following filter deny all events with a level below INFO, that is TRACE and DEBUG -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
+
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%file:%line] %msg%n</pattern>
         </encoder>
@@ -36,5 +38,10 @@
         <appender-ref ref="FILE" />
         <!-- <appender-ref ref="htmlAppender" /> -->
     </root>
+
+    <logger name = "org.opencds.cqf.cql.engine.debug" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE"/>
+    </logger>
 
 </configuration>
