@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
+import org.opencds.cqf.ruler.utility.Ids;
 import org.opencds.cqf.ruler.utility.TypedBundleProvider;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
@@ -20,6 +21,21 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 public interface DaoRegistryUser {
 
 	public DaoRegistry getDaoRegistry();
+
+	default <T extends IBaseResource> T read(Class<T> theResourceClass, String theIdPart) {
+		checkNotNull(theResourceClass);
+		checkNotNull(theIdPart);
+
+		return read(theResourceClass, theIdPart, null);
+	}
+
+	default <T extends IBaseResource> T read(Class<T> theResourceClass, String theIdPart, RequestDetails requestDetails) {
+		checkNotNull(theResourceClass);
+		checkNotNull(theIdPart);
+		checkNotNull(requestDetails);
+
+		return getDaoRegistry().getResourceDao(theResourceClass).read(Ids.newId(theResourceClass, theIdPart), requestDetails);
+	}
 
 	default <T extends IBaseResource> T read(IIdType theId) {
 		checkNotNull(theId);

@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.cql;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.List;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
@@ -12,7 +13,6 @@ import org.opencds.cqf.ruler.utility.Searches;
 import org.opencds.cqf.ruler.utility.Versions;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class JpaLibraryContentProvider
@@ -43,8 +43,10 @@ public class JpaLibraryContentProvider
 			return null;
 		}
 
-		IBundleProvider libraries = search("Library", Searches.byName(libraryIdentifier.getId()), requestDetails);
-		IBaseResource library = Versions.selectByVersion(libraries.getAllResources(), libraryIdentifier.getVersion(),
+		String name = libraryIdentifier.getId();
+		String version = libraryIdentifier.getVersion();
+		List<IBaseResource> libraries = search("Library", Searches.byName(name), requestDetails).getAllResources();
+		IBaseResource library = Versions.selectByVersion(libraries, version,
 				Libraries::getVersion);
 
 		if (library == null) {

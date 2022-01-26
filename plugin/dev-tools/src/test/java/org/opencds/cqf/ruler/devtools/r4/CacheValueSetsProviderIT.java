@@ -151,9 +151,6 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest  {
         BundleEntryComponent entry = resultBundle.getEntry().get(0);
         assertTrue(entry.getResponse().getLocation().startsWith("ValueSet/" + vs.getIdElement().getIdPart()));
         assertEquals("200 OK", entry.getResponse().getStatus());
-        // ValueSet resultingValueSet = myDaoRegistry.getResourceDao(ValueSet.class).read(vs.getIdElement());
-        // resultingValueSet not returning with a version
-        // assertTrue(resultingValueSet.getVersion().endsWith("-cached"));
     }
 
     private StringAndListParam getStringAndListParamFromValueSet(String location) throws IOException {

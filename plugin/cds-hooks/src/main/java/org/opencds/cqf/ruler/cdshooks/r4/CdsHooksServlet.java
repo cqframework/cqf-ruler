@@ -24,7 +24,6 @@ import com.google.gson.JsonParser;
 import org.apache.http.entity.ContentType;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
@@ -170,8 +169,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			logger.info("cds-hooks local server address: {}", baseUrl);
 			logger.info("cds-hooks fhir server address: {}", hook.getRequest().getFhirServerUrl());
 
-			PlanDefinition planDefinition = planDefinitionProvider.getDao()
-					.read(new IdType(hook.getRequest().getServiceName()));
+			PlanDefinition planDefinition = read(PlanDefinition.class, hook.getRequest().getServiceName());
 			AtomicBoolean planDefinitionHookMatchesRequestHook = new AtomicBoolean(false);
 
 			planDefinition.getAction().forEach(action -> {

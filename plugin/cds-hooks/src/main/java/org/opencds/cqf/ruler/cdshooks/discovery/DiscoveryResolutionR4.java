@@ -3,7 +3,6 @@ package org.opencds.cqf.ruler.cdshooks.discovery;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DataRequirement;
@@ -14,7 +13,6 @@ import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.utility.Searches;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
 public class DiscoveryResolutionR4 implements DaoRegistryUser {
 
@@ -190,12 +188,11 @@ public class DiscoveryResolutionR4 implements DaoRegistryUser {
 	}
 
 	public DiscoveryResponse resolve() {
-		List<IBaseResource> planDefinitions = this.daoRegistry.getResourceDao(PlanDefinition.class).search(SearchParameterMap.newSynchronous()).getAllResources();
+		List<PlanDefinition> planDefinitions = search(PlanDefinition.class, Searches.all()).getAllResourcesTyped();
 		DiscoveryResponse response = new DiscoveryResponse();
-		for (IBaseResource resource : planDefinitions) {
-			PlanDefinition planDefinition = (PlanDefinition)resource;
+		for (PlanDefinition resource : planDefinitions) {
 			response.addElement(
-					new DiscoveryElementR4(planDefinition, getPrefetchUrlList(planDefinition)));
+					new DiscoveryElementR4(resource, getPrefetchUrlList(resource)));
 		}
 
 		return response;

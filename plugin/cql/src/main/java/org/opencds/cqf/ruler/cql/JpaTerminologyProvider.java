@@ -8,19 +8,18 @@ import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.CodeSystemInfo;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.ValueSetInfo;
+import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.utility.Ids;
+import org.opencds.cqf.ruler.utility.Searches;
 
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.context.support.IValidationSupport.LookupCodeResult;
 import ca.uhn.fhir.context.support.ValidationSupportContext;
 import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.UriParam;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 /**
@@ -28,12 +27,11 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
  * interface, which is used for Terminology operations
  * in CQL
  */
-public class JpaTerminologyProvider implements TerminologyProvider {
+public class JpaTerminologyProvider implements TerminologyProvider, DaoRegistryUser {
 
 	private final ITermReadSvc myTerminologySvc;
 	private final DaoRegistry myDaoRegistry;
 	private final IValidationSupport myValidationSupport;
-	private final IFhirResourceDao<?> myValueSetDao;
 	private final RequestDetails myRequestDetails;
 
 	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, DaoRegistry theDaoRegistry,
@@ -46,8 +44,12 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 		myTerminologySvc = theTerminologySvc;
 		myDaoRegistry = theDaoRegistry;
 		myValidationSupport = theValidationSupport;
-		myValueSetDao = myDaoRegistry.getResourceDao("ValueSet");
 		myRequestDetails = theRequestDetails;
+	}
+
+	@Override
+	public DaoRegistry getDaoRegistry() {
+		return this.myDaoRegistry;
 	}
 
 	@Override
@@ -62,15 +64,15 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 		return false;
 	}
 
-	protected Boolean hasUrlId(ValueSetInfo valueSet) {
+	protected boolean hasUrlId(ValueSetInfo valueSet) {
 		return valueSet.getId().startsWith("http://") || valueSet.getId().startsWith("https://");
 	}
 
-	protected Boolean hasVersion(ValueSetInfo valueSet) {
+	protected boolean hasVersion(ValueSetInfo valueSet) {
 		return valueSet.getVersion() != null;
 	}
 
-	protected Boolean hasVersionedCodeSystem(ValueSetInfo valueSet) {
+	protected boolean hasVersionedCodeSystem(ValueSetInfo valueSet) {
 		return valueSet.getCodeSystems() != null && valueSet.getCodeSystems().size() > 1
 				|| valueSet.getCodeSystems() != null && valueSet.getCodeSystems().stream().anyMatch(x -> x.getVersion() != null);
 	}
@@ -87,9 +89,7 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 						valueSet.getId()));
 			}
 
-			IBundleProvider bundleProvider = myValueSetDao
-					.search(SearchParameterMap.newSynchronous().add("url", new UriParam(valueSet.getId())),
-							myRequestDetails);
+			IBundleProvider bundleProvider = search("ValueSet", Searches.byUrl(valueSet.getId()), myRequestDetails);
 			List<IBaseResource> valueSets = bundleProvider.getAllResources();
 			if (valueSets.isEmpty()) {
 				throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));
@@ -99,7 +99,7 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 				throw new IllegalArgumentException("Found more than 1 ValueSet with url: " + valueSet.getId());
 			}
 		} else {
-			vs = myValueSetDao.read(Ids.newId(this.myTerminologySvc.getFhirContext(), valueSet.getId()),
+			vs = read(Ids.newId(this.myTerminologySvc.getFhirContext(), "ValueSet", valueSet.getId()),
 					myRequestDetails);
 			if (vs == null) {
 				throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));

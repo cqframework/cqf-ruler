@@ -9,12 +9,10 @@ import org.hl7.fhir.dstu3.model.DataRequirement;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.dstu3.model.ValueSet;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.utility.Searches;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
 public class DiscoveryResolutionStu3 implements DaoRegistryUser  {
 
@@ -199,13 +197,11 @@ public class DiscoveryResolutionStu3 implements DaoRegistryUser  {
 	}
 
 	public DiscoveryResponse resolve() {
-		List<IBaseResource> planDefinitions = this.daoRegistry.getResourceDao(PlanDefinition.class)
-				.search(SearchParameterMap.newSynchronous()).getAllResources();
+		List<PlanDefinition> planDefinitions = search(PlanDefinition.class, Searches.all()).getAllResourcesTyped();
 		DiscoveryResponse response = new DiscoveryResponse();
-		for (IBaseResource resource : planDefinitions) {
-			PlanDefinition planDefinition = (PlanDefinition) resource;
+		for (PlanDefinition resource : planDefinitions) {
 			response.addElement(
-					new DiscoveryElementStu3(planDefinition, getPrefetchUrlList(planDefinition)));
+					new DiscoveryElementStu3(resource, getPrefetchUrlList(resource)));
 		}
 
 		return response;
