@@ -40,4 +40,9 @@
         <!-- <appender-ref ref="htmlAppender" /> -->
     </root>
 
+    <logger name = "org.opencds.cqf.cql.engine.debug" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE"/>
+    </logger>
+
 </configuration>
