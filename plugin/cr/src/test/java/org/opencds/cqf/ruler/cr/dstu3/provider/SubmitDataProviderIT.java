@@ -1,14 +1,15 @@
-package org.opencds.cqf.ruler.cr.r4.provider;
+package org.opencds.cqf.ruler.cr.dstu3.provider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.google.common.collect.Lists;
 
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.MeasureReport;
-import org.hl7.fhir.r4.model.Observation;
-import org.hl7.fhir.r4.model.StringType;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.MeasureReport;
+import org.hl7.fhir.dstu3.model.Observation;
+import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.test.DaoIntegrationTest;
 import org.opencds.cqf.ruler.utility.Searches;
@@ -17,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
-@SpringBootTest(classes = { SubmitDataProviderIT.class }, properties = { "hapi.fhir.fhir_version=r4", })
+@SpringBootTest(classes = { SubmitDataProviderIT.class }, properties = { "hapi.fhir.fhir_version=dstu3", })
 public class SubmitDataProviderIT extends DaoIntegrationTest {
 
 	@Autowired
@@ -44,7 +45,7 @@ public class SubmitDataProviderIT extends DaoIntegrationTest {
 	@Test
 	public void testSubmitDataNoId() {
 		// Create a MR and a resource
-		MeasureReport mr = newResource(MeasureReport.class).setMeasure("Measure/123");
+		MeasureReport mr = newResource(MeasureReport.class).setMeasure(new Reference("Measure/123"));
 		Observation obs = newResource(Observation.class).setValue(new StringType("ABC"));
 
 		// Submit it
@@ -58,7 +59,7 @@ public class SubmitDataProviderIT extends DaoIntegrationTest {
 
 		MeasureReport savedMr = search(MeasureReport.class, Searches.all()).single();
 		assertNotNull(savedMr);
-		assertEquals("Measure/123", savedMr.getMeasure());
+		assertEquals("Measure/123", savedMr.getMeasure().getReference());
 	}
 
 }
