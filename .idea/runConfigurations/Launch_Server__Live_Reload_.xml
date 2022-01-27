@@ -2,25 +2,6 @@
   <configuration default="false" name="Launch Server (Live Reload)" type="Application" factoryName="Application">
     <option name="ALTERNATIVE_JRE_PATH" value="adopt-openjdk-1.8" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-    <classpathModifications>
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\case-reporting\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\quality-measure\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\cds-hooks\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\cpg\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\cql\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\cr\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\dev-tools\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\hello-world\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\ra\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\sdc\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\security\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\test-utility\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\plugin\utility\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\external\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\core\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\server\target\classes" />
-      <entry path="C:\repos\ruler\cqf-ruler\server\target\classes" />
-    </classpathModifications>
     <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
     <option name="MAIN_CLASS_NAME" value="org.opencds.cqf.ruler.Application" />
     <module name="cqf-ruler-server" />
