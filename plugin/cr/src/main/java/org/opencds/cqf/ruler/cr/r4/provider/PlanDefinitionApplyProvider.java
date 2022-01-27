@@ -36,7 +36,6 @@ import org.opencds.cqf.ruler.cr.r4.builder.RelatedArtifactBuilder;
 import org.opencds.cqf.ruler.cr.r4.builder.RequestGroupActionBuilder;
 import org.opencds.cqf.ruler.cr.r4.builder.RequestGroupBuilder;
 import org.opencds.cqf.ruler.cr.r4.helper.ContainedHelper;
-import org.opencds.cqf.ruler.utility.CanonicalUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class PlanDefinitionApplyProvider implements OperationProvider, CanonicalUtilities {
+public class PlanDefinitionApplyProvider implements OperationProvider {
 
 	@Autowired
 	private ExpressionEvaluation expressionEvaluation;

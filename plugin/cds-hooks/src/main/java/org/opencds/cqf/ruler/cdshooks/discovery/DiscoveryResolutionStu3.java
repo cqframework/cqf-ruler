@@ -9,13 +9,12 @@ import org.hl7.fhir.dstu3.model.DataRequirement;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.dstu3.model.ValueSet;
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.opencds.cqf.ruler.utility.ResolutionUtilities;
+import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
+import org.opencds.cqf.ruler.utility.Searches;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 
-public class DiscoveryResolutionStu3 implements ResolutionUtilities {
+public class DiscoveryResolutionStu3 implements DaoRegistryUser  {
 
 	private final String PATIENT_ID_CONTEXT = "{{context.patientId}}";
 	private final int DEFAULT_MAX_URI_LENGTH = 8000;
@@ -26,6 +25,11 @@ public class DiscoveryResolutionStu3 implements ResolutionUtilities {
 	public DiscoveryResolutionStu3(DaoRegistry daoRegistry) {
 		this.daoRegistry = daoRegistry;
 		this.maxUriLength = DEFAULT_MAX_URI_LENGTH;
+	}
+
+	@Override
+	public DaoRegistry getDaoRegistry() {
+		return this.daoRegistry;
 	}
 
 	public int getMaxUriLength() {
@@ -64,13 +68,9 @@ public class DiscoveryResolutionStu3 implements ResolutionUtilities {
 		// library
 		Library library = null;
 		if (planDefinition.hasLibrary() && planDefinition.getLibraryFirstRep().hasReference()) {
-			library = resolveLibrary(planDefinition.getLibraryFirstRep().getReference());
+			library = read(planDefinition.getLibraryFirstRep().getReferenceElement());
 		}
 		return library;
-	}
-
-	public Library resolveLibrary(String libraryId) {
-		return this.resolveById(daoRegistry, Library.class, libraryId);
 	}
 
 	public List<String> resolveValueCodingCodes(List<Coding> valueCodings) {
@@ -91,10 +91,7 @@ public class DiscoveryResolutionStu3 implements ResolutionUtilities {
 	}
 
 	public List<String> resolveValueSetCodes(String valueSetId) {
-		ValueSet valueSet = this.resolveByCanonicalUrl(daoRegistry, ValueSet.class, valueSetId);
-		if (valueSet == null) {
-			return null;
-		}
+		ValueSet valueSet = this.search(ValueSet.class, Searches.byCanonical(valueSetId)).first();
 		List<String> result = new ArrayList<>();
 		StringBuilder codes = new StringBuilder();
 		if (valueSet.hasExpansion() && valueSet.getExpansion().hasContains()) {
@@ -200,13 +197,11 @@ public class DiscoveryResolutionStu3 implements ResolutionUtilities {
 	}
 
 	public DiscoveryResponse resolve() {
-		List<IBaseResource> planDefinitions = this.daoRegistry.getResourceDao(PlanDefinition.class)
-				.search(SearchParameterMap.newSynchronous()).getAllResources();
+		List<PlanDefinition> planDefinitions = search(PlanDefinition.class, Searches.all()).getAllResourcesTyped();
 		DiscoveryResponse response = new DiscoveryResponse();
-		for (IBaseResource resource : planDefinitions) {
-			PlanDefinition planDefinition = (PlanDefinition) resource;
+		for (PlanDefinition resource : planDefinitions) {
 			response.addElement(
-					new DiscoveryElementStu3(planDefinition, getPrefetchUrlList(planDefinition)));
+					new DiscoveryElementStu3(resource, getPrefetchUrlList(resource)));
 		}
 
 		return response;

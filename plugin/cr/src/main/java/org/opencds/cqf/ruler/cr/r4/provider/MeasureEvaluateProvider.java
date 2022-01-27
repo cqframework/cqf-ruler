@@ -11,21 +11,20 @@ import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
-import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
+import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class MeasureEvaluateProvider implements OperationProvider {
+public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 
 	// private static final Logger logger = LoggerFactory.getLogger(MeasureEvaluateProvider.class);
 
@@ -40,9 +39,6 @@ public class MeasureEvaluateProvider implements OperationProvider {
 
 	@Autowired
 	private JpaFhirDalFactory fhirDalFactory;
-
-	@Autowired
-	private DaoRegistry daoRegistry;
 
 	@Autowired
 	private Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache;
@@ -82,7 +78,7 @@ public class MeasureEvaluateProvider implements OperationProvider {
 				null, null, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
 				this.globalLibraryCache);
 
-		Measure measure = this.daoRegistry.getResourceDao(Measure.class).read(theId);
+		Measure measure = read(theId);
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
 				subject, null, lastReceivedOn, null, null, null, null);
 

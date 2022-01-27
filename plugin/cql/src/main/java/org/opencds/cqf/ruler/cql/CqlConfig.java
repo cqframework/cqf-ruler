@@ -127,8 +127,8 @@ public class CqlConfig {
 	}
 
 	@Bean
-	JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory(IFhirResourceDao<?> libraryDao) {
-		return rd -> new JpaLibraryContentProvider(libraryDao, rd);
+	JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory(DaoRegistry daoRegistry) {
+		return rd -> new JpaLibraryContentProvider(daoRegistry, rd);
 	}
 
 	@Bean
@@ -162,11 +162,6 @@ public class CqlConfig {
 	@Bean
 	public Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache() {
 		return new ConcurrentHashMap<>();
-	}
-
-	@Bean
-	public IFhirResourceDao<?> libraryDao(DaoRegistry daoRegistry) {
-		return daoRegistry.getResourceDao("Library");
 	}
 
 	@Bean

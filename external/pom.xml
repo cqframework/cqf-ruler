@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
@@ -9,10 +9,6 @@
 
 	<artifactId>cqf-ruler-external</artifactId>
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-autoconfigure</artifactId>
-		</dependency>
 
 		<!-- This dependency includes the core HAPI-FHIR classes -->
 		<dependency>
@@ -48,6 +44,11 @@
 			<artifactId>hapi-fhir-jpaserver-mdm</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-server-openapi</artifactId>
+		</dependency>
+
 		<!-- This dependency is used for the "FHIR Tester" web app overlay -->
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
@@ -62,23 +63,22 @@
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 
-		<!-- Needed for JEE/Servlet support -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- Used for CORS support -->
 		<!-- Spring Web is used to deploy the server to a web container. -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 		</dependency>
-
 		<dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-server-openapi</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
+		</dependency>
+
+		<!-- Needed for JEE/Servlet support -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
@@ -89,6 +89,9 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
+						<goals>
+							<goal>run</goal>
+						</goals>
 						<?m2e execute onConfiguration?>
 						<phase>generate-sources</phase>
 						<configuration>
@@ -110,9 +113,6 @@
 								</copy>
 							</target>
 						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
@@ -131,10 +131,10 @@
 				<executions>
 					<execution>
 						<id>add-source</id>
-						<phase>generate-sources</phase>
 						<goals>
 							<goal>add-source</goal>
 						</goals>
+						<phase>generate-sources</phase>
 						<configuration>
 							<sources>
 								<source>${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/java</source>
@@ -143,10 +143,10 @@
 					</execution>
 					<execution>
 						<id>add-resources</id>
-						<phase>generate-sources</phase>
 						<goals>
 							<goal>add-resource</goal>
 						</goals>
+						<phase>generate-sources</phase>
 						<configuration>
 							<resources>
 								<resource>
@@ -163,15 +163,6 @@
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
 				<artifactId>maven-replacer-plugin</artifactId>
 				<version>1.4.1</version>
-				<executions>
-					<execution>
-						<?m2e execute onConfiguration?>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>replace</goal>
-						</goals>
-					</execution>
-				</executions>
 				<configuration>
 					<includes>
 						<include>target/generated-sources/**/*.java</include>
@@ -200,6 +191,15 @@
 
 					</replacements>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+						<?m2e execute onConfiguration?>
+						<phase>generate-sources</phase>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>

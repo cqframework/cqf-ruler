@@ -39,7 +39,7 @@
 // import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 // import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 
-// @ExtendWith(SpringExtension.class)
+// 
 // @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties =
 //   {
 //     "spring.batch.job.enabled=false",

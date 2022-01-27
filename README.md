@@ -57,6 +57,12 @@ To run the cqf-ruler directory from this project use:
 
 `java -jar server/target/cqf-ruler-server-*.war`
 
+### Module Structure
+
+The cqf-ruler uses the hapi-fhir-jpaserver-starter project as a base. On top of that, it adds an extensiblity API and utility functions to allow creating plugins which contain functionality for a specific IG. This diagram shows how it's structured
+
+![Module Diagram](docs/diagrams/modules.drawio.svg)
+
 ### Plugins
 
 Plugins use Spring Boot [autoconfiguration](https://docs.spring.io/spring-boot/docs/2.0.0.M3/reference/html/boot-features-developing-auto-configuration.html) to be loaded at runtime. Spring searches for a `spring.factories` file in the meta-data of the jars on the classpath, and the `spring.factories` file points to the root Spring config for the plugin. For example, the content of the `resources/META-INF/spring.factories` file might be:
@@ -103,6 +109,62 @@ To this end:
 
 * The CQF Ruler project has adopted the HAPI Coding Conventions: <https://github.com/hapifhir/hapi-fhir/wiki/Contributing>
 * Plugins should generally use the "hapi.fhir" prefix for configuration properties
+
+### Utility Guidelines
+
+#### Types of Utilities
+
+In general, reusable utilities are separated along two different dimensions, Classes and Behaviors.
+
+Class specific utilities are functions that are associated with specific class or interface, and add functionality to that class.
+
+Behavior specific utilities allow the reuse of behavior across many different classes.
+
+#### Class Specific Utilities
+
+Utility or Helper methods that are associated with a single class should go into a class that has the pluralized name of the associated class. For example, utilities for `Client` should go into the `Clients` class. This ensures that the utility class is focused on one class and allows for more readable code:
+
+`Clients.forUrl("test.com")`
+
+as opposed to:
+
+`ClientUtilities.createClient("test.com")`
+
+or, if you put unrelated code into the class, you might end up with something like:
+
+`Clients.parseRegex()`
+
+If the code doesn't read clearly after you've added an utility, consider that it may not be in the right place.
+
+In general, all the functions for this type of utility should be `static`. No internal state should be maintained (`static final`, or immutable, state is ok). If you final that your utility class contains mutable state, consider an alternate design.
+
+Examples
+
+* Factory functions
+* Adding behavior to a class you can't extend
+
+#### Behavior Specific Utilities
+
+If there is behavior you'd like to share across many classes, model that as an interface and use a name that follows the pattern `"ThingDoer"`. For example, all the classes that access a database might be `DatabaseReader`. Use `default` interface implementations to write logic that can be shared many places. The interfaces themselves shouldn't have mutable state (again `static final` is ok). If it's necessary for the for shared logic to have access to state, model that as an method without a default implementation. For example:
+
+```java
+interface DatabaseReader {
+   Database getDb();
+   default Entity read(Id id) {
+      return getDb().connect().find(id);
+   }
+}
+```
+
+In the above example any class that has access to a `Database` can inherit the `read` behavior.
+
+Examples
+
+* Cross-cutting concerns
+
+### Discovery
+
+Following conventions such as these make it easier for the next developer to find code that's already been implemented as opposed to reinventing the wheel.
 
 ## Commit Policy
 

@@ -20,6 +20,7 @@ import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryManagerFactory;
 import org.opencds.cqf.ruler.cql.LibraryUtilities;
+import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.CanonicalUtilities;
 import org.opencds.cqf.ruler.utility.ClientUtilities;
 import org.opencds.cqf.ruler.utility.OperatorUtilities;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class DataOperationsProvider implements OperationProvider, ClientUtilities, OperatorUtilities, CanonicalUtilities, TranslatorUtilities, LibraryUtilities {
+public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(DataOperationsProvider.class);
 
