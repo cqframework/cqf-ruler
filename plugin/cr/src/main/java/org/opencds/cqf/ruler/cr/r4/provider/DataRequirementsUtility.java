@@ -1,11 +1,11 @@
-package org.opencds.cqf.ruler.qualitymeasure.r4;
+package org.opencds.cqf.ruler.cr.r4.provider;
 
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
 import org.hl7.fhir.convertors.advisors.impl.BaseAdvisor_40_50;
 import org.hl7.fhir.convertors.conv40_50.VersionConvertor_40_50;
-import org.opencds.cqf.ruler.qualitymeasure.common.CommonDataRequirementsUtility;
+import org.opencds.cqf.ruler.cr.common.CommonDataRequirementsUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class DataRequirementsUtility {

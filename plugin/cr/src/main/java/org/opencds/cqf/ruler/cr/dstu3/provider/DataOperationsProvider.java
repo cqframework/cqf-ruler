@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.qualitymeasure.dstu3;
+package org.opencds.cqf.ruler.cr.dstu3.provider;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -7,11 +7,11 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.LibraryManager;
-import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.ruler.cpg.dstu3.util.Dstu3BundleLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
@@ -26,11 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class DataOperationsProvider extends DaoRegistryOperationProvider {
@@ -71,7 +67,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 		LibraryContentProvider bundleLibraryProvider = new Dstu3BundleLibraryContentProvider(libraryBundle);
 
-		java.util.List<LibraryContentProvider> sourceProviders = new ArrayList<LibraryContentProvider>(
+		List<LibraryContentProvider> sourceProviders = new ArrayList<LibraryContentProvider>(
 			Arrays.asList(bundleLibraryProvider, jpaLibraryContentProvider));
 
 		LibraryManager libraryManager = libraryManagerFactory.create(sourceProviders);

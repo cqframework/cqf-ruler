@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.qualitymeasure.dstu3;
+package org.opencds.cqf.ruler.cr.dstu3.provider;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -10,14 +10,14 @@ import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.junit.jupiter.api.Test;
-import org.opencds.cqf.ruler.qualitymeasure.QualityMeasureConfig;
+import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.context.FhirContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { DataOperationProviderIT.class,
-	QualityMeasureConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
+	CrConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 public class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test

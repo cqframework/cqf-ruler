@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.qualitymeasure.r4;
+package org.opencds.cqf.ruler.cr.r4.provider;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -71,7 +71,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 		LibraryContentProvider bundleLibraryProvider = new R4BundleLibraryContentProvider(libraryBundle);
 
-		java.util.List<LibraryContentProvider> sourceProviders = new ArrayList<LibraryContentProvider>(
+		List<LibraryContentProvider> sourceProviders = new ArrayList<LibraryContentProvider>(
 			Arrays.asList(bundleLibraryProvider, jpaLibraryContentProvider));
 
 		LibraryManager libraryManager = libraryManagerFactory.create(sourceProviders);

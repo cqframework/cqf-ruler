@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.qualitymeasure.common;
+package org.opencds.cqf.ruler.cr.common;
 
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;

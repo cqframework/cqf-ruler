@@ -21,12 +21,30 @@
 			<artifactId>cqf-ruler-cql</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.ruler</groupId>
+			<artifactId>cqf-ruler-cpg</artifactId>
+			<version>0.5.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>info.cqframework</groupId>
+			<artifactId>elm-fhir</artifactId>
+			<version>1.5.5-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-dev-tools</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.ruler</groupId>
+			<artifactId>cqf-ruler-cpg</artifactId>
+			<version>0.5.0-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

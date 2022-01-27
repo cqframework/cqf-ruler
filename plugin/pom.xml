@@ -15,7 +15,6 @@
 		<module>cds-hooks</module>
 		<module>cpg</module>
 		<module>case-reporting</module>
-		<module>quality-measure</module>
 		<module>cql</module>
 		<module>cr</module>
 		<module>dev-tools</module>
