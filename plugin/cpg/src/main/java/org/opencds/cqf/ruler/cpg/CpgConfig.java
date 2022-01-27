@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cpg;
 
 import org.opencds.cqf.ruler.api.OperationProvider;
+import org.opencds.cqf.ruler.cpg.r4.util.R4BundleLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -23,6 +24,11 @@ public class CpgConfig {
 	@Conditional(OnR4Condition.class)
 	public OperationProvider r4LibraryEvaluationProvider() {
 		return new org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider();
+	}
+
+	@Bean@Conditional(OnR4Condition.class)
+	public R4BundleLibraryContentProvider r4BundleLibraryContentProvider() {
+		return new R4BundleLibraryContentProvider();
 	}
 
 }

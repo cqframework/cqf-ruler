@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
+import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu2FhirModelResolver;
@@ -11,6 +12,7 @@ import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.EmbeddedFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.model.CacheAwareModelManager;
 import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDecorator;
@@ -64,9 +66,27 @@ public class CqlConfig {
 	}
 
 	@Bean
+	public ModelManagerFactory modelManagerFactory(
+		Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache) {
+		return () -> new CacheAwareModelManager(globalModelCache);
+	}
+
+	@Bean
 	public ModelManager modelManager(
 			Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache) {
 		return new CacheAwareModelManager(globalModelCache);
+	}
+
+	@Bean
+	public LibraryManagerFactory libraryManagerFactory(
+		ModelManager modelManager) {
+		return (providers) -> {
+			LibraryManager libraryManager = new LibraryManager(modelManager);
+			for (LibraryContentProvider provider : providers) {
+				libraryManager.getLibrarySourceLoader().registerProvider(provider);
+			}
+			return libraryManager;
+		};
 	}
 
 	@Bean

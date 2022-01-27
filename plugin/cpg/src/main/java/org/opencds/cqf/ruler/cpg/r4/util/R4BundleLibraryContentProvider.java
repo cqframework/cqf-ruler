@@ -16,10 +16,22 @@ import org.opencds.cqf.ruler.utility.VersionUtilities;
 // TODO: Add support for ELM
 public class R4BundleLibraryContentProvider  implements VersionUtilities, org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider  {
 
-    Bundle bundle;
+	Bundle bundle;
+
+	public R4BundleLibraryContentProvider() {
+	}
+
     public R4BundleLibraryContentProvider(Bundle bundle) {
         this.bundle = bundle;
     }
+
+	public Bundle getBundle() {
+		return bundle;
+	}
+
+	public void setBundle(Bundle bundle) {
+		this.bundle = bundle;
+	}
 
     @Override
     public InputStream getLibrarySource(VersionedIdentifier versionedIdentifier) {

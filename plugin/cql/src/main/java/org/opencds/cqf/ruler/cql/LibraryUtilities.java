@@ -1,11 +1,15 @@
 package org.opencds.cqf.ruler.cql;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Attachment;
 import org.opencds.cqf.ruler.utility.ReflectionUtilities;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -66,6 +70,23 @@ public interface LibraryUtilities extends ReflectionUtilities {
 			}
 		};
 	}
+
+	default InputStream extractContentStream(org.hl7.fhir.r4.model.Library library) {
+		Attachment cql = null;
+		for (Attachment a : library.getContent()) {
+			if (a.getContentType().equals("text/cql")) {
+				cql = a;
+				break;
+			}
+		}
+
+		if (cql == null) {
+			return null;
+		}
+		return new ByteArrayInputStream(Base64.getDecoder().decode(cql.getDataElement().getValueAsString()));
+	}
+
+
 
 	interface ContentFunctions {
 		Function<IBase, List<IBase>> getAttachments();
