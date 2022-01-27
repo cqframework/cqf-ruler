@@ -1,7 +1,6 @@
 package org.opencds.cqf.ruler.qualitymeasure;
 
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.qualitymeasure.common.CommonDataRequirementsUtility;
 import org.opencds.cqf.ruler.qualitymeasure.r4.DataOperationsProvider;
@@ -15,7 +14,7 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.qualitymeasure", name ="enabled", havingValue = "true", matchIfMissing=true)
-@Import({CqlConfig.class, CpgConfig.class})
+@Import({CqlConfig.class})
 public class QualityMeasureConfig {
 	@Bean
 	public QualityMeasureProperties qualityMeasureProperties() {

@@ -3,13 +3,17 @@ package org.opencds.cqf.ruler.utility;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Base64;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.Attachment;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -70,5 +74,20 @@ public class Libraries {
 
 		LibraryFunctions libraryFunctions = getFunctions(library);
 		return libraryFunctions.getVersion().apply(library);
+	}
+
+	public static InputStream extractContentStream(org.hl7.fhir.r4.model.Library library) {
+		Attachment cql = null;
+		for (Attachment a : library.getContent()) {
+			if (a.getContentType().equals("text/cql")) {
+				cql = a;
+				break;
+			}
+		}
+
+		if (cql == null) {
+			return null;
+		}
+		return new ByteArrayInputStream(Base64.getDecoder().decode(cql.getDataElement().getValueAsString()));
 	}
 }

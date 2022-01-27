@@ -1,6 +1,5 @@
 package org.opencds.cqf.ruler.qualitymeasure.r4;
 
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
@@ -14,17 +13,14 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
-import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.cpg.r4.util.R4BundleLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryManagerFactory;
-import org.opencds.cqf.ruler.cql.LibraryUtilities;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.opencds.cqf.ruler.utility.CanonicalUtilities;
-import org.opencds.cqf.ruler.utility.ClientUtilities;
-import org.opencds.cqf.ruler.utility.OperatorUtilities;
-import org.opencds.cqf.ruler.utility.TranslatorUtilities;
+import org.opencds.cqf.ruler.utility.Canonicals;
+import org.opencds.cqf.ruler.utility.Libraries;
+import org.opencds.cqf.ruler.utility.Translators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +35,6 @@ import java.util.Map;
 public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(DataOperationsProvider.class);
-
-	@Autowired
-	private DaoRegistry myDaoRegistry;
 
 	@Autowired
 	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
@@ -60,7 +53,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 		JpaLibraryContentProvider jpaLibraryContentProvider = jpaLibraryContentProviderFactory.create(theRequestDetails);
 
-		Library library = this.resolveById(myDaoRegistry, Library.class, theId, theRequestDetails);
+		Library library = read(theId, theRequestDetails);
 		if (library == null) {
 			throw new RuntimeException("Could not load library.");
 		}
@@ -82,14 +75,14 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 		LibraryManager libraryManager = libraryManagerFactory.create(sourceProviders);
 
-		CqlTranslator translator = getTranslator(extractContentStream(library), libraryManager, libraryManager.getModelManager());
+		CqlTranslator translator = Translators.getTranslator(Libraries.extractContentStream(library), libraryManager, libraryManager.getModelManager());
 		if (translator.getErrors().size() > 0) {
 			throw new RuntimeException("Errors during library compilation.");
 		}
 
 		Library resultLibrary =
 			this.dataRequirementsUtility.getModuleDefinitionLibrary(libraryManager,
-				translator.getTranslatedLibrary(), getTranslatorOptions());
+				translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
 
 		return resultLibrary;
 	}
@@ -115,9 +108,9 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 					String resourceString = relatedArtifact.getResource();
 					if (resourceString.startsWith("Library/") || resourceString.contains("/Library/")) {
 						try {
-							String id = getId(resourceString);
-							IdType newId = new IdType(getResourceName(resourceString)+"/"+id.substring(0,id.indexOf("|")));
-							Library lib = this.resolveById(myDaoRegistry, Library.class, newId, theRequestDetails);
+							String id = Canonicals.getIdPart(resourceString);
+							IdType newId = new IdType(Canonicals.getResourceType(resourceString)+"/"+id.substring(0,id.indexOf("|")));
+							Library lib = read(newId, theRequestDetails);
 							if (!resources.containsKey(lib.getId())) {
 								resources.put(lib.getId(), lib);
 								queue.add(lib);
