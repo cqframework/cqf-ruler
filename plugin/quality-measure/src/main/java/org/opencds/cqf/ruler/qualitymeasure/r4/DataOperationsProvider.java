@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -75,7 +76,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 		LibraryManager libraryManager = libraryManagerFactory.create(sourceProviders);
 
-		CqlTranslator translator = Translators.getTranslator(Libraries.extractContentStream(library), libraryManager, libraryManager.getModelManager());
+		CqlTranslator translator = Translators.getTranslator(new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager, libraryManager.getModelManager());
 		if (translator.getErrors().size() > 0) {
 			throw new RuntimeException("Errors during library compilation.");
 		}
