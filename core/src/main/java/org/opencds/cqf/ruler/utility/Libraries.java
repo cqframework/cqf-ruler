@@ -71,5 +71,4 @@ public class Libraries {
 		LibraryFunctions libraryFunctions = getFunctions(library);
 		return libraryFunctions.getVersion().apply(library);
 	}
-
 }

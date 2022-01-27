@@ -1,8 +1,10 @@
 package org.opencds.cqf.ruler.cpg;
 
 import org.opencds.cqf.ruler.api.OperationProvider;
+import org.opencds.cqf.ruler.cpg.dstu3.util.Dstu3BundleLibraryContentProvider;
 import org.opencds.cqf.ruler.cpg.r4.util.R4BundleLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.CqlConfig;
+import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -26,9 +28,16 @@ public class CpgConfig {
 		return new org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider();
 	}
 
-	@Bean@Conditional(OnR4Condition.class)
+	@Bean
+	@Conditional(OnR4Condition.class)
 	public R4BundleLibraryContentProvider r4BundleLibraryContentProvider() {
 		return new R4BundleLibraryContentProvider();
+	}
+
+	@Bean
+	@Conditional(OnDSTU3Condition.class)
+	public Dstu3BundleLibraryContentProvider dstu3BundleLibraryContentProvider() {
+		return new Dstu3BundleLibraryContentProvider();
 	}
 
 }
