@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.ra.RAConfig;
 import org.opencds.cqf.ruler.ra.RAProperties;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
-import org.opencds.cqf.ruler.test.Urls;
+import org.opencds.cqf.ruler.test.utility.Urls;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

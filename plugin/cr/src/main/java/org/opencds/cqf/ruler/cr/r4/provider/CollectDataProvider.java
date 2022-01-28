@@ -1,12 +1,11 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.instance.model.api.IAnyResource;
-import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
@@ -27,45 +26,38 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 	private MeasureEvaluateProvider measureEvaluateProvider;
 
 	@Operation(name = "$collect-data", idempotent = true, type = Measure.class)
-	public Parameters collectData(RequestDetails theRequestDetails, @IdParam IdType theId, @OperationParam(name = "periodStart") String periodStart,
-			  @OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "patient") String patientRef,
-			  @OperationParam(name = "practitioner") String practitionerRef,
-			  @OperationParam(name = "lastReceivedOn") String lastReceivedOn) throws FHIRException {
+	public Parameters collectData(RequestDetails theRequestDetails, @IdParam IdType theId,
+			@OperationParam(name = "periodStart") String periodStart,
+			@OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "patient") String patientRef,
+			@OperationParam(name = "practitioner") String practitionerRef,
+			@OperationParam(name = "lastReceivedOn") String lastReceivedOn) {
 
-		 MeasureReport report = measureEvaluateProvider.evaluateMeasure(theRequestDetails, theId, periodStart, periodEnd, null, patientRef, practitionerRef, lastReceivedOn, null);
-		 report.setType(MeasureReport.MeasureReportType.DATACOLLECTION);
-		 report.setGroup(null);
+		MeasureReport report = measureEvaluateProvider.evaluateMeasure(theRequestDetails, theId, periodStart, periodEnd,
+				null, patientRef, practitionerRef, lastReceivedOn, null);
+		report.setType(MeasureReport.MeasureReportType.DATACOLLECTION);
+		report.setGroup(null);
 
-		 Parameters parameters = new Parameters();
-		 parameters.addParameter(new Parameters.ParametersParameterComponent().setName("measureReport").setResource(report));
+		Parameters parameters = newParameters(newPart("measureReport", report));
 
-		 addEvaluatedResourcesToParameters(report, parameters);
+		addEvaluatedResourcesToParameters(report, parameters);
 
-		 return parameters;
+		return parameters;
 	}
 
-	private List<IAnyResource> addEvaluatedResources(MeasureReport report){
-		 List<IAnyResource> resources = new ArrayList<>();
-		 for (Reference evaluatedResource : report.getEvaluatedResource()) {
-			  IIdType theEvaluatedId = evaluatedResource.getReferenceElement();
-			  String resourceType = theEvaluatedId.getResourceType();
-			  if (resourceType != null) {
-					IBaseResource resourceBase = getDaoRegistry().getResourceDao(resourceType).read(theEvaluatedId);
-					if (resourceBase instanceof Resource) {
-						 Resource resource = (Resource) resourceBase;
-						 resources.add(resource);
-					}
-			  }
-		 }
-		 return resources;
+	private List<Resource> readEvaluatedResources(MeasureReport report) {
+		List<Resource> resources = new ArrayList<>();
+		for (Reference reference : report.getEvaluatedResource()) {
+			Resource resource = read(reference.getReferenceElement());
+			if (resource != null) {
+				resources.add(resource);
+			}
+		}
+
+		return resources;
 	}
 
 	private void addEvaluatedResourcesToParameters(MeasureReport report, Parameters parameters) {
-		 List<IAnyResource> resources;
-		 resources = addEvaluatedResources(report);
-		 resources.forEach(resource -> {
-			  parameters.addParameter(new Parameters.ParametersParameterComponent().setName("resource").setResource((Resource) resource));
-			  }
-		 );
+		readEvaluatedResources(report)
+			.forEach(resource -> parameters.addParameter(newPart("resource", resource)));
 	}
 }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.behavior.IdCreator;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
+import org.opencds.cqf.ruler.test.behavior.ResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
