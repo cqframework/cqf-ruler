@@ -15,9 +15,12 @@ import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.EmbeddedFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.model.CacheAwareModelManager;
+import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDecorator;
 import org.opencds.cqf.cql.evaluator.engine.execution.TranslatingLibraryLoader;
 import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
+import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
+import org.opencds.cqf.cql.evaluator.spring.fhir.adapter.AdapterConfiguration;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU2Condition;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
@@ -28,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -41,6 +45,7 @@ import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cql", name = "enabled", havingValue = "true", matchIfMissing = true)
+@Import(AdapterConfiguration.class)
 public class CqlConfig {
 
 	private static final Logger ourLog = LoggerFactory.getLogger(CqlConfig.class);
@@ -64,13 +69,7 @@ public class CqlConfig {
 
 		return options;
 	}
-
-	@Bean
-	public ModelManagerFactory modelManagerFactory(
-		Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache) {
-		return () -> new CacheAwareModelManager(globalModelCache);
-	}
-
+	
 	@Bean
 	public ModelManager modelManager(
 			Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache) {
@@ -209,6 +208,11 @@ public class CqlConfig {
 		// TODO: The key piece missing for R5 support is a ModelInfo in the CQL
 		// Translator. That's being tracked here:
 		// https://github.com/cqframework/clinical_quality_language/issues/665
-		throw new IllegalStateException("CQL support not yet implemented for R5. Please disable the CQL plugin.");
+		throw new IllegalStateException("CQL support not yet implemented for R5. Please disable the CQL plugin or switch the server to R4");
+	}
+
+	@Bean
+	public LibraryVersionSelector libraryVersionSelector(AdapterFactory adapterFactory) {
+		return new LibraryVersionSelector(adapterFactory);
 	}
 }

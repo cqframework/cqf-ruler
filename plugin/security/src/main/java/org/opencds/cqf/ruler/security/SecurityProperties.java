@@ -5,13 +5,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "hapi.fhir.security")
 public class SecurityProperties {
 
-	private Boolean enabled = false;
+	private boolean enabled = false;
 
-	public Boolean getEnabled() {
+	public boolean getEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(Boolean enabled) {
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
@@ -26,13 +26,13 @@ public class SecurityProperties {
 	}
 
 	public class OAuth {
-		private Boolean securityCors = true;
+		private boolean securityCors = true;
 
-		public Boolean getSecurityCors() {
+		public boolean getSecurityCors() {
 			return securityCors;
 		}
 
-		public void setSecurityCors(Boolean securityCors) {
+		public void setSecurityCors(boolean securityCors) {
 			this.securityCors = securityCors;
 		}
 

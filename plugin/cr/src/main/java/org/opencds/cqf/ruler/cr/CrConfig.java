@@ -2,9 +2,7 @@ package org.opencds.cqf.ruler.cr;
 
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.cr.common.CommonDataRequirementsUtility;
 import org.opencds.cqf.ruler.cr.r4.provider.DataOperationsProvider;
-import org.opencds.cqf.ruler.cr.r4.provider.DataRequirementsUtility;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -82,25 +80,8 @@ public class CrConfig {
 	}
 
 	@Bean
-	@Conditional(OnR4Condition.class)
-	public DataRequirementsUtility r4DataRequirementsUtil() {
-		return new DataRequirementsUtility();
-	}
-
-	@Bean
 	@Conditional(OnDSTU3Condition.class)
 	public OperationProvider dstu3DataRequirementsProvider() {
 		return new org.opencds.cqf.ruler.cr.dstu3.provider.DataOperationsProvider();
-	}
-
-	@Bean
-	@Conditional(OnDSTU3Condition.class)
-	public org.opencds.cqf.ruler.cr.dstu3.provider.DataRequirementsUtility dstu3DataRequirementsUtil() {
-		return new org.opencds.cqf.ruler.cr.dstu3.provider.DataRequirementsUtility();
-	}
-
-	@Bean
-	public CommonDataRequirementsUtility commonDataRequirementsUtil() {
-		return new CommonDataRequirementsUtility();
 	}
 }

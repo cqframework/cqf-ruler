@@ -33,11 +33,12 @@ import org.opencds.cqf.cql.engine.runtime.DateTime;
 import org.opencds.cqf.cql.engine.runtime.Interval;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
+import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.ruler.cpg.r4.util.FhirMeasureBundler;
-import org.opencds.cqf.ruler.cpg.r4.util.R4ApelonFhirTerminologyProvider;
-import org.opencds.cqf.ruler.cpg.r4.util.R4BundleLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.cql.JpaFhirRetrieveProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
@@ -57,6 +58,7 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
+// TODO: Swap cqf-ruler Libary evaluate implementation to the cql-evaluator one.
 public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 
 	private static final Logger log = LoggerFactory.getLogger(LibraryEvaluationProvider.class);
@@ -75,6 +77,12 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
 	ModelResolver myModelResolver;
+
+	@Autowired
+	AdapterFactory adapterFactory;
+
+	@Autowired
+	LibraryVersionSelector libraryVersionSelector;
 
 	@SuppressWarnings({ "unchecked" })
 	@Operation(name = "$evaluate", idempotent = true, type = Library.class)
@@ -120,11 +128,7 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 
 		if (terminologyEndpoint != null) {
 			IGenericClient client = Clients.forEndpoint(getFhirContext(), terminologyEndpoint);
-			if (terminologyEndpoint.getAddress().contains("apelon")) {
-				terminologyProvider = new R4ApelonFhirTerminologyProvider(client);
-			} else {
-				terminologyProvider = new R4FhirTerminologyProvider(client);
-			}
+			terminologyProvider = new R4FhirTerminologyProvider(client);
 		} else {
 			terminologyProvider = myJpaTerminologyProviderFactory.create(new SystemRequestDetails());
 		}
@@ -133,7 +137,8 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 		if (dataEndpoint != null) {
 			List<RetrieveProvider> retrieveProviderList = new ArrayList<>();
 			IGenericClient client = Clients.forEndpoint(dataEndpoint);
-			RestFhirRetrieveProvider retriever = new RestFhirRetrieveProvider(new SearchParameterResolver(getFhirContext()),
+			RestFhirRetrieveProvider retriever = new RestFhirRetrieveProvider(
+					new SearchParameterResolver(getFhirContext()),
 					client);
 			retriever.setTerminologyProvider(terminologyProvider);
 			if (terminologyEndpoint == null || (terminologyEndpoint != null
@@ -174,7 +179,8 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 			}
 		}
 
-		LibraryContentProvider bundleLibraryProvider = new R4BundleLibraryContentProvider(libraryBundle);
+		LibraryContentProvider bundleLibraryProvider = new BundleFhirLibraryContentProvider(this.getFhirContext(),
+				libraryBundle, adapterFactory, libraryVersionSelector);
 		LibraryContentProvider jpaLibraryContentProvider = this.myJpaLibraryContentProviderFactory
 				.create(theRequestDetails);
 
@@ -285,8 +291,9 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 				return "List";
 			case "FhirBundleCursor":
 				return "Retrieve";
+			default:
+				return type;
 		}
-		return type;
 	}
 
 	// TODO: Merge this into the evaluator

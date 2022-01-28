@@ -6,27 +6,27 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "hapi.fhir.cql")
 public class CqlProperties {
 
-	private Boolean enabled = true;
+	private boolean enabled = true;
 
-	private Boolean use_embedded_cql_translator_content = true;
+	private boolean use_embedded_cql_translator_content = true;
 
-	private Boolean cql_logging_enabled = true;
+	private boolean cql_logging_enabled = true;
 
 	private CqlTranslatorOptions cqlTranslatorOptions = CqlTranslatorOptions.defaultOptions();
 
-	public Boolean getEnabled() {
+	public boolean getEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(Boolean enabled) {
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
-	public Boolean getUse_embedded_cql_translator_content() {
+	public boolean getUse_embedded_cql_translator_content() {
 		return this.use_embedded_cql_translator_content;
 	}
 
-	public void setUse_embedded_cql_translator_content(Boolean use_embedded_cql_translator_content) {
+	public void setUse_embedded_cql_translator_content(boolean use_embedded_cql_translator_content) {
 		this.use_embedded_cql_translator_content = use_embedded_cql_translator_content;
 	}
 
@@ -38,11 +38,11 @@ public class CqlProperties {
 		this.cqlTranslatorOptions = cqlTranslatorOptions;
 	}
 
-	public Boolean getCql_logging_enabled() {
+	public boolean getCql_logging_enabled() {
 		return cql_logging_enabled;
 	}
 
-	public void setCql_logging_enabled(Boolean cql_logging_enabled) {
+	public void setCql_logging_enabled(boolean cql_logging_enabled) {
 		this.cql_logging_enabled = cql_logging_enabled;
 	}
 }

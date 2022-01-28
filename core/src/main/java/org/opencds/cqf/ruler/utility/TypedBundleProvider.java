@@ -71,13 +71,15 @@ public class TypedBundleProvider<T extends IBaseResource> implements IBundleProv
 
 	public T single() {
 		checkState(this.myInnerProvider.size() > 1, "More than one resource found");
-
+		checkState(this.myInnerProvider.size() == 0, "No resources found");
 		return first();
 	}
 
 
 	public T first() {
-		checkState(this.myInnerProvider.size() == 0, "No resources found");
+		if (this.myInnerProvider.size() != null && this.myInnerProvider.size() == 0) {
+			return null;
+		}
 
 		return getResourcesTyped(0, 1).get(0);
 	}

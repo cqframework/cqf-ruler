@@ -14,6 +14,7 @@ import ca.uhn.fhir.jpa.api.model.DaoMethodOutcome;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 /**
  * Simulate FhirDal operations until such time as that is fully baked
@@ -22,6 +23,12 @@ public interface DaoRegistryUser {
 
 	public DaoRegistry getDaoRegistry();
 
+	/**
+	 * @param <T> the Resource type to read
+	 * @param theResourceClass the Resource type to read
+	 * @param theIdPart the logical ID part of this ID. For example, "123"
+	 * @throws ResourceNotFoundException if the Id is not known
+	 */
 	default <T extends IBaseResource> T read(Class<T> theResourceClass, String theIdPart) {
 		checkNotNull(theResourceClass);
 		checkNotNull(theIdPart);
@@ -29,6 +36,13 @@ public interface DaoRegistryUser {
 		return read(theResourceClass, theIdPart, null);
 	}
 
+	/**
+	 * @param <T> the Resource type to read
+	 * @param theResourceClass the Resource type to read
+	 * @param theIdPart the logical ID part of this ID. For example, "123"
+	 * @param requestDetails multi-tenancy information
+	 * @throws ResourceNotFoundException if the Id is not known
+	 */
 	default <T extends IBaseResource> T read(Class<T> theResourceClass, String theIdPart, RequestDetails requestDetails) {
 		checkNotNull(theResourceClass);
 		checkNotNull(theIdPart);
@@ -37,12 +51,27 @@ public interface DaoRegistryUser {
 		return getDaoRegistry().getResourceDao(theResourceClass).read(Ids.newId(theResourceClass, theIdPart), requestDetails);
 	}
 
+	/**
+	 * Reads the the given Id from the local server
+	 * @param <T> the Resource type to read
+	 * @param theId the id to read
+	 * @return the FHIR Resource
+	 * @throws ResourceNotFoundException if the Id is not known
+	 */
 	default <T extends IBaseResource> T read(IIdType theId) {
 		checkNotNull(theId);
 
 		return read(theId, null);
 	}
 
+	/**
+	 * Reads the the given Id from the local server
+	 * @param <T> the Resource type to read
+	 * @param theId the id to read
+	 * @param requestDetails multi-tenancy information
+	 * @return the FHIR Resource
+	 * @throws ResourceNotFoundException if the Id is not known
+	 */
 	@SuppressWarnings("unchecked")
 	default <T extends IBaseResource> T read(IIdType theId, RequestDetails requestDetails) {
 		checkNotNull(theId);
