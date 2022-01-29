@@ -45,7 +45,7 @@ public class JpaLibraryContentProvider
 
 		String name = libraryIdentifier.getId();
 		String version = libraryIdentifier.getVersion();
-		List<IBaseResource> libraries = search("Library", Searches.byName(name), requestDetails).getAllResources();
+		List<IBaseResource> libraries = search(getClass("Library"), Searches.byName(name), requestDetails).getAllResources();
 		IBaseResource library = Versions.selectByVersion(libraries, version,
 				Libraries::getVersion);
 

@@ -7,9 +7,9 @@ import ca.uhn.fhir.rest.api.SearchStyleEnum;
 @ConfigurationProperties(prefix = "hapi.fhir.cdshooks")
 public class CdsHooksProperties {
 
-	private Boolean enabled;
-	public Boolean getEnabled() { return enabled; }
-	public void setEnabled(Boolean enabled) { this.enabled = enabled; }
+	private boolean enabled;
+	public boolean getEnabled() { return enabled; }
+	public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
 	private FhirServer fhirServer = new FhirServer();
 	public FhirServer getFhirServer() {
@@ -25,9 +25,9 @@ public class CdsHooksProperties {
 			this.maxCodesPerQuery = maxCodesPerQuery;
 		}
 
-		private Boolean expandValueSets;
-		public Boolean getExpandValueSets() { return expandValueSets; }
-		public void setExpandValueSets(Boolean expandValueSets) {
+		private boolean expandValueSets;
+		public boolean getExpandValueSets() { return expandValueSets; }
+		public void setExpandValueSets(boolean expandValueSets) {
 			this.expandValueSets = expandValueSets;
 		}
 

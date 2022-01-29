@@ -1,6 +1,8 @@
 package org.opencds.cqf.ruler.cr;
 
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
+import org.opencds.cqf.ruler.api.OperationProvider;
+import org.opencds.cqf.ruler.cr.r4.provider.DataOperationsProvider;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -70,4 +72,16 @@ public class CrConfig {
 	 public org.opencds.cqf.ruler.cr.r4.provider.SubmitDataProvider r4SubmitDataProvider() {
 		return new org.opencds.cqf.ruler.cr.r4.provider.SubmitDataProvider();
   }
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public OperationProvider r4DataRequirementsProvider() {
+		return new DataOperationsProvider();
+	}
+
+	@Bean
+	@Conditional(OnDSTU3Condition.class)
+	public OperationProvider dstu3DataRequirementsProvider() {
+		return new org.opencds.cqf.ruler.cr.dstu3.provider.DataOperationsProvider();
+	}
 }

@@ -9,13 +9,13 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 public class RAProperties {
 
-	private Boolean enabled = true;
+	private boolean enabled = true;
 
-	public Boolean getEnabled() {
+	public boolean getEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(Boolean enabled) {
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 

@@ -32,12 +32,11 @@ import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
-import org.opencds.cqf.ruler.cr.utilities.LibraryUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class ExpressionEvaluation implements LibraryUtilities {
+public class ExpressionEvaluation {
 
 	@Autowired
 	private LibraryLoaderFactory libraryLoaderFactory;

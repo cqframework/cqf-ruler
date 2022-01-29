@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.opencds.cqf.ruler</groupId>
@@ -294,22 +293,22 @@
 			</dependency>
 			<dependency>
 				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.plandefinition</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.spring</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
 				<artifactId>evaluator.measure</artifactId>
 				<version>${cql-evaluator.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.opencds.cqf.cql</groupId>
 				<artifactId>evaluator.measure-hapi</artifactId>
+				<version>${cql-evaluator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.plandefinition</artifactId>
+				<version>${cql-evaluator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.spring</artifactId>
 				<version>${cql-evaluator.version}</version>
 			</dependency>
 

@@ -24,5 +24,4 @@ public class CpgConfig {
 	public OperationProvider r4LibraryEvaluationProvider() {
 		return new org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider();
 	}
-
 }

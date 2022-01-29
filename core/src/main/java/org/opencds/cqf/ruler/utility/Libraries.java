@@ -3,11 +3,17 @@ package org.opencds.cqf.ruler.utility;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.tuple.Triple;
+import org.cqframework.cql.elm.execution.Library;
+import org.cqframework.cql.elm.execution.UsingDef;
 import org.hl7.fhir.instance.model.api.IBase;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
@@ -70,5 +76,32 @@ public class Libraries {
 
 		LibraryFunctions libraryFunctions = getFunctions(library);
 		return libraryFunctions.getVersion().apply(library);
+	}
+
+	private static Map<String, String> urlsByModelName = new HashMap<String, String>() {
+		{
+			put("FHIR", "http://hl7.org/fhir");
+			put("QDM", "urn:healthit-gov:qdm:v5_4");
+		}
+	};
+
+	// Returns a list of (Model, Version, Url) for the usings in library. The
+	// "System" using is excluded.
+	public static List<Triple<String, String, String>> getUsingUrlAndVersion(Library.Usings usings) {
+		if (usings == null || usings.getDef() == null) {
+			return Collections.emptyList();
+		}
+
+		List<Triple<String, String, String>> usingDefs = new ArrayList<>();
+		for (UsingDef def : usings.getDef()) {
+
+			if (def.getLocalIdentifier().equals("System"))
+				continue;
+
+			usingDefs.add(Triple.of(def.getLocalIdentifier(), def.getVersion(),
+				urlsByModelName.get(def.getLocalIdentifier())));
+		}
+
+		return usingDefs;
 	}
 }

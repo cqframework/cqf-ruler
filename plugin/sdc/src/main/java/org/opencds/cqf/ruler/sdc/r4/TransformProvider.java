@@ -27,11 +27,6 @@ public class TransformProvider implements OperationProvider {
     @Autowired
     private SDCProperties mySdcProperties;
 
-    private String replaceCode;
-    private String username;
-    private String password;
-    private String endpoint; // Not needed maybe
-
     @Operation(name = "$transform", idempotent = false, type = Observation.class)
     public Bundle transformObservations(
             @OperationParam(name = "observations") Bundle observationsBundle,
@@ -45,12 +40,12 @@ public class TransformProvider implements OperationProvider {
                     "Unable to perform operation Observation$transform.  No concept map url specified.");
         }
 
-        this.replaceCode = mySdcProperties.getTransform().getReplaceCode();
-        this.username = mySdcProperties.getTransform().getUsername();
-        this.password = mySdcProperties.getTransform().getPassword();
-        this.endpoint = mySdcProperties.getTransform().getEndpoint();
+        String replaceCode = mySdcProperties.getTransform().getReplaceCode();
+      //   String username = mySdcProperties.getTransform().getUsername();
+      //   String password = mySdcProperties.getTransform().getPassword();
+        String endpoint = mySdcProperties.getTransform().getEndpoint();
 
-        IGenericClient client = Clients.forUrl(fhirContext, this.endpoint);
+        IGenericClient client = Clients.forUrl(fhirContext, endpoint);
         ConceptMap transformConceptMap = client.read().resource(ConceptMap.class).withUrl(conceptMapURL).execute();
         if (null == transformConceptMap) {
             throw new IllegalArgumentException(
@@ -75,7 +70,7 @@ public class TransformProvider implements OperationProvider {
                     String obsValueCode = observation.getValueCodeableConcept().getCoding().get(0).getCode();
                     if (obsValueCode != null && codeMappings
                             .get(observation.getValueCodeableConcept().getCoding().get(0).getCode()) != null) {
-                        if (this.replaceCode != null) {
+                        if (replaceCode != null) {
                             observation.getValueCodeableConcept().getCoding().get(0)
                                     .setCode(codeMappings.get(obsValueCode).getCode());
                             observation.getValueCodeableConcept().getCoding().get(0)

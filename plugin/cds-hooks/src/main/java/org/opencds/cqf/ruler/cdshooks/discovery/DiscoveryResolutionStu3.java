@@ -91,7 +91,7 @@ public class DiscoveryResolutionStu3 implements DaoRegistryUser  {
 	}
 
 	public List<String> resolveValueSetCodes(String valueSetId) {
-		ValueSet valueSet = this.search(ValueSet.class, Searches.byCanonical(valueSetId)).first();
+		ValueSet valueSet = this.search(ValueSet.class, Searches.byCanonical(valueSetId)).firstOrNull();
 		List<String> result = new ArrayList<>();
 		StringBuilder codes = new StringBuilder();
 		if (valueSet.hasExpansion() && valueSet.getExpansion().hasContains()) {
