@@ -18,14 +18,13 @@ import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
-import org.opencds.cqf.ruler.behavior.FhirContextUser;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.parser.IParser;
 
-public interface ResourceLoader extends FhirContextUser, DaoRegistryUser {
+public interface ResourceLoader extends DaoRegistryUser {
 
 	default Object loadTransaction(String theLocation)
 			throws IOException {

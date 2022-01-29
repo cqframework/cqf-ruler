@@ -52,6 +52,7 @@ import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.cr.dstu3.provider.PlanDefinitionApplyProvider;
 import org.opencds.cqf.ruler.external.AppProperties;
+import org.opencds.cqf.ruler.utility.Ids;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,7 +170,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			logger.info("cds-hooks local server address: {}", baseUrl);
 			logger.info("cds-hooks fhir server address: {}", hook.getRequest().getFhirServerUrl());
 
-			PlanDefinition planDefinition = read(PlanDefinition.class, hook.getRequest().getServiceName());
+			PlanDefinition planDefinition = read(Ids.newId(PlanDefinition.class, hook.getRequest().getServiceName()));
 			AtomicBoolean planDefinitionHookMatchesRequestHook = new AtomicBoolean(false);
 
 			planDefinition.getAction().forEach(action -> {

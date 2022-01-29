@@ -89,7 +89,7 @@ public class JpaTerminologyProvider implements TerminologyProvider, DaoRegistryU
 						valueSet.getId()));
 			}
 
-			IBundleProvider bundleProvider = search("ValueSet", Searches.byUrl(valueSet.getId()), myRequestDetails);
+			IBundleProvider bundleProvider = search(getClass("ValueSet"), Searches.byUrl(valueSet.getId()), myRequestDetails);
 			List<IBaseResource> valueSets = bundleProvider.getAllResources();
 			if (valueSets.isEmpty()) {
 				throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));

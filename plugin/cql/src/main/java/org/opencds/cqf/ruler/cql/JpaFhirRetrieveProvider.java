@@ -79,7 +79,7 @@ public class JpaFhirRetrieveProvider extends SearchParamFhirRetrieveProvider imp
 			logger.warn("Error converting search parameter map", e);
 		}
 
-		IBundleProvider bundleProvider = search(dataType, hapiMap, myRequestDetails);
+		IBundleProvider bundleProvider = search(getClass(dataType), hapiMap, myRequestDetails);
 		if (bundleProvider.isEmpty()) {
 			return new ArrayList<>();
 		}

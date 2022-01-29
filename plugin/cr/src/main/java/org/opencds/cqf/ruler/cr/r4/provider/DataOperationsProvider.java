@@ -110,7 +110,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 				String resourceString = relatedArtifact.getResource();
 				CanonicalParts parts = Canonicals.getParts(resourceString);
 				if (parts.resourceType().equals("Library")) {
-					Library lib = search(Library.class, Searches.byCanonical(resourceString), theRequestDetails).first();
+					Library lib = search(Library.class, Searches.byCanonical(resourceString), theRequestDetails).firstOrNull();
 					if (lib != null) {
 						resources.putIfAbsent(lib.getId(), lib);
 						queue.add(lib);

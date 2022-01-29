@@ -105,7 +105,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			if (relatedArtifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON)
 					&& relatedArtifact.hasResource()) {
 				IdType id = Ids.newId(Library.class, relatedArtifact.getResource().getId());
-				Library lib = search(Library.class, Searches.byId(id), theRequestDetails).first();
+				Library lib = search(Library.class, Searches.byId(id), theRequestDetails).firstOrNull();
 				if (lib != null) {
 					resources.putIfAbsent(lib.getId(), lib);
 					queue.add(lib);

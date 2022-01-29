@@ -57,26 +57,35 @@ public class TypedBundleProvider<T extends IBaseResource> implements IBundleProv
 	}
 
 	public List<T> getAllResourcesTyped() {
-		List<T> retval = new ArrayList<>();
+		List<T> retVal = new ArrayList<>();
 
 		Integer size = size();
 		if (size == null) {
 			throw new ConfigurationException("Attempt to request all resources from an asynchronous search result.  The SearchParameterMap for this search probably should have been synchronous.");
 		}
 		if (size > 0) {
-			retval.addAll(getResourcesTyped(0, size));
+			retVal.addAll(getResourcesTyped(0, size));
 		}
-		return retval;
+		return retVal;
 	}
 
+	/**
+	 * Returns exactly one Resource. Throws an error if zero or more than one resource is found or if zero resources are found
+	 * 
+	 * @return the Resource found.
+	 */
 	public T single() {
-		checkState(this.myInnerProvider.size() > 1, "More than one resource found");
-		checkState(this.myInnerProvider.size() == 0, "No resources found");
-		return first();
+		checkState(this.myInnerProvider.size() > 0, "No resources found");
+		checkState(this.myInnerProvider.size() == 1, "More than one resource found");
+		return firstOrNull();
 	}
 
-
-	public T first() {
+	/**
+	 * Returns the first Resource found, or null if no resources are found.
+	 * 
+	 * @return the first Resource found or null
+	 */
+	public T firstOrNull() {
 		if (this.myInnerProvider.size() != null && this.myInnerProvider.size() == 0) {
 			return null;
 		}
