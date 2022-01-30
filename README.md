@@ -43,7 +43,7 @@ latest (version 11 or higher) JDK for your platform, and install it.
 
 #### Apache Maven
 
-This project uses the [Maven wrapper](https://github.com/apache/maven-wrapper) to ensure the correct verison of Maven is available on your machine. Use `./mvnw` to invoke it.
+This project uses the [Maven wrapper](https://github.com/apache/maven-wrapper) to ensure the correct version of Maven is available on your machine. Use `./mvnw` to invoke it.
 
 ### Build
 
@@ -59,7 +59,7 @@ To run the cqf-ruler directory from this project use:
 
 ### Module Structure
 
-The cqf-ruler uses the hapi-fhir-jpaserver-starter project as a base. On top of that, it adds an extensiblity API and utility functions to allow creating plugins which contain functionality for a specific IG. This diagram shows how it's structured
+The cqf-ruler uses the hapi-fhir-jpaserver-starter project as a base. On top of that, it adds an extensibility API and utility functions to allow creating plugins which contain functionality for a specific IG. This diagram shows how it's structured
 
 ![Module Diagram](docs/diagrams/modules.drawio.svg)
 
@@ -110,12 +110,18 @@ To this end:
 * The CQF Ruler project has adopted the HAPI Coding Conventions: <https://github.com/hapifhir/hapi-fhir/wiki/Contributing>
 * Plugins should generally use the "hapi.fhir" prefix for configuration properties
 
+### Extensions
+
+Where possible, environment extensions have been recommended.  Please ensure the recommended extensions for your environment have been installed.
+
 ### Style
+
 The CQF Project uses Checkstyle to enforce the coding standard.  This will cause a build failure in the event of a Checkstyle error.  Visit <https://checkstyle.sourceforge.io/> for more info.
 
 Results of Checkstyle errors can be found in the corresponding `checkstyle-result.xml` file.
 
 ### Javadoc
+
 The CQF Project has strict checking for Javadoc enabled.  This will cause a build failure in the event of a Javadoc warning.  Visit <https://www.oracle.com/technical-resources/articles/java/javadoc-tool.html> for more info.
 
 Results of Javadoc can be found in the output of the build.
