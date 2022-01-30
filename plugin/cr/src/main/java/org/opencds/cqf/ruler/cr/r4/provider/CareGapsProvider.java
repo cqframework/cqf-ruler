@@ -63,6 +63,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider {
 	 *                          clinical organization) participates in
 	 * @return Parameters of bundles of Care Gap Measure Reports
 	 */
+	@SuppressWarnings("squid:S00107") //warning for greater than 7 parameters
 	@Description(shortDefinition = "$care-gaps", value = "Implements the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/OperationDefinition-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/index.html\">Da Vinci DEQM FHIR Implementation Guide</a> which is an extension of the <a href=\"http://build.fhir.org/operation-measure-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://hl7.org/fhir/R4/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
 	@Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
 	public Parameters careGapsReport(RequestDetails theRequestDetails,
