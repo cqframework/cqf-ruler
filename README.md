@@ -110,6 +110,16 @@ To this end:
 * The CQF Ruler project has adopted the HAPI Coding Conventions: <https://github.com/hapifhir/hapi-fhir/wiki/Contributing>
 * Plugins should generally use the "hapi.fhir" prefix for configuration properties
 
+### Style
+The CQF Project uses Checkstyle to enforce the coding standard.  This will cause a build failure in the event of a Checkstyle error.  Visit <https://checkstyle.sourceforge.io/> for more info.
+
+Results of Checkstyle errors can be found in the corresponding `checkstyle-result.xml` file.
+
+### Javadoc
+The CQF Project has strict checking for Javadoc enabled.  This will cause a build failure in the event of a Javadoc warning.  Visit <https://www.oracle.com/technical-resources/articles/java/javadoc-tool.html> for more info.
+
+Results of Javadoc can be found in the output of the build.
+
 ### Utility Guidelines
 
 #### Types of Utilities
