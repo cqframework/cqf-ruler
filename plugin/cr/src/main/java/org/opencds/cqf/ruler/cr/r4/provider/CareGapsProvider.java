@@ -66,17 +66,17 @@ public class CareGapsProvider extends DaoRegistryOperationProvider {
 	@Description(shortDefinition = "$care-gaps", value = "Implements the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/OperationDefinition-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/index.html\">Da Vinci DEQM FHIR Implementation Guide</a> which is an extension of the <a href=\"http://build.fhir.org/operation-measure-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://hl7.org/fhir/R4/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
 	@Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
 	public Parameters careGapsReport(RequestDetails theRequestDetails,
-			@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
-			@OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
-			@OperationParam(name = "topic", min = 0) List<String> topic,
-			@OperationParam(name = "subject", min = 0, max = 1) String subject,
-			@OperationParam(name = "practitioner", min = 0, max = 1) String practitioner,
-			@OperationParam(name = "organization", min = 0, max = 1) String organization,
-			@OperationParam(name = "status", min = 1) List<String> status,
-			@OperationParam(name = "measureId", min = 0) List<String> measureId,
-			@OperationParam(name = "measureIdentifier", min = 0) List<String> measureIdentifier,
-			@OperationParam(name = "measureUrl", min = 0) List<CanonicalType> measureUrl,
-			@OperationParam(name = "program", min = 0) List<String> program) {
+			@OperationParam(name = "periodStart") String periodStart,
+			@OperationParam(name = "periodEnd") String periodEnd,
+			@OperationParam(name = "topic") List<String> topic,
+			@OperationParam(name = "subject") String subject,
+			@OperationParam(name = "practitioner") String practitioner,
+			@OperationParam(name = "organization") String organization,
+			@OperationParam(name = "status") List<String> status,
+			@OperationParam(name = "measureId") List<String> measureId,
+			@OperationParam(name = "measureIdentifier") List<String> measureIdentifier,
+			@OperationParam(name = "measureUrl") List<CanonicalType> measureUrl,
+			@OperationParam(name = "program") List<String> program) {
 
 		/*
 		 * TODO - topic should allow many and be a union of them
