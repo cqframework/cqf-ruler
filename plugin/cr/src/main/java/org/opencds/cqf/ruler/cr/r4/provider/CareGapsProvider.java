@@ -2,11 +2,13 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Parameters;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.utility.Operations;
 
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -14,6 +16,9 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class CareGapsProvider extends DaoRegistryOperationProvider {
+
+	public static final Pattern CARE_GAPS_STATUS = Pattern
+			.compile("(open-gap|closed-gap|not-applicable)");
 
 	/**
 	 * Implements the <a href=
@@ -63,7 +68,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider {
 	 *                          clinical organization) participates in
 	 * @return Parameters of bundles of Care Gap Measure Reports
 	 */
-	@SuppressWarnings("squid:S00107") //warning for greater than 7 parameters
+	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
 	@Description(shortDefinition = "$care-gaps", value = "Implements the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/OperationDefinition-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/index.html\">Da Vinci DEQM FHIR Implementation Guide</a> which is an extension of the <a href=\"http://build.fhir.org/operation-measure-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://hl7.org/fhir/R4/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
 	@Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
 	public Parameters careGapsReport(RequestDetails theRequestDetails,
@@ -84,6 +89,17 @@ public class CareGapsProvider extends DaoRegistryOperationProvider {
 		 * TODO -
 		 * "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
 		 */
+
+		Operations.validatePeriod(theRequestDetails, "periodStart", "periodEnd");
+		Operations.validateCardinality(theRequestDetails, "subject", 0, 1);
+		Operations.validatePattern(theRequestDetails, "subject", Operations.PATIENT_OR_GROUP_REFERENCE);
+		Operations.validateCardinality(theRequestDetails, "status", 1);
+		Operations.validatePattern(theRequestDetails, "status", CARE_GAPS_STATUS);
+		Operations.validateExclusive(theRequestDetails, "subject", "organization", "practitioner");
+		Operations.validateExclusive(theRequestDetails, "organization", "subject");
+		Operations.validateInclusive(theRequestDetails, "practitioner", "organization");
+		Operations.validateExclusiveOr(theRequestDetails, "subject", "practitioner");
+		Operations.validateAtLeastOne(theRequestDetails, "measureId", "measureIdentifier", "measureUrl");
 
 		Parameters resultParameters = new Parameters();
 		resultParameters.setId((UUID.randomUUID().toString()));
