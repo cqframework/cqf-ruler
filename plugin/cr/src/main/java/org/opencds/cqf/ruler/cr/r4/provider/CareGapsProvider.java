@@ -92,9 +92,9 @@ public class CareGapsProvider extends DaoRegistryOperationProvider {
 
 		Operations.validatePeriod(theRequestDetails, "periodStart", "periodEnd");
 		Operations.validateCardinality(theRequestDetails, "subject", 0, 1);
-		Operations.validatePattern(theRequestDetails, "subject", Operations.PATIENT_OR_GROUP_REFERENCE);
+		Operations.validateSingularPattern(theRequestDetails, "subject", Operations.PATIENT_OR_GROUP_REFERENCE);
 		Operations.validateCardinality(theRequestDetails, "status", 1);
-		Operations.validatePattern(theRequestDetails, "status", CARE_GAPS_STATUS);
+		Operations.validateSingularPattern(theRequestDetails, "status", CARE_GAPS_STATUS);
 		Operations.validateExclusive(theRequestDetails, "subject", "organization", "practitioner");
 		Operations.validateExclusive(theRequestDetails, "organization", "subject");
 		Operations.validateInclusive(theRequestDetails, "practitioner", "organization");

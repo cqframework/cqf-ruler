@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -188,12 +189,13 @@ public class Operations {
 	public static void validatePattern(String theParameter, String theValue, Pattern thePattern) {
 		checkArgument(thePattern.matcher(theValue).matches(), "Parameter '%s' must match the pattern: %s", theParameter,
 				thePattern);
-
 	}
 
 	/**
 	 * This function validates the value of a named parameter matches a specified
 	 * regex pattern.
+	 * Pattern matching is only enforced if the parameter has a value.
+	 * Precondition: the parameter has one and only one value.
 	 * 
 	 * @param theRequestDetails metadata about the current request being processed.
 	 *                          Generally auto-populated by the HAPI FHIR server
@@ -201,13 +203,13 @@ public class Operations {
 	 * @param theParameter      the name of the parameter
 	 * @param thePattern        the regex pattern to match
 	 */
-	public static void validatePattern(RequestDetails theRequestDetails, String theParameter, Pattern thePattern) {
+	public static void validateSingularPattern(RequestDetails theRequestDetails, String theParameter,
+			Pattern thePattern) {
 		String[] potentialValue = theRequestDetails.getParameters().get(theParameter);
-		if (potentialValue.length == 0) {
+		if (potentialValue == null || potentialValue.length == 0) {
 			return;
 		}
 		validatePattern(theParameter, potentialValue[0], thePattern);
-
 	}
 
 	/**
@@ -227,10 +229,13 @@ public class Operations {
 	public static void validateExclusive(RequestDetails theRequestDetails, String theParameter,
 			String... theExcludedParameters) {
 		String[] potentialValue = theRequestDetails.getParameters().get(theParameter);
-		if (potentialValue.length == 0) {
+		if (potentialValue == null || potentialValue.length == 0) {
 			return;
 		}
 		for (String excludedParameter : theExcludedParameters) {
+			if (theRequestDetails.getParameters().get(excludedParameter) == null) {
+				continue;
+			}
 			checkArgument(theRequestDetails.getParameters().get(excludedParameter).length > 0,
 					"Parameter '%s' cannot be included with parameter '%s'.", excludedParameter, theParameter);
 		}
@@ -253,11 +258,13 @@ public class Operations {
 	public static void validateInclusive(RequestDetails theRequestDetails, String theParameter,
 			String... theIncludedParameters) {
 		String[] potentialValue = theRequestDetails.getParameters().get(theParameter);
-		if (potentialValue.length == 0) {
+		if (potentialValue == null || potentialValue.length == 0) {
 			return;
 		}
 		for (String includedParameter : theIncludedParameters) {
-			checkArgument(theRequestDetails.getParameters().get(includedParameter).length < 1,
+			checkArgument(
+					theRequestDetails.getParameters().get(includedParameter) == null
+							|| theRequestDetails.getParameters().get(includedParameter).length < 1,
 					"Parameter '%s' must be included with parameter '%s'.", includedParameter, theParameter);
 		}
 	}
@@ -277,9 +284,11 @@ public class Operations {
 	 */
 	public static void validateExclusiveOr(RequestDetails theRequestDetails, String theLeftParameter,
 			String theRightParameter) {
+		String[] potentialLeftValue = theRequestDetails.getParameters().get(theLeftParameter);
+		String[] potentialRightValue = theRequestDetails.getParameters().get(theRightParameter);
 		checkArgument(
-				theRequestDetails.getParameters().get(theLeftParameter).length > 0
-						^ theRequestDetails.getParameters().get(theRightParameter).length > 0,
+				(potentialLeftValue != null && potentialLeftValue.length > 0)
+						^ (potentialRightValue != null && potentialRightValue.length > 0),
 				"Either parameter '%s' or parameter '%s' must be included, but not both.", theLeftParameter,
 				theRightParameter);
 	}
@@ -296,14 +305,19 @@ public class Operations {
 	 * @param theParameters     the set of parameters to validate
 	 */
 	public static void validateAtLeastOne(RequestDetails theRequestDetails, String... theParameters) {
+		String[] potentialValue = null;
 		for (String includedParameter : theParameters) {
-			if (theRequestDetails.getParameters().get(includedParameter).length > 1) {
+			potentialValue = theRequestDetails.getParameters().get(includedParameter);
+			if (potentialValue == null) {
+				continue;
+			}
+			if (potentialValue.length > 0) {
 				return;
 			}
 		}
-
 		throw new IllegalArgumentException(String
-				.format("At least one of the following parameters must be included: '%s'.", (Object[]) theParameters));
+				.format("At least one of the following parameters must be included: %s.",
+						StringUtils.join(theParameters, ", ")));
 
 	}
 }

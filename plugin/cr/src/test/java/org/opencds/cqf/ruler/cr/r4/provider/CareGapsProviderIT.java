@@ -20,6 +20,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 	private static final String periodEndValid = "2022-01-15";
 	private static final String subjectValid = "Patient/12345";
 	private static final String statusValid = "open-gap";
+	private static final String measureIdValid = "measure-EXM130-7.3.000";
 
 	@Test
 	public void testPeriodStartValid() throws Exception {
@@ -28,6 +29,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
 		params.addParameter().setName("subject").setValue(new StringType(subjectValid));
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
+		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
 		assertDoesNotThrow(() -> {
 			getClient().operation().onType(Measure.class).named("$care-gaps")
