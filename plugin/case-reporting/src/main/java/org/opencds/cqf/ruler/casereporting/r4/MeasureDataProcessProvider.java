@@ -30,6 +30,9 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
+/**
+ * This class attempts to collect line list data for given MeasureReport
+ */
 public class MeasureDataProcessProvider extends DaoRegistryOperationProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(MeasureDataProcessProvider.class);

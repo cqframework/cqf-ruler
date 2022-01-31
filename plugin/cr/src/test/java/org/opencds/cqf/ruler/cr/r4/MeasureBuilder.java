@@ -1,7 +1,5 @@
 package org.opencds.cqf.ruler.cr.r4;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import com.google.common.collect.Lists;
 
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -20,22 +18,25 @@ public final class MeasureBuilder {
 		this.measure = measure;
 	}
 
-	public static MeasureBuilder newCohortMeasure() {
+	public static MeasureBuilder newCohortMeasure(Library library) {
 		MeasureBuilder mb = new MeasureBuilder(measure("cohort"));
+		mb.setLibrary(library);
 		mb.addPopulation(MeasurePopulationType.INITIALPOPULATION, "Initial Population");
 		return mb;
 	}
 
-	public static MeasureBuilder newProportionMeasure() {
+	public static MeasureBuilder newProportionMeasure(Library library) {
 		MeasureBuilder mb = new MeasureBuilder(measure("proportion"));
+		mb.setLibrary(library);
 		mb.addPopulation(MeasurePopulationType.INITIALPOPULATION, "Initial Population");
 		mb.addPopulation(MeasurePopulationType.DENOMINATOR, "Denominator");
 		mb.addPopulation(MeasurePopulationType.NUMERATOR, "Numerator");
 		return mb;
 	}
 
-	public static MeasureBuilder newContinuousVariableMeasure() {
+	public static MeasureBuilder newContinuousVariableMeasure(Library library) {
 		MeasureBuilder mb = new MeasureBuilder(measure("continuous-variable"));
+		mb.setLibrary(library);
 		mb.addPopulation(MeasurePopulationType.INITIALPOPULATION, "Initial Population");
 		mb.addPopulation(MeasurePopulationType.MEASUREPOPULATION, "Measure Population");
 		return mb;
@@ -78,14 +79,12 @@ public final class MeasureBuilder {
 		return this;
 	}
 
-	public MeasureBuilder setLibrary(Library library) {
+	private MeasureBuilder setLibrary(Library library) {
 		measure.setLibrary(Lists.newArrayList(new CanonicalType(library.getUrl())));
 		return this;
 	}
 
 	public Measure build(){
-		checkState(measure.getLibrary() != null && measure.getLibrary().size() == 1, "Measure must have exactly one library");
-
 		return this.measure;
 	}
 }

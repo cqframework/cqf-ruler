@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.utility;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.hl7.fhir.instance.model.api.IBase;
@@ -101,6 +102,33 @@ public class Ids {
 		checkNotNull(theId);
 
 		return newId(theFhirContext.getVersion().getVersion(), theId);
+	}
+
+	/**
+	 * The gets the "simple" Id for the Resource, without qualifiers or versions. For example, "Patient/123".
+	 * <p>This is shorthand for resource.getIdElement().toUnqualifiedVersionless().getValue()
+	 * @param resource the Resource to get the Id for
+	 * @return the simple Id
+	 */
+	public static String simple(IBaseResource resource) {
+		checkNotNull(resource);
+		checkArgument(resource.getIdElement() != null);
+
+		return simple(resource.getIdElement());
+	}
+
+		/**
+	 * The gets the "simple" Id for the Id, without qualifiers or versions. For example, "Patient/123".
+	 * <p>This is shorthand for id.toUnqualifiedVersionless().getValue()
+	 * @param id the IIdType to get the Id for
+	 * @return the simple Id
+	 */
+	public static String simple(IIdType id) {
+		checkNotNull(id);
+		checkArgument(id.hasResourceType());
+		checkArgument(id.hasIdPart());
+
+		return id.toUnqualifiedVersionless().getValue();
 	}
 
 	/**

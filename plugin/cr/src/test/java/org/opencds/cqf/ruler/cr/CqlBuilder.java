@@ -1,5 +1,15 @@
 package org.opencds.cqf.ruler.cr;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.CqlTranslatorException;
+import org.cqframework.cql.cql2elm.FhirLibrarySourceProvider;
+import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
+import org.opencds.cqf.ruler.utility.Translators;
+
 public class CqlBuilder {
 
 	private final StringBuilder stringBuilder;
@@ -9,7 +19,7 @@ public class CqlBuilder {
 		this.stringBuilder.append(cql(fhirVersion));
 	}
 
-	public static CqlBuilder newCql(String fhirVersion) {
+	public static CqlBuilder newCqlLibrary(String fhirVersion) {
 		return new CqlBuilder(fhirVersion);
 	}
 
@@ -25,7 +35,10 @@ public class CqlBuilder {
 	}
 
 	public String build() {
-		return this.stringBuilder.toString();
+		String cql = this.stringBuilder.toString();
+		validate(cql);
+
+		return cql;
 	}
 
 	private String cql(String fhirVersion) {
@@ -64,5 +77,22 @@ public class CqlBuilder {
 	private String cqlExpression(String name, String expression) {
 		return "define \"" + name + "\":\n" + expression;
 	}
+
+	private void validate(String cql) {
+		ModelManager modelManager = new ModelManager();
+		LibraryManager libraryManager = new LibraryManager(modelManager);
+		libraryManager.getLibrarySourceLoader().registerProvider(new FhirLibrarySourceProvider());
+		CqlTranslator translator;
+		try {
+			translator = CqlTranslator.fromStream(new ByteArrayInputStream(cql.getBytes()), modelManager, libraryManager);
+		}
+		catch (IOException e) {
+			throw new CqlTranslatorException("Error validating cql", e);
+		}
+
+		if(translator.getErrors().size() > 0 ) {
+			throw new CqlTranslatorException("Error validating cql: " + Translators.errorsToString(translator.getErrors()));
+		}
+  }
 
 }

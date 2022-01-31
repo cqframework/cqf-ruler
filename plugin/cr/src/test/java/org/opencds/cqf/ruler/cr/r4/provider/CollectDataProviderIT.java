@@ -18,6 +18,7 @@ import org.opencds.cqf.ruler.cr.r4.Libraries;
 import org.opencds.cqf.ruler.cr.r4.MeasureBuilder;
 import org.opencds.cqf.ruler.cr.r4.Patients;
 import org.opencds.cqf.ruler.test.DaoIntegrationTest;
+import org.opencds.cqf.ruler.utility.Ids;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -32,7 +33,7 @@ public class CollectDataProviderIT extends DaoIntegrationTest {
 	@Test
 	public void testCollectData() {
 		// Create test Measure
-		String cql = CqlBuilder.newCql("4.0.1")
+		String cql = CqlBuilder.newCqlLibrary("4.0.1")
 				.addExpression(
 						"Initial Population",
 						"exists([Observation])")
@@ -41,8 +42,7 @@ public class CollectDataProviderIT extends DaoIntegrationTest {
 		Library lib = Libraries.library(cql);
 
 		Measure m = MeasureBuilder
-				.newCohortMeasure()
-				.setLibrary(lib)
+				.newCohortMeasure(lib)
 				.build();
 
 		this.create(lib);
@@ -62,7 +62,7 @@ public class CollectDataProviderIT extends DaoIntegrationTest {
 
 		// Submit it
 		Parameters results = collectDataProvider.collectData(new SystemRequestDetails(), m.getIdElement(), "2019-01-01",
-				"2019-12-31", "Patient" + "/" + john.getIdElement().getIdPart(), null, null);
+				"2019-12-31", Ids.simple(john), null, null);
 
 		List<ParametersParameterComponent> resources = org.opencds.cqf.ruler.utility.r4.Parameters.getPartsByName(results, "resource");
 		assertEquals(1, resources.size());
