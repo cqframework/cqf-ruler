@@ -25,9 +25,6 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
-
-	// private static final Logger logger = LoggerFactory.getLogger(MeasureEvaluateProvider.class);
-
 	@Autowired
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 
@@ -67,18 +64,16 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn,
 			@OperationParam(name = "productLine") String productLine) {
 
+		Measure measure = read(theId);
 		TerminologyProvider terminologyProvider = this.jpaTerminologyProviderFactory.create(requestDetails);
 		DataProvider dataProvider = this.dataProviderFactory.create(requestDetails, terminologyProvider);
 		LibraryContentProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 
-		// MeasureEvalConfig measureEvalConfig = MeasureEvalConfig.defaultConfig();
-
 		org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor(
 				null, null, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
 				this.globalLibraryCache);
 
-		Measure measure = read(theId);
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
 				subject, null, lastReceivedOn, null, null, null, null);
 

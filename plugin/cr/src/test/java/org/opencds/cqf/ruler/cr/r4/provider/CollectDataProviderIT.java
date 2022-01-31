@@ -3,7 +3,6 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.hl7.fhir.r4.model.Encounter;
 import org.hl7.fhir.r4.model.Library;
@@ -65,8 +64,7 @@ public class CollectDataProviderIT extends DaoIntegrationTest {
 		Parameters results = collectDataProvider.collectData(new SystemRequestDetails(), m.getIdElement(), "2019-01-01",
 				"2019-12-31", "Patient" + "/" + john.getIdElement().getIdPart(), null, null);
 
-		List<ParametersParameterComponent> resources = results.getParameter().stream()
-				.filter(x -> x.getName().equals("resource")).collect(Collectors.toList());
+		List<ParametersParameterComponent> resources = org.opencds.cqf.ruler.utility.r4.Parameters.getPartsByName(results, "resource");
 		assertEquals(1, resources.size());
 		assertEquals("Observation", resources.get(0).getResource().fhirType());
 	}
