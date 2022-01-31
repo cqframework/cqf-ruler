@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import org.hl7.fhir.instance.model.api.IBase;
 
-class LibraryFunctions {
+final class LibraryFunctions {
 
 	private final Function<IBase, List<IBase>> getAttachments;
 	private final Function<IBase, String> getContentType;
