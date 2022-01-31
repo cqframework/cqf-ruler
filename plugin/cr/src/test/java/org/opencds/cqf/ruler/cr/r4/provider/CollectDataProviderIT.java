@@ -67,5 +67,9 @@ public class CollectDataProviderIT extends DaoIntegrationTest {
 		List<ParametersParameterComponent> resources = org.opencds.cqf.ruler.utility.r4.Parameters.getPartsByName(results, "resource");
 		assertEquals(1, resources.size());
 		assertEquals("Observation", resources.get(0).getResource().fhirType());
+
+		List<ParametersParameterComponent> reports = org.opencds.cqf.ruler.utility.r4.Parameters.getPartsByName(results, "measureReport");
+		assertEquals(1, reports.size());
+		assertEquals("MeasureReport", reports.get(0).getResource().fhirType());
 	}
 }
