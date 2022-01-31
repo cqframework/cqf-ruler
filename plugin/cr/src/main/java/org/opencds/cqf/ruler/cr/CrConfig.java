@@ -69,6 +69,12 @@ public class CrConfig {
 	}
 
 	@Bean
+	@Conditional(OnR4Condition.class)
+	public org.opencds.cqf.ruler.cr.dstu3.provider.MeasureEvaluateProvider dstu3MeasureEvaluateProvider() {
+		return new org.opencds.cqf.ruler.cr.dstu3.provider.MeasureEvaluateProvider();
+	}
+
+	@Bean
 	@Conditional(OnDSTU3Condition.class)
 	public org.opencds.cqf.ruler.cr.dstu3.provider.SubmitDataProvider dstu3SubmitDataProvider() {
 		return new org.opencds.cqf.ruler.cr.dstu3.provider.SubmitDataProvider();
@@ -79,6 +85,13 @@ public class CrConfig {
 	public org.opencds.cqf.ruler.cr.r4.provider.SubmitDataProvider r4SubmitDataProvider() {
 		return new org.opencds.cqf.ruler.cr.r4.provider.SubmitDataProvider();
 	}
+
+	@Bean
+	@Conditional(OnDSTU3Condition.class)
+	public org.opencds.cqf.ruler.cr.dstu3.provider.CollectDataProvider dstu3CollectDataProvider() {
+		return new org.opencds.cqf.ruler.cr.dstu3.provider.CollectDataProvider();
+	}
+
 
 	@Bean
 	@Conditional(OnR4Condition.class)
