@@ -152,7 +152,7 @@ or, if you put unrelated code into the class, you might end up with something li
 
 If the code doesn't read clearly after you've added an utility, consider that it may not be in the right place.
 
-In general, all the functions for this type of utility should be `static`. No internal state should be maintained (`static final`, or immutable, state is ok). If you final that your utility class contains mutable state, consider an alternate design.
+In general, all the functions for this type of utility should be `static`. No internal state should be maintained (`static final`, or immutable, state is ok). If you find that your utility class contains mutable state, consider an alternate design.
 
 Examples
 
@@ -161,7 +161,7 @@ Examples
 
 #### Behavior Specific Utilities
 
-If there is behavior you'd like to share across many classes, model that as an interface and use a name that follows the pattern `"ThingDoer"`. For example, all the classes that access a database might be `DatabaseReader`. Use `default` interface implementations to write logic that can be shared many places. The interfaces themselves shouldn't have mutable state (again `static final` is ok). If it's necessary for the for shared logic to have access to state, model that as an method without a default implementation. For example:
+If there is behavior you'd like to share across many classes, model that as an interface and use a name that follows the pattern `"ThingDoer"`. For example, all the classes that access a database might be `DatabaseReader`. Use `default` interface implementations to write logic that can be shared many places. The interfaces themselves shouldn't have mutable state (again `static final` is ok). If it's necessary for the shared logic to have access to state, model that as an method without a default implementation. For example:
 
 ```java
 interface DatabaseReader {

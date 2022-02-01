@@ -7,6 +7,9 @@ import java.util.regex.Pattern;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Patient;
+import org.opencds.cqf.ruler.behavior.ResourceCreator;
+import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Operations;
 
@@ -15,7 +18,7 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class CareGapsProvider extends DaoRegistryOperationProvider {
+public class CareGapsProvider extends DaoRegistryOperationProvider implements ParameterUser, ResourceCreator {
 
 	public static final Pattern CARE_GAPS_STATUS = Pattern
 			.compile("(open-gap|closed-gap|not-applicable)");
@@ -90,6 +93,14 @@ public class CareGapsProvider extends DaoRegistryOperationProvider {
 		 * "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
 		 */
 
+		validateParameters(theRequestDetails);
+		Parameters result = newResource(Parameters.class, UUID.randomUUID().toString());
+		List<Patient> patients = getPatientListFromSubject(subject);
+
+		return result;
+	}
+
+	public void validateParameters(RequestDetails theRequestDetails) {
 		Operations.validatePeriod(theRequestDetails, "periodStart", "periodEnd");
 		Operations.validateCardinality(theRequestDetails, "subject", 0, 1);
 		Operations.validateSingularPattern(theRequestDetails, "subject", Operations.PATIENT_OR_GROUP_REFERENCE);
@@ -100,10 +111,6 @@ public class CareGapsProvider extends DaoRegistryOperationProvider {
 		Operations.validateInclusive(theRequestDetails, "practitioner", "organization");
 		Operations.validateExclusiveOr(theRequestDetails, "subject", "organization");
 		Operations.validateAtLeastOne(theRequestDetails, "measureId", "measureIdentifier", "measureUrl");
-
-		Parameters resultParameters = new Parameters();
-		resultParameters.setId((UUID.randomUUID().toString()));
-
-		return resultParameters;
 	}
+
 }

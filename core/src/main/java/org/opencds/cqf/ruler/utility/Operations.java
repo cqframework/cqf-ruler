@@ -10,8 +10,6 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
@@ -28,8 +26,6 @@ public class Operations {
 
 	public static final Pattern FHIR_DATE = Pattern
 			.compile("-?[0-9]{4}(-(0[1-9]|1[0-2])(-(0[0-9]|[1-2][0-9]|3[0-1]))?)?");
-
-	Logger ourLog = LoggerFactory.getLogger(Operations.class);
 
 	/**
 	 * This function converts a string representation of a FHIR period date to a
@@ -324,4 +320,5 @@ public class Operations {
 						StringUtils.join(theParameters, ", ")));
 
 	}
+
 }
