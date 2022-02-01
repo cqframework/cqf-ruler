@@ -1289,7 +1289,7 @@
       "type": "individual",
       "measure": "DiabetesHemoglobinA1cHbA1cPoorControl9FHIR",
       "subject": {
-        "reference": "patient-12742542"
+        "reference": "Patient/patient-12742542"
       },
       "period": {
         "start": "2019-01-01T00:00:00+00:00",
@@ -1342,7 +1342,7 @@
             "code": "initial-population"
           }
         } ],
-        "reference": "patient-12742542"
+        "reference": "Patient/patient-12742542"
       }, {
         "reference": "#78a5067f-5468-46ba-aaa5-429561e26acc"
       }, {

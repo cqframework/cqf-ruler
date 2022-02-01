@@ -10,13 +10,18 @@ import javax.servlet.http.HttpServletRequest;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryRequestComponent;
+import org.hl7.fhir.r4.model.Bundle.HTTPVerb;
+import org.hl7.fhir.r4.model.Bundle.HTTPVerbEnumFactory;
 import org.hl7.fhir.r4.model.Communication;
+import org.hl7.fhir.r4.model.Enumeration;
 import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.UriType;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.model.api.annotation.Description;
+import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
@@ -35,7 +41,7 @@ import ca.uhn.fhir.util.BundleUtil;
 @Component
 public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 	private static final Logger logger = LoggerFactory.getLogger(ProcessMessageProvider.class);
-
+	@SuppressWarnings("unchecked")
 	@Operation(name = "$process-message-bundle", idempotent = false)
 	public Bundle processMessageBundle(HttpServletRequest theServletRequest, RequestDetails theRequestDetails,
 			@OperationParam(name = "content", min = 1, max = 1) @Description(formalDefinition = "The message to process (or, if using asynchronous messaging, it may be a response message to accept)") Bundle theMessageToProcess) {
@@ -65,18 +71,20 @@ public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 					messageHeader.setMeta(meta);
 				}
 
+				List<IBaseResource> resources = new ArrayList<IBaseResource>();
+
 				List<Patient> patients = BundleUtil.toListOfResourcesOfType(this.getFhirContext(), bundle, Patient.class);
 				for (Patient p : patients) {
 					patientId = p.getId();
 					p.setId(p.getIdElement().toVersionless());
-					this.updateOrCreate(p, theRequestDetails);
+					resources.add(p);
 				}
 
 				List<Bundle> bundles = BundleUtil.toListOfResourcesOfType(this.getFhirContext(), bundle, Bundle.class);
 				for (Bundle b : bundles) {
 					patientId = this.processBundle(b, theRequestDetails);
 					b.setId(b.getIdElement().toVersionless());
-					this.updateOrCreate(b, theRequestDetails);
+					resources.add(b);
 				}
 
 				for (BundleEntryComponent e : bundle.getEntry()) {
@@ -91,7 +99,7 @@ public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 					}
 
 					r.setId(r.getIdElement().toVersionless());
-					this.updateOrCreate(r, theRequestDetails);
+					resources.add(r);
 				}
 
 				if (patientId != null) {
@@ -110,6 +118,16 @@ public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 					referenceList.add(commRef);
 					messageHeader.setFocus(referenceList);
 				}
+				IVersionSpecificBundleFactory newBundleFactory = this.getFhirContext().newBundleFactory();
+				newBundleFactory.addResourcesToBundle(resources, BundleTypeEnum.TRANSACTION, theRequestDetails.getFhirServerBase(), null, null);
+				Bundle transactionBundle = (Bundle) newBundleFactory.getResourceBundle();
+				for (BundleEntryComponent entry : transactionBundle.getEntry()) {
+					UriType uri = new UriType(theRequestDetails.getFhirServerBase() + "/" + entry.getResource().fhirType() + "/" + entry.getResource().getIdElement().getIdPart());
+					Enumeration<HTTPVerb> method = new Enumeration<HTTPVerb>(new HTTPVerbEnumFactory());
+					method.setValue(HTTPVerb.PUT);
+					entry.setRequest(new BundleEntryRequestComponent(method, uri));
+				}
+				this.getDaoRegistry().getSystemDao().transaction(theRequestDetails, transactionBundle);
 				return dafBundle;
 			} else {
 				BundleEntryComponent entryComp = new BundleEntryComponent();
