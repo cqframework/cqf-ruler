@@ -130,8 +130,9 @@ public class Operations {
 	 */
 	public static void validateCardinality(RequestDetails theRequestDetails, String theParameter, int min, int max) {
 		validateCardinality(theRequestDetails, theParameter, min);
-		int count = theRequestDetails.getParameters().get(theParameter).length;
-		checkArgument(count <= max, "Parameter '%s' must be provided a maximum of %s time(s).", theParameter,
+		String[] potentialValue = theRequestDetails.getParameters().get(theParameter);
+		checkArgument(potentialValue == null || potentialValue.length <= max,
+				"Parameter '%s' must be provided a maximum of %s time(s).", theParameter,
 				String.valueOf(max));
 	}
 
@@ -149,8 +150,9 @@ public class Operations {
 		if (min <= 0) {
 			return;
 		}
-		int count = theRequestDetails.getParameters().get(theParameter).length;
-		checkArgument(count >= min, "Parameter '%s' must be provided a minimum of %s time(s).", theParameter,
+		String[] potentialValue = theRequestDetails.getParameters().get(theParameter);
+		checkArgument(potentialValue != null && potentialValue.length >= min,
+				"Parameter '%s' must be provided a minimum of %s time(s).", theParameter,
 				String.valueOf(min));
 	}
 
@@ -232,11 +234,13 @@ public class Operations {
 		if (potentialValue == null || potentialValue.length == 0) {
 			return;
 		}
+		String[] potentialExcludedValue = null;
 		for (String excludedParameter : theExcludedParameters) {
-			if (theRequestDetails.getParameters().get(excludedParameter) == null) {
+			potentialExcludedValue = theRequestDetails.getParameters().get(excludedParameter);
+			if (potentialExcludedValue == null) {
 				continue;
 			}
-			checkArgument(theRequestDetails.getParameters().get(excludedParameter).length > 0,
+			checkArgument(potentialExcludedValue.length <= 0,
 					"Parameter '%s' cannot be included with parameter '%s'.", excludedParameter, theParameter);
 		}
 	}
@@ -263,8 +267,8 @@ public class Operations {
 		}
 		for (String includedParameter : theIncludedParameters) {
 			checkArgument(
-					theRequestDetails.getParameters().get(includedParameter) == null
-							|| theRequestDetails.getParameters().get(includedParameter).length < 1,
+					theRequestDetails.getParameters().get(includedParameter) != null
+							&& theRequestDetails.getParameters().get(includedParameter).length > 0,
 					"Parameter '%s' must be included with parameter '%s'.", includedParameter, theParameter);
 		}
 	}
@@ -289,7 +293,7 @@ public class Operations {
 		checkArgument(
 				(potentialLeftValue != null && potentialLeftValue.length > 0)
 						^ (potentialRightValue != null && potentialRightValue.length > 0),
-				"Either parameter '%s' or parameter '%s' must be included, but not both.", theLeftParameter,
+				"Either one of parameter '%s' or parameter '%s' must be included, but not both.", theLeftParameter,
 				theRightParameter);
 	}
 

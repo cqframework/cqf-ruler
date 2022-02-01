@@ -98,7 +98,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider {
 		Operations.validateExclusive(theRequestDetails, "subject", "organization", "practitioner");
 		Operations.validateExclusive(theRequestDetails, "organization", "subject");
 		Operations.validateInclusive(theRequestDetails, "practitioner", "organization");
-		Operations.validateExclusiveOr(theRequestDetails, "subject", "practitioner");
+		Operations.validateExclusiveOr(theRequestDetails, "subject", "organization");
 		Operations.validateAtLeastOne(theRequestDetails, "measureId", "measureIdentifier", "measureUrl");
 
 		Parameters resultParameters = new Parameters();
