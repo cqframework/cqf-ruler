@@ -22,7 +22,7 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testDstu3DataRequirementsOperation() throws IOException {
-		String bundleTextValueSets = stringFromResource( "LibraryTransactionBundle.json");
+		String bundleTextValueSets = stringFromResource( "DataRequirementsLibraryTransactionBundle.json");
 		FhirContext fhirContext = FhirContext.forDstu3();
 		Bundle bundleValueSet = (Bundle)fhirContext.newJsonParser().parseResource(bundleTextValueSets);
 		getClient().transaction().withBundle(bundleValueSet).execute();
