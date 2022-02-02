@@ -1,7 +1,6 @@
 package org.opencds.cqf.ruler.casereporting.r4;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
@@ -15,8 +14,6 @@ import org.opencds.cqf.ruler.casereporting.CaseReportingConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ProcessMessageProviderIT.class,
 		CaseReportingConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 public class ProcessMessageProviderIT extends RestIntegrationTest {
@@ -27,13 +24,6 @@ public class ProcessMessageProviderIT extends RestIntegrationTest {
 		String packagePrefix = "org/opencds/cqf/ruler/casereporting/r4/";
 
 		Bundle bundle = (Bundle) loadResource(packagePrefix + "example-eicr.json");
-
-		assertThrows(ResourceNotFoundException.class,
-				() -> getClient().read().resource(Patient.class).withId("patient-12742542").execute());
-		assertThrows(ResourceNotFoundException.class,
-				() -> getClient().read().resource(Encounter.class).withId("encounter-97953898").execute());
-		assertThrows(ResourceNotFoundException.class,
-				() -> getClient().read().resource(MeasureReport.class).withId("diabetes-mp").execute());
 
 		Bundle returnBundle = getClient().operation().onServer()
 				.named("$process-message-bundle")

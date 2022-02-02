@@ -27,139 +27,115 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.model.valueset.BundleTypeEnum;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.api.server.storage.TransactionDetails;
-import ca.uhn.fhir.rest.server.exceptions.UnprocessableEntityException;
 import ca.uhn.fhir.util.BundleUtil;
 
 @Component
 public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 	private static final Logger logger = LoggerFactory.getLogger(ProcessMessageProvider.class);
 
-	@SuppressWarnings("unchecked")
 	@Operation(name = "$process-message-bundle", idempotent = false)
 	public Bundle processMessageBundle(HttpServletRequest theServletRequest, RequestDetails theRequestDetails,
 			@OperationParam(name = "content", min = 1, max = 1) @Description(formalDefinition = "The message to process (or, if using asynchronous messaging, it may be a response message to accept)") Bundle theMessageToProcess) {
 		logger.info("Validating the Bundle");
 		Bundle bundle = theMessageToProcess;
-		boolean errorExists = false;
-		try {
-			OperationOutcome outcome = validateBundle(errorExists, bundle);
-			if (!errorExists) {
-				IVersionSpecificBundleFactory bundleFactory = this.getFhirContext().newBundleFactory();
-				bundle.setId(getUUID());
-				bundleFactory.initializeWithBundleResource(bundle);
-				Bundle dafBundle = (Bundle) bundleFactory.getResourceBundle();
-				dafBundle.setTimestamp(new Date());
-				this.getDaoRegistry().getResourceDao(Bundle.class).create(dafBundle);
+		Boolean errorExists = false;
+		OperationOutcome outcome = validateBundle(errorExists, bundle);
+		if (!errorExists) {
+			IVersionSpecificBundleFactory bundleFactory = this.getFhirContext().newBundleFactory();
+			bundle.setId(getUUID());
+			bundleFactory.initializeWithBundleResource(bundle);
+			Bundle dafBundle = (Bundle) bundleFactory.getResourceBundle();
+			dafBundle.setTimestamp(new Date());
+			this.getDaoRegistry().getResourceDao(Bundle.class).create(dafBundle);
 
-				MessageHeader messageHeader = null;
-				String patientId = null;
-				String commId = null;
-				List<MessageHeader> headers = BundleUtil.toListOfResourcesOfType(this.getFhirContext(), bundle,
-						MessageHeader.class);
-				for (MessageHeader mh : headers) {
-					messageHeader = mh;
-					messageHeader.setId(getUUID());
-					Meta meta = messageHeader.getMeta();
-					meta.setLastUpdated(new Date());
-					messageHeader.setMeta(meta);
+			MessageHeader messageHeader = null;
+			String patientId = null;
+			String commId = null;
+			List<MessageHeader> headers = BundleUtil.toListOfResourcesOfType(this.getFhirContext(), bundle,
+					MessageHeader.class);
+			for (MessageHeader mh : headers) {
+				messageHeader = mh;
+				messageHeader.setId(getUUID());
+				Meta meta = messageHeader.getMeta();
+				meta.setLastUpdated(new Date());
+				messageHeader.setMeta(meta);
+			}
+
+			List<IBaseResource> resources = new ArrayList<>();
+
+			List<Patient> patients = BundleUtil.toListOfResourcesOfType(this.getFhirContext(), bundle, Patient.class);
+			for (Patient p : patients) {
+				patientId = p.getId();
+				p.setId(p.getIdElement().toVersionless());
+				resources.add(p);
+			}
+
+			List<Bundle> bundles = BundleUtil.toListOfResourcesOfType(this.getFhirContext(), bundle, Bundle.class);
+			for (Bundle b : bundles) {
+				patientId = this.processBundle(b, theRequestDetails);
+				b.setId(b.getIdElement().toVersionless());
+				resources.add(b);
+			}
+
+			for (BundleEntryComponent e : bundle.getEntry()) {
+				Resource r = e.getResource();
+				if (r == null) {
+					continue;
 				}
 
-				List<IBaseResource> resources = new ArrayList<IBaseResource>();
-
-				List<Patient> patients = BundleUtil.toListOfResourcesOfType(this.getFhirContext(), bundle, Patient.class);
-				for (Patient p : patients) {
-					patientId = p.getId();
-					p.setId(p.getIdElement().toVersionless());
-					resources.add(p);
+				if (r.fhirType().equals("Bundle") || r.fhirType().equals("MessageHeader")
+						|| r.fhirType().equals("Patient")) {
+					continue;
 				}
 
-				List<Bundle> bundles = BundleUtil.toListOfResourcesOfType(this.getFhirContext(), bundle, Bundle.class);
-				for (Bundle b : bundles) {
-					patientId = this.processBundle(b, theRequestDetails);
-					b.setId(b.getIdElement().toVersionless());
-					resources.add(b);
-				}
+				r.setId(r.getIdElement().toVersionless());
+				resources.add(r);
+			}
 
-				for (BundleEntryComponent e : bundle.getEntry()) {
-					Resource r = e.getResource();
-					if (r == null) {
-						continue;
-					}
-
-					if (r.fhirType().equals("Bundle") || r.fhirType().equals("MessageHeader")
-							|| r.fhirType().equals("Patient")) {
-						continue;
-					}
-
-					r.setId(r.getIdElement().toVersionless());
-					resources.add(r);
-				}
-
-				if (patientId != null) {
-					commId = constructAndSaveCommunication(patientId);
-				}
-				if (messageHeader == null) {
-					messageHeader = constructMessageHeaderResource();
-					BundleEntryComponent entryComp = new BundleEntryComponent();
-					entryComp.setResource(messageHeader);
-					dafBundle.addEntry(entryComp);
-				}
-				if (commId != null) {
-					List<Reference> referenceList = new ArrayList<Reference>();
-					Reference commRef = new Reference();
-					commRef.setReference("Communication/" + commId);
-					referenceList.add(commRef);
-					messageHeader.setFocus(referenceList);
-				}
-				IVersionSpecificBundleFactory newBundleFactory = this.getFhirContext().newBundleFactory();
-				newBundleFactory.addResourcesToBundle(resources, BundleTypeEnum.TRANSACTION,
-						theRequestDetails.getFhirServerBase(), null, null);
-				Bundle transactionBundle = (Bundle) newBundleFactory.getResourceBundle();
-				for (BundleEntryComponent entry : transactionBundle.getEntry()) {
-					UriType uri = new UriType(theRequestDetails.getFhirServerBase() + "/" + entry.getResource().fhirType()
-							+ "/" + entry.getResource().getIdElement().getIdPart());
-					Enumeration<HTTPVerb> method = new Enumeration<HTTPVerb>(new HTTPVerbEnumFactory());
-					method.setValue(HTTPVerb.PUT);
-					entry.setRequest(new BundleEntryRequestComponent(method, uri));
-				}
-				this.getDaoRegistry().getSystemDao().transaction(theRequestDetails, transactionBundle);
-				return dafBundle;
-			} else {
+			if (patientId != null) {
+				commId = constructAndSaveCommunication(patientId);
+			}
+			if (messageHeader == null) {
+				messageHeader = constructMessageHeaderResource();
 				BundleEntryComponent entryComp = new BundleEntryComponent();
-				entryComp.setResource(outcome);
-				bundle.addEntry(entryComp);
-				return bundle;
+				entryComp.setResource(messageHeader);
+				dafBundle.addEntry(entryComp);
 			}
-		} catch (Exception e) {
-			logger.error("Error in Processing the Bundle:" + e.getMessage(), e);
-			throw new UnprocessableEntityException("Error in Processing the Bundle", e);
-		}
-	}
+			if (commId != null) {
+				List<Reference> referenceList = new ArrayList<>();
+				Reference commRef = new Reference();
+				commRef.setReference("Communication/" + commId);
+				referenceList.add(commRef);
+				messageHeader.setFocus(referenceList);
+			}
+			IVersionSpecificBundleFactory newBundleFactory = this.getFhirContext().newBundleFactory();
+			newBundleFactory.addResourcesToBundle(resources, BundleTypeEnum.TRANSACTION,
+					theRequestDetails.getFhirServerBase(), null, null);
+			Bundle transactionBundle = (Bundle) newBundleFactory.getResourceBundle();
+			for (BundleEntryComponent entry : transactionBundle.getEntry()) {
+				UriType uri = new UriType(theRequestDetails.getFhirServerBase() + "/" + entry.getResource().fhirType()
+						+ "/" + entry.getResource().getIdElement().getIdPart());
+				Enumeration<HTTPVerb> method = new Enumeration<>(new HTTPVerbEnumFactory());
+				method.setValue(HTTPVerb.PUT);
+				entry.setRequest(new BundleEntryRequestComponent(method, uri));
+			}
 
-	@SuppressWarnings("unchecked")
-	private void updateOrCreate(Resource r, RequestDetails requestDetails) {
-		IFhirResourceDao<IBaseResource> resourceDao = (IFhirResourceDao<IBaseResource>) this.getDaoRegistry()
-				.getResourceDao(r.fhirType());
-		try {
-			if (!r.hasId()) {
-				r.setId(getUUID());
-			}
-			r.setId(r.getIdElement().toVersionless());
-			resourceDao.update(r, null, true, true, requestDetails, new TransactionDetails());
-		} catch (Exception e) {
-			try {
-				resourceDao.create(r);
-			} catch (Exception ex) {
-				logger.error("error creating or updating resource", ex);
-			}
+			@SuppressWarnings("unchecked")
+			IFhirSystemDao<Bundle, Meta> fhirSystemDao = this.getDaoRegistry().getSystemDao();
+			fhirSystemDao.transaction(theRequestDetails, transactionBundle);
+			return dafBundle;
+		} else {
+			BundleEntryComponent entryComp = new BundleEntryComponent();
+			entryComp.setResource(outcome);
+			bundle.addEntry(entryComp);
+			return bundle;
 		}
 	}
 
@@ -169,7 +145,7 @@ public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 		for (Patient p : patients) {
 			patientId = p.getId();
 			p.setId(p.getIdElement().toVersionless());
-			this.updateOrCreate(p, requestDetails);
+			this.update(p, requestDetails);
 		}
 
 		for (BundleEntryComponent e : bundle.getEntry()) {
@@ -183,13 +159,13 @@ public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 			}
 
 			r.setId(r.getIdElement().toVersionless());
-			this.updateOrCreate(r, requestDetails);
+			this.update(r, requestDetails);
 		}
 
 		return patientId;
 	}
 
-	private OperationOutcome validateBundle(boolean errorExists, Bundle bundle) {
+	private OperationOutcome validateBundle(Boolean errorExists, Bundle bundle) {
 		// FhirValidator validator = this.getFhirContext().newValidator();
 		OperationOutcome outcome = new OperationOutcome();
 		// // Create a validation module and register it
@@ -231,7 +207,6 @@ public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 
 	public String getUUID() {
 		UUID uuid = UUID.randomUUID();
-		String randomUUID = uuid.toString();
-		return randomUUID;
+		return uuid.toString();
 	}
 }
