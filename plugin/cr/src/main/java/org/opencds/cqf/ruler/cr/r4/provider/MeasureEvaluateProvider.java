@@ -40,19 +40,29 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	@Autowired
 	private Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache;
 
-/**
- * Implements the <a href="https://www.hl7.org/fhir/operation-measure-evaluate-measure.html">$evaluate-measure</a> operation found in the <a href="http://www.hl7.org/fhir/clinicalreasoning-module.html">FHIR Clinical Reasoning Module</a>. This implementation aims to be compatible with the CQF IG.
- * @param requestDetails The details (such as tenant) of this request. Usually auto-populated HAPI.
- * @param theId the Id of the Measure to evaluate
- * @param periodStart The start of the reporting period
- * @param periodEnd The end of the reporting period
- * @param reportType The type of MeasureReport to generate
- * @param subject the subject to use for the evaluation
- * @param practitioner the practitioner to use for the evaluation
- * @param lastReceivedOn the date the results of this measure were last received.
- * @param productLine the productLine (e.g. Medicare, Medicaid, etc) to use for the evaluation. This is a non-standard parameter.
- * @return the calculated MeasureReport
- */
+	/**
+	 * Implements the <a href=
+	 * "https://www.hl7.org/fhir/operation-measure-evaluate-measure.html">$evaluate-measure</a>
+	 * operation found in the
+	 * <a href="http://www.hl7.org/fhir/clinicalreasoning-module.html">FHIR Clinical
+	 * Reasoning Module</a>. This implementation aims to be compatible with the CQF
+	 * IG.
+	 * 
+	 * @param requestDetails The details (such as tenant) of this request. Usually
+	 *                       auto-populated HAPI.
+	 * @param theId          the Id of the Measure to evaluate
+	 * @param periodStart    The start of the reporting period
+	 * @param periodEnd      The end of the reporting period
+	 * @param reportType     The type of MeasureReport to generate
+	 * @param subject        the subject to use for the evaluation
+	 * @param practitioner   the practitioner to use for the evaluation
+	 * @param lastReceivedOn the date the results of this measure were last
+	 *                       received.
+	 * @param productLine    the productLine (e.g. Medicare, Medicaid, etc) to use
+	 *                       for the evaluation. This is a non-standard parameter.
+	 * @return the calculated MeasureReport
+	 */
+	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
 	@Description(shortDefinition = "$evaluate-measure", value = "Implements the <a href=\"https://www.hl7.org/fhir/operation-measure-evaluate-measure.html\">$evaluate-measure</a> operation found in the <a href=\"http://www.hl7.org/fhir/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>. This implementation aims to be compatible with the CQF IG.", example = "Measure/example/$evaluate-measure?subject=Patient/123&periodStart=2019&periodEnd=2020")
 	@Operation(name = "$evaluate-measure", idempotent = true, type = Measure.class)
 	public MeasureReport evaluateMeasure(RequestDetails requestDetails, @IdParam IdType theId,

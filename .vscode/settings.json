@@ -31,12 +31,26 @@
 		"editor.formatOnSave": true
 	},
 	"cSpell.words": [
+		"Alphora",
+		"autoconfiguration",
+		"autoconfigure",
+		"classpath",
+		"Codeable",
+		"contentgroup",
 		"DEQM",
 		"Eicrs",
-		"Gson",
 		"mgsc",
+		"drawio",
+		"FHIR",
+		"Gson",
+		"jpaserver",
+		"mvnw",
 		"numer",
-		"reindex"
+		"opencds",
+		"reindex",
+		"springframework",
+		"valuesets",
+		"Zulip"
 	],
 	"files.exclude": {
 		"**/.classpath": true,
