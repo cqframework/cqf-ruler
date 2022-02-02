@@ -1,8 +1,11 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.elasticsearch.common.Strings;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Parameters;
@@ -93,17 +96,22 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		 */
 
 		validateParameters(theRequestDetails);
-		Parameters result = newResource(Parameters.class, subject.replace("/", "-") + "-care-gaps-report");
+		Parameters result = newResource(Parameters.class, "care-gaps-report-" + UUID.randomUUID().toString());
 		List<Measure> measures = getMeasures(measureId, measureIdentifier, measureUrl);
 
-		List<Patient> patients = getPatientListFromSubject(subject);
-
-		(patients)
-				.forEach(
-						patient -> {
-							Parameters.ParametersParameterComponent patientParameter = patientReport();
-							result.addParameter(patientParameter);
-						});
+		if (!Strings.isNullOrEmpty(subject)) {
+			List<Patient> patients = getPatientListFromSubject(subject);
+			(patients)
+					.forEach(
+							patient -> {
+								Parameters.ParametersParameterComponent patientParameter = patientReport(periodStart, periodEnd,
+										topic, patient, status, measures, organization);
+								result.addParameter(patientParameter);
+							});
+		} else {
+			// TODO: implement non subject parameters (practioner and organization)
+			throw new NotImplementedException("Non subject parameters have not been implemented.");
+		}
 
 		return result;
 	}
@@ -121,7 +129,12 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		Operations.validateAtLeastOne(theRequestDetails, "measureId", "measureIdentifier", "measureUrl");
 	}
 
-	private Parameters.ParametersParameterComponent patientReport() {
-		return null;
+	private Parameters.ParametersParameterComponent patientReport(String periodStart, String periodEnd,
+			List<String> topic, Patient patient, List<String> status, List<Measure> measures, String organization) {
+		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
+		// bundle ID
+		// subject.replace("/", "-") +
+
+		return patientParameter;
 	}
 }

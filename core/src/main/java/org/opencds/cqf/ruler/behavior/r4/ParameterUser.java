@@ -38,14 +38,20 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 
 		List<Measure> measureList = new ArrayList<>();
 
-		measureList.addAll(search(Measure.class, Searches.byIds(measureIds)).getAllResourcesTyped());
+		if (hasMeasureIds) {
+			measureList.addAll(search(Measure.class, Searches.byIds(measureIds)).getAllResourcesTyped());
+		}
+
 		// TODO: implement searching by measure identifiers
-		if (measureIdentifiers != null && !measureIdentifiers.isEmpty()) {
+		if (hasMeasureIdentifiers) {
 			throw new NotImplementedException();
 			// measureList.addAll(search(Measure.class,
 			// Searches.byIdentifiers(measureIdentifiers)).getAllResourcesTyped());
 		}
-		measureList.addAll(search(Measure.class, Searches.byCanonicals(measureCanonicals)).getAllResourcesTyped());
+
+		if (hasMeasureUrls) {
+			measureList.addAll(search(Measure.class, Searches.byCanonicals(measureCanonicals)).getAllResourcesTyped());
+		}
 
 		Map<String, Measure> result = new HashMap<>();
 		measureList.forEach(measure -> result.putIfAbsent(measure.getUrl(), measure));
