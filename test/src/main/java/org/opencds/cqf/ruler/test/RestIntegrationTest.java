@@ -25,6 +25,8 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 	"spring.batch.job.enabled=false",
 	"hapi.fhir.allow_external_references=true",
 	"hapi.fhir.enforce_referential_integrity_on_write=false",
+	"hapi.fhir.auto_create_placeholder_reference_targets=true",
+	"hapi.fhir.client_id_strategy=ANY",
 	"spring.datasource.url=jdbc:h2:mem:db",
 	"spring.main.lazy-initialization=true" })
 @TestInstance(Lifecycle.PER_CLASS)
