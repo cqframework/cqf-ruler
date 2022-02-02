@@ -32,6 +32,7 @@ spring:
       enabled: false
 hapi:
   fhir:
+#    implementation_description: ''
     ### This is the FHIR version. Choose between, DSTU2, DSTU3, R4 or R5
     fhir_version: R4
 ### enable to use the ApacheProxyAddressStrategy which uses X-Forwarded-* headers

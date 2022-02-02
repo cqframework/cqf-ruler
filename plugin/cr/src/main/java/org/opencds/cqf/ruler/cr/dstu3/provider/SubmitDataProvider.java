@@ -1,13 +1,13 @@
-package org.opencds.cqf.ruler.cr.r4.provider;
+package org.opencds.cqf.ruler.cr.dstu3.provider;
 
 import java.util.List;
 
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Measure;
+import org.hl7.fhir.dstu3.model.MeasureReport;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Measure;
-import org.hl7.fhir.r4.model.MeasureReport;
-import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 
 import ca.uhn.fhir.model.api.annotation.Description;

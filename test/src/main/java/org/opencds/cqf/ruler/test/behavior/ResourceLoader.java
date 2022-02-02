@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.test;
+package org.opencds.cqf.ruler.test.behavior;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -56,7 +56,7 @@ public interface ResourceLoader extends DaoRegistryUser {
 				throw new IllegalArgumentException(
 						String.format("Expected encoding xml, or json.  %s is not a valid encoding", encoding));
 		}
-		
+
 		return parser.parseResource(resourceString);
 	}
 

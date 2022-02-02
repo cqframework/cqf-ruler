@@ -5,7 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.opencds.cqf.ruler.utility.Resources;
+import org.opencds.cqf.ruler.utility.Ids;
 
 public interface ResourceCreator extends FhirContextUser {
 	@SuppressWarnings("unchecked")
@@ -19,6 +19,26 @@ public interface ResourceCreator extends FhirContextUser {
 	}
 
 	default <T extends IBaseResource> T newResource(Class<T> theResourceClass, String theIdPart) {
-		return Resources.newResource(theResourceClass, theIdPart);
+		checkNotNull(theResourceClass);
+		checkNotNull(theIdPart);
+
+		T newResource = newResource(theResourceClass);
+		newResource.setId((IIdType)Ids.newId(getFhirContext(), newResource.fhirType(), theIdPart));
+
+		return newResource;
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T extends IBaseResource> T newResource(Class<T> theResourceClass) {
+		checkNotNull(theResourceClass);
+
+		return (T)this.getFhirContext().getResourceDefinition(theResourceClass).newInstance();
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T extends IBaseResource> T newResource(String theResourceType) {
+		checkNotNull(theResourceType);
+
+		return (T)this.getFhirContext().getResourceDefinition(theResourceType).newInstance();
 	}
 }

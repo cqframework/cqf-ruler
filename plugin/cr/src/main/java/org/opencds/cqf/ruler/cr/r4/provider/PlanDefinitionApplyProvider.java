@@ -88,7 +88,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 			throw new IllegalArgumentException("Couldn't find PlanDefinition " + theId);
 		}
 
-		logger.info("Performing $apply operation on PlanDefinition/" + theId);
+		logger.info("Performing $apply operation on PlanDefinition/{}", theId);
 
 		CarePlanBuilder builder = new CarePlanBuilder();
 
@@ -148,7 +148,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 			RequestDetails theRequest) {
 		Resource result = null;
 		if (action.hasDefinition()) {
-			logger.debug("Resolving definition " + action.getDefinitionCanonicalType().getValue());
+			logger.debug("Resolving definition: {}", action.getDefinitionCanonicalType().getValue());
 			String definition = action.getDefinitionCanonicalType().getValue();
 			if (definition.contains(session.getPlanDefinition().fhirType())) {
 				IdType id = new IdType(definition);
@@ -197,13 +197,13 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 					}
 
 					if (result.getId() == null) {
-						logger.warn("ActivityDefinition %s returned resource with no id, setting one",
+						logger.warn("ActivityDefinition {} returned resource with no id, setting one",
 								action.getDefinitionCanonicalType().getId());
 						result.setId(UUID.randomUUID().toString());
 					}
 
 				} catch (Exception e) {
-					logger.error("ERROR: ActivityDefinition %s could not be applied and threw exception %s",
+					logger.error("ERROR: ActivityDefinition {} could not be applied and threw exception {}",
 							action.getDefinition(), e.toString());
 				}
 			}
@@ -214,8 +214,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 	private void resolveDynamicActions(Session session, PlanDefinition.PlanDefinitionActionComponent action,
 			RequestGroupActionComponent currentActionTarget, RequestDetails theRequest) {
 		for (PlanDefinition.PlanDefinitionActionDynamicValueComponent dynamicValue : action.getDynamicValue()) {
-			logger.info(
-					String.format("Resolving dynamic value %s %s", dynamicValue.getPath(), dynamicValue.getExpression()));
+			logger.info("Resolving dynamic value {} {}", dynamicValue.getPath(), dynamicValue.getExpression());
 			Object result = null;
 			if (dynamicValue.hasExpression()) {
 				String language = dynamicValue.getExpression().getLanguage();
@@ -273,7 +272,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 			// TODO start
 			// TODO stop
 			if (condition.hasExpression() && condition.getExpression().hasDescription()) {
-				logger.info("Resolving condition with description: " + condition.getExpression().getDescription());
+				logger.info("Resolving condition with description: {}", condition.getExpression().getDescription());
 			}
 			if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
 				if (condition.hasExpression() && condition.getExpression().hasLanguage()
@@ -283,7 +282,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 						&& !condition.getExpression().getLanguage().equals("text/cql.name")
 						&& !condition.getExpression().getLanguage().equals("text/cql-name")) {
 					logger.warn(
-							"An action language other than CQL was found: " + condition.getExpression().getLanguage());
+							"An action language other than CQL was found: {}", condition.getExpression().getLanguage());
 					continue;
 				}
 
@@ -292,7 +291,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 					throw new RuntimeException("Missing condition expression");
 				}
 
-				logger.info("Evaluating action condition expression " + condition.getExpression());
+				logger.info("Evaluating action condition expression: {}", condition.getExpression());
 				String cql = condition.getExpression().getExpression();
 				String language = condition.getExpression().getLanguage();
 				Object result;
@@ -311,12 +310,12 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 				}
 
 				if (!(result instanceof Boolean)) {
-					logger.warn("The condition returned a non-boolean value: " + result.getClass().getSimpleName());
+					logger.warn("The condition returned a non-boolean value: {}", result.getClass().getSimpleName());
 					continue;
 				}
 
 				if (!(Boolean) result) {
-					logger.info("The result of condition expression %s is false", condition.getExpression());
+					logger.info("The result of condition expression {} is false", condition.getExpression());
 					return false;
 				}
 			}
@@ -438,8 +437,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 												null,
 												null, null, null, null, null, null, null)
 										.setId(UUID.randomUUID().toString());
-							} catch (FHIRException | ClassNotFoundException | InstantiationException
-									| IllegalAccessException e) {
+							} catch (FHIRException e) {
 								throw new RuntimeException("Error applying ActivityDefinition " + e.getMessage());
 							}
 

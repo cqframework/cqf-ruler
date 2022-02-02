@@ -61,7 +61,7 @@
 
 		<!-- CQL Support -->
 		<cql-engine.version>1.5.4</cql-engine.version>
-		<cql-evaluator.version>1.4.2</cql-evaluator.version>
+		<cql-evaluator.version>1.4.3-SNAPSHOT</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
 		<fhir_core_version>5.3.11</fhir_core_version>
@@ -205,6 +205,12 @@
 
 			<dependency>
 				<groupId>info.cqframework</groupId>
+				<artifactId>elm-fhir</artifactId>
+				<version>${cqframework.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>info.cqframework</groupId>
 				<artifactId>model</artifactId>
 				<version>${cqframework.version}</version>
 			</dependency>
@@ -269,11 +275,6 @@
 			<dependency>
 				<groupId>org.opencds.cqf.cql</groupId>
 				<artifactId>evaluator.activitydefinition</artifactId>
-				<version>${cql-evaluator.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.opencds.cqf.cql</groupId>
-				<artifactId>evaluator.engine</artifactId>
 				<version>${cql-evaluator.version}</version>
 			</dependency>
 			<dependency>

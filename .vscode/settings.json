@@ -13,7 +13,7 @@
 	],
 	"java.test.defaultConfig": "test-config",
 	"java.checkstyle.configuration": "${workspaceFolder}/config/checkstyle/checkstyle.xml",
-	"java.checkstyle.version": "9.21",
+	"java.checkstyle.version": "9.2.1",
 	"cSpell.enabledLanguageIds": [
 		"java",
 		"json",
@@ -38,6 +38,8 @@
 		"Codeable",
 		"contentgroup",
 		"DEQM",
+		"Eicrs",
+		"mgsc",
 		"drawio",
 		"FHIR",
 		"Gson",

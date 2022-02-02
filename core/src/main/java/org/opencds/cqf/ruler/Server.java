@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,6 +16,7 @@ import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.capability.ExtensibleJpaCapabilityStatementProvider;
 import org.opencds.cqf.ruler.capability.ExtensibleJpaConformanceProviderDstu2;
 import org.opencds.cqf.ruler.capability.ExtensibleJpaConformanceProviderDstu3;
+import org.opencds.cqf.ruler.config.ServerProperties;
 import org.opencds.cqf.ruler.external.AppProperties;
 import org.opencds.cqf.ruler.external.BaseJpaRestfulServer;
 import org.slf4j.Logger;
@@ -29,6 +32,7 @@ import ca.uhn.fhir.model.dstu2.resource.Conformance;
 import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
 public class Server extends BaseJpaRestfulServer {
+	private static final long serialVersionUID = 1L;
 
 	private static Logger log = LoggerFactory.getLogger(Server.class);
 
@@ -45,12 +49,13 @@ public class Server extends BaseJpaRestfulServer {
 	private IValidationSupport myValidationSupport;
 
 	@Autowired
+	ApplicationContext myApplicationContext;
+
+	@Autowired
 	AppProperties myAppProperties;
 
 	@Autowired
-	ApplicationContext myApplicationContext;
-
-	private static final long serialVersionUID = 1L;
+	ServerProperties myServerProperties;
 
 	public Server() {
 		super();
@@ -68,13 +73,15 @@ public class Server extends BaseJpaRestfulServer {
 		}
 
 		FhirVersionEnum fhirVersion = fhirSystemDao.getContext().getVersion().getVersion();
+
+		String implementationDescription = myServerProperties.getImplementation_description();
 		if (fhirVersion == FhirVersionEnum.DSTU2) {
 			List<MetadataExtender<Conformance>> extenderList = extenders.values().stream()
 					.map(x -> (MetadataExtender<Conformance>) x).collect(Collectors.toList());
 			ExtensibleJpaConformanceProviderDstu2 confProvider = new ExtensibleJpaConformanceProviderDstu2(this,
 					fhirSystemDao,
 					daoConfig, extenderList);
-			confProvider.setImplementationDescription("CQF RULER DSTU2 Server");
+			confProvider.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER DSTU2 Server"));
 			setServerConformanceProvider(confProvider);
 		} else {
 			if (fhirVersion == FhirVersionEnum.DSTU3) {
@@ -82,21 +89,21 @@ public class Server extends BaseJpaRestfulServer {
 						.map(x -> (MetadataExtender<CapabilityStatement>) x).collect(Collectors.toList());
 				ExtensibleJpaConformanceProviderDstu3 confProvider = new ExtensibleJpaConformanceProviderDstu3(this,
 						fhirSystemDao, daoConfig, searchParamRegistry, extenderList);
-				confProvider.setImplementationDescription("CQF RULER DSTU3 Server");
+				confProvider.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER DSTU3 Server"));
 				setServerConformanceProvider(confProvider);
 			} else if (fhirVersion == FhirVersionEnum.R4) {
 				List<MetadataExtender<IBaseConformance>> extenderList = extenders.values().stream()
 						.map(x -> (MetadataExtender<IBaseConformance>) x).collect(Collectors.toList());
 				ExtensibleJpaCapabilityStatementProvider confProvider = new ExtensibleJpaCapabilityStatementProvider(this,
 						fhirSystemDao, daoConfig, searchParamRegistry, myValidationSupport, extenderList);
-				confProvider.setImplementationDescription("CQF RULER R4 Server");
+				confProvider.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER R4 Server"));
 				setServerConformanceProvider(confProvider);
 			} else if (fhirVersion == FhirVersionEnum.R5) {
 				List<MetadataExtender<IBaseConformance>> extenderList = extenders.values().stream()
 						.map(x -> (MetadataExtender<IBaseConformance>) x).collect(Collectors.toList());
 				ExtensibleJpaCapabilityStatementProvider confProvider = new ExtensibleJpaCapabilityStatementProvider(this,
 						fhirSystemDao, daoConfig, searchParamRegistry, myValidationSupport, extenderList);
-				confProvider.setImplementationDescription("CQF RULER R5 Server");
+				confProvider.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER R5 Server"));
 				setServerConformanceProvider(confProvider);
 			} else {
 				throw new IllegalStateException();
