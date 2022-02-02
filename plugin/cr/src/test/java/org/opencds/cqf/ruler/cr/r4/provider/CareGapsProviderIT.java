@@ -21,17 +21,17 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	private static final String periodStartValid = "2022-01-01";
 	private static final String periodEndValid = "2022-01-15";
-	private static final String subjectPatientValid = "Patient/12345";
-	private static final String subjectGroupValid = "Group/12345";
+	private static final String subjectPatientValid = "Patient/gic-pat-1";
+	private static final String subjectGroupValid = "Group/gic-gr-1";
 	private static final String statusValid = "open-gap";
 	private static final String statusValidSecond = "closed-gap";
 	private static final String measureIdValid = "measure-EXM130-7.3.000";
-	private static final String practitionerValid = "12345";
-	private static final String organizationValid = "12345";
+	private static final String practitionerValid = "gic-pra-1";
+	private static final String organizationValid = "gic-org-1";
 	private static final String dateInvalid = "bad-date";
 	private static final String subjectInvalid = "bad-subject";
 	private static final String statusInvalid = "bad-status";
-	private static final String subjectReferenceInvalid = "Measure/12345";
+	private static final String subjectReferenceInvalid = "Measure/gic-sub-1";
 
 	@Test
 	public void testMinimalParametersValid() throws Exception {
@@ -398,8 +398,8 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType("CervicalCancerScreeningFHIR"));
-		params.addParameter().setName("measureIdentifier")
-				.setValue(new StringType("2138c351-1c17-4298-aebc-43b42b1aa1ba"));
+		// params.addParameter().setName("measureIdentifier")
+		// .setValue(new StringType("2138c351-1c17-4298-aebc-43b42b1aa1ba"));
 		params.addParameter().setName("measureUrl")
 				.setValue(new StringType("http://ecqi.healthit.gov/ecqms/Measure/CervicalCancerScreeningFHIR"));
 
@@ -407,6 +407,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 		loadResource("CervicalCancerScreeningFHIR.json");
 		loadResource("ColorectalCancerScreeningsFHIR.json");
+		loadResource("gic-pat-1.json");
 
 		assertDoesNotThrow(() -> {
 			getClient().operation().onType(Measure.class).named("$care-gaps")

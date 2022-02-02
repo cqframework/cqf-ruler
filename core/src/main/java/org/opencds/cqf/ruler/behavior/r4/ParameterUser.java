@@ -2,7 +2,9 @@ package org.opencds.cqf.ruler.behavior.r4;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -21,6 +23,8 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 public interface ParameterUser extends DaoRegistryUser, IdCreator {
 	static final Logger ourLog = LoggerFactory.getLogger(ParameterUser.class);
 
+	// TODO: document all these
+	// TODO: unit test all these
 	void validateParameters(RequestDetails theRequestDetails);
 
 	default List<Measure> getMeasures(List<String> measureIds, List<String> measureIdentifiers,
@@ -32,18 +36,21 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 			return Collections.emptyList();
 		}
 
-		List<Measure> result = new ArrayList<>();
+		List<Measure> measureList = new ArrayList<>();
 
-		result.addAll(search(Measure.class, Searches.byIds(measureIds)).getAllResourcesTyped());
+		measureList.addAll(search(Measure.class, Searches.byIds(measureIds)).getAllResourcesTyped());
 		// TODO: implement searching by measure identifiers
-		// result.addAll(search(Measure.class,
-		// Searches.byIdentifiers(measureIdentifiers)).getAllResourcesTyped());
-		if (measureIdentifiers != null || !measureIdentifiers.isEmpty()) {
+		if (measureIdentifiers != null && !measureIdentifiers.isEmpty()) {
 			throw new NotImplementedException();
+			// measureList.addAll(search(Measure.class,
+			// Searches.byIdentifiers(measureIdentifiers)).getAllResourcesTyped());
 		}
-		result.addAll(search(Measure.class, Searches.byCanonicals(measureCanonicals)).getAllResourcesTyped());
+		measureList.addAll(search(Measure.class, Searches.byCanonicals(measureCanonicals)).getAllResourcesTyped());
 
-		return result;
+		Map<String, Measure> result = new HashMap<>();
+		measureList.forEach(measure -> result.putIfAbsent(measure.getUrl(), measure));
+
+		return new ArrayList<>(result.values());
 	}
 
 	// TODO: replace this with version from the evaluator?
@@ -88,6 +95,7 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 		if (patient == null) {
 			throw new IllegalArgumentException("Could not find Patient: " + patientRef);
 		}
+
 		return patient;
 	}
 }

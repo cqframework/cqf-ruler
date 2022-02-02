@@ -113,7 +113,8 @@ public class Operations {
 	}
 
 	/**
-	 * This function validates the min and max cardinality of a parameter.
+	 * This function validates the minimal and maximum number (inclusive) of values
+	 * (cardinality) of a parameter.
 	 * 
 	 * @param theRequestDetails metadata about the current request being processed.
 	 *                          Generally auto-populated by the HAPI FHIR server
@@ -133,7 +134,8 @@ public class Operations {
 	}
 
 	/**
-	 * This function validates the min cardinality of a parameter.
+	 * This function validates the minimal number (inclusive) of values
+	 * (cardinality) of a parameter.
 	 * 
 	 * @param theRequestDetails metadata about the current request being processed.
 	 *                          Generally auto-populated by the HAPI FHIR server
@@ -192,7 +194,8 @@ public class Operations {
 	/**
 	 * This function validates the value of a named parameter matches a specified
 	 * regex pattern.
-	 * Pattern matching is only enforced if the parameter has a value.
+	 * Pattern matching is only enforced if the parameter has a non null/empty
+	 * value.
 	 * Precondition: the parameter has one and only one value.
 	 * 
 	 * @param theRequestDetails metadata about the current request being processed.

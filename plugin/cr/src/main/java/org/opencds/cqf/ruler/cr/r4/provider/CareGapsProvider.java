@@ -98,16 +98,12 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 
 		List<Patient> patients = getPatientListFromSubject(subject);
 
-		// TODO: iterate through patients to build report
-
-		// (patients)
-		// .forEach(
-		// patient -> {
-		// Parameters.ParametersParameterComponent patientParameter =
-		// patientReport(patient, period,
-		// requestDetails.getFhirServerBase());
-		// result.addParameter(patientParameter);
-		// });
+		(patients)
+				.forEach(
+						patient -> {
+							Parameters.ParametersParameterComponent patientParameter = patientReport();
+							result.addParameter(patientParameter);
+						});
 
 		return result;
 	}
@@ -125,4 +121,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		Operations.validateAtLeastOne(theRequestDetails, "measureId", "measureIdentifier", "measureUrl");
 	}
 
+	private Parameters.ParametersParameterComponent patientReport() {
+		return null;
+	}
 }
