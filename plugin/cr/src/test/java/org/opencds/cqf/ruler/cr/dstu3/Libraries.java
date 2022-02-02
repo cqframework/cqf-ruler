@@ -1,6 +1,6 @@
-package org.opencds.cqf.ruler.cr.r4;
+package org.opencds.cqf.ruler.cr.dstu3;
 
-import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.dstu3.model.Library;
 
 public class Libraries {
 

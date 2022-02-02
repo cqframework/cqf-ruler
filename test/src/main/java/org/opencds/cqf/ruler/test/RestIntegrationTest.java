@@ -20,7 +20,7 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 
 @Import(Application.class)
-@TestPropertySource(properties = { 
+@TestPropertySource(properties = {
 	"scheduling_disabled=true",
 	"spring.main.allow-bean-definition-overriding=true",
 	"spring.batch.job.enabled=false",

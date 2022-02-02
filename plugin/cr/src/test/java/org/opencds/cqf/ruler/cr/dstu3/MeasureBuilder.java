@@ -1,13 +1,13 @@
-package org.opencds.cqf.ruler.cr.r4;
+package org.opencds.cqf.ruler.cr.dstu3;
 
 import com.google.common.collect.Lists;
 
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.Library;
-import org.hl7.fhir.r4.model.Measure;
-import org.hl7.fhir.r4.model.Measure.MeasureGroupPopulationComponent;
-import org.hl7.fhir.r4.model.Measure.MeasureGroupStratifierComponent;
-import org.hl7.fhir.r4.model.Measure.MeasureSupplementalDataComponent;
+import org.hl7.fhir.dstu3.model.Library;
+import org.hl7.fhir.dstu3.model.Measure;
+import org.hl7.fhir.dstu3.model.Measure.MeasureGroupPopulationComponent;
+import org.hl7.fhir.dstu3.model.Measure.MeasureGroupStratifierComponent;
+import org.hl7.fhir.dstu3.model.Measure.MeasureSupplementalDataComponent;
+import org.hl7.fhir.dstu3.model.Reference;
 import org.opencds.cqf.cql.evaluator.measure.common.MeasurePopulationType;
 
 public final class MeasureBuilder {
@@ -57,21 +57,21 @@ public final class MeasureBuilder {
 	private MeasureBuilder addPopulation(MeasurePopulationType measurePopulationType, String expression) {
 		MeasureGroupPopulationComponent mgpc = this.measure.getGroupFirstRep().addPopulation();
 		mgpc.getCode().getCodingFirstRep().setCode(measurePopulationType.toCode());
-		mgpc.getCriteria().setExpression(expression);
+		mgpc.setCriteria(expression);
 		return this;
 	}
 
 	public MeasureBuilder addStratifier(String stratifierId, String expression) {
 		MeasureGroupStratifierComponent mgsc = measure.getGroupFirstRep().addStratifier();
-		mgsc.getCriteria().setExpression(expression);
+		mgsc.setCriteria(expression);
 		mgsc.setId(stratifierId);
 		return this;
 	}
 
 	public MeasureBuilder addSDE(String sdeId, String expression) {
 		MeasureSupplementalDataComponent sde = measure.getSupplementalDataFirstRep();
-		sde.getCode().setText(sdeId);
-		sde.getCriteria().setLanguage("text/cql").setExpression(expression);
+		sde.setId(sdeId);
+		sde.setCriteria(expression);
 		return this;
 	}
 
@@ -81,7 +81,7 @@ public final class MeasureBuilder {
 	}
 
 	private MeasureBuilder setLibrary(Library library) {
-		measure.setLibrary(Lists.newArrayList(new CanonicalType(library.getUrl())));
+		measure.setLibrary(Lists.newArrayList(new Reference(library.getIdElement())));
 		return this;
 	}
 
