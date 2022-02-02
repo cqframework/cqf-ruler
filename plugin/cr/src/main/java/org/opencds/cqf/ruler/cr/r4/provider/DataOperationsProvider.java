@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -12,8 +13,10 @@ import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibraryContentProvider;
@@ -51,12 +54,46 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	private AdapterFactory adapterFactory;
 
 	@Operation(name = "$data-requirements", idempotent = true, type = Library.class)
-	public Library dataRequirements(@IdParam IdType theId, @OperationParam(name = "target") String target,
-			RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
-
-		JpaLibraryContentProvider jpaLibraryContentProvider = jpaLibraryContentProviderFactory.create(theRequestDetails);
+	public Library dataRequirements(@IdParam IdType theId,
+											  @OperationParam(name = "target") String target,
+											  RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
 
 		Library library = read(theId, theRequestDetails);
+		return processDataRequirements(library, theRequestDetails);
+	}
+
+	@Operation(name = "$data-requirements", idempotent = true, type = Measure.class)
+	public Library dataRequirements(@IdParam IdType theId,
+											  @OperationParam(name = "startPeriod") String startPeriod,
+											  @OperationParam(name = "endPeriod") String endPeriod,
+											  RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
+
+		Measure measure = read(theId, theRequestDetails);
+		Library library = getLibraryFromMeasure(measure, theRequestDetails);
+
+		if (library == null) {
+			throw new RuntimeException("Could not load measure library.");
+		}
+		return processDataRequirements(library, theRequestDetails);
+	}
+
+	public Library getLibraryFromMeasure(Measure measure, RequestDetails theRequestDetails) {
+		Iterator<CanonicalType> var6 = measure.getLibrary().iterator();
+
+		String library = null;
+		//use the first library
+		while (var6.hasNext() && library == null) {
+			CanonicalType ref = var6.next();
+
+			if (ref != null) {
+				library = ref.getValue();
+			}
+		}
+		return search(Library.class, Searches.byCanonical(library), theRequestDetails).firstOrNull();
+	}
+
+	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {
+		JpaLibraryContentProvider jpaLibraryContentProvider = jpaLibraryContentProviderFactory.create(theRequestDetails);
 
 		Bundle libraryBundle = new Bundle();
 		List<Library> listLib = fetchDependencyLibraries(library, theRequestDetails);
@@ -69,22 +106,22 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		});
 
 		LibraryContentProvider bundleLibraryProvider = new BundleFhirLibraryContentProvider(this.getFhirContext(),
-				libraryBundle, adapterFactory, libraryVersionSelector);
+			libraryBundle, adapterFactory, libraryVersionSelector);
 
 		List<LibraryContentProvider> sourceProviders = new ArrayList<>(
-				Arrays.asList(bundleLibraryProvider, jpaLibraryContentProvider));
+			Arrays.asList(bundleLibraryProvider, jpaLibraryContentProvider));
 
 		LibraryManager libraryManager = libraryManagerFactory.create(sourceProviders);
 
 		CqlTranslator translator = Translators.getTranslator(
-				new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
-				libraryManager.getModelManager());
+			new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
+			libraryManager.getModelManager());
 		if (!translator.getErrors().isEmpty()) {
 			throw new CqlTranslatorException(Translators.errorsToString(translator.getErrors()));
 		}
 
 		return DataRequirements.getModuleDefinitionLibraryR4(libraryManager,
-				translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
+			translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
 	}
 
 	private List<Library> fetchDependencyLibraries(Library library, RequestDetails theRequestDetails) {
