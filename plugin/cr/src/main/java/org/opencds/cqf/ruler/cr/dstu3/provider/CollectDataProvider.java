@@ -5,13 +5,16 @@ import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import org.hl7.fhir.dstu3.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.ListResource;
+import org.hl7.fhir.dstu3.model.ListResource.ListEntryComponent;
 import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.MeasureReport;
 import org.hl7.fhir.dstu3.model.MeasureReport.MeasureReportType;
 import org.hl7.fhir.dstu3.model.Parameters;
+import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +33,7 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 	/**
 	* Implements the <a href="http://hl7.org/fhir/DSTU3/measure-operation-collect-data.html">$collect-data</a>
 	* operation found in the
-	* <a href="http://hl7.org/fhir/R4/clinicalreasoning-module.html">FHIR Clinical Reasoning Module</a>.
+	* <a href="http://hl7.org/fhir/DSTU3/clinicalreasoning-module.html">FHIR Clinical Reasoning Module</a>.
 	* 
 	* <p>Returns a set of parameters with the generated MeasureReport and the
 	* resources that were used during the Measure evaluation
@@ -44,7 +47,7 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 	* @param lastReceivedOn    the date the results of this measure were last received.
 	* @return Parameters the parameters containing the MeasureReport and the evaluated Resources
 	*/
-	@Description(shortDefinition = "$collect-data", value = "Implements the <a href=\"http://hl7.org/fhir/R4/measure-operation-collect-data.html\">$collect-data</a> operation found in the <a href=\"http://hl7.org/fhir/R4/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
+	@Description(shortDefinition = "$collect-data", value = "Implements the <a href=\"http://hl7.org/fhir/DSTU3/measure-operation-collect-data.html\">$collect-data</a> operation found in the <a href=\"http://hl7.org/fhir/DSTU3/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
 	@Operation(name = "$collect-data", idempotent = true, type = Measure.class)
 	public Parameters collectData(RequestDetails theRequestDetails, @IdParam IdType theId,
 			@OperationParam(name = "periodStart") String periodStart,
@@ -68,11 +71,30 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 
 	private List<Resource> readEvaluatedResources(MeasureReport report) {
 		List<Resource> resources = new ArrayList<>();
-		for (BundleEntryComponent entry : report.getEvaluatedResourcesTarget().getEntry()) {
-			Resource resource = entry.getResource();
-			if (resource != null) {
-				resources.add(resource);
+		if (report.getEvaluatedResources() == null) {
+			return resources;
+		}
+
+		Reference listReference = report.getEvaluatedResources();
+
+		// Removes the contained "#" prefix
+
+		String listId = listReference.getReference().substring(1);
+		Optional<Resource> list = report.getContained().stream().filter(x -> x.getId().equals(listId)).findFirst();
+
+		if(!list.isPresent()) {
+			return resources;
+		}
+
+		ListResource containedList = (ListResource)list.get();
+
+		for (ListEntryComponent entry : containedList.getEntry()) {
+			if (!entry.hasItem()) {
+				continue;
 			}
+
+			Reference reference = entry.getItem();
+			resources.add(this.read(reference.getReferenceElement()));
 		}
 
 		return resources;

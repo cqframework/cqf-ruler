@@ -66,7 +66,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 
 		org.opencds.cqf.cql.evaluator.measure.dstu3.Dstu3MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.dstu3.Dstu3MeasureProcessor(
-				null, null, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null);
+				null, null, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null, null);
 
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
 				patient, null, lastReceivedOn, null, null, null, null);
