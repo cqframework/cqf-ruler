@@ -41,6 +41,7 @@ import ca.uhn.fhir.util.BundleUtil;
 @Component
 public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 	private static final Logger logger = LoggerFactory.getLogger(ProcessMessageProvider.class);
+
 	@SuppressWarnings("unchecked")
 	@Operation(name = "$process-message-bundle", idempotent = false)
 	public Bundle processMessageBundle(HttpServletRequest theServletRequest, RequestDetails theRequestDetails,
@@ -119,10 +120,12 @@ public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 					messageHeader.setFocus(referenceList);
 				}
 				IVersionSpecificBundleFactory newBundleFactory = this.getFhirContext().newBundleFactory();
-				newBundleFactory.addResourcesToBundle(resources, BundleTypeEnum.TRANSACTION, theRequestDetails.getFhirServerBase(), null, null);
+				newBundleFactory.addResourcesToBundle(resources, BundleTypeEnum.TRANSACTION,
+						theRequestDetails.getFhirServerBase(), null, null);
 				Bundle transactionBundle = (Bundle) newBundleFactory.getResourceBundle();
 				for (BundleEntryComponent entry : transactionBundle.getEntry()) {
-					UriType uri = new UriType(theRequestDetails.getFhirServerBase() + "/" + entry.getResource().fhirType() + "/" + entry.getResource().getIdElement().getIdPart());
+					UriType uri = new UriType(theRequestDetails.getFhirServerBase() + "/" + entry.getResource().fhirType()
+							+ "/" + entry.getResource().getIdElement().getIdPart());
 					Enumeration<HTTPVerb> method = new Enumeration<HTTPVerb>(new HTTPVerbEnumFactory());
 					method.setValue(HTTPVerb.PUT);
 					entry.setRequest(new BundleEntryRequestComponent(method, uri));

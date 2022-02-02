@@ -1214,6 +1214,7 @@
   }, {
     "resource": {
       "resourceType": "MeasureReport",
+		"id": "diabetes-mp",
       "contained": [ {
         "resourceType": "Observation",
         "id": "78a5067f-5468-46ba-aaa5-429561e26acc",
