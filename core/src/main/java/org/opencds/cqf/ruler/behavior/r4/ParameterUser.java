@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Group;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.behavior.IdCreator;
+import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +23,33 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 
 	void validateParameters(RequestDetails theRequestDetails);
 
+	default List<Measure> getMeasures(List<String> measureIds, List<String> measureIdentifiers,
+			List<CanonicalType> measureCanonicals) {
+		boolean hasMeasureIds = measureIds != null && !measureIds.isEmpty();
+		boolean hasMeasureIdentifiers = measureIdentifiers != null && !measureIdentifiers.isEmpty();
+		boolean hasMeasureUrls = measureCanonicals != null && !measureCanonicals.isEmpty();
+		if (!hasMeasureIds && !hasMeasureIdentifiers && !hasMeasureUrls) {
+			return Collections.emptyList();
+		}
+
+		List<Measure> result = new ArrayList<>();
+
+		result.addAll(search(Measure.class, Searches.byIds(measureIds)).getAllResourcesTyped());
+		// TODO: implement searching by measure identifiers
+		// result.addAll(search(Measure.class,
+		// Searches.byIdentifiers(measureIdentifiers)).getAllResourcesTyped());
+		if (measureIdentifiers != null || !measureIdentifiers.isEmpty()) {
+			throw new NotImplementedException();
+		}
+		result.addAll(search(Measure.class, Searches.byCanonicals(measureCanonicals)).getAllResourcesTyped());
+
+		return result;
+	}
+
 	// TODO: replace this with version from the evaluator?
 	default List<Patient> getPatientListFromSubject(String subject) {
 		if (subject.startsWith("Patient/")) {
-			Patient patient = ensurePatient(subject);
-			return Collections.singletonList(patient);
+			return Collections.singletonList(ensurePatient(subject));
 		} else if (subject.startsWith("Group/")) {
 			return getPatientListFromGroup(subject);
 		}

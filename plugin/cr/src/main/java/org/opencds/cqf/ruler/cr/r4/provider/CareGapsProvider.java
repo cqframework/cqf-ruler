@@ -1,7 +1,6 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -94,8 +93,21 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		 */
 
 		validateParameters(theRequestDetails);
-		Parameters result = newResource(Parameters.class, UUID.randomUUID().toString());
+		Parameters result = newResource(Parameters.class, subject.replace("/", "-") + "-care-gaps-report");
+		List<Measure> measures = getMeasures(measureId, measureIdentifier, measureUrl);
+
 		List<Patient> patients = getPatientListFromSubject(subject);
+
+		// TODO: iterate through patients to build report
+
+		// (patients)
+		// .forEach(
+		// patient -> {
+		// Parameters.ParametersParameterComponent patientParameter =
+		// patientReport(patient, period,
+		// requestDetails.getFhirServerBase());
+		// result.addParameter(patientParameter);
+		// });
 
 		return result;
 	}

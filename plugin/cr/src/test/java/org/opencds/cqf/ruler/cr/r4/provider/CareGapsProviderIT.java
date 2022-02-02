@@ -389,4 +389,31 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 					.execute();
 		});
 	}
+
+	@Test
+	public void testMeasures() throws Exception {
+		Parameters params = new Parameters();
+		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
+		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
+		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
+		params.addParameter().setName("status").setValue(new StringType(statusValid));
+		params.addParameter().setName("measureId").setValue(new StringType("CervicalCancerScreeningFHIR"));
+		params.addParameter().setName("measureIdentifier")
+				.setValue(new StringType("2138c351-1c17-4298-aebc-43b42b1aa1ba"));
+		params.addParameter().setName("measureUrl")
+				.setValue(new StringType("http://ecqi.healthit.gov/ecqms/Measure/CervicalCancerScreeningFHIR"));
+
+		params.addParameter().setName("measureId").setValue(new StringType("ColorectalCancerScreeningsFHIR"));
+
+		loadResource("CervicalCancerScreeningFHIR.json");
+		loadResource("ColorectalCancerScreeningsFHIR.json");
+
+		assertDoesNotThrow(() -> {
+			getClient().operation().onType(Measure.class).named("$care-gaps")
+					.withParameters(params)
+					.useHttpGet()
+					.returnResourceType(Parameters.class)
+					.execute();
+		});
+	}
 }
