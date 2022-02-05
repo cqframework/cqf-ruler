@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ca.uhn.fhir.context.FhirContext;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
@@ -146,9 +147,20 @@ public class DataRequirements {
 			TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
 		org.hl7.fhir.r5.model.Library libraryR5 = getModuleDefinitionLibraryR5(libraryManager, translatedLibrary,
 				options);
-		VersionConvertor_30_50 versionConvertor_30_50 = new VersionConvertor_30_50(new BaseAdvisor_30_50());
-		org.hl7.fhir.dstu3.model.Library libraryDstu3 = (org.hl7.fhir.dstu3.model.Library) versionConvertor_30_50
+
+		FhirContext fhirContext = FhirContext.forR5();
+		System.out.println("Resource:"+fhirContext.newJsonParser().setPrettyPrint(true).encodeResourceToString(libraryR5));
+		System.out.println();
+		BaseAdvisor_30_50  baseAdvisor_30_50= new BaseAdvisor_30_50();
+		baseAdvisor_30_50.ignoreExtension("period", "http://hl7.org/fhir/StructureDefinition/cqf-expression");
+		VersionConvertor_30_50 versionConvertor_30_50 = new VersionConvertor_30_50(baseAdvisor_30_50);
+		org.hl7.fhir.dstu3.model.Library libraryDstu3 = null;
+		try{
+		libraryDstu3 = (org.hl7.fhir.dstu3.model.Library) versionConvertor_30_50
 				.convertResource(libraryR5);
+		} catch( Exception e) {
+			System.out.println(e.getMessage());
+		}
 		// libraryR4 = this.addDataRequirementFhirQueries(libraryDstu3); // uncomment
 		// this when engine fhir query generation available
 		return libraryDstu3;

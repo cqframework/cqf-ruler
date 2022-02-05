@@ -80,16 +80,22 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	public Library getLibraryFromMeasure(Measure measure, RequestDetails theRequestDetails) {
 		Iterator<CanonicalType> var6 = measure.getLibrary().iterator();
 
-		String library = null;
+		String libraryIdOrCanonical = null;
 		//use the first library
-		while (var6.hasNext() && library == null) {
+		while (var6.hasNext() && libraryIdOrCanonical == null) {
 			CanonicalType ref = var6.next();
 
 			if (ref != null) {
-				library = ref.getValue();
+				libraryIdOrCanonical = ref.getValue();
 			}
 		}
-		return search(Library.class, Searches.byCanonical(library), theRequestDetails).firstOrNull();
+
+		Library library = read(new IdType(libraryIdOrCanonical), theRequestDetails);
+
+		if(library == null){
+			library = search(Library.class, Searches.byCanonical(libraryIdOrCanonical), theRequestDetails).firstOrNull();
+		}
+		return library;
 	}
 
 	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {

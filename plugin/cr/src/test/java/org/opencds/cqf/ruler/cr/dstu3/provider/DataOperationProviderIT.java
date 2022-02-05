@@ -21,16 +21,36 @@ import ca.uhn.fhir.context.FhirContext;
 public class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test
-	public void testDstu3DataRequirementsOperation() throws IOException {
-		String bundleTextValueSets = stringFromResource( "DataRequirementsLibraryTransactionBundle.json");
+	public void testDstu3LibraryDataRequirementsOperation() throws IOException {
+		String bundleAsText = stringFromResource( "DataRequirementsTransactionBundle.json");
 		FhirContext fhirContext = FhirContext.forDstu3();
-		Bundle bundleValueSet = (Bundle)fhirContext.newJsonParser().parseResource(bundleTextValueSets);
-		getClient().transaction().withBundle(bundleValueSet).execute();
+		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleAsText);
+		getClient().transaction().withBundle(bundle).execute();
 
 		Parameters params = new Parameters();
 		params.addParameter().setName("target").setValue(new StringType("dummy"));
 
 		Library returnLibrary = getClient().operation().onInstance(new IdType("Library", "LibraryEvaluationTest"))
+			.named("$data-requirements")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
+
+		assertNotNull(returnLibrary);
+	}
+
+	@Test
+	public void testDstu3MeasureDataRequirementsOperation() throws IOException {
+		String bundleAsText = stringFromResource( "Exm105Dstu3.json");
+		FhirContext fhirContext = FhirContext.forDstu3();
+		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleAsText);
+		getClient().transaction().withBundle(bundle).execute();
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("startPeriod").setValue(new StringType("2019-01-01"));
+		params.addParameter().setName("endPeriod").setValue(new StringType("2020-01-01"));
+
+		Library returnLibrary = getClient().operation().onInstance(new IdType("Measure", "measure-EXM105-FHIR3-8.0.000"))
 			.named("$data-requirements")
 			.withParameters(params)
 			.returnResourceType(Library.class)
