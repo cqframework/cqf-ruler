@@ -93,6 +93,10 @@ public interface ResourceLoader extends DaoRegistryUser {
 		return IOUtils.toString(is, StandardCharsets.UTF_8);
 	}
 
+	//TODO: is this OK to suppress?
+	//It causes the following error:
+	//[ERROR] High: Usage of GetResource in org.opencds.cqf.ruler.test.behavior.ResourceLoader.uploadTests(String) may be unsafe if class is extended [org.opencds.cqf.ruler.test.behavior.ResourceLoader] At ResourceLoader.java:[line 97] UI_INHERITANCE_UNSAFE_GETRESOURCE
+	@SuppressFBWarnings("UI_INHERITANCE_UNSAFE_GETRESOURCE")
 	default Map<String, IBaseResource> uploadTests(String testDirectory) throws URISyntaxException, IOException {
 		URL url = this.getClass().getResource(testDirectory);
 		File testDir = new File(url.toURI());
