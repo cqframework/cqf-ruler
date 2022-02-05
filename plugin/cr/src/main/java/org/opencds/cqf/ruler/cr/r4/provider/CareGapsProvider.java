@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Strings;
+
 import org.apache.commons.lang3.NotImplementedException;
-import org.elasticsearch.common.Strings;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Parameters;
@@ -13,8 +16,11 @@ import org.hl7.fhir.r4.model.Patient;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.utility.BundleSettings;
+import org.opencds.cqf.ruler.utility.Bundles;
 import org.opencds.cqf.ruler.utility.Operations;
 
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
@@ -24,6 +30,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 
 	public static final Pattern CARE_GAPS_STATUS = Pattern
 			.compile("(open-gap|closed-gap|not-applicable)");
+	public static final String CARE_GAPS_BUNDLE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-bundle-deqm";
 
 	/**
 	 * Implements the <a href=
@@ -109,7 +116,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 								result.addParameter(patientParameter);
 							});
 		} else {
-			// TODO: implement non subject parameters (practioner and organization)
+			// TODO: implement non subject parameters (practitioner and organization)
 			throw new NotImplementedException("Non subject parameters have not been implemented.");
 		}
 
@@ -132,8 +139,12 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 	private Parameters.ParametersParameterComponent patientReport(String periodStart, String periodEnd,
 			List<String> topic, Patient patient, List<String> status, List<Measure> measures, String organization) {
 		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
-		// bundle ID
+
 		// subject.replace("/", "-") +
+
+		Bundle bundle = (Bundle) Bundles.newBundle(FhirVersionEnum.R4,
+				new BundleSettings().addType(BundleType.DOCUMENT.toString())
+						.addProfile(CARE_GAPS_BUNDLE_PROFILE).withDefaults());
 
 		return patientParameter;
 	}

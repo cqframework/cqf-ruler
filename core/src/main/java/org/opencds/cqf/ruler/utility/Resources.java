@@ -11,7 +11,8 @@ public class Resources {
 	private Resources() {
 	}
 
-	public static <T extends IBaseResource, I extends IIdType> T newResource(Class<T> theResourceClass, String theIdPart) {
+	public static <T extends IBaseResource, I extends IIdType> T newResource(Class<T> theResourceClass,
+			String theIdPart) {
 		checkNotNull(theResourceClass);
 		checkNotNull(theIdPart);
 		checkArgument(!theIdPart.contains("/"), "theIdPart must be a simple id. Do not include resourceType or history");
