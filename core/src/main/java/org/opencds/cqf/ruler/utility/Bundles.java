@@ -16,8 +16,8 @@ public class Bundles {
 	/**
 	 * Creates the appropriate IBaseBundle for a given FhirContext
 	 * 
-	 * @param theFhirContext the FHIR version to generate a Bundle for
-	 * @param theId          the String representation of the Id of the Bundle
+	 * @param theFhirContext    the FHIR version to generate a Bundle for
+	 * @param theBundleSettings the settings for the Bundle
 	 * @return the Bundle
 	 */
 	public static IBaseBundle newBundle(FhirContext theFhirContext, BundleSettings theBundleSettings) {
@@ -30,8 +30,7 @@ public class Bundles {
 	 * Creates the appropriate IBaseBundle for a given FhirVersionEnum
 	 * 
 	 * @param theFhirVersionEnum the FHIR version to generate a Bundle for
-	 * @param theId              the String representation of the Id of the Bundle
-	 *                           to generate
+	 * @param theBundleSettings  the settings for the Bundle
 	 * @return the Bundle
 	 */
 	public static IBaseBundle newBundle(FhirVersionEnum theFhirVersionEnum, IResourceSettings theBundleSettings) {

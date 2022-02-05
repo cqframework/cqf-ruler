@@ -266,6 +266,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 					.returnResourceType(Parameters.class)
 					.execute();
 		});
+		// TODO: implement practitioner and organization
 		// assertDoesNotThrow(() -> {
 		// getClient().operation().onType(Measure.class).named("$care-gaps")
 		// .withParameters(params)
@@ -291,6 +292,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 					.returnResourceType(Parameters.class)
 					.execute();
 		});
+		// TODO: implement organization
 		// assertDoesNotThrow(() -> {
 		// getClient().operation().onType(Measure.class).named("$care-gaps")
 		// .withParameters(params)
