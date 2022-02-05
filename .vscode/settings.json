@@ -27,8 +27,7 @@
 		"checkstyle.xml"
 	],
 	"editor.codeActionsOnSave": {
-		"source.organizeImports": true,
-		"editor.formatOnSave": true
+		"source.organizeImports": true
 	},
 	"cSpell.words": [
 		"Alphora",
@@ -65,5 +64,7 @@
 		"**/.project": true,
 		"**/.settings": true,
 		"**/.factorypath": true
-	}
+	},
+	"files.eol": "\n",
+	"editor.formatOnSave": true
 }
