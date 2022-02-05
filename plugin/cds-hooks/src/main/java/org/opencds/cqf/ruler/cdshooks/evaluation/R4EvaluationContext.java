@@ -1,10 +1,9 @@
 package org.opencds.cqf.ruler.cdshooks.evaluation;
 
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import org.opencds.cqf.ruler.cdshooks.hooks.Hook;
-import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.cqframework.cql.elm.execution.Library;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Parameters;
@@ -12,17 +11,16 @@ import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
-import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.ruler.cdshooks.hooks.Hook;
+import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 public class R4EvaluationContext extends EvaluationContext<PlanDefinition> {
 
-    public R4EvaluationContext(Hook hook, FhirVersionEnum fhirVersion, IGenericClient fhirClient,
-            TerminologyProvider terminologyProvider, Context context, Library library, PlanDefinition planDefinition, ProviderConfiguration providerConfiguration, ModelResolver modelResolver) {
-        super(hook, fhirVersion, fhirClient, context, library, planDefinition, providerConfiguration, modelResolver);
+    public R4EvaluationContext(Hook hook, IGenericClient fhirClient, Context context, Library library, PlanDefinition planDefinition, ProviderConfiguration providerConfiguration, ModelResolver modelResolver) {
+        super(hook, FhirVersionEnum.R4, fhirClient, context, library, planDefinition, providerConfiguration, modelResolver);
     }
 
     @Override

@@ -1,13 +1,13 @@
-package org.opencds.cqf.ruler.cr.r4.provider;
+package org.opencds.cqf.ruler.cr.dstu3.provider;
 
 import java.util.List;
 
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.Measure;
+import org.hl7.fhir.dstu3.model.MeasureReport;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Measure;
-import org.hl7.fhir.r4.model.MeasureReport;
-import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 
 import ca.uhn.fhir.model.api.annotation.Description;
@@ -19,21 +19,10 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 public class SubmitDataProvider extends DaoRegistryOperationProvider {
 
 	/**
-	 * Implements the <a href=
-	 * "http://hl7.org/fhir/R4/measure-operation-submit-data.html">$submit-data</a>
-	 * operation found in the
-	 * <a href="http://hl7.org/fhir/R4/clinicalreasoning-module.html">FHIR Clinical
-	 * Reasoning Module</a> per the
-	 * <a href="http://build.fhir.org/ig/HL7/davinci-deqm/datax.html#submit-data">Da
-	 * Vinci DEQM FHIR Implementation Guide</a>.
-	 * 
+	 * Implements the <a href="http://hl7.org/fhir/R4/measure-operation-submit-data.html">$submit-data</a> operation found in the <a href="http://hl7.org/fhir/R4/clinicalreasoning-module.html">FHIR Clinical Reasoning Module</a>.
 	 * 
 	 * The submitted MeasureReport and Resources will be saved to the local server.
 	 * A Bundle reporting the result of the transaction will be returned.
-	 * 
-	 * Usage:
-	 * URL: [base]/Measure/$submit-data
-	 * URL: [base]/Measure/[id]/$submit-data
 	 * 
 	 * @param theRequestDetails generally auto-populated by the HAPI server
 	 *                          framework.
@@ -42,7 +31,7 @@ public class SubmitDataProvider extends DaoRegistryOperationProvider {
 	 * @param theResources      the resources to be submitted
 	 * @return Bundle the transaction result
 	 */
-	@Description(shortDefinition = "$submit-data", value = "Implements the <a href=\"http://hl7.org/fhir/R4/measure-operation-submit-data.html\">$submit-data</a> operation found in the <a href=\"http://hl7.org/fhir/R4/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a> per the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/datax.html#submit-data\">Da Vinci DEQM FHIR Implementation Guide</a>.")
+	@Description(shortDefinition = "$submit-data", value = "Implements the <a href=\"http://hl7.org/fhir/R4/measure-operation-submit-data.html\">$submit-data</a> operation found in the <a href=\"http://hl7.org/fhir/R4/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
 	@Operation(name = "$submit-data", idempotent = true, type = Measure.class)
 	public Bundle submitData(RequestDetails theRequestDetails,
 			@IdParam IdType theId,
@@ -79,20 +68,20 @@ public class SubmitDataProvider extends DaoRegistryOperationProvider {
 
 	private Bundle.BundleEntryComponent createEntry(IBaseResource theResource) {
 		return new Bundle.BundleEntryComponent()
-				.setResource((Resource) theResource)
-				.setRequest(createRequest(theResource));
+			.setResource((Resource)theResource)
+			.setRequest(createRequest(theResource));
 	}
 
 	private Bundle.BundleEntryRequestComponent createRequest(IBaseResource theResource) {
 		Bundle.BundleEntryRequestComponent request = new Bundle.BundleEntryRequestComponent();
 		if (theResource.getIdElement().hasValue()) {
 			request
-					.setMethod(Bundle.HTTPVerb.PUT)
-					.setUrl(theResource.getIdElement().getValue());
+				.setMethod(Bundle.HTTPVerb.PUT)
+				.setUrl(theResource.getIdElement().getValue());
 		} else {
 			request
-					.setMethod(Bundle.HTTPVerb.POST)
-					.setUrl(theResource.fhirType());
+				.setMethod(Bundle.HTTPVerb.POST)
+				.setUrl(theResource.fhirType());
 		}
 
 		return request;

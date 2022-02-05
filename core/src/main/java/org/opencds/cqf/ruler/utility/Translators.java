@@ -16,6 +16,8 @@ import org.cqframework.cql.elm.tracking.TrackBack;
 
 public class Translators {
 
+	private Translators() {}
+
 	public static String errorsToString(Iterable<CqlTranslatorException> exceptions) {
 		ArrayList<String> errors = new ArrayList<>();
 		for (CqlTranslatorException error : exceptions) {

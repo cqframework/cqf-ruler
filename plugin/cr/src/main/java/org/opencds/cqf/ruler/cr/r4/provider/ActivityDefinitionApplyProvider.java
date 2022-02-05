@@ -30,8 +30,9 @@ import org.hl7.fhir.r4.model.SupplyRequest;
 import org.hl7.fhir.r4.model.Task;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.runtime.DateTime;
-import org.opencds.cqf.ruler.api.OperationProvider;
+import org.opencds.cqf.ruler.behavior.ResourceCreator;
 import org.opencds.cqf.ruler.cr.r4.ExpressionEvaluation;
+import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 /**
  * Created by Bryn on 1/16/2017.
  */
-public class ActivityDefinitionApplyProvider implements OperationProvider {
+public class ActivityDefinitionApplyProvider extends DaoRegistryOperationProvider implements ResourceCreator {
 
 	@Autowired
 	private ModelResolver modelResolver;
@@ -68,8 +69,7 @@ public class ActivityDefinitionApplyProvider implements OperationProvider {
 			@OperationParam(name = "userTaskContext") String userTaskContext,
 			@OperationParam(name = "setting") String setting,
 			@OperationParam(name = "settingContext") String settingContext)
-			throws InternalErrorException, FHIRException, ClassNotFoundException, IllegalAccessException,
-			InstantiationException, ActivityDefinitionApplyException {
+			throws InternalErrorException, FHIRException, ActivityDefinitionApplyException {
 		ActivityDefinition activityDefinition;
 
 		try {
@@ -84,15 +84,7 @@ public class ActivityDefinitionApplyProvider implements OperationProvider {
 	// For library use
 	public Resource resolveActivityDefinition(ActivityDefinition activityDefinition, String patientId,
 			String practitionerId, String organizationId, RequestDetails theRequest) throws FHIRException {
-		Resource result = null;
-		try {
-			result = (Resource) Class.forName("org.hl7.fhir.r4.model." + activityDefinition.getKind().toCode())
-					.getConstructor().newInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new FHIRException("Could not find org.hl7.fhir.r4.model." + activityDefinition.getKind().toCode());
-		}
-
+		Resource result = newResource(activityDefinition.getKind().toCode());
 		switch (result.fhirType()) {
 			case "ServiceRequest":
 				result = resolveServiceRequest(activityDefinition, patientId, practitionerId, organizationId);
@@ -150,7 +142,7 @@ public class ActivityDefinitionApplyProvider implements OperationProvider {
 								dynamicValue.getExpression().getExpression(), patientId, theRequest);
 
 						if (value != null) {
-							logger.debug("dynamicValue value: " + value.toString());
+							logger.debug("dynamicValue value: {}", value);
 							if (value instanceof Boolean) {
 								value = new BooleanType((Boolean) value);
 							} else if (value instanceof DateTime) {
@@ -162,13 +154,13 @@ public class ActivityDefinitionApplyProvider implements OperationProvider {
 							this.modelResolver.setValue(result, dynamicValue.getPath(), value);
 
 						} else {
-							logger.warn("WARNING: ActivityDefinition has null value for path: " + dynamicValue.getPath());
+							logger.warn("WARNING: ActivityDefinition has null value for path: {}", dynamicValue.getPath());
 						}
 					}
 				}
 
 			} catch (Exception e) {
-				logger.error("ERROR: ActivityDefinition dynamicValue %s could not be applied and threw exception %s",
+				logger.error("ERROR: ActivityDefinition dynamicValue {} could not be applied and threw exception {}",
 						dynamicValue.getPath(), e.toString());
 				logger.error(e.toString());
 			}

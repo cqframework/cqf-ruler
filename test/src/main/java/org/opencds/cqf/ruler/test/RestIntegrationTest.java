@@ -7,6 +7,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.behavior.IdCreator;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
+import org.opencds.cqf.ruler.test.behavior.ResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
@@ -19,12 +20,14 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 
 @Import(Application.class)
-@TestPropertySource(properties = { 
+@TestPropertySource(properties = {
 	"scheduling_disabled=true",
 	"spring.main.allow-bean-definition-overriding=true",
 	"spring.batch.job.enabled=false",
 	"hapi.fhir.allow_external_references=true",
 	"hapi.fhir.enforce_referential_integrity_on_write=false",
+	"hapi.fhir.auto_create_placeholder_reference_targets=true",
+	"hapi.fhir.client_id_strategy=ANY",
 	"spring.datasource.url=jdbc:h2:mem:db",
 	"spring.main.lazy-initialization=true" })
 @TestInstance(Lifecycle.PER_CLASS)

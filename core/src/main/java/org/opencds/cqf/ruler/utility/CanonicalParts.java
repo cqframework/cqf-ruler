@@ -1,6 +1,6 @@
 package org.opencds.cqf.ruler.utility;
 
-public class CanonicalParts {
+public final class CanonicalParts {
 	private final String url;
 	private final String idPart;
 	private final String resourceType;

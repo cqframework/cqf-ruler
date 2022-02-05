@@ -83,7 +83,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 			throw new IllegalArgumentException("Couldn't find PlanDefinition " + theId);
 		}
 
-		logger.info("Performing $apply operation on PlanDefinition/" + theId);
+		logger.info("Performing $apply operation on PlanDefinition/{}", theId);
 
 		CarePlanBuilder builder = new CarePlanBuilder();
 
@@ -143,7 +143,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 			PlanDefinition.PlanDefinitionActionComponent action) {
 			Resource result = null;
 		if (action.hasDefinition()) {
-			logger.debug("Resolving definition " + action.getDefinition().getReference());
+			logger.debug("Resolving definition: {}", action.getDefinition().getReference());
 			Reference definition = action.getDefinition();
 			if (definition.getId().contains(session.getPlanDefinition().fhirType())) {
 				IdType id = new IdType(definition.getId());
@@ -201,7 +201,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 					}
 
 					if (result.getId() == null) {
-						logger.warn("ActivityDefinition %s returned resource with no id, setting one",
+						logger.warn("ActivityDefinition {} returned resource with no id, setting one",
 								action.getDefinition().getReferenceElement().getIdPart());
 						result.setId(UUID.randomUUID().toString());
 					}
@@ -212,7 +212,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 									.buildResource(new Reference("#" + result.getId()))
 									.build());
 				} catch (Exception e) {
-					logger.error("ERROR: ActivityDefinition %s could not be applied and threw exception %s",
+					logger.error("ERROR: ActivityDefinition {} could not be applied and threw exception {}",
 							action.getDefinition(), e.toString());
 				}
 			}
@@ -279,12 +279,12 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 			// TODO start
 			// TODO stop
 			if (condition.hasDescription()) {
-				logger.info("Resolving condition with description: " + condition.getDescription());
+				logger.info("Resolving condition with description: {}", condition.getDescription());
 			}
 			if (condition.getKind() == PlanDefinition.ActionConditionKind.APPLICABILITY) {
 				if (!condition.getLanguage().equals("text/cql") && !condition.getLanguage().equals("text/cql.identifier") && !condition.getLanguage().equals("text/cql-identifier")
 						&& !condition.getLanguage().equals("text/cql.name") && !condition.getLanguage().equals("text/cql-name")) {
-					logger.warn("An action language other than CQL was found: " + condition.getLanguage());
+					logger.warn("An action language other than CQL was found: {}", condition.getLanguage());
 					continue;
 				}
 
@@ -293,7 +293,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 					throw new RuntimeException("Missing condition expression");
 				}
 
-				logger.info("Evaluating action condition expression " + condition.getExpression());
+				logger.info("Evaluating action condition expression: {}", condition.getExpression());
 
 				Boolean aliasedExpression = null;
 				if (condition.hasLanguage()) {
@@ -317,12 +317,12 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 				}
 
 				if (!(result instanceof Boolean)) {
-					logger.warn("The condition returned a non-boolean value: " + result.getClass().getSimpleName());
+					logger.warn("The condition returned a non-boolean value: {}", result.getClass().getSimpleName());
 					continue;
 				}
 
 				if (!(Boolean) result) {
-					logger.info("The result of condition expression %s is false", condition.getExpression());
+					logger.info("The result of condition expression {} is false", condition.getExpression());
 					return false;
 				}
 			}
@@ -467,8 +467,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 										.apply(theRequest, new IdType(action.getDefinition().getReferenceElement().getIdPart()),
 												patientId, null, null, null, null, null, null, null, null)
 										.setId(UUID.randomUUID().toString());
-							} catch (FHIRException | ClassNotFoundException | InstantiationException
-									| IllegalAccessException e) {
+							} catch (FHIRException e) {
 								throw new RuntimeException("Error applying ActivityDefinition " + e.getMessage());
 							}
 

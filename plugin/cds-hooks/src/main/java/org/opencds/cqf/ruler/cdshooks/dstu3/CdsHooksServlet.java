@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -33,7 +34,6 @@ import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.discovery.DiscoveryResolutionStu3;
 import org.opencds.cqf.ruler.cdshooks.evaluation.EvaluationContext;
@@ -50,7 +50,6 @@ import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
-import org.opencds.cqf.ruler.cr.dstu3.provider.PlanDefinitionApplyProvider;
 import org.opencds.cqf.ruler.external.AppProperties;
 import org.opencds.cqf.ruler.utility.Ids;
 import org.slf4j.Logger;
@@ -67,11 +66,10 @@ import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 
 public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
-	private static final long serialVersionUID = 1L;
-
-	private FhirVersionEnum version = FhirVersionEnum.DSTU3;
 	private static final Logger logger = LoggerFactory
 			.getLogger(org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet.class);
+
+	private static final long serialVersionUID = 1L;
 
 	@Autowired
 	private CqlConfig cqlConfig;
@@ -89,10 +87,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
-
-	@Autowired
-	private PlanDefinitionApplyProvider planDefinitionProvider;
-
+	
 	@Autowired
 	private JpaDataProviderFactory fhirRetrieveProviderFactory;
 
@@ -191,10 +186,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			// No tenant information available, so create local system request
 			RequestDetails requestDetails = new SystemRequestDetails();
 
-			LibraryLoader libraryLoader = libraryLoaderFactory.create(
-				new ArrayList<LibraryContentProvider>(
-						Arrays.asList(
-								jpaLibraryContentProviderFactory.create(requestDetails))));
+			LibraryLoader libraryLoader = libraryLoaderFactory
+					.create(Lists.newArrayList(jpaLibraryContentProviderFactory.create(requestDetails)));
 
 			Reference reference = planDefinition.getLibrary().get(0);
 			Library library = read(reference.getReferenceElement());
@@ -215,9 +208,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
 			context.setExpressionCaching(true);
 
-			EvaluationContext<PlanDefinition> evaluationContext = new Stu3EvaluationContext(hook, version,
-					FhirContext.forCached(FhirVersionEnum.DSTU3).newRestfulGenericClient(baseUrl),
-					serverTerminologyProvider, context, elm,
+			EvaluationContext<PlanDefinition> evaluationContext = new Stu3EvaluationContext(hook,
+					FhirContext.forCached(FhirVersionEnum.DSTU3).newRestfulGenericClient(baseUrl),context, elm,
 					planDefinition, this.getProviderConfiguration(), this.modelResolver);
 
 			this.setAccessControlHeaders(response);

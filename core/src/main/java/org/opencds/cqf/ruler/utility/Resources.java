@@ -16,6 +16,16 @@ public class Resources {
 		checkNotNull(theResourceClass);
 		checkNotNull(theIdPart);
 		checkArgument(!theIdPart.contains("/"), "theIdPart must be a simple id. Do not include resourceType or history");
+		T resource = newResource(theResourceClass);
+
+		@SuppressWarnings("unchecked")
+		I id = (I) Ids.newId(theResourceClass, theIdPart);
+		resource.setId(id);
+		return resource;
+	}
+
+	public static <T extends IBaseResource> T newResource(Class<T> theResourceClass) {
+		checkNotNull(theResourceClass);
 		T resource = null;
 		try {
 			resource = (T) theResourceClass.getConstructor().newInstance();
@@ -24,9 +34,6 @@ public class Resources {
 					"theResourceClass must be a type with an empty default constructor to use this function");
 		}
 
-		@SuppressWarnings("unchecked")
-		I id = (I) Ids.newId(theResourceClass, theIdPart);
-		resource.setId(id);
 		return resource;
 	}
 }

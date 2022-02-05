@@ -21,8 +21,8 @@ import ca.uhn.fhir.context.FhirContext;
 public class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test
-	public void testR4DataRequirementsOperation() throws IOException {
-		String bundleTextValueSets = stringFromResource( "LibraryTransactionBundle.json");
+	public void testR4LibraryDataRequirementsOperation() throws IOException {
+		String bundleTextValueSets = stringFromResource( "DataRequirementsTransactionBundle.json");
 		FhirContext fhirContext = FhirContext.forR4();
 		Bundle bundleValueSet = (Bundle)fhirContext.newJsonParser().parseResource(bundleTextValueSets);
 		getClient().transaction().withBundle(bundleValueSet).execute();
@@ -31,6 +31,26 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("target").setValue(new StringType("dummy"));
 
 		Library returnLibrary = getClient().operation().onInstance(new IdType("Library", "LibraryEvaluationTest"))
+			.named("$data-requirements")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
+
+		assertNotNull(returnLibrary);
+	}
+
+	@Test
+	public void testR4MeasureDataRequirementsOperation() throws IOException {
+		String bundleTextValueSets = stringFromResource( "Exm104Bundle.json");
+		FhirContext fhirContext = FhirContext.forR4();
+		Bundle bundleValueSet = (Bundle)fhirContext.newJsonParser().parseResource(bundleTextValueSets);
+		getClient().transaction().withBundle(bundleValueSet).execute();
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("startPeriod").setValue(new StringType("2019-01-01"));
+		params.addParameter().setName("endPeriod").setValue(new StringType("2020-01-01"));
+
+		Library returnLibrary = getClient().operation().onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
 			.named("$data-requirements")
 			.withParameters(params)
 			.returnResourceType(Library.class)
