@@ -23,6 +23,7 @@ import org.springframework.core.io.Resource;
 
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.parser.IParser;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public interface ResourceLoader extends DaoRegistryUser {
 
