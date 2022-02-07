@@ -15,9 +15,9 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
+import org.opencds.cqf.ruler.builder.BundleSettings;
+import org.opencds.cqf.ruler.builder.Bundles;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.opencds.cqf.ruler.utility.BundleSettings;
-import org.opencds.cqf.ruler.utility.Bundles;
 import org.opencds.cqf.ruler.utility.Operations;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
