@@ -165,7 +165,6 @@ Examples
 ### Discovery
 
 Following conventions such as these make it easier for the next developer to find code that's already been implemented as opposed to reinventing the wheel.
-
 ## Commit Policy
 
 All new development takes place on `<feature>` branches off `master`. Once feature development on the branch is complete, the feature branch is submitted to `master` as a PR. The PR is reviewed by maintainers and regression testing by the CI build occurs.
