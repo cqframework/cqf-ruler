@@ -31,6 +31,6 @@ Next, attempt to build the project. All the dependency versions in the `cql-rule
 
 ## Future Work
 
-Architecturally, we'd like the cqf-ruler components to be able to be dropped into the `hapi-fhir-server` directly. There are a few dependencies that exist in the cqf-ruler projects that make that not possible for the time being. We need to cooridate with the Smile/HAPI Team to identify of subset of this code that could be migrated to the HAPI base server. For example:
+Architecturally, we'd like the cqf-ruler components to be able to be dropped into the `hapi-fhir-server` directly. There are a few dependencies that exist in the cqf-ruler projects that make that not possible for the time being. We need to coordinate with the Smile/HAPI Team to identify of subset of this code that could be migrated to the HAPI base server. For example:
 
 * Condition Annotations (e.g. `OnDstuCondition.class`)
