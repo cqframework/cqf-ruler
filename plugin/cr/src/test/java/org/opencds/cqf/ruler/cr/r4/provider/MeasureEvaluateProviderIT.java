@@ -32,7 +32,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 	@Test
 	public void testMeasureEvaluate() throws Exception {
 		// Patient First
-		// uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
+		uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
 		// Map<String, IBaseResource> resources =
 		// uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker", ourCtx,
 		// myDaoRegistry);
