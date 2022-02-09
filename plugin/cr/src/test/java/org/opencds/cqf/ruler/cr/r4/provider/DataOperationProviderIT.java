@@ -9,6 +9,7 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
@@ -22,7 +23,7 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testR4LibraryDataRequirementsOperation() throws IOException {
-		String bundleAsText = stringFromResource( "DataRequirementsTransactionBundle.json");
+		String bundleAsText = stringFromResource( "DataReqLibraryTransactionBundle.json");
 		FhirContext fhirContext = FhirContext.forR4();
 		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
@@ -41,7 +42,7 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testR4MeasureDataRequirementsOperation() throws IOException {
-		String bundleAsText = stringFromResource( "Exm104Bundle.json");
+		String bundleAsText = stringFromResource( "Exm104MeasureBundle.json");
 		FhirContext fhirContext = FhirContext.forR4();
 		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();

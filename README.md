@@ -43,7 +43,7 @@ latest (version 11 or higher) JDK for your platform, and install it.
 
 #### Apache Maven
 
-This project uses the [Maven wrapper](https://github.com/apache/maven-wrapper) to ensure the correct verison of Maven is available on your machine. Use `./mvnw` to invoke it.
+This project uses the [Maven wrapper](https://github.com/apache/maven-wrapper) to ensure the correct version of Maven is available on your machine. Use `./mvnw` to invoke it.
 
 ### Build
 
@@ -59,7 +59,7 @@ To run the cqf-ruler directory from this project use:
 
 ### Module Structure
 
-The cqf-ruler uses the hapi-fhir-jpaserver-starter project as a base. On top of that, it adds an extensiblity API and utility functions to allow creating plugins which contain functionality for a specific IG. This diagram shows how it's structured
+The cqf-ruler uses the hapi-fhir-jpaserver-starter project as a base. On top of that, it adds an extensibility API and utility functions to allow creating plugins which contain functionality for a specific IG. This diagram shows how it's structured
 
 ![Module Diagram](docs/diagrams/modules.drawio.svg)
 
@@ -165,7 +165,6 @@ Examples
 ### Discovery
 
 Following conventions such as these make it easier for the next developer to find code that's already been implemented as opposed to reinventing the wheel.
-
 ## Commit Policy
 
 All new development takes place on `<feature>` branches off `master`. Once feature development on the branch is complete, the feature branch is submitted to `master` as a PR. The PR is reviewed by maintainers and regression testing by the CI build occurs.

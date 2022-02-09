@@ -14,6 +14,14 @@
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-test-utilities</artifactId>
 		</dependency>
+		<!-- Needed for spotbugs SuppressFBWarning annotation. https://github.com/spotbugs/spotbugs/blob/master/spotbugs-annotations/src/main/java/edu/umd/cs/findbugs/annotations/SuppressFBWarnings.java 
+			https://search.maven.org/artifact/com.github.spotbugs/spotbugs-annotations/4.5.2/jar -->
+		<dependency>
+			<groupId>com.github.spotbugs</groupId>
+			<artifactId>spotbugs-annotations</artifactId>
+			<version>4.5.2</version>
+			<optional>true</optional>
+		</dependency>
 
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -27,6 +35,15 @@
 		<dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
+		</dependency>
+
+		<!-- Needed for spotbugs-annotations. https://stackoverflow.com/questions/39412365/what-to-import-to-use-suppressfbwarnings 
+			https://search.maven.org/artifact/net.jcip/jcip-annotations/1.0/jar -->
+		<dependency>
+			<groupId>net.jcip</groupId>
+			<artifactId>jcip-annotations</artifactId>
+			<version>1.0</version>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>

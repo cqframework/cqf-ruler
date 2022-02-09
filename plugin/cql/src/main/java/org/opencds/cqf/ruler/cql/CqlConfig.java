@@ -38,7 +38,6 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
@@ -69,7 +68,7 @@ public class CqlConfig {
 
 		return options;
 	}
-	
+
 	@Bean
 	public ModelManager modelManager(
 			Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache) {
@@ -78,7 +77,7 @@ public class CqlConfig {
 
 	@Bean
 	public LibraryManagerFactory libraryManagerFactory(
-		ModelManager modelManager) {
+			ModelManager modelManager) {
 		return (providers) -> {
 			LibraryManager libraryManager = new LibraryManager(modelManager);
 			for (LibraryContentProvider provider : providers) {
@@ -166,9 +165,9 @@ public class CqlConfig {
 	@Bean
 	@Primary
 	public ElmCacheResourceChangeListener elmCacheResourceChangeListener(
-			IResourceChangeListenerRegistry resourceChangeListenerRegistry, IFhirResourceDao<?> libraryDao,
+			IResourceChangeListenerRegistry resourceChangeListenerRegistry, DaoRegistry daoRegistry,
 			Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache) {
-		ElmCacheResourceChangeListener listener = new ElmCacheResourceChangeListener(libraryDao, globalLibraryCache);
+		ElmCacheResourceChangeListener listener = new ElmCacheResourceChangeListener(daoRegistry, globalLibraryCache);
 		resourceChangeListenerRegistry.registerResourceResourceChangeListener("Library",
 				SearchParameterMap.newSynchronous(), listener, 1000);
 		return listener;
@@ -208,7 +207,8 @@ public class CqlConfig {
 		// TODO: The key piece missing for R5 support is a ModelInfo in the CQL
 		// Translator. That's being tracked here:
 		// https://github.com/cqframework/clinical_quality_language/issues/665
-		throw new IllegalStateException("CQL support not yet implemented for R5. Please disable the CQL plugin or switch the server to R4");
+		throw new IllegalStateException(
+				"CQL support not yet implemented for R5. Please disable the CQL plugin or switch the server to R4");
 	}
 
 	@Bean

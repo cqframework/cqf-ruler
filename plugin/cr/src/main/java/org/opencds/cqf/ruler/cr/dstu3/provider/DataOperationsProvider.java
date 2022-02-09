@@ -58,7 +58,6 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
 
 		Library library = read(theId, theRequestDetails);
-
 		return processDataRequirements(library, theRequestDetails);
 	}
 
@@ -112,7 +111,6 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			libraryBundle.addEntry(component);
 		});
 
-		System.out.println("Entry size:"+libraryBundle.getEntry().size());
 		LibraryContentProvider bundleLibraryProvider = new BundleFhirLibraryContentProvider(this.getFhirContext(),
 			libraryBundle, adapterFactory, libraryVersionSelector);
 
@@ -124,13 +122,12 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		CqlTranslator translator = Translators.getTranslator(
 			new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
 			libraryManager.getModelManager());
-		System.out.println("Errors:"+translator.getErrors());
+
 		if (!translator.getErrors().isEmpty()) {
 			throw new CqlTranslatorException(Translators.errorsToString(translator.getErrors()));
 		}
-		Library returnLibrary = DataRequirements.getModuleDefinitionLibraryDstu3(libraryManager,
+		return DataRequirements.getModuleDefinitionLibraryDstu3(libraryManager,
 			translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
-		return library;
 	}
 
 	private List<Library> fetchDependencyLibraries(Library library, RequestDetails theRequestDetails) {
