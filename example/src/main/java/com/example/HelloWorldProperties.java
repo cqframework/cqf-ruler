@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.hello;
+package com.example;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

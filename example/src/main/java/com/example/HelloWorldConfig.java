@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.hello;
+package com.example;
 
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;

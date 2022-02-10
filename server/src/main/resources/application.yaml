@@ -64,14 +64,14 @@ hapi:
       #    allow_override_default_search_params: true
       #    allow_placeholder_references: true
       #    auto_create_placeholder_reference_targets: false
-      cql_enabled: true
+      #    cql_enabled: true
       #    default_encoding: JSON
       #    default_pretty_print: true
       #    default_page_size: 20
       #    enable_repository_validating_interceptor: false
       #    enable_index_missing_fields: false
-      #    enforce_referential_integrity_on_delete: false
-      #    enforce_referential_integrity_on_write: false
+      enforce_referential_integrity_on_delete: false
+      enforce_referential_integrity_on_write: false
       #    etag_support_enabled: true
       #    expunge_enabled: true
       #    daoconfig_client_id_strategy: null
@@ -187,7 +187,6 @@ hapi:
             searchStyle: GET
          prefetch:
             maxUriLength: 8000
-
 #elasticsearch:
 #  debug:
 #    pretty_print_json_log: false
@@ -218,7 +217,3 @@ hapi:
 # cds_hooks.fhirServer.expandValueSets=
 # cds_hooks.fhirServer.searchStyle=
 # cds_hooks.prefetch.maxUriLength=
-
-hello:
-   world:
-      message: Hello
