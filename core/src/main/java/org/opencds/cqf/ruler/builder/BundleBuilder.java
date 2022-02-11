@@ -1,71 +1,31 @@
 package org.opencds.cqf.ruler.builder;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.hl7.fhir.instance.model.api.IBaseBundle;
-import org.opencds.cqf.ruler.utility.Resources;
-
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 
 public class BundleBuilder extends ResourceBuilder {
 
-	protected BundleBuilder(IBaseBundle theBundle, BundleSettings theBundleSettings) {
-		super(theBundle, theBundleSettings);
+	protected <T extends IBaseBundle> BundleBuilder(Class<T> theBundleClass, BundleSettings theBundleSettings) {
+		super(theBundleClass, theBundleSettings);
 	}
 
 	/**
-	 * Creates the appropriate IBaseBundle for a given FhirContext
+	 * Creates the appropriate IBaseBundle for a given bundle class
 	 * 
-	 * @param theFhirContext    the FHIR version to generate a Bundle for
+	 * @param theBundleClass    the FHIR version to generate a Bundle for
 	 * @param theBundleSettings the settings for the Bundle
 	 * @return the Bundle
 	 */
-	public static IBaseBundle create(FhirContext theFhirContext, BundleSettings theBundleSettings) {
-		return create(theFhirContext.getVersion().getVersion(), theBundleSettings);
-	}
+	public static <T extends IBaseBundle> T create(Class<T> theBundleClass, BundleSettings theBundleSettings) {
+		checkNotNull(theBundleClass, theBundleSettings);
 
-	/**
-	 * Creates the appropriate IBaseBundle for a given FhirVersionEnum
-	 * 
-	 * @param theFhirVersionEnum the FHIR version to generate a Bundle for
-	 * @param theBundleSettings  the settings for the Bundle
-	 * @return the Bundle
-	 */
-	@SuppressWarnings("unchecked")
-	public static IBaseBundle create(FhirVersionEnum theFhirVersionEnum, BundleSettings theBundleSettings) {
-		checkNotNull(theFhirVersionEnum, theBundleSettings);
-		checkArgument(theBundleSettings instanceof BundleSettings);
-
-		Class myClass = null;
-		switch (theFhirVersionEnum) {
-			case DSTU2:
-				myClass = ca.uhn.fhir.model.dstu2.resource.Bundle.class;
-				break;
-			case DSTU2_1:
-				myClass = org.hl7.fhir.dstu2016may.model.Bundle.class;
-				break;
-			case DSTU2_HL7ORG:
-				myClass = org.hl7.fhir.dstu2.model.Bundle.class;
-				break;
-			case DSTU3:
-				myClass = org.hl7.fhir.dstu3.model.Bundle.class;
-				break;
-			case R4:
-				myClass = org.hl7.fhir.r4.model.Bundle.class;
-				break;
-			case R5:
-				myClass = org.hl7.fhir.r5.model.Bundle.class;
-				break;
-			default:
-				throw new IllegalArgumentException(String.format("BundleBuilder.create does not support FHIR version %s",
-						theFhirVersionEnum.getFhirVersionString()));
-		}
-		BundleBuilder myBuilder = new BundleBuilder((IBaseBundle) Resources
-				.newResource(myClass, theBundleSettings.id()),
+		BundleBuilder myBuilder = new BundleBuilder(theBundleClass,
 				theBundleSettings);
-		return myBuilder.getResource();
+
+		@SuppressWarnings("unchecked")
+		T myBundle = (T) myBuilder.getResource();
+		return myBundle;
 	}
 
 	@Override
@@ -83,6 +43,7 @@ public class BundleBuilder extends ResourceBuilder {
 		super.initializeDstu2();
 		ca.uhn.fhir.model.dstu2.resource.Bundle myBundle = (ca.uhn.fhir.model.dstu2.resource.Bundle) getResource();
 		myBundle.setType(ca.uhn.fhir.model.dstu2.valueset.BundleTypeEnum.forCode(getSettings().type()));
+		// no identifier
 		// no timestamp
 	}
 
@@ -91,6 +52,7 @@ public class BundleBuilder extends ResourceBuilder {
 		super.initializeDstu2_1();
 		org.hl7.fhir.dstu2016may.model.Bundle myBundle = (org.hl7.fhir.dstu2016may.model.Bundle) getResource();
 		myBundle.setType(org.hl7.fhir.dstu2016may.model.Bundle.BundleType.valueOf(getSettings().type()));
+		// no identifier
 		// no timestamp
 	}
 
@@ -99,6 +61,7 @@ public class BundleBuilder extends ResourceBuilder {
 		super.initializeDstu2_HL7Org();
 		org.hl7.fhir.dstu2.model.Bundle myBundle = (org.hl7.fhir.dstu2.model.Bundle) getResource();
 		myBundle.setType(org.hl7.fhir.dstu2.model.Bundle.BundleType.valueOf(getSettings().type()));
+		// no identifier
 		// no timestamp
 	}
 

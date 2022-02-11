@@ -1,22 +1,23 @@
 package org.opencds.cqf.ruler.builder;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.opencds.cqf.ruler.utility.Resources;
 
 public abstract class ResourceBuilder {
 
 	private IBaseResource myResource;
 	private IResourceSettings myResourceSettings;
 
-	protected ResourceBuilder(IBaseResource theResource, IResourceSettings theResourceSettings) {
-		checkNotNull(theResource);
-		checkNotNull(theResourceSettings);
-		checkArgument(theResourceSettings instanceof ResourceSettings);
+	protected <T extends IBaseResource> ResourceBuilder(Class<T> theResourceClass,
+			IResourceSettings theResourceSettings) {
+		checkNotNull(theResourceClass, theResourceSettings);
 
-		myResource = theResource;
 		myResourceSettings = theResourceSettings;
+		myResource = Resources
+				.newResource(theResourceClass, theResourceSettings.id());
+
 		initializeResource();
 	}
 
@@ -24,16 +25,22 @@ public abstract class ResourceBuilder {
 		switch (myResource.getStructureFhirVersionEnum()) {
 			case DSTU2:
 				initializeDstu2();
+				break;
 			case DSTU2_1:
 				initializeDstu2_1();
+				break;
 			case DSTU2_HL7ORG:
 				initializeDstu2_HL7Org();
+				break;
 			case DSTU3:
 				initializeDstu3();
+				break;
 			case R4:
 				initializeR4();
+				break;
 			case R5:
 				initializeR5();
+				break;
 			default:
 				throw new IllegalArgumentException(
 						String.format("ResourceBuilder.initializeResource does not support FHIR version %s",

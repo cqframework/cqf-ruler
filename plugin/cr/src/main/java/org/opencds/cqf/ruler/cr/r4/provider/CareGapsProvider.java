@@ -20,7 +20,6 @@ import org.opencds.cqf.ruler.builder.BundleSettings;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Operations;
 
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
@@ -142,7 +141,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 
 		// subject.replace("/", "-") +
 
-		Bundle bundle = (Bundle) BundleBuilder.create(FhirVersionEnum.R4,
+		Bundle bundle = (Bundle) BundleBuilder.create(Bundle.class,
 				(BundleSettings) new BundleSettings().addType(BundleType.DOCUMENT.toString())
 						.addProfile(CARE_GAPS_BUNDLE_PROFILE).withDefaults());
 
