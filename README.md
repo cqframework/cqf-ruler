@@ -1,10 +1,10 @@
 # cqf-ruler
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-r4/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-r4) [![Build Status](https://www.travis-ci.com/DBCG/cqf-ruler.svg?branch=master)](https://www.travis-ci.com/DBCG/cqf-ruler) [![docker image](https://img.shields.io/docker/v/contentgroup/cqf-ruler/latest?style=flat&color=brightgreen&label=docker%20image)](https://hub.docker.com/r/contentgroup/cqf-ruler/tags) [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://chat.fhir.org/#narrow/stream/179220-cql)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-server/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.opencds.cqf/cqf-ruler-r4) [![Build Status](https://www.travis-ci.com/DBCG/cqf-ruler.svg?branch=master)](https://www.travis-ci.com/DBCG/cqf-ruler) [![docker image](https://img.shields.io/docker/v/contentgroup/cqf-ruler/latest?style=flat&color=brightgreen&label=docker%20image)](https://hub.docker.com/r/contentgroup/cqf-ruler/tags) [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://chat.fhir.org/#narrow/stream/179220-cql)
 
-The CQF Ruler is a set of plugins for the [HAPI FHIR Server](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) that provides an implementation of FHIR's [Clinical Reasoning Module](
-http://hl7.org/fhir/clinicalreasoning-module.html) and serves as a
-knowledge artifact repository and a [cds-hooks](https://cds-hooks.org/) compatible clinical decision support service. It does this via integrating a number of other CQL-related projects, which are listed below.
+The CQF Ruler is based on the [HAPI FHIR JPA Server Starter](https://github.com/hapifhir/hapi-fhir-jpaserver-starter) and adds a set of plugins that provide an implementation of FHIR's [Clinical Reasoning Module](
+http://hl7.org/fhir/clinicalreasoning-module.html), serve as a
+knowledge artifact repository, and a [cds-hooks](https://cds-hooks.org/) compatible clinical decision support service. It does this via integrating a number of other CQL and FHIR-related projects, some of which are listed below.
 
 ## Usage
 
@@ -17,7 +17,7 @@ docker pull contentgroup/cqf-ruler
 docker run -p 8080:8080 contentgroup/cqf-ruler
 ```
 
-This will make the cqf-ruler available on `http://localhost:8080/cqf-ruler-r4`
+This will make the cqf-ruler available on `http://localhost:8080`
 
 Other options for deployment are listed on the [wiki](https://github.com/DBCG/cqf-ruler/wiki) for more documentation.
 
@@ -25,24 +25,29 @@ Other options for deployment are listed on the [wiki](https://github.com/DBCG/cq
 
 ### Dependencies
 
+#### Git Submodules
+
+This project includes the `hapi-fhir-jpaserver-starter` project as a submodule and includes the compiled classes as a jar called `cqf-ruler-external`. Be sure to use the following command when cloning this repository to ensure the submodules are initialized correctly:
+
+`git clone --recurse-submodules https://github.com/DBCG/cqf-ruler.git`
+
+or if you've already checked out the repo, use
+
+`git submodule update --init --recursive`
+
 #### Java
 
 Go to [http://www.oracle.com/technetwork/java/javase/downloads/](
 http://www.oracle.com/technetwork/java/javase/downloads/) and download the
 latest (version 11 or higher) JDK for your platform, and install it.
 
-#### Apache Maven 3.5.3
+#### Apache Maven
 
-Go to [https://maven.apache.org](https://maven.apache.org), visit the main
-"Download" page, and under "Files" download the 3.5.3 binary.  Then unpack that archive file and follow the installation
-instructions in its README.txt.  The end result of this should be that the
-binary "mvn" is now in your path.
+This project uses the [Maven wrapper](https://github.com/apache/maven-wrapper) to ensure the correct version of Maven is available on your machine. Use `./mvnw` to invoke it.
 
 ### Build
 
-`mvn package`
-
-Builds the project war file (cqf-ruler-dstu3.war and cqf-ruler-r4.war in the projects' target directory)
+`./mvnw package`
 
 Visit the [wiki](https://github.com/DBCG/cqf-ruler/wiki) for more documentation.
 
@@ -50,24 +55,116 @@ Visit the [wiki](https://github.com/DBCG/cqf-ruler/wiki) for more documentation.
 
 To run the cqf-ruler directory from this project use:
 
-#### DSTU3
+`java -jar server/target/cqf-ruler-server-*.war`
 
-`mvn jetty:run -am --projects cqf-ruler-dstu3`
+### Module Structure
 
-The cqf-ruler will be available at `http://localhost:8080/cqf-ruler-dstu3/`
+The cqf-ruler uses the hapi-fhir-jpaserver-starter project as a base. On top of that, it adds an extensibility API and utility functions to allow creating plugins which contain functionality for a specific IG. This diagram shows how it's structured
 
-#### R4
+![Module Diagram](docs/diagrams/modules.drawio.svg)
 
-`mvn jetty:run -am --projects cqf-ruler-r4`
+### Plugins
 
-The cqf-ruler will be available at `http://localhost:8080/cqf-ruler-r4/`
+Plugins use Spring Boot [autoconfiguration](https://docs.spring.io/spring-boot/docs/2.0.0.M3/reference/html/boot-features-developing-auto-configuration.html) to be loaded at runtime. Spring searches for a `spring.factories` file in the meta-data of the jars on the classpath, and the `spring.factories` file points to the root Spring config for the plugin. For example, the content of the `resources/META-INF/spring.factories` file might be:
+
+```ini
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.example.ExampleConfig
+```
+
+Any Beans defined in that root plugin config that implement one the cqf-ruler plugin apis will be loaded by the cqf-ruler on startup. There's a full plugin example [here](example).
+
+Plugins should reference the `cqf-ruler-core` project using the `provided` scope. This tells Maven that the `cqf-ruler-core` classes will be available at runtime, and not to include those dependencies in the plugin jar.
+
+```xml
+<dependency>
+    <groupId>org.opencds.cqf.ruler</groupId>
+    <artifactId>cqf-ruler-core</artifactId>
+    <version>0.5.0-SNAPSHOT</version>
+    <scope>provided</scope>
+</dependency>
+```
+
+Any other dependencies also required by the base `cqf-ruler-core` may also be listed in `provided` scope
+
+#### Plugin API
+
+Currently the cqf-ruler recognizes three types of plugin contributions:
+
+* Operation Providers
+  * Provide implementation of some FHIR operation
+* Metadata Extenders
+  * Mutates the conformance/capability statements
+* Interceptors
+  * Modify requests/responses
+
+#### Plugin Limitations
+
+The plugin system is very simple and naive. Plugins are expected to be well-behaved, and not contribute any beans that may be invalid for the current server's configuration. This includes but is not limited to, multiple versions of plugins, mismatched FHIR versions, operation overrides, etc.
 
 ## Coding Conventions
 
 The CQF Project has adopted an over-arching goal to contribute back to HAPI.
 To this end:
--   The CQF Ruler project has adopted the HAPI Coding Conventions: https://github.com/hapifhir/hapi-fhir/wiki/Contributing
--   Plugins should generally use the "hapi.fhir" prefix for configuration properties
+
+* The CQF Ruler project has adopted the HAPI Coding Conventions: <https://github.com/hapifhir/hapi-fhir/wiki/Contributing>
+* Plugins should generally use the "hapi.fhir" prefix for configuration properties
+
+### Utility Guidelines
+
+#### Types of Utilities
+
+In general, reusable utilities are separated along two different dimensions, Classes and Behaviors.
+
+Class specific utilities are functions that are associated with specific class or interface, and add functionality to that class.
+
+Behavior specific utilities allow the reuse of behavior across many different classes.
+
+#### Class Specific Utilities
+
+Utility or Helper methods that are associated with a single class should go into a class that has the pluralized name of the associated class. For example, utilities for `Client` should go into the `Clients` class. This ensures that the utility class is focused on one class and allows for more readable code:
+
+`Clients.forUrl("test.com")`
+
+as opposed to:
+
+`ClientUtilities.createClient("test.com")`
+
+or, if you put unrelated code into the class, you might end up with something like:
+
+`Clients.parseRegex()`
+
+If the code doesn't read clearly after you've added an utility, consider that it may not be in the right place.
+
+In general, all the functions for this type of utility should be `static`. No internal state should be maintained (`static final`, or immutable, state is ok). If you final that your utility class contains mutable state, consider an alternate design.
+
+Examples
+
+* Factory functions
+* Adding behavior to a class you can't extend
+
+#### Behavior Specific Utilities
+
+If there is behavior you'd like to share across many classes, model that as an interface and use a name that follows the pattern `"ThingDoer"`. For example, all the classes that access a database might be `DatabaseReader`. Use `default` interface implementations to write logic that can be shared many places. The interfaces themselves shouldn't have mutable state (again `static final` is ok). If it's necessary for the for shared logic to have access to state, model that as an method without a default implementation. For example:
+
+```java
+interface DatabaseReader {
+   Database getDb();
+   default Entity read(Id id) {
+      return getDb().connect().find(id);
+   }
+}
+```
+
+In the above example any class that has access to a `Database` can inherit the `read` behavior.
+
+Examples
+
+* Cross-cutting concerns
+
+### Discovery
+
+Following conventions such as these make it easier for the next developer to find code that's already been implemented as opposed to reinventing the wheel.
 
 ## Commit Policy
 
@@ -78,24 +175,24 @@ Changes to the `master` branch must be done through an approved PR. Delete branc
 Merges to `master` trigger a deployment to the Maven Snapshots repositories. Once ready for a release, the `master` branch is updated with the correct version number and is tagged. Tags trigger a full release to Maven Central and a corresponding release to Github. Releases SHALL NOT have a SNAPSHOT version, nor any SNAPSHOT dependencies.
 
 ## Release Process
-To release a new version of CQF Ruler:
-- Ensure target versions/releases of:
-   - [ ] HAPI
-   - [ ] CQFTooling
-   - [ ] CDSHooks
-- [ ] Update master to be a release version (and all the reviews, bug fixes, etc. that that requires)
-   - [ ] Regression test each of the operations of all the plugins
-- [ ] Passed Travis Build = ready for release
-- [ ] Create a Github Release (which creates a tag at the current commit of master)
-   - [ ] Choose the "Auto-generate release notes" option
-- Travis does the release to Maven, ensure binaries are published to the binaries repository:
-   - [ ]  r4: (https://oss.sonatype.org/#view-repositories;public~browsestorage~org/opencds/cqf/cqf-ruler-r4)
-   - [ ] stu3: (https://oss.sonatype.org/#view-repositories;public~browsestorage~org/opencds/cqf/cqf-ruler-dstu3)
-- Travis does the release of the image to DockerHub
-   - [ ] Ensure the image is published to DockerHub (https://hub.docker.com/r/contentgroup/cqf-ruler)
-- [ ] Update master to vNext-SNAPSHOT
-- [ ] Ensure all issues included in the release are Closed
 
+To release a new version of CQF Ruler:
+
+* [ ] Ensure target versions/releases of:
+  * [ ] HAPI
+  * [ ] CQFTooling
+  * [ ] CDSHooks
+* [ ] Update master to be a release (i.e. no SNAPSHOT) version
+  * [ ] Regression test each of the operations of all the plugins
+* [ ] Passed Travis Build for release profile
+* [ ] Create a Github Release (which creates a tag at the current commit of master)
+  * [ ] Choose the "Auto-generate release notes" option
+* Travis does the release to Maven, ensure binaries are published to the binaries repository:
+  * [ ]  server: (<https://oss.sonatype.org/#view-repositories;public~browsestorage~org/opencds/cqf/cqf-ruler-server>)
+* Travis does the release of the image to DockerHub
+  * [ ] Ensure the image is published to DockerHub (<https://hub.docker.com/r/contentgroup/cqf-ruler>)
+* [ ] Update master to vNext-SNAPSHOT
+* [ ] Ensure all issues included in the release are Closed
 
 ## Getting Help
 

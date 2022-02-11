@@ -1,0 +1,62 @@
+{
+	"java.configuration.updateBuildConfiguration": "automatic",
+	"java.errors.incompleteClasspath.severity": "ignore",
+	"java.test.config": [
+		{
+			"name": "test-config",
+			"vmArgs": [
+				"-XX:TieredStopAtLevel=1",
+				"-Xverify:none",
+				"-Dspring.main.lazy-initialization=true"
+			]
+		},
+	],
+	"java.test.defaultConfig": "test-config",
+	"java.checkstyle.configuration": "${workspaceFolder}/config/checkstyle/checkstyle.xml",
+	"java.checkstyle.version": "9.2.1",
+	"cSpell.enabledLanguageIds": [
+		"java",
+		"json",
+		"xml",
+		"markdown"
+	],
+	"cSpell.ignorePaths": [
+		".git/objects",
+		".vscode",
+		"**/pom.xml",
+		"checkstyle.xml"
+	],
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": true
+	},
+	"cSpell.words": [
+		"Alphora",
+		"autoconfiguration",
+		"autoconfigure",
+		"classpath",
+		"Codeable",
+		"contentgroup",
+		"DEQM",
+		"Eicrs",
+		"mgsc",
+		"drawio",
+		"FHIR",
+		"Gson",
+		"jpaserver",
+		"mvnw",
+		"numer",
+		"opencds",
+		"reindex",
+		"springframework",
+		"valuesets",
+		"Zulip"
+	],
+	"files.exclude": {
+		"**/.classpath": true,
+		"**/.project": true,
+		"**/.settings": true,
+		"**/.factorypath": true
+	},
+	"files.eol": "\n",
+	"editor.formatOnSave": true
+}

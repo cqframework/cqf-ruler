@@ -1,0 +1,45 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b8-de111-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de111-choices-grouper",
+  "name": "FetalpresentationChoicesGrouper",
+  "title": "Fetal presentation Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Fetal presentation Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de112" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de115" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b8-de116" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE112",
+      "display": "Unknown fetal presentation"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE113",
+      "display": "Cephalic fetal presentation"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE114",
+      "display": "Pelvic fetal presentation"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE115",
+      "display": "Transverse fetal presentation"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B8.DE116",
+      "display": "Other fetal presentation (specify)"
+    } ]
+  }
+}

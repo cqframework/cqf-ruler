@@ -1,0 +1,32 @@
+{
+  "resourceType": "Observation",
+  "id": "anc-b5-de48-charity-with-danger-signs",
+  "meta": {
+    "profile": [ "http://fhir.org/guides/who/anc-cds/StructureDefinition/anc-b5-de48" ]
+  },
+  "status": "final",
+  "code": {
+    "coding": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B5.DE48",
+      "display": "Danger signs"
+    } ]
+  },
+  "subject": {
+    "reference": "Patient/charity-with-danger-signs"
+  },
+  "encounter": {
+	  "reference": "Encounter/encounter-anc-charity-with-danger-signs"
+  },
+  "valueCodeableConcept": {
+    "coding": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B5.DE51",
+      "display": "Central cyanosis"
+    }, {
+      "system": "http://snomed.info/sct",
+      "code": "95837007",
+      "display": "Central cyanosis (disorder)"
+    } ]
+  }
+}

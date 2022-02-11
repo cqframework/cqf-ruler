@@ -1,0 +1,113 @@
+{
+  "resourceType": "Patient",
+  "id": "ra-patient02",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+    ]
+  },
+  "extension": [
+      {
+          "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+          "valueCode": "M"
+      },
+      {
+          "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+          "extension": [
+              {
+                  "url": "ombCategory",
+                  "valueCoding": {
+                      "system": "urn:oid:2.16.840.1.113883.6.238",
+                      "code": "2106-3",
+                      "display": "White"
+                  }
+              },
+              {
+                  "url": "text",
+                  "valueString": "White"
+              }
+          ]
+      },
+      {
+          "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+          "extension": [
+              {
+                  "url": "ombCategory",
+                  "valueCoding": {
+                      "system": "urn:oid:2.16.840.1.113883.6.238",
+                      "code": "2186-5",
+                      "display": "Not Hispanic or Latino"
+                  }
+              },
+              {
+                  "url": "text",
+                  "valueString": "Not Hispanic or Latino"
+              }
+          ]
+      }
+  ],
+  "identifier": [
+      {
+          "use": "usual",
+          "type": {
+              "coding": [
+                  {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                      "code": "MR",
+                      "display": "Medical record number"
+                  }
+              ]
+          },
+          "system": "http://hospital.davinci.org",
+          "value": "23456"
+      }
+  ],
+  "active": true,
+  "name": [
+      {
+          "use": "official",
+          "family": "Everyman",
+          "given": [
+              "Adam"
+          ]
+      }
+  ],
+  "gender": "female",
+  "birthDate": "1950-12-16",
+  "deceasedBoolean": false,
+  "address": [
+      {
+          "use": "home",
+          "line": [
+              "2222 Home Street"
+          ],
+          "city": "Ann Arbor",
+          "state": "MI",
+          "postalCode": "99999",
+          "country": "USA"
+      }
+  ],
+  "maritalStatus": {
+      "coding": [
+          {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+              "code": "M",
+              "display": "Married"
+          }
+      ]
+  },
+  "communication": [
+      {
+          "language": {
+              "coding": [
+                  {
+                      "system": "urn:ietf:bcp:47",
+                      "code": "en-US",
+                      "display": "English (Region=United States)"
+                  }
+              ]
+          },
+          "preferred": true
+      }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "resourceType": "Condition",
+  "id": "ra-condition17pat01",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition"
+    ]
+  },
+  "clinicalStatus": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+        "code": "active",
+        "display": "Active"
+      }
+    ],
+    "text": "Active"
+  },
+  "verificationStatus": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+        "code": "confirmed",
+        "display": "Confirmed"
+      }
+    ],
+    "text": "Confirmed"
+  },
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+          "code": "encounter-diagnosis",
+          "display": "Encounter Diagnosis"
+        }
+      ],
+      "text": "Encounter Diagnosis"
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "Z68.42",
+        "display": "Body mass index [BMI] 45.0-49.9, adult"
+      }
+    ],
+    "text": "Z68.42: Body mass index [BMI] 45.0-49.9, adult"
+  },
+  "subject": {
+    "reference": "Patient/ra-patient01"
+  },
+  "onsetDateTime": "2021-01-31"
+}

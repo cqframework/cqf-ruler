@@ -1,0 +1,4 @@
+hapi:
+  fhir:
+    cr:
+      enabled: true

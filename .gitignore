@@ -54,13 +54,13 @@ Session.vim
 *.iml
 
 ## Directory-based project format:
-.idea/
+.idea
 # if you remove the above rule, at least ignore the following:
 
 # User-specific stuff:
-# .idea/workspace.xml
-# .idea/tasks.xml
-# .idea/dictionaries
+#  .idea/workspace.xml
+#  .idea/tasks.xml
+#  .idea/dictionaries
 
 # Sensitive or high-churn files:
 # .idea/dataSources.ids
@@ -142,16 +142,10 @@ local.properties
 *.txt
 
 target
-.project
-.settings
 .classpath
 .flattened-pom.xml
 .factorypath
-org.eclipse.m2e.core.prefs
-!/src/main/resources/hapi.properties
-
-.vscode
-
+.settings
 
 LogMessages.html
 

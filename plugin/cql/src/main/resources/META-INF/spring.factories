@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.opencds.cqf.ruler.cql.CqlConfig

@@ -1,0 +1,67 @@
+{
+  "resourceType": "ValueSet",
+  "id": "pain-treatment-plan",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-distributablevalueset",
+      "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-publishablevalueset"
+    ]
+  },
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-author",
+      "valueContactDetail": {
+        "name": "MD Partners, Inc.",
+        "telecom": [
+          {
+            "system": "email",
+            "value": "info@mdpartners.com"
+          }
+        ]
+      }
+    }
+  ],
+  "url": "http://fhir.org/guides/cdc/opioid-cds/ValueSet/pain-treatment-plan",
+  "name": "Pain_Treatment_Plan",
+  "title": "ValueSet - Pain Treatment Plan",
+  "status": "active",
+  "experimental": true,
+  "date": "2020-03-26T17:39:08-06:00",
+  "publisher": "Centers for Disease Control and Prevention (CDC)",
+  "description": "A Pain medicine Plan of care note",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US"
+        }
+      ]
+    }
+  ],
+  "purpose": "Identification of Pain medicine Plan of care note for use in opioid therapy management",
+  "copyright": "© CDC 2016+.",
+  "compose": {
+    "include": [
+      {
+        "system": "http://loinc.org",
+        "concept": [
+          {
+            "code": "80764-4"
+          }
+        ]
+      }
+    ]
+  },
+  "expansion": {
+    "timestamp": "2020-03-26T17:39:09-06:00",
+    "contains": [
+      {
+        "system": "http://loinc.org",
+        "version": "2.67",
+        "code": "80764-4",
+        "display": "Pain medicine Plan of care note"
+      }
+    ]
+  }
+}

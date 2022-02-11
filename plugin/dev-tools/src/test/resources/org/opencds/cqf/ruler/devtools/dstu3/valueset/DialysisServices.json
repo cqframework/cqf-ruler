@@ -1,0 +1,246 @@
+{
+  "resourceType": "ValueSet",
+  "id": "2.16.840.1.113883.3.464.1003.109.12.1013",
+  "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.109.12.1013",
+  "title": "Dialysis Services",
+  "status": "active",
+  "publisher": "National Committee for Quality Assurance",
+  "compose": {
+    "include": [
+      {
+        "system": "http://snomed.info/sct",
+        "version": "2019-03",
+        "concept": [
+          {
+            "code": "108241001",
+            "display": "Dialysis procedure (procedure)"
+          },
+          {
+            "code": "10848006",
+            "display": "Removal of peritoneal dialysis catheter (procedure)"
+          },
+          {
+            "code": "11932001",
+            "display": "Stabilizing hemodialysis (procedure)"
+          },
+          {
+            "code": "14684005",
+            "display": "Peritoneal dialysis excluding cannulation (procedure)"
+          },
+          {
+            "code": "180273006",
+            "display": "Removal of chronic ambulatory peritoneal dialysis catheter (procedure)"
+          },
+          {
+            "code": "225230008",
+            "display": "Chronic peritoneal dialysis (procedure)"
+          },
+          {
+            "code": "225231007",
+            "display": "Stab peritoneal dialysis (procedure)"
+          },
+          {
+            "code": "233575001",
+            "display": "Intermittent hemodialysis (procedure)"
+          },
+          {
+            "code": "233576000",
+            "display": "Intermittent hemodialysis with sequential ultrafiltration (procedure)"
+          },
+          {
+            "code": "233577009",
+            "display": "Intermittent hemodialysis with continuous ultrafiltration (procedure)"
+          },
+          {
+            "code": "233578004",
+            "display": "Continuous hemodialysis (procedure)"
+          },
+          {
+            "code": "233579007",
+            "display": "Continuous arteriovenous hemodialysis (procedure)"
+          },
+          {
+            "code": "233580005",
+            "display": "Continuous venovenous hemodialysis (procedure)"
+          },
+          {
+            "code": "233581009",
+            "display": "Hemofiltration (procedure)"
+          },
+          {
+            "code": "233582002",
+            "display": "Intermittent hemofiltration (procedure)"
+          },
+          {
+            "code": "233583007",
+            "display": "Continuous hemofiltration (procedure)"
+          },
+          {
+            "code": "233584001",
+            "display": "Continuous arteriovenous hemofiltration (procedure)"
+          },
+          {
+            "code": "233585000",
+            "display": "Continuous venovenous hemofiltration (procedure)"
+          },
+          {
+            "code": "233586004",
+            "display": "Hemodiafiltration (procedure)"
+          },
+          {
+            "code": "233587008",
+            "display": "Intermittent hemodiafiltration (procedure)"
+          },
+          {
+            "code": "233588003",
+            "display": "Continuous hemodiafiltration (procedure)"
+          },
+          {
+            "code": "233589006",
+            "display": "Continuous arteriovenous hemodiafiltration (procedure)"
+          },
+          {
+            "code": "233590002",
+            "display": "Continuous venovenous hemodiafiltration (procedure)"
+          },
+          {
+            "code": "238316008",
+            "display": "Aspiration of chronic ambulatory peritoneal dialysis catheter (procedure)"
+          },
+          {
+            "code": "238317004",
+            "display": "Flushing of chronic ambulatory peritoneal dialysis catheter (procedure)"
+          },
+          {
+            "code": "238318009",
+            "display": "Continuous ambulatory peritoneal dialysis (procedure)"
+          },
+          {
+            "code": "238319001",
+            "display": "Continuous cycling peritoneal dialysis (procedure)"
+          },
+          {
+            "code": "238321006",
+            "display": "Intermittent peritoneal dialysis (procedure)"
+          },
+          {
+            "code": "238322004",
+            "display": "Tidal peritoneal dialysis (procedure)"
+          },
+          {
+            "code": "238323009",
+            "display": "Night-time intermittent peritoneal dialysis (procedure)"
+          },
+          {
+            "code": "265764009",
+            "display": "Renal dialysis (procedure)"
+          },
+          {
+            "code": "288182009",
+            "display": "Extracorporeal kidney (procedure)"
+          },
+          {
+            "code": "302497006",
+            "display": "Hemodialysis (procedure)"
+          },
+          {
+            "code": "34897002",
+            "display": "Hemodialysis, maintenance in hospital (procedure)"
+          },
+          {
+            "code": "427053002",
+            "display": "Extracorporeal albumin hemodialysis (procedure)"
+          },
+          {
+            "code": "428648006",
+            "display": "Automated peritoneal dialysis (procedure)"
+          },
+          {
+            "code": "439278006",
+            "display": "Measurement of static venous pressure in hemodialysis vascular access (procedure)"
+          },
+          {
+            "code": "439976001",
+            "display": "Measurement of recirculation in hemodialysis vascular access (procedure)"
+          },
+          {
+            "code": "57274006",
+            "display": "Initial hemodialysis (procedure)"
+          },
+          {
+            "code": "676002",
+            "display": "Peritoneal dialysis including cannulation (procedure)"
+          },
+          {
+            "code": "67970008",
+            "display": "Hemodialysis, maintenance at home (procedure)"
+          },
+          {
+            "code": "68341005",
+            "display": "Hemodialysis, supervision at home (procedure)"
+          },
+          {
+            "code": "71192002",
+            "display": "Peritoneal dialysis (procedure)"
+          },
+          {
+            "code": "714749008",
+            "display": "Continuous renal replacement therapy (procedure)"
+          }
+        ]
+      },
+      {
+        "system": "http://www.ama-assn.org/go/cpt",
+        "version": "2019",
+        "concept": [
+          {
+            "code": "1019320",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 12-19 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents"
+          },
+          {
+            "code": "90935",
+            "display": "Hemodialysis procedure with single evaluation by a physician or other qualified health care professional"
+          },
+          {
+            "code": "90937",
+            "display": "Hemodialysis procedure requiring repeated evaluation(s) with or without substantial revision of dialysis prescription"
+          },
+          {
+            "code": "90940",
+            "display": "Hemodialysis access flow study to determine blood flow in grafts and arteriovenous fistulae by an indicator method"
+          },
+          {
+            "code": "90945",
+            "display": "Dialysis procedure other than hemodialysis (eg, peritoneal dialysis, hemofiltration, or other continuous renal replacement therapies), with single evaluation by a physician or other qualified health care professional"
+          },
+          {
+            "code": "90947",
+            "display": "Dialysis procedure other than hemodialysis (eg, peritoneal dialysis, hemofiltration, or other continuous renal replacement therapies) requiring repeated evaluations by a physician or other qualified health care professional, with or without substantial revision of dialysis prescription"
+          },
+          {
+            "code": "90957",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 12-19 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 4 or more face-to-face visits by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90958",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 12-19 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 2-3 face-to-face visits by a physician or other qualified health care professional per month"
+          },
+          {
+            "code": "90959",
+            "display": "End-stage renal disease (ESRD) related services monthly, for patients 12-19 years of age to include monitoring for the adequacy of nutrition, assessment of growth and development, and counseling of parents; with 1 face-to-face visit by a physician or other qualified health care professional per month"
+          }
+        ]
+      },
+      {
+        "system": "https://www.cms.gov/Medicare/Coding/MedHCPCSGenInfo/index.html",
+        "version": "2019",
+        "concept": [
+          {
+            "code": "G0257",
+            "display": "Unscheduled or emergency dialysis treatment for an esrd patient in a hospital outpatient department that is not certified as an esrd facility"
+          }
+        ]
+      }
+    ]
+  }
+}

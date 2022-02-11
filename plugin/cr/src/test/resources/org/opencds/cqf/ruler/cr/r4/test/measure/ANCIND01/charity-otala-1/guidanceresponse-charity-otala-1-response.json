@@ -1,0 +1,32 @@
+{
+  "resourceType": "GuidanceResponse",
+  "id": "charity-otala-1-response",
+  "contained": [
+    {
+      "resourceType": "Parameters",
+      "id": "output",
+      "parameter": [
+        {
+          "name": "Initial Population",
+          "valueBoolean": true
+        },
+        {
+          "name": "Denominator",
+          "valueBoolean": true
+        },
+        {
+          "name": "Numerator",
+          "valueBoolean": true
+        }
+      ]
+    }
+  ],
+  "moduleCanonical": "http://fhir.org/guides/who/anc-cds/Library/ANCIND01",
+  "status": "success",
+  "subject": {
+    "reference": "Patient/charity-otala-1"
+  },
+  "outputParameters": {
+    "reference": "#output"
+  }
+}

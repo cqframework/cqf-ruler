@@ -1,0 +1,30 @@
+{
+    "resourceType": "ValueSet",
+    "id": "2.16.840.1.113883.3.117.1.7.1.207",
+    "url": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.207",
+    "identifier": [
+      {
+        "system": "urn:ietf:rfc:3986",
+        "value": "2.16.840.1.113883.3.117.1.7.1.207"
+      }
+    ],
+    "version": "20170725",
+    "name": "DischargedtoHealthCareFacilityforHospiceCare",
+    "title": "Discharged to Health Care Facility for Hospice Care",
+    "status": "active",
+    "publisher": "NLM",
+    "compose": {
+      "include": [
+        {
+          "system": "http://snomed.info/sct",
+          "version": "2018-03",
+          "concept": [
+            {
+              "code": "428371000124100",
+              "display": "Discharge to healthcare facility for hospice care (procedure)"
+            }
+          ]
+        }
+      ]
+    }
+  }

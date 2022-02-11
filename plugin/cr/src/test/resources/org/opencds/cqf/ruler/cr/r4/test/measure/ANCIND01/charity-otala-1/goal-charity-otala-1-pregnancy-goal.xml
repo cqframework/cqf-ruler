@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Goal xmlns="http://hl7.org/fhir">
+  <id value="charity-otala-1-pregnancy-goal"/>
+  <lifecycleStatus value="active"/>
+	<!-- TODO: Category? -->
+  <!-- TODO: Temporarily commented description due to bug in publisher -->
+  <!-- <description>
+    <text value="Maintain patient&#39;s health throughout pregnancy and ensure a healthy child"/>
+  </description> -->
+  <subject>
+    <reference value="Patient/charity-otala-1"/>
+    <display value="Charity Otala"/>
+  </subject>
+</Goal>

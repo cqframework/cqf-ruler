@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.opencds.cqf.ruler</groupId>
+		<artifactId>cqf-ruler</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>cqf-ruler-external</artifactId>
+	<dependencies>
+
+		<!-- This dependency includes the core HAPI-FHIR classes -->
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-base</artifactId>
+		</dependency>
+
+		<!-- This dependency includes the JPA server itself, which is packaged separately from the rest of HAPI FHIR -->
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-jpaserver-base</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-jcl</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- This dependency includes the JPA CQL Server -->
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-jpaserver-cql</artifactId>
+		</dependency>
+
+		<!-- This dependency includes the JPA MDM Server -->
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-jpaserver-mdm</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-server-openapi</artifactId>
+		</dependency>
+
+		<!-- This dependency is used for the "FHIR Tester" web app overlay -->
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-testpage-overlay</artifactId>
+			<classifier>classes</classifier>
+		</dependency>
+
+		<!-- HAPI-FHIR uses Logback for logging support. The logback library is included automatically by Maven as a part of the hapi-fhir-base dependency, but you also need to include a logging library. Logback
+            is used here, but log4j would also be fine. -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+
+		<!-- Used for CORS support -->
+		<!-- Spring Web is used to deploy the server to a web container. -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
+		</dependency>
+
+		<!-- Needed for JEE/Servlet support -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<?m2e execute onConfiguration?>
+						<phase>generate-sources</phase>
+						<configuration>
+							<target>
+								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/java/org/opencds/cqf/ruler/external">
+									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter">
+										<include name="**/*.*"/>
+									</fileset>
+								</copy>
+								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources">
+									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/resources">
+										<include name="**/*.*"/>
+									</fileset>
+								</copy>
+								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/webapp">
+									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/webapp">
+										<include name="**/*.*"/>
+									</fileset>
+								</copy>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<additionalparam>-Xdoclint:none</additionalparam>
+					<additionalOptions>-Xdoclint:none</additionalOptions>
+					<additionalJOption>-Xdoclint:none</additionalJOption>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/java</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-resources</id>
+						<goals>
+							<goal>add-resource</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources</directory>
+									<!-- <targetPath>resources</targetPath> -->
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>maven-replacer-plugin</artifactId>
+				<version>1.4.1</version>
+				<configuration>
+					<includes>
+						<include>target/generated-sources/**/*.java</include>
+					</includes>
+
+					<regex>true</regex>
+					<regexFlags>
+						<regexFlag>MULTILINE</regexFlag>
+					</regexFlags>
+					<replacements>
+						<!-- this is just so we don't publish anything under Smile's domain
+						If they end up publishing the starter server directly we can use those classes
+						It'd be better to share the same namespace to facilitate easier migration of the code to HAPi -->
+						<replacement>
+							<token>^package ca.uhn.fhir.jpa.starter</token>
+							<value>package org.opencds.cqf.ruler.external</value>
+						</replacement>
+						<replacement>
+							<token>^import ca.uhn.fhir.jpa.starter.</token>
+							<value>import org.opencds.cqf.ruler.external.</value>
+						</replacement>
+						<replacement>
+							<token>^(@SuppressWarnings\(.*?\)\s+)?public class</token>
+							<value>@SuppressWarnings("all") public class</value>
+						</replacement>
+
+					</replacements>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+						<?m2e execute onConfiguration?>
+						<phase>generate-sources</phase>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<showDeprecation>false</showDeprecation>
+					<showWarnings>false</showWarnings>
+					<compilerArgs>
+						<arg>-Xlint:none</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

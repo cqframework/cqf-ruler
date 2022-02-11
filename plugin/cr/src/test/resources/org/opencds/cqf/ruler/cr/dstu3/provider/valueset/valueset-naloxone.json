@@ -1,0 +1,312 @@
+{
+  "resourceType": "ValueSet",
+  "id": "naloxone",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/StructureDefinition/shareablevalueset",
+      "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/cdc-valueset"
+    ]
+  },
+  "extension": [
+    {
+      "url": "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/cdc-valueset-inclusion",
+      "valueString": "For RxNorm, TTY = IN, BN, PIN, SBD, SCD for Nalaxone."
+    },
+    {
+      "url": "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/cdc-valueset-exclusion",
+      "valueString": "Any drug concept not specified in the inclusion."
+    },
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-warning",
+      "valueMarkdown": "Note that the terminologies included in this implementation guide will need to be updated, because the ideal mechanism for distribution (as an expression) is not currently supported by the content logical definition constructs available in the FHIR ValueSet resource and all known implementations of it. Before use in a production environment, ensure you have the latest value sets based on the definitions for each value set (as defined in the inclusion/exclusion criteria for each one)."
+    }
+  ],
+  "url": "http://fhir.org/guides/cdc/opioid-cds/ValueSet/naloxone",
+  "name": "valueset-nalaxone",
+  "title": "RxNorm Nalaxone Drugs",
+  "status": "active",
+  "experimental": false,
+  "publisher": "Centers for Disease Control and Prevention (CDC)",
+  "description": "ValueSet containing all orderable drug representations for Nalaxone codes.",
+  "useContext": [
+    {
+      "code": {
+        "system": "http://hl7.org/fhir/usage-context-type",
+        "code": "focus",
+        "display": "Clinical Focus"
+      },
+      "valueCodeableConcept": {
+        "text": "All orderable drug representations for Nalaxone."
+      }
+    }
+  ],
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US",
+          "display": "United States of America"
+        }
+      ]
+    }
+  ],
+  "purpose": "Provide terminology for Naloxone MedicationRequest retrieval in recommendation 8.",
+  "copyright": "© CDC 2016+.",
+  "compose": {
+    "extension": [
+      {
+        "extension": [
+          {
+            "url": "language",
+            "valueUri": "http://www.nlm.nih.gov/research/umls/rxmix"
+          },
+          {
+            "url": "expression",
+            "valueString": "TTY = BN,IN,PIN,SBD,SCD for Nalaxone (TTY=IN, RxCUI=7242)"
+          }
+        ],
+        "url": "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/cdc-valueset-query"
+      }
+    ],
+    "include": [
+      {
+        "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+        "concept": [
+          {
+            "code": "1495294",
+            "display": "Evzio"
+          },
+          {
+            "code": "197117",
+            "display": "Narcan"
+          },
+          {
+            "code": "352990",
+            "display": "Suboxone"
+          },
+          {
+            "code": "1546084",
+            "display": "Targiniq"
+          },
+          {
+            "code": "1431077",
+            "display": "Zubsolv"
+          },
+          {
+            "code": "7242",
+            "display": "Naloxone"
+          },
+          {
+            "code": "1010598",
+            "display": "Naloxone Hydrochloride Dihydrate"
+          },
+          {
+            "code": "203192",
+            "display": "Naloxone Hydrochloride"
+          },
+          {
+            "code": "1495298",
+            "display": "0.4 ML Naloxone Hydrochloride 1 MG/ML Auto-Injector [Evzio]"
+          },
+          {
+            "code": "1855732",
+            "display": "0.4 ML Naloxone Hydrochloride 5 MG/ML Auto-Injector [Evzio]"
+          },
+          {
+            "code": "1546089",
+            "display": "12 HR Naloxone Hydrochloride 5 MG / Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet [Targiniq]"
+          },
+          {
+            "code": "1864414",
+            "display": "Buprenorphine 0.7 MG / Naloxone 0.18 MG Sublingual Tablet [Zubsolv]"
+          },
+          {
+            "code": "1431083",
+            "display": "Buprenorphine 1.4 MG / Naloxone 0.36 MG Sublingual Tablet [Zubsolv]"
+          },
+          {
+            "code": "1597570",
+            "display": "Buprenorphine 11.4 MG / Naloxone 2.9 MG Sublingual Tablet [Zubsolv]"
+          },
+          {
+            "code": "1307063",
+            "display": "Buprenorphine 12 MG / Naloxone 3 MG Oral Strip [Suboxone]"
+          },
+          {
+            "code": "1010603",
+            "display": "Buprenorphine 2 MG / Naloxone 0.5 MG Oral Strip [Suboxone]"
+          },
+          {
+            "code": "1010608",
+            "display": "Buprenorphine 2 MG / Naloxone 0.5 MG Sublingual Tablet [Suboxone]"
+          },
+          {
+            "code": "1542396",
+            "display": "Buprenorphine 2.1 MG / Naloxone 0.3 MG Buccal Film [Bunavail]"
+          },
+          {
+            "code": "1666385",
+            "display": "Buprenorphine 2.9 MG / Naloxone 0.71 MG Sublingual Tablet [Zubsolv]"
+          },
+          {
+            "code": "1307058",
+            "display": "Buprenorphine 4 MG / Naloxone 1 MG Oral Strip [Suboxone]"
+          },
+          {
+            "code": "1544853",
+            "display": "Buprenorphine 4.2 MG / Naloxone 0.7 MG Buccal Film [Bunavail]"
+          },
+          {
+            "code": "1431104",
+            "display": "Buprenorphine 5.7 MG / Naloxone 1.4 MG Sublingual Tablet [Zubsolv]"
+          },
+          {
+            "code": "1544856",
+            "display": "Buprenorphine 6.3 MG / Naloxone 1 MG Buccal Film [Bunavail]"
+          },
+          {
+            "code": "1010606",
+            "display": "Buprenorphine 8 MG / Naloxone 2 MG Oral Strip [Suboxone]"
+          },
+          {
+            "code": "1010609",
+            "display": "Buprenorphine 8 MG / Naloxone 2 MG Sublingual Tablet [Suboxone]"
+          },
+          {
+            "code": "1597575",
+            "display": "Buprenorphine 8.6 MG / Naloxone 2.1 MG Sublingual Tablet [Zubsolv]"
+          },
+          {
+            "code": "1870935",
+            "display": "Naloxone Hydrochloride 20 MG/ML Nasal Spray [Narcan]"
+          },
+          {
+            "code": "1725064",
+            "display": "Naloxone Hydrochloride 40 MG/ML Nasal Spray [Narcan]"
+          },
+          {
+            "code": "1495293",
+            "display": "0.4 ML Naloxone Hydrochloride 1 MG/ML Auto-Injector"
+          },
+          {
+            "code": "1855730",
+            "display": "0.4 ML Naloxone Hydrochloride 5 MG/ML Auto-Injector"
+          },
+          {
+            "code": "1191234",
+            "display": "1 ML Naloxone Hydrochloride 0.4 MG/ML Cartridge"
+          },
+          {
+            "code": "1659929",
+            "display": "1 ML Naloxone Hydrochloride 0.4 MG/ML Injection"
+          },
+          {
+            "code": "1545903",
+            "display": "12 HR Naloxone Hydrochloride 10 MG / Oxycodone Hydrochloride 20 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1545907",
+            "display": "12 HR Naloxone Hydrochloride 20 MG / Oxycodone Hydrochloride 40 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1545910",
+            "display": "12 HR Naloxone Hydrochloride 5 MG / Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet"
+          },
+          {
+            "code": "1191245",
+            "display": "2 ML Naloxone Hydrochloride 0.4 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "1191250",
+            "display": "2 ML Naloxone Hydrochloride 1 MG/ML Prefilled Syringe"
+          },
+          {
+            "code": "1864412",
+            "display": "Buprenorphine 0.7 MG / Naloxone 0.18 MG Sublingual Tablet"
+          },
+          {
+            "code": "1431076",
+            "display": "Buprenorphine 1.4 MG / Naloxone 0.36 MG Sublingual Tablet"
+          },
+          {
+            "code": "1597568",
+            "display": "Buprenorphine 11.4 MG / Naloxone 2.9 MG Sublingual Tablet"
+          },
+          {
+            "code": "1307061",
+            "display": "Buprenorphine 12 MG / Naloxone 3 MG Oral Strip"
+          },
+          {
+            "code": "1010600",
+            "display": "Buprenorphine 2 MG / Naloxone 0.5 MG Oral Strip"
+          },
+          {
+            "code": "351266",
+            "display": "Buprenorphine 2 MG / Naloxone 0.5 MG Sublingual Tablet"
+          },
+          {
+            "code": "1542390",
+            "display": "Buprenorphine 2.1 MG / Naloxone 0.3 MG Buccal Film"
+          },
+          {
+            "code": "1666338",
+            "display": "Buprenorphine 2.9 MG / Naloxone 0.71 MG Sublingual Tablet"
+          },
+          {
+            "code": "1307056",
+            "display": "Buprenorphine 4 MG / Naloxone 1 MG Oral Strip"
+          },
+          {
+            "code": "1544851",
+            "display": "Buprenorphine 4.2 MG / Naloxone 0.7 MG Buccal Film"
+          },
+          {
+            "code": "1431102",
+            "display": "Buprenorphine 5.7 MG / Naloxone 1.4 MG Sublingual Tablet"
+          },
+          {
+            "code": "1544854",
+            "display": "Buprenorphine 6.3 MG / Naloxone 1 MG Buccal Film"
+          },
+          {
+            "code": "1010604",
+            "display": "Buprenorphine 8 MG / Naloxone 2 MG Oral Strip"
+          },
+          {
+            "code": "351267",
+            "display": "Buprenorphine 8 MG / Naloxone 2 MG Sublingual Tablet"
+          },
+          {
+            "code": "1597573",
+            "display": "Buprenorphine 8.6 MG / Naloxone 2.1 MG Sublingual Tablet"
+          },
+          {
+            "code": "312289",
+            "display": "Naloxone 0.5 MG / Pentazocine 50 MG Oral Tablet"
+          },
+          {
+            "code": "1191212",
+            "display": "Naloxone Hydrochloride 0.02 MG/ML Injectable Solution"
+          },
+          {
+            "code": "1191222",
+            "display": "Naloxone Hydrochloride 0.4 MG/ML Injectable Solution"
+          },
+          {
+            "code": "1191228",
+            "display": "Naloxone Hydrochloride 1 MG/ML Injectable Solution"
+          },
+          {
+            "code": "1870933",
+            "display": "Naloxone Hydrochloride 20 MG/ML Nasal Spray"
+          },
+          {
+            "code": "1725059",
+            "display": "Naloxone Hydrochloride 40 MG/ML Nasal Spray"
+          }
+        ]
+      }
+    ]
+  }
+}

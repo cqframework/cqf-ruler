@@ -1,0 +1,7 @@
+hapi:
+  fhir:
+    cql:
+      enabled: true
+      use_embedded_translator_content: true
+      cqlTranslatorOptions:
+        analyzeDataRequirements: true

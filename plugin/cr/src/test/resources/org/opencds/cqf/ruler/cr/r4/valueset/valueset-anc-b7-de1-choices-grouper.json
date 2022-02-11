@@ -1,0 +1,51 @@
+{
+  "resourceType": "ValueSet",
+  "id": "anc-b7-de1-choices-grouper",
+  "url": "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de1-choices-grouper",
+  "name": "MedicationfollowupChoicesGrouper",
+  "title": "Medication follow-up Choices Grouper",
+  "status": "draft",
+  "experimental": false,
+  "date": "2021-09-07T20:15:19-06:00",
+  "description": "Group Valueset with codes representing possible values for the Medication follow-up Choices Grouper element",
+  "immutable": true,
+  "compose": {
+    "include": [ {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de2" ]
+    }, {
+      "valueSet": [ "http://fhir.org/guides/who/anc-cds/ValueSet/anc-b7-de5" ]
+    } ]
+  },
+  "expansion": {
+    "timestamp": "2021-09-07T20:15:19-06:00",
+    "contains": [ {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE2",
+      "display": "Taking calcium supplements"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE3",
+      "display": "Has side-effects from calcium supplements"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE4",
+      "display": "Taking iron and folic acid (IFA) tablets"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE6",
+      "display": "Taking aspirin tablets"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE7",
+      "display": "Taking vitamin A supplements"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE8",
+      "display": "Taking penicillin treatment for syphilis"
+    }, {
+      "system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes",
+      "code": "ANC.B7.DE5",
+      "display": "Has side-effects from iron and folic acid supplements"
+    } ]
+  }
+}

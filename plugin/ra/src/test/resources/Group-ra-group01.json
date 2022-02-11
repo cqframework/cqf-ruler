@@ -1,0 +1,18 @@
+{
+    "resourceType": "Group",
+    "id": "ra-group01",
+    "meta": {
+        "profile": [
+            "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-patient-group"
+        ]
+    },
+    "type": "person",
+    "actual": true,
+    "member": [
+        {
+            "entity": {
+                "reference": "Patient/ra-patient01"
+            }
+        }
+    ]
+}

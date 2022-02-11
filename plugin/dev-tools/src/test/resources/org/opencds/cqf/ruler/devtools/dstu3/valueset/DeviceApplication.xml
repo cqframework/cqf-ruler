@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ValueSet xmlns="http://hl7.org/fhir">
+  <id value="2.16.840.1.113762.1.4.1110.48"/>
+  <meta>
+    <versionId value="5"/>
+    <lastUpdated value="2019-10-29T01:00:18.000-04:00"/>
+  </meta>
+  <text>
+    <status value="generated"/>
+    <div xmlns="http://www.w3.org/1999/xhtml">
+      <h2>Device Application</h2>
+      <p>This value set includes codes from the following code systems:</p>
+      <ul>
+        <li>Include these codes as defined in 
+          <a href="http://www.snomed.org/">
+            <code>http://snomed.info/sct</code>
+          </a>
+          <table class="none">
+            <tr>
+              <td>
+                <b>Code</b>
+              </td>
+              <td>
+                <b>Display</b>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <a href="http://browser.ihtsdotools.org/?perspective=full&amp;conceptId1=360030002">360030002</a>
+              </td>
+              <td>Application of device (procedure)</td>
+              <td/>
+            </tr>
+          </table>
+        </li>
+      </ul>
+    </div>
+  </text>
+  <url value="http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1110.48"/>
+  <version value="20191029"/>
+  <name value="Device Application"/>
+  <status value="active"/>
+  <date value="2019-10-29T01:00:18-04:00"/>
+  <publisher value="TJC EH Steward"/>
+  <compose>
+    <include>
+      <system value="http://snomed.info/sct"/>
+      <concept>
+        <code value="360030002"/>
+        <display value="Application of device (procedure)"/>
+      </concept>
+    </include>
+  </compose>
+</ValueSet>

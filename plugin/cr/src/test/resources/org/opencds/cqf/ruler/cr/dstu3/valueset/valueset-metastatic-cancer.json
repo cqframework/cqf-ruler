@@ -1,0 +1,317 @@
+{
+  "resourceType": "ValueSet",
+  "id": "metastatic-cancer",
+  "meta": {
+    "profile": [
+      "http://hl7.org/fhir/StructureDefinition/shareablevalueset",
+      "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/cdc-valueset"
+    ]
+  },
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/StructureDefinition/valueset-warning",
+      "valueMarkdown": "Note that the terminologies included in this implementation guide will need to be updated, because the ideal mechanism for distribution (as an expression) is not currently supported by the content logical definition constructs available in the FHIR ValueSet resource and all known implementations of it. Before use in a production environment, ensure you have the latest value sets based on the definitions for each value set (as defined in the inclusion/exclusion criteria for each one)."
+    }
+  ],
+  "url": "http://fhir.org/guides/cdc/opioid-cds/ValueSet/metastatic-cancer",
+  "identifier": [
+    {
+      "value": "2.16.840.1.113762.1.4.1116.351"
+    }
+  ],
+  "status": "active",
+  "compose": {
+    "include": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-9-cm",
+        "concept": [
+          {
+            "code": "196.2",
+            "display": "Secondary and unspecified malignant neoplasm of intra-abdominal lymph nodes"
+          },
+          {
+            "code": "196.3",
+            "display": "Secondary and unspecified malignant neoplasm of lymph nodes of axilla and upper limb"
+          },
+          {
+            "code": "196.5",
+            "display": "Secondary and unspecified malignant neoplasm of lymph nodes of inguinal region and lower limb"
+          },
+          {
+            "code": "196.6",
+            "display": "Secondary and unspecified malignant neoplasm of intrapelvic lymph nodes"
+          },
+          {
+            "code": "196.8",
+            "display": "Secondary and unspecified malignant neoplasm of lymph nodes of multiple sites"
+          },
+          {
+            "code": "196.9",
+            "display": "Secondary and unspecified malignant neoplasm of lymph nodes, site unspecified"
+          },
+          {
+            "code": "197.0",
+            "display": "Secondary malignant neoplasm of lung"
+          },
+          {
+            "code": "197.1",
+            "display": "Secondary malignant neoplasm of mediastinum"
+          },
+          {
+            "code": "197.2",
+            "display": "Secondary malignant neoplasm of pleura"
+          },
+          {
+            "code": "197.3",
+            "display": "Secondary malignant neoplasm of other respiratory organs"
+          },
+          {
+            "code": "197.4",
+            "display": "Secondary malignant neoplasm of small intestine including duodenum"
+          },
+          {
+            "code": "197.5",
+            "display": "Secondary malignant neoplasm of large intestine and rectum"
+          },
+          {
+            "code": "197.6",
+            "display": "Secondary malignant neoplasm of retroperitoneum and peritoneum"
+          },
+          {
+            "code": "197.7",
+            "display": "Malignant neoplasm of liver, secondary"
+          },
+          {
+            "code": "197.8",
+            "display": "Secondary malignant neoplasm of other digestive organs and spleen"
+          },
+          {
+            "code": "198.0",
+            "display": "Secondary malignant neoplasm of kidney"
+          },
+          {
+            "code": "198.1",
+            "display": "Secondary malignant neoplasm of other urinary organs"
+          },
+          {
+            "code": "198.2",
+            "display": "Secondary malignant neoplasm of skin"
+          },
+          {
+            "code": "198.3",
+            "display": "Secondary malignant neoplasm of brain and spinal cord"
+          },
+          {
+            "code": "198.4",
+            "display": "Secondary malignant neoplasm of other parts of nervous system"
+          },
+          {
+            "code": "198.5",
+            "display": "Secondary malignant neoplasm of bone and bone marrow"
+          },
+          {
+            "code": "198.6",
+            "display": "Secondary malignant neoplasm of ovary"
+          },
+          {
+            "code": "198.7",
+            "display": "Secondary malignant neoplasm of adrenal gland"
+          },
+          {
+            "code": "198.81",
+            "display": "Secondary malignant neoplasm of breast"
+          },
+          {
+            "code": "198.82",
+            "display": "Secondary malignant neoplasm of genital organs"
+          },
+          {
+            "code": "198.89",
+            "display": "Secondary malignant neoplasm of other specified sites"
+          }
+        ]
+      },
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "concept": [
+          {
+            "code": "C77.0",
+            "display": "Secondary and unspecified malignant neoplasm of lymph nodes of head, face and neck"
+          },
+          {
+            "code": "C77.1",
+            "display": "Secondary and unspecified malignant neoplasm of intrathoracic lymph nodes"
+          },
+          {
+            "code": "C77.2",
+            "display": "Secondary and unspecified malignant neoplasm of intra-abdominal lymph nodes"
+          },
+          {
+            "code": "C77.3",
+            "display": "Secondary and unspecified malignant neoplasm of axilla and upper limb lymph nodes"
+          },
+          {
+            "code": "C77.4",
+            "display": "Secondary and unspecified malignant neoplasm of inguinal and lower limb lymph nodes"
+          },
+          {
+            "code": "C77.5",
+            "display": "Secondary and unspecified malignant neoplasm of intrapelvic lymph nodes"
+          },
+          {
+            "code": "C77.8",
+            "display": "Secondary and unspecified malignant neoplasm of lymph nodes of multiple regions"
+          },
+          {
+            "code": "C77.9",
+            "display": "Secondary and unspecified malignant neoplasm of lymph node, unspecified"
+          },
+          {
+            "code": "C78.00",
+            "display": "Secondary malignant neoplasm of unspecified lung"
+          },
+          {
+            "code": "C78.01",
+            "display": "Secondary malignant neoplasm of right lung"
+          },
+          {
+            "code": "C78.02",
+            "display": "Secondary malignant neoplasm of left lung"
+          },
+          {
+            "code": "C78.1",
+            "display": "Secondary malignant neoplasm of mediastinum"
+          },
+          {
+            "code": "C78.2",
+            "display": "Secondary malignant neoplasm of pleura"
+          },
+          {
+            "code": "C78.30",
+            "display": "Secondary malignant neoplasm of unspecified respiratory organ"
+          },
+          {
+            "code": "C78.39",
+            "display": "Secondary malignant neoplasm of other respiratory organs"
+          },
+          {
+            "code": "C78.4",
+            "display": "Secondary malignant neoplasm of small intestine"
+          },
+          {
+            "code": "C78.5",
+            "display": "Secondary malignant neoplasm of large intestine and rectum"
+          },
+          {
+            "code": "C78.6",
+            "display": "Secondary malignant neoplasm of retroperitoneum and peritoneum"
+          },
+          {
+            "code": "C78.7",
+            "display": "Secondary malignant neoplasm of liver and intrahepatic bile duct"
+          },
+          {
+            "code": "C78.80",
+            "display": "Secondary malignant neoplasm of unspecified digestive organ"
+          },
+          {
+            "code": "C78.89",
+            "display": "Secondary malignant neoplasm of other digestive organs"
+          },
+          {
+            "code": "C79.00",
+            "display": "Secondary malignant neoplasm of unspecified kidney and renal pelvis"
+          },
+          {
+            "code": "C79.01",
+            "display": "Secondary malignant neoplasm of right kidney and renal pelvis"
+          },
+          {
+            "code": "C79.02",
+            "display": "Secondary malignant neoplasm of left kidney and renal pelvis"
+          },
+          {
+            "code": "C79.10",
+            "display": "Secondary malignant neoplasm of unspecified urinary organs"
+          },
+          {
+            "code": "C79.11",
+            "display": "Secondary malignant neoplasm of bladder"
+          },
+          {
+            "code": "C79.19",
+            "display": "Secondary malignant neoplasm of other urinary organs"
+          },
+          {
+            "code": "C79.2",
+            "display": "Secondary malignant neoplasm of skin"
+          },
+          {
+            "code": "C79.31",
+            "display": "Secondary malignant neoplasm of brain"
+          },
+          {
+            "code": "C79.32",
+            "display": "Secondary malignant neoplasm of cerebral meninges"
+          },
+          {
+            "code": "C79.40",
+            "display": "Secondary malignant neoplasm of unspecified part of nervous system"
+          },
+          {
+            "code": "C79.49",
+            "display": "Secondary malignant neoplasm of other parts of nervous system"
+          },
+          {
+            "code": "C79.51",
+            "display": "Secondary malignant neoplasm of bone"
+          },
+          {
+            "code": "C79.52",
+            "display": "Secondary malignant neoplasm of bone marrow"
+          },
+          {
+            "code": "C79.60",
+            "display": "Secondary malignant neoplasm of unspecified ovary"
+          },
+          {
+            "code": "C79.61",
+            "display": "Secondary malignant neoplasm of right ovary"
+          },
+          {
+            "code": "C79.62",
+            "display": "Secondary malignant neoplasm of left ovary"
+          },
+          {
+            "code": "C79.70",
+            "display": "Secondary malignant neoplasm of unspecified adrenal gland"
+          },
+          {
+            "code": "C79.71",
+            "display": "Secondary malignant neoplasm of right adrenal gland"
+          },
+          {
+            "code": "C79.72",
+            "display": "Secondary malignant neoplasm of left adrenal gland"
+          },
+          {
+            "code": "C79.81",
+            "display": "Secondary malignant neoplasm of breast"
+          },
+          {
+            "code": "C79.82",
+            "display": "Secondary malignant neoplasm of genital organs"
+          },
+          {
+            "code": "C79.89",
+            "display": "Secondary malignant neoplasm of other specified sites"
+          },
+          {
+            "code": "C79.9",
+            "display": "Secondary malignant neoplasm of unspecified site"
+          }
+        ]
+      }
+    ]
+  }
+}
