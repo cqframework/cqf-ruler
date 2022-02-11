@@ -15,8 +15,8 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
+import org.opencds.cqf.ruler.builder.BundleBuilder;
 import org.opencds.cqf.ruler.builder.BundleSettings;
-import org.opencds.cqf.ruler.builder.Bundles;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Operations;
 
@@ -142,8 +142,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 
 		// subject.replace("/", "-") +
 
-		Bundle bundle = (Bundle) Bundles.newBundle(FhirVersionEnum.R4,
-				new BundleSettings().addType(BundleType.DOCUMENT.toString())
+		Bundle bundle = (Bundle) BundleBuilder.create(FhirVersionEnum.R4,
+				(BundleSettings) new BundleSettings().addType(BundleType.DOCUMENT.toString())
 						.addProfile(CARE_GAPS_BUNDLE_PROFILE).withDefaults());
 
 		return patientParameter;
