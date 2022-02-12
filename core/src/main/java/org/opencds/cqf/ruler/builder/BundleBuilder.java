@@ -17,7 +17,7 @@ public class BundleBuilder extends ResourceBuilder {
 	 * @param theBundleSettings the settings for the Bundle
 	 * @return the Bundle
 	 */
-	public static <T extends IBaseBundle> T create(Class<T> theBundleClass, BundleSettings theBundleSettings) {
+	public static <T extends IBaseBundle> T build(Class<T> theBundleClass, BundleSettings theBundleSettings) {
 		checkNotNull(theBundleClass, theBundleSettings);
 
 		BundleBuilder myBuilder = new BundleBuilder(theBundleClass,
@@ -28,14 +28,12 @@ public class BundleBuilder extends ResourceBuilder {
 		return myBundle;
 	}
 
-	@Override
 	protected IBaseBundle getResource() {
-		return (IBaseBundle) super.getResource();
+		return (IBaseBundle) myResource;
 	}
 
-	@Override
 	protected BundleSettings getSettings() {
-		return (BundleSettings) super.getSettings();
+		return (BundleSettings) myResourceSettings;
 	}
 
 	@Override

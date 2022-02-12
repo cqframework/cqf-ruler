@@ -7,8 +7,8 @@ import org.opencds.cqf.ruler.utility.Resources;
 
 public abstract class ResourceBuilder {
 
-	private IBaseResource myResource;
-	private IResourceSettings myResourceSettings;
+	protected IBaseResource myResource;
+	protected IResourceSettings myResourceSettings;
 
 	protected <T extends IBaseResource> ResourceBuilder(Class<T> theResourceClass,
 			IResourceSettings theResourceSettings) {
@@ -46,14 +46,6 @@ public abstract class ResourceBuilder {
 						String.format("ResourceBuilder.initializeResource does not support FHIR version %s",
 								myResource.getStructureFhirVersionEnum().getFhirVersionString()));
 		}
-	}
-
-	protected IBaseResource getResource() {
-		return myResource;
-	}
-
-	protected IResourceSettings getSettings() {
-		return myResourceSettings;
 	}
 
 	private void addProfiles() {

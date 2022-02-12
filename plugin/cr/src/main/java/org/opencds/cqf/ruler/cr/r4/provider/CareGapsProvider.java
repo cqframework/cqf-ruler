@@ -10,6 +10,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
@@ -17,6 +18,9 @@ import org.opencds.cqf.ruler.behavior.ResourceCreator;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.builder.BundleBuilder;
 import org.opencds.cqf.ruler.builder.BundleSettings;
+import org.opencds.cqf.ruler.builder.CodeableConceptSettings;
+import org.opencds.cqf.ruler.builder.CompositionBuilder;
+import org.opencds.cqf.ruler.builder.CompositionSettings;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Operations;
 
@@ -30,6 +34,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 	public static final Pattern CARE_GAPS_STATUS = Pattern
 			.compile("(open-gap|closed-gap|not-applicable)");
 	public static final String CARE_GAPS_BUNDLE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-bundle-deqm";
+	public static final String CARE_GAPS_COMPOSITION_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-composition-deqm";
 
 	/**
 	 * Implements the <a href=
@@ -141,10 +146,27 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 
 		// subject.replace("/", "-") +
 
-		Bundle bundle = (Bundle) BundleBuilder.create(Bundle.class,
-				(BundleSettings) new BundleSettings().addType(BundleType.DOCUMENT.toString())
-						.addProfile(CARE_GAPS_BUNDLE_PROFILE).withDefaults());
+		Bundle bundle = getBundle();
+
+		Composition composition = getComposition(patient, organization);
 
 		return patientParameter;
+	}
+
+	private Bundle getBundle() {
+		return (Bundle) BundleBuilder.build(Bundle.class,
+				(BundleSettings) new BundleSettings().addType(BundleType.DOCUMENT.toString())
+						.addProfile(CARE_GAPS_BUNDLE_PROFILE).withDefaults());
+	}
+
+	private Composition getComposition(Patient patient, String organization) {
+		return (Composition) CompositionBuilder.build(Composition.class,
+				(CompositionSettings) new CompositionSettings()
+						.addType(new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps in care report"))
+						.addProfile(CARE_GAPS_COMPOSITION_PROFILE)
+						.addSubject(patient.getId())
+						.addTitle("Care Gap Report for " + patient.getId())
+						.addCustodian(organization)
+						.addAuthor().withDefaults());
 	}
 }
