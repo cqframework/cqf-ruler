@@ -43,9 +43,8 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 	public SELF withProfile(String theProfile) {
 		List<String> profile = new ArrayList<>();
 		profile.add(theProfile);
-		withProfile(profile);
 
-		return self();
+		return withProfile(profile);
 	}
 
 	public SELF withProfile(List<String> theProfile) {

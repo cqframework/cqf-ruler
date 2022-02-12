@@ -74,8 +74,8 @@ public class BundleBuilder<T extends IBaseBundle> extends ResourceBuilder<Bundle
 		bundle.setType(org.hl7.fhir.dstu3.model.Bundle.BundleType.valueOf(myType));
 
 		bundle.setIdentifier(
-				new org.hl7.fhir.dstu3.model.Identifier().setSystem(myIdentifier.getLeft())
-						.setValue(myIdentifier.getRight()));
+				new org.hl7.fhir.dstu3.model.Identifier().setSystem(myIdentifier.getKey())
+						.setValue(myIdentifier.getValue()));
 		// no timestamp
 	}
 
@@ -87,8 +87,8 @@ public class BundleBuilder<T extends IBaseBundle> extends ResourceBuilder<Bundle
 		bundle.setType(org.hl7.fhir.r4.model.Bundle.BundleType.valueOf(myType));
 
 		bundle.setIdentifier(
-				new org.hl7.fhir.r4.model.Identifier().setSystem(myIdentifier.getLeft())
-						.setValue(myIdentifier.getRight()));
+				new org.hl7.fhir.r4.model.Identifier().setSystem(myIdentifier.getKey())
+						.setValue(myIdentifier.getValue()));
 
 		bundle.setTimestamp(myTimestamp);
 
@@ -102,8 +102,8 @@ public class BundleBuilder<T extends IBaseBundle> extends ResourceBuilder<Bundle
 		bundle.setType(org.hl7.fhir.r5.model.Bundle.BundleType.valueOf(myType));
 
 		bundle.setIdentifier(
-				new org.hl7.fhir.r5.model.Identifier().setSystem(myIdentifier.getLeft())
-						.setValue(myIdentifier.getRight()));
+				new org.hl7.fhir.r5.model.Identifier().setSystem(myIdentifier.getKey())
+						.setValue(myIdentifier.getValue()));
 
 		bundle.setTimestamp(myTimestamp);
 	}

@@ -24,6 +24,12 @@ public class Operations {
 	public static final Pattern PATIENT_OR_GROUP_REFERENCE = Pattern
 			.compile("(Patient|Group)\\/[A-Za-z0-9\\-\\.]{1,64}");
 
+	public static final Pattern PRACTITIONER_REFERENCE = Pattern
+			.compile("Practitioner\\/[A-Za-z0-9\\-\\.]{1,64}");
+
+	public static final Pattern ORGANIZATION_REFERENCE = Pattern
+			.compile("Organization\\/[A-Za-z0-9\\-\\.]{1,64}");
+
 	public static final Pattern FHIR_DATE = Pattern
 			.compile("-?[0-9]{4}(-(0[1-9]|1[0-2])(-(0[0-9]|[1-2][0-9]|3[0-1]))?)?");
 

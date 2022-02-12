@@ -163,10 +163,10 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		return new CompositionBuilder<Composition>(Composition.class)
 				.withProfile(CARE_GAPS_COMPOSITION_PROFILE)
 				.withType(new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps in care report"))
-				.withTitle("Care Gap Report for " + patient.getId())
-				.withSubject(patient.getId())
-				.withCustodian(organization)
-				.withAuthor("") // TODO: figure this out
+				.withTitle("Care Gap Report for " + patient.getIdElement().getIdPart())
+				.withSubject(patient.getIdElement().getIdPart())
+				.withCustodian(organization) // TODO: check to see if this is correct.
+				.withAuthor("Patient/" + patient.getIdElement().getIdPart()) // TODO: this is wrong figure it out.
 				.withDefaults()
 				.build();
 	}
