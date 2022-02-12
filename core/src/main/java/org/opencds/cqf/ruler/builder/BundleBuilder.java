@@ -2,45 +2,48 @@ package org.opencds.cqf.ruler.builder;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Date;
+
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 
-public class BundleBuilder extends ResourceBuilder {
+public class BundleBuilder<T extends IBaseBundle> extends ResourceBuilder<BundleBuilder<T>, T> {
 
-	protected <T extends IBaseBundle> BundleBuilder(Class<T> theBundleClass, BundleSettings theBundleSettings) {
-		super(theBundleClass, theBundleSettings);
+	protected String myType;
+	protected Date myTimestamp;
+
+	public BundleBuilder(Class<T> theResourceClass) {
+		super(theResourceClass);
 	}
 
-	/**
-	 * Creates the appropriate IBaseBundle for a given bundle class
-	 * 
-	 * @param theBundleClass    the FHIR version to generate a Bundle for
-	 * @param theBundleSettings the settings for the Bundle
-	 * @return the Bundle
-	 */
-	public static <T extends IBaseBundle> T build(Class<T> theBundleClass, BundleSettings theBundleSettings) {
-		checkNotNull(theBundleClass, theBundleSettings);
+	@Override
+	public BundleBuilder<T> withDefaults() {
+		checkNotNull(myType);
+		super.withDefaults();
 
-		BundleBuilder myBuilder = new BundleBuilder(theBundleClass,
-				theBundleSettings);
+		if (myTimestamp == null) {
+			myTimestamp = new Date();
+		}
 
-		@SuppressWarnings("unchecked")
-		T myBundle = (T) myBuilder.getResource();
-		return myBundle;
+		return this;
 	}
 
-	protected IBaseBundle getResource() {
-		return (IBaseBundle) myResource;
+	public BundleBuilder<T> withType(String theType) {
+		myType = theType;
+
+		return this;
 	}
 
-	protected BundleSettings getSettings() {
-		return (BundleSettings) myResourceSettings;
+	public BundleBuilder<T> addTimestamp(Date theTimestamp) {
+		myTimestamp = theTimestamp;
+
+		return this;
 	}
 
 	@Override
 	protected void initializeDstu2() {
 		super.initializeDstu2();
-		ca.uhn.fhir.model.dstu2.resource.Bundle myBundle = (ca.uhn.fhir.model.dstu2.resource.Bundle) getResource();
-		myBundle.setType(ca.uhn.fhir.model.dstu2.valueset.BundleTypeEnum.forCode(getSettings().type()));
+		ca.uhn.fhir.model.dstu2.resource.Bundle myBundle = (ca.uhn.fhir.model.dstu2.resource.Bundle) myResource;
+		myBundle.setType(ca.uhn.fhir.model.dstu2.valueset.BundleTypeEnum.forCode(myType));
 		// no identifier
 		// no timestamp
 	}
@@ -48,8 +51,8 @@ public class BundleBuilder extends ResourceBuilder {
 	@Override
 	protected void initializeDstu2_1() {
 		super.initializeDstu2_1();
-		org.hl7.fhir.dstu2016may.model.Bundle myBundle = (org.hl7.fhir.dstu2016may.model.Bundle) getResource();
-		myBundle.setType(org.hl7.fhir.dstu2016may.model.Bundle.BundleType.valueOf(getSettings().type()));
+		org.hl7.fhir.dstu2016may.model.Bundle myBundle = (org.hl7.fhir.dstu2016may.model.Bundle) myResource;
+		myBundle.setType(org.hl7.fhir.dstu2016may.model.Bundle.BundleType.valueOf(myType));
 		// no identifier
 		// no timestamp
 	}
@@ -57,8 +60,8 @@ public class BundleBuilder extends ResourceBuilder {
 	@Override
 	protected void initializeDstu2_HL7Org() {
 		super.initializeDstu2_HL7Org();
-		org.hl7.fhir.dstu2.model.Bundle myBundle = (org.hl7.fhir.dstu2.model.Bundle) getResource();
-		myBundle.setType(org.hl7.fhir.dstu2.model.Bundle.BundleType.valueOf(getSettings().type()));
+		org.hl7.fhir.dstu2.model.Bundle myBundle = (org.hl7.fhir.dstu2.model.Bundle) myResource;
+		myBundle.setType(org.hl7.fhir.dstu2.model.Bundle.BundleType.valueOf(myType));
 		// no identifier
 		// no timestamp
 	}
@@ -66,42 +69,42 @@ public class BundleBuilder extends ResourceBuilder {
 	@Override
 	protected void initializeDstu3() {
 		super.initializeDstu3();
-		org.hl7.fhir.dstu3.model.Bundle myBundle = (org.hl7.fhir.dstu3.model.Bundle) getResource();
+		org.hl7.fhir.dstu3.model.Bundle myBundle = (org.hl7.fhir.dstu3.model.Bundle) myResource;
 
-		myBundle.setType(org.hl7.fhir.dstu3.model.Bundle.BundleType.valueOf(getSettings().type()));
+		myBundle.setType(org.hl7.fhir.dstu3.model.Bundle.BundleType.valueOf(myType));
 
 		myBundle.setIdentifier(
-				new org.hl7.fhir.dstu3.model.Identifier().setSystem(getSettings().identifier().getLeft())
-						.setValue(getSettings().identifier().getRight()));
+				new org.hl7.fhir.dstu3.model.Identifier().setSystem(myIdentifier.getLeft())
+						.setValue(myIdentifier.getRight()));
 		// no timestamp
 	}
 
 	@Override
 	protected void initializeR4() {
 		super.initializeR4();
-		org.hl7.fhir.r4.model.Bundle myBundle = (org.hl7.fhir.r4.model.Bundle) getResource();
+		org.hl7.fhir.r4.model.Bundle myBundle = (org.hl7.fhir.r4.model.Bundle) myResource;
 
-		myBundle.setType(org.hl7.fhir.r4.model.Bundle.BundleType.valueOf(getSettings().type()));
+		myBundle.setType(org.hl7.fhir.r4.model.Bundle.BundleType.valueOf(myType));
 
 		myBundle.setIdentifier(
-				new org.hl7.fhir.r4.model.Identifier().setSystem(getSettings().identifier().getLeft())
-						.setValue(getSettings().identifier().getRight()));
+				new org.hl7.fhir.r4.model.Identifier().setSystem(myIdentifier.getLeft())
+						.setValue(myIdentifier.getRight()));
 
-		myBundle.setTimestamp(getSettings().timestamp());
+		myBundle.setTimestamp(myTimestamp);
 
 	}
 
 	@Override
 	protected void initializeR5() {
 		super.initializeR5();
-		org.hl7.fhir.r5.model.Bundle myBundle = (org.hl7.fhir.r5.model.Bundle) getResource();
+		org.hl7.fhir.r5.model.Bundle myBundle = (org.hl7.fhir.r5.model.Bundle) myResource;
 
-		myBundle.setType(org.hl7.fhir.r5.model.Bundle.BundleType.valueOf(getSettings().type()));
+		myBundle.setType(org.hl7.fhir.r5.model.Bundle.BundleType.valueOf(myType));
 
 		myBundle.setIdentifier(
-				new org.hl7.fhir.r5.model.Identifier().setSystem(getSettings().identifier().getLeft())
-						.setValue(getSettings().identifier().getRight()));
+				new org.hl7.fhir.r5.model.Identifier().setSystem(myIdentifier.getLeft())
+						.setValue(myIdentifier.getRight()));
 
-		myBundle.setTimestamp(getSettings().timestamp());
+		myBundle.setTimestamp(myTimestamp);
 	}
 }

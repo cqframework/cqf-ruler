@@ -17,7 +17,6 @@ import org.hl7.fhir.r4.model.Patient;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.builder.BundleBuilder;
-import org.opencds.cqf.ruler.builder.BundleSettings;
 import org.opencds.cqf.ruler.builder.CodeableConceptSettings;
 import org.opencds.cqf.ruler.builder.CompositionBuilder;
 import org.opencds.cqf.ruler.builder.CompositionSettings;
@@ -154,19 +153,22 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 	}
 
 	private Bundle getBundle() {
-		return (Bundle) BundleBuilder.build(Bundle.class,
-				(BundleSettings) new BundleSettings().addType(BundleType.DOCUMENT.toString())
-						.addProfile(CARE_GAPS_BUNDLE_PROFILE).withDefaults());
+		return new BundleBuilder<Bundle>(Bundle.class)
+				.withType(BundleType.DOCUMENT.toString())
+				.withProfile(CARE_GAPS_BUNDLE_PROFILE)
+				.withDefaults()
+				.build();
 	}
 
 	private Composition getComposition(Patient patient, String organization) {
-		return (Composition) CompositionBuilder.build(Composition.class,
-				(CompositionSettings) new CompositionSettings()
-						.addType(new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps in care report"))
-						.addProfile(CARE_GAPS_COMPOSITION_PROFILE)
+		return CompositionBuilder.build(Composition.class,
+				(CompositionSettings) new CompositionSettings<CompositionSettings, ResourceSettings>()
 						.addSubject(patient.getId())
+						.addType(new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps incare report"))
 						.addTitle("Care Gap Report for " + patient.getId())
 						.addCustodian(organization)
-						.addAuthor().withDefaults());
+						.addAuthor("")
+						.addProfile(CARE_GAPS_COMPOSITION_PROFILE)
+						.withDefaults());
 	}
 }

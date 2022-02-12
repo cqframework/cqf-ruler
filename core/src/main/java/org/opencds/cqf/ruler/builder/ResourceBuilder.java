@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.builder;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,13 +18,14 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 	public static final String DEFAULT_IDENTIFIER_VALUE_PREFIX = "urn:uuid:";
 
 	private Class<T> myResourceClass;
-	private String myId;
-	private List<String> myProfile;
-	private Pair<String, String> myIdentifier;
 
+	protected String myId;
+	protected List<String> myProfile;
+	protected Pair<String, String> myIdentifier;
 	protected T myResource;
 
 	protected ResourceBuilder(Class<T> theResourceClass) {
+		checkNotNull(theResourceClass);
 		myResourceClass = theResourceClass;
 	}
 
@@ -70,7 +73,7 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 		return self();
 	}
 
-	protected T build() {
+	public T build() {
 		myResource = Resources
 				.newResource(myResourceClass, myId);
 
