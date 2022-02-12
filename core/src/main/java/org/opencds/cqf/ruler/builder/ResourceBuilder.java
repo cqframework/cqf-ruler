@@ -1,27 +1,79 @@
 package org.opencds.cqf.ruler.builder;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.elasticsearch.common.Strings;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.ruler.utility.Resources;
 
-public abstract class ResourceBuilder {
+public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 
-	protected IBaseResource myResource;
-	protected IResourceSettings myResourceSettings;
+	public static final String DEFAULT_IDENTIFIER_SYSTEM = "urn:ietf:rfc:3986";
+	public static final String DEFAULT_IDENTIFIER_VALUE_PREFIX = "urn:uuid:";
 
-	protected <T extends IBaseResource> ResourceBuilder(Class<T> theResourceClass,
-			IResourceSettings theResourceSettings) {
-		checkNotNull(theResourceClass, theResourceSettings);
+	private Class<T> myResourceClass;
+	private String myId;
+	private List<String> myProfile;
+	private Pair<String, String> myIdentifier;
 
-		myResourceSettings = theResourceSettings;
-		myResource = Resources
-				.newResource(theResourceClass, theResourceSettings.id());
+	protected T myResource;
 
-		initializeResource();
+	protected ResourceBuilder(Class<T> theResourceClass) {
+		myResourceClass = theResourceClass;
 	}
 
-	protected void initializeResource() {
+	@SuppressWarnings("unchecked")
+	private SELF self() {
+		return (SELF) this;
+	}
+
+	public SELF withId(String theId) {
+		myId = theId;
+
+		return self();
+	}
+
+	public SELF withProfile(String theProfile) {
+		List<String> profile = new ArrayList<>();
+		profile.add(theProfile);
+		withProfile(profile);
+
+		return self();
+	}
+
+	public SELF withProfile(List<String> theProfile) {
+		myProfile = theProfile;
+
+		return self();
+	}
+
+	public SELF addIdentifier(Pair<String, String> theIdentifier) {
+		myIdentifier = theIdentifier;
+
+		return self();
+	}
+
+	public SELF withDefaults() {
+		if (Strings.isNullOrEmpty(myId)) {
+			myId = UUID.randomUUID().toString();
+		}
+
+		if (myIdentifier == null) {
+			myIdentifier = new ImmutablePair<>(DEFAULT_IDENTIFIER_SYSTEM,
+					DEFAULT_IDENTIFIER_VALUE_PREFIX + UUID.randomUUID().toString());
+		}
+
+		return self();
+	}
+
+	protected T build() {
+		myResource = Resources
+				.newResource(myResourceClass, myId);
+
 		switch (myResource.getStructureFhirVersionEnum()) {
 			case DSTU2:
 				initializeDstu2();
@@ -46,10 +98,12 @@ public abstract class ResourceBuilder {
 						String.format("ResourceBuilder.initializeResource does not support FHIR version %s",
 								myResource.getStructureFhirVersionEnum().getFhirVersionString()));
 		}
+
+		return myResource;
 	}
 
 	private void addProfiles() {
-		myResourceSettings.profile()
+		myProfile
 				.forEach(profile -> myResource.getMeta().addProfile(profile));
 	}
 
