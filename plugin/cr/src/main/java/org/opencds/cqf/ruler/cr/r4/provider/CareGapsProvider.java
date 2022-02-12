@@ -19,7 +19,6 @@ import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.builder.BundleBuilder;
 import org.opencds.cqf.ruler.builder.CodeableConceptSettings;
 import org.opencds.cqf.ruler.builder.CompositionBuilder;
-import org.opencds.cqf.ruler.builder.CompositionSettings;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Operations;
 
@@ -154,21 +153,21 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 
 	private Bundle getBundle() {
 		return new BundleBuilder<Bundle>(Bundle.class)
-				.withType(BundleType.DOCUMENT.toString())
 				.withProfile(CARE_GAPS_BUNDLE_PROFILE)
+				.withType(BundleType.DOCUMENT.toString())
 				.withDefaults()
 				.build();
 	}
 
 	private Composition getComposition(Patient patient, String organization) {
-		return CompositionBuilder.build(Composition.class,
-				(CompositionSettings) new CompositionSettings<CompositionSettings, ResourceSettings>()
-						.addSubject(patient.getId())
-						.addType(new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps incare report"))
-						.addTitle("Care Gap Report for " + patient.getId())
-						.addCustodian(organization)
-						.addAuthor("")
-						.addProfile(CARE_GAPS_COMPOSITION_PROFILE)
-						.withDefaults());
+		return new CompositionBuilder<Composition>(Composition.class)
+				.withProfile(CARE_GAPS_COMPOSITION_PROFILE)
+				.withType(new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps in care report"))
+				.withTitle("Care Gap Report for " + patient.getId())
+				.withSubject(patient.getId())
+				.withCustodian(organization)
+				.withAuthor("") // TODO: figure this out
+				.withDefaults()
+				.build();
 	}
 }
