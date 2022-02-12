@@ -69,10 +69,10 @@ Plugins use Spring Boot [autoconfiguration](https://docs.spring.io/spring-boot/d
 
 ```ini
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.opencds.cqf.ruler.example.ExampleConfig
+com.example.ExampleConfig
 ```
 
-Any Beans defined in that root plugin config that implement one the cqf-ruler plugin apis will be loaded by the cqf-ruler on startup. There's a full plugin example [here](plugin/hello-world).
+Any Beans defined in that root plugin config that implement one the cqf-ruler plugin apis will be loaded by the cqf-ruler on startup. There's a full plugin example [here](example).
 
 Plugins should reference the `cqf-ruler-core` project using the `provided` scope. This tells Maven that the `cqf-ruler-core` classes will be available at runtime, and not to include those dependencies in the plugin jar.
 
@@ -181,6 +181,7 @@ Examples
 ### Discovery
 
 Following conventions such as these make it easier for the next developer to find code that's already been implemented as opposed to reinventing the wheel.
+
 ## Commit Policy
 
 All new development takes place on `<feature>` branches off `master`. Once feature development on the branch is complete, the feature branch is submitted to `master` as a PR. The PR is reviewed by maintainers and regression testing by the CI build occurs.
