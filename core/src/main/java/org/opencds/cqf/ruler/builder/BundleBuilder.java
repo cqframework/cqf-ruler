@@ -16,6 +16,15 @@ public class BundleBuilder<T extends IBaseBundle> extends ResourceBuilder<Bundle
 		super(theResourceClass);
 	}
 
+	public BundleBuilder(Class<T> theResourceClass, String theId) {
+		super(theResourceClass, theId);
+	}
+
+	public BundleBuilder(Class<T> theResourceClass, String theId, String theType) {
+		this(theResourceClass, theId);
+		myType = theType;
+	}
+
 	public BundleBuilder<T> withType(String theType) {
 		myType = theType;
 

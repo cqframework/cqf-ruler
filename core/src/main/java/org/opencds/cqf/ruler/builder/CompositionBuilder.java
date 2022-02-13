@@ -34,6 +34,19 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 		super(theResourceClass);
 	}
 
+	public CompositionBuilder(Class<T> theResourceClass, String theId) {
+		super(theResourceClass, theId);
+	}
+
+	public CompositionBuilder(Class<T> theResourceClass, String theId, CodeableConceptSettings theType, String theStatus,
+			String theAuthor, String theTitle) {
+		this(theResourceClass, theId);
+		myType = theType;
+		myStatus = theStatus;
+		myAuthor = theAuthor;
+		myTitle = theTitle;
+	}
+
 	public CompositionBuilder<T> withStatus(String theStatus) {
 		checkNotNull(theStatus);
 

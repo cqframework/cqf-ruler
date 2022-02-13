@@ -29,6 +29,11 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 		myResourceClass = theResourceClass;
 	}
 
+	protected ResourceBuilder(Class<T> theResourceClass, String theId) {
+		this(theResourceClass);
+		myId = theId;
+	}
+
 	@SuppressWarnings("unchecked")
 	private SELF self() {
 		return (SELF) this;
