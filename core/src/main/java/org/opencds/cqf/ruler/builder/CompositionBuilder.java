@@ -24,27 +24,14 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 	protected String myStatus;
 	protected String myTitle;
 	protected CodeableConceptSettings myType;
-	protected Date myDate;
 	protected String mySubject;
 	protected String myAuthor;
 	protected String myCustodian;
 
+	protected Date myDate = new Date();
+
 	public CompositionBuilder(Class<T> theResourceClass) {
 		super(theResourceClass);
-	}
-
-	@Override
-	public CompositionBuilder<T> withDefaults() {
-
-		checkNotNull(myType, myStatus, myAuthor, myTitle);
-		checkArgument(!myType.getCodingSettings().isEmpty() && myType.getCodingSettings().size() == 1);
-		super.withDefaults();
-
-		if (myDate == null) {
-			myDate = new Date();
-		}
-
-		return this;
 	}
 
 	public CompositionBuilder<T> withStatus(String theStatus) {
@@ -106,20 +93,31 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 
 		return this;
 	}
-	
+
+	@Override
+	public T build() {
+		T resource = super.build();
+		checkNotNull(myType, myStatus, myAuthor, myTitle);
+		checkArgument(!myType.getCodingSettings().isEmpty() &&
+				myType.getCodingSettings().size() == 1);
+
+		return resource;
+	}
+
 	private CodingSettings myCodingSettings;
 
 	private CodingSettings getTypeSettings() {
 		if (myCodingSettings == null) {
 			myCodingSettings = myType.getCodingSettings().toArray(new CodingSettings[0])[0];
 		}
+
 		return myCodingSettings;
 	}
 
 	@Override
-	protected void initializeDstu2() {
-		super.initializeDstu2();
-		ca.uhn.fhir.model.dstu2.resource.Composition composition = (ca.uhn.fhir.model.dstu2.resource.Composition) myResource;
+	protected void initializeDstu2(T theResource) {
+		super.initializeDstu2(theResource);
+		ca.uhn.fhir.model.dstu2.resource.Composition composition = (ca.uhn.fhir.model.dstu2.resource.Composition) theResource;
 
 		List<ResourceReferenceDt> author = new ArrayList<>();
 		author.add(new ResourceReferenceDt(myAuthor));
@@ -137,9 +135,9 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 	}
 
 	@Override
-	protected void initializeDstu2_1() {
-		super.initializeDstu2_1();
-		org.hl7.fhir.dstu2016may.model.Composition composition = (org.hl7.fhir.dstu2016may.model.Composition) myResource;
+	protected void initializeDstu2_1(T theResource) {
+		super.initializeDstu2_1(theResource);
+		org.hl7.fhir.dstu2016may.model.Composition composition = (org.hl7.fhir.dstu2016may.model.Composition) theResource;
 
 		composition
 				.setStatus(org.hl7.fhir.dstu2016may.model.Composition.CompositionStatus.fromCode(myStatus))
@@ -155,9 +153,9 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 	}
 
 	@Override
-	protected void initializeDstu2_HL7Org() {
-		super.initializeDstu2_HL7Org();
-		org.hl7.fhir.dstu2.model.Composition composition = (org.hl7.fhir.dstu2.model.Composition) myResource;
+	protected void initializeDstu2_HL7Org(T theResource) {
+		super.initializeDstu2_HL7Org(theResource);
+		org.hl7.fhir.dstu2.model.Composition composition = (org.hl7.fhir.dstu2.model.Composition) theResource;
 
 		composition
 				.setStatus(org.hl7.fhir.dstu2.model.Composition.CompositionStatus.fromCode(myStatus))
@@ -173,9 +171,9 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 	}
 
 	@Override
-	protected void initializeDstu3() {
-		super.initializeDstu3();
-		org.hl7.fhir.dstu3.model.Composition composition = (org.hl7.fhir.dstu3.model.Composition) myResource;
+	protected void initializeDstu3(T theResource) {
+		super.initializeDstu3(theResource);
+		org.hl7.fhir.dstu3.model.Composition composition = (org.hl7.fhir.dstu3.model.Composition) theResource;
 
 		composition
 				.setStatus(org.hl7.fhir.dstu3.model.Composition.CompositionStatus.fromCode(myStatus))
@@ -191,9 +189,9 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 	}
 
 	@Override
-	protected void initializeR4() {
-		super.initializeR4();
-		org.hl7.fhir.r4.model.Composition composition = (org.hl7.fhir.r4.model.Composition) myResource;
+	protected void initializeR4(T theResource) {
+		super.initializeR4(theResource);
+		org.hl7.fhir.r4.model.Composition composition = (org.hl7.fhir.r4.model.Composition) theResource;
 
 		composition
 				.setStatus(org.hl7.fhir.r4.model.Composition.CompositionStatus.fromCode(myStatus))
@@ -206,13 +204,12 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 								.setDisplay(getTypeSettings().getDisplay())))
 				.addAuthor(new org.hl7.fhir.r4.model.Reference(myAuthor))
 				.setCustodian(new org.hl7.fhir.r4.model.Reference(myCustodian));
-
 	}
 
 	@Override
-	protected void initializeR5() {
-		super.initializeR5();
-		org.hl7.fhir.r5.model.Composition composition = (org.hl7.fhir.r5.model.Composition) myResource;
+	protected void initializeR5(T theResource) {
+		super.initializeR5(theResource);
+		org.hl7.fhir.r5.model.Composition composition = (org.hl7.fhir.r5.model.Composition) theResource;
 
 		composition
 				.setStatus(CompositionStatus.fromCode(myStatus))

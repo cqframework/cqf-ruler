@@ -11,6 +11,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
@@ -33,6 +34,24 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 			.compile("(open-gap|closed-gap|not-applicable)");
 	public static final String CARE_GAPS_BUNDLE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-bundle-deqm";
 	public static final String CARE_GAPS_COMPOSITION_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-composition-deqm";
+	public static final String CARE_GAPS_DETECTED_ISSUE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-detectedissue-deqm";
+	public static final String CARE_GAPS_GAP_STATUS_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-gapStatus";
+	public static final String CARE_GAPS_GAP_STATUS_SYSTEM = "http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-status";
+
+	public enum CareGapsStatusCode {
+		OPEN_GAP("open-gap"), CLOSED_GAP("closed-gap"), NOT_APPLICABLE("not-applicable");
+
+		private final String myValue;
+
+		private CareGapsStatusCode(final String theValue) {
+			myValue = theValue;
+		}
+
+		@Override
+		public String toString() {
+			return myValue;
+		}
+	}
 
 	/**
 	 * Implements the <a href=
@@ -142,8 +161,6 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 			List<String> topic, Patient patient, List<String> status, List<Measure> measures, String organization) {
 		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
 
-		// subject.replace("/", "-") +
-
 		Bundle bundle = getBundle();
 
 		Composition composition = getComposition(patient, organization);
@@ -155,7 +172,6 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		return new BundleBuilder<Bundle>(Bundle.class)
 				.withProfile(CARE_GAPS_BUNDLE_PROFILE)
 				.withType(BundleType.DOCUMENT.toString())
-				.withDefaults()
 				.build();
 	}
 
@@ -167,7 +183,11 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 				.withSubject(patient.getIdElement().getIdPart())
 				.withCustodian(organization) // TODO: check to see if this is correct.
 				.withAuthor("Patient/" + patient.getIdElement().getIdPart()) // TODO: this is wrong figure it out.
-				.withDefaults()
 				.build();
+	}
+
+	private DetectedIssue getDetectedIssue() {
+		return null;
+
 	}
 }

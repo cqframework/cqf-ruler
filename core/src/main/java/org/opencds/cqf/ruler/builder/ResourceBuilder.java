@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.elasticsearch.common.Strings;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.ruler.utility.Resources;
 
@@ -17,12 +16,13 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 	public static final String DEFAULT_IDENTIFIER_SYSTEM = "urn:ietf:rfc:3986";
 	public static final String DEFAULT_IDENTIFIER_VALUE_PREFIX = "urn:uuid:";
 
-	private Class<T> myResourceClass;
+	private final Class<T> myResourceClass;
 
-	protected String myId;
 	protected List<String> myProfile;
-	protected Pair<String, String> myIdentifier;
-	protected T myResource;
+
+	protected String myId = UUID.randomUUID().toString();
+	protected Pair<String, String> myIdentifier = new ImmutablePair<>(DEFAULT_IDENTIFIER_SYSTEM,
+			DEFAULT_IDENTIFIER_VALUE_PREFIX + UUID.randomUUID().toString());
 
 	protected ResourceBuilder(Class<T> theResourceClass) {
 		checkNotNull(theResourceClass);
@@ -53,86 +53,73 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 		return self();
 	}
 
-	public SELF addIdentifier(Pair<String, String> theIdentifier) {
+	public SELF withIdentifier(Pair<String, String> theIdentifier) {
 		myIdentifier = theIdentifier;
 
 		return self();
 	}
 
-	public SELF withDefaults() {
-		if (Strings.isNullOrEmpty(myId)) {
-			myId = UUID.randomUUID().toString();
-		}
-
-		if (myIdentifier == null) {
-			myIdentifier = new ImmutablePair<>(DEFAULT_IDENTIFIER_SYSTEM,
-					DEFAULT_IDENTIFIER_VALUE_PREFIX + UUID.randomUUID().toString());
-		}
-
-		return self();
-	}
-
 	public T build() {
-		myResource = Resources
+		T resource = Resources
 				.newResource(myResourceClass, myId);
 
-		switch (myResource.getStructureFhirVersionEnum()) {
+		switch (resource.getStructureFhirVersionEnum()) {
 			case DSTU2:
-				initializeDstu2();
+				initializeDstu2(resource);
 				break;
 			case DSTU2_1:
-				initializeDstu2_1();
+				initializeDstu2_1(resource);
 				break;
 			case DSTU2_HL7ORG:
-				initializeDstu2_HL7Org();
+				initializeDstu2_HL7Org(resource);
 				break;
 			case DSTU3:
-				initializeDstu3();
+				initializeDstu3(resource);
 				break;
 			case R4:
-				initializeR4();
+				initializeR4(resource);
 				break;
 			case R5:
-				initializeR5();
+				initializeR5(resource);
 				break;
 			default:
 				throw new IllegalArgumentException(
 						String.format("ResourceBuilder.initializeResource does not support FHIR version %s",
-								myResource.getStructureFhirVersionEnum().getFhirVersionString()));
+								resource.getStructureFhirVersionEnum().getFhirVersionString()));
 		}
 
-		return myResource;
+		return resource;
 	}
 
-	private void addProfiles() {
+	private void addProfiles(T theResource) {
 		myProfile
-				.forEach(profile -> myResource.getMeta().addProfile(profile));
+				.forEach(profile -> theResource.getMeta().addProfile(profile));
 	}
 
-	protected void initializeDstu2() {
-		addProfiles();
+	protected void initializeDstu2(T theResource) {
+		addProfiles(theResource);
 		// no identifier
 	}
 
-	protected void initializeDstu2_1() {
-		addProfiles();
+	protected void initializeDstu2_1(T theResource) {
+		addProfiles(theResource);
 		// no identifier
 	}
 
-	protected void initializeDstu2_HL7Org() {
-		addProfiles();
+	protected void initializeDstu2_HL7Org(T theResource) {
+		addProfiles(theResource);
 		// no identifier
 	}
 
-	protected void initializeDstu3() {
-		addProfiles();
+	protected void initializeDstu3(T theResource) {
+		addProfiles(theResource);
 	}
 
-	protected void initializeR4() {
-		addProfiles();
+	protected void initializeR4(T theResource) {
+		addProfiles(theResource);
 	}
 
-	protected void initializeR5() {
-		addProfiles();
+	protected void initializeR5(T theResource) {
+		addProfiles(theResource);
 	}
 }
