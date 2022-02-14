@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 
 import java.util.Map;
 
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Measure;
@@ -72,7 +73,8 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "subject") String subject,
 			@OperationParam(name = "practitioner") String practitioner,
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn,
-			@OperationParam(name = "productLine") String productLine) {
+			@OperationParam(name = "productLine") String productLine,
+			@OperationParam(name = "additionalData") Bundle data) {
 
 		Measure measure = read(theId);
 		TerminologyProvider terminologyProvider = this.jpaTerminologyProviderFactory.create(requestDetails);
@@ -85,7 +87,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 				this.globalLibraryCache);
 
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
-				subject, null, lastReceivedOn, null, null, null, null);
+				subject, null, lastReceivedOn, null, null, null, data);
 
 		if (productLine != null) {
 			Extension ext = new Extension();
