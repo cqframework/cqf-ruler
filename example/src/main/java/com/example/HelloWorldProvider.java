@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.hello;
+package com.example;
 
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.opencds.cqf.ruler.api.OperationProvider;

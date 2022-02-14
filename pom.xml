@@ -33,6 +33,7 @@
 	</developers>
 
 	<modules>
+		<module>example</module>
 		<module>external</module>
 		<module>test</module>
 		<module>core</module>
