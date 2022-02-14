@@ -7,15 +7,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.elasticsearch.common.Strings;
 import org.hl7.fhir.dstu2016may.model.CodeableConcept;
 import org.hl7.fhir.dstu2016may.model.Coding;
+import org.hl7.fhir.dstu2016may.model.Identifier;
 import org.hl7.fhir.dstu2016may.model.Reference;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r5.model.Enumerations.CompositionStatus;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.composite.CodingDt;
+import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.valueset.CompositionStatusEnum;
 
@@ -41,6 +42,8 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 	public CompositionBuilder(Class<T> theResourceClass, String theId, CodeableConceptSettings theType, String theStatus,
 			String theAuthor, String theTitle) {
 		this(theResourceClass, theId);
+		checkNotNull(theType, theStatus, theAuthor, theTitle);
+
 		myType = theType;
 		myStatus = theStatus;
 		myAuthor = theAuthor;
@@ -78,11 +81,7 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 	}
 
 	public CompositionBuilder<T> withSubject(String theSubject) {
-		mySubject = theSubject;
-		if (Strings.isNullOrEmpty(mySubject) || mySubject.startsWith("Patient/")) {
-			return this;
-		}
-		mySubject = "Patient/" + mySubject;
+		mySubject = ensurePatientReference(theSubject);
 
 		return this;
 	}
@@ -98,33 +97,22 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 	}
 
 	public CompositionBuilder<T> withCustodian(String theCustodian) {
-		myCustodian = theCustodian;
-		if (Strings.isNullOrEmpty(myCustodian) || myCustodian.startsWith("Organization/")) {
-			return this;
-		}
-		myCustodian = "Organization/" + myCustodian;
+		myCustodian = ensureOrganizationReference(theCustodian);
 
 		return this;
 	}
 
 	@Override
 	public T build() {
-		T resource = super.build();
 		checkNotNull(myType, myStatus, myAuthor, myTitle);
 		checkArgument(!myType.getCodingSettings().isEmpty() &&
 				myType.getCodingSettings().size() == 1);
 
-		return resource;
+		return super.build();
 	}
 
-	private CodingSettings myCodingSettings;
-
-	private CodingSettings getTypeSettings() {
-		if (myCodingSettings == null) {
-			myCodingSettings = myType.getCodingSettings().toArray(new CodingSettings[0])[0];
-		}
-
-		return myCodingSettings;
+	private CodingSettings getTypeSetting() {
+		return myType.getCodingSettingsArray()[0];
 	}
 
 	@Override
@@ -135,14 +123,16 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 		List<ResourceReferenceDt> author = new ArrayList<>();
 		author.add(new ResourceReferenceDt(myAuthor));
 
-		composition.setStatus(CompositionStatusEnum.forCode(myStatus))
+		composition
+				.setIdentifier(new IdentifierDt(myIdentifier.getKey(), myIdentifier.getValue()))
+				.setStatus(CompositionStatusEnum.forCode(myStatus))
 				.setSubject(new ResourceReferenceDt(mySubject))
 				.setTitle(myTitle)
 				.setType(new CodeableConceptDt()
 						.addCoding(new CodingDt()
-								.setSystem(getTypeSettings().getSystem())
-								.setCode(getTypeSettings().getCode())
-								.setDisplay(getTypeSettings().getDisplay())))
+								.setSystem(getTypeSetting().getSystem())
+								.setCode(getTypeSetting().getCode())
+								.setDisplay(getTypeSetting().getDisplay())))
 				.setAuthor(author)
 				.setCustodian(new ResourceReferenceDt(myCustodian));
 	}
@@ -153,14 +143,15 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 		org.hl7.fhir.dstu2016may.model.Composition composition = (org.hl7.fhir.dstu2016may.model.Composition) theResource;
 
 		composition
-				.setStatus(org.hl7.fhir.dstu2016may.model.Composition.CompositionStatus.fromCode(myStatus))
+				.setIdentifier(new Identifier().setSystem(myIdentifier.getKey()).setValue(myIdentifier.getValue()))
+				.setStatus(org.hl7.fhir.dstu2016may.model.Composition.CompositionStatus.valueOf(myStatus))
 				.setSubject(new Reference(mySubject))
 				.setTitle(myTitle)
 				.setType(new CodeableConcept()
 						.addCoding(new Coding()
-								.setSystem(getTypeSettings().getSystem())
-								.setCode(getTypeSettings().getCode())
-								.setDisplay(getTypeSettings().getDisplay())))
+								.setSystem(getTypeSetting().getSystem())
+								.setCode(getTypeSetting().getCode())
+								.setDisplay(getTypeSetting().getDisplay())))
 				.addAuthor(new Reference(myAuthor))
 				.setCustodian(new Reference(myCustodian));
 	}
@@ -171,14 +162,16 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 		org.hl7.fhir.dstu2.model.Composition composition = (org.hl7.fhir.dstu2.model.Composition) theResource;
 
 		composition
-				.setStatus(org.hl7.fhir.dstu2.model.Composition.CompositionStatus.fromCode(myStatus))
+				.setIdentifier(new org.hl7.fhir.dstu2.model.Identifier().setSystem(myIdentifier.getKey())
+						.setValue(myIdentifier.getValue()))
+				.setStatus(org.hl7.fhir.dstu2.model.Composition.CompositionStatus.valueOf(myStatus))
 				.setSubject(new org.hl7.fhir.dstu2.model.Reference(mySubject))
 				.setTitle(myTitle)
 				.setType(new org.hl7.fhir.dstu2.model.CodeableConcept()
 						.addCoding(new org.hl7.fhir.dstu2.model.Coding()
-								.setSystem(getTypeSettings().getSystem())
-								.setCode(getTypeSettings().getCode())
-								.setDisplay(getTypeSettings().getDisplay())))
+								.setSystem(getTypeSetting().getSystem())
+								.setCode(getTypeSetting().getCode())
+								.setDisplay(getTypeSetting().getDisplay())))
 				.addAuthor(new org.hl7.fhir.dstu2.model.Reference(myAuthor))
 				.setCustodian(new org.hl7.fhir.dstu2.model.Reference(myCustodian));
 	}
@@ -189,14 +182,16 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 		org.hl7.fhir.dstu3.model.Composition composition = (org.hl7.fhir.dstu3.model.Composition) theResource;
 
 		composition
-				.setStatus(org.hl7.fhir.dstu3.model.Composition.CompositionStatus.fromCode(myStatus))
+				.setIdentifier(new org.hl7.fhir.dstu3.model.Identifier().setSystem(myIdentifier.getKey())
+						.setValue(myIdentifier.getValue()))
+				.setStatus(org.hl7.fhir.dstu3.model.Composition.CompositionStatus.valueOf(myStatus))
 				.setSubject(new org.hl7.fhir.dstu3.model.Reference(mySubject))
 				.setTitle(myTitle)
 				.setType(new org.hl7.fhir.dstu3.model.CodeableConcept()
 						.addCoding(new org.hl7.fhir.dstu3.model.Coding()
-								.setSystem(getTypeSettings().getSystem())
-								.setCode(getTypeSettings().getCode())
-								.setDisplay(getTypeSettings().getDisplay())))
+								.setSystem(getTypeSetting().getSystem())
+								.setCode(getTypeSetting().getCode())
+								.setDisplay(getTypeSetting().getDisplay())))
 				.addAuthor(new org.hl7.fhir.dstu3.model.Reference(myAuthor))
 				.setCustodian(new org.hl7.fhir.dstu3.model.Reference(myCustodian));
 	}
@@ -207,14 +202,16 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 		org.hl7.fhir.r4.model.Composition composition = (org.hl7.fhir.r4.model.Composition) theResource;
 
 		composition
-				.setStatus(org.hl7.fhir.r4.model.Composition.CompositionStatus.fromCode(myStatus))
+				.setIdentifier(new org.hl7.fhir.r4.model.Identifier().setSystem(myIdentifier.getKey())
+						.setValue(myIdentifier.getValue()))
+				.setStatus(org.hl7.fhir.r4.model.Composition.CompositionStatus.valueOf(myStatus))
 				.setSubject(new org.hl7.fhir.r4.model.Reference(mySubject))
 				.setTitle(myTitle)
 				.setType(new org.hl7.fhir.r4.model.CodeableConcept()
 						.addCoding(new org.hl7.fhir.r4.model.Coding()
-								.setSystem(getTypeSettings().getSystem())
-								.setCode(getTypeSettings().getCode())
-								.setDisplay(getTypeSettings().getDisplay())))
+								.setSystem(getTypeSetting().getSystem())
+								.setCode(getTypeSetting().getCode())
+								.setDisplay(getTypeSetting().getDisplay())))
 				.addAuthor(new org.hl7.fhir.r4.model.Reference(myAuthor))
 				.setCustodian(new org.hl7.fhir.r4.model.Reference(myCustodian));
 	}
@@ -225,14 +222,16 @@ public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder
 		org.hl7.fhir.r5.model.Composition composition = (org.hl7.fhir.r5.model.Composition) theResource;
 
 		composition
-				.setStatus(CompositionStatus.fromCode(myStatus))
+				.setIdentifier(new org.hl7.fhir.r5.model.Identifier().setSystem(myIdentifier.getKey())
+						.setValue(myIdentifier.getValue()))
+				.setStatus(CompositionStatus.valueOf(myStatus))
 				.setSubject(new org.hl7.fhir.r5.model.Reference(mySubject))
 				.setTitle(myTitle)
 				.setType(new org.hl7.fhir.r5.model.CodeableConcept()
 						.addCoding(new org.hl7.fhir.r5.model.Coding()
-								.setSystem(getTypeSettings().getSystem())
-								.setCode(getTypeSettings().getCode())
-								.setDisplay(getTypeSettings().getDisplay())))
+								.setSystem(getTypeSetting().getSystem())
+								.setCode(getTypeSetting().getCode())
+								.setDisplay(getTypeSetting().getDisplay())))
 				.addAuthor(new org.hl7.fhir.r5.model.Reference(myAuthor))
 				.setCustodian(new org.hl7.fhir.r5.model.Reference(myCustodian));
 	}

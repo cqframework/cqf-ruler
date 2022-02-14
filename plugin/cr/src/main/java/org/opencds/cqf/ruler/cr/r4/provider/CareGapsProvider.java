@@ -20,7 +20,9 @@ import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.builder.BundleBuilder;
 import org.opencds.cqf.ruler.builder.CodeableConceptSettings;
 import org.opencds.cqf.ruler.builder.CompositionBuilder;
+import org.opencds.cqf.ruler.builder.DetectedIssueBuilder;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.utility.Ids;
 import org.opencds.cqf.ruler.utility.Operations;
 
 import ca.uhn.fhir.model.api.annotation.Description;
@@ -165,6 +167,9 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 
 		Composition composition = getComposition(patient, organization);
 
+		// get actual measure id
+		DetectedIssue detectedIssue = getDetectedIssue(patient, measures.get(0));
+
 		return patientParameter;
 	}
 
@@ -179,15 +184,22 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		return new CompositionBuilder<Composition>(Composition.class)
 				.withProfile(CARE_GAPS_COMPOSITION_PROFILE)
 				.withType(new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps in care report"))
-				.withTitle("Care Gap Report for " + patient.getIdElement().getIdPart())
-				.withSubject(patient.getIdElement().getIdPart())
+				.withStatus(Composition.CompositionStatus.FINAL.toString())
+				.withTitle("Care Gap Report for " + Ids.simplePart(patient))
+				.withSubject(Ids.simple(patient))
 				.withCustodian(organization) // TODO: check to see if this is correct.
-				.withAuthor("Patient/" + patient.getIdElement().getIdPart()) // TODO: this is wrong figure it out.
+				.withAuthor(Ids.simple(patient)) // TODO: this is wrong figure it out.
 				.build();
 	}
 
-	private DetectedIssue getDetectedIssue() {
-		return null;
-
+	private DetectedIssue getDetectedIssue(Patient patient, Measure measure) {
+		return new DetectedIssueBuilder<DetectedIssue>(DetectedIssue.class)
+				.withProfile(CARE_GAPS_DETECTED_ISSUE_PROFILE)
+				.withStatus(DetectedIssue.DetectedIssueStatus.FINAL.toString())
+				.withCode(new CodeableConceptSettings().add("http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP",
+						"Care Gaps"))
+				.withPatient(Ids.simple(patient))
+				.withEvidenceDetail(Ids.simple(measure))
+				.build();
 	}
 }

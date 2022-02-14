@@ -22,10 +22,14 @@ public class BundleBuilder<T extends IBaseBundle> extends ResourceBuilder<Bundle
 
 	public BundleBuilder(Class<T> theResourceClass, String theId, String theType) {
 		this(theResourceClass, theId);
+		checkNotNull(theType);
+
 		myType = theType;
 	}
 
 	public BundleBuilder<T> withType(String theType) {
+		checkNotNull(theType);
+
 		myType = theType;
 
 		return this;
@@ -39,10 +43,9 @@ public class BundleBuilder<T extends IBaseBundle> extends ResourceBuilder<Bundle
 
 	@Override
 	public T build() {
-		T resource = super.build();
 		checkNotNull(myType);
 
-		return resource;
+		return super.build();
 	}
 
 	@Override

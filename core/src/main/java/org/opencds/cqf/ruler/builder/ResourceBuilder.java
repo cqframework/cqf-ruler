@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.elasticsearch.common.Strings;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.ruler.utility.Resources;
 
@@ -31,6 +32,8 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 
 	protected ResourceBuilder(Class<T> theResourceClass, String theId) {
 		this(theResourceClass);
+		checkNotNull(theId);
+
 		myId = theId;
 	}
 
@@ -39,7 +42,23 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 		return (SELF) this;
 	}
 
+	public static String ensurePatientReference(String thePatientId) {
+		if (Strings.isNullOrEmpty(thePatientId) || thePatientId.startsWith("Patient/")) {
+			return thePatientId;
+		}
+		return "Patient/" + thePatientId;
+	}
+
+	public static String ensureOrganizationReference(String theOrganizationId) {
+		if (Strings.isNullOrEmpty(theOrganizationId) || theOrganizationId.startsWith("Organization/")) {
+			return theOrganizationId;
+		}
+		return "Organization/" + theOrganizationId;
+	}
+
 	public SELF withId(String theId) {
+		checkNotNull(theId);
+
 		myId = theId;
 
 		return self();

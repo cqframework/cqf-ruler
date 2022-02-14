@@ -23,4 +23,8 @@ public class CodeableConceptSettings {
 		return this.codingSettings;
 	}
 
+	public CodingSettings[] getCodingSettingsArray() {
+		return getCodingSettings().toArray(new CodingSettings[0]);
+	}
+
 }
