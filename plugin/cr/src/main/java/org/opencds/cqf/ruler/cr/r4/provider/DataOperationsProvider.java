@@ -18,7 +18,6 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.opencds.cqf.cql.engine.fhir.exception.FhirVersionMisMatchException;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
@@ -58,7 +57,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	@Operation(name = "$data-requirements", idempotent = true, type = Library.class)
 	public Library dataRequirements(@IdParam IdType theId,
 											  @OperationParam(name = "target") String target,
-											  RequestDetails theRequestDetails) throws InternalErrorException, FHIRException, FhirVersionMisMatchException {
+											  RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
 
 		Library library = read(theId, theRequestDetails);
 		return processDataRequirements(library, theRequestDetails);
@@ -69,7 +68,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	public Library dataRequirements(@IdParam IdType theId,
 											  @OperationParam(name = "startPeriod") String startPeriod,
 											  @OperationParam(name = "endPeriod") String endPeriod,
-											  RequestDetails theRequestDetails) throws InternalErrorException, FHIRException, FhirVersionMisMatchException {
+											  RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
 
 		Measure measure = read(theId, theRequestDetails);
 		Library library = getLibraryFromMeasure(measure, theRequestDetails);
@@ -101,7 +100,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		return library;
 	}
 
-	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) throws FhirVersionMisMatchException {
+	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {
 		JpaLibraryContentProvider jpaLibraryContentProvider = jpaLibraryContentProviderFactory.create(theRequestDetails);
 
 		Bundle libraryBundle = new Bundle();
