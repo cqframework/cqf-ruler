@@ -13,11 +13,12 @@ import org.hl7.fhir.convertors.advisors.impl.BaseAdvisor_30_50;
 import org.hl7.fhir.convertors.advisors.impl.BaseAdvisor_40_50;
 import org.hl7.fhir.convertors.conv30_50.VersionConvertor_30_50;
 import org.hl7.fhir.convertors.conv40_50.VersionConvertor_40_50;
+import org.hl7.fhir.instance.model.api.IBaseConformance;
 import org.hl7.fhir.r5.model.CanonicalType;
 import org.hl7.fhir.r5.model.Extension;
-import org.hl7.fhir.r5.model.Library;
 import org.hl7.fhir.r5.model.Measure;
 import org.hl7.fhir.r5.model.Meta;
+import org.opencds.cqf.cql.engine.fhir.retrieve.BaseFhirQueryGenerator;
 
 public class DataRequirements {
 	private DataRequirements() {
@@ -28,11 +29,12 @@ public class DataRequirements {
 	private static final String EXTENSION_URL_REFERENCE_CODE = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-directReferenceCode";
 	private static final String EXTENSION_URL_LOGIC_DEFINITION = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition";
 	private static final String EXTENSION_URL_COMPUTABLE_MEASURE = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/computable-measure-cqfm";
+	private static final String EXTENSION_URL_FHIR_QUERY_PATTERN = "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern";
 
 	public static Measure createMeasure(Measure measureToUse, LibraryManager libraryManager,
 			TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
 
-		Library moduleDefinitionLibrary = getModuleDefinitionLibrary(measureToUse, libraryManager, translatedLibrary,
+		org.hl7.fhir.r5.model.Library moduleDefinitionLibrary = getModuleDefinitionLibrary(measureToUse, libraryManager, translatedLibrary,
 				options);
 
 		measureToUse.setDate(new Date());
@@ -51,7 +53,7 @@ public class DataRequirements {
 		return measureToUse;
 	}
 
-	public static Library getModuleDefinitionLibrary(org.hl7.fhir.r5.model.Measure measureToUse,
+	public static org.hl7.fhir.r5.model.Library getModuleDefinitionLibrary(org.hl7.fhir.r5.model.Measure measureToUse,
 			LibraryManager libraryManager,
 			TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
 
@@ -156,19 +158,36 @@ public class DataRequirements {
 		return libraryDstu3;
 	}
 
-	public static org.hl7.fhir.r4.model.Library getModuleDefinitionLibraryR4(LibraryManager libraryManager,
-			TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+	public static org.hl7.fhir.r4.model.Library getModuleDefinitionLibraryR4(BaseFhirQueryGenerator fhirQueryGenerator,
+																									 IBaseConformance iBaseConformance, LibraryManager libraryManager,
+																									 TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
 		org.hl7.fhir.r5.model.Library libraryR5 = getModuleDefinitionLibraryR5(libraryManager, translatedLibrary,
-				options);
+			options);
 		VersionConvertor_40_50 versionConvertor_30_50 = new VersionConvertor_40_50(new BaseAdvisor_40_50());
 		org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) versionConvertor_30_50
 				.convertResource(libraryR5);
-		// libraryR4 = this.addDataRequirementFhirQueries(libraryR4); // uncomment this
-		// when engine fhir query generation available
+		libraryR4 = addDataRequirementFhirQueries(fhirQueryGenerator, libraryR4, iBaseConformance);
 		return libraryR4;
 	}
 
-	public static Library getModuleDefinitionLibraryR5(LibraryManager libraryManager,
+	private static org.hl7.fhir.r4.model.Library addDataRequirementFhirQueries(BaseFhirQueryGenerator fhirQueryGenerator,
+																										org.hl7.fhir.r4.model.Library library,
+																										IBaseConformance iBaseConformance) {
+		List<org.hl7.fhir.r4.model.DataRequirement> dataReqs = library.getDataRequirement();
+
+		System.out.println("Data Req:"+dataReqs.size());
+		for (org.hl7.fhir.r4.model.DataRequirement drq : dataReqs) {
+			List<String> queries = fhirQueryGenerator.generateFhirQueries(drq, null,null, null, iBaseConformance);
+			for (String query : queries) {
+				org.hl7.fhir.r4.model.Extension ext = new org.hl7.fhir.r4.model.Extension();
+				ext.setUrl(EXTENSION_URL_FHIR_QUERY_PATTERN);
+				ext.setValue(new org.hl7.fhir.r4.model.StringType(query));
+				drq.getExtension().add(ext);
+			}
+		}
+		return library;
+	}
+	public static org.hl7.fhir.r5.model.Library getModuleDefinitionLibraryR5(LibraryManager libraryManager,
 			TranslatedLibrary translatedLibrary,
 			CqlTranslatorOptions options) {
 		DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();

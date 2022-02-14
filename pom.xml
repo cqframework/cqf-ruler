@@ -61,7 +61,7 @@
 		<cqframework.version>1.5.6</cqframework.version>
 
 		<!-- CQL Support -->
-		<cql-engine.version>1.5.4</cql-engine.version>
+		<cql-engine.version>1.5.5-SNAPSHOT</cql-engine.version>
 		<cql-evaluator.version>1.4.3-SNAPSHOT</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
