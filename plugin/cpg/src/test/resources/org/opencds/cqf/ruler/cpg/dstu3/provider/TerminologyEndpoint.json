@@ -1,0 +1,16 @@
+{
+	"resourceType": "Endpoint",
+	"id": "TerminologyEndpoint",
+	"status": "active",
+	"connectionType": {
+		"code": ""
+	},
+	"payloadType": [
+		{
+			"coding": [{
+				"code": ""
+			}]
+		}
+	],
+	"address": "http://terminologyEndpoint:8080/fhir/"
+}
