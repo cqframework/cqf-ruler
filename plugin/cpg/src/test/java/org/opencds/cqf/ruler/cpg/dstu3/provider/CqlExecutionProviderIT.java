@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CqlExecutionProviderIT.class,
-	CpgConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
+		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 public class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(CqlExecutionProviderIT.class);
@@ -50,10 +50,12 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters params = new Parameters();
 		params.addParameter().setName("subject").setValue(new StringType("Patient/SimplePatient"));
 		Parameters libraryParameter = new Parameters();
-		libraryParameter.addParameter().setName("url").setValue(new StringType(this.getClient().getServerBase() + "Library/SimpleDstu3Library"));
+		libraryParameter.addParameter().setName("url")
+				.setValue(new StringType(this.getClient().getServerBase() + "Library/SimpleDstu3Library"));
 		libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleDstu3Library"));
 		params.addParameter().setName("library").setResource(libraryParameter);
-		params.addParameter().setName("expression").setValue(new StringType("SimpleDstu3Library.\"simpleBooleanExpression\""));
+		params.addParameter().setName("expression")
+				.setValue(new StringType("SimpleDstu3Library.\"simpleBooleanExpression\""));
 		String packagePrefix = "org/opencds/cqf/ruler/cpg/dstu3/provider/";
 		loadResource(packagePrefix + "SimpleDstu3Library.json");
 		loadResource(packagePrefix + "SimplePatient.json");
@@ -69,10 +71,12 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 	public void testDataBundleCqlExecutionProvider() throws Exception {
 		Parameters params = new Parameters();
 		Parameters libraryParameter = new Parameters();
-		libraryParameter.addParameter().setName("url").setValue(new StringType(this.getClient().getServerBase() + "Library/SimpleDstu3Library"));
+		libraryParameter.addParameter().setName("url")
+				.setValue(new StringType(this.getClient().getServerBase() + "Library/SimpleDstu3Library"));
 		libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleDstu3Library"));
 		params.addParameter().setName("library").setResource(libraryParameter);
-		params.addParameter().setName("expression").setValue(new StringType("SimpleDstu3Library.\"observationRetrieve\""));
+		params.addParameter().setName("expression")
+				.setValue(new StringType("SimpleDstu3Library.\"observationRetrieve\""));
 		String packagePrefix = "org/opencds/cqf/ruler/cpg/dstu3/provider/";
 		loadResource(packagePrefix + "SimpleDstu3Library.json");
 		loadResource(packagePrefix + "SimplePatient.json");
@@ -81,7 +85,8 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("useServerData").setValue(new BooleanType(false));
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getResource() instanceof Bundle);
-		assertTrue(((Bundle) results.getParameter().get(0).getResource()).getEntry().get(0).getResource() instanceof Observation);
+		assertTrue(((Bundle) results.getParameter().get(0).getResource()).getEntry().get(0)
+				.getResource() instanceof Observation);
 		assertTrue(results.getParameter().get(1).getValue() instanceof StringType);
 		assertTrue(((StringType) results.getParameter().get(1).getValue()).asStringValue().equals("List"));
 		logger.debug("Results: ", results);
@@ -92,10 +97,12 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters params = new Parameters();
 		Parameters libraryParameter = new Parameters();
 		params.addParameter().setName("subject").setValue(new StringType("Patient/SimplePatient"));
-		libraryParameter.addParameter().setName("url").setValue(new StringType(this.getClient().getServerBase() + "Library/SimpleDstu3Library"));
+		libraryParameter.addParameter().setName("url")
+				.setValue(new StringType(this.getClient().getServerBase() + "Library/SimpleDstu3Library"));
 		libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleDstu3Library"));
 		params.addParameter().setName("library").setResource(libraryParameter);
-		params.addParameter().setName("expression").setValue(new StringType("SimpleDstu3Library.\"observationRetrieve\""));
+		params.addParameter().setName("expression")
+				.setValue(new StringType("SimpleDstu3Library.\"observationRetrieve\""));
 		String packagePrefix = "org/opencds/cqf/ruler/cpg/dstu3/provider/";
 		loadResource(packagePrefix + "SimpleDstu3Library.json");
 		loadResource(packagePrefix + "SimplePatient.json");
@@ -104,7 +111,8 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("useServerData").setValue(new BooleanType(false));
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getResource() instanceof Bundle);
-		assertTrue(((Bundle) results.getParameter().get(0).getResource()).getEntry().get(0).getResource() instanceof Observation);
+		assertTrue(((Bundle) results.getParameter().get(0).getResource()).getEntry().get(0)
+				.getResource() instanceof Observation);
 		assertTrue(results.getParameter().get(1).getValue() instanceof StringType);
 		assertTrue(((StringType) results.getParameter().get(1).getValue()).asStringValue().equals("List"));
 		logger.debug("Results: ", results);

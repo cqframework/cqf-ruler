@@ -161,7 +161,8 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	 * Evaluates a CQL expression and returns the results as a Parameters resource.
 	 * 
 	 * @param theRequestDetails   the {@link RequestDetails RequestDetails}
-	 * @param subject             ***Only Patient is supported as of now*** Subject for which the expression will be
+	 * @param subject             ***Only Patient is supported as of now*** Subject
+	 *                            for which the expression will be
 	 *                            evaluated. This corresponds to the context in
 	 *                            which the expression will be evaluated and is
 	 *                            represented as a relative FHIR id (e.g.

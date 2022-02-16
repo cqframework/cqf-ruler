@@ -39,7 +39,8 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 	public void testSimpleRetrieveCqlExecutionProvider() throws Exception {
 		Parameters params = new Parameters();
 		params.addParameter().setName("subject").setValue(new StringType("Patient/SimplePatient"));
-		params.addParameter().setName("expression").setValue(new StringType("[Observation] O where O.status = 'final'"));
+		params.addParameter().setName("expression")
+				.setValue(new StringType("[Observation] O where O.status = 'final'"));
 		String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
 		loadResource(packagePrefix + "SimpleObservation.json");
 		loadResource(packagePrefix + "SimplePatient.json");
@@ -52,10 +53,12 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters params = new Parameters();
 		params.addParameter().setName("subject").setValue(new StringType("Patient/SimplePatient"));
 		Parameters libraryParameter = new Parameters();
-		libraryParameter.addParameter().setName("url").setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
+		libraryParameter.addParameter().setName("url")
+				.setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
 		libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleR4Library"));
 		params.addParameter().setName("library").setResource(libraryParameter);
-		params.addParameter().setName("expression").setValue(new StringType("SimpleR4Library.\"simpleBooleanExpression\""));
+		params.addParameter().setName("expression")
+				.setValue(new StringType("SimpleR4Library.\"simpleBooleanExpression\""));
 		String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
 		loadResource(packagePrefix + "SimpleR4Library.json");
 		loadResource(packagePrefix + "SimplePatient.json");
@@ -71,7 +74,8 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 	public void testDataBundleCqlExecutionProvider() throws Exception {
 		Parameters params = new Parameters();
 		Parameters libraryParameter = new Parameters();
-		libraryParameter.addParameter().setName("url").setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
+		libraryParameter.addParameter().setName("url")
+				.setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
 		libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleR4Library"));
 		params.addParameter().setName("library").setResource(libraryParameter);
 		params.addParameter().setName("expression").setValue(new StringType("SimpleR4Library.\"observationRetrieve\""));
@@ -83,7 +87,8 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("useServerData").setValue(new BooleanType(false));
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getResource() instanceof Bundle);
-		assertTrue(((Bundle) results.getParameter().get(0).getResource()).getEntry().get(0).getResource() instanceof Observation);
+		assertTrue(((Bundle) results.getParameter().get(0).getResource()).getEntry().get(0)
+				.getResource() instanceof Observation);
 		assertTrue(results.getParameter("resultType") instanceof StringType);
 		assertTrue(((StringType) results.getParameter("resultType")).asStringValue().equals("List"));
 		logger.debug("Results: ", results);
@@ -94,7 +99,8 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters params = new Parameters();
 		Parameters libraryParameter = new Parameters();
 		params.addParameter().setName("subject").setValue(new StringType("Patient/SimplePatient"));
-		libraryParameter.addParameter().setName("url").setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
+		libraryParameter.addParameter().setName("url")
+				.setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
 		libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleR4Library"));
 		params.addParameter().setName("library").setResource(libraryParameter);
 		params.addParameter().setName("expression").setValue(new StringType("SimpleR4Library.\"observationRetrieve\""));
@@ -106,7 +112,8 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("useServerData").setValue(new BooleanType(false));
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getResource() instanceof Bundle);
-		assertTrue(((Bundle) results.getParameter().get(0).getResource()).getEntry().get(0).getResource() instanceof Observation);
+		assertTrue(((Bundle) results.getParameter().get(0).getResource()).getEntry().get(0)
+				.getResource() instanceof Observation);
 		assertTrue(results.getParameter("resultType") instanceof StringType);
 		assertTrue(((StringType) results.getParameter("resultType")).asStringValue().equals("List"));
 		logger.debug("Results: ", results);
@@ -129,51 +136,70 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	// @Test
 	// public void testDataEndpoint() throws Exception {
-	// 	Parameters params = new Parameters();
-	// 	Parameters libraryParameter = new Parameters();
-	// 	libraryParameter.addParameter().setName("url").setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
-	// 	libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleR4Library"));
-	// 	params.addParameter().setName("library").setResource(libraryParameter);
-	// 	params.addParameter().setName("expression").setValue(new StringType("SimpleR4Library.\"observationRetrieve\""));
-	// 	String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
-	// 	Endpoint dataEndpoint = (Endpoint) this.readResource(packagePrefix + "DataEndpoint.json");
-	// 	params.addParameter().setName("dataEndpoint").setResource(dataEndpoint);
-	// 	this.stubResourceForUrl(packagePrefix + "SimpleObservation.json", "http://dataEndpoint:8080/fhir/Observation/SimpleObservation");
-	// 	this.stubResourceForUrl(packagePrefix + "SimplePatient.json", "http://dataEndpoint:8080/fhir/Patient/SimplePatient");
-	// 	this.stubResourceForUrl(packagePrefix + "SimpleObservation.json", "http://dataEndpoint:8080/fhir/Observation/?subject=SimplePatient");
-	// 	Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
-	// 	logger.debug("Results: ", results);
-  	// }
+	// Parameters params = new Parameters();
+	// Parameters libraryParameter = new Parameters();
+	// libraryParameter.addParameter().setName("url").setValue(new
+	// CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
+	// libraryParameter.addParameter().setName("name").setValue(new
+	// StringType("SimpleR4Library"));
+	// params.addParameter().setName("library").setResource(libraryParameter);
+	// params.addParameter().setName("expression").setValue(new
+	// StringType("SimpleR4Library.\"observationRetrieve\""));
+	// String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
+	// Endpoint dataEndpoint = (Endpoint) this.readResource(packagePrefix +
+	// "DataEndpoint.json");
+	// params.addParameter().setName("dataEndpoint").setResource(dataEndpoint);
+	// this.stubResourceForUrl(packagePrefix + "SimpleObservation.json",
+	// "http://dataEndpoint:8080/fhir/Observation/SimpleObservation");
+	// this.stubResourceForUrl(packagePrefix + "SimplePatient.json",
+	// "http://dataEndpoint:8080/fhir/Patient/SimplePatient");
+	// this.stubResourceForUrl(packagePrefix + "SimpleObservation.json",
+	// "http://dataEndpoint:8080/fhir/Observation/?subject=SimplePatient");
+	// Parameters results =
+	// getClient().operation().onServer().named("$cql").withParameters(params).execute();
+	// logger.debug("Results: ", results);
+	// }
 
 	// @Test
 	// public void testContentEndpoint() throws Exception {
-	// 	Parameters params = new Parameters();
-	// 	Parameters libraryParameter = new Parameters();
-	// 	libraryParameter.addParameter().setName("url").setValue(new CanonicalType("http://contentEndpoint:8080/fhir/Library/SimpleR4Library"));
-	// 	libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleR4Library"));
-	// 	params.addParameter().setName("library").setResource(libraryParameter);
-	// 	params.addParameter().setName("expression").setValue(new StringType("SimpleR4Library.\"observationRetrieve\""));
-	// 	String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
-	// 	loadResource(packagePrefix + "SimpleR4Library.json");
-	// 	Endpoint contentEndpoint = (Endpoint) this.readResource(packagePrefix + "ContentEndpoint.json");
-	// 	params.addParameter().setName("contentEndpoint").setResource(contentEndpoint);
-	// 	this.stubResourceForUrl(packagePrefix + "SimpleR4Library.json", "http://contentEndpoint:8080/fhir/Library/SimpleR4Library");
-	// 	Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
-	// 	logger.debug("Results: ", results);
-	// 	}
+	// Parameters params = new Parameters();
+	// Parameters libraryParameter = new Parameters();
+	// libraryParameter.addParameter().setName("url").setValue(new
+	// CanonicalType("http://contentEndpoint:8080/fhir/Library/SimpleR4Library"));
+	// libraryParameter.addParameter().setName("name").setValue(new
+	// StringType("SimpleR4Library"));
+	// params.addParameter().setName("library").setResource(libraryParameter);
+	// params.addParameter().setName("expression").setValue(new
+	// StringType("SimpleR4Library.\"observationRetrieve\""));
+	// String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
+	// loadResource(packagePrefix + "SimpleR4Library.json");
+	// Endpoint contentEndpoint = (Endpoint) this.readResource(packagePrefix +
+	// "ContentEndpoint.json");
+	// params.addParameter().setName("contentEndpoint").setResource(contentEndpoint);
+	// this.stubResourceForUrl(packagePrefix + "SimpleR4Library.json",
+	// "http://contentEndpoint:8080/fhir/Library/SimpleR4Library");
+	// Parameters results =
+	// getClient().operation().onServer().named("$cql").withParameters(params).execute();
+	// logger.debug("Results: ", results);
+	// }
 
 	// @Test
 	// public void testTerminologyEndpoint() throws Exception {
-	// 	Parameters params = new Parameters();
-	// 	Parameters libraryParameter = new Parameters();
-	// 	libraryParameter.addParameter().setName("url").setValue(new CanonicalType("http://dataEndpoint:8080/fhir/Library/SimpleR4Library"));
-	// 	libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleR4Library"));
-	// 	params.addParameter().setName("library").setResource(libraryParameter);
-	// 	params.addParameter().setName("expression").setValue(new StringType("SimpleR4Library.\"observationRetrieve\""));
-	// 	String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
-	// 	Endpoint terminologyEndpoint = (Endpoint) this.readResource(packagePrefix + "TerminologyEndpoint.json");
-	// 	params.addParameter().setName("terminologyEndpoint").setResource(terminologyEndpoint);
-	// 	Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
-	// 	logger.debug("Results: ", results);
+	// Parameters params = new Parameters();
+	// Parameters libraryParameter = new Parameters();
+	// libraryParameter.addParameter().setName("url").setValue(new
+	// CanonicalType("http://dataEndpoint:8080/fhir/Library/SimpleR4Library"));
+	// libraryParameter.addParameter().setName("name").setValue(new
+	// StringType("SimpleR4Library"));
+	// params.addParameter().setName("library").setResource(libraryParameter);
+	// params.addParameter().setName("expression").setValue(new
+	// StringType("SimpleR4Library.\"observationRetrieve\""));
+	// String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
+	// Endpoint terminologyEndpoint = (Endpoint) this.readResource(packagePrefix +
+	// "TerminologyEndpoint.json");
+	// params.addParameter().setName("terminologyEndpoint").setResource(terminologyEndpoint);
+	// Parameters results =
+	// getClient().operation().onServer().named("$cql").withParameters(params).execute();
+	// logger.debug("Results: ", results);
 	// }
 }

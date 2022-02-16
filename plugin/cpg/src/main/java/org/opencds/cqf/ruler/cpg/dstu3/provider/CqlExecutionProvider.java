@@ -159,7 +159,8 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	 * Evaluates a CQL expression and returns the results as a Parameters resource.
 	 * 
 	 * @param theRequestDetails   the {@link RequestDetails RequestDetails}
-	 * @param subject             ***Only Patient is supported as of now*** Subject for which the expression will be
+	 * @param subject             ***Only Patient is supported as of now*** Subject
+	 *                            for which the expression will be
 	 *                            evaluated. This corresponds to the context in
 	 *                            which the expression will be evaluated and is
 	 *                            represented as a relative FHIR id (e.g.
@@ -268,7 +269,8 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 							name = ((StringType) param.getValue()).asStringValue();
 							break;
 						default:
-							throw new IllegalArgumentException("Only url and name parts are allowed for Parameter: library");
+							throw new IllegalArgumentException(
+									"Only url and name parts are allowed for Parameter: library");
 					}
 				}
 				if (url == null) {
@@ -318,8 +320,9 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		List<LibraryContentProvider> libraryProviders = new ArrayList<LibraryContentProvider>();
 		libraryProviders.add(jpaLibraryContentProviderFactory.create(theRequestDetails));
 		if (contentEndpoint != null) {
-			libraryProviders.add(fhirRestibraryContentProviderFactory.create(contentEndpoint.getAddress(), contentEndpoint
-					.getHeader().stream().map(x -> x.asStringValue()).collect(Collectors.toList())));
+			libraryProviders
+					.add(fhirRestibraryContentProviderFactory.create(contentEndpoint.getAddress(), contentEndpoint
+							.getHeader().stream().map(x -> x.asStringValue()).collect(Collectors.toList())));
 		}
 		LibraryLoader tempLibraryLoader = libraryLoaderFactory.create(
 				new ArrayList<LibraryContentProvider>(libraryProviders));
@@ -514,7 +517,8 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			} else if (res instanceof List<?>) {
 				if (((List<?>) res).size() > 0 && ((List<?>) res).get(0) instanceof Resource) {
 					result.addParameter().setName("value")
-							.setResource(bundler.bundle((Iterable<Resource>) res, theRequestDetails.getFhirServerBase()));
+							.setResource(
+									bundler.bundle((Iterable<Resource>) res, theRequestDetails.getFhirServerBase()));
 				} else {
 					result.addParameter().setName("value").setValue(new StringType(res.toString()));
 				}
