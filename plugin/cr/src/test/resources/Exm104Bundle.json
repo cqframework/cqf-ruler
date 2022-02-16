@@ -94,7 +94,7 @@
 					"reference": "#cqf-tooling"
 				}
 			} ],
-			"url": "http://hl7.org/fhir/us/cqfmeasures/Measure/EXM104",
+			"url": "http://localhost:8080/fhir/Measure/measure-EXM104-8.2.000",
 			"identifier": [ {
 				"use": "official",
 				"system": "http://hl7.org/fhir/cqi/ecqm/Measure/Identifier/cms",
@@ -180,7 +180,7 @@
 				"type": "depends-on",
 				"resource": "Library/library-TJCOverall-5.0.000"
 			} ],
-			"library": [ "Library/library-EXM104-8.2.000" ],
+			"library": [ "http://localhost:8080/fhir/Library/library-EXM104-8.2.000" ],
 			"disclaimer": "These performance measures are not clinical guidelines and do not establish a standard of medical care, and have not been tested for all potential applications. The measures and specifications are provided without warranty.",
 			"scoring": {
 				"coding": [ {
@@ -431,7 +431,7 @@
 					"reference": "#cqf-tooling"
 				}
 			} ],
-			"url": "http://fhir.org/guides/dbcg/connectathon/Library/EXM104",
+			"url": "http://localhost:8080/fhir/Library/library-EXM104-8.2.000",
 			"version": "8.2.000",
 			"name": "EXM104",
 			"status": "active",
@@ -2187,7 +2187,7 @@
 					"reference": "#cqf-tooling"
 				}
 			} ],
-			"url": "http://fhir.org/guides/dbcg/connectathon/Library/SupplementalDataElements",
+			"url": "http://localhost:8080/fhir/Library/library-SupplementalDataElements-2.0.0",
 			"version": "2.0.0",
 			"name": "SupplementalDataElements",
 			"status": "active",
@@ -3391,7 +3391,7 @@
 					"reference": "#cqf-tooling"
 				}
 			} ],
-			"url": "http://fhir.org/guides/dbcg/connectathon/Library/MATGlobalCommonFunctions",
+			"url": "http://localhost:8080/fhir/Library/library-MATGlobalCommonFunctions-5.0.000",
 			"version": "5.0.000",
 			"name": "MATGlobalCommonFunctions",
 			"status": "active",
@@ -3539,7 +3539,7 @@
 					"reference": "#cqf-tooling"
 				}
 			} ],
-			"url": "http://fhir.org/guides/dbcg/connectathon/Library/TJCOverall",
+			"url": "http://localhost:8080/fhir/Library/library-TJCOverall-5.0.000",
 			"version": "5.0.000",
 			"name": "TJCOverall",
 			"status": "active",
