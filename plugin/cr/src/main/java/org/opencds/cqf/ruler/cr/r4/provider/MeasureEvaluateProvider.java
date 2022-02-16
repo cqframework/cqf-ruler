@@ -74,7 +74,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "practitioner") String practitioner,
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn,
 			@OperationParam(name = "productLine") String productLine,
-			@OperationParam(name = "additionalData") Bundle data) {
+			@OperationParam(name = "additionalData") Bundle additionalData) {
 
 		Measure measure = read(theId);
 		TerminologyProvider terminologyProvider = this.jpaTerminologyProviderFactory.create(requestDetails);
@@ -86,8 +86,11 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 				null, null, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
 				this.globalLibraryCache);
 
+		System.out.println("data provider: "+ dataProvider);
+
+
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
-				subject, null, lastReceivedOn, null, null, null, data);
+				subject, null, lastReceivedOn, null, null, null, additionalData);
 
 		if (productLine != null) {
 			Extension ext = new Extension();
