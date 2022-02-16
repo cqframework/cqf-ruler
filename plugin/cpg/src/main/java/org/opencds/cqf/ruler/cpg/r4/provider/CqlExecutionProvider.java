@@ -40,7 +40,6 @@ import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvi
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
-import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.cpg.r4.util.FhirMeasureBundler;
 import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.cql.JpaFhirDal;
@@ -63,7 +62,8 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 /**
- * This class is used to provide an {@link OperationProvider OperationProvider}
+ * This class is used to provide an {@link DaoRegistryOperationProvider
+ * OperationProvider}
  * implementation that supports cql expression evaluation
  * Created by Bryn on 1/16/2017.
  */
@@ -161,8 +161,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	 * Evaluates a CQL expression and returns the results as a Parameters resource.
 	 * 
 	 * @param theRequestDetails   the {@link RequestDetails RequestDetails}
-	 * @param subject             ***Only Patient is supported as of now*** Subject
-	 *                            for which the expression will be
+	 * @param subject             Subject for which the expression will be
 	 *                            evaluated. This corresponds to the context in
 	 *                            which the expression will be evaluated and is
 	 *                            represented as a relative FHIR id (e.g.
@@ -245,15 +244,6 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		if (prefetchData != null) {
 			throw new NotImplementedException("prefetchData is not yet supported.");
 		}
-		if (subject != null) {
-			if (!(subject.split("/").length > 0)) {
-				throw new IllegalArgumentException("Subject must be a Reference String.  i.e. Patient/patient-example");
-			}
-			if (!(subject.split("/")[0].equals("Patient"))) {
-				throw new IllegalArgumentException("Only Patient is supported as of now.");
-			}
-			subject = subject.substring(subject.lastIndexOf("/") + 1, subject.length());
-		}
 		if (useServerData == null) {
 			useServerData = new BooleanType(true);
 		}
@@ -293,8 +283,10 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 				resolvedParameters.put(pc.getName(), pc.getValue());
 			}
 		}
+		String contextType = subject.substring(0, subject.lastIndexOf("/") - 1);
+		String subjectId = subject.substring(0, subject.lastIndexOf("/") - 1);
 		EvaluationResult evalResult = engine.evaluate(localLibraryIdentifier, null,
-				Pair.of(subject != null ? "Patient" : "Unspecified", subject == null ? "null" : subject),
+				Pair.of(contextType != null ? contextType : "Unspecified", subjectId == null ? "null" : subject),
 				resolvedParameters, this.getDebugMap());
 
 		if (evalResult != null && evalResult.expressionResults != null) {
