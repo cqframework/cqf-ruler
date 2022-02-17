@@ -20,6 +20,7 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
+import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
@@ -77,7 +78,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	@Autowired
 	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
 	@Autowired
-	private FhirRestLibraryContentProviderFactory fhirRestibraryContentProviderFactory;
+	private FhirRestLibraryContentProviderFactory fhirRestLibraryContentProviderFactory;
 	@Autowired
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 	@Autowired
@@ -247,7 +248,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		if (useServerData == null) {
 			useServerData = new BooleanType(true);
 		}
-		List<LibraryParameter> libraryParameters = new ArrayList<LibraryParameter>();
+		List<LibraryParameter> libraryParameters = new ArrayList<>();
 		if (library != null) {
 			for (Parameters libraryParameter : library) {
 				CanonicalType url = null;
@@ -277,14 +278,15 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		CqlEngine engine = setupEngine(localLibraryIdentifier, expression, libraryParameters, subject, parameters,
 				contentEndpoint,
 				dataEndpoint, terminologyEndpoint, data, useServerData.booleanValue(), theRequestDetails);
-		Map<String, Object> resolvedParameters = new HashMap<String, Object>();
+		Map<String, Object> resolvedParameters = new HashMap<>();
 		if (parameters != null) {
 			for (Parameters.ParametersParameterComponent pc : parameters.getParameter()) {
 				resolvedParameters.put(pc.getName(), pc.getValue());
 			}
 		}
-		String contextType = subject.substring(0, subject.lastIndexOf("/") - 1);
-		String subjectId = subject.substring(0, subject.lastIndexOf("/") - 1);
+
+		String contextType = subject != null ? subject.substring(0, subject.lastIndexOf("/") - 1) : null;
+		String subjectId = subject != null ? subject.substring(0, subject.lastIndexOf("/") - 1) : null;
 		EvaluationResult evalResult = engine.evaluate(localLibraryIdentifier, null,
 				Pair.of(contextType != null ? contextType : "Unspecified", subjectId == null ? "null" : subject),
 				resolvedParameters, this.getDebugMap());
@@ -310,20 +312,20 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 
 		// temporary LibraryLoader to resolve library dependencies when building
 		// includes
-		List<LibraryContentProvider> libraryProviders = new ArrayList<LibraryContentProvider>();
+		List<LibraryContentProvider> libraryProviders = new ArrayList<>();
 		libraryProviders.add(jpaLibraryContentProviderFactory.create(theRequestDetails));
 		if (contentEndpoint != null) {
-			libraryProviders.add(fhirRestibraryContentProviderFactory.create(contentEndpoint.getAddress(), contentEndpoint
-					.getHeader().stream().map(x -> x.asStringValue()).collect(Collectors.toList())));
+			libraryProviders.add(fhirRestLibraryContentProviderFactory.create(contentEndpoint.getAddress(), contentEndpoint
+					.getHeader().stream().map(PrimitiveType::asStringValue).collect(Collectors.toList())));
 		}
 		LibraryLoader tempLibraryLoader = libraryLoaderFactory.create(
-				new ArrayList<LibraryContentProvider>(libraryProviders));
+				new ArrayList<>(libraryProviders));
 
 		String cql = buildCqlLibrary(library, jpaFhirDal, tempLibraryLoader, expression, parameters, theRequestDetails);
 
 		libraryProviders.add(new InMemoryLibraryContentProvider(Arrays.asList(cql)));
 		LibraryLoader libraryLoader = libraryLoaderFactory.create(
-				new ArrayList<LibraryContentProvider>(libraryProviders));
+				new ArrayList<>(libraryProviders));
 
 		return setupEngine(subject, parameters, dataEndpoint, terminologyEndpoint, data, useServerData, libraryLoader,
 				localLibraryIdentifier, theRequestDetails);
@@ -464,7 +466,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			try {
 				executionLibrary = libraryLoader.load(libraryIdentifier);
 			} catch (Exception e) {
-				logger.debug("Unable to load executable library " + libraryParameter.name);
+				logger.debug("Unable to load executable library {}", libraryParameter.name);
 			}
 			if (executionLibrary != null) {
 				libraryName = executionLibrary.getIdentifier().getId();
@@ -494,7 +496,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			if (res == null) {
 				result.addParameter().setName("value").setValue(new StringType("null"));
 			} else if (res instanceof List<?>) {
-				if (((List<?>) res).size() > 0 && ((List<?>) res).get(0) instanceof Resource) {
+				if (!((List<?>) res).isEmpty() && ((List<?>) res).get(0) instanceof Resource) {
 					result.addParameter().setName("value")
 							.setResource(bundler.bundle((Iterable<Resource>) res, theRequestDetails.getFhirServerBase()));
 				} else {
