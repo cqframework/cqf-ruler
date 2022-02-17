@@ -24,7 +24,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testMeasureEvaluate() throws Exception {
-		String bundleAsText = stringFromResource( "Exm104Bundle.json");
+		String bundleAsText = stringFromResource( "Exm104FhirR4MeasureBundle.json");
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
