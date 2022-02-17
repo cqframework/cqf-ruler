@@ -5,7 +5,6 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
@@ -46,7 +45,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		//System.out.println("Resource:"+this.getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(returnMeasureReport));
 	}
 
-	@Disabled("temporary")
 	@Test
 	public void testMeasureEvaluateWithAdditionalData() throws Exception {
 		String mainBundleAsText = stringFromResource( "Exm104MeasurePartBundle.json");
@@ -60,7 +58,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
 		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
-		params.addParameter().setName("reportType").setValue(new StringType("individual"));
+		params.addParameter().setName("reportType").setValue(new StringType("subject"));
 		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM104"));
 		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
 		params.addParameter().setName("additionalData").setResource(additionalData);
@@ -71,6 +69,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 			.returnResourceType(MeasureReport.class)
 			.execute();
 
+		assertNotNull(returnMeasureReport);
 	}
 
 }
