@@ -1,0 +1,29 @@
+{
+	"resourceType": "Library",
+	"id": "SimpleR4Library",
+	"name": "SimpleR4Library",
+	"version": "0.0.1",
+	"status": "active",
+	"experimental": false,
+	"type": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/library-type",
+				"code": "logic-library"
+			}
+		]
+	},
+	"date": "2021-04-23T15:32:03+00:00",
+	"publisher": "National Committee for Quality Assurance",
+	"description": "Simple Library for Testing Simple Expressions",
+	"content": [
+		{
+			"contentType": "text/cql",
+			"data": "bGlicmFyeSBTaW1wbGVSNExpYnJhcnkKCnVzaW5nIEZISVIgdmVyc2lvbiAnNC4wLjEnCgppbmNsdWRlIEZISVJIZWxwZXJzIHZlcnNpb24gJzQuMC4xJyBjYWxsZWQgRkhJUkhlbHBlcnMKCmNvbnRleHQgUGF0aWVudAoKZGVmaW5lIHNpbXBsZUJvb2xlYW5FeHByZXNzaW9uOiB0cnVlCgpkZWZpbmUgb2JzZXJ2YXRpb25SZXRyaWV2ZTogW09ic2VydmF0aW9uXQoKZGVmaW5lIG9ic2VydmF0aW9uSGFzQ29kZTogbm90IElzTnVsbCgoW09ic2VydmF0aW9uXSkuY29kZSkKCmRlZmluZSAiSW5pdGlhbCBQb3B1bGF0aW9uIjogb2JzZXJ2YXRpb25IYXNDb2RlCgpkZWZpbmUgIkRlbm9taW5hdG9yIjogIkluaXRpYWwgUG9wdWxhdGlvbiIKCmRlZmluZSAiTnVtZXJhdG9yIjogIkRlbm9taW5hdG9yIgo="
+		},
+		{
+			"contentType": "application/elm+xml",
+			"data": ""
+		}
+	]
+}

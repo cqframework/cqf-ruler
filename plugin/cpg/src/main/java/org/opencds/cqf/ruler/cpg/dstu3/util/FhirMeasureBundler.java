@@ -1,7 +1,7 @@
-package org.opencds.cqf.ruler.cpg.r4.util;
+package org.opencds.cqf.ruler.cpg.dstu3.util;
 
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.dstu3.model.Bundle;
+import org.hl7.fhir.dstu3.model.Resource;
 import org.opencds.cqf.cql.engine.execution.Context;
 
 /**

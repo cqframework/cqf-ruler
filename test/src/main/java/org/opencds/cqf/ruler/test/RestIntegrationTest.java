@@ -1,5 +1,12 @@
 package org.opencds.cqf.ruler.test;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+
+import java.io.IOException;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -63,6 +70,17 @@ public class RestIntegrationTest implements ResourceLoader, ResourceCreator, IdC
 
 	protected int getPort() {
 		return myPort;
+	}
+
+	protected void stubResourceForUrl(String location, String url) throws IOException {
+		String resourceString = stringFromResource(location);
+		stubFor(
+        get(urlEqualTo(url))
+            .willReturn(
+                aResponse()
+                    .withStatus(200)
+                    .withBody(resourceString)
+                    .withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
 	}
 
 	@BeforeEach
