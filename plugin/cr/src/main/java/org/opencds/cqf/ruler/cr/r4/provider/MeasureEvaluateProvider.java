@@ -31,10 +31,10 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 
 	@Autowired
-	private JpaDataProviderFactory dataProviderFactory;
+	private JpaDataProviderFactory jpaDataProviderFactory;
 
 	@Autowired
-	private DataProviderFactory evaluatorDataProviderFactory;
+	private DataProviderFactory dataProviderFactory;
 
 	@Autowired
 	private JpaLibraryContentProviderFactory libraryContentProviderFactory;
@@ -65,6 +65,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	 *                       received.
 	 * @param productLine    the productLine (e.g. Medicare, Medicaid, etc) to use
 	 *                       for the evaluation. This is a non-standard parameter.
+	 * @param additionalData the data bundle containing additional data
 	 * @return the calculated MeasureReport
 	 */
 	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
@@ -82,12 +83,12 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 
 		Measure measure = read(theId);
 		TerminologyProvider terminologyProvider = this.jpaTerminologyProviderFactory.create(requestDetails);
-		DataProvider dataProvider = this.dataProviderFactory.create(requestDetails, terminologyProvider);
+		DataProvider dataProvider = this.jpaDataProviderFactory.create(requestDetails, terminologyProvider);
 		LibraryContentProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 
 		org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor(
-			null, this.evaluatorDataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
+			null, this.dataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
 			this.globalLibraryCache);
 
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,

@@ -47,11 +47,11 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testMeasureEvaluateWithAdditionalData() throws Exception {
-		String mainBundleAsText = stringFromResource( "Exm104MeasurePartBundle.json");
+		String mainBundleAsText = stringFromResource( "Exm104FhirR4MeasurePartBundle.json");
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(mainBundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		String additionalBundleAsText = stringFromResource( "Exm104MeasureAdditionalData.json");
+		String additionalBundleAsText = stringFromResource( "Exm104FhirR4MeasureAdditionalData.json");
 		Bundle additionalData = (Bundle)getFhirContext().newJsonParser().parseResource(additionalBundleAsText);
 
 
