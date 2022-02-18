@@ -1,9 +1,6 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Extension;
@@ -12,15 +9,9 @@ import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.cql.engine.data.DataProvider;
-import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.evaluator.builder.Constants;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
-import org.opencds.cqf.cql.evaluator.builder.data.FhirModelResolverFactory;
-import org.opencds.cqf.cql.evaluator.builder.data.TypedRetrieveProviderFactory;
-import org.opencds.cqf.cql.evaluator.builder.ModelResolverFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
-import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
@@ -41,6 +32,9 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
 	private JpaDataProviderFactory dataProviderFactory;
+
+	@Autowired
+	private DataProviderFactory evaluatorDataProviderFactory;
 
 	@Autowired
 	private JpaLibraryContentProviderFactory libraryContentProviderFactory;
@@ -93,7 +87,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 
 		org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor(
-			null, getDataProviderFactory(additionalData), null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
+			null, this.evaluatorDataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
 			this.globalLibraryCache);
 
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
@@ -107,34 +101,6 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		}
 
 		return report;
-	}
-
-	private DataProviderFactory getDataProviderFactory(Bundle bundle) {
-		Set<ModelResolverFactory> modelResolverFactories = new HashSet<ModelResolverFactory>() {
-			{
-				add(new FhirModelResolverFactory());
-			}
-		};
-
-		Set<TypedRetrieveProviderFactory> retrieveProviderFactories = new HashSet<TypedRetrieveProviderFactory>() {
-			{
-				add(new TypedRetrieveProviderFactory() {
-					@Override
-					public String getType() {
-						return Constants.HL7_FHIR_FILES;
-					}
-
-					@Override
-					public RetrieveProvider create(String url, List<String> headers) {
-
-						return new BundleRetrieveProvider(getFhirContext(), bundle);
-					}
-				});
-			}
-		};
-
-		return new org.opencds.cqf.cql.evaluator.builder.data.DataProviderFactory(
-			getFhirContext(), modelResolverFactories, retrieveProviderFactories);
 	}
 
 }
