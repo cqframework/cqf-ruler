@@ -40,17 +40,22 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	@BeforeEach
 	void beforeEach() throws Exception {
-		loadResource("gic-pat-1.json");
-		loadResource("CervicalCancerScreeningFHIR.json");
+		loadResource("numer-EXM125-patient.json");
 	}
 
 	private void beforeEachMeasure() throws Exception {
+		loadTransaction("BreastCancerScreeningFHIR-bundle.json");
+	}
+
+	private void beforeEachMultipleMeasures() throws Exception {
 		loadTransaction("BreastCancerScreeningFHIR-bundle.json");
 		loadTransaction("ColorectalCancerScreeningsFHIR-bundle.json");
 	}
 
 	@Test
 	public void testMinimalParametersValid() throws Exception {
+		beforeEachMeasure();
+
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -407,6 +412,8 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testMultipleStatusValid() throws Exception {
+		beforeEachMeasure();
+
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -426,7 +433,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testMeasures() throws Exception {
-		beforeEachMeasure();
+		beforeEachMultipleMeasures();
 
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));

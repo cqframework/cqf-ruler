@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -11,10 +12,12 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
+import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
@@ -24,8 +27,11 @@ import org.opencds.cqf.ruler.builder.CodeableConceptSettings;
 import org.opencds.cqf.ruler.builder.CompositionBuilder;
 import org.opencds.cqf.ruler.builder.DetectedIssueBuilder;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Ids;
 import org.opencds.cqf.ruler.utility.Operations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.model.api.annotation.Description;
@@ -37,6 +43,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 
 	public static final Pattern CARE_GAPS_STATUS = Pattern
 			.compile("(open-gap|closed-gap|not-applicable)");
+	public static final String CARE_GAPS_REPORT_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/indv-measurereport-deqm";
 	public static final String CARE_GAPS_BUNDLE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-bundle-deqm";
 	public static final String CARE_GAPS_COMPOSITION_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-composition-deqm";
 	public static final String CARE_GAPS_DETECTED_ISSUE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-detectedissue-deqm";
@@ -57,6 +64,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 			return myValue;
 		}
 	}
+
+	static final Logger ourLog = LoggerFactory.getLogger(CareGapsProvider.class);
 
 	@Autowired
 	private MeasureEvaluateProvider measureEvaluateProvider;
@@ -134,6 +143,12 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		validateParameters(theRequestDetails);
 		Parameters result = newResource(Parameters.class, "care-gaps-report-" + UUID.randomUUID().toString());
 		List<Measure> measures = getMeasures(measureId, measureIdentifier, measureUrl);
+		measures.forEach(measure -> {
+			if (!measure.hasScoring()) {
+				ourLog.info("Measure does not specify a scoring so skipping: {}.", measure.getId());
+				measures.remove(measure);
+			}
+		});
 
 		if (!Strings.isNullOrEmpty(subject)) {
 			List<Patient> patients = getPatientListFromSubject(subject);
@@ -171,20 +186,14 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 			List<String> topic, Patient patient, List<String> status, List<Measure> measures, String organization) {
 
 		// for each measure, query evaluatemeasure for the patient
-		List<MeasureReport> reports = new ArrayList<>();
-		List<DetectedIssue> detectedIssues = new ArrayList<>();
-		MeasureReport report = null;
 
-		for (Measure measure : measures) {
-			report = measureEvaluateProvider.evaluateMeasure(requestDetails, measure.getIdElement(), periodStart,
-					periodEnd, "patient", Ids.simple(patient), null, null, null);
-			// get actual measure id
-			DetectedIssue detectedIssue = getDetectedIssue(patient, measure);
-		}
+		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, measures);
 
 		if (reports.isEmpty()) {
 			return null;
 		}
+
+		List<DetectedIssue> detectedIssues = getDetectedIssues(reports, patient);
 
 		// for each report, add to MR to result
 
@@ -195,6 +204,47 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
 
 		return patientParameter;
+	}
+
+	private List<MeasureReport> getReports(RequestDetails requestDetails, String periodStart,
+			String periodEnd, Patient patient, List<Measure> measures) {
+		List<MeasureReport> reports = new ArrayList<>();
+
+		MeasureReport report = null;
+		for (Measure measure : measures) {
+			report = measureEvaluateProvider.evaluateMeasure(requestDetails, measure.getIdElement(), periodStart,
+					periodEnd, "patient", Ids.simple(patient), null, null, null);
+
+			if (!report.hasGroup()) {
+				ourLog.info("Report does not include a group so skipping.\nSubject: {}\nMeasure: {}", Ids.simple(patient),
+						Ids.simple(measure));
+				continue;
+			}
+
+			initializeReport(report, measure.getImprovementNotation());
+
+			reports.add(report);
+		}
+
+		return reports;
+	}
+
+	private List<DetectedIssue> getDetectedIssues(List<MeasureReport> reports, Patient patient) {
+		List<DetectedIssue> detectedIssues = new ArrayList<>();
+		reports.forEach(report -> detectedIssues.add(getDetectedIssue(patient, report.getMeasureElement())));
+		return detectedIssues;
+	}
+
+	private void initializeReport(MeasureReport report, CodeableConcept improvementNotation) {
+		report.setId(UUID.randomUUID().toString());
+		report.setDate(new Date());
+		report.setImprovementNotation(improvementNotation);
+		// TODO: this is an org hack && requires an Organization to be in the ruler
+		// Resource org = getReportingOrganization();
+		// if (org != null) {
+		// report.setReporter(new Reference(org));
+		// }
+		report.setMeta(new Meta().addProfile(CARE_GAPS_REPORT_PROFILE));
 	}
 
 	private Bundle getBundle() {
@@ -216,14 +266,15 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 				.build();
 	}
 
-	private DetectedIssue getDetectedIssue(Patient patient, Measure measure) {
+	private DetectedIssue getDetectedIssue(Patient patient, CanonicalType measure) {
 		return new DetectedIssueBuilder<DetectedIssue>(DetectedIssue.class)
 				.withProfile(CARE_GAPS_DETECTED_ISSUE_PROFILE)
 				.withStatus(DetectedIssue.DetectedIssueStatus.FINAL.toString())
 				.withCode(new CodeableConceptSettings().add("http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP",
 						"Care Gaps"))
 				.withPatient(Ids.simple(patient))
-				.withEvidenceDetail(Ids.simple(measure))
+				// TODO: check this is the correct value
+				.withEvidenceDetail(Canonicals.getUrl(measure))
 				.build();
 	}
 }

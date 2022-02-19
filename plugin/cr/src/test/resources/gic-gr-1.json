@@ -11,7 +11,7 @@
 	"member": [
 		{
 			"entity": {
-				"reference": "Patient/gic-pat-1"
+				"reference": "Patient/numer-EXM125"
 			}
 		}
 	]
