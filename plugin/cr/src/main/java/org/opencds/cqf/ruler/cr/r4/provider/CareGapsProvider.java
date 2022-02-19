@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -13,6 +14,7 @@ import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.Measure;
+import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
@@ -24,6 +26,7 @@ import org.opencds.cqf.ruler.builder.DetectedIssueBuilder;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Ids;
 import org.opencds.cqf.ruler.utility.Operations;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -54,6 +57,9 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 			return myValue;
 		}
 	}
+
+	@Autowired
+	private MeasureEvaluateProvider measureEvaluateProvider;
 
 	/**
 	 * Implements the <a href=
@@ -134,7 +140,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 			(patients)
 					.forEach(
 							patient -> {
-								Parameters.ParametersParameterComponent patientParameter = patientReport(periodStart, periodEnd,
+								Parameters.ParametersParameterComponent patientParameter = patientReport(theRequestDetails,
+										periodStart, periodEnd,
 										topic, patient, status, measures, organization);
 								result.addParameter(patientParameter);
 							});
@@ -159,16 +166,33 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		Operations.validateAtLeastOne(theRequestDetails, "measureId", "measureIdentifier", "measureUrl");
 	}
 
-	private Parameters.ParametersParameterComponent patientReport(String periodStart, String periodEnd,
+	private Parameters.ParametersParameterComponent patientReport(RequestDetails requestDetails, String periodStart,
+			String periodEnd,
 			List<String> topic, Patient patient, List<String> status, List<Measure> measures, String organization) {
-		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
+
+		// for each measure, query evaluatemeasure for the patient
+		List<MeasureReport> reports = new ArrayList<>();
+		List<DetectedIssue> detectedIssues = new ArrayList<>();
+		MeasureReport report = null;
+
+		for (Measure measure : measures) {
+			report = measureEvaluateProvider.evaluateMeasure(requestDetails, measure.getIdElement(), periodStart,
+					periodEnd, "patient", Ids.simple(patient), null, null, null);
+			// get actual measure id
+			DetectedIssue detectedIssue = getDetectedIssue(patient, measure);
+		}
+
+		if (reports.isEmpty()) {
+			return null;
+		}
+
+		// for each report, add to MR to result
 
 		Bundle bundle = getBundle();
 
 		Composition composition = getComposition(patient, organization);
 
-		// get actual measure id
-		DetectedIssue detectedIssue = getDetectedIssue(patient, measures.get(0));
+		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
 
 		return patientParameter;
 	}

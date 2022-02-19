@@ -22,11 +22,15 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	private static final String periodStartValid = "2022-01-01";
 	private static final String periodEndValid = "2022-01-15";
-	private static final String subjectPatientValid = "Patient/gic-pat-1";
+	private static final String subjectPatientValid = "Patient/numer-EXM125";
 	private static final String subjectGroupValid = "Group/gic-gr-1";
 	private static final String statusValid = "open-gap";
 	private static final String statusValidSecond = "closed-gap";
-	private static final String measureIdValid = "CervicalCancerScreeningFHIR";
+	private static final String measureIdValid = "BreastCancerScreeningFHIR";
+	private static final String measureUrlValid = "http://ecqi.healthit.gov/ecqms/Measure/BreastCancerScreeningFHIR";
+	// TODO: spec probably needs to be updated to allow a full identifier, not just
+	// a string
+	private static final String measureIdentifierValid = "80366f35-e0a0-4ba7-a746-ad5760b79e01";
 	private static final String practitionerValid = "gic-pra-1";
 	private static final String organizationValid = "gic-org-1";
 	private static final String dateInvalid = "bad-date";
@@ -38,6 +42,11 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 	void beforeEach() throws Exception {
 		loadResource("gic-pat-1.json");
 		loadResource("CervicalCancerScreeningFHIR.json");
+	}
+
+	private void beforeEachMeasure() throws Exception {
+		loadTransaction("BreastCancerScreeningFHIR-bundle.json");
+		loadTransaction("ColorectalCancerScreeningsFHIR-bundle.json");
 	}
 
 	@Test
@@ -417,20 +426,18 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testMeasures() throws Exception {
+		beforeEachMeasure();
+
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
 		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType("CervicalCancerScreeningFHIR"));
+		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 		// params.addParameter().setName("measureIdentifier")
-		// .setValue(new StringType("2138c351-1c17-4298-aebc-43b42b1aa1ba"));
-		params.addParameter().setName("measureUrl")
-				.setValue(new StringType("http://ecqi.healthit.gov/ecqms/Measure/CervicalCancerScreeningFHIR"));
-
+		// .setValue(new StringType(measureIdentifierValid));
+		params.addParameter().setName("measureUrl").setValue(new StringType(measureUrlValid));
 		params.addParameter().setName("measureId").setValue(new StringType("ColorectalCancerScreeningsFHIR"));
-
-		loadResource("ColorectalCancerScreeningsFHIR.json");
 
 		assertDoesNotThrow(() -> {
 			getClient().operation().onType(Measure.class).named("$care-gaps")
