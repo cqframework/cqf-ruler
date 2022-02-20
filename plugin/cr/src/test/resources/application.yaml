@@ -5,11 +5,15 @@ spring:
       allow-bean-definition-overriding: true
    batch:
       job:
-         enabled: false"
+         enabled: false
 
 hapi:
    fhir:
-      tester_enabled: false;
+      tester_enabled: false
       enforce_referential_integrity_on_write: false
       enforce_referential_integrity_on_delete: false
       allow_external_references: true
+      cr:
+         enabled: true
+         measure_report:
+            reporter: testone-org

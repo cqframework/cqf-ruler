@@ -1,4 +1,7 @@
 hapi:
-  fhir:
-    cr:
-      enabled: true
+   fhir:
+      cr:
+         enabled: true
+         ## This is a required setting.  Set a value and uncomment before running.
+         #measure_report:
+         #reporter: <id>

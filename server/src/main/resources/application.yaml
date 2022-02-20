@@ -177,6 +177,9 @@ hapi:
       ## CR Settings
       cr:
          enabled: true
+         ## This is a required setting.  Set a value and uncomment before running.
+         #measure_report:
+         #reporter: <id>
 
       ## CDS Hook Settings
       cdshooks:

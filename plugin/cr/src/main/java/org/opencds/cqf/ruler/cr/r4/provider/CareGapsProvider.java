@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,17 +17,21 @@ import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.DetectedIssue;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Reference;
+import org.opencds.cqf.ruler.behavior.ConfigurationUser;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.builder.BundleBuilder;
 import org.opencds.cqf.ruler.builder.CodeableConceptSettings;
 import org.opencds.cqf.ruler.builder.CompositionBuilder;
 import org.opencds.cqf.ruler.builder.DetectedIssueBuilder;
+import org.opencds.cqf.ruler.cr.CrProperties;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Ids;
@@ -39,16 +45,18 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class CareGapsProvider extends DaoRegistryOperationProvider implements ParameterUser, ResourceCreator {
+public class CareGapsProvider extends DaoRegistryOperationProvider
+		implements ParameterUser, ConfigurationUser, ResourceCreator {
 
 	public static final Pattern CARE_GAPS_STATUS = Pattern
 			.compile("(open-gap|closed-gap|not-applicable)");
 	public static final String CARE_GAPS_REPORT_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/indv-measurereport-deqm";
 	public static final String CARE_GAPS_BUNDLE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-bundle-deqm";
 	public static final String CARE_GAPS_COMPOSITION_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-composition-deqm";
-	public static final String CARE_GAPS_DETECTED_ISSUE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-detectedissue-deqm";
+	public static final String CARE_GAPS_DETECTEDISSUE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-detectedissue-deqm";
 	public static final String CARE_GAPS_GAP_STATUS_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-gapStatus";
 	public static final String CARE_GAPS_GAP_STATUS_SYSTEM = "http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-status";
+	public static final String CARE_GAPS_MEASUREREPORT_REPORTER_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-reporterGroup";
 
 	public enum CareGapsStatusCode {
 		OPEN_GAP("open-gap"), CLOSED_GAP("closed-gap"), NOT_APPLICABLE("not-applicable");
@@ -69,6 +77,9 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 
 	@Autowired
 	private MeasureEvaluateProvider measureEvaluateProvider;
+
+	@Autowired
+	CrProperties crProperties;
 
 	/**
 	 * Implements the <a href=
@@ -139,7 +150,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		 * TODO -
 		 * "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
 		 */
-
+		validateConfiguration(crProperties);
 		validateParameters(theRequestDetails);
 		Parameters result = newResource(Parameters.class, "care-gaps-report-" + UUID.randomUUID().toString());
 		List<Measure> measures = getMeasures(measureId, measureIdentifier, measureUrl);
@@ -166,6 +177,16 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		}
 
 		return result;
+	}
+
+	@Override
+	public void validateConfiguration(Object theConfiguration) {
+		if (validated(theConfiguration)) {
+			return;
+		}
+		ConfigurationUser.super.validateConfiguration(theConfiguration);
+		checkArgument(!Strings.isNullOrEmpty(((CrProperties) theConfiguration).getMeasureReport().getReporter()),
+				"The measure_report.reporter setting is required for the $care-gaps operation.");
 	}
 
 	public void validateParameters(RequestDetails theRequestDetails) {
@@ -239,11 +260,10 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		report.setId(UUID.randomUUID().toString());
 		report.setDate(new Date());
 		report.setImprovementNotation(improvementNotation);
-		// TODO: this is an org hack && requires an Organization to be in the ruler
-		// Resource org = getReportingOrganization();
-		// if (org != null) {
-		// report.setReporter(new Reference(org));
-		// }
+		Reference reporter = new Reference().setReference(crProperties.getMeasureReport().getReporter());
+		// TODO: figure out what this extension is for
+		reporter.addExtension(new Extension().setUrl(CARE_GAPS_MEASUREREPORT_REPORTER_EXTENSION));
+		report.setReporter(reporter);
 		report.setMeta(new Meta().addProfile(CARE_GAPS_REPORT_PROFILE));
 	}
 
@@ -268,7 +288,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 
 	private DetectedIssue getDetectedIssue(Patient patient, CanonicalType measure) {
 		return new DetectedIssueBuilder<DetectedIssue>(DetectedIssue.class)
-				.withProfile(CARE_GAPS_DETECTED_ISSUE_PROFILE)
+				.withProfile(CARE_GAPS_DETECTEDISSUE_PROFILE)
 				.withStatus(DetectedIssue.DetectedIssueStatus.FINAL.toString())
 				.withCode(new CodeableConceptSettings().add("http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP",
 						"Care Gaps"))
