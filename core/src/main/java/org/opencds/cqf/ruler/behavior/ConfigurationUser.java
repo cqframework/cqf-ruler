@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.behavior;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.HashSet;
@@ -8,11 +9,22 @@ import java.util.Set;
 public interface ConfigurationUser {
 	static final ConfigurationSet configurations = new ConfigurationSet();
 
-	default void validateConfiguration(Object theConfiguration) {
-		if (configurationValidated(theConfiguration)) {
-			return;
+	public abstract void validateConfiguration();
+
+	default ConfigurationUser validateConfiguration(Object theConfiguration, boolean theExpression, String theMessage) {
+		if (configurationValid(theConfiguration)) {
+			return this;
 		}
-		checkNotNull(theConfiguration);
+
+		try {
+			checkNotNull(theConfiguration);
+			checkArgument(theExpression, theMessage);
+		} catch (Exception e) {
+			setConfigurationInvalid(theConfiguration);
+			throw e;
+		}
+
+		return this;
 	}
 
 	default void setConfigurationValid(Object theConfiguration) {
@@ -23,7 +35,7 @@ public interface ConfigurationUser {
 		configurations.getConfigurations().remove(theConfiguration);
 	}
 
-	default boolean configurationValidated(Object theConfiguration) {
+	default boolean configurationValid(Object theConfiguration) {
 		return configurations.getConfigurations().contains(theConfiguration);
 	}
 

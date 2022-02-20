@@ -1,7 +1,5 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -150,7 +148,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		 * TODO -
 		 * "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
 		 */
-		validateConfiguration(crProperties);
+		validateConfiguration();
 		validateParameters(theRequestDetails);
 		Parameters result = newResource(Parameters.class, "care-gaps-report-" + UUID.randomUUID().toString());
 		List<Measure> measures = getMeasures(measureId, measureIdentifier, measureUrl);
@@ -180,21 +178,11 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	@Override
-	public void validateConfiguration(Object theConfiguration) {
-		if (configurationValidated(theConfiguration)) {
-			return;
-		}
-		ConfigurationUser.super.validateConfiguration(theConfiguration);
-
-		try {
-			checkArgument(!Strings.isNullOrEmpty(((CrProperties) theConfiguration).getMeasureReport().getReporter()),
-					"The measure_report.reporter setting is required for the $care-gaps operation.");
-		} catch (IllegalArgumentException e) {
-			ConfigurationUser.super.setConfigurationInvalid(theConfiguration);
-			throw e;
-		}
-
-		ConfigurationUser.super.setConfigurationValid(theConfiguration);
+	public void validateConfiguration() {
+		ConfigurationUser.super.validateConfiguration(crProperties,
+				!Strings.isNullOrEmpty(crProperties.getMeasureReport().getReporter()),
+				"The measure_report.reporter setting is required for the $care-gaps operation.")
+						.setConfigurationValid(crProperties);
 	}
 
 	public void validateParameters(RequestDetails theRequestDetails) {
