@@ -247,13 +247,13 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 												.getResourceType() + "/"
 												+ ((Resource) ((List<?>) res).get(0)).getIdElement().getIdPart()));
 							} else {
-								result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res));
+								result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res, theRequestDetails.getFhirServerBase()));
 							}
 						} else {
 							result.addParameter().setName("value").setValue(new StringType(res.toString()));
 						}
 					} else if (res instanceof Iterable) {
-						result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res));
+						result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res, theRequestDetails.getFhirServerBase()));
 					} else if (res instanceof Resource) {
 						if (executionResults != null && executionResults.equals("Summary")) {
 							result.addParameter().setName("value")
@@ -279,7 +279,7 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 			}
 		}
 
-		return bundler.bundle(results);
+		return bundler.bundle(results, theRequestDetails.getFhirServerBase());
 	}
 
 	private String resolveType(Object result) {
