@@ -150,6 +150,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		validateConfiguration();
 		validateParameters(theRequestDetails);
 
+		// TODO: filter by topic.
+		// TODO: filter by program.
 		List<Measure> measures = ensureMeasures(getMeasures(measureId, measureIdentifier, measureUrl));
 
 		List<Patient> patients;
@@ -165,8 +167,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				.forEach(
 						patient -> {
 							Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails,
-									periodStart, periodEnd,
-									topic, patient, status, measures, organization);
+									periodStart, periodEnd, patient, status, measures, organization);
 							if (patientParameter != null) {
 								result.addParameter(patientParameter);
 							}
@@ -183,6 +184,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 						.setConfigurationValid(crProperties);
 	}
 
+	@SuppressWarnings("squid:S1192") // warning for using the same string value more than 5 times
 	public void validateParameters(RequestDetails theRequestDetails) {
 		Operations.validatePeriod(theRequestDetails, "periodStart", "periodEnd");
 		Operations.validateCardinality(theRequestDetails, "subject", 0, 1);
@@ -220,6 +222,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		if (detectedIssues == null) {
 			detectedIssues = new ArrayList<>();
 		}
+
 		detectedIssues.add(detectedIssue);
 	}
 
@@ -227,14 +230,14 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		if (detectedIssues == null) {
 			return Collections.emptyList();
 		}
+
 		return detectedIssues;
 	}
 
+	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
 	private Parameters.ParametersParameterComponent patientReports(RequestDetails requestDetails, String periodStart,
-			String periodEnd,
-			List<String> topic, Patient patient, List<String> status, List<Measure> measures, String organization) {
-		// TODO: filter by topic. This may need to happen in ensureMeasures and be
-		// removed as a parameter here.
+			String periodEnd, Patient patient, List<String> status, List<Measure> measures, String organization) {
+		// TODO: add organization to report, if it exists.
 		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, status, measures);
 
 		if (reports.isEmpty()) {
