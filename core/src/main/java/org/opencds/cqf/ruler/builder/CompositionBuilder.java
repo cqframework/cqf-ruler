@@ -20,7 +20,7 @@ import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.valueset.CompositionStatusEnum;
 
-public class CompositionBuilder<T extends IBaseResource> extends ResourceBuilder<CompositionBuilder<T>, T> {
+public class CompositionBuilder<T extends IBaseResource> extends BaseElementBuilder<CompositionBuilder<T>, T> {
 
 	protected String myStatus;
 	protected String myTitle;

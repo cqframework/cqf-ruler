@@ -38,7 +38,7 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private SELF self() {
+	protected SELF self() {
 		return (SELF) this;
 	}
 

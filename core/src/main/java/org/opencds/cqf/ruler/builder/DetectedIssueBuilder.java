@@ -18,7 +18,7 @@ import org.hl7.fhir.r5.model.Enumerations.ObservationStatus;
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 
-public class DetectedIssueBuilder<T extends IBaseResource> extends ResourceBuilder<DetectedIssueBuilder<T>, T> {
+public class DetectedIssueBuilder<T extends IBaseResource> extends BaseElementBuilder<DetectedIssueBuilder<T>, T> {
 
 	protected String myStatus;
 	protected CodeableConceptSettings myCode;

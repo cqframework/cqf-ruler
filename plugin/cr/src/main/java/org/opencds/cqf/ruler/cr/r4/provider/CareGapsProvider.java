@@ -9,6 +9,9 @@ import java.util.regex.Pattern;
 import com.google.common.base.Strings;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CanonicalType;
@@ -31,7 +34,6 @@ import org.opencds.cqf.ruler.builder.CompositionBuilder;
 import org.opencds.cqf.ruler.builder.DetectedIssueBuilder;
 import org.opencds.cqf.ruler.cr.CrProperties;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Ids;
 import org.opencds.cqf.ruler.utility.Operations;
 import org.slf4j.Logger;
@@ -55,6 +57,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	public static final String CARE_GAPS_GAP_STATUS_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-gapStatus";
 	public static final String CARE_GAPS_GAP_STATUS_SYSTEM = "http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-status";
 	public static final String CARE_GAPS_MEASUREREPORT_REPORTER_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-reporterGroup";
+	public static final String MEASUREREPORT_IMPROVEMENT_NOTATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-improvement-notation";
+	public static final String MEASUREREPORT_MEASURE_POPULATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-population";
 
 	public enum CareGapsStatusCode {
 		OPEN_GAP("open-gap"), CLOSED_GAP("closed-gap"), NOT_APPLICABLE("not-applicable");
@@ -151,13 +155,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		validateConfiguration();
 		validateParameters(theRequestDetails);
 		Parameters result = newResource(Parameters.class, "care-gaps-report-" + UUID.randomUUID().toString());
-		List<Measure> measures = getMeasures(measureId, measureIdentifier, measureUrl);
-		measures.forEach(measure -> {
-			if (!measure.hasScoring()) {
-				ourLog.info("Measure does not specify a scoring so skipping: {}.", measure.getId());
-				measures.remove(measure);
-			}
-		});
+		List<Measure> measures = ensureMeasures(getMeasures(measureId, measureIdentifier, measureUrl));
 
 		if (!Strings.isNullOrEmpty(subject)) {
 			List<Patient> patients = getPatientListFromSubject(subject);
@@ -198,19 +196,32 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		Operations.validateAtLeastOne(theRequestDetails, "measureId", "measureIdentifier", "measureUrl");
 	}
 
+	private List<Measure> ensureMeasures(List<Measure> measures) {
+		measures.forEach(measure -> {
+			if (!measure.hasScoring()) {
+				ourLog.info("Measure does not specify a scoring so skipping: {}.", measure.getId());
+				measures.remove(measure);
+			}
+			if (!measure.hasImprovementNotation()) {
+				ourLog.info("Measure does not specify an improvement notation so skipping: {}.", measure.getId());
+				measures.remove(measure);
+			}
+		});
+		return measures;
+	}
+
 	private Parameters.ParametersParameterComponent patientReport(RequestDetails requestDetails, String periodStart,
 			String periodEnd,
 			List<String> topic, Patient patient, List<String> status, List<Measure> measures, String organization) {
 
-		// for each measure, query evaluatemeasure for the patient
+		List<DetectedIssue> detectedIssues = new ArrayList<>();
 
-		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, measures);
+		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, status, measures,
+				detectedIssues);
 
 		if (reports.isEmpty()) {
 			return null;
 		}
-
-		List<DetectedIssue> detectedIssues = getDetectedIssues(reports, patient);
 
 		// for each report, add to MR to result
 
@@ -224,7 +235,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	private List<MeasureReport> getReports(RequestDetails requestDetails, String periodStart,
-			String periodEnd, Patient patient, List<Measure> measures) {
+			String periodEnd, Patient patient, List<String> status, List<Measure> measures,
+			List<DetectedIssue> detectedIssues) {
 		List<MeasureReport> reports = new ArrayList<>();
 
 		MeasureReport report = null;
@@ -238,18 +250,37 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				continue;
 			}
 
-			initializeReport(report, measure.getImprovementNotation());
+			String gapStatus = getGapStatus(measure, report);
+			if (!status.contains(gapStatus)) {
+				continue;
+			}
+			detectedIssues.add(getDetectedIssue(patient, measure, gapStatus));
 
+			initializeReport(report, measure.getImprovementNotation());
 			reports.add(report);
 		}
 
 		return reports;
 	}
 
-	private List<DetectedIssue> getDetectedIssues(List<MeasureReport> reports, Patient patient) {
-		List<DetectedIssue> detectedIssues = new ArrayList<>();
-		reports.forEach(report -> detectedIssues.add(getDetectedIssue(patient, report.getMeasureElement())));
-		return detectedIssues;
+	private String getGapStatus(Measure measure, MeasureReport report) {
+		Pair<String, Boolean> inNumerator = new MutablePair<>("numerator", false);
+		report.getGroup().forEach(group -> group.getPopulation().forEach(population -> {
+			if (population.hasCode()
+					&& population.getCode().hasCoding(MEASUREREPORT_MEASURE_POPULATION_SYSTEM, inNumerator.getKey())
+					&& population.getCount() == 1) {
+				inNumerator.setValue(true);
+			}
+		}));
+
+		boolean isPositive = measure.getImprovementNotation().hasCoding(MEASUREREPORT_IMPROVEMENT_NOTATION_SYSTEM,
+				"increase");
+
+		if ((isPositive && !inNumerator.getValue()) || (!isPositive && inNumerator.getValue())) {
+			return "open-gap";
+		}
+
+		return "closed-gap";
 	}
 
 	private void initializeReport(MeasureReport report, CodeableConcept improvementNotation) {
@@ -282,7 +313,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				.build();
 	}
 
-	private DetectedIssue getDetectedIssue(Patient patient, CanonicalType measure) {
+	private DetectedIssue getDetectedIssue(Patient patient, Measure measure, String gapStatus) {
 		return new DetectedIssueBuilder<DetectedIssue>(DetectedIssue.class)
 				.withProfile(CARE_GAPS_DETECTEDISSUE_PROFILE)
 				.withStatus(DetectedIssue.DetectedIssueStatus.FINAL.toString())
@@ -290,7 +321,10 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 						"Care Gaps"))
 				.withPatient(Ids.simple(patient))
 				// TODO: check this is the correct value
-				.withEvidenceDetail(Canonicals.getUrl(measure))
+				.withEvidenceDetail(measure.getUrl())
+				.withExtension(new ImmutablePair<>(
+						CARE_GAPS_GAP_STATUS_EXTENSION,
+						new CodeableConceptSettings().add(CARE_GAPS_GAP_STATUS_SYSTEM, gapStatus, "Gap Status")))
 				.build();
 	}
 }

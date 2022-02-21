@@ -20,8 +20,8 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 		})
 public class CareGapsProviderIT extends RestIntegrationTest {
 
-	private static final String periodStartValid = "2022-01-01";
-	private static final String periodEndValid = "2022-01-15";
+	private static final String periodStartValid = "2019-01-01";
+	private static final String periodEndValid = "2019-12-31";
 	private static final String subjectPatientValid = "Patient/numer-EXM125";
 	private static final String subjectGroupValid = "Group/gic-gr-1";
 	private static final String statusValid = "open-gap";

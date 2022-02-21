@@ -6,7 +6,7 @@ import java.util.Date;
 
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 
-public class BundleBuilder<T extends IBaseBundle> extends ResourceBuilder<BundleBuilder<T>, T> {
+public class BundleBuilder<T extends IBaseBundle> extends BaseElementBuilder<BundleBuilder<T>, T> {
 
 	protected String myType;
 
