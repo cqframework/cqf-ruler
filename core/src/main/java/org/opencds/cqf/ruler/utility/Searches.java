@@ -43,7 +43,7 @@ public class Searches {
 	public static SearchParameterMap byName(String theName) {
 		checkNotNull(theName);
 
-		return byParam(NAME_SP, new StringParam(theName));
+		return byParam(NAME_SP, new StringParam(theName, true));
 	}
 
 	public static SearchParameterMap byName(String theName, String theVersion) {

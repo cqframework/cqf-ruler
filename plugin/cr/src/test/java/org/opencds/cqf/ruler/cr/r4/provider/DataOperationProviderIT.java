@@ -9,13 +9,11 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.uhn.fhir.context.FhirContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { DataOperationProviderIT.class,
 	CrConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
@@ -23,9 +21,8 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testR4LibraryDataRequirementsOperation() throws IOException {
-		String bundleAsText = stringFromResource( "DataReqLibraryTransactionBundle.json");
-		FhirContext fhirContext = FhirContext.forR4();
-		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleAsText);
+		String bundleAsText = stringFromResource( "DataRequirementsTransactionBundle.json");
+		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
 		Parameters params = new Parameters();
@@ -42,9 +39,8 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testR4MeasureDataRequirementsOperation() throws IOException {
-		String bundleAsText = stringFromResource( "Exm104MeasureBundle.json");
-		FhirContext fhirContext = FhirContext.forR4();
-		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleAsText);
+		String bundleAsText = stringFromResource( "Exm104FhirR4MeasureBundle.json");
+		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
 		Parameters params = new Parameters();

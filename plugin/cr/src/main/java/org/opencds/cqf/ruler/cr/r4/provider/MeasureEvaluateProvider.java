@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 
 import java.util.Map;
 
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Measure;
@@ -9,6 +10,7 @@ import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
@@ -29,7 +31,10 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 
 	@Autowired
-	private JpaDataProviderFactory dataProviderFactory;
+	private JpaDataProviderFactory jpaDataProviderFactory;
+
+	@Autowired
+	private DataProviderFactory dataProviderFactory;
 
 	@Autowired
 	private JpaLibraryContentProviderFactory libraryContentProviderFactory;
@@ -60,6 +65,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	 *                       received.
 	 * @param productLine    the productLine (e.g. Medicare, Medicaid, etc) to use
 	 *                       for the evaluation. This is a non-standard parameter.
+	 * @param additionalData the data bundle containing additional data
 	 * @return the calculated MeasureReport
 	 */
 	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
@@ -72,20 +78,21 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "subject") String subject,
 			@OperationParam(name = "practitioner") String practitioner,
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn,
-			@OperationParam(name = "productLine") String productLine) {
+			@OperationParam(name = "productLine") String productLine,
+			@OperationParam(name = "additionalData") Bundle additionalData) {
 
 		Measure measure = read(theId);
 		TerminologyProvider terminologyProvider = this.jpaTerminologyProviderFactory.create(requestDetails);
-		DataProvider dataProvider = this.dataProviderFactory.create(requestDetails, terminologyProvider);
+		DataProvider dataProvider = this.jpaDataProviderFactory.create(requestDetails, terminologyProvider);
 		LibraryContentProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 
 		org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor(
-				null, null, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
-				this.globalLibraryCache);
+			null, this.dataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
+			this.globalLibraryCache);
 
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
-				subject, null, lastReceivedOn, null, null, null, null);
+			subject, null, lastReceivedOn, null, null, null, additionalData);
 
 		if (productLine != null) {
 			Extension ext = new Extension();

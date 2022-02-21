@@ -15,17 +15,15 @@ import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.uhn.fhir.context.FhirContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { DataOperationProviderIT.class,
 	CrConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 public class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test
-	public void testDstu3LibraryDataRequirementsOperation() throws IOException {
-		String bundleAsText = stringFromResource( "DataReqLibraryTransactionBundle.json");
-		FhirContext fhirContext = FhirContext.forDstu3();
-		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleAsText);
+	public void testDstu3DataRequirementsOperation() throws IOException {
+		String bundleAsText = stringFromResource( "DataRequirementsTransactionBundle.json");
+		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
 		Parameters params = new Parameters();
@@ -44,8 +42,7 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 	@Test
 	public void testDstu3MeasureDataRequirementsOperation() throws IOException {
 		String bundleAsText = stringFromResource( "Exm105Dstu3MeasureBundle.json");
-		FhirContext fhirContext = FhirContext.forDstu3();
-		Bundle bundle = (Bundle)fhirContext.newJsonParser().parseResource(bundleAsText);
+		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
 		Parameters params = new Parameters();

@@ -5,9 +5,11 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.MeasureReport;
 import org.hl7.fhir.dstu3.model.StringType;
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
@@ -27,7 +29,10 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 
 	@Autowired
-	private JpaDataProviderFactory dataProviderFactory;
+	private JpaDataProviderFactory jpaDataProviderFactory;
+
+	@Autowired
+	private DataProviderFactory dataProviderFactory;
 
 	@Autowired
 	private JpaLibraryContentProviderFactory libraryContentProviderFactory;
@@ -56,6 +61,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	 *                       received.
 	 * @param productLine    the productLine (e.g. Medicare, Medicaid, etc) to use
 	 *                       for the evaluation. This is a non-standard parameter.
+	 * @param additionalData the data bundle containing additional data
 	 * @return the calculated MeasureReport
 	 */
 	@Description(shortDefinition = "$evaluate-measure", value = "Implements the <a href=\"https://www.hl7.org/fhir/operation-measure-evaluate-measure.html\">$evaluate-measure</a> operation found in the <a href=\"http://www.hl7.org/fhir/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>. This implementation aims to be compatible with the CQF IG.", example = "Measure/example/$evaluate-measure?subject=Patient/123&periodStart=2019&periodEnd=2020")
@@ -67,20 +73,21 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "patient") String patient,
 			@OperationParam(name = "practitioner") String practitioner,
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn,
-			@OperationParam(name = "productLine") String productLine) {
+			@OperationParam(name = "productLine") String productLine,
+		   @OperationParam(name = "additionalData") Bundle additionalData) {
 
 		Measure measure = read(theId);
 		TerminologyProvider terminologyProvider = this.jpaTerminologyProviderFactory.create(requestDetails);
-		DataProvider dataProvider = this.dataProviderFactory.create(requestDetails, terminologyProvider);
+		DataProvider dataProvider = this.jpaDataProviderFactory.create(requestDetails, terminologyProvider);
 		LibraryContentProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 
 		org.opencds.cqf.cql.evaluator.measure.dstu3.Dstu3MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.dstu3.Dstu3MeasureProcessor(
-				null, null, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
+				null, dataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
 				null);
 
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
-				patient, null, lastReceivedOn, null, null, null, null);
+				patient, null, lastReceivedOn, null, null, null, additionalData);
 
 		if (productLine != null) {
 			Extension ext = new Extension();
