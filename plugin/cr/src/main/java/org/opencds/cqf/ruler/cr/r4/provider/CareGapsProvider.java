@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +19,6 @@ import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Composition;
 import org.hl7.fhir.r4.model.DetectedIssue;
-import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Meta;
@@ -81,7 +81,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	private MeasureEvaluateProvider measureEvaluateProvider;
 
 	@Autowired
-	CrProperties crProperties;
+	private CrProperties crProperties;
 
 	/**
 	 * Implements the <a href=
@@ -214,14 +214,28 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		return newResource(Parameters.class, "care-gaps-report-" + UUID.randomUUID().toString());
 	}
 
+	private List<DetectedIssue> detectedIssues;
+
+	private void registerDetectedIssue(DetectedIssue detectedIssue) {
+		if (detectedIssues == null) {
+			detectedIssues = new ArrayList<>();
+		}
+		detectedIssues.add(detectedIssue);
+	}
+
+	private List<DetectedIssue> getRegisteredIssues() {
+		if (detectedIssues == null) {
+			return Collections.emptyList();
+		}
+		return detectedIssues;
+	}
+
 	private Parameters.ParametersParameterComponent patientReports(RequestDetails requestDetails, String periodStart,
 			String periodEnd,
 			List<String> topic, Patient patient, List<String> status, List<Measure> measures, String organization) {
-
-		List<DetectedIssue> detectedIssues = new ArrayList<>();
-
-		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, status, measures,
-				detectedIssues);
+		// TODO: filter by topic. This may need to happen in ensureMeasures and be
+		// removed as a parameter here.
+		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, status, measures);
 
 		if (reports.isEmpty()) {
 			return null;
@@ -237,8 +251,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	private List<MeasureReport> getReports(RequestDetails requestDetails, String periodStart,
-			String periodEnd, Patient patient, List<String> status, List<Measure> measures,
-			List<DetectedIssue> detectedIssues) {
+			String periodEnd, Patient patient, List<String> status, List<Measure> measures) {
 		List<MeasureReport> reports = new ArrayList<>();
 
 		MeasureReport report = null;
@@ -256,7 +269,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			if (!status.contains(gapStatus)) {
 				continue;
 			}
-			detectedIssues.add(getDetectedIssue(patient, measure, gapStatus));
+			registerDetectedIssue(getDetectedIssue(patient, measure, gapStatus));
 
 			initializeReport(report, measure.getImprovementNotation());
 			reports.add(report);
@@ -271,7 +284,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		report.setImprovementNotation(improvementNotation);
 		Reference reporter = new Reference().setReference(crProperties.getMeasureReport().getReporter());
 		// TODO: figure out what this extension is for
-		reporter.addExtension(new Extension().setUrl(CARE_GAPS_MEASUREREPORT_REPORTER_EXTENSION));
+		// reporter.addExtension(new
+		// Extension().setUrl(CARE_GAPS_MEASUREREPORT_REPORTER_EXTENSION));
 		report.setReporter(reporter);
 		report.setMeta(new Meta().addProfile(CARE_GAPS_REPORT_PROFILE));
 	}
