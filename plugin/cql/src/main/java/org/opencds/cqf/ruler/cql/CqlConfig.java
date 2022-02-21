@@ -3,15 +3,21 @@ package org.opencds.cqf.ruler.cql;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu2FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
+import org.opencds.cqf.cql.evaluator.builder.Constants;
+import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
+import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.EmbeddedFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.model.CacheAwareModelManager;
@@ -19,6 +25,7 @@ import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDecorator;
 import org.opencds.cqf.cql.evaluator.engine.execution.TranslatingLibraryLoader;
 import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
+import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.spring.fhir.adapter.AdapterConfiguration;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU2Condition;
@@ -109,6 +116,24 @@ public class CqlConfig {
 			}
 			return new CompositeDataProvider(modelResolver, provider);
 		};
+	}
+
+	@Bean
+	DataProviderFactory dataProviderFactory(FhirContext fhirContext, ModelResolver modelResolver) {
+		return new DataProviderFactory() {
+			@Override
+			public Triple<String, ModelResolver, RetrieveProvider> create(EndpointInfo endpointInfo) {
+				// to do implement endpoint
+				return null;
+			}
+
+			@Override
+			public Triple<String, ModelResolver, RetrieveProvider> create(IBaseBundle dataBundle) {
+				return Triple.of(Constants.FHIR_MODEL_URI, modelResolver,
+				new BundleRetrieveProvider(fhirContext, dataBundle));
+			}
+		};
+
 	}
 
 	@Bean
