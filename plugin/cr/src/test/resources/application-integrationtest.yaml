@@ -5,7 +5,7 @@ spring:
     allow-bean-definition-overriding: true
   batch:
     job:
-      enabled: false"
+      enabled: false
 
 hapi:
   fhir:
