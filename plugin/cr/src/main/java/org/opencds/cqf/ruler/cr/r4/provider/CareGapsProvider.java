@@ -322,7 +322,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				.withPatient(Ids.simple(patient))
 				// TODO: check this is the correct value
 				.withEvidenceDetail(measure.getUrl())
-				.withExtension(new ImmutablePair<>(
+				.withModifierExtension(new ImmutablePair<>(
 						CARE_GAPS_GAP_STATUS_EXTENSION,
 						new CodeableConceptSettings().add(CARE_GAPS_GAP_STATUS_SYSTEM, gapStatus, "Gap Status")))
 				.build();

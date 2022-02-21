@@ -11,7 +11,7 @@ import org.hl7.fhir.dstu2016may.model.CodeableConcept;
 import org.hl7.fhir.dstu2016may.model.Coding;
 import org.hl7.fhir.dstu2016may.model.Identifier;
 import org.hl7.fhir.dstu2016may.model.Reference;
-import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IDomainResource;
 import org.hl7.fhir.r5.model.Enumerations.CompositionStatus;
 
 import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
@@ -20,7 +20,7 @@ import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.valueset.CompositionStatusEnum;
 
-public class CompositionBuilder<T extends IBaseResource> extends BaseElementBuilder<CompositionBuilder<T>, T> {
+public class CompositionBuilder<T extends IDomainResource> extends DomainResourceBuilder<CompositionBuilder<T>, T> {
 
 	protected String myStatus;
 	protected String myTitle;

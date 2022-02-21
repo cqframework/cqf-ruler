@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.builder;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 
 	private final Class<T> myResourceClass;
 
-	protected List<String> myProfile;
+	private List<String> myProfile;
 
 	protected String myId = UUID.randomUUID().toString();
 	protected Pair<String, String> myIdentifier = new ImmutablePair<>(DEFAULT_IDENTIFIER_SYSTEM,
@@ -56,6 +57,13 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 		return "Organization/" + theOrganizationId;
 	}
 
+	protected List<String> getProfile() {
+		if (myProfile == null) {
+			return Collections.emptyList();
+		}
+		return myProfile;
+	}
+
 	public SELF withId(String theId) {
 		checkNotNull(theId);
 
@@ -65,14 +73,12 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 	}
 
 	public SELF withProfile(String theProfile) {
-		List<String> profile = new ArrayList<>();
-		profile.add(theProfile);
+		checkNotNull(theProfile);
 
-		return withProfile(profile);
-	}
-
-	public SELF withProfile(List<String> theProfile) {
-		myProfile = theProfile;
+		if (myProfile == null) {
+			myProfile = new ArrayList<>();
+		}
+		myProfile.add(theProfile);
 
 		return self();
 	}
@@ -116,7 +122,7 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 	}
 
 	private void addProfiles(T theResource) {
-		myProfile
+		getProfile()
 				.forEach(profile -> theResource.getMeta().addProfile(profile));
 	}
 
@@ -141,6 +147,7 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 
 	protected void initializeR4(T theResource) {
 		addProfiles(theResource);
+
 	}
 
 	protected void initializeR5(T theResource) {

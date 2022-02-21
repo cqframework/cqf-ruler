@@ -9,7 +9,7 @@ import java.util.List;
 import org.hl7.fhir.dstu2016may.model.Identifier;
 import org.hl7.fhir.dstu2016may.model.Reference;
 import org.hl7.fhir.dstu3.model.DetectedIssue.DetectedIssueStatus;
-import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IDomainResource;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DetectedIssue.DetectedIssueEvidenceComponent;
@@ -18,7 +18,7 @@ import org.hl7.fhir.r5.model.Enumerations.ObservationStatus;
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 
-public class DetectedIssueBuilder<T extends IBaseResource> extends BaseElementBuilder<DetectedIssueBuilder<T>, T> {
+public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResourceBuilder<DetectedIssueBuilder<T>, T> {
 
 	protected String myStatus;
 	protected CodeableConceptSettings myCode;
