@@ -102,6 +102,22 @@ Currently the cqf-ruler recognizes three types of plugin contributions:
 
 The plugin system is very simple and naive. Plugins are expected to be well-behaved, and not contribute any beans that may be invalid for the current server's configuration. This includes but is not limited to, multiple versions of plugins, mismatched FHIR versions, operation overrides, etc.
 
+#### Plugin Testing
+
+Integration Tests
+
+Configuration settings for integration tests should be implemented in the `properties` element of the `SpringBootTest` annotation.
+
+Example:
+
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { HelloWorldProviderIT.class,
+  HelloWorldConfig.class }, properties = {
+    "hapi.fhir.fhir_version=r4",
+    "hello.world.message=Howdy"
+  })
+```
+
 ## Coding Conventions
 
 The CQF Project has adopted an over-arching goal to contribute back to HAPI.
