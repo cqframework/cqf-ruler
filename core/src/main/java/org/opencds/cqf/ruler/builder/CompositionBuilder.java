@@ -19,17 +19,18 @@ import ca.uhn.fhir.model.dstu2.composite.CodingDt;
 import ca.uhn.fhir.model.dstu2.composite.IdentifierDt;
 import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 import ca.uhn.fhir.model.dstu2.valueset.CompositionStatusEnum;
+import ca.uhn.fhir.model.primitive.DateTimeDt;
 
 public class CompositionBuilder<T extends IDomainResource> extends DomainResourceBuilder<CompositionBuilder<T>, T> {
 
-	protected String myStatus;
-	protected String myTitle;
-	protected CodeableConceptSettings myType;
-	protected String mySubject;
-	protected String myAuthor;
-	protected String myCustodian;
+	private String myStatus;
+	private String myTitle;
+	private CodeableConceptSettings myType;
+	private String mySubject;
+	private String myAuthor;
+	private String myCustodian;
 
-	protected Date myDate = new Date();
+	private Date myDate = new Date();
 
 	public CompositionBuilder(Class<T> theResourceClass) {
 		super(theResourceClass);
@@ -75,6 +76,8 @@ public class CompositionBuilder<T extends IDomainResource> extends DomainResourc
 	}
 
 	public CompositionBuilder<T> withDate(Date theDate) {
+		checkNotNull(theDate);
+
 		myDate = theDate;
 
 		return this;
@@ -124,7 +127,8 @@ public class CompositionBuilder<T extends IDomainResource> extends DomainResourc
 		author.add(new ResourceReferenceDt(myAuthor));
 
 		composition
-				.setIdentifier(new IdentifierDt(myIdentifier.getKey(), myIdentifier.getValue()))
+				.setDate(new DateTimeDt(myDate))
+				.setIdentifier(new IdentifierDt(getIdentifier().getKey(), getIdentifier().getValue()))
 				.setStatus(CompositionStatusEnum.forCode(myStatus))
 				.setSubject(new ResourceReferenceDt(mySubject))
 				.setTitle(myTitle)
@@ -143,7 +147,8 @@ public class CompositionBuilder<T extends IDomainResource> extends DomainResourc
 		org.hl7.fhir.dstu2016may.model.Composition composition = (org.hl7.fhir.dstu2016may.model.Composition) theResource;
 
 		composition
-				.setIdentifier(new Identifier().setSystem(myIdentifier.getKey()).setValue(myIdentifier.getValue()))
+				.setDate(myDate)
+				.setIdentifier(new Identifier().setSystem(getIdentifier().getKey()).setValue(getIdentifier().getValue()))
 				.setStatus(org.hl7.fhir.dstu2016may.model.Composition.CompositionStatus.valueOf(myStatus))
 				.setSubject(new Reference(mySubject))
 				.setTitle(myTitle)
@@ -162,8 +167,9 @@ public class CompositionBuilder<T extends IDomainResource> extends DomainResourc
 		org.hl7.fhir.dstu2.model.Composition composition = (org.hl7.fhir.dstu2.model.Composition) theResource;
 
 		composition
-				.setIdentifier(new org.hl7.fhir.dstu2.model.Identifier().setSystem(myIdentifier.getKey())
-						.setValue(myIdentifier.getValue()))
+				.setDate(myDate)
+				.setIdentifier(new org.hl7.fhir.dstu2.model.Identifier().setSystem(getIdentifier().getKey())
+						.setValue(getIdentifier().getValue()))
 				.setStatus(org.hl7.fhir.dstu2.model.Composition.CompositionStatus.valueOf(myStatus))
 				.setSubject(new org.hl7.fhir.dstu2.model.Reference(mySubject))
 				.setTitle(myTitle)
@@ -182,8 +188,9 @@ public class CompositionBuilder<T extends IDomainResource> extends DomainResourc
 		org.hl7.fhir.dstu3.model.Composition composition = (org.hl7.fhir.dstu3.model.Composition) theResource;
 
 		composition
-				.setIdentifier(new org.hl7.fhir.dstu3.model.Identifier().setSystem(myIdentifier.getKey())
-						.setValue(myIdentifier.getValue()))
+				.setDate(myDate)
+				.setIdentifier(new org.hl7.fhir.dstu3.model.Identifier().setSystem(getIdentifier().getKey())
+						.setValue(getIdentifier().getValue()))
 				.setStatus(org.hl7.fhir.dstu3.model.Composition.CompositionStatus.valueOf(myStatus))
 				.setSubject(new org.hl7.fhir.dstu3.model.Reference(mySubject))
 				.setTitle(myTitle)
@@ -202,8 +209,9 @@ public class CompositionBuilder<T extends IDomainResource> extends DomainResourc
 		org.hl7.fhir.r4.model.Composition composition = (org.hl7.fhir.r4.model.Composition) theResource;
 
 		composition
-				.setIdentifier(new org.hl7.fhir.r4.model.Identifier().setSystem(myIdentifier.getKey())
-						.setValue(myIdentifier.getValue()))
+				.setDate(myDate)
+				.setIdentifier(new org.hl7.fhir.r4.model.Identifier().setSystem(getIdentifier().getKey())
+						.setValue(getIdentifier().getValue()))
 				.setStatus(org.hl7.fhir.r4.model.Composition.CompositionStatus.valueOf(myStatus))
 				.setSubject(new org.hl7.fhir.r4.model.Reference(mySubject))
 				.setTitle(myTitle)
@@ -222,8 +230,9 @@ public class CompositionBuilder<T extends IDomainResource> extends DomainResourc
 		org.hl7.fhir.r5.model.Composition composition = (org.hl7.fhir.r5.model.Composition) theResource;
 
 		composition
-				.setIdentifier(new org.hl7.fhir.r5.model.Identifier().setSystem(myIdentifier.getKey())
-						.setValue(myIdentifier.getValue()))
+				.setDate(myDate)
+				.setIdentifier(new org.hl7.fhir.r5.model.Identifier().setSystem(getIdentifier().getKey())
+						.setValue(getIdentifier().getValue()))
 				.setStatus(CompositionStatus.valueOf(myStatus))
 				.setSubject(new org.hl7.fhir.r5.model.Reference(mySubject))
 				.setTitle(myTitle)

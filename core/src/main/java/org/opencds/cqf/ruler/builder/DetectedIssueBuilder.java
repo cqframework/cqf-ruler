@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.hl7.fhir.dstu2016may.model.Identifier;
@@ -20,11 +21,10 @@ import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
 
 public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResourceBuilder<DetectedIssueBuilder<T>, T> {
 
-	protected String myStatus;
-	protected CodeableConceptSettings myCode;
-	protected String myPatient;
-
-	protected List<String> myEvidenceDetail = new ArrayList<>();
+	private String myStatus;
+	private CodeableConceptSettings myCode;
+	private String myPatient;
+	private List<String> myEvidenceDetail;
 
 	public DetectedIssueBuilder(Class<T> theResourceClass) {
 		super(theResourceClass);
@@ -34,12 +34,28 @@ public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResou
 		super(theResourceClass, theId);
 	}
 
-	public DetectedIssueBuilder(Class<T> theResourceClass, String theId, String theStatus,
-			List<String> theEvidenceDetail) {
+	public DetectedIssueBuilder(Class<T> theResourceClass, String theId, String theStatus, String theEvidenceDetail) {
 		super(theResourceClass, theId);
 		checkNotNull(theStatus, theEvidenceDetail);
+
 		myStatus = theStatus;
-		myEvidenceDetail = theEvidenceDetail;
+		addEvidenceDetail(theEvidenceDetail);
+	}
+
+	private void addEvidenceDetail(String theEvidenceDetail) {
+		if (myEvidenceDetail == null) {
+			myEvidenceDetail = new ArrayList<>();
+		}
+
+		myEvidenceDetail.add(theEvidenceDetail);
+	}
+
+	private List<String> getEvidenceDetails() {
+		if (myEvidenceDetail == null) {
+			return Collections.emptyList();
+		}
+
+		return myEvidenceDetail;
 	}
 
 	public DetectedIssueBuilder<T> withStatus(String theStatus) {
@@ -63,16 +79,9 @@ public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResou
 	}
 
 	public DetectedIssueBuilder<T> withEvidenceDetail(String theEvidenceDetail) {
-		List<String> evidenceDetail = new ArrayList<>();
-		evidenceDetail.add(theEvidenceDetail);
-		withEvidenceDetail(evidenceDetail);
-
-		return this;
-	}
-
-	public DetectedIssueBuilder<T> withEvidenceDetail(List<String> theEvidenceDetail) {
 		checkNotNull(theEvidenceDetail);
-		myEvidenceDetail = theEvidenceDetail;
+
+		addEvidenceDetail(theEvidenceDetail);
 
 		return this;
 	}
@@ -95,9 +104,9 @@ public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResou
 		ca.uhn.fhir.model.dstu2.resource.DetectedIssue detectedIssue = (ca.uhn.fhir.model.dstu2.resource.DetectedIssue) theResource;
 
 		detectedIssue
-				.setIdentifier(new IdentifierDt(myIdentifier.getKey(), myIdentifier.getValue()))
+				.setIdentifier(new IdentifierDt(getIdentifier().getKey(), getIdentifier().getValue()))
 				.setPatient(new ResourceReferenceDt(myPatient));
-		myEvidenceDetail.forEach(detectedIssue::setReference);
+		getEvidenceDetails().forEach(detectedIssue::setReference);
 	}
 
 	@Override
@@ -106,9 +115,9 @@ public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResou
 		org.hl7.fhir.dstu2016may.model.DetectedIssue detectedIssue = (org.hl7.fhir.dstu2016may.model.DetectedIssue) theResource;
 
 		detectedIssue
-				.setIdentifier(new Identifier().setSystem(myIdentifier.getKey()).setValue(myIdentifier.getValue()))
+				.setIdentifier(new Identifier().setSystem(getIdentifier().getKey()).setValue(getIdentifier().getValue()))
 				.setPatient(new Reference(myPatient));
-		myEvidenceDetail.forEach(detectedIssue::setReference);
+		getEvidenceDetails().forEach(detectedIssue::setReference);
 	}
 
 	@Override
@@ -117,10 +126,10 @@ public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResou
 		org.hl7.fhir.dstu2.model.DetectedIssue detectedIssue = (org.hl7.fhir.dstu2.model.DetectedIssue) theResource;
 
 		detectedIssue
-				.setIdentifier(new org.hl7.fhir.dstu2.model.Identifier().setSystem(myIdentifier.getKey())
-						.setValue(myIdentifier.getValue()))
+				.setIdentifier(new org.hl7.fhir.dstu2.model.Identifier().setSystem(getIdentifier().getKey())
+						.setValue(getIdentifier().getValue()))
 				.setPatient(new org.hl7.fhir.dstu2.model.Reference(myPatient));
-		myEvidenceDetail.forEach(detectedIssue::setReference);
+		getEvidenceDetails().forEach(detectedIssue::setReference);
 	}
 
 	@Override
@@ -129,11 +138,11 @@ public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResou
 		org.hl7.fhir.dstu3.model.DetectedIssue detectedIssue = (org.hl7.fhir.dstu3.model.DetectedIssue) theResource;
 
 		detectedIssue
-				.setIdentifier(new org.hl7.fhir.dstu3.model.Identifier().setSystem(myIdentifier.getKey())
-						.setValue(myIdentifier.getValue()))
+				.setIdentifier(new org.hl7.fhir.dstu3.model.Identifier().setSystem(getIdentifier().getKey())
+						.setValue(getIdentifier().getValue()))
 				.setPatient(new org.hl7.fhir.dstu3.model.Reference(myPatient))
 				.setStatus(DetectedIssueStatus.valueOf(myStatus));
-		myEvidenceDetail.forEach(detectedIssue::setReference);
+		getEvidenceDetails().forEach(detectedIssue::setReference);
 	}
 
 	@Override
@@ -142,7 +151,8 @@ public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResou
 		org.hl7.fhir.r4.model.DetectedIssue detectedIssue = (org.hl7.fhir.r4.model.DetectedIssue) theResource;
 
 		List<org.hl7.fhir.r4.model.Identifier> identifier = new ArrayList<>();
-		identifier.add(new org.hl7.fhir.r4.model.Identifier().setSystem(myIdentifier.getKey()));
+		identifier.add(new org.hl7.fhir.r4.model.Identifier().setSystem(getIdentifier().getKey())
+				.setValue(getIdentifier().getValue()));
 
 		detectedIssue
 				.setIdentifier(identifier)
@@ -153,7 +163,7 @@ public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResou
 								.setSystem(getCodeSetting().getSystem())
 								.setCode(getCodeSetting().getCode())
 								.setDisplay(getCodeSetting().getDisplay())));
-		myEvidenceDetail.forEach(evidence -> detectedIssue.addEvidence(
+		getEvidenceDetails().forEach(evidence -> detectedIssue.addEvidence(
 				new DetectedIssueEvidenceComponent().addDetail(new org.hl7.fhir.r4.model.Reference(evidence))));
 	}
 
@@ -163,7 +173,8 @@ public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResou
 		org.hl7.fhir.r5.model.DetectedIssue detectedIssue = (org.hl7.fhir.r5.model.DetectedIssue) theResource;
 
 		List<org.hl7.fhir.r5.model.Identifier> identifier = new ArrayList<>();
-		identifier.add(new org.hl7.fhir.r5.model.Identifier().setSystem(myIdentifier.getKey()));
+		identifier.add(new org.hl7.fhir.r5.model.Identifier().setSystem(getIdentifier().getKey())
+				.setValue(getIdentifier().getValue()));
 
 		detectedIssue
 				.setIdentifier(identifier)
@@ -174,7 +185,7 @@ public class DetectedIssueBuilder<T extends IDomainResource> extends DomainResou
 								.setSystem(getCodeSetting().getSystem())
 								.setCode(getCodeSetting().getCode())
 								.setDisplay(getCodeSetting().getDisplay())));
-		myEvidenceDetail.forEach(evidence -> detectedIssue.addEvidence(
+		getEvidenceDetails().forEach(evidence -> detectedIssue.addEvidence(
 				new org.hl7.fhir.r5.model.DetectedIssue.DetectedIssueEvidenceComponent()
 						.addDetail(new org.hl7.fhir.r5.model.Reference(evidence))));
 	}

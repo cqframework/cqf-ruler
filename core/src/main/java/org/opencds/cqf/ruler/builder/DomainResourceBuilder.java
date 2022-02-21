@@ -24,14 +24,28 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 		super(theResourceClass, theId);
 	}
 
-	protected List<Pair<String, CodeableConceptSettings>> getExtension() {
+	private void addExtension(Pair<String, CodeableConceptSettings> theExtension) {
+		if (myExtension == null) {
+			myExtension = new ArrayList<>();
+		}
+		myExtension.add(theExtension);
+	}
+
+	private List<Pair<String, CodeableConceptSettings>> getExtensions() {
 		if (myExtension == null) {
 			return Collections.emptyList();
 		}
 		return myExtension;
 	}
 
-	protected List<Pair<String, CodeableConceptSettings>> getModifierExtension() {
+	private void addModifierExtension(Pair<String, CodeableConceptSettings> theModifierExtension) {
+		if (myModifierExtension == null) {
+			myModifierExtension = new ArrayList<>();
+		}
+		myModifierExtension.add(theModifierExtension);
+	}
+
+	private List<Pair<String, CodeableConceptSettings>> getModifierExtensions() {
 		if (myModifierExtension == null) {
 			return Collections.emptyList();
 		}
@@ -41,10 +55,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 	public SELF withExtension(Pair<String, CodeableConceptSettings> theExtension) {
 		checkNotNull(theExtension);
 
-		if (myExtension == null) {
-			myExtension = new ArrayList<>();
-		}
-		myExtension.add(theExtension);
+		addExtension(theExtension);
 
 		return self();
 	}
@@ -52,10 +63,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 	public SELF withModifierExtension(Pair<String, CodeableConceptSettings> theModifierExtension) {
 		checkNotNull(theModifierExtension);
 
-		if (myModifierExtension == null) {
-			myModifierExtension = new ArrayList<>();
-		}
-		myModifierExtension.add(theModifierExtension);
+		addModifierExtension(theModifierExtension);
 
 		return self();
 	}
@@ -70,7 +78,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 	protected void initializeDstu2(T theResource) {
 		super.initializeDstu2(theResource);
 
-		getExtension()
+		getExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt codeableConcept = new ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt()
@@ -83,7 +91,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 							extension.setValue(codeableConcept);
 						}));
 
-		getModifierExtension()
+		getModifierExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt codeableConcept = new ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt()
@@ -101,7 +109,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 	protected void initializeDstu2_1(T theResource) {
 		super.initializeDstu2_1(theResource);
 
-		getExtension()
+		getExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							org.hl7.fhir.dstu2016may.model.CodeableConcept codeableConcept = new org.hl7.fhir.dstu2016may.model.CodeableConcept()
@@ -114,7 +122,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 							extension.setValue(codeableConcept);
 						}));
 
-		getModifierExtension()
+		getModifierExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							org.hl7.fhir.dstu2016may.model.CodeableConcept codeableConcept = new org.hl7.fhir.dstu2016may.model.CodeableConcept()
@@ -133,7 +141,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 	protected void initializeDstu2_HL7Org(T theResource) {
 		super.initializeDstu2_HL7Org(theResource);
 
-		getExtension()
+		getExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							org.hl7.fhir.dstu2.model.CodeableConcept codeableConcept = new org.hl7.fhir.dstu2.model.CodeableConcept()
@@ -146,7 +154,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 							extension.setValue(codeableConcept);
 						}));
 
-		getModifierExtension()
+		getModifierExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							org.hl7.fhir.dstu2.model.CodeableConcept codeableConcept = new org.hl7.fhir.dstu2.model.CodeableConcept()
@@ -164,7 +172,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 	protected void initializeDstu3(T theResource) {
 		super.initializeDstu3(theResource);
 
-		getExtension()
+		getExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							org.hl7.fhir.dstu3.model.CodeableConcept codeableConcept = new org.hl7.fhir.dstu3.model.CodeableConcept()
@@ -177,7 +185,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 							extension.setValue(codeableConcept);
 						}));
 
-		getModifierExtension()
+		getModifierExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							org.hl7.fhir.dstu3.model.CodeableConcept codeableConcept = new org.hl7.fhir.dstu3.model.CodeableConcept()
@@ -195,7 +203,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 	protected void initializeR4(T theResource) {
 		super.initializeR4(theResource);
 
-		getExtension()
+		getExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							org.hl7.fhir.r4.model.CodeableConcept codeableConcept = new org.hl7.fhir.r4.model.CodeableConcept()
@@ -208,7 +216,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 							extension.setValue(codeableConcept);
 						}));
 
-		getModifierExtension()
+		getModifierExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							org.hl7.fhir.r4.model.CodeableConcept codeableConcept = new org.hl7.fhir.r4.model.CodeableConcept()
@@ -226,7 +234,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 	protected void initializeR5(T theResource) {
 		super.initializeR5(theResource);
 
-		getExtension()
+		getExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							org.hl7.fhir.r5.model.CodeableConcept codeableConcept = new org.hl7.fhir.r5.model.CodeableConcept()
@@ -239,7 +247,7 @@ public abstract class DomainResourceBuilder<SELF, T extends IDomainResource>
 							extension.setValue(codeableConcept);
 						}));
 
-		getModifierExtension()
+		getModifierExtensions()
 				.forEach(extensionSetting -> extensionSetting.getValue().getCodingSettings()
 						.forEach(coding -> {
 							org.hl7.fhir.r5.model.CodeableConcept codeableConcept = new org.hl7.fhir.r5.model.CodeableConcept()

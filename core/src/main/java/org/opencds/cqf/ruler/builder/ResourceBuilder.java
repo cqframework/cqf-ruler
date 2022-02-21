@@ -22,8 +22,8 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 
 	private List<String> myProfile;
 
-	protected String myId = UUID.randomUUID().toString();
-	protected Pair<String, String> myIdentifier = new ImmutablePair<>(DEFAULT_IDENTIFIER_SYSTEM,
+	private String myId = UUID.randomUUID().toString();
+	private Pair<String, String> myIdentifier = new ImmutablePair<>(DEFAULT_IDENTIFIER_SYSTEM,
 			DEFAULT_IDENTIFIER_VALUE_PREFIX + UUID.randomUUID().toString());
 
 	protected ResourceBuilder(Class<T> theResourceClass) {
@@ -57,11 +57,28 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 		return "Organization/" + theOrganizationId;
 	}
 
-	protected List<String> getProfile() {
+	private void addProfile(String profile) {
+		if (myProfile == null) {
+			myProfile = new ArrayList<>();
+		}
+
+		myProfile.add(profile);
+	}
+
+	protected List<String> getProfiles() {
 		if (myProfile == null) {
 			return Collections.emptyList();
 		}
+
 		return myProfile;
+	}
+
+	protected String getId() {
+		return myId;
+	}
+
+	protected Pair<String, String> getIdentifier() {
+		return myIdentifier;
 	}
 
 	public SELF withId(String theId) {
@@ -75,10 +92,7 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 	public SELF withProfile(String theProfile) {
 		checkNotNull(theProfile);
 
-		if (myProfile == null) {
-			myProfile = new ArrayList<>();
-		}
-		myProfile.add(theProfile);
+		addProfile(theProfile);
 
 		return self();
 	}
@@ -122,7 +136,7 @@ public abstract class ResourceBuilder<SELF, T extends IBaseResource> {
 	}
 
 	private void addProfiles(T theResource) {
-		getProfile()
+		getProfiles()
 				.forEach(profile -> theResource.getMeta().addProfile(profile));
 	}
 
