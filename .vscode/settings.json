@@ -66,6 +66,6 @@
 		"**/.settings": true,
 		"**/.factorypath": true
 	},
-	"files.eol": "\n",
+	"files.eol": "\r\n",
 	"editor.formatOnSave": true
 }
