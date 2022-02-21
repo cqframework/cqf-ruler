@@ -16,7 +16,9 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CareGapsProviderIT.class,
 		CrConfig.class }, properties = {
-				"hapi.fhir.fhir_version=r4",
+				"hapi.fhir.fhir_version=r4", "hapi.fhir.enforce_referential_integrity_on_write=false",
+				"hapi.fhir.enforce_referential_integrity_on_delete=false", "hapi.fhir.cr.enabled=true",
+				"hapi.fhir.cr.measure_report.reporter=testone-org"
 		})
 public class CareGapsProviderIT extends RestIntegrationTest {
 
