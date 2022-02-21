@@ -147,30 +147,30 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			@OperationParam(name = "measureUrl") List<CanonicalType> measureUrl,
 			@OperationParam(name = "program") List<String> program) {
 
-		/*
-		 * TODO - topic should allow many and be a union of them
-		 * TODO -
-		 * "The Server needs to make sure that practitioner is authorized to get the gaps in care report for and know what measures the practitioner are eligible or qualified."
-		 */
 		validateConfiguration();
 		validateParameters(theRequestDetails);
-		Parameters result = newResource(Parameters.class, "care-gaps-report-" + UUID.randomUUID().toString());
+
 		List<Measure> measures = ensureMeasures(getMeasures(measureId, measureIdentifier, measureUrl));
 
+		List<Patient> patients;
 		if (!Strings.isNullOrEmpty(subject)) {
-			List<Patient> patients = getPatientListFromSubject(subject);
-			(patients)
-					.forEach(
-							patient -> {
-								Parameters.ParametersParameterComponent patientParameter = patientReport(theRequestDetails,
-										periodStart, periodEnd,
-										topic, patient, status, measures, organization);
-								result.addParameter(patientParameter);
-							});
+			patients = getPatientListFromSubject(subject);
 		} else {
 			// TODO: implement non subject parameters (practitioner and organization)
 			throw new NotImplementedException("Non subject parameters have not been implemented.");
 		}
+
+		Parameters result = initializeResult();
+		(patients)
+				.forEach(
+						patient -> {
+							Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails,
+									periodStart, periodEnd,
+									topic, patient, status, measures, organization);
+							if (patientParameter != null) {
+								result.addParameter(patientParameter);
+							}
+						});
 
 		return result;
 	}
@@ -210,7 +210,11 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		return measures;
 	}
 
-	private Parameters.ParametersParameterComponent patientReport(RequestDetails requestDetails, String periodStart,
+	private Parameters initializeResult() {
+		return newResource(Parameters.class, "care-gaps-report-" + UUID.randomUUID().toString());
+	}
+
+	private Parameters.ParametersParameterComponent patientReports(RequestDetails requestDetails, String periodStart,
 			String periodEnd,
 			List<String> topic, Patient patient, List<String> status, List<Measure> measures, String organization) {
 
@@ -225,13 +229,11 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 
 		// for each report, add to MR to result
 
-		Bundle bundle = getBundle();
+		Bundle reportBundle = getBundle();
 
 		Composition composition = getComposition(patient, organization);
 
-		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
-
-		return patientParameter;
+		return initializePatientParameter().setResource(reportBundle);
 	}
 
 	private List<MeasureReport> getReports(RequestDetails requestDetails, String periodStart,
@@ -263,6 +265,25 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		return reports;
 	}
 
+	private void initializeReport(MeasureReport report, CodeableConcept improvementNotation) {
+		report.setId(UUID.randomUUID().toString());
+		report.setDate(new Date());
+		report.setImprovementNotation(improvementNotation);
+		Reference reporter = new Reference().setReference(crProperties.getMeasureReport().getReporter());
+		// TODO: figure out what this extension is for
+		reporter.addExtension(new Extension().setUrl(CARE_GAPS_MEASUREREPORT_REPORTER_EXTENSION));
+		report.setReporter(reporter);
+		report.setMeta(new Meta().addProfile(CARE_GAPS_REPORT_PROFILE));
+	}
+
+	private Parameters.ParametersParameterComponent initializePatientParameter() {
+		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent()
+				.setName("return");
+		patientParameter.setId(UUID.randomUUID().toString());
+
+		return patientParameter;
+	}
+
 	private String getGapStatus(Measure measure, MeasureReport report) {
 		Pair<String, Boolean> inNumerator = new MutablePair<>("numerator", false);
 		report.getGroup().forEach(group -> group.getPopulation().forEach(population -> {
@@ -281,17 +302,6 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		}
 
 		return "closed-gap";
-	}
-
-	private void initializeReport(MeasureReport report, CodeableConcept improvementNotation) {
-		report.setId(UUID.randomUUID().toString());
-		report.setDate(new Date());
-		report.setImprovementNotation(improvementNotation);
-		Reference reporter = new Reference().setReference(crProperties.getMeasureReport().getReporter());
-		// TODO: figure out what this extension is for
-		reporter.addExtension(new Extension().setUrl(CARE_GAPS_MEASUREREPORT_REPORTER_EXTENSION));
-		report.setReporter(reporter);
-		report.setMeta(new Meta().addProfile(CARE_GAPS_REPORT_PROFILE));
 	}
 
 	private Bundle getBundle() {
