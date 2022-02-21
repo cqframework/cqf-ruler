@@ -179,7 +179,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	@Override
 	public void validateConfiguration() {
 		ConfigurationUser.super.validateConfiguration(crProperties,
-				!Strings.isNullOrEmpty(crProperties.getMeasureReport().getReporter()),
+				(crProperties.getMeasureReport() != null)
+						&& !Strings.isNullOrEmpty(crProperties.getMeasureReport().getReporter()),
 				"The measure_report.reporter setting is required for the $care-gaps operation.")
 						.setConfigurationValid(crProperties);
 	}
