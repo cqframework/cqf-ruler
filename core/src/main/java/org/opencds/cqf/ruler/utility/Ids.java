@@ -12,7 +12,8 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 
 public class Ids {
 
-	private Ids() {}
+	private Ids() {
+	}
 
 	/**
 	 * Creates the appropriate IIdType for a given ResourceTypeClass
@@ -77,7 +78,7 @@ public class Ids {
 	 * @param <IdType>           an IIdType type
 	 * @param theFhirVersionEnum the FHIR version to generate an Id for
 	 * @param theResourceType    the type of the Resource to create an Id for
-	 * @param theIdPart              the String representation of the Id to generate
+	 * @param theIdPart          the String representation of the Id to generate
 	 * @return the id
 	 */
 	public static <IdType extends IIdType> IdType newId(FhirVersionEnum theFhirVersionEnum, String theResourceType,
@@ -105,8 +106,12 @@ public class Ids {
 	}
 
 	/**
-	 * The gets the "simple" Id for the Resource, without qualifiers or versions. For example, "Patient/123".
-	 * <p>This is shorthand for resource.getIdElement().toUnqualifiedVersionless().getValue()
+	 * The gets the "simple" Id for the Resource, without qualifiers or versions.
+	 * For example, "Patient/123".
+	 * <p>
+	 * This is shorthand for
+	 * resource.getIdElement().toUnqualifiedVersionless().getValue()
+	 * 
 	 * @param resource the Resource to get the Id for
 	 * @return the simple Id
 	 */
@@ -117,9 +122,12 @@ public class Ids {
 		return simple(resource.getIdElement());
 	}
 
-		/**
-	 * The gets the "simple" Id for the Id, without qualifiers or versions. For example, "Patient/123".
-	 * <p>This is shorthand for id.toUnqualifiedVersionless().getValue()
+	/**
+	 * The gets the "simple" Id for the Id, without qualifiers or versions. For
+	 * example, "Patient/123".
+	 * <p>
+	 * This is shorthand for id.toUnqualifiedVersionless().getValue()
+	 * 
 	 * @param id the IIdType to get the Id for
 	 * @return the simple Id
 	 */
@@ -129,6 +137,40 @@ public class Ids {
 		checkArgument(id.hasIdPart());
 
 		return id.toUnqualifiedVersionless().getValue();
+	}
+
+	/**
+	 * The gets the "simple" Id part for the Id, without qualifiers or versions or
+	 * the resource Prefix. For example, "123".
+	 * <p>
+	 * This is shorthand for
+	 * resource.getIdElement().toUnqualifiedVersionless().getIdPart()
+	 * 
+	 * @param resource the Resource to get the Id for
+	 * @return the simple Id part
+	 */
+	public static String simplePart(IBaseResource resource) {
+		checkNotNull(resource);
+		checkArgument(resource.getIdElement() != null);
+
+		return simplePart(resource.getIdElement());
+	}
+
+	/**
+	 * The gets the "simple" Id part for the Id, without qualifiers or versions or
+	 * the resource Prefix. For example, "123".
+	 * <p>
+	 * This is shorthand for id.toUnqualifiedVersionless().getIdPart()
+	 * 
+	 * @param id the IIdType to get the Id for
+	 * @return the simple Id part
+	 */
+	public static String simplePart(IIdType id) {
+		checkNotNull(id);
+		checkArgument(id.hasResourceType());
+		checkArgument(id.hasIdPart());
+
+		return id.toUnqualifiedVersionless().getIdPart();
 	}
 
 	/**

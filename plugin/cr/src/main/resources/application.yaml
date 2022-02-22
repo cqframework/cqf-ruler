@@ -1,4 +1,7 @@
 hapi:
-  fhir:
-    cr:
-      enabled: true
+   fhir:
+      cr:
+         enabled: true
+         measure_report:
+            care_gaps_reporter: Organization/alphora
+            care_gaps_composition_section_author: Organization/alphora

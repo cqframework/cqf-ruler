@@ -3,13 +3,18 @@ package org.opencds.cqf.ruler.utility;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.param.StringParam;
+import ca.uhn.fhir.rest.param.TokenOrListParam;
 import ca.uhn.fhir.rest.param.TokenParam;
+import ca.uhn.fhir.rest.param.UriOrListParam;
 import ca.uhn.fhir.rest.param.UriParam;
 
 public class Searches {
@@ -66,6 +71,19 @@ public class Searches {
 		return byParam(URL_SP, new UriParam(theUrl));
 	}
 
+	// TODO: versioned version
+	public static SearchParameterMap byUrls(List<String> theUrls) {
+		checkNotNull(theUrls);
+		UriOrListParam params = new UriOrListParam();
+
+		theUrls.forEach(theUrl -> {
+			checkNotNull(theUrl);
+			params.addOr(new UriParam(theUrl));
+		});
+
+		return sync().add(ID_SP, params);
+	}
+
 	public static SearchParameterMap byCanonical(String theCanonical) {
 		checkNotNull(theCanonical);
 
@@ -85,6 +103,19 @@ public class Searches {
 		return byCanonical(theCanonicalType.getValue());
 	}
 
+	// TODO: use versioned version
+	public static <C extends IPrimitiveType<String>> SearchParameterMap byCanonicals(List<C> theCanonicalTypes) {
+		checkNotNull(theCanonicalTypes);
+
+		List<String> urls = new ArrayList<>();
+		theCanonicalTypes.forEach(canonicalType -> {
+			checkArgument(canonicalType.hasValue());
+			urls.add(canonicalType.getValue());
+		});
+
+		return byUrls(urls);
+	}
+
 	public static SearchParameterMap byId(IIdType theId) {
 		checkNotNull(theId);
 		return byParam(ID_SP, new TokenParam(theId.getIdPart()));
@@ -93,5 +124,17 @@ public class Searches {
 	public static SearchParameterMap byId(String theIdPart) {
 		checkNotNull(theIdPart);
 		return byParam(ID_SP, new TokenParam(theIdPart));
+	}
+
+	public static SearchParameterMap byIds(List<String> theIdParts) {
+		checkNotNull(theIdParts);
+		TokenOrListParam params = new TokenOrListParam();
+
+		theIdParts.forEach(theIdPart -> {
+			checkNotNull(theIdPart);
+			params.addOr(new TokenParam(theIdPart));
+		});
+
+		return sync().add(ID_SP, params);
 	}
 }

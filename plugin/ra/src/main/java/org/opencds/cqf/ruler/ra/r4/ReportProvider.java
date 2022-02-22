@@ -1,7 +1,5 @@
 package org.opencds.cqf.ruler.ra.r4;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,24 +8,21 @@ import java.util.UUID;
 
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.Group;
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
-import org.opencds.cqf.ruler.behavior.IdCreator;
+import org.opencds.cqf.ruler.behavior.ResourceCreator;
+import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
+import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Operations;
 import org.opencds.cqf.ruler.utility.Searches;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -35,8 +30,8 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 
-public class ReportProvider extends DaoRegistryOperationProvider implements IdCreator {
-	private static final Logger ourLog = LoggerFactory.getLogger(ReportProvider.class);
+public class ReportProvider extends DaoRegistryOperationProvider
+		implements ParameterUser, ResourceCreator, MeasureReportUser {
 	/**
 	 * Implements the <a href=
 	 * "https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-report.html">$report</a>
@@ -62,8 +57,11 @@ public class ReportProvider extends DaoRegistryOperationProvider implements IdCr
 			@OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
 			@OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {
 
-		Period period = validateParameters(periodStart, periodEnd, subject);
-		Parameters result = initializeParametersResult(subject);
+		validateParameters(periodStart, periodEnd, subject);
+		Parameters result = newResource(Parameters.class, subject.replace("/", "-") + "-report");
+		Date periodStartDate = Operations.resolveRequestDate(periodStart, true);
+		Date periodEndDate = Operations.resolveRequestDate(periodEnd, false);
+		Period period = new Period().setStart(periodStartDate).setEnd(periodEndDate);
 		List<Patient> patients = getPatientListFromSubject(subject);
 
 		(patients)
@@ -75,6 +73,11 @@ public class ReportProvider extends DaoRegistryOperationProvider implements IdCr
 						});
 
 		return result;
+	}
+
+	// TODO: implement this correctly
+	public void validateParameters(RequestDetails requestDetails) {
+
 	}
 
 	private Period validateParameters(String periodStart, String periodEnd, String subject) {
@@ -101,13 +104,6 @@ public class ReportProvider extends DaoRegistryOperationProvider implements IdCr
 		return new Period().setStart(periodStartDate).setEnd(periodEndDate);
 	}
 
-	private Parameters initializeParametersResult(String subject) {
-		Parameters result = new Parameters();
-		result.setId(subject.replace("/", "-") + "-report");
-
-		return result;
-	}
-
 	private static final String PATIENT_REPORT_PROFILE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle";
 
 	private Parameters.ParametersParameterComponent patientReport(Patient thePatient, Period thePeriod,
@@ -128,8 +124,9 @@ public class ReportProvider extends DaoRegistryOperationProvider implements IdCr
 
 					bundleEntries.putIfAbsent(measureReport.getIdElement(), measureReport);
 
-					getEvaluatedResources(measureReport).forEach(resource ->
-						bundleEntries.putIfAbsent(resource.getIdElement(), resource));
+					getEvaluatedResources(measureReport)
+							.values()
+							.forEach(resource -> bundleEntries.putIfAbsent(resource.getIdElement(), resource));
 				});
 
 		Bundle patientReportBundle = new Bundle();
@@ -140,12 +137,11 @@ public class ReportProvider extends DaoRegistryOperationProvider implements IdCr
 		patientReportBundle.setIdentifier(
 				new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
 
-		bundleEntries.entrySet().forEach(resource ->
-			patientReportBundle.addEntry(
-					new Bundle.BundleEntryComponent()
-							.setResource((Resource) resource.getValue())
-							.setFullUrl(Operations.getFullUrl(serverBase, resource.getValue().fhirType(),
-									resource.getValue().getIdElement().getIdPart()))));
+		bundleEntries.entrySet().forEach(resource -> patientReportBundle.addEntry(
+				new Bundle.BundleEntryComponent()
+						.setResource((Resource) resource.getValue())
+						.setFullUrl(Operations.getFullUrl(serverBase, resource.getValue().fhirType(),
+								resource.getValue().getIdElement().getIdPart()))));
 
 		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
 		patientParameter.setResource(patientReportBundle);
@@ -153,67 +149,5 @@ public class ReportProvider extends DaoRegistryOperationProvider implements IdCr
 		patientParameter.setName("return");
 
 		return patientParameter;
-	}
-
-	// TODO: this might be useful to make a utility
-	private List<IAnyResource> getEvaluatedResources(MeasureReport report) {
-		List<IAnyResource> resources = new ArrayList<>();
-		for (Reference evaluatedResource : report.getEvaluatedResource()) {
-			IIdType theEvaluatedId = evaluatedResource.getReferenceElement();
-			IBaseResource resourceBase = read(theEvaluatedId);
-			if (resourceBase instanceof Resource) {
-				Resource resource = (Resource) resourceBase;
-				resources.add(resource);
-			}
-		}
-		return resources;
-
-	}
-
-	// TODO: replace this with version from the evaluator?
-	private Patient ensurePatient(String patientRef) {
-		Patient patient = read(newId(patientRef));
-		if (patient == null) {
-			throw new RuntimeException("Could not find Patient: " + patientRef);
-		}
-		return patient;
-	}
-
-	// TODO: replace this with version from the evaluator?
-	private List<Patient> getPatientListFromSubject(String subject) {
-		if (subject.startsWith("Patient/")) {
-			Patient patient = ensurePatient(subject);
-			return Collections.singletonList(patient);
-		} else if (subject.startsWith("Group/")) {
-			return getPatientListFromGroup(subject);
-		}
-
-		ourLog.info("Subject member was not a Patient or a Group, so skipping. \n{}", subject);
-		return Collections.emptyList();
-	}
-
-	// TODO: replace this with version from the evaluator?
-	private List<Patient> getPatientListFromGroup(String subjectGroupId) {
-		List<Patient> patientList = new ArrayList<>();
-
-		Group group = read(newId(subjectGroupId));
-		if (group == null) {
-			throw new RuntimeException("Could not find Group: " + subjectGroupId);
-		}
-
-		group.getMember().forEach(member -> {
-			Reference reference = member.getEntity();
-			if (reference.getReferenceElement().getResourceType().equals("Patient")) {
-				Patient patient = ensurePatient(reference.getReference());
-				patientList.add(patient);
-			} else if (reference.getReferenceElement().getResourceType().equals("Group")) {
-				patientList.addAll(getPatientListFromGroup(reference.getReference()));
-			} else {
-				ourLog.info("Group member was not a Patient or a Group, so skipping. \n{}",
-						reference.getReference());
-			}
-		});
-
-		return patientList;
 	}
 }

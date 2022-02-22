@@ -102,6 +102,22 @@ Currently the cqf-ruler recognizes three types of plugin contributions:
 
 The plugin system is very simple and naive. Plugins are expected to be well-behaved, and not contribute any beans that may be invalid for the current server's configuration. This includes but is not limited to, multiple versions of plugins, mismatched FHIR versions, operation overrides, etc.
 
+#### Plugin Testing
+
+Integration Tests
+
+Configuration settings for integration tests should be implemented in the `properties` element of the `SpringBootTest` annotation.
+
+Example:
+
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { HelloWorldProviderIT.class,
+  HelloWorldConfig.class }, properties = {
+    "hapi.fhir.fhir_version=r4",
+    "hello.world.message=Howdy"
+  })
+```
+
 ## Coding Conventions
 
 The CQF Project has adopted an over-arching goal to contribute back to HAPI.
@@ -109,6 +125,22 @@ To this end:
 
 * The CQF Ruler project has adopted the HAPI Coding Conventions: <https://github.com/hapifhir/hapi-fhir/wiki/Contributing>
 * Plugins should generally use the "hapi.fhir" prefix for configuration properties
+
+### Extensions
+
+Where possible, environment extensions have been recommended.  Please ensure the recommended extensions for your environment have been installed.
+
+### Style
+
+The CQF Project uses Checkstyle to enforce the coding standard.  This will cause a build failure in the event of a Checkstyle error.  Visit <https://checkstyle.sourceforge.io/> for more info.
+
+Results of Checkstyle errors can be found in the corresponding `checkstyle-result.xml` file.
+
+### Javadoc
+
+The CQF Project has strict checking for Javadoc enabled.  This will cause a build failure in the event of a Javadoc warning.  Visit <https://www.oracle.com/technical-resources/articles/java/javadoc-tool.html> for more info.
+
+Results of Javadoc can be found in the output of the build.
 
 ### Utility Guidelines
 
@@ -136,7 +168,7 @@ or, if you put unrelated code into the class, you might end up with something li
 
 If the code doesn't read clearly after you've added an utility, consider that it may not be in the right place.
 
-In general, all the functions for this type of utility should be `static`. No internal state should be maintained (`static final`, or immutable, state is ok). If you final that your utility class contains mutable state, consider an alternate design.
+In general, all the functions for this type of utility should be `static`. No internal state should be maintained (`static final`, or immutable, state is ok). If you find that your utility class contains mutable state, consider an alternate design.
 
 Examples
 
@@ -145,7 +177,7 @@ Examples
 
 #### Behavior Specific Utilities
 
-If there is behavior you'd like to share across many classes, model that as an interface and use a name that follows the pattern `"ThingDoer"`. For example, all the classes that access a database might be `DatabaseReader`. Use `default` interface implementations to write logic that can be shared many places. The interfaces themselves shouldn't have mutable state (again `static final` is ok). If it's necessary for the for shared logic to have access to state, model that as an method without a default implementation. For example:
+If there is behavior you'd like to share across many classes, model that as an interface and use a name that follows the pattern `"ThingDoer"`. For example, all the classes that access a database might be `DatabaseReader`. Use `default` interface implementations to write logic that can be shared many places. The interfaces themselves shouldn't have mutable state (again `static final` is ok). If it's necessary for the shared logic to have access to state, model that as an method without a default implementation. For example:
 
 ```java
 interface DatabaseReader {
