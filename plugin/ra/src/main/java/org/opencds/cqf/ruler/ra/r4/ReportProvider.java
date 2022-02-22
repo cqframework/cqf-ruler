@@ -1,6 +1,5 @@
 package org.opencds.cqf.ruler.ra.r4;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.UUID;
 
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Identifier;
@@ -18,9 +16,9 @@ import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Period;
-import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
+import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Operations;
@@ -32,7 +30,8 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 
-public class ReportProvider extends DaoRegistryOperationProvider implements ParameterUser, ResourceCreator {
+public class ReportProvider extends DaoRegistryOperationProvider
+		implements ParameterUser, ResourceCreator, MeasureReportUser {
 	/**
 	 * Implements the <a href=
 	 * "https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-report.html">$report</a>
@@ -126,6 +125,7 @@ public class ReportProvider extends DaoRegistryOperationProvider implements Para
 					bundleEntries.putIfAbsent(measureReport.getIdElement(), measureReport);
 
 					getEvaluatedResources(measureReport)
+							.values()
 							.forEach(resource -> bundleEntries.putIfAbsent(resource.getIdElement(), resource));
 				});
 
@@ -150,19 +150,4 @@ public class ReportProvider extends DaoRegistryOperationProvider implements Para
 
 		return patientParameter;
 	}
-
-	// TODO: this might be useful to make a utility
-	private List<IAnyResource> getEvaluatedResources(MeasureReport report) {
-		List<IAnyResource> resources = new ArrayList<>();
-		for (Reference evaluatedResource : report.getEvaluatedResource()) {
-			IIdType theEvaluatedId = evaluatedResource.getReferenceElement();
-			IBaseResource resourceBase = read(theEvaluatedId);
-			if (resourceBase instanceof Resource) {
-				Resource resource = (Resource) resourceBase;
-				resources.add(resource);
-			}
-		}
-		return resources;
-	}
-
 }

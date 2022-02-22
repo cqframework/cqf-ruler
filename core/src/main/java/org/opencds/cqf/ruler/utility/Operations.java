@@ -10,6 +10,7 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
@@ -84,12 +85,23 @@ public class Operations {
 	 * @param serverAddress the address of the server
 	 * @param fhirType      the type of the resource
 	 * @param elementId     the id of the resource
-	 * @return the FHIR period date as a java.util.Date type
+	 * @return the full url as a String
 	 */
 	public static String getFullUrl(String serverAddress, String fhirType, String elementId) {
 		String fullUrl = String.format("%s%s/%s", serverAddress + (serverAddress.endsWith("/") ? "" : "/"), fhirType,
 				elementId);
 		return fullUrl;
+	}
+
+	/**
+	 * This function returns a fullUrl for a resource.
+	 * 
+	 * @param serverAddress the address of the server
+	 * @param resource      the resource
+	 * @return the full url as a String
+	 */
+	public static String getFullUrl(String serverAddress, IBaseResource resource) {
+		return getFullUrl(serverAddress, resource.fhirType(), Ids.simplePart(resource));
 	}
 
 	/**

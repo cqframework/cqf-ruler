@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.hl7.fhir.r4.model.Measure;
@@ -442,18 +443,19 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
 		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
+		params.addParameter().setName("status").setValue(new StringType(statusValidSecond));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 		// params.addParameter().setName("measureIdentifier")
 		// .setValue(new StringType(measureIdentifierValid));
 		params.addParameter().setName("measureUrl").setValue(new StringType(measureUrlValid));
 		params.addParameter().setName("measureId").setValue(new StringType("ColorectalCancerScreeningsFHIR"));
 
-		assertDoesNotThrow(() -> {
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute();
-		});
+		Parameters result = getClient().operation().onType(Measure.class).named("$care-gaps")
+				.withParameters(params)
+				.useHttpGet()
+				.returnResourceType(Parameters.class)
+				.execute();
+
+		assertNotNull(result);
 	}
 }
