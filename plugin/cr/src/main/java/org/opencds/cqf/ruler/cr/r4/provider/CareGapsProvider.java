@@ -31,11 +31,14 @@ import org.opencds.cqf.ruler.behavior.r4.ParameterUser;
 import org.opencds.cqf.ruler.builder.BundleBuilder;
 import org.opencds.cqf.ruler.builder.CodeableConceptSettings;
 import org.opencds.cqf.ruler.builder.CompositionBuilder;
+import org.opencds.cqf.ruler.builder.CompositionSectionComponentBuilder;
 import org.opencds.cqf.ruler.builder.DetectedIssueBuilder;
+import org.opencds.cqf.ruler.builder.NarrativeSettings;
 import org.opencds.cqf.ruler.cr.CrProperties;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Ids;
 import org.opencds.cqf.ruler.utility.Operations;
+import org.opencds.cqf.ruler.utility.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -239,7 +242,9 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	private Parameters.ParametersParameterComponent patientReports(RequestDetails requestDetails, String periodStart,
 			String periodEnd, Patient patient, List<String> status, List<Measure> measures, String organization) {
 		// TODO: add organization to report, if it exists.
-		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, status, measures);
+		Composition composition = getComposition(patient, organization);
+		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, status, measures,
+				composition);
 
 		if (reports.isEmpty()) {
 			return null;
@@ -248,14 +253,13 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		// for each report, add to MR to result
 
 		Bundle reportBundle = getBundle();
-
-		Composition composition = getComposition(patient, organization);
+		// reportBundle.addEntry(); //composition
 
 		return initializePatientParameter().setResource(reportBundle);
 	}
 
 	private List<MeasureReport> getReports(RequestDetails requestDetails, String periodStart,
-			String periodEnd, Patient patient, List<String> status, List<Measure> measures) {
+			String periodEnd, Patient patient, List<String> status, List<Measure> measures, Composition composition) {
 		List<MeasureReport> reports = new ArrayList<>();
 
 		MeasureReport report = null;
@@ -265,7 +269,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 
 			if (!report.hasGroup()) {
 				ourLog.info("Report does not include a group so skipping.\nSubject: {}\nMeasure: {}", Ids.simple(patient),
-						Ids.simple(measure));
+						Ids.simplePart(measure));
 				continue;
 			}
 
@@ -273,7 +277,11 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			if (!status.contains(gapStatus)) {
 				continue;
 			}
-			registerDetectedIssue(getDetectedIssue(patient, measure, gapStatus));
+			DetectedIssue detectedIssue = getDetectedIssue(patient, measure, gapStatus);
+			registerDetectedIssue(detectedIssue);
+
+			Composition.SectionComponent section = getSection(measure, detectedIssue, gapStatus);
+			composition.addSection(section);
 
 			initializeReport(report, measure.getImprovementNotation());
 			reports.add(report);
@@ -295,7 +303,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	private Parameters.ParametersParameterComponent initializePatientParameter() {
-		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent()
+		Parameters.ParametersParameterComponent patientParameter = Resources
+				.newBackboneElement(Parameters.ParametersParameterComponent.class)
 				.setName("return");
 		patientParameter.setId(UUID.randomUUID().toString());
 
@@ -320,6 +329,17 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		}
 
 		return "closed-gap";
+	}
+
+	private Composition.SectionComponent getSection(Measure measure, DetectedIssue detectedIssue, String gapStatus) {
+		String narrative = String.format("<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>%s</p></div>",
+				gapStatus.equals("closed-gap") ? "No detected issues." : "Issues detected.");
+		return new CompositionSectionComponentBuilder<Composition.SectionComponent>(Composition.SectionComponent.class)
+				.withTitle(measure.hasTitle() ? measure.getTitle() : measure.getUrl())
+				.withFocus(Ids.simple(measure))
+				.withText(new NarrativeSettings(narrative))
+				.withEntry(Ids.simple(detectedIssue))
+				.build();
 	}
 
 	private Bundle getBundle() {
