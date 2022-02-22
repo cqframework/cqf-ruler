@@ -25,7 +25,6 @@ import org.hl7.fhir.r4.model.UriType;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.model.api.annotation.Description;
@@ -36,7 +35,6 @@ import ca.uhn.fhir.rest.api.IVersionSpecificBundleFactory;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.util.BundleUtil;
 
-@Component
 public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 	private static final Logger logger = LoggerFactory.getLogger(ProcessMessageProvider.class);
 
