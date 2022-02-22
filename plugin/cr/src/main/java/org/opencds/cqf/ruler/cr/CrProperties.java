@@ -20,8 +20,8 @@ public class CrProperties {
 		return this.measure_report;
 	}
 
-	public void setMeasureReport(MeasureReportConfiguration theMeasureReport) {
-		this.measure_report = theMeasureReport;
+	public void setMeasureReport(MeasureReportConfiguration measureReport) {
+		this.measure_report = measureReport;
 	}
 
 	public static class MeasureReportConfiguration {
@@ -35,14 +35,34 @@ public class CrProperties {
 		 * <a href="http://build.fhir.org/ig/HL7/davinci-deqm/index.html">Da Vinci DEQM
 		 * FHIR Implementation Guide</a>.
 		 **/
-		private String reporter;
+		private String care_gaps_reporter;
 
 		public String getReporter() {
-			return reporter;
+			return care_gaps_reporter;
 		}
 
-		public void setReporter(String reporter) {
-			this.reporter = ResourceBuilder.ensureOrganizationReference(reporter);
+		public void setCareGapsReporter(String careGapsReporter) {
+			this.care_gaps_reporter = ResourceBuilder.ensureOrganizationReference(careGapsReporter);
+		}
+
+		/**
+		 * Implements the author element of the <a href=
+		 * "http://www.hl7.org/fhir/composition.html">Composition</a> FHIR
+		 * Resource.
+		 * This is required by the <a href=
+		 * "http://build.fhir.org/ig/HL7/davinci-deqm/StructureDefinition-gaps-composition-deqm.html">DEQMGapsInCareCompositionProfile</a>
+		 * profile found in the
+		 * <a href="http://build.fhir.org/ig/HL7/davinci-deqm/index.html">Da Vinci DEQM
+		 * FHIR Implementation Guide</a>.
+		 **/
+		private String care_gaps_composition_section_author;
+
+		public String getCompositionAuthor() {
+			return care_gaps_composition_section_author;
+		}
+
+		public void setCareGapsCompositionSectionAuthor(String careGapsCompositionSectionAuthor) {
+			this.care_gaps_composition_section_author = careGapsCompositionSectionAuthor;
 		}
 	}
 }

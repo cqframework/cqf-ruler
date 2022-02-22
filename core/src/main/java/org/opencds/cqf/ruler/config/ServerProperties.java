@@ -12,11 +12,10 @@ public class ServerProperties {
 
 	public String getImplementation_description() {
 		return implementation_description;
-	 }
-  
-	 public void setImplementation_description(String implementation_description) {
-		this.implementation_description = implementation_description;
-	 }
+	}
 
-	
+	public void setImplementation_description(String implementation_description) {
+		this.implementation_description = implementation_description;
+	}
+
 }

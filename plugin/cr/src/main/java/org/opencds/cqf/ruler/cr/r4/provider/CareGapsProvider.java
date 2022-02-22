@@ -183,9 +183,14 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	@Override
 	public void validateConfiguration() {
 		ConfigurationUser.super.validateConfiguration(crProperties,
-				(crProperties.getMeasureReport() != null)
-						&& !Strings.isNullOrEmpty(crProperties.getMeasureReport().getReporter()),
-				"The measure_report.reporter setting is required for the $care-gaps operation.")
+				crProperties.getMeasureReport() != null,
+				"The measure_report setting is required for the $care-gaps operation.")
+						.validateConfiguration(crProperties,
+								!Strings.isNullOrEmpty(crProperties.getMeasureReport().getReporter()),
+								"The measure_report.care_gaps_reporter setting is required for the $care-gaps operation.")
+						.validateConfiguration(crProperties,
+								!Strings.isNullOrEmpty(crProperties.getMeasureReport().getCompositionAuthor()),
+								"The measure_report.care_gaps_composition_section_author setting is required for the $care-gaps operation.")
 						.setConfigurationValid(crProperties);
 	}
 
@@ -251,7 +256,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		MeasureReport report = null;
 		for (Measure measure : measures) {
 			report = measureEvaluateProvider.evaluateMeasure(requestDetails, measure.getIdElement(), periodStart,
-					periodEnd, "patient", Ids.simple(patient), null, null, null);
+					periodEnd, "patient", Ids.simple(patient), null, null, null, null);
 
 			if (!report.hasGroup()) {
 				ourLog.info("Report does not include a group so skipping.\nSubject: {}\nMeasure: {}", Ids.simple(patient),
@@ -259,18 +264,19 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				continue;
 			}
 
+			initializeReport(report);
+
 			String gapStatus = getGapStatus(measure, report);
 			if (!status.contains(gapStatus)) {
 				continue;
 			}
-			DetectedIssue detectedIssue = getDetectedIssue(patient, measure, gapStatus);
+			DetectedIssue detectedIssue = getDetectedIssue(patient, report, gapStatus);
 			detectedIssues.add(detectedIssue);
 
-			composition.addSection(getSection(measure, detectedIssue, gapStatus));
+			composition.addSection(getSection(measure, report, detectedIssue, gapStatus));
 
 			getEvaluatedResources(report, evaluatedResources);
 
-			initializeReport(report);
 			reports.add(report);
 		}
 
@@ -344,12 +350,13 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				.setFullUrl(Operations.getFullUrl(serverBase, resource));
 	}
 
-	private Composition.SectionComponent getSection(Measure measure, DetectedIssue detectedIssue, String gapStatus) {
+	private Composition.SectionComponent getSection(Measure measure, MeasureReport report, DetectedIssue detectedIssue,
+			String gapStatus) {
 		String narrative = String.format("<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>%s</p></div>",
 				gapStatus.equals("closed-gap") ? "No detected issues." : "Issues detected.");
 		return new CompositionSectionComponentBuilder<Composition.SectionComponent>(Composition.SectionComponent.class)
 				.withTitle(measure.hasTitle() ? measure.getTitle() : measure.getUrl())
-				.withFocus(Ids.simple(measure))
+				.withFocus(Ids.simple(report))
 				.withText(new NarrativeSettings(narrative))
 				.withEntry(Ids.simple(detectedIssue))
 				.build();
@@ -370,19 +377,18 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				.withTitle("Care Gap Report for " + Ids.simplePart(patient))
 				.withSubject(Ids.simple(patient))
 				.withCustodian(organization) // TODO: check to see if this is correct.
-				.withAuthor(Ids.simple(patient)) // TODO: this is wrong figure it out.
+				.withAuthor(crProperties.getMeasureReport().getCompositionAuthor())
 				.build();
 	}
 
-	private DetectedIssue getDetectedIssue(Patient patient, Measure measure, String gapStatus) {
+	private DetectedIssue getDetectedIssue(Patient patient, MeasureReport report, String gapStatus) {
 		return new DetectedIssueBuilder<DetectedIssue>(DetectedIssue.class)
 				.withProfile(CARE_GAPS_DETECTEDISSUE_PROFILE)
 				.withStatus(DetectedIssue.DetectedIssueStatus.FINAL.toString())
 				.withCode(new CodeableConceptSettings().add("http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP",
 						"Care Gaps"))
 				.withPatient(Ids.simple(patient))
-				// TODO: check this is the correct value
-				.withEvidenceDetail(measure.getUrl())
+				.withEvidenceDetail(Ids.simple(report))
 				.withModifierExtension(new ImmutablePair<>(
 						CARE_GAPS_GAP_STATUS_EXTENSION,
 						new CodeableConceptSettings().add(CARE_GAPS_GAP_STATUS_SYSTEM, gapStatus, "Gap Status")))

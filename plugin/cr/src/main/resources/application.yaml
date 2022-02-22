@@ -2,6 +2,6 @@ hapi:
    fhir:
       cr:
          enabled: true
-         ## This is a required setting.  Set a value and uncomment before running.
-         #measure_report:
-         #reporter: <id>
+         measure_report:
+            care_gaps_reporter: Organization/alphora
+            care_gaps_composition_section_author: Organization/alphora
