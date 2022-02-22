@@ -41,6 +41,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
 public class DataOperationsProvider extends DaoRegistryOperationProvider {
+
 	@Autowired
 	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
 
@@ -60,6 +61,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 		Library library = read(theId, theRequestDetails);
 		return processDataRequirements(library, theRequestDetails);
+
 	}
 
 	@Operation(name = "$data-requirements", idempotent = true, type = Measure.class)
@@ -80,16 +82,22 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	public Library getLibraryFromMeasure(Measure measure, RequestDetails theRequestDetails) {
 		Iterator<CanonicalType> var6 = measure.getLibrary().iterator();
 
-		String library = null;
+		String libraryIdOrCanonical = null;
 		//use the first library
-		while (var6.hasNext() && library == null) {
+		while (var6.hasNext() && libraryIdOrCanonical == null) {
 			CanonicalType ref = var6.next();
 
 			if (ref != null) {
-				library = ref.getValue();
+				libraryIdOrCanonical = ref.getValue();
 			}
 		}
-		return search(Library.class, Searches.byCanonical(library), theRequestDetails).firstOrNull();
+
+		Library library = read(new IdType(libraryIdOrCanonical), theRequestDetails);
+
+		if(library == null){
+			library = search(Library.class, Searches.byCanonical(libraryIdOrCanonical), theRequestDetails).firstOrNull();
+		}
+		return library;
 	}
 
 	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {
@@ -119,9 +127,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		if (!translator.getErrors().isEmpty()) {
 			throw new CqlTranslatorException(Translators.errorsToString(translator.getErrors()));
 		}
-
-		return DataRequirements.getModuleDefinitionLibraryR4(libraryManager,
-			translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
+		return DataRequirements.getModuleDefinitionLibraryR4(libraryManager, translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
 	}
 
 	private List<Library> fetchDependencyLibraries(Library library, RequestDetails theRequestDetails) {

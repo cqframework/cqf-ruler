@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.cr.dstu3.provider;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,8 +15,10 @@ import org.cqframework.cql.cql2elm.LibraryManager;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Library;
+import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.dstu3.model.Measure;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
@@ -54,9 +57,49 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	public Library dataRequirements(@IdParam IdType theId, @OperationParam(name = "target") String target,
 			RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
 
-		JpaLibraryContentProvider jpaLibraryContentProvider = jpaLibraryContentProviderFactory.create(theRequestDetails);
-
 		Library library = read(theId, theRequestDetails);
+		return processDataRequirements(library, theRequestDetails);
+	}
+
+	@Operation(name = "$data-requirements", idempotent = true, type = Measure.class)
+	public Library dataRequirements(@IdParam IdType theId,
+												@OperationParam(name = "startPeriod") String startPeriod,
+												@OperationParam(name = "endPeriod") String endPeriod,
+												RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
+
+		Measure measure = read(theId, theRequestDetails);
+		Library library = getLibraryFromMeasure(measure, theRequestDetails);
+
+		if (library == null) {
+			throw new RuntimeException("Could not load measure library.");
+		}
+		return processDataRequirements(library, theRequestDetails);
+	}
+
+	public Library getLibraryFromMeasure(Measure measure, RequestDetails theRequestDetails) {
+		Iterator<Reference> var6 = measure.getLibrary().iterator();
+
+		String libraryIdOrCanonical = null;
+		//use the first library
+		while (var6.hasNext() && libraryIdOrCanonical == null) {
+			Reference ref = var6.next();
+
+			if (ref != null) {
+				libraryIdOrCanonical = ref.getReference();
+			}
+		}
+
+		Library library = read(new IdType(libraryIdOrCanonical), theRequestDetails);
+
+		if(library == null){
+			library = search(Library.class, Searches.byCanonical(libraryIdOrCanonical), theRequestDetails).firstOrNull();
+		}
+		return library;
+	}
+
+
+	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {
+		JpaLibraryContentProvider jpaLibraryContentProvider = jpaLibraryContentProviderFactory.create(theRequestDetails);
 
 		Bundle libraryBundle = new Bundle();
 		List<Library> listLib = fetchDependencyLibraries(library, theRequestDetails);
@@ -69,21 +112,22 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		});
 
 		LibraryContentProvider bundleLibraryProvider = new BundleFhirLibraryContentProvider(this.getFhirContext(),
-				libraryBundle, adapterFactory, libraryVersionSelector);
+			libraryBundle, adapterFactory, libraryVersionSelector);
 
 		List<LibraryContentProvider> sourceProviders = Lists.newArrayList(bundleLibraryProvider,
-				jpaLibraryContentProvider);
+			jpaLibraryContentProvider);
 
 		LibraryManager libraryManager = libraryManagerFactory.create(sourceProviders);
 
 		CqlTranslator translator = Translators.getTranslator(
-				new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
-				libraryManager.getModelManager());
+			new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
+			libraryManager.getModelManager());
+
 		if (!translator.getErrors().isEmpty()) {
 			throw new CqlTranslatorException(Translators.errorsToString(translator.getErrors()));
 		}
 		return DataRequirements.getModuleDefinitionLibraryDstu3(libraryManager,
-				translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
+			translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
 	}
 
 	private List<Library> fetchDependencyLibraries(Library library, RequestDetails theRequestDetails) {
@@ -104,7 +148,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		for (RelatedArtifact relatedArtifact : library.getRelatedArtifact()) {
 			if (relatedArtifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON)
 					&& relatedArtifact.hasResource()) {
-				IdType id = Ids.newId(Library.class, relatedArtifact.getResource().getId());
+				IdType id = Ids.newId(Library.class, relatedArtifact.getResource().getReference());
 				Library lib = search(Library.class, Searches.byId(id), theRequestDetails).firstOrNull();
 				if (lib != null) {
 					resources.putIfAbsent(lib.getId(), lib);

@@ -21,7 +21,7 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testR4LibraryDataRequirementsOperation() throws IOException {
-		String bundleAsText = stringFromResource( "DataRequirementsTransactionBundle.json");
+		String bundleAsText = stringFromResource( "DataReqLibraryTransactionBundle.json");
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
