@@ -73,7 +73,8 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		if (library == null) {
 			throw new RuntimeException("Could not load measure library.");
 		}
-		return processDataRequirements(library, theRequestDetails);
+		// TODO: Pass startPeriod and endPeriod as parameters to the data requirements operation
+		return processDataRequirements(measure, library, theRequestDetails);
 	}
 
 	public Library getLibraryFromMeasure(Measure measure, RequestDetails theRequestDetails) {
@@ -97,8 +98,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		return library;
 	}
 
-
-	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {
+	private LibraryManager createLibraryManager(Library library, RequestDetails theRequestDetails) {
 		JpaLibraryContentProvider jpaLibraryContentProvider = jpaLibraryContentProviderFactory.create(theRequestDetails);
 
 		Bundle libraryBundle = new Bundle();
@@ -117,8 +117,10 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		List<LibraryContentProvider> sourceProviders = Lists.newArrayList(bundleLibraryProvider,
 			jpaLibraryContentProvider);
 
-		LibraryManager libraryManager = libraryManagerFactory.create(sourceProviders);
+		return libraryManagerFactory.create(sourceProviders);
+	}
 
+	private CqlTranslator translateLibrary(Library library, LibraryManager libraryManager, RequestDetails theRequestDetails) {
 		CqlTranslator translator = Translators.getTranslator(
 			new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
 			libraryManager.getModelManager());
@@ -126,6 +128,21 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		if (!translator.getErrors().isEmpty()) {
 			throw new CqlTranslatorException(Translators.errorsToString(translator.getErrors()));
 		}
+		return translator;
+	}
+
+	private Library processDataRequirements(Measure measure, Library library, RequestDetails theRequestDetails) {
+		LibraryManager libraryManager = createLibraryManager(library, theRequestDetails);
+		CqlTranslator translator = translateLibrary(library, libraryManager, theRequestDetails);
+
+		return DataRequirements.getModuleDefinitionLibraryDstu3(measure, libraryManager,
+			translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
+	}
+
+	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {
+		LibraryManager libraryManager = createLibraryManager(library, theRequestDetails);
+		CqlTranslator translator = translateLibrary(library, libraryManager, theRequestDetails);
+
 		return DataRequirements.getModuleDefinitionLibraryDstu3(libraryManager,
 			translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
 	}
