@@ -77,6 +77,22 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		public String toString() {
 			return myValue;
 		}
+
+		public String toDisplayString() {
+			if (myValue.equals("open-gap")) {
+				return "Open Gap";
+			}
+
+			if (myValue.equals("closed-gap")) {
+				return "Closed Gap";
+			}
+
+			if (myValue.equals("not-applicable")) {
+				return "Not Applicable";
+			}
+
+			throw new IllegalArgumentException();
+		}
 	}
 
 	static final Logger ourLog = LoggerFactory.getLogger(CareGapsProvider.class);
@@ -266,8 +282,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 
 			initializeReport(report);
 
-			String gapStatus = getGapStatus(measure, report);
-			if (!status.contains(gapStatus)) {
+			CareGapsStatusCode gapStatus = getGapStatus(measure, report);
+			if (!status.contains(gapStatus.toString())) {
 				continue;
 			}
 			DetectedIssue detectedIssue = getDetectedIssue(patient, report, gapStatus);
@@ -315,17 +331,17 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		Bundle reportBundle = getBundle();
 		reportBundle.addEntry(getBundleEntry(serverBase, composition));
 
+		reports.forEach(report -> reportBundle.addEntry(getBundleEntry(serverBase, report)));
+
 		detectedIssues.forEach(
 				detectedIssue -> reportBundle.addEntry(getBundleEntry(serverBase, detectedIssue)));
-
-		reports.forEach(report -> reportBundle.addEntry(getBundleEntry(serverBase, report)));
 
 		evaluatedResources.values().forEach(resource -> reportBundle.addEntry(getBundleEntry(serverBase, resource)));
 
 		return reportBundle;
 	}
 
-	private String getGapStatus(Measure measure, MeasureReport report) {
+	private CareGapsStatusCode getGapStatus(Measure measure, MeasureReport report) {
 		Pair<String, Boolean> inNumerator = new MutablePair<>("numerator", false);
 		report.getGroup().forEach(group -> group.getPopulation().forEach(population -> {
 			if (population.hasCode()
@@ -339,10 +355,10 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				"increase");
 
 		if ((isPositive && !inNumerator.getValue()) || (!isPositive && inNumerator.getValue())) {
-			return "open-gap";
+			return CareGapsStatusCode.OPEN_GAP;
 		}
 
-		return "closed-gap";
+		return CareGapsStatusCode.CLOSED_GAP;
 	}
 
 	private BundleEntryComponent getBundleEntry(String serverBase, Resource resource) {
@@ -351,9 +367,10 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	private Composition.SectionComponent getSection(Measure measure, MeasureReport report, DetectedIssue detectedIssue,
-			String gapStatus) {
+			CareGapsStatusCode gapStatus) {
 		String narrative = String.format("<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>%s</p></div>",
-				gapStatus.equals("closed-gap") ? "No detected issues." : "Issues detected.");
+				gapStatus == CareGapsStatusCode.CLOSED_GAP ? "No detected issues."
+						: String.format("Issues detected.  See %s for details.", Ids.simple(detectedIssue)));
 		return new CompositionSectionComponentBuilder<Composition.SectionComponent>(Composition.SectionComponent.class)
 				.withTitle(measure.hasTitle() ? measure.getTitle() : measure.getUrl())
 				.withFocus(Ids.simple(report))
@@ -381,7 +398,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				.build();
 	}
 
-	private DetectedIssue getDetectedIssue(Patient patient, MeasureReport report, String gapStatus) {
+	private DetectedIssue getDetectedIssue(Patient patient, MeasureReport report, CareGapsStatusCode gapStatus) {
 		return new DetectedIssueBuilder<DetectedIssue>(DetectedIssue.class)
 				.withProfile(CARE_GAPS_DETECTEDISSUE_PROFILE)
 				.withStatus(DetectedIssue.DetectedIssueStatus.FINAL.toString())
@@ -391,7 +408,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				.withEvidenceDetail(Ids.simple(report))
 				.withModifierExtension(new ImmutablePair<>(
 						CARE_GAPS_GAP_STATUS_EXTENSION,
-						new CodeableConceptSettings().add(CARE_GAPS_GAP_STATUS_SYSTEM, gapStatus, "Gap Status")))
+						new CodeableConceptSettings().add(CARE_GAPS_GAP_STATUS_SYSTEM, gapStatus.toString(),
+								gapStatus.toDisplayString())))
 				.build();
 	}
 }
