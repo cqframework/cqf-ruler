@@ -11,7 +11,7 @@
 		<dependency>
 			<groupId>info.cqframework</groupId>
 			<artifactId>elm-fhir</artifactId>
-			<version>1.5.5-SNAPSHOT</version>
+			<version>1.5.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
