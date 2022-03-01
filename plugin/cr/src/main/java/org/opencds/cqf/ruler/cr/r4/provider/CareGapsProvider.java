@@ -403,7 +403,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				.withProfile(CARE_GAPS_DETECTEDISSUE_PROFILE)
 				.withStatus(DetectedIssue.DetectedIssueStatus.FINAL.toString())
 				.withCode(new CodeableConceptSettings().add("http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP",
-						"Care Gaps"))
+						"Caregap"))
 				.withPatient(Ids.simple(patient))
 				.withEvidenceDetail(Ids.simple(report))
 				.withModifierExtension(new ImmutablePair<>(
