@@ -113,6 +113,7 @@ public class CqlConfig {
 				provider.setTerminologyProvider(t);
 				// TODO: Read config...
 				provider.setExpandValueSets(true);
+				provider.setModelResolver(modelResolver);
 			}
 			return new CompositeDataProvider(modelResolver, provider);
 		};

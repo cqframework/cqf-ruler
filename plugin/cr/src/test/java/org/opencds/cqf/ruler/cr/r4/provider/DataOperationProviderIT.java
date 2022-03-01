@@ -147,5 +147,4 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 			}
 		}
 	}
-
 }
