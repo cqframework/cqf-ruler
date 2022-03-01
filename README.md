@@ -53,6 +53,10 @@ or if you've already checked out the repo, use
 
 `git submodule update --init --recursive`
 
+to clean up any unneeded or unused files, use:
+
+`git clean -fdx`
+
 #### Java
 
 Go to [http://www.oracle.com/technetwork/java/javase/downloads/](
