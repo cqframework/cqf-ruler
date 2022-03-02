@@ -190,12 +190,12 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			@OperationParam(name = "measureUrl") List<CanonicalType> measureUrl,
 			@OperationParam(name = "program") List<String> program) {
 
-		validateConfiguration();
+		validateConfiguration(theRequestDetails);
 		validateParameters(theRequestDetails);
 
 		// TODO: filter by topic.
 		// TODO: filter by program.
-		List<Measure> measures = ensureMeasures(getMeasures(measureId, measureIdentifier, measureUrl));
+		List<Measure> measures = ensureMeasures(getMeasures(measureId, measureIdentifier, measureUrl, theRequestDetails));
 
 		List<Patient> patients;
 		if (!Strings.isNullOrEmpty(subject)) {
@@ -219,11 +219,10 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		return result;
 	}
 
-	private static Organization configuredReporter;
-	private static Organization configuredAuthor;
+	private static Map<String, Resource> configuredResources = new HashMap<>();
 
 	@Override
-	public void validateConfiguration() {
+	public void validateConfiguration(RequestDetails theRequestDetails) {
 		if (ConfigurationUser.super.configurationValid(CrProperties.class)) {
 			return;
 		}
@@ -238,10 +237,11 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 								!Strings.isNullOrEmpty(crProperties.getMeasureReport().getCompositionAuthor()),
 								"The measure_report.care_gaps_composition_section_author setting is required for the $care-gaps operation.");
 
-		configuredReporter = search(Organization.class, Searches.byId(crProperties.getMeasureReport().getReporter()))
-				.firstOrNull();
-		configuredAuthor = search(Organization.class,
-				Searches.byId(crProperties.getMeasureReport().getCompositionAuthor()))
+		Organization configuredReporter = search(Organization.class,
+				Searches.byId(crProperties.getMeasureReport().getReporter()), theRequestDetails)
+						.firstOrNull();
+		Organization configuredAuthor = search(Organization.class,
+				Searches.byId(crProperties.getMeasureReport().getCompositionAuthor()), theRequestDetails)
 						.firstOrNull();
 
 		ConfigurationUser.super.validateConfiguration(CrProperties.class, configuredReporter != null,
@@ -253,6 +253,9 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 												"The %s Resource is configured as the measure_report.care_gaps_composition_section_author but the Resource could not be read.",
 												crProperties.getMeasureReport().getCompositionAuthor()))
 								.setConfigurationValid(CrProperties.class);
+
+		configuredResources.put("care_gaps_reporter", configuredReporter);
+		configuredResources.put("care_gaps_composition_section_author", configuredAuthor);
 	}
 
 	@SuppressWarnings("squid:S1192") // warning for using the same string value more than 5 times
@@ -383,7 +386,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		detectedIssues.forEach(
 				detectedIssue -> reportBundle.addEntry(getBundleEntry(serverBase, detectedIssue)));
 
-		reportBundle.addEntry(getBundleEntry(serverBase, configuredReporter));
+		configuredResources.values().forEach(resource -> reportBundle.addEntry(getBundleEntry(serverBase, resource)));
 
 		evaluatedResources.values().forEach(resource -> reportBundle.addEntry(getBundleEntry(serverBase, resource)));
 
@@ -442,7 +445,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				.withStatus(Composition.CompositionStatus.FINAL.toString())
 				.withTitle("Care Gap Report for " + Ids.simplePart(patient))
 				.withSubject(Ids.simple(patient))
-				.withAuthor(Ids.simple(configuredAuthor))
+				.withAuthor(Ids.simple(configuredResources.get("care_gaps_composition_section_author")))
 				// .withCustodian(organization) // TODO: Optional: identifies the organization
 				// who is responsible for ongoing maintenance of and accessing to this gaps in
 				// care report. Add as a setting and optionally read if it's there.

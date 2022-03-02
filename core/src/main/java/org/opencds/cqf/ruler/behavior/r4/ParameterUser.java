@@ -28,7 +28,7 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 	void validateParameters(RequestDetails theRequestDetails);
 
 	default List<Measure> getMeasures(List<String> measureIds, List<String> measureIdentifiers,
-			List<CanonicalType> measureCanonicals) {
+			List<CanonicalType> measureCanonicals, RequestDetails theRequestDetails) {
 		boolean hasMeasureIds = measureIds != null && !measureIds.isEmpty();
 		boolean hasMeasureIdentifiers = measureIdentifiers != null && !measureIdentifiers.isEmpty();
 		boolean hasMeasureUrls = measureCanonicals != null && !measureCanonicals.isEmpty();
@@ -39,18 +39,21 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 		List<Measure> measureList = new ArrayList<>();
 
 		if (hasMeasureIds) {
-			measureList.addAll(search(Measure.class, Searches.byIds(measureIds)).getAllResourcesTyped());
+			measureList
+					.addAll(search(Measure.class, Searches.byIds(measureIds), theRequestDetails).getAllResourcesTyped());
 		}
 
 		// TODO: implement searching by measure identifiers
 		if (hasMeasureIdentifiers) {
 			throw new NotImplementedException();
 			// measureList.addAll(search(Measure.class,
-			// Searches.byIdentifiers(measureIdentifiers)).getAllResourcesTyped());
+			// Searches.byIdentifiers(measureIdentifiers),
+			// theRequestDetails).getAllResourcesTyped());
 		}
 
 		if (hasMeasureUrls) {
-			measureList.addAll(search(Measure.class, Searches.byCanonicals(measureCanonicals)).getAllResourcesTyped());
+			measureList.addAll(search(Measure.class, Searches.byCanonicals(measureCanonicals), theRequestDetails)
+					.getAllResourcesTyped());
 		}
 
 		Map<String, Measure> result = new HashMap<>();

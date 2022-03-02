@@ -5,10 +5,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.HashSet;
 import java.util.Set;
 
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+
 public interface ConfigurationUser {
 	static final ConfigurationSet configurations = new ConfigurationSet();
 
-	public abstract void validateConfiguration();
+	public abstract void validateConfiguration(RequestDetails theRequestDetails);
 
 	default <T> ConfigurationUser validateConfiguration(Class<T> theClass, boolean theExpression, String theMessage) {
 		if (configurationValid(theClass)) {
