@@ -45,7 +45,7 @@ echo "Building and publishing docker image"
 # content group registry
 DOCKER_IMAGE="contentgroup/cqf-ruler"
 # alphora registry
-DOCKER_IMAGE_A='alphora/cqf-ruler'
+DOCKER_IMAGE_A="alphora/cqf-ruler"
 
 DOCKER_TAG=$TRAVIS_BRANCH
 if [[ "$TRAVIS_BRANCH" == master ]]; then
