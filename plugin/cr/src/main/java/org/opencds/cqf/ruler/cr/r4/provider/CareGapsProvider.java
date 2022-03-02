@@ -220,6 +220,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	private static Organization configuredReporter;
+	private static Organization configuredAuthor;
 
 	@Override
 	public void validateConfiguration() {
@@ -232,14 +233,25 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				"The measure_report setting is required for the $care-gaps operation.")
 						.validateConfiguration(CrProperties.class,
 								!Strings.isNullOrEmpty(crProperties.getMeasureReport().getReporter()),
-								"The measure_report.care_gaps_reporter setting is required for the $care-gaps operation.");
+								"The measure_report.care_gaps_reporter setting is required for the $care-gaps operation.")
+						.validateConfiguration(CrProperties.class,
+								!Strings.isNullOrEmpty(crProperties.getMeasureReport().getCompositionAuthor()),
+								"The measure_report.care_gaps_composition_section_author setting is required for the $care-gaps operation.");
 
 		configuredReporter = search(Organization.class, Searches.byId(crProperties.getMeasureReport().getReporter()))
 				.firstOrNull();
+		configuredAuthor = search(Organization.class,
+				Searches.byId(crProperties.getMeasureReport().getCompositionAuthor()))
+						.firstOrNull();
+
 		ConfigurationUser.super.validateConfiguration(CrProperties.class, configuredReporter != null,
 				String.format(
 						"The %s Resource is configured as the measure_report.care_gaps_reporter but the Resource could not be read.",
 						crProperties.getMeasureReport().getReporter()))
+								.validateConfiguration(CrProperties.class, configuredAuthor != null,
+										String.format(
+												"The %s Resource is configured as the measure_report.care_gaps_composition_section_author but the Resource could not be read.",
+												crProperties.getMeasureReport().getCompositionAuthor()))
 								.setConfigurationValid(CrProperties.class);
 	}
 
@@ -430,12 +442,10 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				.withStatus(Composition.CompositionStatus.FINAL.toString())
 				.withTitle("Care Gap Report for " + Ids.simplePart(patient))
 				.withSubject(Ids.simple(patient))
+				.withAuthor(Ids.simple(configuredAuthor))
 				// .withCustodian(organization) // TODO: Optional: identifies the organization
 				// who is responsible for ongoing maintenance of and accessing to this gaps in
 				// care report. Add as a setting and optionally read if it's there.
-				// .withAuthor(crProperties.getMeasureReport().getCompositionAuthor()) //TODO:
-				// Optional: Who and/or what authored the section. Add as a setting and
-				// optionally read if it's there.
 				.build();
 	}
 
