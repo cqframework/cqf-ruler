@@ -42,7 +42,11 @@ eval $CMD
 
 echo "Building and publishing docker image"
 # Set up for docker publish
+# content group registry
 DOCKER_IMAGE="contentgroup/cqf-ruler"
+# alphora registry
+DOCKER_IMAGE_A='alphora/cqf-ruler'
+
 DOCKER_TAG=$TRAVIS_BRANCH
 if [[ "$TRAVIS_BRANCH" == master ]]; then
   DOCKER_TAG="latest"
@@ -50,6 +54,9 @@ elif [[ ! -z "$TRAVIS_TAG" ]]; then
   DOCKER_TAG="$TRAVIS_TAG"
 fi
 
+
+
 # Push image to registry
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-docker build . -t "$DOCKER_IMAGE:$DOCKER_TAG"  && docker push "$DOCKER_IMAGE:$DOCKER_TAG"
+docker build . -t "$DOCKER_IMAGE:$DOCKER_TAG" -t "$DOCKER_IMAGE_A:$DOCKER_TAG" && docker push "$DOCKER_IMAGE:$DOCKER_TAG"
+docker push "$DOCKER_IMAGE_A:$DOCKER_TAG"
