@@ -33,7 +33,7 @@ then
     echo $GPG_SECRET_KEYS | base64 --decode| $GPG_EXECUTABLE --import;
     echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust;
     # Activate the release profile
-    CMD="$CMD,release"
+    CMD="$CMD -P release"
 else
    echo "Publishing Maven Central snapshot / pre-release for branch: $TRAVIS_BRANCH"
 fi 
