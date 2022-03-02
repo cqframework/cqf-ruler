@@ -1,5 +1,8 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -219,43 +222,38 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		return result;
 	}
 
-	private static Map<String, Resource> configuredResources = new HashMap<>();
+	private Map<String, Resource> configuredResources = new HashMap<>();
+
+	private <T extends Resource> T putConfiguredResource(Class<T> theResourceClass, String theId,
+			String theKey, RequestDetails theRequestDetails) {
+		T resource = search(theResourceClass, Searches.byId(theId), theRequestDetails).firstOrNull();
+		if (resource != null) {
+			configuredResources.put(theKey, resource);
+		}
+		return resource;
+	}
 
 	@Override
 	public void validateConfiguration(RequestDetails theRequestDetails) {
-		if (ConfigurationUser.super.configurationValid(CrProperties.class)) {
-			return;
-		}
+		checkNotNull(crProperties.getMeasureReport(),
+				"The measure_report setting is required for the $care-gaps operation.");
+		checkArgument(!Strings.isNullOrEmpty(crProperties.getMeasureReport().getReporter()),
+				"The measure_report.care_gaps_reporter setting is required for the $care-gaps operation.");
+		checkArgument(!Strings.isNullOrEmpty(crProperties.getMeasureReport().getCompositionAuthor()),
+				"The measure_report.care_gaps_composition_section_author setting is required for the $care-gaps operation.");
 
-		ConfigurationUser.super.validateConfiguration(CrProperties.class,
-				crProperties.getMeasureReport() != null,
-				"The measure_report setting is required for the $care-gaps operation.")
-						.validateConfiguration(CrProperties.class,
-								!Strings.isNullOrEmpty(crProperties.getMeasureReport().getReporter()),
-								"The measure_report.care_gaps_reporter setting is required for the $care-gaps operation.")
-						.validateConfiguration(CrProperties.class,
-								!Strings.isNullOrEmpty(crProperties.getMeasureReport().getCompositionAuthor()),
-								"The measure_report.care_gaps_composition_section_author setting is required for the $care-gaps operation.");
+		Resource configuredReporter = putConfiguredResource(Organization.class,
+				crProperties.getMeasureReport().getReporter(), "care_gaps_reporter", theRequestDetails);
+		Resource configuredAuthor = putConfiguredResource(Organization.class,
+				crProperties.getMeasureReport().getCompositionAuthor(), "care_gaps_composition_section_author",
+				theRequestDetails);
 
-		Organization configuredReporter = search(Organization.class,
-				Searches.byId(crProperties.getMeasureReport().getReporter()), theRequestDetails)
-						.firstOrNull();
-		Organization configuredAuthor = search(Organization.class,
-				Searches.byId(crProperties.getMeasureReport().getCompositionAuthor()), theRequestDetails)
-						.firstOrNull();
-
-		ConfigurationUser.super.validateConfiguration(CrProperties.class, configuredReporter != null,
-				String.format(
-						"The %s Resource is configured as the measure_report.care_gaps_reporter but the Resource could not be read.",
-						crProperties.getMeasureReport().getReporter()))
-								.validateConfiguration(CrProperties.class, configuredAuthor != null,
-										String.format(
-												"The %s Resource is configured as the measure_report.care_gaps_composition_section_author but the Resource could not be read.",
-												crProperties.getMeasureReport().getCompositionAuthor()))
-								.setConfigurationValid(CrProperties.class);
-
-		configuredResources.put("care_gaps_reporter", configuredReporter);
-		configuredResources.put("care_gaps_composition_section_author", configuredAuthor);
+		checkNotNull(configuredReporter, String.format(
+				"The %s Resource is configured as the measure_report.care_gaps_reporter but the Resource could not be read.",
+				crProperties.getMeasureReport().getReporter()));
+		checkNotNull(configuredAuthor, String.format(
+				"The %s Resource is configured as the measure_report.care_gaps_composition_section_author but the Resource could not be read.",
+				crProperties.getMeasureReport().getCompositionAuthor()));
 	}
 
 	@SuppressWarnings("squid:S1192") // warning for using the same string value more than 5 times
