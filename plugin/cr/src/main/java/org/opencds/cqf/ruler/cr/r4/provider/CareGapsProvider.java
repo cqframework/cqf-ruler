@@ -23,6 +23,7 @@ import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Meta;
+import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
@@ -42,6 +43,7 @@ import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Ids;
 import org.opencds.cqf.ruler.utility.Operations;
 import org.opencds.cqf.ruler.utility.Resources;
+import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +65,27 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	public static final String CARE_GAPS_GAP_STATUS_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-gapStatus";
 	public static final String CARE_GAPS_GAP_STATUS_SYSTEM = "http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-status";
 	public static final String CARE_GAPS_MEASUREREPORT_REPORTER_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-reporterGroup";
+
+	protected static final Map<String, CodeableConceptSettings> CARE_GAPS_CODES;
+	static {
+		CARE_GAPS_CODES = new HashMap<>();
+		CARE_GAPS_CODES.put("http://loinc.org/96315-7",
+				new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps in care report"));
+		CARE_GAPS_CODES.put("http://terminology.hl7.org/CodeSystem/v3-ActCode/CAREGAP", new CodeableConceptSettings()
+				.add("http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP", "Care Gaps"));
+	}
+	// TODO: I guess this isn't available yet? Replace when we update to newer
+	// version of Java.
+	// = ofEntries(
+	// new AbstractMap.SimpleEntry<String,
+	// CodeableConceptSettings>("http://loinc.org/96315-7",
+	// new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps in
+	// care report")),
+	// new AbstractMap.SimpleEntry<String, CodeableConceptSettings>(
+	// "http://terminology.hl7.org/CodeSystem/v3-ActCode/CAREGAP", new
+	// CodeableConceptSettings()
+	// .add("http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP", "Care
+	// Gaps")));
 
 	public enum CareGapsStatusCode {
 		OPEN_GAP("open-gap"), CLOSED_GAP("closed-gap"), NOT_APPLICABLE("not-applicable");
@@ -196,18 +219,28 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		return result;
 	}
 
+	private static Organization configuredReporter;
+
 	@Override
 	public void validateConfiguration() {
-		ConfigurationUser.super.validateConfiguration(crProperties,
+		if (ConfigurationUser.super.configurationValid(CrProperties.class)) {
+			return;
+		}
+
+		ConfigurationUser.super.validateConfiguration(CrProperties.class,
 				crProperties.getMeasureReport() != null,
 				"The measure_report setting is required for the $care-gaps operation.")
-						.validateConfiguration(crProperties,
+						.validateConfiguration(CrProperties.class,
 								!Strings.isNullOrEmpty(crProperties.getMeasureReport().getReporter()),
-								"The measure_report.care_gaps_reporter setting is required for the $care-gaps operation.")
-						.validateConfiguration(crProperties,
-								!Strings.isNullOrEmpty(crProperties.getMeasureReport().getCompositionAuthor()),
-								"The measure_report.care_gaps_composition_section_author setting is required for the $care-gaps operation.")
-						.setConfigurationValid(crProperties);
+								"The measure_report.care_gaps_reporter setting is required for the $care-gaps operation.");
+
+		configuredReporter = search(Organization.class, Searches.byId(crProperties.getMeasureReport().getReporter()))
+				.firstOrNull();
+		ConfigurationUser.super.validateConfiguration(CrProperties.class, configuredReporter != null,
+				String.format(
+						"The %s Resource is configured as the measure_report.care_gaps_reporter but the Resource could not be read.",
+						crProperties.getMeasureReport().getReporter()))
+								.setConfigurationValid(CrProperties.class);
 	}
 
 	@SuppressWarnings("squid:S1192") // warning for using the same string value more than 5 times
@@ -247,7 +280,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			String periodEnd, Patient patient, List<String> status, List<Measure> measures, String organization) {
 		// TODO: add organization to report, if it exists.
 
-		Composition composition = getComposition(patient, organization);
+		Composition composition = getComposition(patient);
 		List<DetectedIssue> detectedIssues = new ArrayList<>();
 		Map<String, Resource> evaluatedResources = new HashMap<>();
 
@@ -275,7 +308,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 					periodEnd, "patient", Ids.simple(patient), null, null, null, null);
 
 			if (!report.hasGroup()) {
-				ourLog.info("Report does not include a group so skipping.\nSubject: {}\nMeasure: {}", Ids.simple(patient),
+				ourLog.info("Report does not include a group so skipping.\nSubject: {}\nMeasure: {}",
+						Ids.simple(patient),
 						Ids.simplePart(measure));
 				continue;
 			}
@@ -286,6 +320,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			if (!status.contains(gapStatus.toString())) {
 				continue;
 			}
+
 			DetectedIssue detectedIssue = getDetectedIssue(patient, report, gapStatus);
 			detectedIssues.add(detectedIssue);
 
@@ -336,6 +371,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		detectedIssues.forEach(
 				detectedIssue -> reportBundle.addEntry(getBundleEntry(serverBase, detectedIssue)));
 
+		reportBundle.addEntry(getBundleEntry(serverBase, configuredReporter));
+
 		evaluatedResources.values().forEach(resource -> reportBundle.addEntry(getBundleEntry(serverBase, resource)));
 
 		return reportBundle;
@@ -368,7 +405,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 
 	private Composition.SectionComponent getSection(Measure measure, MeasureReport report, DetectedIssue detectedIssue,
 			CareGapsStatusCode gapStatus) {
-		String narrative = String.format("<div xmlns=\"http://www.w3.org/1999/xhtml\"><p>%s</p></div>",
+		String narrative = String.format(HTML_DIV_PARAGRAPH_CONTENT,
 				gapStatus == CareGapsStatusCode.CLOSED_GAP ? "No detected issues."
 						: String.format("Issues detected.  See %s for details.", Ids.simple(detectedIssue)));
 		return new CompositionSectionComponentBuilder<Composition.SectionComponent>(Composition.SectionComponent.class)
@@ -386,15 +423,19 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				.build();
 	}
 
-	private Composition getComposition(Patient patient, String organization) {
+	private Composition getComposition(Patient patient) {
 		return new CompositionBuilder<Composition>(Composition.class)
 				.withProfile(CARE_GAPS_COMPOSITION_PROFILE)
-				.withType(new CodeableConceptSettings().add("http://loinc.org", "96315-7", "Gaps in care report"))
+				.withType(CARE_GAPS_CODES.get("http://loinc.org/96315-7"))
 				.withStatus(Composition.CompositionStatus.FINAL.toString())
 				.withTitle("Care Gap Report for " + Ids.simplePart(patient))
 				.withSubject(Ids.simple(patient))
-				.withCustodian(organization) // TODO: check to see if this is correct.
-				.withAuthor(crProperties.getMeasureReport().getCompositionAuthor())
+				// .withCustodian(organization) // TODO: Optional: identifies the organization
+				// who is responsible for ongoing maintenance of and accessing to this gaps in
+				// care report. Add as a setting and optionally read if it's there.
+				// .withAuthor(crProperties.getMeasureReport().getCompositionAuthor()) //TODO:
+				// Optional: Who and/or what authored the section. Add as a setting and
+				// optionally read if it's there.
 				.build();
 	}
 
@@ -402,8 +443,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		return new DetectedIssueBuilder<DetectedIssue>(DetectedIssue.class)
 				.withProfile(CARE_GAPS_DETECTEDISSUE_PROFILE)
 				.withStatus(DetectedIssue.DetectedIssueStatus.FINAL.toString())
-				.withCode(new CodeableConceptSettings().add("http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP",
-						"Care Gaps"))
+				.withCode(CARE_GAPS_CODES.get("http://terminology.hl7.org/CodeSystem/v3-ActCode/CAREGAP"))
 				.withPatient(Ids.simple(patient))
 				.withEvidenceDetail(Ids.simple(report))
 				.withModifierExtension(new ImmutablePair<>(

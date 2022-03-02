@@ -19,8 +19,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 		CrConfig.class }, properties = {
 				"hapi.fhir.fhir_version=r4", "hapi.fhir.enforce_referential_integrity_on_write=false",
 				"hapi.fhir.enforce_referential_integrity_on_delete=false", "hapi.fhir.cr.enabled=true",
-				"hapi.fhir.cr.measure_report.care_gaps_reporter=Organization/test-reporter-org",
-				"hapi.fhir.cr.measure_report.care_gaps_composition_section_author=Organization/test-author-org"
+				"hapi.fhir.cr.measure_report.care_gaps_reporter=Organization/alphora"
 		})
 public class CareGapsProviderIT extends RestIntegrationTest {
 
@@ -44,6 +43,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	@BeforeEach
 	void beforeEach() throws Exception {
+		loadResource("Alphora-organization.json");
 		loadResource("numer-EXM125-patient.json");
 	}
 

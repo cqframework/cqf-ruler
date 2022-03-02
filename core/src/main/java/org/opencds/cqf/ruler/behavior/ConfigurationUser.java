@@ -1,7 +1,6 @@
 package org.opencds.cqf.ruler.behavior;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,38 +10,37 @@ public interface ConfigurationUser {
 
 	public abstract void validateConfiguration();
 
-	default ConfigurationUser validateConfiguration(Object theConfiguration, boolean theExpression, String theMessage) {
-		if (configurationValid(theConfiguration)) {
+	default <T> ConfigurationUser validateConfiguration(Class<T> theClass, boolean theExpression, String theMessage) {
+		if (configurationValid(theClass)) {
 			return this;
 		}
 
 		try {
-			checkNotNull(theConfiguration);
 			checkArgument(theExpression, theMessage);
 		} catch (Exception e) {
-			setConfigurationInvalid(theConfiguration);
+			setConfigurationInvalid(theClass);
 			throw e;
 		}
 
 		return this;
 	}
 
-	default void setConfigurationValid(Object theConfiguration) {
-		configurations.getConfigurations().add(theConfiguration);
+	default <T> void setConfigurationValid(Class<T> theClass) {
+		configurations.getConfigurations().add(theClass.getName());
 	}
 
-	default void setConfigurationInvalid(Object theConfiguration) {
-		configurations.getConfigurations().remove(theConfiguration);
+	default <T> void setConfigurationInvalid(Class<T> theClass) {
+		configurations.getConfigurations().remove(theClass.getName());
 	}
 
-	default boolean configurationValid(Object theConfiguration) {
-		return configurations.getConfigurations().contains(theConfiguration);
+	default <T> boolean configurationValid(Class<T> theClass) {
+		return configurations.getConfigurations().contains(theClass.getName());
 	}
 
 	class ConfigurationSet {
-		private final Set<Object> configurations = new HashSet<>();
+		private final Set<String> configurations = new HashSet<>();
 
-		public Set<Object> getConfigurations() {
+		public Set<String> getConfigurations() {
 			return this.configurations;
 		}
 	}
