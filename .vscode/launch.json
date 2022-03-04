@@ -1,12 +1,12 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
 		{
 			"type": "java",
-			"name": "Launch Server (Live Reload)",
+			"name": "Launch Server R4 (Live Reload)",
 			"request": "launch",
 			"mainClass": "org.opencds.cqf.ruler.Application",
 			"projectName": "cqf-ruler-server",
@@ -16,6 +16,52 @@
 				"-Dspring.main.lazy-initialization=true",
 				"-Dloader.debug=true",
 				"-Ddebug=true"
+			],
+			"stepFilters": {
+				"classNameFilters": [
+					"java.*",
+					"javax.*",
+					"com.sun.*",
+					"sun.*",
+					"sunw.*",
+					"org.omg.*"
+				]
+			},
+			"classPaths": [
+				"$Auto",
+				"$Runtime"
+			]
+		},
+		{
+			"type": "java",
+			"name": "Attach",
+			"request": "attach",
+			"hostName": "localhost",
+			"port": "5005",
+			"stepFilters": {
+				"classNameFilters": [
+					"java.*",
+					"javax.*",
+					"com.sun.*",
+					"sun.*",
+					"sunw.*",
+					"org.omg.*"
+				]
+			}
+		},
+		{
+			"type": "java",
+			"name": "Launch Server DSTU3 (Live Reload)",
+			"request": "launch",
+			"mainClass": "org.opencds.cqf.ruler.Application",
+			"projectName": "cqf-ruler-server",
+			"vmArgs": [
+				"-XX:TieredStopAtLevel=1",
+				"-Xverify:none",
+				"-Dspring.main.lazy-initialization=true",
+				"-Dloader.debug=true",
+				"-Ddebug=true",
+				"-Dhapi.fhir.fhir_version=DSTU3"
 			],
 			"stepFilters": {
 				"classNameFilters": [
