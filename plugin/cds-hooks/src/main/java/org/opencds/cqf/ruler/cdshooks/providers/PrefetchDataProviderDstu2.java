@@ -49,7 +49,7 @@ public class PrefetchDataProviderDstu2 extends TerminologyAwareRetrieveProvider 
         // This dataType can't be related to patient, therefore may
         // not be in the pre-fetch bundle, or might required a lookup by Id
         if (context.equals("Patient") && contextPath == null) {
-            return null;
+			  return Collections.emptyList();
         }
 
         List<Object> resourcesOfType = prefetchResources.get(dataType);
