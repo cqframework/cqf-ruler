@@ -147,4 +147,53 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 			}
 		}
 	}
+
+	@Test
+	public void testR4LibraryEvaluationTest() throws IOException {
+		String bundleAsText = stringFromResource("bundlegen-bundle.json");
+		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
+		getClient().transaction().withBundle(bundle).execute();
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("target").setValue(new StringType("dummy"));
+
+		Library returnLibrary = getClient().operation().onInstance(new IdType("Library", "LibraryEvaluationTest"))
+			.named("$data-requirements")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
+
+		assertNotNull(returnLibrary);
+		System.out.println("Resource:"+this.getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(returnLibrary));
+
+		for (DataRequirement dr : returnLibrary.getDataRequirement()) {
+			String query = dr.getExtensionByUrl("http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern").getValueAsPrimitive().getValueAsString();
+			switch (dr.getType()) {
+				case "Patient": {
+					assertTrue("Patient?_id={{context.patientId}}".equals(query));
+				}
+				break;
+
+				case "Condition": {
+					if (dr.hasCodeFilter() && dr.getCodeFilter().size() > 0) {
+						assertTrue("Condition?category:in=http://mcg.com/fhir/ValueSet/condition-problem-list-category&subject=Patient/{{context.patientId}}".equals(query));
+					}
+					else {
+						assertTrue("Condition?subject=Patient/{{context.patientId}}".equals(query));
+					}
+				}
+				break;
+
+				case "Encounter": {
+					assertTrue("Encounter?subject=Patient/{{context.patientId}}".equals(query));
+				}
+				break;
+
+				case "Procedure": {
+					assertTrue("Procedure?subject=Patient/{{context.patientId}}".equals(query));
+				}
+				break;
+			}
+		}
+	}
 }
