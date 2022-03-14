@@ -37,19 +37,20 @@ public class Server extends BaseJpaRestfulServer {
 	private static Logger log = LoggerFactory.getLogger(Server.class);
 
 	@Autowired
-	DaoConfig daoConfig;
+	DaoConfig myDaoConfig;
+
 	@Autowired
-	ISearchParamRegistry searchParamRegistry;
+	ISearchParamRegistry mySearchParamRegistry;
 
 	@SuppressWarnings("rawtypes")
 	@Autowired
-	IFhirSystemDao fhirSystemDao;
+	IFhirSystemDao myFhirSystemDao;
 
 	@Autowired
 	private IValidationSupport myValidationSupport;
 
 	@Autowired
-	ApplicationContext myApplicationContext;
+	ApplicationContext applicationContext;
 
 	@Autowired
 	AppProperties myAppProperties;
@@ -67,20 +68,20 @@ public class Server extends BaseJpaRestfulServer {
 		super.initialize();
 
 		log.info("Loading metadata extenders from plugins");
-		Map<String, MetadataExtender> extenders = myApplicationContext.getBeansOfType(MetadataExtender.class);
+		Map<String, MetadataExtender> extenders = applicationContext.getBeansOfType(MetadataExtender.class);
 		for (MetadataExtender o : extenders.values()) {
 			log.info("Found {} extender", o.getClass().getName());
 		}
 
-		FhirVersionEnum fhirVersion = fhirSystemDao.getContext().getVersion().getVersion();
+		FhirVersionEnum fhirVersion = myFhirSystemDao.getContext().getVersion().getVersion();
 
 		String implementationDescription = myServerProperties.getImplementation_description();
 		if (fhirVersion == FhirVersionEnum.DSTU2) {
 			List<MetadataExtender<Conformance>> extenderList = extenders.values().stream()
 					.map(x -> (MetadataExtender<Conformance>) x).collect(Collectors.toList());
 			ExtensibleJpaConformanceProviderDstu2 confProvider = new ExtensibleJpaConformanceProviderDstu2(this,
-					fhirSystemDao,
-					daoConfig, extenderList);
+					myFhirSystemDao,
+					myDaoConfig, extenderList);
 			confProvider.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER DSTU2 Server"));
 			setServerConformanceProvider(confProvider);
 		} else {
@@ -88,21 +89,22 @@ public class Server extends BaseJpaRestfulServer {
 				List<MetadataExtender<CapabilityStatement>> extenderList = extenders.values().stream()
 						.map(x -> (MetadataExtender<CapabilityStatement>) x).collect(Collectors.toList());
 				ExtensibleJpaConformanceProviderDstu3 confProvider = new ExtensibleJpaConformanceProviderDstu3(this,
-						fhirSystemDao, daoConfig, searchParamRegistry, extenderList);
-				confProvider.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER DSTU3 Server"));
+						myFhirSystemDao, myDaoConfig, mySearchParamRegistry, extenderList);
+				confProvider
+						.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER DSTU3 Server"));
 				setServerConformanceProvider(confProvider);
 			} else if (fhirVersion == FhirVersionEnum.R4) {
 				List<MetadataExtender<IBaseConformance>> extenderList = extenders.values().stream()
 						.map(x -> (MetadataExtender<IBaseConformance>) x).collect(Collectors.toList());
 				ExtensibleJpaCapabilityStatementProvider confProvider = new ExtensibleJpaCapabilityStatementProvider(this,
-						fhirSystemDao, daoConfig, searchParamRegistry, myValidationSupport, extenderList);
+						myFhirSystemDao, myDaoConfig, mySearchParamRegistry, myValidationSupport, extenderList);
 				confProvider.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER R4 Server"));
 				setServerConformanceProvider(confProvider);
 			} else if (fhirVersion == FhirVersionEnum.R5) {
 				List<MetadataExtender<IBaseConformance>> extenderList = extenders.values().stream()
 						.map(x -> (MetadataExtender<IBaseConformance>) x).collect(Collectors.toList());
 				ExtensibleJpaCapabilityStatementProvider confProvider = new ExtensibleJpaCapabilityStatementProvider(this,
-						fhirSystemDao, daoConfig, searchParamRegistry, myValidationSupport, extenderList);
+						myFhirSystemDao, myDaoConfig, mySearchParamRegistry, myValidationSupport, extenderList);
 				confProvider.setImplementationDescription(firstNonNull(implementationDescription, "CQF RULER R5 Server"));
 				setServerConformanceProvider(confProvider);
 			} else {
@@ -111,14 +113,14 @@ public class Server extends BaseJpaRestfulServer {
 		}
 
 		log.info("Loading operation providers from plugins");
-		Map<String, OperationProvider> providers = myApplicationContext.getBeansOfType(OperationProvider.class);
+		Map<String, OperationProvider> providers = applicationContext.getBeansOfType(OperationProvider.class);
 		for (OperationProvider o : providers.values()) {
 			log.info("Registering {}", o.getClass().getName());
 			this.registerProvider(o);
 		}
 
 		log.info("Loading interceptors from plugins");
-		Map<String, Interceptor> interceptors = myApplicationContext.getBeansOfType(Interceptor.class);
+		Map<String, Interceptor> interceptors = applicationContext.getBeansOfType(Interceptor.class);
 		for (Interceptor o : interceptors.values()) {
 			log.info("Registering {} interceptor", o.getClass().getName());
 			this.registerInterceptor(o);
