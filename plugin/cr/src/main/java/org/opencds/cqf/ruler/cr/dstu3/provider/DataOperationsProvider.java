@@ -15,10 +15,10 @@ import org.cqframework.cql.cql2elm.LibraryManager;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Library;
+import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.dstu3.model.Measure;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
@@ -39,6 +39,7 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	@Autowired
@@ -63,27 +64,28 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 	@Operation(name = "$data-requirements", idempotent = true, type = Measure.class)
 	public Library dataRequirements(@IdParam IdType theId,
-												@OperationParam(name = "startPeriod") String startPeriod,
-												@OperationParam(name = "endPeriod") String endPeriod,
-												RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
+			@OperationParam(name = "startPeriod") String startPeriod,
+			@OperationParam(name = "endPeriod") String endPeriod,
+			RequestDetails theRequestDetails) throws InternalErrorException, FHIRException {
 
 		Measure measure = read(theId, theRequestDetails);
 		Library library = getLibraryFromMeasure(measure, theRequestDetails);
 
 		if (library == null) {
-			throw new RuntimeException("Could not load measure library.");
+			throw new ResourceNotFoundException(measure.getLibrary().get(0).getReference());
 		}
-		// TODO: Pass startPeriod and endPeriod as parameters to the data requirements operation
+		// TODO: Pass startPeriod and endPeriod as parameters to the data requirements
+		// operation
 		return processDataRequirements(measure, library, theRequestDetails);
 	}
 
 	public Library getLibraryFromMeasure(Measure measure, RequestDetails theRequestDetails) {
-		Iterator<Reference> var6 = measure.getLibrary().iterator();
+		Iterator<Reference> libraryIter = measure.getLibrary().iterator();
 
 		String libraryIdOrCanonical = null;
-		//use the first library
-		while (var6.hasNext() && libraryIdOrCanonical == null) {
-			Reference ref = var6.next();
+		// use the first library
+		while (libraryIter.hasNext() && libraryIdOrCanonical == null) {
+			Reference ref = libraryIter.next();
 
 			if (ref != null) {
 				libraryIdOrCanonical = ref.getReference();
@@ -92,7 +94,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 		Library library = read(new IdType(libraryIdOrCanonical), theRequestDetails);
 
-		if(library == null){
+		if (library == null) {
 			library = search(Library.class, Searches.byCanonical(libraryIdOrCanonical), theRequestDetails).firstOrNull();
 		}
 		return library;
@@ -112,18 +114,18 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		});
 
 		LibraryContentProvider bundleLibraryProvider = new BundleFhirLibraryContentProvider(this.getFhirContext(),
-			libraryBundle, adapterFactory, libraryVersionSelector);
+				libraryBundle, adapterFactory, libraryVersionSelector);
 
 		List<LibraryContentProvider> sourceProviders = Lists.newArrayList(bundleLibraryProvider,
-			jpaLibraryContentProvider);
+				jpaLibraryContentProvider);
 
 		return libraryManagerFactory.create(sourceProviders);
 	}
 
-	private CqlTranslator translateLibrary(Library library, LibraryManager libraryManager, RequestDetails theRequestDetails) {
+	private CqlTranslator translateLibrary(Library library, LibraryManager libraryManager) {
 		CqlTranslator translator = Translators.getTranslator(
-			new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
-			libraryManager.getModelManager());
+				new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
+				libraryManager.getModelManager());
 
 		if (!translator.getErrors().isEmpty()) {
 			throw new CqlTranslatorException(Translators.errorsToString(translator.getErrors()));
@@ -133,18 +135,18 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 	private Library processDataRequirements(Measure measure, Library library, RequestDetails theRequestDetails) {
 		LibraryManager libraryManager = createLibraryManager(library, theRequestDetails);
-		CqlTranslator translator = translateLibrary(library, libraryManager, theRequestDetails);
+		CqlTranslator translator = translateLibrary(library, libraryManager);
 
 		return DataRequirements.getModuleDefinitionLibraryDstu3(measure, libraryManager,
-			translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
+				translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
 	}
 
 	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {
 		LibraryManager libraryManager = createLibraryManager(library, theRequestDetails);
-		CqlTranslator translator = translateLibrary(library, libraryManager, theRequestDetails);
+		CqlTranslator translator = translateLibrary(library, libraryManager);
 
 		return DataRequirements.getModuleDefinitionLibraryDstu3(libraryManager,
-			translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
+				translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
 	}
 
 	private List<Library> fetchDependencyLibraries(Library library, RequestDetails theRequestDetails) {

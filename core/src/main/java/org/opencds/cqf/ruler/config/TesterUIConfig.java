@@ -23,7 +23,7 @@ public class TesterUIConfig {
 		dispatcherServlet.setContextClass(AnnotationConfigWebApplicationContext.class);
 		dispatcherServlet.setContextConfigLocation(FhirTesterConfig.class.getName());
 
-		ServletRegistrationBean<DispatcherServlet> registrationBean = new ServletRegistrationBean<DispatcherServlet>();
+		ServletRegistrationBean<DispatcherServlet> registrationBean = new ServletRegistrationBean<>();
 		registrationBean.setServlet(dispatcherServlet);
 		registrationBean.addUrlMappings("/*");
 		registrationBean.setLoadOnStartup(1);
