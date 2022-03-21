@@ -3,38 +3,38 @@ jdk: openjdk11
 os: linux
 dist: xenial
 services:
-- docker
+   - docker
 cache:
-  timeout: 180
-  directories:
-  - "$HOME/.m2/repository"
+   timeout: 180
+   directories:
+      - "$HOME/.m2/repository"
 install:
-- ./scripts/install.sh
+   - ./scripts/install.sh
 script:
-- ./scripts/test.sh
+   - ./scripts/test.sh
 before_cache:
-- rm -rf $HOME/.m2/repository/org/opencds/cqf/
+   - rm -rf $HOME/.m2/repository/org/opencds/cqf/
 after_success:
-- ./scripts/deploy.sh
+   - test $TRAVIS_BRANCH = "master" && test $TRAVIS_PULL_REQUEST = "false" && ./scripts/deploy.sh
 deploy:
-  provider: releases
-  api_key:
-    secure: M4rVJAVsMEnKPKas8jt+Ih/VVw1kpeyYyDP7wQxklW4qNiCRPBCx+UBSEx3J4JF4BWSNUCwER/6XGo530bDwA2IFzlEzfuAqB2FJLCT2Po9KvaWChEGs9GSRxDybkT2mqOIriEm1ePO+1eNs2yjY/qpmEGgYik8cs9TMnt1io0s6IGVHS1bl0bw0urwVti7TjgMNmHrjtVoO9pwj7REs5htXNhl7QuNOfhCawMkkLvi7Q8vUQnYBffT6llDZVWkAKfHfvHGA2HDBTB48sa9EciVgy7ORKEmhba0vinn3Vbfm4RaOoMTSjJjlBC+ojeHyYgBxoQFnMrXFO21x7vlPAbbSKviOuQUxxFr8OJ9Ijb4JXWTWNBYyTA9a2E8BQw48zbqw7vZRkw+x2x1JUZ3Vb+UW13iLASwQvGC+b/ivSZHxTZj8YNoHBnzU3fbJYZzpp28NKApVBsNI1+X07fZ0eq18bzIXy6XU5hb7aVhn4XqmUEAE1+kanxSFwq7DCC4OJpdKSaV9Dq9+9ZpJvJcsOZ9uP10E6dMWKoDPF1vME/FK43riRyZ2Nax3pqq3q21TEthOWg3LfETvk4hGYfAkzsN/+nKlnwHHlxKCJW3p7KKjN6FE9IZZ3xhL7CdK+dKA9jwfgo2Cq9QlnmpJDM9vfZhawzna9JDh0wInZh4H+oc=
-  file_glob: true
-  file: "**/target/*.jar"
-  skip_cleanup: true
-  name: CQF Ruler $TRAVIS_TAG
-  overwrite: true
-  target_commitish: $TRAVIS_COMMIT
-  on:
-    tags: true
+   provider: releases
+   api_key:
+      secure: M4rVJAVsMEnKPKas8jt+Ih/VVw1kpeyYyDP7wQxklW4qNiCRPBCx+UBSEx3J4JF4BWSNUCwER/6XGo530bDwA2IFzlEzfuAqB2FJLCT2Po9KvaWChEGs9GSRxDybkT2mqOIriEm1ePO+1eNs2yjY/qpmEGgYik8cs9TMnt1io0s6IGVHS1bl0bw0urwVti7TjgMNmHrjtVoO9pwj7REs5htXNhl7QuNOfhCawMkkLvi7Q8vUQnYBffT6llDZVWkAKfHfvHGA2HDBTB48sa9EciVgy7ORKEmhba0vinn3Vbfm4RaOoMTSjJjlBC+ojeHyYgBxoQFnMrXFO21x7vlPAbbSKviOuQUxxFr8OJ9Ijb4JXWTWNBYyTA9a2E8BQw48zbqw7vZRkw+x2x1JUZ3Vb+UW13iLASwQvGC+b/ivSZHxTZj8YNoHBnzU3fbJYZzpp28NKApVBsNI1+X07fZ0eq18bzIXy6XU5hb7aVhn4XqmUEAE1+kanxSFwq7DCC4OJpdKSaV9Dq9+9ZpJvJcsOZ9uP10E6dMWKoDPF1vME/FK43riRyZ2Nax3pqq3q21TEthOWg3LfETvk4hGYfAkzsN/+nKlnwHHlxKCJW3p7KKjN6FE9IZZ3xhL7CdK+dKA9jwfgo2Cq9QlnmpJDM9vfZhawzna9JDh0wInZh4H+oc=
+   file_glob: true
+   file: "**/target/*.jar"
+   skip_cleanup: true
+   name: CQF Ruler $TRAVIS_TAG
+   overwrite: true
+   target_commitish: $TRAVIS_COMMIT
+   on:
+      tags: true
 notifications:
-  slack:
-    - rooms:
-      - secure: UcwCk/9xDrkLXtaHPXJAsJuyZN7MIzRunndBpxMk/fwiAF56ZscPMu5IlPN72x2TqdkDPDAykGnczQ/w76txFcIzyH9/06fmXh//8XL/YWpERsfCW9q1XOn+xTTXwrxF5f6eaAMqYlNDe5tXLCOHCEnuHpdFNnFoNasZ2dTqaDNP+jjPLlSO0zhVv5zW4d75lpklg2+SQra5smgKW4eXJO6z4mXFJtkhN/lKwlgKCKbC+G8o3QO+zSJouyeCmr6xdPkTob1va8jNuR1SRIlk943btmZAUlfLh9pUMO2Hhay1BJhXpFrO5ZE3eCwU9jaoCyoTTPcVBytOKKNbGr1miRM/fDdxDYUMGQbqmkKDMqTZzkeLSbQPH92bs2lUILZf0xr2wbi8mZICdz0HZwRkaLzF6okIeQ69/b7/QNbDXAxKlT0DaShtidVbUfwNb/mUOXc3fkjn8vShPn7n9xtdLQvrGR9bJVHHBIDYS+dge2EtdPzsrmHsEhGS153uytPgF+zcYwRN83Xpyjk78+AMQFmzorErz6I+74ZQyXFzN4Z2Z1SfeGGpBp7uUK7dDD1WYVk370hf5oU19euWdSWmzBDajrLlalH25VKt140lQBMU6QyDmdraWM0f0iut034QbTUisOo+O2Km0AhZdTVTVmZSyLOJ6Ec+lusU2AHtayM=
-      on_success: always
-      on_failure: never
-    - rooms:
-      - secure: CNBq9ztma598N0CBeQNcvwvx6d+jHnI0B8iWAedqJ+oX+kYwCb4tBRTEwtflB0aQndAzn/5fba0S4tQ1gP9liRWb+RQIeBHVQgopEg7iNXYj6d4NIYBmVxpVq44szQI8T7mQJN/v1DFjXoCRbeMKiA5jN8OCrM4kowF4O15b+9RJ1bxbJULzop5K3WlZQQbsDSdxIuR3CGCmLakvf5G1cqHmHE1xWtXWFrNOSe32bp/Pdv7Vo5jaIeLG1b70G4SUUKk60+cwK9/NH4okewYgU5KlI+q51UW0Io8KEmsoFWV49dJ+1NfINM7uArVS3nNeJViMumR2ba1L1gUjGXj9FkuuIM8OS9FaxSss0IaQ8z+gNekuQLyvrE4020UNGY4/b1B8IueQcs+sucs4juCnvyTGdAEGiT23mVWdurqjT6qFTzYHSbXXd23KlmFoeLs46Iwo4mXwx6pxoUmBbNKpSXs7/irCz0GJHXjJAOb3JXxyBohyimKlfBZu1ZJhLytcsQD9SIVpX5B97SD1xD99BAN3sFgDUtZ91usLc3eSg1jaHmaSimw9PVGcoXHEkxiJYzQVPuZNQtwmRSu0zezAv9DhbkNzZAEBkC+vt1dBWzj9T9An3AwIlyANSb0P2qtC7wreHzvLq5duHA0zKGaMjtAZecnEXpIeuhuJhfximP4=
-      on_success: never
-      on_failure: always
+   slack:
+      - rooms:
+           - secure: UcwCk/9xDrkLXtaHPXJAsJuyZN7MIzRunndBpxMk/fwiAF56ZscPMu5IlPN72x2TqdkDPDAykGnczQ/w76txFcIzyH9/06fmXh//8XL/YWpERsfCW9q1XOn+xTTXwrxF5f6eaAMqYlNDe5tXLCOHCEnuHpdFNnFoNasZ2dTqaDNP+jjPLlSO0zhVv5zW4d75lpklg2+SQra5smgKW4eXJO6z4mXFJtkhN/lKwlgKCKbC+G8o3QO+zSJouyeCmr6xdPkTob1va8jNuR1SRIlk943btmZAUlfLh9pUMO2Hhay1BJhXpFrO5ZE3eCwU9jaoCyoTTPcVBytOKKNbGr1miRM/fDdxDYUMGQbqmkKDMqTZzkeLSbQPH92bs2lUILZf0xr2wbi8mZICdz0HZwRkaLzF6okIeQ69/b7/QNbDXAxKlT0DaShtidVbUfwNb/mUOXc3fkjn8vShPn7n9xtdLQvrGR9bJVHHBIDYS+dge2EtdPzsrmHsEhGS153uytPgF+zcYwRN83Xpyjk78+AMQFmzorErz6I+74ZQyXFzN4Z2Z1SfeGGpBp7uUK7dDD1WYVk370hf5oU19euWdSWmzBDajrLlalH25VKt140lQBMU6QyDmdraWM0f0iut034QbTUisOo+O2Km0AhZdTVTVmZSyLOJ6Ec+lusU2AHtayM=
+        on_success: always
+        on_failure: never
+      - rooms:
+           - secure: CNBq9ztma598N0CBeQNcvwvx6d+jHnI0B8iWAedqJ+oX+kYwCb4tBRTEwtflB0aQndAzn/5fba0S4tQ1gP9liRWb+RQIeBHVQgopEg7iNXYj6d4NIYBmVxpVq44szQI8T7mQJN/v1DFjXoCRbeMKiA5jN8OCrM4kowF4O15b+9RJ1bxbJULzop5K3WlZQQbsDSdxIuR3CGCmLakvf5G1cqHmHE1xWtXWFrNOSe32bp/Pdv7Vo5jaIeLG1b70G4SUUKk60+cwK9/NH4okewYgU5KlI+q51UW0Io8KEmsoFWV49dJ+1NfINM7uArVS3nNeJViMumR2ba1L1gUjGXj9FkuuIM8OS9FaxSss0IaQ8z+gNekuQLyvrE4020UNGY4/b1B8IueQcs+sucs4juCnvyTGdAEGiT23mVWdurqjT6qFTzYHSbXXd23KlmFoeLs46Iwo4mXwx6pxoUmBbNKpSXs7/irCz0GJHXjJAOb3JXxyBohyimKlfBZu1ZJhLytcsQD9SIVpX5B97SD1xD99BAN3sFgDUtZ91usLc3eSg1jaHmaSimw9PVGcoXHEkxiJYzQVPuZNQtwmRSu0zezAv9DhbkNzZAEBkC+vt1dBWzj9T9An3AwIlyANSb0P2qtC7wreHzvLq5duHA0zKGaMjtAZecnEXpIeuhuJhfximP4=
+        on_success: never
+        on_failure: always
