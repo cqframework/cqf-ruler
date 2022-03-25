@@ -16,7 +16,7 @@ The public sandbox is not persistent, has no authentication, and is regularly re
 
 [GUI](https://cloud.alphora.com/sandbox/r4/cqm/)
 
-[Open API Docs](https://cloud.alphora.com/sandbox/r4/cqm/fhir/api-docs/)
+[Open API Docs](https://cloud.alphora.com/sandbox/r4/cqm/fhir/api-docs)
 
 [Swagger UI](https://cloud.alphora.com/sandbox/r4/cqm/fhir/swagger-ui/)
 
