@@ -201,22 +201,3 @@ hapi:
 #  protocol: 'http'
 #  schema_management_strategy: CREATE
 #  username: SomeUsername
-
-# questionnaireResponseExtract.enabled=true
-# questionnaireResponseExtract.endpoint=http://localhost:8080/cqf-ruler-r4/fhir
-# #  https://cds4cpm-develop.sandbox.alphora.com/cqf-ruler-r4/fhir
-# questionnaireResponseExtract.username=
-# questionnaireResponseExtract.password=
-
-# observationTransform.enabled=true
-# observationTransform.username=
-# observationTransform.password=
-# observationTransform.replaceCode=false
-
-# ##################################################
-# # CDS-Hooks Settings
-# ##################################################
-# cds_hooks.fhirServer.maxCodesPerQuery=
-# cds_hooks.fhirServer.expandValueSets=
-# cds_hooks.fhirServer.searchStyle=
-# cds_hooks.prefetch.maxUriLength=
