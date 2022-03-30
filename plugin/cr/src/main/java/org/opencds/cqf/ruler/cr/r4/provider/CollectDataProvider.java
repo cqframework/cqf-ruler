@@ -52,7 +52,7 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn) {
 
 		MeasureReport report = measureEvaluateProvider.evaluateMeasure(theRequestDetails, theId, periodStart, periodEnd,
-				"subject", subject, practitioner, lastReceivedOn, null, null);
+				"subject", subject, practitioner, lastReceivedOn, null, null, null);
 		report.setType(MeasureReport.MeasureReportType.DATACOLLECTION);
 		report.setGroup(null);
 
