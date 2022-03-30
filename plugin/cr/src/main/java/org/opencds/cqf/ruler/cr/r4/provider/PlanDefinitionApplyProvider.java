@@ -36,12 +36,12 @@ import org.opencds.cqf.ruler.cr.r4.builder.RelatedArtifactBuilder;
 import org.opencds.cqf.ruler.cr.r4.builder.RequestGroupActionBuilder;
 import org.opencds.cqf.ruler.cr.r4.builder.RequestGroupBuilder;
 import org.opencds.cqf.ruler.cr.r4.helper.ContainedHelper;
+import org.opencds.cqf.ruler.utility.Canonicals;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.cql.r4.helper.CanonicalHelper;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.model.primitive.IdDt;
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -190,7 +190,7 @@ public class PlanDefinitionApplyProvider implements OperationProvider {
 								session.getPatientId(), session.getPractitionerId(), session.getOrganizationId(), theRequest);
 					} else {
 						result = this.activityDefinitionApplyProvider.apply(
-								theRequest, new IdType(CanonicalHelper.getId(action.getDefinitionCanonicalType())),
+								theRequest, new IdType(Canonicals.getIdPart(action.getDefinitionCanonicalType())),
 								session.getPatientId(), session.getEncounterId(), session.getPractitionerId(),
 								session.getOrganizationId(), null, session.getUserLanguage(),
 								session.getUserTaskContext(), session.getSetting(), session.getSettingContext());

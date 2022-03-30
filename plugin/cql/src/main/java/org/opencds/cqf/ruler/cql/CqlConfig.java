@@ -44,6 +44,8 @@ import org.springframework.context.annotation.Primary;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.support.IValidationSupport;
+import ca.uhn.fhir.cql.common.provider.CqlProviderFactory;
+import ca.uhn.fhir.cql.common.provider.CqlProviderLoader;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
@@ -131,7 +133,7 @@ public class CqlConfig {
 			@Override
 			public Triple<String, ModelResolver, RetrieveProvider> create(IBaseBundle dataBundle) {
 				return Triple.of(Constants.FHIR_MODEL_URI, modelResolver,
-				new BundleRetrieveProvider(fhirContext, dataBundle));
+						new BundleRetrieveProvider(fhirContext, dataBundle));
 			}
 		};
 
@@ -240,5 +242,18 @@ public class CqlConfig {
 	@Bean
 	public LibraryVersionSelector libraryVersionSelector(AdapterFactory adapterFactory) {
 		return new LibraryVersionSelector(adapterFactory);
+	}
+
+	// This overrides the base HAPI cql provider.
+	@Bean
+	@Primary
+	public CqlProviderLoader cqlProviderLoader() {
+		return null;
+	}
+
+	@Bean
+	@Primary
+	public CqlProviderFactory cqlProviderFactory() {
+		return null;
 	}
 }

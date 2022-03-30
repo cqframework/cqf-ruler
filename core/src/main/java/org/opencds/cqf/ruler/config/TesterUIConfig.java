@@ -24,6 +24,7 @@ public class TesterUIConfig {
 		dispatcherServlet.setContextConfigLocation(FhirTesterConfig.class.getName());
 
 		ServletRegistrationBean<DispatcherServlet> registrationBean = new ServletRegistrationBean<>();
+		registrationBean.setName("test ui servlet");
 		registrationBean.setServlet(dispatcherServlet);
 		registrationBean.addUrlMappings("/*");
 		registrationBean.setLoadOnStartup(1);
