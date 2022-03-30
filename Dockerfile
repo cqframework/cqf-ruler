@@ -1,5 +1,7 @@
 FROM openjdk:11
 
+RUN apt update && apt upgrade -y && rm -rf /var/lib/apt/lists/*
+
 RUN mkdir server
 RUN mkdir plugin
 COPY ./server/target/cqf-ruler-server-*.war server/ROOT.war
