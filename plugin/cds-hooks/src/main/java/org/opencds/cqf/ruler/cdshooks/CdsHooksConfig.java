@@ -44,7 +44,8 @@ public class CdsHooksConfig {
 		org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet cdsHooksServlet = new org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet();
 		beanFactory.autowireBean(cdsHooksServlet);
 
-		ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet> registrationBean = new ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet>();
+		ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
+		registrationBean.setName("cds-hooks servlet");
 		registrationBean.setServlet(cdsHooksServlet);
 		registrationBean.addUrlMappings("/cds-services/*");
 		registrationBean.setLoadOnStartup(1);
@@ -57,7 +58,8 @@ public class CdsHooksConfig {
 		org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet cdsHooksServlet = new org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet();
 		beanFactory.autowireBean(cdsHooksServlet);
 
-		ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet> registrationBean = new ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet>();
+		ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet> registrationBean = new ServletRegistrationBean<>();
+		registrationBean.setName("cds-hooks servlet");
 		registrationBean.setServlet(cdsHooksServlet);
 		registrationBean.addUrlMappings("/cds-services/*");
 		registrationBean.setLoadOnStartup(1);

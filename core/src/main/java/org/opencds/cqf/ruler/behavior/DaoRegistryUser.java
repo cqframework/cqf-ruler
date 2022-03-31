@@ -12,14 +12,18 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.api.model.DaoMethodOutcome;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.rest.api.SearchTotalModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 /**
- * Simulate FhirDal operations until that's fully baked. This interface is trying to be small and have a reasonable path forwards towards
- * model independence in the future. The method overloads with "RequestDetails" will eventually go away once we're able to make that a
- * cross-cutting concern. There are some ramifications to not using the "RequestDetails" such as not firing hooks on the server, so the
- * overloads with that parameter should generally be preferred for the short-term.
+ * Simulate FhirDal operations until that's fully baked. This interface is
+ * trying to be small and have a reasonable path forwards towards
+ * model independence in the future. The method overloads with "RequestDetails"
+ * will eventually go away once we're able to make that a
+ * cross-cutting concern. There are some ramifications to not using the
+ * "RequestDetails" such as not firing hooks on the server, so the
+ * overloads with that parameter should generally be preferred for the
+ * short-term.
  */
 public interface DaoRegistryUser extends FhirContextUser {
 
@@ -30,9 +34,11 @@ public interface DaoRegistryUser extends FhirContextUser {
 	}
 
 	/**
-	 * Get the class of the given Resource. FHIR version aware. For example, if the server is running in DSTU3 mode
+	 * Get the class of the given Resource. FHIR version aware. For example, if the
+	 * server is running in DSTU3 mode
 	 * this will return the DSTU3 Library class when invoked with "Library".
-	 * @param <T> the type of resource to return
+	 * 
+	 * @param <T>             the type of resource to return
 	 * @param theResourceName the name of the Resource to get the class for
 	 * @return the class of the resource
 	 */
@@ -42,8 +48,11 @@ public interface DaoRegistryUser extends FhirContextUser {
 	}
 
 	/**
-	 * Reads a Resource with the given Id from the local server. Throws an error if the Resource is not present
-	 * <p>NOTE: Use {@code search} if a null result is preferred over an error.
+	 * Reads a Resource with the given Id from the local server. Throws an error if
+	 * the Resource is not present
+	 * <p>
+	 * NOTE: Use {@code search} if a null result is preferred over an error.
+	 * 
 	 * @param <T>   the Resource type to read
 	 * @param theId the id to read
 	 * @return the FHIR Resource
@@ -56,8 +65,11 @@ public interface DaoRegistryUser extends FhirContextUser {
 	}
 
 	/**
-	 * Reads a Resource with the given Id from the local server. Throws an error if the Resource is not present
-	 * <p>NOTE: Use {@code search} if a null result is preferred over an error.
+	 * Reads a Resource with the given Id from the local server. Throws an error if
+	 * the Resource is not present
+	 * <p>
+	 * NOTE: Use {@code search} if a null result is preferred over an error.
+	 * 
 	 * @param <T>            the Resource type to read
 	 * @param theId          the id to read
 	 * @param requestDetails multi-tenancy information
@@ -74,7 +86,7 @@ public interface DaoRegistryUser extends FhirContextUser {
 	/**
 	 * Creates the given Resource on the local server
 	 * 
-	 * @param <T> The Resource type
+	 * @param <T>         The Resource type
 	 * @param theResource the resource to create
 	 * @return the outcome of the creation
 	 */
@@ -87,8 +99,8 @@ public interface DaoRegistryUser extends FhirContextUser {
 	/**
 	 * Creates the given Resource on the local server
 	 * 
-	 * @param <T> The Resource type
-	 * @param theResource the resource to create
+	 * @param <T>            The Resource type
+	 * @param theResource    the resource to create
 	 * @param requestDetails multi-tenancy information
 	 * @return the outcome of the creation
 	 */
@@ -103,7 +115,7 @@ public interface DaoRegistryUser extends FhirContextUser {
 	/**
 	 * Updates the given Resource on the local server
 	 * 
-	 * @param <T> The Resource type
+	 * @param <T>         The Resource type
 	 * @param theResource the resource to update
 	 * @return the outcome of the creation
 	 */
@@ -116,8 +128,8 @@ public interface DaoRegistryUser extends FhirContextUser {
 	/**
 	 * Updates the given Resource on the local server
 	 * 
-	 * @param <T> The Resource type
-	 * @param theResource the resource to update
+	 * @param <T>            The Resource type
+	 * @param theResource    the resource to update
 	 * @param requestDetails multi-tenancy information
 	 * @return the outcome of the creation
 	 */
@@ -144,7 +156,7 @@ public interface DaoRegistryUser extends FhirContextUser {
 	/**
 	 * Deletes the Resource with the given Id from the local server
 	 * 
-	 * @param theIdType the Id of the Resource to delete.
+	 * @param theIdType      the Id of the Resource to delete.
 	 * @param requestDetails multi-tenancy information
 	 * @return the outcome of the deletion
 	 */
@@ -155,10 +167,11 @@ public interface DaoRegistryUser extends FhirContextUser {
 	}
 
 	/**
-	 * NOTE: This is untested as of the time I'm writing this so it may need to be reworked.
+	 * NOTE: This is untested as of the time I'm writing this so it may need to be
+	 * reworked.
 	 * Executes a given transaction Bundle on the local server
 	 * 
-	 * @param <T> the type of Bundle
+	 * @param <T>            the type of Bundle
 	 * @param theTransaction the transaction to process
 	 * @return the transaction outcome
 	 */
@@ -169,11 +182,12 @@ public interface DaoRegistryUser extends FhirContextUser {
 	}
 
 	/**
-	 * NOTE: This is untested as of the time I'm writing this so it may need to be reworked.
+	 * NOTE: This is untested as of the time I'm writing this so it may need to be
+	 * reworked.
 	 * Executes a given transaction Bundle on the local server
 	 * 
-	 * @param <T> the type of Bundle
-	 * @param theTransaction the transaction to process
+	 * @param <T>               the type of Bundle
+	 * @param theTransaction    the transaction to process
 	 * @param theRequestDetails multi-tenancy information
 	 * @return the transaction outcome
 	 */
@@ -185,11 +199,12 @@ public interface DaoRegistryUser extends FhirContextUser {
 	}
 
 	/**
-	 * Searches for a Resource on the local server using the Search Parameters specified
+	 * Searches for a Resource on the local server using the Search Parameters
+	 * specified
 	 * 
-	 * @param <T> the type of Resource to return
+	 * @param <T>              the type of Resource to return
 	 * @param theResourceClass the class of the Resource
-	 * @param theSearchMap the Search Parameters
+	 * @param theSearchMap     the Search Parameters
 	 * @return Bundle provider
 	 */
 	default <T extends IBaseResource> TypedBundleProvider<T> search(Class<T> theResourceClass,
@@ -201,11 +216,12 @@ public interface DaoRegistryUser extends FhirContextUser {
 	}
 
 	/**
-	 * Searches for a Resource on the local server using the Search Parameters specified
+	 * Searches for a Resource on the local server using the Search Parameters
+	 * specified
 	 * 
-	 * @param <T> the type of Resource to return
-	 * @param theResourceClass the class of the Resource
-	 * @param theSearchMap the Search Parameters
+	 * @param <T>               the type of Resource to return
+	 * @param theResourceClass  the class of the Resource
+	 * @param theSearchMap      the Search Parameters
 	 * @param theRequestDetails multi-tenancy information
 	 * @return Bundle provider
 	 */
@@ -214,6 +230,12 @@ public interface DaoRegistryUser extends FhirContextUser {
 			RequestDetails theRequestDetails) {
 		checkNotNull(theResourceClass);
 		checkNotNull(theSearchMap);
+
+		// CQL Data providers and so on depend on this behavior.
+		// Basically, if the search total is not known the underlying hapi provider can
+		// return "null",
+		// Which is interpreted at "no resources or an async search result".
+		theSearchMap.setSearchTotalMode(SearchTotalModeEnum.ACCURATE);
 
 		return TypedBundleProvider.fromBundleProvider(
 				getDaoRegistry().getResourceDao(theResourceClass).search(theSearchMap, theRequestDetails));

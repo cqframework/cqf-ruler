@@ -10,6 +10,16 @@ See the [wiki](https://github.com/DBCG/cqf-ruler/wiki/Home) for more information
 
 ## Usage
 
+### Public Sandbox
+
+The public sandbox is not persistent, has no authentication, and is regularly reset. Do not store any sensitive data, PHI, or anything you need to be persistent on the sandbox:
+
+[GUI](https://cloud.alphora.com/sandbox/r4/cqm/)
+
+[Open API Docs](https://cloud.alphora.com/sandbox/r4/cqm/fhir/api-docs)
+
+[Swagger UI](https://cloud.alphora.com/sandbox/r4/cqm/fhir/swagger-ui/)
+
 ### Docker
 
 The easiest way to get started with the cqf-ruler is to pull and run the docker image
@@ -25,13 +35,13 @@ Other options for deployment are listed on the [wiki](https://github.com/DBCG/cq
 
 ### GUI
 
-The cqf-ruler provides the HAPI FHIR Tester UI which allows FHIR Resource CRUD at the server base url. That's <http://localhost:8080> if you're running with the Docker command above or check out a publicly hosted test server [here](https://cloud.alphora.com/sandbox/r4/cqm/).
+The cqf-ruler provides the HAPI FHIR Tester UI which allows FHIR Resource CRUD at the server base url. That's <http://localhost:8080> if you're running with the Docker command above.
 
 ### Swagger / Open API
 
-The cqf-ruler provides Swagger UI for the REST API and test interface at [http://localhost:8080/fhir/swagger-ui/](http://localhost:8080/fhir/swagger-ui/). Check out a public test sever [here](https://cloud.alphora.com/sandbox/r4/cqm/fhir/swagger-ui/)
+The cqf-ruler provides Swagger UI for the REST API and test interface at [http://localhost:8080/fhir/swagger-ui/](http://localhost:8080/fhir/swagger-ui/).
 
-Similarly, Open API docs are available at [http://localhost:8080/fhir/api-docs](http://localhost:8080/fhir/api-docs). The public test server is [here](https://cloud.alphora.com/sandbox/r4/cqm/fhir/api-docs)
+Similarly, Open API docs are available at [http://localhost:8080/fhir/api-docs](http://localhost:8080/fhir/api-docs).
 
 ### Example Operations
 

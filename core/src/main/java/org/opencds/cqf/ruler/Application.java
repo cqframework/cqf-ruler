@@ -59,9 +59,10 @@ public class Application extends SpringBootServletInitializer {
 	@Bean
 	@Conditional(OnEitherVersion.class)
 	public ServletRegistrationBean<Server> hapiServletRegistration() {
-		ServletRegistrationBean<Server> servletRegistrationBean = new ServletRegistrationBean<Server>();
+		ServletRegistrationBean<Server> servletRegistrationBean = new ServletRegistrationBean<>();
 		Server server = new Server();
 		beanFactory.autowireBean(server);
+		servletRegistrationBean.setName("fhir servlet");
 		servletRegistrationBean.setServlet(server);
 		servletRegistrationBean.addUrlMappings("/fhir/*");
 		servletRegistrationBean.setLoadOnStartup(1);

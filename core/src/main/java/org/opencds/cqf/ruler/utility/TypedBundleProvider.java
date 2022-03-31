@@ -15,13 +15,14 @@ import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
 public class TypedBundleProvider<T extends IBaseResource> implements IBundleProvider {
-	
+
 	private IBundleProvider myInnerProvider;
 
-	public static <T extends IBaseResource> TypedBundleProvider<T> fromBundleProvider(IBundleProvider theBundleProvider) {
+	public static <T extends IBaseResource> TypedBundleProvider<T> fromBundleProvider(
+			IBundleProvider theBundleProvider) {
 		return new TypedBundleProvider<>(theBundleProvider);
 	}
-	
+
 	private TypedBundleProvider(IBundleProvider theInnerProvider) {
 		myInnerProvider = checkNotNull(theInnerProvider);
 	}
@@ -53,7 +54,8 @@ public class TypedBundleProvider<T extends IBaseResource> implements IBundleProv
 
 	@SuppressWarnings("unchecked")
 	public List<T> getResourcesTyped(int theFromIndex, int theToIndex) {
-		return myInnerProvider.getResources(theFromIndex, theToIndex).stream().map(x -> (T)x).collect(Collectors.toList());
+		return myInnerProvider.getResources(theFromIndex, theToIndex).stream().map(x -> (T) x)
+				.collect(Collectors.toList());
 	}
 
 	public List<T> getAllResourcesTyped() {
@@ -61,7 +63,8 @@ public class TypedBundleProvider<T extends IBaseResource> implements IBundleProv
 
 		Integer size = size();
 		if (size == null) {
-			throw new ConfigurationException("Attempt to request all resources from an asynchronous search result.  The SearchParameterMap for this search probably should have been synchronous.");
+			throw new ConfigurationException(
+					"Attempt to request all resources from an asynchronous search result.  The SearchParameterMap for this search probably should have been synchronous.");
 		}
 		if (size > 0) {
 			retVal.addAll(getResourcesTyped(0, size));
@@ -70,7 +73,8 @@ public class TypedBundleProvider<T extends IBaseResource> implements IBundleProv
 	}
 
 	/**
-	 * Returns exactly one Resource. Throws an error if zero or more than one resource is found or if zero resources are found
+	 * Returns exactly one Resource. Throws an error if zero or more than one
+	 * resource is found or if zero resources are found
 	 * 
 	 * @return the Resource found.
 	 */
