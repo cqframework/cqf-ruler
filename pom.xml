@@ -73,7 +73,7 @@
 		<javax.version>8.0.1</javax.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring_boot_version>2.5.6</spring_boot_version>
+		<spring_boot_version>2.5.12</spring_boot_version>
 		<spring_version>5.3.12</spring_version>
 	</properties>
 
