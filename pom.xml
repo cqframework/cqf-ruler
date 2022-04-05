@@ -73,8 +73,8 @@
 		<javax.version>8.0.1</javax.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring_boot_version>2.5.6</spring_boot_version>
-		<spring_version>5.3.12</spring_version>
+		<spring_boot_version>2.5.12</spring_boot_version>
+		<spring_version>5.3.18</spring_version>
 	</properties>
 
 	<dependencyManagement>
@@ -94,6 +94,14 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-framework-bom</artifactId>
+				<version>${spring_version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
 			<dependency>
 				<!-- Import dependency management from Spring Boot -->
 				<groupId>org.springframework.boot</groupId>
@@ -138,11 +146,6 @@
 				<artifactId>flexmark</artifactId>
 				<version>${flexmark_version}</version>
 			</dependency>
-			<!-- <dependency>
-                <groupId>com.vladsch.flexmark</groupId>
-                <artifactId>flexmark-ext</artifactId>
-                <version>.11_1</version>
-            </dependency> -->
 			<dependency>
 				<groupId>com.vladsch.flexmark</groupId>
 				<artifactId>flexmark-ext-autolink</artifactId>
@@ -309,12 +312,6 @@
 				<groupId>org.opencds.cqf.cql</groupId>
 				<artifactId>evaluator.spring</artifactId>
 				<version>${cql-evaluator.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context</artifactId>
-				<version>${spring_version}</version>
 			</dependency>
 
 			<dependency>
@@ -578,8 +575,6 @@
 							</goals>
 							<phase>generate-sources</phase>
 							<configuration>
-								<!-- <configLocation>google_checks.xml</configLocation> -->
-								<!--suppress UnresolvedMavenProperty -->
 								<configLocation>config/checkstyle/checkstyle.xml</configLocation>
 								<encoding>UTF-8</encoding>
 								<consoleOutput>true</consoleOutput>
