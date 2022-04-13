@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import org.hl7.fhir.dstu3.model.Endpoint;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Measure;
@@ -7,6 +9,7 @@ import org.hl7.fhir.dstu3.model.MeasureReport;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.opencds.cqf.cql.engine.data.DataProvider;
+import org.opencds.cqf.cql.engine.fhir.terminology.Dstu3FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
@@ -16,6 +19,7 @@ import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.utility.Clients;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.model.api.annotation.Description;
@@ -74,10 +78,20 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "practitioner") String practitioner,
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn,
 			@OperationParam(name = "productLine") String productLine,
-		   @OperationParam(name = "additionalData") Bundle additionalData) {
+		   @OperationParam(name = "additionalData") Bundle additionalData,
+		   @OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
 		Measure measure = read(theId);
-		TerminologyProvider terminologyProvider = this.jpaTerminologyProviderFactory.create(requestDetails);
+
+		TerminologyProvider terminologyProvider;
+
+		if (terminologyEndpoint != null) {
+			IGenericClient client = Clients.forEndpoint(getFhirContext(), terminologyEndpoint);
+			terminologyProvider = new Dstu3FhirTerminologyProvider(client);
+		} else {
+			terminologyProvider = this.jpaTerminologyProviderFactory.create(requestDetails);
+		}
+
 		DataProvider dataProvider = this.jpaDataProviderFactory.create(requestDetails, terminologyProvider);
 		LibraryContentProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
