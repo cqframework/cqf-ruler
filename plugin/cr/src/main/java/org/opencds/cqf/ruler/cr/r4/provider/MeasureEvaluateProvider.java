@@ -106,7 +106,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			this.globalLibraryCache);
 
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
-			subject, null, lastReceivedOn, null, terminologyEndpoint, null, additionalData);
+			subject, null, lastReceivedOn, null, null, null, additionalData);
 
 		if (productLine != null) {
 			Extension ext = new Extension();
