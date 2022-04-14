@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = { MeasureEvaluateProviderIT.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { MeasureEvaluateProviderIT.class,
 		CrConfig.class, CqlConfig.class, DevToolsConfig.class }, properties = {
 				"hapi.fhir.fhir_version=dstu3",
 		})
@@ -52,6 +52,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 		String terminologyAsText = stringFromResource( "Endpoint.json");
 		Endpoint terminologyEndpoint = (Endpoint)getFhirContext().newJsonParser().parseResource(terminologyAsText);
+		terminologyEndpoint.setAddress(String.format("http://localhost:%s/fhir/",getPort()));
 
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
