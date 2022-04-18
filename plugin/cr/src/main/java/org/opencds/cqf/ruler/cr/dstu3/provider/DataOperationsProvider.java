@@ -23,6 +23,7 @@ import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
+import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryManagerFactory;
@@ -31,7 +32,7 @@ import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Ids;
 import org.opencds.cqf.ruler.utility.Libraries;
 import org.opencds.cqf.ruler.utility.Searches;
-import org.opencds.cqf.ruler.utility.Translators;
+import org.opencds.cqf.ruler.cql.utility.Translators;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -53,6 +54,9 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
 	private AdapterFactory adapterFactory;
+
+	@Autowired
+	private CqlConfig cqlConfig;
 
 	@Operation(name = "$data-requirements", idempotent = true, type = Library.class)
 	public Library dataRequirements(@IdParam IdType theId, @OperationParam(name = "target") String target,
@@ -138,7 +142,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		CqlTranslator translator = translateLibrary(library, libraryManager);
 
 		return DataRequirements.getModuleDefinitionLibraryDstu3(measure, libraryManager,
-				translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
+				translator.getTranslatedLibrary(), cqlConfig.cqlProperties().getCqlTranslatorOptions());
 	}
 
 	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {
@@ -146,7 +150,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		CqlTranslator translator = translateLibrary(library, libraryManager);
 
 		return DataRequirements.getModuleDefinitionLibraryDstu3(libraryManager,
-				translator.getTranslatedLibrary(), Translators.getTranslatorOptions());
+				translator.getTranslatedLibrary(), cqlConfig.cqlProperties().getCqlTranslatorOptions());
 	}
 
 	private List<Library> fetchDependencyLibraries(Library library, RequestDetails theRequestDetails) {
