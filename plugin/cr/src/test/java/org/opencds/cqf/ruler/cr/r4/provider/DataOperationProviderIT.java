@@ -66,7 +66,7 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 				case "Encounter": {
 					String query = dr.getExtensionByUrl("http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-fhirQueryPattern").getValueAsPrimitive().getValueAsString();
 					if (dr.hasCodeFilter()) {
-						assertTrue("Encounter?status=finished&subject=Patient/{{context.patientId}}&type:in=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.292".equals(query));
+						assertTrue("Encounter?subject=Patient/{{context.patientId}}&type:in=http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.292".equals(query));
 					}
 					else {
 						assertTrue("Encounter?subject=Patient/{{context.patientId}}".equals(query));
