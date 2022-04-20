@@ -8,7 +8,7 @@ import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.FhirLibrarySourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
-import org.opencds.cqf.ruler.utility.Translators;
+import org.opencds.cqf.ruler.cql.utility.Translators;
 
 public class CqlBuilder {
 

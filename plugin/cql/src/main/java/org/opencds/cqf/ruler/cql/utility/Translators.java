@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.utility;
+package org.opencds.cqf.ruler.cql.utility;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

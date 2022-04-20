@@ -29,6 +29,14 @@ public class CqlProperties {
 	public void setUse_embedded_cql_translator_content(boolean use_embedded_cql_translator_content) {
 		this.use_embedded_cql_translator_content = use_embedded_cql_translator_content;
 	}
+	
+	public boolean getCql_logging_enabled() {
+		return cql_logging_enabled;
+	}
+
+	public void setCql_logging_enabled(boolean cql_logging_enabled) {
+		this.cql_logging_enabled = cql_logging_enabled;
+	}
 
 	public CqlTranslatorOptions getCqlTranslatorOptions() {
 		return this.cqlTranslatorOptions;
@@ -36,13 +44,5 @@ public class CqlProperties {
 
 	public void setCqlTranslatorOptions(CqlTranslatorOptions cqlTranslatorOptions) {
 		this.cqlTranslatorOptions = cqlTranslatorOptions;
-	}
-
-	public boolean getCql_logging_enabled() {
-		return cql_logging_enabled;
-	}
-
-	public void setCql_logging_enabled(boolean cql_logging_enabled) {
-		this.cql_logging_enabled = cql_logging_enabled;
 	}
 }

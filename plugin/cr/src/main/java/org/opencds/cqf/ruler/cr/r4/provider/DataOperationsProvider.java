@@ -34,8 +34,9 @@ import org.opencds.cqf.ruler.utility.CanonicalParts;
 import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Libraries;
 import org.opencds.cqf.ruler.utility.Searches;
-import org.opencds.cqf.ruler.utility.Translators;
+import org.opencds.cqf.ruler.cql.utility.Translators;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.opencds.cqf.ruler.cql.CqlConfig;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -66,6 +67,9 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
 	ModelResolver myModelResolver;
+
+	@Autowired
+	private CqlConfig cqlConfig;
 
 	@Operation(name = "$data-requirements", idempotent = true, type = Library.class)
 	public Library dataRequirements(@IdParam IdType theId,
@@ -154,7 +158,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		// TODO: Pass the server's capability statement
 		// TODO: Enable passing a capability statement as a parameter to the operation
 		return DataRequirements.getModuleDefinitionLibraryR4(libraryManager, translator.getTranslatedLibrary(),
-				Translators.getTranslatorOptions(), searchParameterResolver,
+				cqlConfig.cqlProperties().getCqlTranslatorOptions(), searchParameterResolver,
 				jpaTerminologyProviderFactory.create(theRequestDetails),
 				myModelResolver, null);
 	}
@@ -166,7 +170,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		// TODO: Pass the server's capability statement
 		// TODO: Enable passing a capabiliity statement as a parameter to the operation
 		return DataRequirements.getModuleDefinitionLibraryR4(measure, libraryManager, translator.getTranslatedLibrary(),
-				Translators.getTranslatorOptions(), searchParameterResolver,
+				cqlConfig.cqlProperties().getCqlTranslatorOptions(), searchParameterResolver,
 				jpaTerminologyProviderFactory.create(theRequestDetails),
 				myModelResolver, null);
 	}
