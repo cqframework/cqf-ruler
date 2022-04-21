@@ -9,34 +9,17 @@
 		</encoder>
 	</appender>
 
-	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>messages.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>messages.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
-			<maxHistory>10</maxHistory>
-			<totalSizeCap>1GB</totalSizeCap>
-		</rollingPolicy>
-
-		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%file:%line] %msg%n</pattern>
-		</encoder>
-	</appender>
-
 	<logger name="org.springframework.beans" level="INFO">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="FILE"/>
 	</logger>
 	<logger name="org.springframework.core" level="INFO">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="FILE"/>
 	</logger>
 	<logger name = "org.opencds.cqf.cql.engine.debug" level="DEBUG" additivity="false">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="FILE"/>
 	</logger>
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="FILE" />
 	</root>
 </configuration>
