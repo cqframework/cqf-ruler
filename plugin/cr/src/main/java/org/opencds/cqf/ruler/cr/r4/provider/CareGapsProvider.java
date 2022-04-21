@@ -318,7 +318,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		MeasureReport report = null;
 		for (Measure measure : measures) {
 			report = measureEvaluateProvider.evaluateMeasure(requestDetails, measure.getIdElement(), periodStart,
-					periodEnd, "patient", Ids.simple(patient), null, null, null, null);
+					periodEnd, "patient", Ids.simple(patient), null, null, null, null, null);
 
 			if (!report.hasGroup()) {
 				ourLog.info("Report does not include a group so skipping.\nSubject: {}\nMeasure: {}",

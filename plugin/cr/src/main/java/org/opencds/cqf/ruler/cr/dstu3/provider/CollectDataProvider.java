@@ -56,7 +56,7 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn) {
 
 		MeasureReport report = measureEvaluateProvider.evaluateMeasure(theRequestDetails, theId, periodStart, periodEnd,
-				"subject", subject, practitioner, lastReceivedOn, null, null);
+				"subject", subject, practitioner, lastReceivedOn, null, null,null);
 
 		// TODO: Data collection doesn't exist?
 		report.setType(MeasureReportType.SUMMARY);

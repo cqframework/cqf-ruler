@@ -2420,7 +2420,7 @@
 				"publisher": "NLM",
 				"compose": {
 					"include": [ {
-						"system": "http://www.phdsc.org/standards/pdfs/SourceofPaymentTypologyVersion6FINALSeptember2015.pdf",
+						"system": "http://snomed.info/sct",
 						"version": "8.0",
 						"concept": [ {
 							"code": "1",
