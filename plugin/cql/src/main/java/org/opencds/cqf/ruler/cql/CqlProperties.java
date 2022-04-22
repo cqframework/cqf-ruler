@@ -10,7 +10,7 @@ public class CqlProperties {
 
 	private boolean use_embedded_cql_translator_content = true;
 
-	private boolean cql_logging_enabled = true;
+	private boolean cql_logging_enabled = false;
 
 	private CqlTranslatorOptions cqlTranslatorOptions = CqlTranslatorOptions.defaultOptions();
 
@@ -29,7 +29,7 @@ public class CqlProperties {
 	public void setUse_embedded_cql_translator_content(boolean use_embedded_cql_translator_content) {
 		this.use_embedded_cql_translator_content = use_embedded_cql_translator_content;
 	}
-	
+
 	public boolean getCql_logging_enabled() {
 		return cql_logging_enabled;
 	}

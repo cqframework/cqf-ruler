@@ -64,7 +64,6 @@ hapi:
       #    allow_override_default_search_params: true
       #    allow_placeholder_references: true
       #    auto_create_placeholder_reference_targets: false
-      #    cql_enabled: true
       #    default_encoding: JSON
       #    default_pretty_print: true
       #    default_page_size: 20
@@ -139,6 +138,16 @@ hapi:
       ###   2: NORMALIZED_QUANTITY_SEARCH_SUPPORTED
       #    normalized_quantity_search_level: 2
 
+      ## CQL Settings
+      cql:
+         # enabled: true
+         # cql_logging_enabled: false
+         # use_embedded_cql_translator_content: true
+         #cqlTranslatorOptions:
+         #    analyzeDataRequirements: false
+         #    collapseDataRequirements: true
+         # options: "EnableAnnotations,EnableLocators,DisableListDemotion,DisableListPromotion"
+
       ## RA Settings
       ra:
          report:
@@ -158,6 +167,7 @@ hapi:
 
       ## Dev Tools Settings
       devtools:
+         # enabled: true
 
       ## Security settings
       security:
