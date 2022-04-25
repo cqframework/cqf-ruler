@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM openjdk:18-slim-bullseye
 
 RUN apt update && apt upgrade -y && rm -rf /var/lib/apt/lists/*
 
