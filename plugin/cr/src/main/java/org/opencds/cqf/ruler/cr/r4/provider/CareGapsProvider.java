@@ -209,7 +209,6 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			// TODO: implement non subject parameters (practitioner and organization)
 			throw new NotImplementedException("Non subject parameters have not been implemented.");
 		}
-		System.out.println("no of patients:"+ patients.size());
 
 		StopWatch watch = StopWatch.createStarted();
       List<CompletableFuture<Parameters.ParametersParameterComponent>> futures = new ArrayList<>();
@@ -224,10 +223,6 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 				});
 
 		futures.forEach(x -> result.addParameter(x.join()));
-
-		System.out.println(getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(result));
-
-		System.out.println("time:"+watch.getTime());
 		return result;
 	}
 
@@ -280,7 +275,6 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	private List<Measure> ensureMeasures(List<Measure> measures) {
-		System.out.println("No of measures:" + measures.size());
 		measures.forEach(measure -> {
 			if (!measure.hasScoring()) {
 				ourLog.info("Measure does not specify a scoring so skipping: {}.", measure.getId());
@@ -303,7 +297,6 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			String periodEnd, Patient patient, List<String> status, List<Measure> measures, String organization) {
 		// TODO: add organization to report, if it exists.
 
-		System.out.println("Starting patient:" + patient.getId());
 		Composition composition = getComposition(patient);
 		List<DetectedIssue> detectedIssues = new ArrayList<>();
 		Map<String, Resource> evaluatedResources = new HashMap<>();
