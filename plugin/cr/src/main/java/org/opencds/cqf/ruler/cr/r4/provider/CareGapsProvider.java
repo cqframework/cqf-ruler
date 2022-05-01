@@ -210,7 +210,6 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			throw new NotImplementedException("Non subject parameters have not been implemented.");
 		}
 
-		StopWatch watch = StopWatch.createStarted();
       List<CompletableFuture<Parameters.ParametersParameterComponent>> futures = new ArrayList<>();
 
 		Parameters result = initializeResult();
