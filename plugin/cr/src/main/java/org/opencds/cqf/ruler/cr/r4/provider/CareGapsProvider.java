@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 import com.google.common.base.Strings;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
