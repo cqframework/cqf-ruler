@@ -8,7 +8,7 @@ To setup the project follow the instructions mentioned [here](https://github.com
 
 ## Usage
 
-To use the Member Attribution List API's import the Postman collection added as part of this plugin into the Postman client. 
+To use the Member Attribution List API's import the [Postman collection](https://github.com/DBCG/cqf-ruler/blob/feature-mal/mal/MAL-API's.postman_collection.json) added as part of this plugin into the Postman client. 
 
 ### Instructions to test the MAL API's
 1. Create a Bundle of type transaction and add Patient, Coverage, RelatedPerson, Practitioner, PractitionerRole, Organization, Location resources as bundle entries. 
