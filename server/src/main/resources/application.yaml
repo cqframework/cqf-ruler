@@ -3,18 +3,19 @@ spring:
    main:
       allow-bean-definition-overriding: true
    datasource:
-      url: "jdbc:h2:file:./target/database/h2"
+      url: "jdbc:postgresql://localhost:5432/hapi_r4"
       #url: jdbc:h2:mem:test_mem
-      username: sa
-      password: null
-      driverClassName: org.h2.Driver
+      username: postgres
+      password: postgres
+      driverClassName: org.postgresql.Driver
       max-active: 15
    jpa:
       properties:
          hibernate.format_sql: false
          hibernate.show_sql: false
+         #hibernate.packages-Scan: org.hl7.davinci.atr.server.model
    #      hibernate.dialect: org.hibernate.dialect.h2dialect
-   #      hibernate.hbm2ddl.auto: update
+         #hibernate.hbm2ddl.auto: create
    #      hibernate.jdbc.batch_size: 20
    #      hibernate.cache.use_query_cache: false
    #      hibernate.cache.use_second_level_cache: false
@@ -117,7 +118,7 @@ hapi:
       #      requests_enabled: true
       #      responses_enabled: true
       #    binary_storage_enabled: true
-      #    bulk_export_enabled: true
+      bulk_export_enabled: true
       #    subscription:
       #      resthook_enabled: false
       #      websocket_enabled: false
