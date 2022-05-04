@@ -1,6 +1,6 @@
-FROM openjdk:11
+FROM openjdk:18-slim-bullseye
 
-RUN apt update && apt upgrade -y && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir server
 RUN mkdir plugin

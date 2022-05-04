@@ -14,8 +14,8 @@
 				"-XX:TieredStopAtLevel=1",
 				"-Xverify:none",
 				"-Dspring.main.lazy-initialization=true",
-				"-Dloader.debug=true",
-				"-Ddebug=true"
+				"-Ddebug=true",
+				"-Dloader.debug=true"
 			],
 			"stepFilters": {
 				"classNameFilters": [
@@ -59,8 +59,8 @@
 				"-XX:TieredStopAtLevel=1",
 				"-Xverify:none",
 				"-Dspring.main.lazy-initialization=true",
-				"-Dloader.debug=true",
 				"-Ddebug=true",
+				"-Dloader.debug=true",
 				"-Dhapi.fhir.fhir_version=DSTU3"
 			],
 			"stepFilters": {
