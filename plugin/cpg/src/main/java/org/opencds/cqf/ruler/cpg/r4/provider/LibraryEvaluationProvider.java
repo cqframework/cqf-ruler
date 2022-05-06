@@ -247,13 +247,15 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 												.getResourceType() + "/"
 												+ ((Resource) ((List<?>) res).get(0)).getIdElement().getIdPart()));
 							} else {
-								result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res, theRequestDetails.getFhirServerBase()));
+								result.addParameter().setName("value").setResource(
+										bundler.bundle((Iterable<Resource>) res, theRequestDetails.getFhirServerBase()));
 							}
 						} else {
 							result.addParameter().setName("value").setValue(new StringType(res.toString()));
 						}
 					} else if (res instanceof Iterable) {
-						result.addParameter().setName("value").setResource(bundler.bundle((Iterable<Resource>) res, theRequestDetails.getFhirServerBase()));
+						result.addParameter().setName("value")
+								.setResource(bundler.bundle((Iterable<Resource>) res, theRequestDetails.getFhirServerBase()));
 					} else if (res instanceof Resource) {
 						if (executionResults != null && executionResults.equals("Summary")) {
 							result.addParameter().setName("value")
@@ -316,7 +318,7 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (myCqlProperties.getCql_logging_enabled()) {
+		if (myCqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;

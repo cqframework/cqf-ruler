@@ -45,7 +45,7 @@ import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.request.JsonHelper;
 import org.opencds.cqf.ruler.cdshooks.request.Request;
 import org.opencds.cqf.ruler.cdshooks.response.CdsCard;
-import org.opencds.cqf.ruler.cql.CqlConfig;
+import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
@@ -71,7 +71,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	private CqlConfig cqlConfig;
+	private CqlProperties cqlProperties;
 
 	@Autowired
 	private DaoRegistry daoRegistry;
@@ -366,7 +366,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (cqlConfig.cqlProperties().getCql_logging_enabled()) {
+		if (cqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;
