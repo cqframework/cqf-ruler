@@ -22,7 +22,7 @@ import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 		"hapi.fhir.subscription.websocket_enabled=true",
 		"hapi.fhir.allow_external_references=true",
 		"hapi.fhir.allow_placeholder_references=true",
-		"flyway.enabled=false"
+		"spring.flyway.enabled=false"
 })
 
 public class ExampleServerDstu3IT {

@@ -26,7 +26,7 @@ import ca.uhn.fhir.rest.server.provider.ProviderConstants;
 		"hapi.fhir.fhir_version=r4",
 		"hapi.fhir.subscription.websocket_enabled=true",
 		"hapi.fhir.partitioning.partitioning_include_in_search_hashes=false",
-		"flyway.enabled=false"
+		"spring.flyway.enabled=false"
 })
 public class MultitenantServerR4IT {
 	private IGenericClient ourClient;
