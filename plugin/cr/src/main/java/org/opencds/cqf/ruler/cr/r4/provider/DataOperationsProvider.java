@@ -24,19 +24,19 @@ import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
+import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryManagerFactory;
+import org.opencds.cqf.ruler.cql.utility.Translators;
 import org.opencds.cqf.ruler.cr.utility.DataRequirements;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.CanonicalParts;
 import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Libraries;
 import org.opencds.cqf.ruler.utility.Searches;
-import org.opencds.cqf.ruler.cql.utility.Translators;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.opencds.cqf.ruler.cql.CqlConfig;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -158,7 +158,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		// TODO: Pass the server's capability statement
 		// TODO: Enable passing a capability statement as a parameter to the operation
 		return DataRequirements.getModuleDefinitionLibraryR4(libraryManager, translator.getTranslatedLibrary(),
-				cqlConfig.cqlProperties().getCqlTranslatorOptions(), searchParameterResolver,
+				cqlConfig.cqlProperties().getOptions().getCqlTranslatorOptions(), searchParameterResolver,
 				jpaTerminologyProviderFactory.create(theRequestDetails),
 				myModelResolver, null);
 	}
@@ -170,7 +170,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		// TODO: Pass the server's capability statement
 		// TODO: Enable passing a capabiliity statement as a parameter to the operation
 		return DataRequirements.getModuleDefinitionLibraryR4(measure, libraryManager, translator.getTranslatedLibrary(),
-				cqlConfig.cqlProperties().getCqlTranslatorOptions(), searchParameterResolver,
+				cqlConfig.cqlProperties().getOptions().getCqlTranslatorOptions(), searchParameterResolver,
 				jpaTerminologyProviderFactory.create(theRequestDetails),
 				myModelResolver, null);
 	}

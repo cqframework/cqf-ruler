@@ -36,7 +36,8 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 		"hapi.fhir.auto_create_placeholder_reference_targets=true",
 		"hapi.fhir.client_id_strategy=ANY",
 		"spring.datasource.url=jdbc:h2:mem:db",
-		"spring.main.lazy-initialization=true" })
+		"spring.main.lazy-initialization=true",
+		"spring.flyway.enabled=false" })
 @TestInstance(Lifecycle.PER_CLASS)
 public class RestIntegrationTest implements ResourceLoader, ResourceCreator, IdCreator {
 

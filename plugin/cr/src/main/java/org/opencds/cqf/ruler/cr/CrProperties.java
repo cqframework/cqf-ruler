@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cr;
 
+import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.ruler.builder.ResourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -7,6 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class CrProperties {
 	private boolean enabled = true;
 	private MeasureReportConfiguration measure_report;
+
+	private MeasureEvaluationOptions measure_evaluation = MeasureEvaluationOptions.defaultOptions();
 
 	public boolean getEnabled() {
 		return enabled;
@@ -22,6 +25,14 @@ public class CrProperties {
 
 	public void setMeasureReport(MeasureReportConfiguration measureReport) {
 		this.measure_report = measureReport;
+	}
+
+	public MeasureEvaluationOptions getMeasureEvaluation() {
+		return this.measure_evaluation;
+	}
+
+	public void setMeasureEvaluation(MeasureEvaluationOptions measureEvaluation) {
+		this.measure_evaluation = measureEvaluation;
 	}
 
 	public static class MeasureReportConfiguration {

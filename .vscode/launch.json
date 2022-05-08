@@ -12,7 +12,6 @@
 			"projectName": "cqf-ruler-server",
 			"vmArgs": [
 				"-XX:TieredStopAtLevel=1",
-				"-Xverify:none",
 				"-Dspring.main.lazy-initialization=true",
 				"-Ddebug=true",
 				"-Dloader.debug=true"
@@ -34,30 +33,12 @@
 		},
 		{
 			"type": "java",
-			"name": "Attach",
-			"request": "attach",
-			"hostName": "localhost",
-			"port": "5005",
-			"stepFilters": {
-				"classNameFilters": [
-					"java.*",
-					"javax.*",
-					"com.sun.*",
-					"sun.*",
-					"sunw.*",
-					"org.omg.*"
-				]
-			}
-		},
-		{
-			"type": "java",
 			"name": "Launch Server DSTU3 (Live Reload)",
 			"request": "launch",
 			"mainClass": "org.opencds.cqf.ruler.Application",
 			"projectName": "cqf-ruler-server",
 			"vmArgs": [
 				"-XX:TieredStopAtLevel=1",
-				"-Xverify:none",
 				"-Dspring.main.lazy-initialization=true",
 				"-Ddebug=true",
 				"-Dloader.debug=true",

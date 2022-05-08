@@ -537,7 +537,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 
 	private DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (myCqlProperties.getCql_logging_enabled()) {
+		if (myCqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;
