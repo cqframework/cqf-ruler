@@ -33,6 +33,37 @@
 		},
 		{
 			"type": "java",
+			"name": "Launch Server R4 (Live Reload) - Local Postgres",
+			"request": "launch",
+			"mainClass": "org.opencds.cqf.ruler.Application",
+			"projectName": "cqf-ruler-server",
+			"vmArgs": [
+				"-XX:TieredStopAtLevel=1",
+				"-Dspring.main.lazy-initialization=true",
+				"-Ddebug=true",
+				"-Dloader.debug=true",
+				"-Dspring.datasource.url=jdbc:postgresql://localhost:5432/postgres",
+				"-Dspring.datasource.username=postgres",
+				"-Dspring.datasource.password=",
+				"-Dspring.datasource.driverClassName=org.postgresql.Driver"
+			],
+			"stepFilters": {
+				"classNameFilters": [
+					"java.*",
+					"javax.*",
+					"com.sun.*",
+					"sun.*",
+					"sunw.*",
+					"org.omg.*"
+				]
+			},
+			"classPaths": [
+				"$Auto",
+				"$Runtime"
+			]
+		},
+		{
+			"type": "java",
 			"name": "Launch Server DSTU3 (Live Reload)",
 			"request": "launch",
 			"mainClass": "org.opencds.cqf.ruler.Application",
