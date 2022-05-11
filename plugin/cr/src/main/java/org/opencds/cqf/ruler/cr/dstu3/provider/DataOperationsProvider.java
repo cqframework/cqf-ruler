@@ -41,6 +41,7 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.springframework.util.StringUtils;
 
 public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	@Autowired
@@ -172,10 +173,12 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			if (relatedArtifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON)
 					&& relatedArtifact.hasResource()) {
 				IdType id = Ids.newId(Library.class, relatedArtifact.getResource().getReference());
-				Library lib = search(Library.class, Searches.byId(id), theRequestDetails).firstOrNull();
-				if (lib != null) {
-					resources.putIfAbsent(lib.getId(), lib);
-					queue.add(lib);
+				if(id != null && StringUtils.hasText(id.getId())) {
+					Library lib = search(Library.class, Searches.byId(id), theRequestDetails).firstOrNull();
+					if (lib != null) {
+						resources.putIfAbsent(lib.getId(), lib);
+						queue.add(lib);
+					}
 				}
 			}
 		}

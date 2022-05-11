@@ -8,7 +8,6 @@ import org.hl7.fhir.dstu3.model.DateType;
 import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.StringType;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
@@ -33,8 +32,6 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 		assertTrue(((StringType) results.getParameter().get(1).getValue()).asStringValue().equals("Integer"));
 		logger.debug("Results: ", results);
 	}
-
-	@Disabled("Bug in the dstu3 engine model resolver")
 	@Test
 	public void testSimpleRetrieveCqlExecutionProvider() throws Exception {
 		Parameters params = new Parameters();

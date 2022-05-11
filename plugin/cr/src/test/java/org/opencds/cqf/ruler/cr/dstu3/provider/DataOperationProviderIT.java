@@ -9,7 +9,6 @@ import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.StringType;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
@@ -37,8 +36,6 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 
 		assertNotNull(returnLibrary);
 	}
-
-	@Disabled("Erroring because could not convert r5 Library to dstu3")
 	@Test
 	public void testDstu3MeasureDataRequirementsOperation() throws IOException {
 		String bundleAsText = stringFromResource( "Exm105Dstu3MeasureBundle.json");
