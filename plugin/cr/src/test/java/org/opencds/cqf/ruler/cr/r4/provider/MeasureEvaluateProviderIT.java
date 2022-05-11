@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Parameters;
@@ -15,6 +16,8 @@ import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -162,5 +165,39 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		runWithPatient("BCSEHEDISMY2022", "Patient/Patient-21", 1, 0, 1, 0, true, "Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
 		runWithPatient("BCSEHEDISMY2022", "Patient/Patient-23", 1, 1, 0, 0, true, "Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
 		runWithPatient("BCSEHEDISMY2022", "Patient/Patient-65", 1, 1, 0, 1, true, "Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
+	}
+
+	@Test
+	public void testClientNonPatientBasedMeasureEvaluate() throws Exception {
+		String bundleAsText = stringFromResource( "ClientNonPatientBasedMeasureBundle.json");
+		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
+		getClient().transaction().withBundle(bundle).execute();
+
+		Measure measure = getClient().read().resource(Measure.class).withId("InitialInpatientPopluation").execute();
+		assertNotNull(measure);
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
+		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
+		params.addParameter().setName("reportType").setValue(new StringType("subject"));
+		params.addParameter().setName("subject").setValue(new StringType("Patient/97f27374-8a5c-4aa1-a26f-5a1ab03caa47"));
+
+		MeasureReport  returnMeasureReport = getClient().operation()
+			.onInstance(new IdType("Measure", "InitialInpatientPopluation"))
+			.named("$evaluate-measure")
+			.withParameters(params)
+			.returnResourceType(MeasureReport.class)
+			.execute();
+
+		assertNotNull(returnMeasureReport);
+
+		String populationName = "initial-population";
+		int expectedCount = 2;
+
+		Optional<MeasureReport.MeasureReportGroupPopulationComponent> population = returnMeasureReport.getGroup().get(0).
+			getPopulation().stream().filter(x -> x.hasCode() && x.getCode().hasCoding() && x.getCode().getCoding().get(0).getCode().equals(populationName)).findFirst();
+
+		assertTrue(population.isPresent(), String.format("Unable to locate a population with id \"%s\"", populationName));
+		assertEquals(population.get().getCount(), expectedCount, String.format("expected count for population \"%s\" did not match", populationName));
 	}
 }
