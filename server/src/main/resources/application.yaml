@@ -2,6 +2,10 @@ spring:
    #  debug: true
    main:
       allow-bean-definition-overriding: true
+   flyway:
+      enabled: false
+      check-location: false
+      baselineOnMigrate: true
    datasource:
       url: "jdbc:h2:file:./target/database/h2"
       #url: jdbc:h2:mem:test_mem
@@ -64,7 +68,6 @@ hapi:
       #    allow_override_default_search_params: true
       #    allow_placeholder_references: true
       #    auto_create_placeholder_reference_targets: false
-      #    cql_enabled: true
       #    default_encoding: JSON
       #    default_pretty_print: true
       #    default_page_size: 20
@@ -139,6 +142,16 @@ hapi:
       ###   2: NORMALIZED_QUANTITY_SEARCH_SUPPORTED
       #    normalized_quantity_search_level: 2
 
+      ## CQL Settings
+      cql:
+         # enabled: true
+         # cql_logging_enabled: false
+         # use_embedded_cql_translator_content: true
+         #cqlTranslatorOptions:
+         #    analyzeDataRequirements: false
+         #    collapseDataRequirements: true
+         # options: "EnableAnnotations,EnableLocators,DisableListDemotion,DisableListPromotion"
+
       ## RA Settings
       ra:
          report:
@@ -158,6 +171,7 @@ hapi:
 
       ## Dev Tools Settings
       devtools:
+         # enabled: true
 
       ## Security settings
       security:
@@ -180,6 +194,10 @@ hapi:
          measure_report:
             care_gaps_reporter: Organization/alphora
             care_gaps_composition_section_author: Organization/alphora-author
+         # measure_evaluation:
+         #    threaded_enabled: true
+         #    threaded_batch_size: 1000
+         #    num_threads: 8
 
       ## CDS Hook Settings
       cdshooks:

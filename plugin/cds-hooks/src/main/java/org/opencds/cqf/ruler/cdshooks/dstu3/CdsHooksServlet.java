@@ -45,7 +45,7 @@ import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.request.JsonHelper;
 import org.opencds.cqf.ruler.cdshooks.request.Request;
 import org.opencds.cqf.ruler.cdshooks.response.CdsCard;
-import org.opencds.cqf.ruler.cql.CqlConfig;
+import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
@@ -72,7 +72,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	private CqlConfig cqlConfig;
+	private CqlProperties cqlProperties;
 
 	@Autowired
 	private DaoRegistry daoRegistry;
@@ -87,7 +87,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
-	
+
 	@Autowired
 	private JpaDataProviderFactory fhirRetrieveProviderFactory;
 
@@ -194,7 +194,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			Library library = read(reference.getReferenceElement());
 
 			org.cqframework.cql.elm.execution.Library elm = libraryLoader.load(
-									new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
+					new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
 
 			Context context = new Context(elm);
 
@@ -203,14 +203,16 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			// No tenant information available for cds-hooks
 			TerminologyProvider serverTerminologyProvider = myJpaTerminologyProviderFactory.create(requestDetails);
 
-			context.registerDataProvider("http://hl7.org/fhir", fhirRetrieveProviderFactory.create(requestDetails, serverTerminologyProvider)); // TODO make sure tooling handles remote
+			context.registerDataProvider("http://hl7.org/fhir",
+					fhirRetrieveProviderFactory.create(requestDetails, serverTerminologyProvider)); // TODO make sure tooling
+																																// handles remote
 			context.registerTerminologyProvider(serverTerminologyProvider);
 			context.registerLibraryLoader(libraryLoader);
 			context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
 			context.setExpressionCaching(true);
 
 			EvaluationContext<PlanDefinition> evaluationContext = new Stu3EvaluationContext(hook,
-					FhirContext.forCached(FhirVersionEnum.DSTU3).newRestfulGenericClient(baseUrl),context, elm,
+					FhirContext.forCached(FhirVersionEnum.DSTU3).newRestfulGenericClient(baseUrl), context, elm,
 					planDefinition, this.getProviderConfiguration(), this.modelResolver);
 
 			this.setAccessControlHeaders(response);
@@ -330,7 +332,6 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		return discoveryResolutionStu3.resolve().getAsJson();
 	}
 
-
 	private String toJsonResponse(List<CdsCard> cards) {
 		JsonObject ret = new JsonObject();
 		JsonArray cardArray = new JsonArray();
@@ -363,7 +364,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (cqlConfig.cqlProperties().getCql_logging_enabled()) {
+		if (cqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;

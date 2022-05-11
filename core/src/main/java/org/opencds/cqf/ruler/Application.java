@@ -1,7 +1,6 @@
 package org.opencds.cqf.ruler;
 
 import org.opencds.cqf.ruler.config.BeanFinderConfig;
-import org.opencds.cqf.ruler.config.ServerProperties;
 import org.opencds.cqf.ruler.config.TesterUIConfig;
 import org.opencds.cqf.ruler.external.FhirTesterConfig;
 import org.opencds.cqf.ruler.external.annotations.OnEitherVersion;
@@ -68,10 +67,5 @@ public class Application extends SpringBootServletInitializer {
 		servletRegistrationBean.setLoadOnStartup(1);
 
 		return servletRegistrationBean;
-	}
-
-	@Bean
-	public ServerProperties serverProperties() {
-		return new ServerProperties();
 	}
 }

@@ -6,7 +6,6 @@
 			"name": "test-config",
 			"vmArgs": [
 				"-XX:TieredStopAtLevel=1",
-				"-Xverify:none",
 				"-Dspring.main.lazy-initialization=true"
 			]
 		},

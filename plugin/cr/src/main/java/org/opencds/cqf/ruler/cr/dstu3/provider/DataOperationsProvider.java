@@ -27,12 +27,12 @@ import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryManagerFactory;
+import org.opencds.cqf.ruler.cql.utility.Translators;
 import org.opencds.cqf.ruler.cr.utility.DataRequirements;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Ids;
 import org.opencds.cqf.ruler.utility.Libraries;
 import org.opencds.cqf.ruler.utility.Searches;
-import org.opencds.cqf.ruler.cql.utility.Translators;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -142,7 +142,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		CqlTranslator translator = translateLibrary(library, libraryManager);
 
 		return DataRequirements.getModuleDefinitionLibraryDstu3(measure, libraryManager,
-				translator.getTranslatedLibrary(), cqlConfig.cqlProperties().getCqlTranslatorOptions());
+				translator.getTranslatedLibrary(), cqlConfig.cqlProperties().getOptions().getCqlTranslatorOptions());
 	}
 
 	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {
@@ -150,7 +150,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		CqlTranslator translator = translateLibrary(library, libraryManager);
 
 		return DataRequirements.getModuleDefinitionLibraryDstu3(libraryManager,
-				translator.getTranslatedLibrary(), cqlConfig.cqlProperties().getCqlTranslatorOptions());
+				translator.getTranslatedLibrary(), cqlConfig.cqlProperties().getOptions().getCqlTranslatorOptions());
 	}
 
 	private List<Library> fetchDependencyLibraries(Library library, RequestDetails theRequestDetails) {

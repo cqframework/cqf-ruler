@@ -1,19 +1,22 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
-import ca.uhn.fhir.rest.client.api.IGenericClient;
+import java.util.Map;
+
+import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Endpoint;
 import org.hl7.fhir.dstu3.model.Extension;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.MeasureReport;
 import org.hl7.fhir.dstu3.model.StringType;
-import org.hl7.fhir.dstu3.model.Bundle;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.fhir.terminology.Dstu3FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.CqlOptions;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
+import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
@@ -27,6 +30,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	@Autowired
@@ -43,6 +47,15 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
 	private JpaFhirDalFactory fhirDalFactory;
+
+	@Autowired
+	private Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache;
+
+	@Autowired
+	private CqlOptions cqlOptions;
+
+	@Autowired
+	private MeasureEvaluationOptions measureEvaluationOptions;
 
 	/**
 	 * Implements the <a href=
@@ -78,8 +91,8 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "practitioner") String practitioner,
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn,
 			@OperationParam(name = "productLine") String productLine,
-		   @OperationParam(name = "additionalData") Bundle additionalData,
-		   @OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
+			@OperationParam(name = "additionalData") Bundle additionalData,
+			@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
 		Measure measure = read(theId);
 
@@ -97,8 +110,8 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 
 		org.opencds.cqf.cql.evaluator.measure.dstu3.Dstu3MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.dstu3.Dstu3MeasureProcessor(
-				null, dataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
-				null);
+				null, dataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider,
+				fhirDal, measureEvaluationOptions, cqlOptions, globalLibraryCache);
 
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
 				patient, null, lastReceivedOn, null, null, null, additionalData);
