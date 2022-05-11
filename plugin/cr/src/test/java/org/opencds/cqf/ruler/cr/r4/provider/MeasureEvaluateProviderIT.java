@@ -8,6 +8,7 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
@@ -47,6 +48,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		//System.out.println("Resource:"+this.getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(returnMeasureReport));
 	}
 
+	@Disabled("$expand not working on server")
 	@Test
 	public void testMeasureEvaluateWithTerminologyEndpoint() throws Exception {
 		String bundleAsText = stringFromResource( "Exm104FhirR4MeasureBundle.json");
