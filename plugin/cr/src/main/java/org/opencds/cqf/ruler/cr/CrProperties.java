@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "hapi.fhir.cr")
 public class CrProperties {
 	private boolean enabled = true;
+	private boolean care_gaps_parallel_enabled = true;
 	private MeasureReportConfiguration measure_report;
 
 	private MeasureEvaluationOptions measure_evaluation = MeasureEvaluationOptions.defaultOptions();
@@ -17,6 +18,14 @@ public class CrProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public boolean getCareGapsParallelEnabled() {
+		return care_gaps_parallel_enabled;
+	}
+
+	public void setCareGapsParallelEnabled(boolean enabled) {
+		this.care_gaps_parallel_enabled = enabled;
 	}
 
 	public MeasureReportConfiguration getMeasureReport() {

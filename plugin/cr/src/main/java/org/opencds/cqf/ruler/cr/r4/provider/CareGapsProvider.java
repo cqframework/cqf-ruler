@@ -213,14 +213,27 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 
 		Parameters result = initializeResult();
 
-		(patients)
-			.forEach(
-				patient -> {
-					futures.add(CompletableFuture.supplyAsync(() -> patientReports(theRequestDetails,
-						periodStart, periodEnd, patient, status, measures, organization)));
-				});
+		if (crProperties.getCareGapsParallelEnabled()) {
+			(patients)
+				.forEach(
+					patient -> {
+						futures.add(CompletableFuture.supplyAsync(() -> patientReports(theRequestDetails,
+							periodStart, periodEnd, patient, status, measures, organization)));
+					});
 
-		futures.forEach(x -> result.addParameter(x.join()));
+			futures.forEach(x -> result.addParameter(x.join()));
+		} else {
+			(patients)
+				.forEach(
+					patient -> {
+						Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails,
+							periodStart, periodEnd, patient, status, measures, organization);
+						if (patientParameter != null) {
+							result.addParameter(patientParameter);
+						}
+					});
+		}
+
 		return result;
 	}
 
