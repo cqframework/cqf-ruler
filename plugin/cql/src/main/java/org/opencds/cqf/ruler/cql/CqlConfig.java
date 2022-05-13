@@ -3,7 +3,6 @@ package org.opencds.cqf.ruler.cql;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.tuple.Triple;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -14,8 +13,9 @@ import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
-import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
+import org.opencds.cqf.cql.evaluator.CqlOptions;
 import org.opencds.cqf.cql.evaluator.builder.Constants;
+import org.opencds.cqf.cql.evaluator.builder.DataProviderComponents;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
@@ -64,8 +64,13 @@ public class CqlConfig {
 	}
 
 	@Bean
+	public CqlOptions cqlOptions() {
+		return cqlProperties().getOptions();
+	}
+
+	@Bean
 	public CqlTranslatorOptions cqlTranslatorOptions(FhirContext fhirContext, CqlProperties cqlProperties) {
-		CqlTranslatorOptions options = cqlProperties.getCqlTranslatorOptions();
+		CqlTranslatorOptions options = cqlProperties.getOptions().getCqlTranslatorOptions();
 
 		if (fhirContext.getVersion().getVersion().isOlderThan(FhirVersionEnum.R4)
 				&& (options.getCompatibilityLevel().equals("1.5") || options.getCompatibilityLevel().equals("1.4"))) {
@@ -125,14 +130,14 @@ public class CqlConfig {
 	DataProviderFactory dataProviderFactory(FhirContext fhirContext, ModelResolver modelResolver) {
 		return new DataProviderFactory() {
 			@Override
-			public Triple<String, ModelResolver, RetrieveProvider> create(EndpointInfo endpointInfo) {
+			public DataProviderComponents create(EndpointInfo endpointInfo) {
 				// to do implement endpoint
 				return null;
 			}
 
 			@Override
-			public Triple<String, ModelResolver, RetrieveProvider> create(IBaseBundle dataBundle) {
-				return Triple.of(Constants.FHIR_MODEL_URI, modelResolver,
+			public DataProviderComponents create(IBaseBundle dataBundle) {
+				return new DataProviderComponents(Constants.FHIR_MODEL_URI, modelResolver,
 						new BundleRetrieveProvider(fhirContext, dataBundle));
 			}
 		};
@@ -163,7 +168,7 @@ public class CqlConfig {
 			ModelManager modelManager, CqlTranslatorOptions cqlTranslatorOptions, CqlProperties cqlProperties) {
 		return lcp -> {
 
-			if (cqlProperties.getUse_embedded_cql_translator_content()) {
+			if (cqlProperties.getOptions().useEmbeddedLibraries()) {
 				lcp.add(new EmbeddedFhirLibraryContentProvider());
 			}
 

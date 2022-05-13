@@ -10,26 +10,11 @@
 	<artifactId>cqf-ruler-core</artifactId>
 
 	<dependencies>
-		<!-- These should really be introduced in the CQL plugin-->
-		<dependency>
-			<groupId>info.cqframework</groupId>
-			<artifactId>cql-to-elm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>info.cqframework</groupId>
-			<artifactId>elm</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>8.0.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.opencds.cqf.cql</groupId>
-			<artifactId>engine</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>
 			<artifactId>cqf-ruler-external</artifactId>

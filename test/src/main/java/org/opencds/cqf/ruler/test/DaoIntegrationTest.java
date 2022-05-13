@@ -23,8 +23,9 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 		"spring.batch.job.enabled=false",
 		"hapi.fhir.allow_external_references=true",
 		"hapi.fhir.enforce_referential_integrity_on_write=false",
-		"spring.datasource.url=jdbc:h2:mem:db" ,
-		"spring.main.lazy-initialization=true" })
+		"spring.datasource.url=jdbc:h2:mem:db",
+		"spring.main.lazy-initialization=true",
+		"spring.flyway.enabled=false" })
 @TestInstance(Lifecycle.PER_CLASS)
 public class DaoIntegrationTest implements ResourceLoader, ResourceCreator, IdCreator {
 	@Autowired

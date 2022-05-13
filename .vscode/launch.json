@@ -12,10 +12,9 @@
 			"projectName": "cqf-ruler-server",
 			"vmArgs": [
 				"-XX:TieredStopAtLevel=1",
-				"-Xverify:none",
 				"-Dspring.main.lazy-initialization=true",
-				"-Dloader.debug=true",
-				"-Ddebug=true"
+				"-Ddebug=true",
+				"-Dloader.debug=true"
 			],
 			"stepFilters": {
 				"classNameFilters": [
@@ -34,10 +33,20 @@
 		},
 		{
 			"type": "java",
-			"name": "Attach",
-			"request": "attach",
-			"hostName": "localhost",
-			"port": "5005",
+			"name": "Launch Server R4 (Live Reload) - Local Postgres",
+			"request": "launch",
+			"mainClass": "org.opencds.cqf.ruler.Application",
+			"projectName": "cqf-ruler-server",
+			"vmArgs": [
+				"-XX:TieredStopAtLevel=1",
+				"-Dspring.main.lazy-initialization=true",
+				"-Ddebug=true",
+				"-Dloader.debug=true",
+				"-Dspring.datasource.url=jdbc:postgresql://localhost:5432/postgres",
+				"-Dspring.datasource.username=postgres",
+				"-Dspring.datasource.password=",
+				"-Dspring.datasource.driverClassName=org.postgresql.Driver"
+			],
 			"stepFilters": {
 				"classNameFilters": [
 					"java.*",
@@ -47,7 +56,11 @@
 					"sunw.*",
 					"org.omg.*"
 				]
-			}
+			},
+			"classPaths": [
+				"$Auto",
+				"$Runtime"
+			]
 		},
 		{
 			"type": "java",
@@ -57,10 +70,9 @@
 			"projectName": "cqf-ruler-server",
 			"vmArgs": [
 				"-XX:TieredStopAtLevel=1",
-				"-Xverify:none",
 				"-Dspring.main.lazy-initialization=true",
-				"-Dloader.debug=true",
 				"-Ddebug=true",
+				"-Dloader.debug=true",
 				"-Dhapi.fhir.fhir_version=DSTU3"
 			],
 			"stepFilters": {

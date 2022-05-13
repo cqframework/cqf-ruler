@@ -2,7 +2,6 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 
 import java.util.Map;
 
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Extension;
@@ -13,9 +12,11 @@ import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
+import org.opencds.cqf.cql.evaluator.CqlOptions;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
+import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
@@ -29,6 +30,7 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	@Autowired
@@ -48,6 +50,12 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
 	private Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache;
+
+	@Autowired
+	private CqlOptions cqlOptions;
+
+	@Autowired
+	private MeasureEvaluationOptions measureEvaluationOptions;
 
 	/**
 	 * Implements the <a href=
@@ -76,15 +84,15 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	@Description(shortDefinition = "$evaluate-measure", value = "Implements the <a href=\"https://www.hl7.org/fhir/operation-measure-evaluate-measure.html\">$evaluate-measure</a> operation found in the <a href=\"http://www.hl7.org/fhir/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>. This implementation aims to be compatible with the CQF IG.", example = "Measure/example/$evaluate-measure?subject=Patient/123&periodStart=2019&periodEnd=2020")
 	@Operation(name = "$evaluate-measure", idempotent = true, type = Measure.class)
 	public MeasureReport evaluateMeasure(RequestDetails requestDetails, @IdParam IdType theId,
-		  @OperationParam(name = "periodStart") String periodStart,
-		  @OperationParam(name = "periodEnd") String periodEnd,
-		  @OperationParam(name = "reportType") String reportType,
-		  @OperationParam(name = "subject") String subject,
-		  @OperationParam(name = "practitioner") String practitioner,
-		  @OperationParam(name = "lastReceivedOn") String lastReceivedOn,
-		  @OperationParam(name = "productLine") String productLine,
-		  @OperationParam(name = "additionalData") Bundle additionalData,
-		  @OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
+			@OperationParam(name = "periodStart") String periodStart,
+			@OperationParam(name = "periodEnd") String periodEnd,
+			@OperationParam(name = "reportType") String reportType,
+			@OperationParam(name = "subject") String subject,
+			@OperationParam(name = "practitioner") String practitioner,
+			@OperationParam(name = "lastReceivedOn") String lastReceivedOn,
+			@OperationParam(name = "productLine") String productLine,
+			@OperationParam(name = "additionalData") Bundle additionalData,
+			@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
 		Measure measure = read(theId);
 
@@ -102,11 +110,12 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 
 		org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor(
-			null, this.dataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider, fhirDal, null,
-			this.globalLibraryCache);
+				null, this.dataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider,
+				fhirDal, measureEvaluationOptions, cqlOptions,
+				this.globalLibraryCache);
 
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
-			subject, null, lastReceivedOn, null, null, null, additionalData);
+				subject, null, lastReceivedOn, null, null, null, additionalData);
 
 		if (productLine != null) {
 			Extension ext = new Extension();

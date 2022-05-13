@@ -287,7 +287,7 @@ public class ExpressionEvaluation {
 
 	public DebugMap getDebugMap() {
 		DebugMap debugMap = new DebugMap();
-		if (cqlProperties.getCql_logging_enabled()) {
+		if (cqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
 			debugMap.setIsLoggingEnabled(true);
 		}
 		return debugMap;
