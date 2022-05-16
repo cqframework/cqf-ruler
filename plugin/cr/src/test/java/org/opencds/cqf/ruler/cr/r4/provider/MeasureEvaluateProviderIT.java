@@ -161,4 +161,42 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		runWithPatient("BCSEHEDISMY2022", "Patient/Patient-23", 1, 1, 0, 0, true, "Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
 		runWithPatient("BCSEHEDISMY2022", "Patient/Patient-65", 1, 1, 0, 1, true, "Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
 	}
+
+
+	@Test
+	public void testMeasureEvaluateMultiVersion() throws Exception {
+		String bundleAsTextVersion7 = stringFromResource( "multiversion/EXM124-7.0.000-bundle.json");
+		String bundleAsTextVersion9 = stringFromResource( "multiversion/EXM124-9.0.000-bundle.json");
+		Bundle bundleVersion7 = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsTextVersion7);
+		Bundle bundleVersion9 = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsTextVersion9);
+		getClient().transaction().withBundle(bundleVersion7).execute();
+		getClient().transaction().withBundle(bundleVersion9).execute();
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
+		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
+		params.addParameter().setName("reportType").setValue(new StringType("individual"));
+		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM124"));
+		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
+
+		MeasureReport  returnMeasureReportVersion7 = getClient().operation()
+			.onInstance(new IdType("Measure", "measure-EXM124-7.0.000"))
+			.named("$evaluate-measure")
+			.withParameters(params)
+			.returnResourceType(MeasureReport.class)
+			.execute();
+
+		assertNotNull(returnMeasureReportVersion7);
+
+		MeasureReport  returnMeasureReportVersion9 = getClient().operation()
+			.onInstance(new IdType("Measure", "measure-EXM124-9.0.000"))
+			.named("$evaluate-measure")
+			.withParameters(params)
+			.returnResourceType(MeasureReport.class)
+			.execute();
+
+		assertNotNull(returnMeasureReportVersion9);
+
+	}
+
 }
