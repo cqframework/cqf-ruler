@@ -134,7 +134,7 @@ public class CodeSystemUpdateProvider implements OperationProvider {
 		for (Map.Entry<String, Set<String>> entry : codesBySystem.entrySet()) {
 			String system = entry.getKey();
 			CodeSystem codeSystem = getCodeSystemByUrl(system);
-			updateCodeSystem(codeSystem.setUrl(system), getUnionDistinctCodes(entry.getValue(), codeSystem));
+			updateCodeSystem(codeSystem, getUnionDistinctCodes(entry.getValue(), codeSystem));
 
 			codeSystems.add(codeSystem.getUrl());
 
@@ -164,8 +164,12 @@ public class CodeSystemUpdateProvider implements OperationProvider {
 			return (CodeSystem) bundleProvider.getResources(0, 1).get(0);
 		}
 
-		return (CodeSystem) new CodeSystem().setUrl(url)
+		CodeSystem system = (CodeSystem) new CodeSystem().setUrl(url)
 				.setId((IIdType) Ids.newId(CodeSystem.class, UUID.randomUUID().toString()));
+
+		this.myCodeSystemDaoDSTU3.create(system);
+
+		return system;
 	}
 
 	/***

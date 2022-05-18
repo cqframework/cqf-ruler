@@ -1,13 +1,14 @@
+#Adds the option to go to eg. http://localhost:8080/actuator/health for seeing the running configuration
+#see https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html#actuator.endpoints
 management:
    endpoints:
       web:
          exposure:
             include: "health,prometheus"
 spring:
-   #  debug: true
    main:
       allow-circular-references: true
-      allow-bean-definition-overriding: true
+      #allow-bean-definition-overriding: true
    flyway:
       enabled: false
       check-location: false
@@ -19,11 +20,14 @@ spring:
       password: null
       driverClassName: org.h2.Driver
       max-active: 15
+
+      # database connection pool size
+      hikari:
+         maximum-pool-size: 10
    jpa:
       properties:
          hibernate.format_sql: false
          hibernate.show_sql: false
-
          #Hibernate dialect is automatically detected except Postgres and H2.
          #If using H2, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirH2Dialect
          #If using postgres, then supply the value of ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect
@@ -47,7 +51,8 @@ spring:
          enabled: false
 hapi:
    fhir:
-      #    implementation_description: ''
+      ### This enables the swagger-ui at /fhir/swagger-ui/index.html as well as the /fhir/api-docs (see https://hapifhir.io/hapi-fhir/docs/server_plain/openapi.html)
+      openapi_enabled: true
       ### This is the FHIR version. Choose between, DSTU2, DSTU3, R4 or R5
       fhir_version: R4
       ### enable to use the ApacheProxyAddressStrategy which uses X-Forwarded-* headers
@@ -57,8 +62,9 @@ hapi:
       ### alternatively, it may be set using the X-Forwarded-Proto header.
       #   use_apache_address_strategy_https: false
       ### enable to set the Server URL
-      server_address: "http://localhost:8080/fhir"
+      #    server_address: http://hapi.fhir.org/baseR4
       #    defer_indexing_for_codesystems_of_size: 101
+      #    install_transitive_ig_dependencies: true
       #    implementationguides:
       ###    example from registry (packages.fhir.org)
       #      swiss:
@@ -74,18 +80,24 @@ hapi:
       #      - Observation
       #    allow_cascading_deletes: true
       #    allow_contains_searches: true
-      allow_external_references: true
+      #    allow_external_references: true
       #    allow_multiple_delete: true
       #    allow_override_default_search_params: true
-      #    allow_placeholder_references: true
       #    auto_create_placeholder_reference_targets: false
+      #    cql_enabled: true
       #    default_encoding: JSON
       #    default_pretty_print: true
       #    default_page_size: 20
+      #    delete_expunge_enabled: true
       #    enable_repository_validating_interceptor: false
       #    enable_index_missing_fields: false
-      enforce_referential_integrity_on_delete: false
-      enforce_referential_integrity_on_write: false
+      #    enable_index_of_type: true
+      #    enable_index_contained_resource: false
+      ###  !!Extended Lucene/Elasticsearch Indexing is still a experimental feature, expect some features (e.g. _total=accurate) to not work as expected!!
+      ###  more information here: https://hapifhir.io/hapi-fhir/docs/server_jpa/elastic.html
+      #    advanced_lucene_indexing: false
+      #    enforce_referential_integrity_on_delete: false
+      #    enforce_referential_integrity_on_write: false
       #    etag_support_enabled: true
       #    expunge_enabled: true
       #    daoconfig_client_id_strategy: null
@@ -94,6 +106,9 @@ hapi:
       #    filter_search_enabled: true
       #    graphql_enabled: true
       #    narrative_enabled: true
+      #    mdm_enabled: true
+      #    local_base_urls:
+      #      - https://hapi.fhir.org/baseR4
       #    partitioning:
       #      allow_references_across_partitions: false
       #      partitioning_include_in_search_hashes: false
@@ -102,6 +117,16 @@ hapi:
          # These are allowed_origin patterns, see: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/cors/CorsConfiguration.html#setAllowedOriginPatterns-java.util.List-
          allowed_origin:
             - "*"
+
+      # Search coordinator thread pool sizes
+      search-coord-core-pool-size: 20
+      search-coord-max-pool-size: 100
+      search-coord-queue-capacity: 200
+
+      # Threadpool size for BATCH'ed GETs in a bundle.
+      #    bundle_batch_pool_size: 10
+      #    bundle_batch_pool_max_size: 50
+
       #    logger:
       #      error_format: 'ERROR - ${requestVerb} ${requestUrl}'
       #      format: >-
@@ -115,110 +140,42 @@ hapi:
       #    max_page_size: 200
       #    retain_cached_searches_mins: 60
       #    reuse_cached_search_results_millis: 60000
-      openapi_enabled: true
-      tester_enabled: true
       tester:
          home:
             name: Local Tester
             server_address: "http://localhost:8080/fhir"
             refuse_to_fetch_third_party_urls: false
             fhir_version: R4
-         # global:
-         #   name: Global Tester
-         #   server_address: "http://hapi.fhir.org/baseR4"
-         #   refuse_to_fetch_third_party_urls: false
-         #   fhir_version: R4
-      #    validation:
-      #      requests_enabled: true
-      #      responses_enabled: true
-      #    binary_storage_enabled: true
-      #    bulk_export_enabled: true
-      #    subscription:
-      #      resthook_enabled: false
-      #      websocket_enabled: false
-      #      email:
-      #        from: some@test.com
-      #        host: google.com
-      #        port:
-      #        username:
-      #        password:
-      #        auth:
-      #        startTlsEnable:
-      #        startTlsRequired:
-      #        quitWait:
-      #    lastn_enabled: true
-      ###  This is configuration for normalized quantity serach level default is 0
-      ###   0: NORMALIZED_QUANTITY_SEARCH_NOT_SUPPORTED - default
-      ###   1: NORMALIZED_QUANTITY_STORAGE_SUPPORTED
-      ###   2: NORMALIZED_QUANTITY_SEARCH_SUPPORTED
-      #    normalized_quantity_search_level: 2
-
-      ## CQL Settings
-      cql:
-         # enabled: true
-         # cql_logging_enabled: false
-         # use_embedded_cql_translator_content: true
-         #cqlTranslatorOptions:
-         #    analyzeDataRequirements: false
-         #    collapseDataRequirements: true
-         # options: "EnableAnnotations,EnableLocators,DisableListDemotion,DisableListPromotion"
-
-      ## RA Settings
-      ra:
-         report:
-            endpoint: ""
-
-      sdc:
-         extract:
-            endpoint: "http://localhost:8080/fhir/"
-            username:
-            password:
-         transform:
-            enabled: true
-            replace_code:
-            username:
-            password:
-            endpoint:
-
-      ## Dev Tools Settings
-      devtools:
-         # enabled: true
-
-      ## Security settings
-      security:
-         enabled: false
-         oauth:
-            securityCors: true
-            securityUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
-            securityExtAuthUrl: authorize
-            securityExtAuthValueUri: http://launch.smarthealthit.org/v/r4/auth/authorize
-            securityExtTokenUrl: token
-            securityExtTokenValueUri: http://launch.smarthealthit.org/v/r4/auth/token
-            serviceSystem: http://hl7.org/fhir/restful-security-service
-            serviceCode: SMART-on-FHIR
-            serviceDisplay: SMART-on-FHIR
-            serviceText: OAuth2 using SMART-on-FHIR profile (see http://docs.smarthealthit.org)
-
-      ## CR Settings
-      cr:
-         enabled: true
-         measure_report:
-            care_gaps_reporter: Organization/alphora
-            care_gaps_composition_section_author: Organization/alphora-author
-         # measure_evaluation:
-         #    threaded_enabled: true
-         #    threaded_batch_size: 1000
-         #    num_threads: 8
-
-      ## CDS Hook Settings
-      cdshooks:
-         enabled: true
-         fhirserver:
-            expandValueSets: true
-            maxCodesPerQuery: 64
-            searchStyle: GET
-         prefetch:
-            maxUriLength: 8000
+         global:
+            name: Global Tester
+            server_address: "http://hapi.fhir.org/baseR4"
+            refuse_to_fetch_third_party_urls: false
+            fhir_version: R4
+#    validation:
+#      requests_enabled: true
+#      responses_enabled: true
+#    binary_storage_enabled: true
+#    bulk_export_enabled: true
+#    subscription:
+#      resthook_enabled: true
+#      websocket_enabled: false
+#      email:
+#        from: some@test.com
+#        host: google.com
+#        port:
+#        username:
+#        password:
+#        auth:
+#        startTlsEnable:
+#        startTlsRequired:
+#        quitWait:
+#    lastn_enabled: true
+#    store_resource_in_lucene_index_enabled: true
+###  This is configuration for normalized quantity serach level default is 0
+###   0: NORMALIZED_QUANTITY_SEARCH_NOT_SUPPORTED - default
+###   1: NORMALIZED_QUANTITY_STORAGE_SUPPORTED
+###   2: NORMALIZED_QUANTITY_SEARCH_SUPPORTED
+#    normalized_quantity_search_level: 2
 #elasticsearch:
 #  debug:
 #    pretty_print_json_log: false

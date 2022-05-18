@@ -1,1356 +1,1728 @@
 {
-  "resourceType": "Bundle",
-  "id": "eicr-report",
-  "meta": {
-    "versionId": "1",
-    "lastUpdated": "2021-07-29T16:44:18.217+00:00",
-    "profile": [ "http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-measurereport-bundle" ]
-  },
-  "type": "document",
-  "timestamp": "2021-07-29T16:44:18.218+00:00",
-  "entry": [ {
-    "resource": {
-      "resourceType": "Composition",
-      "id": "4975e926-7ca2-49ba-ac12-175213a7fcc5",
-      "contained": [ {
-        "resourceType": "Device",
-        "id": "1",
-        "deviceName": [ {
-          "name": "eCRNow/Backend Service App"
-        } ]
-      } ],
-      "extension": [ {
-        "url": "http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber",
-        "valueString": "1"
-      } ],
-      "identifier": {
-        "value": "4975e926-7ca2-49ba-ac12-175213a7fcc5"
-      },
-      "type": {
-        "coding": [ {
-          "system": "http://loinc.org",
-          "code": "55751-2",
-          "display": "Public Health Case Report"
-        } ],
-        "text": "Public Health Case Report"
-      },
-      "subject": {
-        "reference": "Patient/patient-12742542"
-      },
-      "encounter": {
-        "reference": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Encounter/encounter-97953898"
-      },
-      "date": "2021-07-29T16:44:18+00:00",
-      "author": [ {
-        "reference": "#1"
-      } ],
-      "section": [ {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "46239-0",
-            "display": "Chief complaint+Reason for visit Narrative"
-          } ],
-          "text": "Chief complaint+Reason for visit Narrative"
-        },
-        "text": {
-          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">No Information</div>"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "10164-2",
-            "display": "History of Present illness Narrative"
-          } ],
-          "text": "History of Present illness Narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "10187-3",
-            "display": "Review of Systems narrative"
-          } ],
-          "text": "Review of Systems narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "11450-4",
-            "display": "Problem Section Narrative"
-          } ],
-          "text": "Problem Section Narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "11348-0",
-            "display": "Past Medical History Narrative"
-          } ],
-          "text": "Past Medical History Narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "29549-3",
-            "display": "Medications Administered Narrative"
-          } ],
-          "text": "Medications Administered Narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "30954-2",
-            "display": "Results Section Narrative"
-          } ],
-          "text": "Results Section Narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "18776-5",
-            "display": "Plan of Treatment Narrative"
-          } ],
-          "text": "Plan of Treatment Narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "11369-6",
-            "display": "Immunizations Narrative"
-          } ],
-          "text": "Immunizations Narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "47519-4",
-            "display": "Procedure Section Narrative"
-          } ],
-          "text": "Procedure Section Narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "8716-3",
-            "display": "Vital Signs Narrative"
-          } ],
-          "text": "Vital Signs Narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "29762-2",
-            "display": "Social History Narrative"
-          } ],
-          "text": "Social History Narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "90767-5",
-            "display": "Pregnancy Section Narrative"
-          } ],
-          "text": "Pregnancy Section Narrative"
-        }
-      }, {
-        "code": {
-          "coding": [ {
-            "system": "http://loinc.org",
-            "code": "83910-0",
-            "display": "Emergency Outbreak Section Narrative"
-          } ],
-          "text": "Emergency Outbreak Section Narrative"
-        }
-      } ]
-    }
-  }, {
-    "resource": {
-      "resourceType": "Patient",
-      "id": "patient-12742542",
-      "meta": {
-        "versionId": "10",
-        "lastUpdated": "2021-05-14T17:38:03.000Z"
-      },
-      "text": {
-        "status": "extensions",
-        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Patient</b></p><p><b>Name</b>: GILBERT, ALICE S</p><p><b>Status</b>: Active</p><p><b>DOB</b>: Nov 16, 1970</p><p><b>Birth Sex</b>: Female</p><p><b>Administrative Gender</b>: Female</p><p><b>Marital Status</b>: Married</p></div>"
-      },
-      "extension": [ {
-        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-        "valueCode": "F"
-      }, {
-        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
-        "extension": [ {
-          "url": "detailed",
-          "valueCoding": {
-            "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2131-1",
-            "display": "Other Race",
-            "userSelected": false
-          }
-        }, {
-          "url": "text",
-          "valueString": "Other Race"
-        } ]
-      }, {
-        "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
-        "extension": [ {
-          "url": "ombCategory",
-          "valueCoding": {
-            "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2135-2",
-            "display": "Hispanic or Latino",
-            "userSelected": false
-          }
-        }, {
-          "url": "text",
-          "valueString": "Hispanic, Latino, or Spanish Origin"
-        } ]
-      } ],
-      "identifier": [ {
-        "id": "CI-490117359-0",
-        "use": "usual",
-        "type": {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
-            "code": "2",
-            "display": "Community Medical Record Number",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-            "code": "MR",
-            "display": "Medical record number",
-            "userSelected": false
-          } ],
-          "text": "Community Medical Record Number"
-        },
-        "system": "urn:oid:2.16.840.1.113883.3.787.0.0",
-        "value": "9002472173",
-        "_value": {
-          "extension": [ {
-            "url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
-            "valueString": "9002472173"
-          } ]
-        }
-      }, {
-        "id": "CI-490056475-1",
-        "use": "usual",
-        "type": {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
-            "code": "10",
-            "display": "MRN",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-            "code": "MR",
-            "display": "Medical record number",
-            "userSelected": false
-          } ],
-          "text": "MRN"
-        },
-        "system": "urn:oid:2.16.840.1.113883.6.1000",
-        "value": "6967",
-        "_value": {
-          "extension": [ {
-            "url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
-            "valueString": "00000006967"
-          } ]
-        }
-      }, {
-        "id": "CI-490261455-3",
-        "use": "usual",
-        "type": {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
-            "code": "670843",
-            "display": "Messaging",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-            "code": "U",
-            "display": "Unspecified identifier",
-            "userSelected": false
-          } ],
-          "text": "Messaging"
-        },
-        "system": "urn:oid:2.16.840.1.113883.3.13.8",
-        "value": "64D6F66CC7F74DC6A7B0CCB486DD61D1",
-        "_value": {
-          "extension": [ {
-            "url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
-            "valueString": "64D6F66CC7F74DC6A7B0CCB486DD61D1"
-          } ]
-        },
-        "period": {
-          "start": "2021-05-14T17:38:03.000Z"
-        }
-      }, {
-        "id": "CI-490261452-4",
-        "use": "usual",
-        "type": {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
-            "code": "2553236771",
-            "display": "Federated Person Principal",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-            "code": "AN",
-            "display": "Account number",
-            "userSelected": false
-          } ],
-          "text": "Federated Person Principal"
-        },
-        "system": "urn:oid:2.16.840.1.113883.3.13.6",
-        "value": "URN:CERNER:IDENTITY-FEDERATION:REALM:EC2458F2-1E24-41C8-B71B-0E701AF7583D-CH:PRINCIPAL:YK2IQ7QH6JE3KR4E",
-        "_value": {
-          "extension": [ {
-            "url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
-            "valueString": "URN:CERNER:IDENTITY-FEDERATION:REALM:EC2458F2-1E24-41C8-B71B-0E701AF7583D-CH:PRINCIPAL:YK2IQ7QH6JE3KR4E"
-          } ]
-        },
-        "period": {
-          "start": "2021-05-14T17:38:02.000Z"
-        }
-      }, {
-        "id": "CI-490155187-5",
-        "use": "usual",
-        "type": {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
-            "code": "2553236785",
-            "display": "MIllennium Person Identifier",
-            "userSelected": true
-          } ],
-          "text": "MIllennium Person Identifier"
-        },
-        "_system": {
-          "extension": [ {
-            "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
-            "valueCode": "unknown"
-          } ]
-        },
-        "value": "13520",
-        "_value": {
-          "extension": [ {
-            "url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
-            "valueString": "13520"
-          } ]
-        },
-        "period": {
-          "start": "2020-12-18T19:15:15.000Z"
-        }
-      } ],
-      "active": true,
-      "name": [ {
-        "id": "CI-patient-12742542-0",
-        "use": "official",
-        "text": "GILBERT, ALICE S",
-        "family": "GILBERT",
-        "given": [ "ALICE", "S" ]
-      } ],
-      "telecom": [ {
-        "id": "CI-PH-29822737-0",
-        "extension": [ {
-          "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address",
-          "valueUrl": "(212)555-5557"
-        } ],
-        "system": "phone",
-        "value": "2125555557",
-        "use": "home",
-        "rank": 1,
-        "period": {
-          "start": "2020-04-27T16:50:28.000Z"
-        }
-      }, {
-        "id": "CI-EM-29864766-0",
-        "system": "email",
-        "value": "zwhptupssiogslisnh@twzhhq.com",
-        "use": "home",
-        "rank": 1,
-        "period": {
-          "start": "2021-05-14T17:36:14.000Z"
-        }
-      } ],
-      "gender": "female",
-      "birthDate": "1970-11-16",
-      "address": [ {
-        "id": "CI-24326610-0",
-        "use": "home",
-        "text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
-        "line": [ "2802 ROCK CREEK PKWY" ],
-        "city": "KANSAS CITY",
-        "state": "MO",
-        "postalCode": "64117",
-        "country": "US",
-        "period": {
-          "start": "2020-04-27T16:50:28.000Z"
-        }
-      } ],
-      "maritalStatus": {
-        "coding": [ {
-          "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/38",
-          "code": "309237",
-          "display": "Married",
-          "userSelected": true
-        }, {
-          "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
-          "code": "M",
-          "display": "Married",
-          "userSelected": false
-        } ],
-        "text": "Married"
-      },
-      "contact": [ {
-        "relationship": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
-            "code": "2553243305",
-            "display": "Authorized Representative",
-            "userSelected": true
-          } ],
-          "text": "Authorized Representative"
-        } ],
-        "name": {
-          "id": "CI-12742543-0",
-          "use": "official",
-          "text": "GILBERT, ROY",
-          "family": "GILBERT",
-          "given": [ "ROY" ]
-        },
-        "telecom": [ {
-          "extension": [ {
-            "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address",
-            "valueUrl": "(212)555-5557"
-          } ],
-          "system": "phone",
-          "value": "2125555557",
-          "use": "home",
-          "rank": 1,
-          "period": {
-            "start": "2020-04-27T16:50:28.000Z"
-          }
-        }, {
-          "system": "email",
-          "value": "RoyGbiv@yahoo.com",
-          "use": "home",
-          "rank": 1,
-          "period": {
-            "start": "2020-04-27T16:52:16.000Z"
-          }
-        } ],
-        "address": {
-          "use": "home",
-          "text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
-          "line": [ "2802 ROCK CREEK PKWY" ],
-          "city": "KANSAS CITY",
-          "state": "MO",
-          "postalCode": "64117",
-          "country": "US",
-          "period": {
-            "start": "2020-04-27T16:50:28.000Z"
-          }
-        },
-        "gender": "male"
-      }, {
-        "relationship": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
-            "code": "1152",
-            "display": "Emergency Contact",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
-            "code": "C",
-            "display": "Emergency Contact",
-            "userSelected": false
-          } ],
-          "text": "Emergency Contact"
-        } ],
-        "name": {
-          "id": "CI-12747697-1",
-          "use": "official",
-          "text": "GILBERT, ROY",
-          "family": "GILBERT",
-          "given": [ "ROY" ],
-          "period": {
-            "start": "2020-12-23T19:00:37.000Z"
-          }
-        },
-        "telecom": [ {
-          "extension": [ {
-            "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address",
-            "valueUrl": "(212)555-5557"
-          } ],
-          "system": "phone",
-          "value": "2125555557",
-          "use": "home",
-          "rank": 1,
-          "period": {
-            "start": "2020-04-27T16:50:28.000Z"
-          }
-        }, {
-          "system": "email",
-          "value": "RoyGbiv@yahoo.com",
-          "use": "home",
-          "rank": 1,
-          "period": {
-            "start": "2020-04-27T16:52:16.000Z"
-          }
-        } ],
-        "address": {
-          "use": "home",
-          "text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
-          "line": [ "2802 ROCK CREEK PKWY" ],
-          "city": "KANSAS CITY",
-          "state": "MO",
-          "postalCode": "64117",
-          "country": "US",
-          "period": {
-            "start": "2020-04-27T16:50:28.000Z"
-          }
-        },
-        "gender": "male",
-        "period": {
-          "start": "2020-12-23T19:00:36.000Z"
-        }
-      }, {
-        "relationship": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
-            "code": "1152",
-            "display": "Emergency Contact",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
-            "code": "C",
-            "display": "Emergency Contact",
-            "userSelected": false
-          } ],
-          "text": "Emergency Contact"
-        } ],
-        "name": {
-          "id": "CI-12742543-2",
-          "use": "official",
-          "text": "GILBERT, ROY",
-          "family": "GILBERT",
-          "given": [ "ROY" ]
-        },
-        "telecom": [ {
-          "extension": [ {
-            "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address",
-            "valueUrl": "(212)555-5557"
-          } ],
-          "system": "phone",
-          "value": "2125555557",
-          "use": "home",
-          "rank": 1,
-          "period": {
-            "start": "2020-04-27T16:50:28.000Z"
-          }
-        }, {
-          "system": "email",
-          "value": "RoyGbiv@yahoo.com",
-          "use": "home",
-          "rank": 1,
-          "period": {
-            "start": "2020-04-27T16:52:16.000Z"
-          }
-        } ],
-        "address": {
-          "use": "home",
-          "text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
-          "line": [ "2802 ROCK CREEK PKWY" ],
-          "city": "KANSAS CITY",
-          "state": "MO",
-          "postalCode": "64117",
-          "country": "US",
-          "period": {
-            "start": "2020-04-27T16:50:28.000Z"
-          }
-        },
-        "gender": "male",
-        "period": {
-          "end": "2020-12-23T19:00:37.000Z"
-        }
-      }, {
-        "relationship": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
-            "code": "1153",
-            "display": "Family Member",
-            "userSelected": true
-          } ],
-          "text": "Family Member"
-        } ],
-        "name": {
-          "id": "CI-12742543-3",
-          "use": "official",
-          "text": "GILBERT, ROY",
-          "family": "GILBERT",
-          "given": [ "ROY" ]
-        },
-        "telecom": [ {
-          "extension": [ {
-            "url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address",
-            "valueUrl": "(212)555-5557"
-          } ],
-          "system": "phone",
-          "value": "2125555557",
-          "use": "home",
-          "rank": 1,
-          "period": {
-            "start": "2020-04-27T16:50:28.000Z"
-          }
-        }, {
-          "system": "email",
-          "value": "RoyGbiv@yahoo.com",
-          "use": "home",
-          "rank": 1,
-          "period": {
-            "start": "2020-04-27T16:52:16.000Z"
-          }
-        } ],
-        "address": {
-          "use": "home",
-          "text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
-          "line": [ "2802 ROCK CREEK PKWY" ],
-          "city": "KANSAS CITY",
-          "state": "MO",
-          "postalCode": "64117",
-          "country": "US",
-          "period": {
-            "start": "2020-04-27T16:50:28.000Z"
-          }
-        },
-        "gender": "male"
-      } ],
-      "communication": [ {
-        "language": {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/36",
-            "code": "2553237401",
-            "display": "Spanish",
-            "userSelected": true
-          }, {
-            "system": "urn:ietf:bcp:47",
-            "code": "es",
-            "display": "Spanish",
-            "userSelected": false
-          } ],
-          "text": "Spanish"
-        },
-        "preferred": true
-      } ],
-      "generalPractitioner": [ {
-        "id": "CI-490056499-0",
-        "reference": "Practitioner/11938004",
-        "display": "Bradford, MD, Michael Cerner"
-      } ]
-    }
-  }, {
-    "resource": {
-      "resourceType": "Encounter",
-      "id": "encounter-97953898",
-      "meta": {
-        "versionId": "2",
-        "lastUpdated": "2020-12-23T19:04:25.000Z"
-      },
-      "text": {
-        "status": "generated",
-        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Encounter</b></p><p><b>Patient</b>: GILBERT, ALICE S</p><p><b>Location</b>: Model Hospital, MX Hospital, ICU, 101, A</p><p><b>Type</b>: Inpatient</p><p><b>Service Type</b>: Pulmonology</p><p><b>Class</b>: inpatient encounter</p><p><b>Status</b>: In Progress</p><p><b>Period Start Date</b>: Dec 23, 2020  7:02 P.M. UTC</p><p><b>Reason For Visit</b>: Covid-19 rule out</p><p><b>Attending Physician</b>: Carter, Kristin Cerner</p><p><b>Service Provider</b>: Model Hospital</p></div>"
-      },
-      "extension": [ {
-        "url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
-        "extension": [ {
-          "id": "ENCNTR:3339151",
-          "url": "custom-attribute-name",
-          "valueString": "Previous Patient Type"
-        }, {
-          "url": "custom-attribute-value",
-          "valueCodeableConcept": {
-            "coding": [ {
-              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/71",
-              "code": "309308",
-              "display": "Inpatient",
-              "userSelected": true
-            } ],
-            "text": "Inpatient"
-          }
-        } ]
-      }, {
-        "url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
-        "extension": [ {
-          "id": "ENCNTR:204298207",
-          "url": "custom-attribute-name",
-          "valueString": "Full Reg User ID"
-        }, {
-          "url": "custom-attribute-value",
-          "valueString": "REGSUPER"
-        } ]
-      }, {
-        "url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
-        "extension": [ {
-          "id": "ENCNTR:17368048",
-          "url": "custom-attribute-name",
-          "valueString": "Full Reg Date/Time"
-        }, {
-          "url": "custom-attribute-value",
-          "valueDateTime": "2020-12-23T19:04:24.000Z"
-        } ]
-      }, {
-        "url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
-        "extension": [ {
-          "id": "ENCNTR:34310433",
-          "url": "custom-attribute-name",
-          "valueString": "Complete Reg?"
-        }, {
-          "url": "custom-attribute-value",
-          "valueCodeableConcept": {
-            "coding": [ {
-              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/20322",
-              "code": "3542949",
-              "display": "Yes",
-              "userSelected": true
-            } ],
-            "text": "Yes"
-          }
-        } ]
-      }, {
-        "url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
-        "extension": [ {
-          "id": "ENCNTR:684109",
-          "url": "custom-attribute-name",
-          "valueString": "Accident Related Visit"
-        }, {
-          "url": "custom-attribute-value",
-          "valueCodeableConcept": {
-            "coding": [ {
-              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/100700",
-              "code": "684155",
-              "display": "No",
-              "userSelected": true
-            } ],
-            "text": "No"
-          }
-        } ]
-      }, {
-        "url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
-        "extension": [ {
-          "id": "ENCNTR:4047481",
-          "url": "custom-attribute-name",
-          "valueString": "Conversation"
-        }, {
-          "url": "custom-attribute-value",
-          "valueCodeableConcept": {
-            "coding": [ {
-              "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/100040",
-              "code": "4630114",
-              "display": "Register Patient",
-              "userSelected": true
-            } ],
-            "text": "Register Patient"
-          }
-        } ]
-      }, {
-        "url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/estimated-financial-responsibility-amount",
-        "valueMoney": {
-          "value": 0.0,
-          "currency": "USD"
-        }
-      } ],
-      "identifier": [ {
-        "use": "usual",
-        "type": {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/319",
-            "code": "1077",
-            "display": "FIN NBR",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
-            "code": "AN",
-            "display": "Account number",
-            "userSelected": false
-          } ],
-          "text": "FIN NBR"
-        },
-        "system": "urn:oid:5.5.5.5.5.5.",
-        "value": "16048"
-      } ],
-      "status": "in-progress",
-      "class": {
-        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-        "code": "IMP",
-        "display": "inpatient encounter",
-        "userSelected": false
-      },
-      "type": [ {
-        "coding": [ {
-          "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/71",
-          "code": "309308",
-          "display": "Inpatient",
-          "userSelected": true
-        }, {
-          "system": "http://terminology.hl7.org/CodeSystem/v2-0004",
-          "code": "I",
-          "display": "Inpatient",
-          "userSelected": false
-        } ],
-        "text": "Inpatient"
-      } ],
-      "serviceType": {
-        "coding": [ {
-          "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/34",
-          "code": "313017",
-          "display": "Pulmonology",
-          "userSelected": true
-        }, {
-          "system": "http://snomed.info/sct",
-          "code": "722174002",
-          "display": "Pulmonary medicine service (qualifier value)",
-          "userSelected": false
-        } ],
-        "text": "Pulmonology"
-      },
-      "priority": {
-        "coding": [ {
-          "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/3",
-          "code": "309203",
-          "display": "Emergency",
-          "userSelected": true
-        }, {
-          "system": "http://terminology.hl7.org/CodeSystem/v3-ActPriority",
-          "code": "EM",
-          "display": "emergency",
-          "userSelected": false
-        } ],
-        "text": "Emergency"
-      },
-      "subject": {
-        "reference": "Patient/patient-12742542",
-        "display": "GILBERT, ALICE S"
-      },
-      "participant": [ {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "1116",
-            "display": "Admitting Physician",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "ADM",
-            "display": "admitter",
-            "userSelected": false
-          } ],
-          "text": "Admitting Physician"
-        } ],
-        "period": {
-          "start": "2020-04-24T05:00:00.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/11817978",
-          "display": "Carter, Kristin Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "1119",
-            "display": "Attending Physician",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "ATND",
-            "display": "attender",
-            "userSelected": false
-          } ],
-          "text": "Attending Physician"
-        } ],
-        "period": {
-          "start": "2020-04-24T05:00:00.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/11817978",
-          "display": "Carter, Kristin Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "1121",
-            "display": "Consulting Physician",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "CON",
-            "display": "consultant",
-            "userSelected": false
-          } ],
-          "text": "Consulting Physician"
-        } ],
-        "period": {
-          "start": "2020-04-30T21:32:00.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/4122625",
-          "display": "Cerner Test, Physician - Cardiovascular Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "1121",
-            "display": "Consulting Physician",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "CON",
-            "display": "consultant",
-            "userSelected": false
-          } ],
-          "text": "Consulting Physician"
-        } ],
-        "period": {
-          "start": "2020-04-28T19:47:00.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/4122622",
-          "display": "Cerner Test, Physician - Hospitalist Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "1123",
-            "display": "Ordering Physician",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "PPRF",
-            "display": "primary performer",
-            "userSelected": false
-          } ],
-          "text": "Ordering Physician"
-        } ],
-        "period": {
-          "start": "2021-01-12T19:33:08.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/11817978",
-          "display": "Carter, Kristin Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "1125",
-            "display": "Registered Nurse",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "SPRF",
-            "display": "secondary performer",
-            "userSelected": false
-          } ],
-          "text": "Registered Nurse"
-        } ],
-        "period": {
-          "start": "2021-04-22T20:43:00.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/607928",
-          "display": "Cerner Test, Nurse Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "1125",
-            "display": "Registered Nurse",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "SPRF",
-            "display": "secondary performer",
-            "userSelected": false
-          } ],
-          "text": "Registered Nurse"
-        } ],
-        "period": {
-          "start": "2021-03-18T16:10:52.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/607928",
-          "display": "Cerner Test, Nurse Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "1125",
-            "display": "Registered Nurse",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "SPRF",
-            "display": "secondary performer",
-            "userSelected": false
-          } ],
-          "text": "Registered Nurse"
-        } ],
-        "period": {
-          "start": "2021-01-11T16:32:00.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/607928",
-          "display": "Cerner Test, Nurse Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "1125",
-            "display": "Registered Nurse",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "SPRF",
-            "display": "secondary performer",
-            "userSelected": false
-          } ],
-          "text": "Registered Nurse"
-        } ],
-        "period": {
-          "start": "2020-04-29T13:56:00.000Z",
-          "end": "2020-04-30T06:01:53.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/607928",
-          "display": "Cerner Test, Nurse Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "1125",
-            "display": "Registered Nurse",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "SPRF",
-            "display": "secondary performer",
-            "userSelected": false
-          } ],
-          "text": "Registered Nurse"
-        } ],
-        "period": {
-          "start": "2020-04-28T18:11:50.000Z",
-          "end": "2020-04-29T11:01:38.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/607928",
-          "display": "Cerner Test, Nurse Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "1126",
-            "display": "Referring Physician",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "REF",
-            "display": "referrer",
-            "userSelected": false
-          } ],
-          "text": "Referring Physician"
-        } ],
-        "period": {
-          "start": "2020-04-24T05:00:00.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/11938004",
-          "display": "Bradford, MD, Michael Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "681274",
-            "display": "Database Coordinator",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "PART",
-            "display": "Participation",
-            "userSelected": false
-          } ],
-          "text": "Database Coordinator"
-        } ],
-        "period": {
-          "start": "2021-06-14T18:11:30.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/1",
-          "display": "SYSTEM, SYSTEM Cerner"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "18883355",
-            "display": "Covering Physician",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "PPRF",
-            "display": "primary performer",
-            "userSelected": false
-          } ],
-          "text": "Covering Physician"
-        } ],
-        "period": {
-          "start": "2020-12-23T16:43:00.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/12743848",
-          "display": "Doctor, Test"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "681274",
-            "display": "Database Coordinator",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "PART",
-            "display": "Participation",
-            "userSelected": false
-          } ],
-          "text": "Database Coordinator"
-        } ],
-        "period": {
-          "start": "2020-11-06T18:11:35.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/12742554",
-          "display": "Pickering, Kathy"
-        }
-      }, {
-        "type": [ {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
-            "code": "18883355",
-            "display": "Covering Physician",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-            "code": "PPRF",
-            "display": "primary performer",
-            "userSelected": false
-          } ],
-          "text": "Covering Physician"
-        } ],
-        "period": {
-          "start": "2020-05-14T18:08:42.000Z"
-        },
-        "individual": {
-          "reference": "Practitioner/12742575",
-          "display": "Torres, Drew"
-        }
-      } ],
-      "period": {
-        "start": "2020-12-23T19:02:26.000Z"
-      },
-      "reasonCode": [ {
-        "text": "Covid-19 rule out"
-      } ],
-      "hospitalization": {
-        "admitSource": {
-          "coding": [ {
-            "system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/2",
-            "code": "18625664",
-            "display": "Transfer from SNF",
-            "userSelected": true
-          }, {
-            "system": "http://terminology.hl7.org/CodeSystem/admit-source",
-            "code": "nursing",
-            "display": "From nursing home",
-            "userSelected": false
-          } ],
-          "text": "Transfer from SNF"
-        }
-      },
-      "location": [ {
-        "location": {
-          "reference": "Location/33488145",
-          "display": "Model Hospital, MX Hospital, ICU, 101, A"
-        },
-        "status": "active"
-      } ],
-      "serviceProvider": {
-        "reference": "Organization/675844",
-        "display": "Model Hospital"
-      }
-    }
-  }, {
-    "resource": {
-      "resourceType": "MeasureReport",
-		"id": "diabetes-mp",
-      "contained": [ {
-        "resourceType": "Observation",
-        "id": "78a5067f-5468-46ba-aaa5-429561e26acc",
-        "extension": [ {
-          "url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
-          "extension": [ {
-            "url": "measure",
-            "valueCanonical": "http://hl7.org/fhir/us/cqfmeasures/DiabetesHemoglobinA1cHbA1cPoorControl9FHIR"
-          }, {
-            "url": "populationId",
-            "valueString": "sde-race"
-          } ]
-        } ],
-        "status": "final",
-        "code": {
-          "text": "sde-race"
-        },
-        "valueCodeableConcept": {
-          "coding": [ {
-            "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2131-1",
-            "display": "Other Race"
-          } ]
-        }
-      }, {
-        "resourceType": "Observation",
-        "id": "87f51021-9a31-44fc-a79b-d3339af7c749",
-        "extension": [ {
-          "url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
-          "extension": [ {
-            "url": "measure",
-            "valueCanonical": "http://hl7.org/fhir/us/cqfmeasures/DiabetesHemoglobinA1cHbA1cPoorControl9FHIR"
-          }, {
-            "url": "populationId",
-            "valueString": "sde-ethnicity"
-          } ]
-        } ],
-        "status": "final",
-        "code": {
-          "text": "sde-ethnicity"
-        },
-        "valueCodeableConcept": {
-          "coding": [ {
-            "system": "urn:oid:2.16.840.1.113883.6.238",
-            "code": "2135-2",
-            "display": "Hispanic or Latino"
-          } ]
-        }
-      }, {
-        "resourceType": "Observation",
-        "id": "6deb9431-4fe1-41ae-9452-01a338d6da37",
-        "extension": [ {
-          "url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
-          "extension": [ {
-            "url": "measure",
-            "valueCanonical": "http://hl7.org/fhir/us/cqfmeasures/DiabetesHemoglobinA1cHbA1cPoorControl9FHIR"
-          }, {
-            "url": "populationId",
-            "valueString": "sde-sex"
-          } ]
-        } ],
-        "status": "final",
-        "code": {
-          "text": "sde-sex"
-        },
-        "valueCodeableConcept": {
-          "coding": [ {
-            "code": "F"
-          } ]
-        }
-      } ],
-      "status": "complete",
-      "type": "individual",
-      "measure": "DiabetesHemoglobinA1cHbA1cPoorControl9FHIR",
-      "subject": {
-        "reference": "Patient/patient-12742542"
-      },
-      "period": {
-        "start": "2019-01-01T00:00:00+00:00",
-        "end": "2020-01-01T00:00:00+00:00"
-      },
-      "group": [ {
-        "population": [ {
-          "code": {
-            "coding": [ {
-              "system": "http://terminology.hl7.org/CodeSystem/measure-population",
-              "code": "initial-population",
-              "display": "Initial Population"
-            } ]
-          },
-          "count": 0
-        }, {
-          "code": {
-            "coding": [ {
-              "system": "http://terminology.hl7.org/CodeSystem/measure-population",
-              "code": "numerator",
-              "display": "Numerator"
-            } ]
-          },
-          "count": 0
-        }, {
-          "code": {
-            "coding": [ {
-              "system": "http://terminology.hl7.org/CodeSystem/measure-population",
-              "code": "denominator",
-              "display": "Denominator"
-            } ]
-          },
-          "count": 0
-        }, {
-          "code": {
-            "coding": [ {
-              "system": "http://terminology.hl7.org/CodeSystem/measure-population",
-              "code": "denominator-exclusion",
-              "display": "Denominator Exclusion"
-            } ]
-          },
-          "count": 0
-        } ]
-      } ],
-      "evaluatedResource": [ {
-        "extension": [ {
-          "url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
-          "valueCoding": {
-            "system": "http://teminology.hl7.org/CodeSystem/measure-population",
-            "code": "initial-population"
-          }
-        } ],
-        "reference": "Patient/patient-12742542"
-      }, {
-        "reference": "#78a5067f-5468-46ba-aaa5-429561e26acc"
-      }, {
-        "reference": "#87f51021-9a31-44fc-a79b-d3339af7c749"
-      }, {
-        "reference": "#6deb9431-4fe1-41ae-9452-01a338d6da37"
-      } ]
-    }
-  } ]
+	"resourceType": "Bundle",
+	"id": "eicr-report",
+	"meta": {
+		"versionId": "1",
+		"lastUpdated": "2021-07-29T16:44:18.217+00:00",
+		"profile": [
+			"http://hl7.org/fhir/us/ecr/StructureDefinition/eicr-measurereport-bundle"
+		]
+	},
+	"type": "document",
+	"timestamp": "2021-07-29T16:44:18.218+00:00",
+	"entry": [
+		{
+			"resource": {
+				"resourceType": "Composition",
+				"id": "4975e926-7ca2-49ba-ac12-175213a7fcc5",
+				"contained": [
+					{
+						"resourceType": "Device",
+						"id": "1",
+						"deviceName": [
+							{
+								"name": "eCRNow/Backend Service App"
+							}
+						]
+					}
+				],
+				"extension": [
+					{
+						"url": "http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber",
+						"valueString": "1"
+					}
+				],
+				"identifier": {
+					"value": "4975e926-7ca2-49ba-ac12-175213a7fcc5"
+				},
+				"type": {
+					"coding": [
+						{
+							"system": "http://loinc.org",
+							"code": "55751-2",
+							"display": "Public Health Case Report"
+						}
+					],
+					"text": "Public Health Case Report"
+				},
+				"subject": {
+					"reference": "Patient/patient-12742542"
+				},
+				"encounter": {
+					"reference": "https://fhir-ehr-code.cerner.com/r4/ec2458f2-1e24-41c8-b71b-0e701af7583d/Encounter/encounter-97953898"
+				},
+				"date": "2021-07-29T16:44:18+00:00",
+				"author": [
+					{
+						"reference": "#1"
+					}
+				],
+				"section": [
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "46239-0",
+									"display": "Chief complaint+Reason for visit Narrative"
+								}
+							],
+							"text": "Chief complaint+Reason for visit Narrative"
+						},
+						"text": {
+							"div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">No Information</div>"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "10164-2",
+									"display": "History of Present illness Narrative"
+								}
+							],
+							"text": "History of Present illness Narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "10187-3",
+									"display": "Review of Systems narrative"
+								}
+							],
+							"text": "Review of Systems narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "11450-4",
+									"display": "Problem Section Narrative"
+								}
+							],
+							"text": "Problem Section Narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "11348-0",
+									"display": "Past Medical History Narrative"
+								}
+							],
+							"text": "Past Medical History Narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "29549-3",
+									"display": "Medications Administered Narrative"
+								}
+							],
+							"text": "Medications Administered Narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "30954-2",
+									"display": "Results Section Narrative"
+								}
+							],
+							"text": "Results Section Narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "18776-5",
+									"display": "Plan of Treatment Narrative"
+								}
+							],
+							"text": "Plan of Treatment Narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "11369-6",
+									"display": "Immunizations Narrative"
+								}
+							],
+							"text": "Immunizations Narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "47519-4",
+									"display": "Procedure Section Narrative"
+								}
+							],
+							"text": "Procedure Section Narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "8716-3",
+									"display": "Vital Signs Narrative"
+								}
+							],
+							"text": "Vital Signs Narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "29762-2",
+									"display": "Social History Narrative"
+								}
+							],
+							"text": "Social History Narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "90767-5",
+									"display": "Pregnancy Section Narrative"
+								}
+							],
+							"text": "Pregnancy Section Narrative"
+						}
+					},
+					{
+						"code": {
+							"coding": [
+								{
+									"system": "http://loinc.org",
+									"code": "83910-0",
+									"display": "Emergency Outbreak Section Narrative"
+								}
+							],
+							"text": "Emergency Outbreak Section Narrative"
+						}
+					}
+				]
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Patient",
+				"id": "patient-12742542",
+				"meta": {
+					"versionId": "10",
+					"lastUpdated": "2021-05-14T17:38:03.000Z"
+				},
+				"text": {
+					"status": "extensions",
+					"div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Patient</b></p><p><b>Name</b>: GILBERT, ALICE S</p><p><b>Status</b>: Active</p><p><b>DOB</b>: Nov 16, 1970</p><p><b>Birth Sex</b>: Female</p><p><b>Administrative Gender</b>: Female</p><p><b>Marital Status</b>: Married</p></div>"
+				},
+				"extension": [
+					{
+						"url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
+						"valueCode": "F"
+					},
+					{
+						"url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+						"extension": [
+							{
+								"url": "detailed",
+								"valueCoding": {
+									"system": "urn:oid:2.16.840.1.113883.6.238",
+									"code": "2131-1",
+									"display": "Other Race",
+									"userSelected": false
+								}
+							},
+							{
+								"url": "text",
+								"valueString": "Other Race"
+							}
+						]
+					},
+					{
+						"url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+						"extension": [
+							{
+								"url": "ombCategory",
+								"valueCoding": {
+									"system": "urn:oid:2.16.840.1.113883.6.238",
+									"code": "2135-2",
+									"display": "Hispanic or Latino",
+									"userSelected": false
+								}
+							},
+							{
+								"url": "text",
+								"valueString": "Hispanic, Latino, or Spanish Origin"
+							}
+						]
+					}
+				],
+				"identifier": [
+					{
+						"id": "CI-490117359-0",
+						"use": "usual",
+						"type": {
+							"coding": [
+								{
+									"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+									"code": "2",
+									"display": "Community Medical Record Number",
+									"userSelected": true
+								},
+								{
+									"system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+									"code": "MR",
+									"display": "Medical record number",
+									"userSelected": false
+								}
+							],
+							"text": "Community Medical Record Number"
+						},
+						"system": "urn:oid:2.16.840.1.113883.3.787.0.0",
+						"value": "9002472173",
+						"_value": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
+									"valueString": "9002472173"
+								}
+							]
+						}
+					},
+					{
+						"id": "CI-490056475-1",
+						"use": "usual",
+						"type": {
+							"coding": [
+								{
+									"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+									"code": "10",
+									"display": "MRN",
+									"userSelected": true
+								},
+								{
+									"system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+									"code": "MR",
+									"display": "Medical record number",
+									"userSelected": false
+								}
+							],
+							"text": "MRN"
+						},
+						"system": "urn:oid:2.16.840.1.113883.6.1000",
+						"value": "6967",
+						"_value": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
+									"valueString": "00000006967"
+								}
+							]
+						}
+					},
+					{
+						"id": "CI-490261455-3",
+						"use": "usual",
+						"type": {
+							"coding": [
+								{
+									"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+									"code": "670843",
+									"display": "Messaging",
+									"userSelected": true
+								},
+								{
+									"system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+									"code": "U",
+									"display": "Unspecified identifier",
+									"userSelected": false
+								}
+							],
+							"text": "Messaging"
+						},
+						"system": "urn:oid:2.16.840.1.113883.3.13.8",
+						"value": "64D6F66CC7F74DC6A7B0CCB486DD61D1",
+						"_value": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
+									"valueString": "64D6F66CC7F74DC6A7B0CCB486DD61D1"
+								}
+							]
+						},
+						"period": {
+							"start": "2021-05-14T17:38:03.000Z"
+						}
+					},
+					{
+						"id": "CI-490261452-4",
+						"use": "usual",
+						"type": {
+							"coding": [
+								{
+									"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+									"code": "2553236771",
+									"display": "Federated Person Principal",
+									"userSelected": true
+								},
+								{
+									"system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+									"code": "AN",
+									"display": "Account number",
+									"userSelected": false
+								}
+							],
+							"text": "Federated Person Principal"
+						},
+						"system": "urn:oid:2.16.840.1.113883.3.13.6",
+						"value": "URN:CERNER:IDENTITY-FEDERATION:REALM:EC2458F2-1E24-41C8-B71B-0E701AF7583D-CH:PRINCIPAL:YK2IQ7QH6JE3KR4E",
+						"_value": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
+									"valueString": "URN:CERNER:IDENTITY-FEDERATION:REALM:EC2458F2-1E24-41C8-B71B-0E701AF7583D-CH:PRINCIPAL:YK2IQ7QH6JE3KR4E"
+								}
+							]
+						},
+						"period": {
+							"start": "2021-05-14T17:38:02.000Z"
+						}
+					},
+					{
+						"id": "CI-490155187-5",
+						"use": "usual",
+						"type": {
+							"coding": [
+								{
+									"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/4",
+									"code": "2553236785",
+									"display": "MIllennium Person Identifier",
+									"userSelected": true
+								}
+							],
+							"text": "MIllennium Person Identifier"
+						},
+						"value": "13520",
+						"_value": {
+							"extension": [
+								{
+									"url": "http://hl7.org/fhir/StructureDefinition/rendered-value",
+									"valueString": "13520"
+								}
+							]
+						},
+						"period": {
+							"start": "2020-12-18T19:15:15.000Z"
+						}
+					}
+				],
+				"active": true,
+				"name": [
+					{
+						"id": "CI-patient-12742542-0",
+						"use": "official",
+						"text": "GILBERT, ALICE S",
+						"family": "GILBERT",
+						"given": [
+							"ALICE",
+							"S"
+						]
+					}
+				],
+				"telecom": [
+					{
+						"id": "CI-PH-29822737-0",
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address",
+								"valueUrl": "(212)555-5557"
+							}
+						],
+						"system": "phone",
+						"value": "2125555557",
+						"use": "home",
+						"rank": 1,
+						"period": {
+							"start": "2020-04-27T16:50:28.000Z"
+						}
+					},
+					{
+						"id": "CI-EM-29864766-0",
+						"system": "email",
+						"value": "zwhptupssiogslisnh@twzhhq.com",
+						"use": "home",
+						"rank": 1,
+						"period": {
+							"start": "2021-05-14T17:36:14.000Z"
+						}
+					}
+				],
+				"gender": "female",
+				"birthDate": "1970-11-16",
+				"address": [
+					{
+						"id": "CI-24326610-0",
+						"use": "home",
+						"text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
+						"line": [
+							"2802 ROCK CREEK PKWY"
+						],
+						"city": "KANSAS CITY",
+						"state": "MO",
+						"postalCode": "64117",
+						"country": "US",
+						"period": {
+							"start": "2020-04-27T16:50:28.000Z"
+						}
+					}
+				],
+				"maritalStatus": {
+					"coding": [
+						{
+							"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/38",
+							"code": "309237",
+							"display": "Married",
+							"userSelected": true
+						},
+						{
+							"system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+							"code": "M",
+							"display": "Married",
+							"userSelected": false
+						}
+					],
+					"text": "Married"
+				},
+				"contact": [
+					{
+						"relationship": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+										"code": "2553243305",
+										"display": "Authorized Representative",
+										"userSelected": true
+									}
+								],
+								"text": "Authorized Representative"
+							}
+						],
+						"name": {
+							"id": "CI-12742543-0",
+							"use": "official",
+							"text": "GILBERT, ROY",
+							"family": "GILBERT",
+							"given": [
+								"ROY"
+							]
+						},
+						"telecom": [
+							{
+								"extension": [
+									{
+										"url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address",
+										"valueUrl": "(212)555-5557"
+									}
+								],
+								"system": "phone",
+								"value": "2125555557",
+								"use": "home",
+								"rank": 1,
+								"period": {
+									"start": "2020-04-27T16:50:28.000Z"
+								}
+							},
+							{
+								"system": "email",
+								"value": "RoyGbiv@yahoo.com",
+								"use": "home",
+								"rank": 1,
+								"period": {
+									"start": "2020-04-27T16:52:16.000Z"
+								}
+							}
+						],
+						"address": {
+							"use": "home",
+							"text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
+							"line": [
+								"2802 ROCK CREEK PKWY"
+							],
+							"city": "KANSAS CITY",
+							"state": "MO",
+							"postalCode": "64117",
+							"country": "US",
+							"period": {
+								"start": "2020-04-27T16:50:28.000Z"
+							}
+						},
+						"gender": "male"
+					},
+					{
+						"relationship": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+										"code": "1152",
+										"display": "Emergency Contact",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+										"code": "C",
+										"display": "Emergency Contact",
+										"userSelected": false
+									}
+								],
+								"text": "Emergency Contact"
+							}
+						],
+						"name": {
+							"id": "CI-12747697-1",
+							"use": "official",
+							"text": "GILBERT, ROY",
+							"family": "GILBERT",
+							"given": [
+								"ROY"
+							],
+							"period": {
+								"start": "2020-12-23T19:00:37.000Z"
+							}
+						},
+						"telecom": [
+							{
+								"extension": [
+									{
+										"url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address",
+										"valueUrl": "(212)555-5557"
+									}
+								],
+								"system": "phone",
+								"value": "2125555557",
+								"use": "home",
+								"rank": 1,
+								"period": {
+									"start": "2020-04-27T16:50:28.000Z"
+								}
+							},
+							{
+								"system": "email",
+								"value": "RoyGbiv@yahoo.com",
+								"use": "home",
+								"rank": 1,
+								"period": {
+									"start": "2020-04-27T16:52:16.000Z"
+								}
+							}
+						],
+						"address": {
+							"use": "home",
+							"text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
+							"line": [
+								"2802 ROCK CREEK PKWY"
+							],
+							"city": "KANSAS CITY",
+							"state": "MO",
+							"postalCode": "64117",
+							"country": "US",
+							"period": {
+								"start": "2020-04-27T16:50:28.000Z"
+							}
+						},
+						"gender": "male",
+						"period": {
+							"start": "2020-12-23T19:00:36.000Z"
+						}
+					},
+					{
+						"relationship": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+										"code": "1152",
+										"display": "Emergency Contact",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+										"code": "C",
+										"display": "Emergency Contact",
+										"userSelected": false
+									}
+								],
+								"text": "Emergency Contact"
+							}
+						],
+						"name": {
+							"id": "CI-12742543-2",
+							"use": "official",
+							"text": "GILBERT, ROY",
+							"family": "GILBERT",
+							"given": [
+								"ROY"
+							]
+						},
+						"telecom": [
+							{
+								"extension": [
+									{
+										"url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address",
+										"valueUrl": "(212)555-5557"
+									}
+								],
+								"system": "phone",
+								"value": "2125555557",
+								"use": "home",
+								"rank": 1,
+								"period": {
+									"start": "2020-04-27T16:50:28.000Z"
+								}
+							},
+							{
+								"system": "email",
+								"value": "RoyGbiv@yahoo.com",
+								"use": "home",
+								"rank": 1,
+								"period": {
+									"start": "2020-04-27T16:52:16.000Z"
+								}
+							}
+						],
+						"address": {
+							"use": "home",
+							"text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
+							"line": [
+								"2802 ROCK CREEK PKWY"
+							],
+							"city": "KANSAS CITY",
+							"state": "MO",
+							"postalCode": "64117",
+							"country": "US",
+							"period": {
+								"start": "2020-04-27T16:50:28.000Z"
+							}
+						},
+						"gender": "male",
+						"period": {
+							"end": "2020-12-23T19:00:37.000Z"
+						}
+					},
+					{
+						"relationship": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/351",
+										"code": "1153",
+										"display": "Family Member",
+										"userSelected": true
+									}
+								],
+								"text": "Family Member"
+							}
+						],
+						"name": {
+							"id": "CI-12742543-3",
+							"use": "official",
+							"text": "GILBERT, ROY",
+							"family": "GILBERT",
+							"given": [
+								"ROY"
+							]
+						},
+						"telecom": [
+							{
+								"extension": [
+									{
+										"url": "http://hl7.org/fhir/StructureDefinition/iso21090-TEL-address",
+										"valueUrl": "(212)555-5557"
+									}
+								],
+								"system": "phone",
+								"value": "2125555557",
+								"use": "home",
+								"rank": 1,
+								"period": {
+									"start": "2020-04-27T16:50:28.000Z"
+								}
+							},
+							{
+								"system": "email",
+								"value": "RoyGbiv@yahoo.com",
+								"use": "home",
+								"rank": 1,
+								"period": {
+									"start": "2020-04-27T16:52:16.000Z"
+								}
+							}
+						],
+						"address": {
+							"use": "home",
+							"text": "2802 ROCK CREEK PKWY\nKANSAS CITY, MO 64117\nUS",
+							"line": [
+								"2802 ROCK CREEK PKWY"
+							],
+							"city": "KANSAS CITY",
+							"state": "MO",
+							"postalCode": "64117",
+							"country": "US",
+							"period": {
+								"start": "2020-04-27T16:50:28.000Z"
+							}
+						},
+						"gender": "male"
+					}
+				],
+				"communication": [
+					{
+						"language": {
+							"coding": [
+								{
+									"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/36",
+									"code": "2553237401",
+									"display": "Spanish",
+									"userSelected": true
+								},
+								{
+									"system": "urn:ietf:bcp:47",
+									"code": "es",
+									"display": "Spanish",
+									"userSelected": false
+								}
+							],
+							"text": "Spanish"
+						},
+						"preferred": true
+					}
+				],
+				"generalPractitioner": [
+					{
+						"id": "CI-490056499-0",
+						"reference": "Practitioner/11938004",
+						"display": "Bradford, MD, Michael Cerner"
+					}
+				]
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Encounter",
+				"id": "encounter-97953898",
+				"meta": {
+					"versionId": "2",
+					"lastUpdated": "2020-12-23T19:04:25.000Z"
+				},
+				"text": {
+					"status": "generated",
+					"div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Encounter</b></p><p><b>Patient</b>: GILBERT, ALICE S</p><p><b>Location</b>: Model Hospital, MX Hospital, ICU, 101, A</p><p><b>Type</b>: Inpatient</p><p><b>Service Type</b>: Pulmonology</p><p><b>Class</b>: inpatient encounter</p><p><b>Status</b>: In Progress</p><p><b>Period Start Date</b>: Dec 23, 2020  7:02 P.M. UTC</p><p><b>Reason For Visit</b>: Covid-19 rule out</p><p><b>Attending Physician</b>: Carter, Kristin Cerner</p><p><b>Service Provider</b>: Model Hospital</p></div>"
+				},
+				"extension": [
+					{
+						"url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
+						"extension": [
+							{
+								"id": "ENCNTR:3339151",
+								"url": "custom-attribute-name",
+								"valueString": "Previous Patient Type"
+							},
+							{
+								"url": "custom-attribute-value",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/71",
+											"code": "309308",
+											"display": "Inpatient",
+											"userSelected": true
+										}
+									],
+									"text": "Inpatient"
+								}
+							}
+						]
+					},
+					{
+						"url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
+						"extension": [
+							{
+								"id": "ENCNTR:204298207",
+								"url": "custom-attribute-name",
+								"valueString": "Full Reg User ID"
+							},
+							{
+								"url": "custom-attribute-value",
+								"valueString": "REGSUPER"
+							}
+						]
+					},
+					{
+						"url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
+						"extension": [
+							{
+								"id": "ENCNTR:17368048",
+								"url": "custom-attribute-name",
+								"valueString": "Full Reg Date/Time"
+							},
+							{
+								"url": "custom-attribute-value",
+								"valueDateTime": "2020-12-23T19:04:24.000Z"
+							}
+						]
+					},
+					{
+						"url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
+						"extension": [
+							{
+								"id": "ENCNTR:34310433",
+								"url": "custom-attribute-name",
+								"valueString": "Complete Reg?"
+							},
+							{
+								"url": "custom-attribute-value",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/20322",
+											"code": "3542949",
+											"display": "Yes",
+											"userSelected": true
+										}
+									],
+									"text": "Yes"
+								}
+							}
+						]
+					},
+					{
+						"url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
+						"extension": [
+							{
+								"id": "ENCNTR:684109",
+								"url": "custom-attribute-name",
+								"valueString": "Accident Related Visit"
+							},
+							{
+								"url": "custom-attribute-value",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/100700",
+											"code": "684155",
+											"display": "No",
+											"userSelected": true
+										}
+									],
+									"text": "No"
+								}
+							}
+						]
+					},
+					{
+						"url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/custom-attribute",
+						"extension": [
+							{
+								"id": "ENCNTR:4047481",
+								"url": "custom-attribute-name",
+								"valueString": "Conversation"
+							},
+							{
+								"url": "custom-attribute-value",
+								"valueCodeableConcept": {
+									"coding": [
+										{
+											"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/100040",
+											"code": "4630114",
+											"display": "Register Patient",
+											"userSelected": true
+										}
+									],
+									"text": "Register Patient"
+								}
+							}
+						]
+					},
+					{
+						"url": "https://fhir-ehr.cerner.com/r4/StructureDefinition/estimated-financial-responsibility-amount",
+						"valueMoney": {
+							"value": 0.0,
+							"currency": "USD"
+						}
+					}
+				],
+				"identifier": [
+					{
+						"use": "usual",
+						"type": {
+							"coding": [
+								{
+									"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/319",
+									"code": "1077",
+									"display": "FIN NBR",
+									"userSelected": true
+								},
+								{
+									"system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+									"code": "AN",
+									"display": "Account number",
+									"userSelected": false
+								}
+							],
+							"text": "FIN NBR"
+						},
+						"system": "urn:oid:5.5.5.5.5.5.",
+						"value": "16048"
+					}
+				],
+				"status": "in-progress",
+				"class": {
+					"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+					"code": "IMP",
+					"display": "inpatient encounter",
+					"userSelected": false
+				},
+				"type": [
+					{
+						"coding": [
+							{
+								"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/71",
+								"code": "309308",
+								"display": "Inpatient",
+								"userSelected": true
+							},
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/v2-0004",
+								"code": "I",
+								"display": "Inpatient",
+								"userSelected": false
+							}
+						],
+						"text": "Inpatient"
+					}
+				],
+				"serviceType": {
+					"coding": [
+						{
+							"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/34",
+							"code": "313017",
+							"display": "Pulmonology",
+							"userSelected": true
+						},
+						{
+							"system": "http://snomed.info/sct",
+							"code": "722174002",
+							"display": "Pulmonary medicine service (qualifier value)",
+							"userSelected": false
+						}
+					],
+					"text": "Pulmonology"
+				},
+				"priority": {
+					"coding": [
+						{
+							"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/3",
+							"code": "309203",
+							"display": "Emergency",
+							"userSelected": true
+						},
+						{
+							"system": "http://terminology.hl7.org/CodeSystem/v3-ActPriority",
+							"code": "EM",
+							"display": "emergency",
+							"userSelected": false
+						}
+					],
+					"text": "Emergency"
+				},
+				"subject": {
+					"reference": "Patient/patient-12742542",
+					"display": "GILBERT, ALICE S"
+				},
+				"participant": [
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "1116",
+										"display": "Admitting Physician",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "ADM",
+										"display": "admitter",
+										"userSelected": false
+									}
+								],
+								"text": "Admitting Physician"
+							}
+						],
+						"period": {
+							"start": "2020-04-24T05:00:00.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/11817978",
+							"display": "Carter, Kristin Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "1119",
+										"display": "Attending Physician",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "ATND",
+										"display": "attender",
+										"userSelected": false
+									}
+								],
+								"text": "Attending Physician"
+							}
+						],
+						"period": {
+							"start": "2020-04-24T05:00:00.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/11817978",
+							"display": "Carter, Kristin Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "1121",
+										"display": "Consulting Physician",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "CON",
+										"display": "consultant",
+										"userSelected": false
+									}
+								],
+								"text": "Consulting Physician"
+							}
+						],
+						"period": {
+							"start": "2020-04-30T21:32:00.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/4122625",
+							"display": "Cerner Test, Physician - Cardiovascular Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "1121",
+										"display": "Consulting Physician",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "CON",
+										"display": "consultant",
+										"userSelected": false
+									}
+								],
+								"text": "Consulting Physician"
+							}
+						],
+						"period": {
+							"start": "2020-04-28T19:47:00.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/4122622",
+							"display": "Cerner Test, Physician - Hospitalist Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "1123",
+										"display": "Ordering Physician",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "PPRF",
+										"display": "primary performer",
+										"userSelected": false
+									}
+								],
+								"text": "Ordering Physician"
+							}
+						],
+						"period": {
+							"start": "2021-01-12T19:33:08.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/11817978",
+							"display": "Carter, Kristin Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "1125",
+										"display": "Registered Nurse",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "SPRF",
+										"display": "secondary performer",
+										"userSelected": false
+									}
+								],
+								"text": "Registered Nurse"
+							}
+						],
+						"period": {
+							"start": "2021-04-22T20:43:00.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/607928",
+							"display": "Cerner Test, Nurse Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "1125",
+										"display": "Registered Nurse",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "SPRF",
+										"display": "secondary performer",
+										"userSelected": false
+									}
+								],
+								"text": "Registered Nurse"
+							}
+						],
+						"period": {
+							"start": "2021-03-18T16:10:52.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/607928",
+							"display": "Cerner Test, Nurse Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "1125",
+										"display": "Registered Nurse",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "SPRF",
+										"display": "secondary performer",
+										"userSelected": false
+									}
+								],
+								"text": "Registered Nurse"
+							}
+						],
+						"period": {
+							"start": "2021-01-11T16:32:00.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/607928",
+							"display": "Cerner Test, Nurse Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "1125",
+										"display": "Registered Nurse",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "SPRF",
+										"display": "secondary performer",
+										"userSelected": false
+									}
+								],
+								"text": "Registered Nurse"
+							}
+						],
+						"period": {
+							"start": "2020-04-29T13:56:00.000Z",
+							"end": "2020-04-30T06:01:53.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/607928",
+							"display": "Cerner Test, Nurse Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "1125",
+										"display": "Registered Nurse",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "SPRF",
+										"display": "secondary performer",
+										"userSelected": false
+									}
+								],
+								"text": "Registered Nurse"
+							}
+						],
+						"period": {
+							"start": "2020-04-28T18:11:50.000Z",
+							"end": "2020-04-29T11:01:38.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/607928",
+							"display": "Cerner Test, Nurse Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "1126",
+										"display": "Referring Physician",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "REF",
+										"display": "referrer",
+										"userSelected": false
+									}
+								],
+								"text": "Referring Physician"
+							}
+						],
+						"period": {
+							"start": "2020-04-24T05:00:00.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/11938004",
+							"display": "Bradford, MD, Michael Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "681274",
+										"display": "Database Coordinator",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "PART",
+										"display": "Participation",
+										"userSelected": false
+									}
+								],
+								"text": "Database Coordinator"
+							}
+						],
+						"period": {
+							"start": "2021-06-14T18:11:30.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/1",
+							"display": "SYSTEM, SYSTEM Cerner"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "18883355",
+										"display": "Covering Physician",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "PPRF",
+										"display": "primary performer",
+										"userSelected": false
+									}
+								],
+								"text": "Covering Physician"
+							}
+						],
+						"period": {
+							"start": "2020-12-23T16:43:00.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/12743848",
+							"display": "Doctor, Test"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "681274",
+										"display": "Database Coordinator",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "PART",
+										"display": "Participation",
+										"userSelected": false
+									}
+								],
+								"text": "Database Coordinator"
+							}
+						],
+						"period": {
+							"start": "2020-11-06T18:11:35.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/12742554",
+							"display": "Pickering, Kathy"
+						}
+					},
+					{
+						"type": [
+							{
+								"coding": [
+									{
+										"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/333",
+										"code": "18883355",
+										"display": "Covering Physician",
+										"userSelected": true
+									},
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+										"code": "PPRF",
+										"display": "primary performer",
+										"userSelected": false
+									}
+								],
+								"text": "Covering Physician"
+							}
+						],
+						"period": {
+							"start": "2020-05-14T18:08:42.000Z"
+						},
+						"individual": {
+							"reference": "Practitioner/12742575",
+							"display": "Torres, Drew"
+						}
+					}
+				],
+				"period": {
+					"start": "2020-12-23T19:02:26.000Z"
+				},
+				"reasonCode": [
+					{
+						"text": "Covid-19 rule out"
+					}
+				],
+				"hospitalization": {
+					"admitSource": {
+						"coding": [
+							{
+								"system": "https://fhir.cerner.com/ec2458f2-1e24-41c8-b71b-0e701af7583d/codeSet/2",
+								"code": "18625664",
+								"display": "Transfer from SNF",
+								"userSelected": true
+							},
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/admit-source",
+								"code": "nursing",
+								"display": "From nursing home",
+								"userSelected": false
+							}
+						],
+						"text": "Transfer from SNF"
+					}
+				},
+				"location": [
+					{
+						"location": {
+							"reference": "Location/33488145",
+							"display": "Model Hospital, MX Hospital, ICU, 101, A"
+						},
+						"status": "active"
+					}
+				],
+				"serviceProvider": {
+					"reference": "Organization/675844",
+					"display": "Model Hospital"
+				}
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "MeasureReport",
+				"id": "diabetes-mp",
+				"contained": [
+					{
+						"resourceType": "Observation",
+						"id": "78a5067f-5468-46ba-aaa5-429561e26acc",
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+								"extension": [
+									{
+										"url": "measure",
+										"valueCanonical": "http://hl7.org/fhir/us/cqfmeasures/DiabetesHemoglobinA1cHbA1cPoorControl9FHIR"
+									},
+									{
+										"url": "populationId",
+										"valueString": "sde-race"
+									}
+								]
+							}
+						],
+						"status": "final",
+						"code": {
+							"text": "sde-race"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "urn:oid:2.16.840.1.113883.6.238",
+									"code": "2131-1",
+									"display": "Other Race"
+								}
+							]
+						}
+					},
+					{
+						"resourceType": "Observation",
+						"id": "87f51021-9a31-44fc-a79b-d3339af7c749",
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+								"extension": [
+									{
+										"url": "measure",
+										"valueCanonical": "http://hl7.org/fhir/us/cqfmeasures/DiabetesHemoglobinA1cHbA1cPoorControl9FHIR"
+									},
+									{
+										"url": "populationId",
+										"valueString": "sde-ethnicity"
+									}
+								]
+							}
+						],
+						"status": "final",
+						"code": {
+							"text": "sde-ethnicity"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"system": "urn:oid:2.16.840.1.113883.6.238",
+									"code": "2135-2",
+									"display": "Hispanic or Latino"
+								}
+							]
+						}
+					},
+					{
+						"resourceType": "Observation",
+						"id": "6deb9431-4fe1-41ae-9452-01a338d6da37",
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+								"extension": [
+									{
+										"url": "measure",
+										"valueCanonical": "http://hl7.org/fhir/us/cqfmeasures/DiabetesHemoglobinA1cHbA1cPoorControl9FHIR"
+									},
+									{
+										"url": "populationId",
+										"valueString": "sde-sex"
+									}
+								]
+							}
+						],
+						"status": "final",
+						"code": {
+							"text": "sde-sex"
+						},
+						"valueCodeableConcept": {
+							"coding": [
+								{
+									"code": "F"
+								}
+							]
+						}
+					}
+				],
+				"status": "complete",
+				"type": "individual",
+				"measure": "DiabetesHemoglobinA1cHbA1cPoorControl9FHIR",
+				"subject": {
+					"reference": "Patient/patient-12742542"
+				},
+				"period": {
+					"start": "2019-01-01T00:00:00+00:00",
+					"end": "2020-01-01T00:00:00+00:00"
+				},
+				"group": [
+					{
+						"population": [
+							{
+								"code": {
+									"coding": [
+										{
+											"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+											"code": "initial-population",
+											"display": "Initial Population"
+										}
+									]
+								},
+								"count": 0
+							},
+							{
+								"code": {
+									"coding": [
+										{
+											"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+											"code": "numerator",
+											"display": "Numerator"
+										}
+									]
+								},
+								"count": 0
+							},
+							{
+								"code": {
+									"coding": [
+										{
+											"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+											"code": "denominator",
+											"display": "Denominator"
+										}
+									]
+								},
+								"count": 0
+							},
+							{
+								"code": {
+									"coding": [
+										{
+											"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+											"code": "denominator-exclusion",
+											"display": "Denominator Exclusion"
+										}
+									]
+								},
+								"count": 0
+							}
+						]
+					}
+				],
+				"evaluatedResource": [
+					{
+						"extension": [
+							{
+								"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+								"valueCoding": {
+									"system": "http://teminology.hl7.org/CodeSystem/measure-population",
+									"code": "initial-population"
+								}
+							}
+						],
+						"reference": "Patient/patient-12742542"
+					},
+					{
+						"reference": "#78a5067f-5468-46ba-aaa5-429561e26acc"
+					},
+					{
+						"reference": "#87f51021-9a31-44fc-a79b-d3339af7c749"
+					},
+					{
+						"reference": "#6deb9431-4fe1-41ae-9452-01a338d6da37"
+					}
+				]
+			}
+		}
+	]
 }

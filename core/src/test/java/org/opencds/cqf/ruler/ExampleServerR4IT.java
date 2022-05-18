@@ -34,8 +34,7 @@ import ca.uhn.fhir.util.BundleUtil;
 		// Override is currently required when using MDM as the construction of the MDM
 		// beans are ambiguous as they are constructed multiple places. This is evident
 		// when running in a spring boot environment
-		"spring.main.allow-bean-definition-overriding=true",
-		"spring.flyway.enabled=false"
+		"spring.main.allow-bean-definition-overriding=true"
 })
 public class ExampleServerR4IT {
 	private static final org.slf4j.Logger ourLog = org.slf4j.LoggerFactory.getLogger(ExampleServerR4IT.class);

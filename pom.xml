@@ -65,9 +65,9 @@
 		<cql-evaluator.version>1.4.4-SNAPSHOT</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
-		<fhir_core_version>5.6.0</fhir_core_version>
+		<fhir_core_version>5.6.36</fhir_core_version>
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>5.6.3</hapi_version>
+		<hapi_version>5.7.0</hapi_version>
 		<javax.version>8.0.1</javax.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

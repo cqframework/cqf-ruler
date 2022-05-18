@@ -24,8 +24,7 @@ import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 		"spring.datasource.url=jdbc:h2:mem:dbr5",
 		"hapi.fhir.fhir_version=r5",
 		"hapi.fhir.subscription.websocket_enabled=true",
-		"hapi.fhir.subscription.websocket_enabled=true",
-		"spring.flyway.enabled=false"
+		"hapi.fhir.mdm_enabled=false"
 })
 public class ExampleServerR5IT {
 
