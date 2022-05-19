@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.opencds.cqf.ruler</groupId>
@@ -65,7 +66,7 @@
 		<cql-evaluator.version>1.4.4-SNAPSHOT</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
-		<fhir_core_version>5.6.0</fhir_core_version>
+		<fhir_core_version>5.5.7</fhir_core_version>
 		<flexmark_version>0.62.2</flexmark_version>
 		<hapi_version>5.6.3</hapi_version>
 		<javax.version>8.0.1</javax.version>

@@ -21,8 +21,7 @@ import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 		"hapi.fhir.fhir_version=dstu3",
 		"hapi.fhir.subscription.websocket_enabled=true",
 		"hapi.fhir.allow_external_references=true",
-		"hapi.fhir.allow_placeholder_references=true",
-		"spring.flyway.enabled=false"
+		"hapi.fhir.allow_placeholder_references=true"
 })
 
 public class ExampleServerDstu3IT {

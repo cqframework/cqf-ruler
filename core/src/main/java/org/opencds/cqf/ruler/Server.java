@@ -28,6 +28,7 @@ import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.provider.ValueSetOperationProvider;
 import ca.uhn.fhir.model.dstu2.resource.Conformance;
 import ca.uhn.fhir.rest.server.util.ISearchParamRegistry;
 
@@ -58,6 +59,9 @@ public class Server extends BaseJpaRestfulServer {
 	@Autowired
 	ServerProperties myServerProperties;
 
+	@Autowired
+	ValueSetOperationProvider valueSetOperationProvider;
+
 	public Server() {
 		super();
 	}
@@ -66,6 +70,10 @@ public class Server extends BaseJpaRestfulServer {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void initialize() throws ServletException {
 		super.initialize();
+
+		// TODO: This is needed due to a version mismatch with HAPI. Once we upgrade to
+		// >=5.7.0 we need to remove this
+		this.registerProvider(valueSetOperationProvider);
 
 		log.info("Loading metadata extenders from plugins");
 		Map<String, MetadataExtender> extenders = applicationContext.getBeansOfType(MetadataExtender.class);
