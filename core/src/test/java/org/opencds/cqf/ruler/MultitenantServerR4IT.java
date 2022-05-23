@@ -25,8 +25,7 @@ import ca.uhn.fhir.rest.server.provider.ProviderConstants;
 		"spring.datasource.url=jdbc:h2:mem:dbr4-mt",
 		"hapi.fhir.fhir_version=r4",
 		"hapi.fhir.subscription.websocket_enabled=true",
-		"hapi.fhir.partitioning.partitioning_include_in_search_hashes=false",
-		"spring.flyway.enabled=false"
+		"hapi.fhir.partitioning.partitioning_include_in_search_hashes=false"
 })
 public class MultitenantServerR4IT {
 	private IGenericClient ourClient;

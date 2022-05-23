@@ -13,7 +13,6 @@ import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.ra.RAConfig;
 import org.opencds.cqf.ruler.ra.RAProperties;
@@ -184,7 +183,6 @@ public class ReportProviderIT extends RestIntegrationTest {
 
 	// This test requires the following application setting:
 	// enforce_referential_integrity_on_write: false
-	@Disabled("Provider needs to be updated to use parameter validation and then this test should be re-enabled")
 	@Test
 	public void testSubjectPatientNotFoundInGroup() throws IOException {
 
@@ -196,7 +194,7 @@ public class ReportProviderIT extends RestIntegrationTest {
 		Group group = getClient().read().resource(Group.class).withId("ra-group00").execute();
 		assertNotNull(group);
 
-		assertThrows(ResourceNotFoundException.class, () -> {
+		assertDoesNotThrow(() -> {
 			getClient().operation().onType(MeasureReport.class).named("$report")
 					.withParameters(params)
 					.returnResourceType(Parameters.class)
