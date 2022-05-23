@@ -56,6 +56,8 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class CareGapsProvider extends DaoRegistryOperationProvider
 		implements ParameterUser, ConfigurationUser, ResourceCreator, MeasureReportUser {
 
@@ -180,7 +182,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
 	@Description(shortDefinition = "$care-gaps", value = "Implements the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/OperationDefinition-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://build.fhir.org/ig/HL7/davinci-deqm/index.html\">Da Vinci DEQM FHIR Implementation Guide</a> which is an extension of the <a href=\"http://build.fhir.org/operation-measure-care-gaps.html\">$care-gaps</a> operation found in the <a href=\"http://hl7.org/fhir/R4/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
 	@Operation(name = "$care-gaps", idempotent = true, type = Measure.class)
-	public Parameters careGapsReport(RequestDetails theRequestDetails,
+	public Parameters careGapsReport(HttpServletRequest request, RequestDetails theRequestDetails,
 			@OperationParam(name = "periodStart") String periodStart,
 			@OperationParam(name = "periodEnd") String periodEnd,
 			@OperationParam(name = "topic") List<String> topic,
@@ -212,7 +214,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		(patients)
 				.forEach(
 						patient -> {
-							Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails,
+							Parameters.ParametersParameterComponent patientParameter = patientReports(request, theRequestDetails,
 									periodStart, periodEnd, patient, status, measures, organization);
 							if (patientParameter != null) {
 								result.addParameter(patientParameter);
@@ -289,15 +291,16 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
-	private Parameters.ParametersParameterComponent patientReports(RequestDetails requestDetails, String periodStart,
-			String periodEnd, Patient patient, List<String> status, List<Measure> measures, String organization) {
+	private Parameters.ParametersParameterComponent patientReports(HttpServletRequest request,
+			RequestDetails requestDetails, String periodStart, String periodEnd, Patient patient,
+			List<String> status, List<Measure> measures, String organization) {
 		// TODO: add organization to report, if it exists.
 
 		Composition composition = getComposition(patient);
 		List<DetectedIssue> detectedIssues = new ArrayList<>();
 		Map<String, Resource> evaluatedResources = new HashMap<>();
 
-		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, status, measures,
+		List<MeasureReport> reports = getReports(request, requestDetails, periodStart, periodEnd, patient, status, measures,
 				composition, detectedIssues, evaluatedResources);
 
 		if (reports.isEmpty()) {
@@ -310,14 +313,14 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
-	private List<MeasureReport> getReports(RequestDetails requestDetails, String periodStart,
-			String periodEnd, Patient patient, List<String> status, List<Measure> measures, Composition composition,
-			List<DetectedIssue> detectedIssues, Map<String, Resource> evaluatedResources) {
+	private List<MeasureReport> getReports(HttpServletRequest request, RequestDetails requestDetails,
+			String periodStart, String periodEnd, Patient patient, List<String> status, List<Measure> measures,
+			Composition composition, List<DetectedIssue> detectedIssues, Map<String, Resource> evaluatedResources) {
 		List<MeasureReport> reports = new ArrayList<>();
 
 		MeasureReport report = null;
 		for (Measure measure : measures) {
-			report = measureEvaluateProvider.evaluateMeasure(requestDetails, measure.getIdElement(), periodStart,
+			report = measureEvaluateProvider.evaluateMeasure(request, requestDetails, measure.getIdElement(), periodStart,
 					periodEnd, "patient", Ids.simple(patient), null, null, null, null, null);
 
 			if (!report.hasGroup()) {

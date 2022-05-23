@@ -21,6 +21,8 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class CollectDataProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
@@ -45,13 +47,14 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 	*/
 	@Description(shortDefinition = "$collect-data", value = "Implements the <a href=\"http://hl7.org/fhir/R4/measure-operation-collect-data.html\">$collect-data</a> operation found in the <a href=\"http://hl7.org/fhir/R4/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
 	@Operation(name = "$collect-data", idempotent = true, type = Measure.class)
-	public Parameters collectData(RequestDetails theRequestDetails, @IdParam IdType theId,
+	public Parameters collectData(HttpServletRequest request, RequestDetails theRequestDetails,
+			@IdParam IdType theId,
 			@OperationParam(name = "periodStart") String periodStart,
 			@OperationParam(name = "periodEnd") String periodEnd, @OperationParam(name = "subject") String subject,
 			@OperationParam(name = "practitioner") String practitioner,
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn) {
 
-		MeasureReport report = measureEvaluateProvider.evaluateMeasure(theRequestDetails, theId, periodStart, periodEnd,
+		MeasureReport report = measureEvaluateProvider.evaluateMeasure(request,theRequestDetails, theId, periodStart, periodEnd,
 				"subject", subject, practitioner, lastReceivedOn, null, null, null);
 		report.setType(MeasureReport.MeasureReportType.DATACOLLECTION);
 		report.setGroup(null);

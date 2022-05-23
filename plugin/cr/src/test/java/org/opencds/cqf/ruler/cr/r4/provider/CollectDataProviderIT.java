@@ -61,7 +61,7 @@ public class CollectDataProviderIT extends DaoIntegrationTest {
 		this.create(enc);
 
 		// Submit it
-		Parameters results = collectDataProvider.collectData(new SystemRequestDetails(), m.getIdElement(), "2019-01-01",
+		Parameters results = collectDataProvider.collectData(null, new SystemRequestDetails(), m.getIdElement(), "2019-01-01",
 				"2019-12-31", Ids.simple(john), null, null);
 
 		List<ParametersParameterComponent> resources = org.opencds.cqf.ruler.utility.r4.Parameters.getPartsByName(results, "resource");
