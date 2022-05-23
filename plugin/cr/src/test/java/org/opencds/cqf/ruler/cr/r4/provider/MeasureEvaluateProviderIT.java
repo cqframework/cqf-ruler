@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Parameters;
@@ -197,6 +198,34 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				"Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
 		runWithPatient("BCSEHEDISMY2022", "Patient/Patient-65", 1, 1, 0, 1, true,
 				"Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
+	}
+
+	@Test
+	public void testMeasureEvaluateWithManifestHeader() throws Exception {
+		String bundleAsText = stringFromResource("Exm104FhirR4MeasureBundle.json");
+		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
+		getClient().transaction().withBundle(bundle).execute();
+		loadResource("multiversion/Library-example-manifest.json");
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
+		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
+		params.addParameter().setName("reportType").setValue(new StringType("individual"));
+		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM104"));
+		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
+
+		Library library = getClient().read().resource(Library.class).withId("example-manifest").execute();
+		assertNotNull(library);
+
+		MeasureReport returnMeasureReport = getClient().operation()
+			.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
+			.named("$evaluate-measure")
+			.withParameters(params)
+			.returnResourceType(MeasureReport.class)
+			.withAdditionalHeader("X-Manifest", "http://example.org/fhir/Library/example-manifest")
+			.execute();
+
+		assertNotNull(returnMeasureReport);
 	}
 
 

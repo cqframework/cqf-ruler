@@ -1,0 +1,20 @@
+{
+	"resourceType": "Library",
+	"id": "example-manifest",
+	"url": "http://example.org/fhir/Library/example-manifest",
+	"type": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/library-type",
+				"code": "asset-collection"
+			}
+		]
+	},
+	"relatedArtifact": [
+		{
+			"type": "depends-on",
+			"display": "Value set Mammography",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1018|20200505"
+		}
+	]
+}

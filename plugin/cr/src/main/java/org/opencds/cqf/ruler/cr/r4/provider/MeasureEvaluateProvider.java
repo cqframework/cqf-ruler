@@ -2,10 +2,13 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.StringType;
@@ -23,6 +26,8 @@ import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Clients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.model.api.annotation.Description;
@@ -35,7 +40,10 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import javax.servlet.http.HttpServletRequest;
 
 public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
-	@Autowired
+
+	private static final Logger logger = LoggerFactory.getLogger(MeasureEvaluateProvider.class);
+
+  	@Autowired
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 
 	@Autowired
@@ -97,6 +105,14 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		 @OperationParam(name = "additionalData") Bundle additionalData,
 		 @OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
+		String manifest = parseManifestHeader(request);
+		System.out.println("Manifest header: " + manifest);
+
+		if(StringUtils.isNotBlank(manifest)) {
+			Library library = read(new IdType(manifest), requestDetails);
+			System.out.println("Manifest library found :" + library.getUrl());
+		}
+
 		Measure measure = read(theId);
 
 		TerminologyProvider terminologyProvider;
@@ -128,6 +144,14 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		}
 
 		return report;
+	}
+
+	//https://github.com/HL7/Content-Management-Infrastructure-IG/blob/main/input/pages/version-manifest.md#x-manifest-header
+	private String parseManifestHeader(HttpServletRequest request) {
+		if (request != null) {
+			return request.getHeader("X-Manifest") != null ? request.getHeader("X-Manifest") : "";
+		}
+		return "";
 	}
 
 }
