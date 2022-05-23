@@ -12,6 +12,7 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
@@ -200,6 +201,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 
 	@Test
+	@Disabled("waiting for implementation")
 	public void testMeasureEvaluateMultiVersion() throws Exception {
 		String bundleAsTextVersion7 = stringFromResource( "multiversion/EXM124-7.0.000-bundle.json");
 		String bundleAsTextVersion9 = stringFromResource( "multiversion/EXM124-9.0.000-bundle.json");

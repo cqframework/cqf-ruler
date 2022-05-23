@@ -213,7 +213,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 
 		Parameters result = initializeResult();
 
-		if (crProperties.getCareGapsParallelEnabled()) {
+		if (crProperties.getThreadedCareGapsEnabled()) {
 			(patients)
 				.forEach(
 					patient -> {
