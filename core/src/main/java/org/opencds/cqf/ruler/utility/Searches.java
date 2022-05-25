@@ -96,6 +96,18 @@ public class Searches {
 		return search;
 	}
 
+	public static SearchParameterMap byCanonical(String theCanonical, String version) {
+		checkNotNull(theCanonical);
+
+		SearchParameterMap search = byUrl(Canonicals.getUrl(theCanonical));
+		if (version != null) {
+			search.add(VERSION_SP, new TokenParam(version));
+		}
+
+		return search;
+	}
+
+
 	public static <C extends IPrimitiveType<String>> SearchParameterMap byCanonical(C theCanonicalType) {
 		checkNotNull(theCanonicalType);
 		checkArgument(theCanonicalType.hasValue());
