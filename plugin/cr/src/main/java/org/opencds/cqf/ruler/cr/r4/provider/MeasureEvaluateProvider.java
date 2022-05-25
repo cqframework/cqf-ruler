@@ -27,6 +27,7 @@ import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Clients;
+import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,21 +107,16 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		 @OperationParam(name = "additionalData") Bundle additionalData,
 		 @OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
-		String manifest = parseManifestHeader(request);
-		System.out.println("Manifest header: " + manifest);
+		Map<String, String> urlVersionManifestMap = new HashMap<>();
+		processManifest(request, requestDetails, urlVersionManifestMap);
 
-		if(StringUtils.isNotBlank(manifest)) {
-			Library library = read(new IdType(manifest), requestDetails);
-			System.out.println("Manifest library found :" + library.getUrl());
+		logger.info("Map keys: {}", urlVersionManifestMap);
 
-			Map<String, String> resourceVersionMap;
-
-			if(library != null) {
-				resourceVersionMap = generateResourceVersionMap(library);
-			}
-		}
-
+		// should there be another $evaluate-measure signature that considers measure id or canonical!
 		Measure measure = read(theId);
+
+		measure = validateMeasureVersion(measure, urlVersionManifestMap, requestDetails);
+
 
 		TerminologyProvider terminologyProvider = initTerminologyProvider(terminologyEndpoint, requestDetails);
 		DataProvider dataProvider = this.jpaDataProviderFactory.create(requestDetails, terminologyProvider);
@@ -140,6 +136,22 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		return report;
 	}
 
+	private Map<String, String> processManifest(HttpServletRequest request, RequestDetails requestDetails,
+															  Map<String, String> resourceVersionMap) {
+
+		String manifest = parseManifestHeader(request);
+		logger.info("Manifest header: {}", manifest);
+		if (StringUtils.isNotBlank(manifest)) {
+			Library assetCollectionManifest = read(new IdType(manifest), requestDetails);
+			logger.info("Manifest library found : {}", assetCollectionManifest.getUrl());
+			if (assetCollectionManifest != null) {
+				populateResourceVersionMap(assetCollectionManifest, resourceVersionMap);
+			}
+		}
+
+		return resourceVersionMap;
+	}
+
 	//https://github.com/HL7/Content-Management-Infrastructure-IG/blob/main/input/pages/version-manifest.md#x-manifest-header
 	private String parseManifestHeader(HttpServletRequest request) {
 		if (request != null) {
@@ -149,8 +161,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		return "";
 	}
 
-	private Map<String, String> generateResourceVersionMap(Library library) {
-		Map<String, String> resourceVersionMap = new HashMap<>();
+	private Map<String, String> populateResourceVersionMap(Library library, Map<String, String> resourceVersionMap) {
 		if (library.hasRelatedArtifact()) {
 			library.getRelatedArtifact().forEach(item -> {
 				String version = Canonicals.getVersion(item.getResource());
@@ -164,6 +175,23 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			});
 		}
 		return resourceVersionMap;
+	}
+
+	private Measure validateMeasureVersion(Measure measure, Map<String, String> urlVersionManifestMap,
+														RequestDetails requestDetails) {
+		if (measure.hasUrl()) {
+			if (StringUtils.isBlank(Canonicals.getVersion(measure.getUrl())) &&
+				urlVersionManifestMap.containsKey(measure.getUrl())
+			) {
+				measure = search(Measure.class, Searches.byCanonical(
+						measure.getUrl(), urlVersionManifestMap.get(measure.getUrl())),
+					requestDetails).firstOrNull();
+				logger.info("Measure updated based on manifest");
+			} else {
+				logger.info("Measure unchanged");
+			}
+		}
+		return measure;
 	}
 
 	private static final String PRODUCT_LINE_EXT_URL = "http://hl7.org/fhir/us/cqframework/cqfmeasures/StructureDefinition/cqfm-productLine";
