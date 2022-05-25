@@ -143,12 +143,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		MeasureReport report = measureProcessor.evaluateMeasure(measure.getUrl(), periodStart, periodEnd, reportType,
 				subject, null, lastReceivedOn, null, null, null, additionalData);
 
-		if (productLine != null) {
-			Extension ext = new Extension();
-			ext.setUrl("http://hl7.org/fhir/us/cqframework/cqfmeasures/StructureDefinition/cqfm-productLine");
-			ext.setValue(new StringType(productLine));
-			report.addExtension(ext);
-		}
+		addProductLineExtension(report, productLine);
 
 		return report;
 	}
@@ -177,6 +172,17 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			});
 		}
 		return resourceVersionMap;
+	}
+
+	private static final String PRODUCT_LINE_EXT_URL = "http://hl7.org/fhir/us/cqframework/cqfmeasures/StructureDefinition/cqfm-productLine";
+
+	private void addProductLineExtension(MeasureReport report, String productLine) {
+		if (productLine != null) {
+			Extension ext = new Extension();
+			ext.setUrl(PRODUCT_LINE_EXT_URL);
+			ext.setValue(new StringType(productLine));
+			report.addExtension(ext);
+		}
 	}
 
 }
