@@ -122,15 +122,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 
 		Measure measure = read(theId);
 
-		TerminologyProvider terminologyProvider;
-
-		if (terminologyEndpoint != null) {
-			IGenericClient client = Clients.forEndpoint(getFhirContext(), terminologyEndpoint);
-			terminologyProvider = new R4FhirTerminologyProvider(client);
-		} else {
-			terminologyProvider = this.jpaTerminologyProviderFactory.create(requestDetails);
-		}
-
+		TerminologyProvider terminologyProvider = initTerminologyProvider(terminologyEndpoint, requestDetails);
 		DataProvider dataProvider = this.jpaDataProviderFactory.create(requestDetails, terminologyProvider);
 		LibraryContentProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
@@ -183,6 +175,17 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			ext.setValue(new StringType(productLine));
 			report.addExtension(ext);
 		}
+	}
+
+	private TerminologyProvider initTerminologyProvider(Endpoint terminologyEndpoint, RequestDetails requestDetails) {
+		TerminologyProvider terminologyProvider;
+		if (terminologyEndpoint != null) {
+			IGenericClient client = Clients.forEndpoint(getFhirContext(), terminologyEndpoint);
+			terminologyProvider = new R4FhirTerminologyProvider(client);
+		} else {
+			terminologyProvider = this.jpaTerminologyProviderFactory.create(requestDetails);
+		}
+		return terminologyProvider;
 	}
 
 }
