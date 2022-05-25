@@ -12,28 +12,20 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import ca.uhn.fhir.jpa.provider.ValueSetOperationProvider;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
 		MeasureEvaluateProviderIT.class,
 		CrConfig.class, CqlConfig.class, DevToolsConfig.class }, properties = {
-				"hapi.fhir.fhir_version=r4",
-				"spring.main.lazy-initialization=false" // Due to this test requiring network callbacks, we need to ensure
-																		// the
-																		// ValueSetOperationProvider is registered.
+				"hapi.fhir.fhir_version=r4"
 		})
 public class MeasureEvaluateProviderIT extends RestIntegrationTest {
-
-	@Autowired
-	ValueSetOperationProvider valueSetOperationProvider;
 
 	@Test
 	public void testMeasureEvaluate() throws Exception {
@@ -56,7 +48,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.execute();
 
 		assertNotNull(returnMeasureReport);
-		// System.out.println("Resource:"+this.getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(returnMeasureReport));
 	}
 
 	@Test
@@ -134,7 +125,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.execute();
 
 		assertNotNull(returnMeasureReport);
-		// System.out.println("Resource:"+this.getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(returnMeasureReport));
 
 		for (MeasureReport.MeasureReportGroupPopulationComponent population : returnMeasureReport.getGroupFirstRep()
 				.getPopulation()) {
@@ -198,13 +188,13 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				"Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
 	}
 
-
+	@Disabled("The cql/elm in the Bundles is incorrect. It references ValueSets by localhost url, which is not valid")
 	@Test
 	public void testMeasureEvaluateMultiVersion() throws Exception {
-		String bundleAsTextVersion7 = stringFromResource( "multiversion/EXM124-7.0.000-bundle.json");
-		String bundleAsTextVersion9 = stringFromResource( "multiversion/EXM124-9.0.000-bundle.json");
-		Bundle bundleVersion7 = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsTextVersion7);
-		Bundle bundleVersion9 = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsTextVersion9);
+		String bundleAsTextVersion7 = stringFromResource("multiversion/EXM124-7.0.000-bundle.json");
+		String bundleAsTextVersion9 = stringFromResource("multiversion/EXM124-9.0.000-bundle.json");
+		Bundle bundleVersion7 = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsTextVersion7);
+		Bundle bundleVersion9 = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsTextVersion9);
 		getClient().transaction().withBundle(bundleVersion7).execute();
 		getClient().transaction().withBundle(bundleVersion9).execute();
 
@@ -215,21 +205,21 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM124"));
 		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
 
-		MeasureReport  returnMeasureReportVersion7 = getClient().operation()
-			.onInstance(new IdType("Measure", "measure-EXM124-7.0.000"))
-			.named("$evaluate-measure")
-			.withParameters(params)
-			.returnResourceType(MeasureReport.class)
-			.execute();
+		MeasureReport returnMeasureReportVersion7 = getClient().operation()
+				.onInstance(new IdType("Measure", "measure-EXM124-7.0.000"))
+				.named("$evaluate-measure")
+				.withParameters(params)
+				.returnResourceType(MeasureReport.class)
+				.execute();
 
 		assertNotNull(returnMeasureReportVersion7);
 
-		MeasureReport  returnMeasureReportVersion9 = getClient().operation()
-			.onInstance(new IdType("Measure", "measure-EXM124-9.0.000"))
-			.named("$evaluate-measure")
-			.withParameters(params)
-			.returnResourceType(MeasureReport.class)
-			.execute();
+		MeasureReport returnMeasureReportVersion9 = getClient().operation()
+				.onInstance(new IdType("Measure", "measure-EXM124-9.0.000"))
+				.named("$evaluate-measure")
+				.withParameters(params)
+				.returnResourceType(MeasureReport.class)
+				.execute();
 
 		assertNotNull(returnMeasureReportVersion9);
 

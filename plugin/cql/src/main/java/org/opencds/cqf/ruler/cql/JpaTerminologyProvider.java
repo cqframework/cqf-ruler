@@ -74,7 +74,8 @@ public class JpaTerminologyProvider implements TerminologyProvider, DaoRegistryU
 
 	protected boolean hasVersionedCodeSystem(ValueSetInfo valueSet) {
 		return valueSet.getCodeSystems() != null && valueSet.getCodeSystems().size() > 1
-				|| valueSet.getCodeSystems() != null && valueSet.getCodeSystems().stream().anyMatch(x -> x.getVersion() != null);
+				|| valueSet.getCodeSystems() != null
+						&& valueSet.getCodeSystems().stream().anyMatch(x -> x.getVersion() != null);
 	}
 
 	@Override
@@ -89,7 +90,8 @@ public class JpaTerminologyProvider implements TerminologyProvider, DaoRegistryU
 						valueSet.getId()));
 			}
 
-			IBundleProvider bundleProvider = search(getClass("ValueSet"), Searches.byUrl(valueSet.getId()), myRequestDetails);
+			IBundleProvider bundleProvider = search(getClass("ValueSet"), Searches.byUrl(valueSet.getId()),
+					myRequestDetails);
 			List<IBaseResource> valueSets = bundleProvider.getAllResources();
 			if (valueSets.isEmpty()) {
 				throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));

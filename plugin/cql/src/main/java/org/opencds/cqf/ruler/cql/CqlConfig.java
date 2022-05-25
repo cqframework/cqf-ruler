@@ -241,7 +241,7 @@ public class CqlConfig {
 		// Translator. That's being tracked here:
 		// https://github.com/cqframework/clinical_quality_language/issues/665
 		throw new IllegalStateException(
-				"CQL support not yet implemented for R5. Please disable the CQL plugin or switch the server to R4");
+				"CQL support not yet implemented for R5. Please disable the CQL plugin or switch the server to <=R4");
 	}
 
 	@Bean
