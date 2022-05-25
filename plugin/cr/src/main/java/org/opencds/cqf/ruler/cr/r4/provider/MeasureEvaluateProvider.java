@@ -1,9 +1,9 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Extension;
@@ -25,6 +25,7 @@ import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Clients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,6 +112,12 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		if(StringUtils.isNotBlank(manifest)) {
 			Library library = read(new IdType(manifest), requestDetails);
 			System.out.println("Manifest library found :" + library.getUrl());
+
+			Map<String, String> resourceVersionMap;
+
+			if(library != null) {
+				resourceVersionMap = generateResourceVersionMap(library);
+			}
 		}
 
 		Measure measure = read(theId);
@@ -149,9 +156,27 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	//https://github.com/HL7/Content-Management-Infrastructure-IG/blob/main/input/pages/version-manifest.md#x-manifest-header
 	private String parseManifestHeader(HttpServletRequest request) {
 		if (request != null) {
-			return request.getHeader("X-Manifest") != null ? request.getHeader("X-Manifest") : "";
+			String manifest = request.getHeader("X-Manifest");
+			return StringUtils.isNotBlank(manifest) ? manifest : "";
 		}
 		return "";
+	}
+
+	private Map<String, String> generateResourceVersionMap(Library library) {
+		Map<String, String> resourceVersionMap = new HashMap<>();
+		if (library.hasRelatedArtifact()) {
+			library.getRelatedArtifact().forEach(item -> {
+				String version = Canonicals.getVersion(item.getResource());
+				String url = Canonicals.getUrl(item.getResource());
+
+				if (StringUtils.isNotBlank(url)) {
+					if (StringUtils.isNotBlank(version)) {
+						resourceVersionMap.put(url, version);
+					}
+				}
+			});
+		}
+		return resourceVersionMap;
 	}
 
 }
