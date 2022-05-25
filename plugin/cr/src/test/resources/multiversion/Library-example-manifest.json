@@ -14,7 +14,7 @@
 		{
 			"type": "depends-on",
 			"display": "Value set Mammography",
-			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1018|20200505"
+			"resource": "http://hl7.org/fhir/us/cqfmeasures/Measure/EXM124|9.0.000"
 		}
 	]
 }
