@@ -8,7 +8,6 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.StringType;
@@ -107,16 +106,15 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		 @OperationParam(name = "additionalData") Bundle additionalData,
 		 @OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
-		Map<String, String> urlVersionManifestMap = new HashMap<>();
-		processManifest(request, requestDetails, urlVersionManifestMap);
-
-		logger.info("Map keys: {}", urlVersionManifestMap);
+		Map<String, String> urlVersionManifestMap = (HashMap)requestDetails.getUserData().get("manifest");
 
 		// should there be another $evaluate-measure signature that considers measure id or canonical!
 		Measure measure = read(theId);
 
-		measure = validateMeasureVersion(measure, urlVersionManifestMap, requestDetails);
-
+		if (urlVersionManifestMap != null) {
+			logger.info("UrlVersionManifestMap : ", urlVersionManifestMap);
+			measure = validateMeasureVersion(measure, urlVersionManifestMap, requestDetails);
+		}
 
 		TerminologyProvider terminologyProvider = initTerminologyProvider(terminologyEndpoint, requestDetails);
 		DataProvider dataProvider = this.jpaDataProviderFactory.create(requestDetails, terminologyProvider);
@@ -134,47 +132,6 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		addProductLineExtension(report, productLine);
 
 		return report;
-	}
-
-	private Map<String, String> processManifest(HttpServletRequest request, RequestDetails requestDetails,
-															  Map<String, String> resourceVersionMap) {
-
-		String manifest = parseManifestHeader(request);
-		logger.info("Manifest header: {}", manifest);
-		if (StringUtils.isNotBlank(manifest)) {
-			Library assetCollectionManifest = read(new IdType(manifest), requestDetails);
-			logger.info("Manifest library found : {}", assetCollectionManifest.getUrl());
-			if (assetCollectionManifest != null) {
-				populateResourceVersionMap(assetCollectionManifest, resourceVersionMap);
-			}
-		}
-
-		return resourceVersionMap;
-	}
-
-	//https://github.com/HL7/Content-Management-Infrastructure-IG/blob/main/input/pages/version-manifest.md#x-manifest-header
-	private String parseManifestHeader(HttpServletRequest request) {
-		if (request != null) {
-			String manifest = request.getHeader("X-Manifest");
-			return StringUtils.isNotBlank(manifest) ? manifest : "";
-		}
-		return "";
-	}
-
-	private Map<String, String> populateResourceVersionMap(Library library, Map<String, String> resourceVersionMap) {
-		if (library.hasRelatedArtifact()) {
-			library.getRelatedArtifact().forEach(item -> {
-				String version = Canonicals.getVersion(item.getResource());
-				String url = Canonicals.getUrl(item.getResource());
-
-				if (StringUtils.isNotBlank(url)) {
-					if (StringUtils.isNotBlank(version)) {
-						resourceVersionMap.put(url, version);
-					}
-				}
-			});
-		}
-		return resourceVersionMap;
 	}
 
 	private Measure validateMeasureVersion(Measure measure, Map<String, String> urlVersionManifestMap,
