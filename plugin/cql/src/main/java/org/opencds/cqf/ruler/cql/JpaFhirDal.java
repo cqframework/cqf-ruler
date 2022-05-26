@@ -60,9 +60,9 @@ public class JpaFhirDal implements FhirDal {
 	public Iterable<IBaseResource> searchByUrl(String theResourceType, String theUrl) {
 		SearchParameterMap searchParameterMap = SearchParameterMap.newSynchronous();
 		searchParameterMap.add("url", new UriParam(theUrl));
-		Map<String, String> urlVersionManifestMap = (HashMap) requestDetails.getUserData().get("manifest");
+		Map<?, ?> urlVersionManifestMap = (Map<?,?>) requestDetails.getUserData().get("manifest");
 		if (urlVersionManifestMap != null && urlVersionManifestMap.containsKey(theUrl)) {
-			searchParameterMap.add("version", new TokenParam(urlVersionManifestMap.get(theUrl)));
+			searchParameterMap.add("version", new TokenParam((String)urlVersionManifestMap.get(theUrl)));
 		}
 		return this.daoRegistry.getResourceDao(theResourceType)
 			.search(searchParameterMap).getAllResources();
