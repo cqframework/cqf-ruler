@@ -111,7 +111,13 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			}
 		}
 
-		Library library = read(new IdType(libraryIdOrCanonical), theRequestDetails);
+		Library library = null;
+
+		try {
+			library = read(new IdType(libraryIdOrCanonical), theRequestDetails);
+		} catch (Exception e) {
+
+		}
 
 		if (library == null) {
 			library = search(Library.class, Searches.byCanonical(libraryIdOrCanonical), theRequestDetails).firstOrNull();

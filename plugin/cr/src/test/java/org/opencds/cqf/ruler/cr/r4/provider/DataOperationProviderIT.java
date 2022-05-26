@@ -85,7 +85,6 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	@Disabled
 	public void testR4MeasureDataRequirementsOperation() throws IOException {
 		String bundleAsText = stringFromResource( "Exm104FhirR4MeasureBundle.json");
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
