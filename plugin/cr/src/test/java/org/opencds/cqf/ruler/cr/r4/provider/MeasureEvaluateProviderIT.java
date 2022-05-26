@@ -30,7 +30,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	@Test
-	@Disabled
 	public void testMeasureEvaluate() throws Exception {
 		String bundleAsText = stringFromResource("Exm104FhirR4MeasureBundle.json");
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
@@ -54,7 +53,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	@Disabled
 	public void testMeasureEvaluateWithTerminologyEndpoint() throws Exception {
 		String bundleAsText = stringFromResource("Exm104FhirR4MeasureBundle.json");
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
@@ -87,7 +85,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	@Disabled
 	public void testMeasureEvaluateWithAdditionalData() throws Exception {
 		String mainBundleAsText = stringFromResource("Exm104FhirR4MeasurePartBundle.json");
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(mainBundleAsText);
