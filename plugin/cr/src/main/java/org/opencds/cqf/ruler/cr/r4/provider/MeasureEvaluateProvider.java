@@ -1,6 +1,5 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;

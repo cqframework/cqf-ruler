@@ -10,7 +10,6 @@ import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.UriParam;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
