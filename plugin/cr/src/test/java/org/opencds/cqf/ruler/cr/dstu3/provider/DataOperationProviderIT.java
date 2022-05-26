@@ -21,14 +21,15 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 
 	@Test
 	public void testDstu3DataRequirementsOperation() throws IOException {
-		String bundleAsText = stringFromResource( "DataReqLibraryTransactionBundle.json");
+		String bundleAsText = stringFromResource( "DataReqLibraryTransactionBundleDstu3.json");
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
 		Parameters params = new Parameters();
 		params.addParameter().setName("target").setValue(new StringType("dummy"));
 
-		Library returnLibrary = getClient().operation().onInstance(new IdType("Library", "LibraryEvaluationTest"))
+		Library returnLibrary = getClient().operation()
+			.onInstance(new IdType("Library", "LibraryEvaluationTest"))
 			.named("$data-requirements")
 			.withParameters(params)
 			.returnResourceType(Library.class)
