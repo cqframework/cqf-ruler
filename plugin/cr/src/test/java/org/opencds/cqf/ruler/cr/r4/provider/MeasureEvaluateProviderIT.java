@@ -8,6 +8,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Parameters;
@@ -216,6 +217,41 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 		MeasureReport  returnMeasureReportVersion7 = getClient().operation()
 			.onInstance(new IdType("Measure", "measure-EXM124-7.0.000"))
+			.named("$evaluate-measure")
+			.withParameters(params)
+			.returnResourceType(MeasureReport.class)
+			.withAdditionalHeader("X-Manifest", "http://example.org/fhir/Library/example-manifest")
+			.execute();
+
+		assertNotNull(returnMeasureReportVersion7);
+
+	}
+
+	@Test
+	public void testGeneralApiMeasureEvaluateMultiVersionWithManifestHeader() throws Exception {
+
+		String bundleAsTextVersion7 = stringFromResource( "multiversion/EXM124-7.0.000-bundle.json");
+		String bundleAsTextVersion9 = stringFromResource( "multiversion/EXM124-9.0.000-bundle.json");
+		Bundle bundleVersion7 = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsTextVersion7);
+		Bundle bundleVersion9 = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsTextVersion9);
+		getClient().transaction().withBundle(bundleVersion7).execute();
+		getClient().transaction().withBundle(bundleVersion9).execute();
+
+		loadResource("multiversion/Library-example-manifest.json");
+
+		Library library = getClient().read().resource(Library.class).withId("example-manifest").execute();
+		assertNotNull(library);
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("measure").setValue(new StringType("http://hl7.org/fhir/us/cqfmeasures/Measure/EXM124"));
+		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
+		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
+		params.addParameter().setName("reportType").setValue(new StringType("individual"));
+		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM124"));
+		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
+
+		MeasureReport  returnMeasureReportVersion7 = getClient().operation()
+			.onType(Measure.class)
 			.named("$evaluate-measure")
 			.withParameters(params)
 			.returnResourceType(MeasureReport.class)
