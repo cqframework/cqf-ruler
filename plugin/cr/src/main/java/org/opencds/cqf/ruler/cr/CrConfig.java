@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.cr;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.ruler.cql.CqlConfig;
+import org.opencds.cqf.ruler.cr.interceptor.ManifestInterceptor;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -30,6 +31,11 @@ public class CrConfig {
 	@Bean
 	SearchParameterResolver searchParameterResolver(FhirContext fhirContext) {
 		return new SearchParameterResolver(fhirContext);
+	}
+
+	@Bean
+	ManifestInterceptor manifestInterceptor() {
+		return new ManifestInterceptor();
 	}
 
 	@Bean
