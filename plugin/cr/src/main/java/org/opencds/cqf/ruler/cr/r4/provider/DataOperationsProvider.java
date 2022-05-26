@@ -36,6 +36,8 @@ import org.opencds.cqf.ruler.utility.CanonicalParts;
 import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Libraries;
 import org.opencds.cqf.ruler.utility.Searches;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
@@ -46,6 +48,8 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 public class DataOperationsProvider extends DaoRegistryOperationProvider {
+
+	private Logger myLog = LoggerFactory.getLogger(DataOperationsProvider.class);
 
 	@Autowired
 	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
@@ -111,8 +115,13 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			}
 		}
 
-		Library library = read(new IdType(libraryIdOrCanonical), theRequestDetails);
+		Library library = null;
 
+		try {
+			library = read(new IdType(libraryIdOrCanonical), theRequestDetails);
+		} catch (Exception e) {
+			myLog.info("Library read failed as measure.getLibrary() is not an ID, fall back to search as canonical");
+		}
 		if (library == null) {
 			library = search(Library.class, Searches.byCanonical(libraryIdOrCanonical), theRequestDetails).firstOrNull();
 		}
