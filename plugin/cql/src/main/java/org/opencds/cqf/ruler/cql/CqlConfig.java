@@ -118,8 +118,8 @@ public class CqlConfig {
 			JpaFhirRetrieveProvider provider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, rd);
 			if (t != null) {
 				provider.setTerminologyProvider(t);
-				// TODO: Read config...
-				provider.setExpandValueSets(true);
+				// // TODO: Read config...
+				// provider.setExpandValueSets(true);
 				provider.setModelResolver(modelResolver);
 			}
 			return new CompositeDataProvider(modelResolver, provider);

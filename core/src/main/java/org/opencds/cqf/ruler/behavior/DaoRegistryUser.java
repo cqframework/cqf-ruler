@@ -12,8 +12,8 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.api.model.DaoMethodOutcome;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
-import ca.uhn.fhir.rest.api.SearchTotalModeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
 /**
  * Simulate FhirDal operations until that's fully baked. This interface is
@@ -235,7 +235,7 @@ public interface DaoRegistryUser extends FhirContextUser {
 		// Basically, if the search total is not known the underlying hapi provider can
 		// return "null",
 		// Which is interpreted at "no resources or an async search result".
-		theSearchMap.setSearchTotalMode(SearchTotalModeEnum.ACCURATE);
+		// theSearchMap.setSearchTotalMode(SearchTotalModeEnum.ACCURATE);
 
 		return TypedBundleProvider.fromBundleProvider(
 				getDaoRegistry().getResourceDao(theResourceClass).search(theSearchMap, theRequestDetails));
