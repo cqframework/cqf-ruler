@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cql;
 
+import ca.uhn.fhir.rest.param.TokenParam;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
@@ -8,6 +9,9 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.UriParam;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class JpaFhirDal implements FhirDal {
@@ -54,7 +58,13 @@ public class JpaFhirDal implements FhirDal {
 
 	@Override
 	public Iterable<IBaseResource> searchByUrl(String theResourceType, String theUrl) {
+		SearchParameterMap searchParameterMap = SearchParameterMap.newSynchronous();
+		searchParameterMap.add("url", new UriParam(theUrl));
+		Map<String, String> urlVersionManifestMap = (HashMap) requestDetails.getUserData().get("manifest");
+		if (urlVersionManifestMap != null && urlVersionManifestMap.containsKey(theUrl)) {
+			searchParameterMap.add("version", new TokenParam(urlVersionManifestMap.get(theUrl)));
+		}
 		return this.daoRegistry.getResourceDao(theResourceType)
-				.search(SearchParameterMap.newSynchronous().add("url", new UriParam(theUrl))).getAllResources();
+			.search(searchParameterMap).getAllResources();
 	}
 }
