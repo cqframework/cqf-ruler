@@ -4,21 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.ICompositeType;
 import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.CodeSystemInfo;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.ValueSetInfo;
-import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
-import org.opencds.cqf.ruler.utility.Ids;
-import org.opencds.cqf.ruler.utility.Searches;
 
 import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.context.support.IValidationSupport.LookupCodeResult;
 import ca.uhn.fhir.context.support.ValidationSupportContext;
 import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
-import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
@@ -27,29 +24,25 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
  * interface, which is used for Terminology operations
  * in CQL
  */
-public class JpaTerminologyProvider implements TerminologyProvider, DaoRegistryUser {
+public class JpaTerminologyProvider implements TerminologyProvider {
 
 	private final ITermReadSvc myTerminologySvc;
-	private final DaoRegistry myDaoRegistry;
 	private final IValidationSupport myValidationSupport;
+	private final IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType> myValueSetDao;
 	private final RequestDetails myRequestDetails;
 
-	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, DaoRegistry theDaoRegistry,
-			IValidationSupport theValidationSupport) {
-		this(theTerminologySvc, theDaoRegistry, theValidationSupport, null);
+	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, IValidationSupport theValidationSupport,
+			IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType> theValueSetDao) {
+		this(theTerminologySvc, theValidationSupport, theValueSetDao, null);
 	}
 
-	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, DaoRegistry theDaoRegistry,
-			IValidationSupport theValidationSupport, RequestDetails theRequestDetails) {
+	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, IValidationSupport theValidationSupport,
+			IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType> theValueSetDao,
+			RequestDetails theRequestDetails) {
+		myValueSetDao = theValueSetDao;
 		myTerminologySvc = theTerminologySvc;
-		myDaoRegistry = theDaoRegistry;
 		myValidationSupport = theValidationSupport;
 		myRequestDetails = theRequestDetails;
-	}
-
-	@Override
-	public DaoRegistry getDaoRegistry() {
-		return this.myDaoRegistry;
 	}
 
 	@Override
@@ -89,25 +82,13 @@ public class JpaTerminologyProvider implements TerminologyProvider, DaoRegistryU
 						"Could not expand value set %s; version and code system bindings are not supported at this time.",
 						valueSet.getId()));
 			}
-
-			IBundleProvider bundleProvider = search(getClass("ValueSet"), Searches.byUrl(valueSet.getId()),
-					myRequestDetails);
-			List<IBaseResource> valueSets = bundleProvider.getAllResources();
-			if (valueSets.isEmpty()) {
-				throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));
-			} else if (valueSets.size() == 1) {
-				vs = valueSets.get(0);
-			} else {
-				throw new IllegalArgumentException("Found more than 1 ValueSet with url: " + valueSet.getId());
-			}
-		} else {
-			vs = read(Ids.newId(this.myTerminologySvc.getFhirContext(), "ValueSet", valueSet.getId()),
-					myRequestDetails);
-			if (vs == null) {
-				throw new IllegalArgumentException(String.format("Could not resolve value set %s.", valueSet.getId()));
-			}
 		}
 
+		ValueSetExpansionOptions valueSetExpansionOptions = new ValueSetExpansionOptions();
+		valueSetExpansionOptions.setFailOnMissingCodeSystem(false);
+		valueSetExpansionOptions.setCount(Integer.MAX_VALUE);
+
+		vs = myValueSetDao.expandByIdentifier(valueSet.getId(), valueSetExpansionOptions);
 		// TODO: There's probably a way to share a bit more code between the various
 		// versions of FHIR
 		// here. The cql-evaluator has a CodeUtil class that read any version of a
@@ -138,11 +119,6 @@ public class JpaTerminologyProvider implements TerminologyProvider, DaoRegistryU
 	}
 
 	protected List<Code> getCodes(org.hl7.fhir.dstu3.model.ValueSet theValueSet) {
-		// Attempt to expand the ValueSet if it's not already expanded.
-		if (!(theValueSet.hasExpansion() && theValueSet.getExpansion().hasContains())) {
-			theValueSet = this.innerExpand(theValueSet);
-		}
-
 		List<Code> codes = new ArrayList<>();
 
 		// If expansion was successful, use the codes.
@@ -170,11 +146,6 @@ public class JpaTerminologyProvider implements TerminologyProvider, DaoRegistryU
 	}
 
 	protected List<Code> getCodes(org.hl7.fhir.r4.model.ValueSet theValueSet) {
-		// Attempt to expand the ValueSet if it's not already expanded.
-		if (!(theValueSet.hasExpansion() && theValueSet.getExpansion().hasContains())) {
-			theValueSet = this.innerExpand(theValueSet);
-		}
-
 		List<Code> codes = new ArrayList<>();
 
 		// If expansion was successful, use the codes.
@@ -201,11 +172,6 @@ public class JpaTerminologyProvider implements TerminologyProvider, DaoRegistryU
 	}
 
 	protected List<Code> getCodes(org.hl7.fhir.r5.model.ValueSet theValueSet) {
-		// Attempt to expand the ValueSet if it's not already expanded.
-		if (!(theValueSet.hasExpansion() && theValueSet.getExpansion().hasContains())) {
-			theValueSet = this.innerExpand(theValueSet);
-		}
-
 		List<Code> codes = new ArrayList<>();
 
 		// If expansion was successful, use the codes.
@@ -229,11 +195,5 @@ public class JpaTerminologyProvider implements TerminologyProvider, DaoRegistryU
 		}
 
 		return codes;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected <T extends IBaseResource> T innerExpand(T theValueSet) {
-		return (T) myTerminologySvc.expandValueSet(
-				new ValueSetExpansionOptions().setCount(Integer.MAX_VALUE).setFailOnMissingCodeSystem(false), theValueSet);
 	}
 }

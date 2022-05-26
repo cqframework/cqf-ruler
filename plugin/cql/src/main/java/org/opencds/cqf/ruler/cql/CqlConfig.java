@@ -7,6 +7,8 @@ import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
+import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.ICompositeType;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu2FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
@@ -47,6 +49,7 @@ import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.cql.common.provider.CqlProviderFactory;
 import ca.uhn.fhir.cql.common.provider.CqlProviderLoader;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
@@ -118,8 +121,6 @@ public class CqlConfig {
 			JpaFhirRetrieveProvider provider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, rd);
 			if (t != null) {
 				provider.setTerminologyProvider(t);
-				// // TODO: Read config...
-				// provider.setExpandValueSets(true);
 				provider.setModelResolver(modelResolver);
 			}
 			return new CompositeDataProvider(modelResolver, provider);
@@ -150,11 +151,19 @@ public class CqlConfig {
 		return new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Bean
+	IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType> valueSetDao(DaoRegistry daoRegistry) {
+		return (IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType>) daoRegistry
+				.getResourceDao("ValueSet");
+	}
+
 	@Bean
 	public JpaTerminologyProviderFactory jpaTerminologyProviderFactory(ITermReadSvc theTerminologySvc,
-			DaoRegistry theDaoRegistry,
-			IValidationSupport theValidationSupport) {
-		return rd -> new JpaTerminologyProvider(theTerminologySvc, theDaoRegistry, theValidationSupport, rd);
+			IValidationSupport theValidationSupport,
+			IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType> theValueSetDao) {
+		return rd -> new JpaTerminologyProvider(theTerminologySvc, theValidationSupport, theValueSetDao,
+				rd);
 	}
 
 	@Bean
