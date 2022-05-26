@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.cr;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.ruler.cql.CqlConfig;
+import org.opencds.cqf.ruler.cr.interceptor.RulerExceptionHandlingInterceptor;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -20,6 +21,11 @@ public class CrConfig {
 	@Bean
 	public CrProperties crProperties() {
 		return new CrProperties();
+	}
+
+	@Bean
+	RulerExceptionHandlingInterceptor rulerExceptionHandlingInterceptor() {
+		return new RulerExceptionHandlingInterceptor();
 	}
 
 	@Bean
