@@ -5,3 +5,4 @@ hapi:
          measure_report:
             care_gaps_reporter: Organization/alphora
             care_gaps_composition_section_author: Organization/alphora-author
+         threaded_care_gaps_enabled: true

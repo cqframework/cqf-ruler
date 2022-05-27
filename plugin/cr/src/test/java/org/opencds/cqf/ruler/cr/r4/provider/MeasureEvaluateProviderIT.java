@@ -190,6 +190,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	@Disabled("The cql/elm in the Bundles is incorrect. It references ValueSets by localhost url, which is not valid")
 	@Test
+	@Disabled("waiting for implementation")
 	public void testMeasureEvaluateMultiVersion() throws Exception {
 		String bundleAsTextVersion7 = stringFromResource("multiversion/EXM124-7.0.000-bundle.json");
 		String bundleAsTextVersion9 = stringFromResource("multiversion/EXM124-9.0.000-bundle.json");
