@@ -231,12 +231,6 @@ public interface DaoRegistryUser extends FhirContextUser {
 		checkNotNull(theResourceClass);
 		checkNotNull(theSearchMap);
 
-		// CQL Data providers and so on depend on this behavior.
-		// Basically, if the search total is not known the underlying hapi provider can
-		// return "null",
-		// Which is interpreted at "no resources or an async search result".
-		// theSearchMap.setSearchTotalMode(SearchTotalModeEnum.ACCURATE);
-
 		return TypedBundleProvider.fromBundleProvider(
 				getDaoRegistry().getResourceDao(theResourceClass).search(theSearchMap, theRequestDetails));
 	}
