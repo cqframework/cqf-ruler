@@ -30,6 +30,10 @@ import org.opencds.cqf.cql.evaluator.engine.model.CachingModelResolverDecorator;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.spring.fhir.adapter.AdapterConfiguration;
+import org.opencds.cqf.ruler.cql.dstu2.PreExpandedTermReadSvcDstu2;
+import org.opencds.cqf.ruler.cql.dstu3.PreExpandedTermReadSvcDstu3;
+import org.opencds.cqf.ruler.cql.r4.PreExpandedTermReadSvcR4;
+import org.opencds.cqf.ruler.cql.r5.PreExpandedTermReadSvcR5;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU2Condition;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
@@ -53,6 +57,9 @@ import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
+import ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3;
+import ca.uhn.fhir.jpa.term.api.ITermReadSvcR4;
+import ca.uhn.fhir.jpa.term.api.ITermReadSvcR5;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cql", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -269,5 +276,29 @@ public class CqlConfig {
 	@Primary
 	public CqlProviderFactory cqlProviderFactory() {
 		return null;
+	}
+
+	@Bean({ "terminologyService", "myTerminologySvc", "myTermReadSvc" })
+	@Conditional(OnDSTU2Condition.class)
+	public ITermReadSvc termReadSvcDstu2() {
+		return new PreExpandedTermReadSvcDstu2();
+	}
+
+	@Bean({ "terminologyService", "myTerminologySvc", "myTermReadSvc" })
+	@Conditional(OnDSTU3Condition.class)
+	public ITermReadSvcDstu3 termReadSvcDstu3() {
+		return new PreExpandedTermReadSvcDstu3();
+	}
+
+	@Bean({ "terminologyService", "myTerminologySvc", "myTermReadSvc" })
+	@Conditional(OnR4Condition.class)
+	public ITermReadSvcR4 termReadSvcR4() {
+		return new PreExpandedTermReadSvcR4();
+	}
+
+	@Bean({ "terminologyService", "myTerminologySvc", "myTermReadSvc" })
+	@Conditional(OnR5Condition.class)
+	public ITermReadSvcR5 termReadSvcR5() {
+		return new PreExpandedTermReadSvcR5();
 	}
 }

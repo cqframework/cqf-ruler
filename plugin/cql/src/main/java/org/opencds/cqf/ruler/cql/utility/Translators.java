@@ -33,25 +33,18 @@ public class Translators {
 	}
 
 	public static CqlTranslator getTranslator(InputStream cqlStream, LibraryManager libraryManager,
-			ModelManager modelManager) {
+			ModelManager modelManager, CqlTranslatorOptions cqlTranslatorOptions) {
 		CqlTranslator translator;
 		try {
 			translator = CqlTranslator.fromStream(cqlStream, modelManager,
 					libraryManager,
-					getTranslatorOptions().getOptions()
-							.toArray(new CqlTranslator.Options[getTranslatorOptions().getOptions().size()]));
+					cqlTranslatorOptions.getOptions()
+							.toArray(new CqlTranslator.Options[cqlTranslatorOptions.getOptions().size()]));
 		} catch (IOException e) {
 			throw new IllegalArgumentException(
 					String.format("Errors occurred translating library: %s", e.getMessage()));
 		}
 
 		return translator;
-	}
-
-	public static CqlTranslatorOptions getTranslatorOptions() {
-		CqlTranslatorOptions cqlTranslatorOptions = CqlTranslatorOptions.defaultOptions();
-		cqlTranslatorOptions.setAnalyzeDataRequirements(true);
-		cqlTranslatorOptions.setCollapseDataRequirements(true);
-		return cqlTranslatorOptions;
 	}
 }
