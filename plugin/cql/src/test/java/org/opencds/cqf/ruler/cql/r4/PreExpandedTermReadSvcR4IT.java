@@ -14,7 +14,6 @@ import org.hl7.fhir.r4.model.ValueSet.ValueSetComposeComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionComponent;
 import org.hl7.fhir.r4.model.ValueSet.ValueSetExpansionContainsComponent;
 import org.junit.jupiter.api.Test;
-import org.opencds.cqf.ruler.cql.JpaFhirRetrieveProviderIT;
 import org.opencds.cqf.ruler.test.DaoIntegrationTest;
 import org.opencds.cqf.ruler.utility.Searches;
 import org.opencds.cqf.ruler.utility.TypedBundleProvider;
@@ -23,7 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.TokenParamModifier;
 
-@SpringBootTest(classes = { JpaFhirRetrieveProviderIT.class }, properties = { "hapi.fhir.fhir_version=r4" })
+@SpringBootTest(classes = { PreExpandedTermReadSvcR4IT.class }, properties = { "hapi.fhir.fhir_version=r4" })
 public class PreExpandedTermReadSvcR4IT extends DaoIntegrationTest {
 
 	@Test
