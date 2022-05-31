@@ -44,6 +44,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
 				.named("$evaluate-measure")
 				.withParameters(params)
+			   .withAdditionalHeader("Authorization", "Basic c29tZXVzZXI6dGhlcGFzc3dvcmQ=")
 				.returnResourceType(MeasureReport.class)
 				.execute();
 
