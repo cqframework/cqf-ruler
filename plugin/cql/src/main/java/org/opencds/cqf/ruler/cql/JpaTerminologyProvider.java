@@ -2,9 +2,10 @@ package org.opencds.cqf.ruler.cql;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.instance.model.api.ICompositeType;
 import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.engine.terminology.CodeSystemInfo;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
@@ -14,7 +15,6 @@ import ca.uhn.fhir.context.support.IValidationSupport;
 import ca.uhn.fhir.context.support.IValidationSupport.LookupCodeResult;
 import ca.uhn.fhir.context.support.ValidationSupportContext;
 import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDaoValueSet;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
@@ -28,20 +28,20 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 
 	private final ITermReadSvc myTerminologySvc;
 	private final IValidationSupport myValidationSupport;
-	private final IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType> myValueSetDao;
 	private final RequestDetails myRequestDetails;
+	private final Map<VersionedIdentifier, List<Code>> myGlobalCodeCache;
 
 	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, IValidationSupport theValidationSupport,
-			IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType> theValueSetDao) {
-		this(theTerminologySvc, theValidationSupport, theValueSetDao, null);
+			Map<VersionedIdentifier, List<Code>> theGlobalCodeCache) {
+		this(theTerminologySvc, theValidationSupport, theGlobalCodeCache, null);
 	}
 
 	public JpaTerminologyProvider(ITermReadSvc theTerminologySvc, IValidationSupport theValidationSupport,
-			IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType> theValueSetDao,
+			Map<VersionedIdentifier, List<Code>> theGlobalCodeCache,
 			RequestDetails theRequestDetails) {
-		myValueSetDao = theValueSetDao;
 		myTerminologySvc = theTerminologySvc;
 		myValidationSupport = theValidationSupport;
+		myGlobalCodeCache = theGlobalCodeCache;
 		myRequestDetails = theRequestDetails;
 	}
 
@@ -84,27 +84,42 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 			}
 		}
 
+		VersionedIdentifier vsId = new VersionedIdentifier().withId(valueSet.getId()).withVersion(valueSet.getVersion());
+
+		if (this.myGlobalCodeCache.containsKey(vsId)) {
+			return this.myGlobalCodeCache.get(vsId);
+		}
+
 		ValueSetExpansionOptions valueSetExpansionOptions = new ValueSetExpansionOptions();
 		valueSetExpansionOptions.setFailOnMissingCodeSystem(false);
 		valueSetExpansionOptions.setCount(Integer.MAX_VALUE);
 
-		vs = myValueSetDao.expandByIdentifier(valueSet.getId(), valueSetExpansionOptions);
+		vs = myTerminologySvc.expandValueSet(valueSetExpansionOptions, valueSet.getId());
 		// TODO: There's probably a way to share a bit more code between the various
 		// versions of FHIR
 		// here. The cql-evaluator has a CodeUtil class that read any version of a
 		// ValueSet, but it
 		// relies heavily on reflection.
+
+		List<Code> codes = null;
 		switch (vs.getStructureFhirVersionEnum()) {
 			case DSTU3:
-				return getCodes((org.hl7.fhir.dstu3.model.ValueSet) vs);
+				codes = getCodes((org.hl7.fhir.dstu3.model.ValueSet) vs);
+				break;
 			case R4:
-				return getCodes((org.hl7.fhir.r4.model.ValueSet) vs);
+				codes = getCodes((org.hl7.fhir.r4.model.ValueSet) vs);
+				break;
 			case R5:
-				return getCodes((org.hl7.fhir.r5.model.ValueSet) vs);
+				codes = getCodes((org.hl7.fhir.r5.model.ValueSet) vs);
+				break;
 			default:
 				throw new IllegalArgumentException(String.format("expand does not support FHIR version %s",
 						vs.getStructureFhirVersionEnum().getFhirVersionString()));
 		}
+
+		this.myGlobalCodeCache.put(vsId, codes);
+
+		return codes;
 	}
 
 	@Override

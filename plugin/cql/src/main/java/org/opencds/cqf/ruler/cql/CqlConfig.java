@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cql;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,6 +16,7 @@ import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.R4FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.engine.runtime.Code;
 import org.opencds.cqf.cql.evaluator.CqlOptions;
 import org.opencds.cqf.cql.evaluator.builder.Constants;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderComponents;
@@ -128,6 +130,8 @@ public class CqlConfig {
 			JpaFhirRetrieveProvider provider = new JpaFhirRetrieveProvider(daoRegistry, searchParameterResolver, rd);
 			if (t != null) {
 				provider.setTerminologyProvider(t);
+				provider.setExpandValueSets(true);
+				provider.setMaxCodesPerQuery(2048);
 				provider.setModelResolver(modelResolver);
 			}
 			return new CompositeDataProvider(modelResolver, provider);
@@ -168,8 +172,8 @@ public class CqlConfig {
 	@Bean
 	public JpaTerminologyProviderFactory jpaTerminologyProviderFactory(ITermReadSvc theTerminologySvc,
 			IValidationSupport theValidationSupport,
-			IFhirResourceDaoValueSet<IBaseResource, ICompositeType, ICompositeType> theValueSetDao) {
-		return rd -> new JpaTerminologyProvider(theTerminologySvc, theValidationSupport, theValueSetDao,
+			Map<org.cqframework.cql.elm.execution.VersionedIdentifier, List<Code>> globalCodeCache) {
+		return rd -> new JpaTerminologyProvider(theTerminologySvc, theValidationSupport, globalCodeCache,
 				rd);
 	}
 
@@ -207,6 +211,11 @@ public class CqlConfig {
 	}
 
 	@Bean
+	public Map<org.cqframework.cql.elm.execution.VersionedIdentifier, List<Code>> globalCodeCache() {
+		return new ConcurrentHashMap<>();
+	}
+
+	@Bean
 	public Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache() {
 		return new ConcurrentHashMap<>();
 	}
@@ -218,6 +227,17 @@ public class CqlConfig {
 			Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache) {
 		ElmCacheResourceChangeListener listener = new ElmCacheResourceChangeListener(daoRegistry, globalLibraryCache);
 		resourceChangeListenerRegistry.registerResourceResourceChangeListener("Library",
+				SearchParameterMap.newSynchronous(), listener, 1000);
+		return listener;
+	}
+
+	@Bean
+	@Primary
+	public CodeCacheResourceChangeListener codeCacheResourceChangeListener(
+			IResourceChangeListenerRegistry resourceChangeListenerRegistry, DaoRegistry daoRegistry,
+			Map<org.cqframework.cql.elm.execution.VersionedIdentifier, List<Code>> globalCodeCache) {
+		CodeCacheResourceChangeListener listener = new CodeCacheResourceChangeListener(daoRegistry, globalCodeCache);
+		resourceChangeListenerRegistry.registerResourceResourceChangeListener("ValueSet",
 				SearchParameterMap.newSynchronous(), listener, 1000);
 		return listener;
 	}
