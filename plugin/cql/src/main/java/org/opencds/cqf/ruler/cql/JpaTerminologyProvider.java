@@ -101,24 +101,8 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 		// ValueSet, but it
 		// relies heavily on reflection.
 
-		List<Code> codes = null;
-		switch (vs.getStructureFhirVersionEnum()) {
-			case DSTU3:
-				codes = getCodes((org.hl7.fhir.dstu3.model.ValueSet) vs);
-				break;
-			case R4:
-				codes = getCodes((org.hl7.fhir.r4.model.ValueSet) vs);
-				break;
-			case R5:
-				codes = getCodes((org.hl7.fhir.r5.model.ValueSet) vs);
-				break;
-			default:
-				throw new IllegalArgumentException(String.format("expand does not support FHIR version %s",
-						vs.getStructureFhirVersionEnum().getFhirVersionString()));
-		}
-
+		List<Code> codes = getCodes((org.hl7.fhir.r4.model.ValueSet) vs);
 		this.myGlobalCodeCache.put(vsId, codes);
-
 		return codes;
 	}
 
@@ -131,33 +115,6 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 		code.setSystem(codeSystem.getId());
 
 		return code;
-	}
-
-	protected List<Code> getCodes(org.hl7.fhir.dstu3.model.ValueSet theValueSet) {
-		List<Code> codes = new ArrayList<>();
-
-		// If expansion was successful, use the codes.
-		if (theValueSet.hasExpansion() && theValueSet.getExpansion().hasContains()) {
-			for (org.hl7.fhir.dstu3.model.ValueSet.ValueSetExpansionContainsComponent vse : theValueSet.getExpansion()
-					.getContains()) {
-				codes.add(new Code().withCode(vse.getCode()).withSystem(vse.getSystem()));
-			}
-		}
-		// If not, best-effort based on codes. Should probably make this configurable to
-		// match the behavior of the
-		// underlying terminology service implementation
-		else if (theValueSet.hasCompose() && theValueSet.getCompose().hasInclude()) {
-			for (org.hl7.fhir.dstu3.model.ValueSet.ConceptSetComponent include : theValueSet.getCompose()
-					.getInclude()) {
-				for (org.hl7.fhir.dstu3.model.ValueSet.ConceptReferenceComponent concept : include.getConcept()) {
-					if (concept.hasCode()) {
-						codes.add(new Code().withCode(concept.getCode()).withSystem(include.getSystem()));
-					}
-				}
-			}
-		}
-
-		return codes;
 	}
 
 	protected List<Code> getCodes(org.hl7.fhir.r4.model.ValueSet theValueSet) {
@@ -176,32 +133,6 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 		else if (theValueSet.hasCompose() && theValueSet.getCompose().hasInclude()) {
 			for (org.hl7.fhir.r4.model.ValueSet.ConceptSetComponent include : theValueSet.getCompose().getInclude()) {
 				for (org.hl7.fhir.r4.model.ValueSet.ConceptReferenceComponent concept : include.getConcept()) {
-					if (concept.hasCode()) {
-						codes.add(new Code().withCode(concept.getCode()).withSystem(include.getSystem()));
-					}
-				}
-			}
-		}
-
-		return codes;
-	}
-
-	protected List<Code> getCodes(org.hl7.fhir.r5.model.ValueSet theValueSet) {
-		List<Code> codes = new ArrayList<>();
-
-		// If expansion was successful, use the codes.
-		if (theValueSet.hasExpansion() && theValueSet.getExpansion().hasContains()) {
-			for (org.hl7.fhir.r5.model.ValueSet.ValueSetExpansionContainsComponent vse : theValueSet.getExpansion()
-					.getContains()) {
-				codes.add(new Code().withCode(vse.getCode()).withSystem(vse.getSystem()));
-			}
-		}
-		// If not, best-effort based on codes. Should probably make this configurable to
-		// match the behavior of the
-		// underlying terminology service implementation
-		else if (theValueSet.hasCompose() && theValueSet.getCompose().hasInclude()) {
-			for (org.hl7.fhir.r5.model.ValueSet.ConceptSetComponent include : theValueSet.getCompose().getInclude()) {
-				for (org.hl7.fhir.r5.model.ValueSet.ConceptReferenceComponent concept : include.getConcept()) {
 					if (concept.hasCode()) {
 						codes.add(new Code().withCode(concept.getCode()).withSystem(include.getSystem()));
 					}
