@@ -157,3 +157,5 @@ heapdump.*
 Snap.*
 
 .flattened-pom.xml
+
+thunder-tests/thunderActivity.json

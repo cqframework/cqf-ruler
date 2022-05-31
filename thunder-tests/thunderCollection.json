@@ -1,0 +1,17 @@
+[
+  {
+    "_id": "03f3c972-fdc1-4fcf-85f1-ba70d0beb33c",
+    "colName": "Digital Quality Measures",
+    "created": "2022-05-31T22:07:12.630Z",
+    "sortNum": 10000,
+    "folders": [
+      {
+        "_id": "4ef36ff9-0e3b-428d-b150-aa0c2cbadbc6",
+        "name": "Config",
+        "containerId": "",
+        "created": "2022-05-31T22:07:20.853Z",
+        "sortNum": 10000
+      }
+    ]
+  }
+]
