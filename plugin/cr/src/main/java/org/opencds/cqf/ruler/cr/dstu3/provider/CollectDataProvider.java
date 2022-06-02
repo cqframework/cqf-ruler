@@ -100,9 +100,6 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 			}
 
 			Reference reference = entry.getItem();
-			if (reference == null) {
-				continue;
-			}
 			resources.add(this.read(reference.getReferenceElement()));
 		}
 
