@@ -31,22 +31,28 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 	private MeasureEvaluateProvider measureEvaluateProvider;
 
 	/**
-	* Implements the <a href="http://hl7.org/fhir/DSTU3/measure-operation-collect-data.html">$collect-data</a>
-	* operation found in the
-	* <a href="http://hl7.org/fhir/DSTU3/clinicalreasoning-module.html">FHIR Clinical Reasoning Module</a>.
-	* 
-	* <p>Returns a set of parameters with the generated MeasureReport and the
-	* resources that were used during the Measure evaluation
-	* 
-	* @param theRequestDetails generally auto-populated by the HAPI server framework.
-	* @param theId             the Id of the Measure to sub data for
-	* @param periodStart       The start of the reporting period
-	* @param periodEnd         The end of the reporting period
-	* @param subject           the subject to use for the evaluation
-	* @param practitioner      the practitioner to use for the evaluation
-	* @param lastReceivedOn    the date the results of this measure were last received.
-	* @return Parameters the parameters containing the MeasureReport and the evaluated Resources
-	*/
+	 * Implements the <a href=
+	 * "http://hl7.org/fhir/DSTU3/measure-operation-collect-data.html">$collect-data</a>
+	 * operation found in the
+	 * <a href="http://hl7.org/fhir/DSTU3/clinicalreasoning-module.html">FHIR
+	 * Clinical Reasoning Module</a>.
+	 * 
+	 * <p>
+	 * Returns a set of parameters with the generated MeasureReport and the
+	 * resources that were used during the Measure evaluation
+	 * 
+	 * @param theRequestDetails generally auto-populated by the HAPI server
+	 *                          framework.
+	 * @param theId             the Id of the Measure to sub data for
+	 * @param periodStart       The start of the reporting period
+	 * @param periodEnd         The end of the reporting period
+	 * @param subject           the subject to use for the evaluation
+	 * @param practitioner      the practitioner to use for the evaluation
+	 * @param lastReceivedOn    the date the results of this measure were last
+	 *                          received.
+	 * @return Parameters the parameters containing the MeasureReport and the
+	 *         evaluated Resources
+	 */
 	@Description(shortDefinition = "$collect-data", value = "Implements the <a href=\"http://hl7.org/fhir/DSTU3/measure-operation-collect-data.html\">$collect-data</a> operation found in the <a href=\"http://hl7.org/fhir/DSTU3/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
 	@Operation(name = "$collect-data", idempotent = true, type = Measure.class)
 	public Parameters collectData(RequestDetails theRequestDetails, @IdParam IdType theId,
@@ -56,7 +62,7 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "lastReceivedOn") String lastReceivedOn) {
 
 		MeasureReport report = measureEvaluateProvider.evaluateMeasure(theRequestDetails, theId, periodStart, periodEnd,
-				"subject", subject, practitioner, lastReceivedOn, null, null,null);
+				"subject", subject, practitioner, lastReceivedOn, null, null, null);
 
 		// TODO: Data collection doesn't exist?
 		report.setType(MeasureReportType.SUMMARY);
@@ -82,11 +88,11 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 		String listId = listReference.getReference().substring(1);
 		Optional<Resource> list = report.getContained().stream().filter(x -> x.getId().equals(listId)).findFirst();
 
-		if(!list.isPresent()) {
+		if (!list.isPresent()) {
 			return resources;
 		}
 
-		ListResource containedList = (ListResource)list.get();
+		ListResource containedList = (ListResource) list.get();
 
 		for (ListEntryComponent entry : containedList.getEntry()) {
 			if (!entry.hasItem()) {
@@ -94,6 +100,9 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 			}
 
 			Reference reference = entry.getItem();
+			if (reference == null) {
+				continue;
+			}
 			resources.add(this.read(reference.getReferenceElement()));
 		}
 
