@@ -6,6 +6,7 @@ import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
@@ -27,22 +28,28 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 	private MeasureEvaluateProvider measureEvaluateProvider;
 
 	/**
-	* Implements the <a href="http://hl7.org/fhir/R4/measure-operation-collect-data.html">$collect-data</a>
-	* operation found in the
-	* <a href="http://hl7.org/fhir/R4/clinicalreasoning-module.html">FHIR Clinical Reasoning Module</a>.
-	* 
-	* <p>Returns a set of parameters with the generated MeasureReport and the
-	* resources that were used during the Measure evaluation
-	* 
-	* @param theRequestDetails generally auto-populated by the HAPI server framework.
-	* @param theId             the Id of the Measure to sub data for
-	* @param periodStart       The start of the reporting period
-	* @param periodEnd         The end of the reporting period
-	* @param subject           the subject to use for the evaluation
-	* @param practitioner      the practitioner to use for the evaluation
-	* @param lastReceivedOn    the date the results of this measure were last received.
-	* @return Parameters the parameters containing the MeasureReport and the evaluated Resources
-	*/
+	 * Implements the <a href=
+	 * "http://hl7.org/fhir/R4/measure-operation-collect-data.html">$collect-data</a>
+	 * operation found in the
+	 * <a href="http://hl7.org/fhir/R4/clinicalreasoning-module.html">FHIR Clinical
+	 * Reasoning Module</a>.
+	 * 
+	 * <p>
+	 * Returns a set of parameters with the generated MeasureReport and the
+	 * resources that were used during the Measure evaluation
+	 * 
+	 * @param theRequestDetails generally auto-populated by the HAPI server
+	 *                          framework.
+	 * @param theId             the Id of the Measure to sub data for
+	 * @param periodStart       The start of the reporting period
+	 * @param periodEnd         The end of the reporting period
+	 * @param subject           the subject to use for the evaluation
+	 * @param practitioner      the practitioner to use for the evaluation
+	 * @param lastReceivedOn    the date the results of this measure were last
+	 *                          received.
+	 * @return Parameters the parameters containing the MeasureReport and the
+	 *         evaluated Resources
+	 */
 	@Description(shortDefinition = "$collect-data", value = "Implements the <a href=\"http://hl7.org/fhir/R4/measure-operation-collect-data.html\">$collect-data</a> operation found in the <a href=\"http://hl7.org/fhir/R4/clinicalreasoning-module.html\">FHIR Clinical Reasoning Module</a>.")
 	@Operation(name = "$collect-data", idempotent = true, type = Measure.class)
 	public Parameters collectData(RequestDetails theRequestDetails, @IdParam IdType theId,
@@ -66,7 +73,11 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 	private List<Resource> readEvaluatedResources(MeasureReport report) {
 		List<Resource> resources = new ArrayList<>();
 		for (Reference reference : report.getEvaluatedResource()) {
-			Resource resource = read(reference.getReferenceElement());
+			IIdType id = reference.getReferenceElement();
+			if (id.isEmpty()) {
+				continue;
+			}
+			Resource resource = read(id);
 			if (resource != null) {
 				resources.add(resource);
 			}
