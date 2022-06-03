@@ -47,11 +47,6 @@ public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Inte
 			String username = parts[0];
 			String password = parts[1];
 
-			myLog.info("user:"+ username);
-			myLog.info("user:"+ crConfig.crProperties().getSecurityConfiguration().getUsername());
-			myLog.info("pass:"+ password);
-			myLog.info("pass:"+ crConfig.crProperties().getSecurityConfiguration().getPassword());
-
 			/*
 			 * Here we test for a hardcoded username & password. This is
 			 * not typically how you would implement this in a production
