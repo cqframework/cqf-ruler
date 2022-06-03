@@ -9,6 +9,8 @@ public class CrProperties {
 	private boolean enabled = true;
 	private MeasureReportConfiguration measure_report;
 
+	private SecurityConfiguration security_configuration;
+
 	private MeasureEvaluationOptions measure_evaluation = MeasureEvaluationOptions.defaultOptions();
 
 	public boolean getEnabled() {
@@ -17,6 +19,14 @@ public class CrProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public SecurityConfiguration getSecurityConfiguration() {
+		return this.security_configuration;
+	}
+
+	public void setSecurityConfiguration(SecurityConfiguration security_configuration) {
+		this.security_configuration = security_configuration;
 	}
 
 	public MeasureReportConfiguration getMeasureReport() {
@@ -75,5 +85,32 @@ public class CrProperties {
 		public void setCareGapsCompositionSectionAuthor(String careGapsCompositionSectionAuthor) {
 			this.care_gaps_composition_section_author = careGapsCompositionSectionAuthor;
 		}
+	}
+
+	public static class SecurityConfiguration {
+
+		private boolean enabled;
+		private String username;
+		private String password;
+
+		public boolean getEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getUsername() {
+			return this.username;
+		}
+
+		public void setUsername(String username) { this.username = username; }
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) { this.password = password; }
 	}
 }
