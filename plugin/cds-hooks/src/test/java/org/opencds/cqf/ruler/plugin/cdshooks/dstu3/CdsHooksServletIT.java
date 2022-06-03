@@ -32,7 +32,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 		CdsHooksConfig.class }, properties = {
-				"hapi.fhir.fhir_version=dstu3", "hapi.fhir.cr.security_configuration.enabled=false"
+				"hapi.fhir.fhir_version=dstu3", "hapi.fhir.security.security_configuration.enabled=false"
 		})
 public class CdsHooksServletIT extends RestIntegrationTest {
 

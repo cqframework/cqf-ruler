@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.cr.interceptor;
+package org.opencds.cqf.ruler.security.interceptor;
 
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
@@ -6,7 +6,7 @@ import ca.uhn.fhir.interceptor.api.Pointcut;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import org.apache.commons.lang3.StringUtils;
-import org.opencds.cqf.ruler.cr.CrConfig;
+import org.opencds.cqf.ruler.security.SecurityProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +23,12 @@ public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Inte
 	private final Logger myLog = LoggerFactory.getLogger(AuthenticationInterceptor.class);
 
 	@Autowired
-	private CrConfig crConfig;
+	private SecurityProperties securityProperties;
 
 	@Hook(Pointcut.SERVER_INCOMING_REQUEST_POST_PROCESSED)
 	public boolean incomingRequestPostProcessed(RequestDetails theRequestDetails, HttpServletRequest theRequest,
 															  HttpServletResponse theResponse) throws AuthenticationException {
-		if(crConfig.crProperties().getSecurityConfiguration().getEnabled()) {
+		if(securityProperties.getSecurityConfiguration().getEnabled()) {
 			String authHeader = theRequest.getHeader("Authorization");
 
 			myLog.info("incoming request intercepted");
@@ -55,8 +55,8 @@ public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Inte
 			 * system of course..
 			 */
 
-			if (!StringUtils.equals(username.trim(), crConfig.crProperties().getSecurityConfiguration().getUsername().trim()) ||
-				!StringUtils.equals(password.trim(), crConfig.crProperties().getSecurityConfiguration().getPassword().trim())) {
+			if (!StringUtils.equals(username.trim(), securityProperties.getSecurityConfiguration().getUsername().trim()) ||
+				!StringUtils.equals(password.trim(), securityProperties.getSecurityConfiguration().getPassword().trim())) {
 				throw new AuthenticationException(643 + "Invalid username or password");
 			}
 

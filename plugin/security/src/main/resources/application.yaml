@@ -1,6 +1,11 @@
 hapi:
   fhir:
     security:
+      enabled: true
+      security_configuration:
+        enabled: false
+        username: someuser
+        password: thepassword
       oauth:
         securityCors: true
         securityUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris

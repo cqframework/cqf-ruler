@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.cr.interceptor;
+package org.opencds.cqf.ruler.security.interceptor;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -12,17 +12,17 @@ import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.devtools.DevToolsConfig;
+import org.opencds.cqf.ruler.security.SecurityConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-	org.opencds.cqf.ruler.cr.interceptor.AuthenticatorInterceptorIT.class,
-	CrConfig.class, CqlConfig.class, DevToolsConfig.class }, properties = {
-	"hapi.fhir.fhir_version=r4", "hapi.fhir.cr.security_configuration.enabled=true",
-	"hapi.fhir.cr.security_configuration.username=someuser",
-	"hapi.fhir.cr.security_configuration.password=thepassword"
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {AuthenticatorInterceptorIT.class,
+	SecurityConfig.class, CrConfig.class, CqlConfig.class, DevToolsConfig.class }, properties = {
+	"hapi.fhir.fhir_version=r4", "hapi.fhir.security.security_configuration.enabled=true",
+	"hapi.fhir.security.security_configuration.username=someuser",
+	"hapi.fhir.security.security_configuration.password=thepassword"
 })
 public class AuthenticatorInterceptorIT extends RestIntegrationTest {
 
