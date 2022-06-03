@@ -41,11 +41,11 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
 
 		MeasureReport returnMeasureReport = getClient().operation()
-			.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
-			.named("$evaluate-measure")
-			.withParameters(params)
-			.returnResourceType(MeasureReport.class)
-			.execute();
+				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
+				.named("$evaluate-measure")
+				.withParameters(params)
+				.returnResourceType(MeasureReport.class)
+				.execute();
 
 		assertNotNull(returnMeasureReport);
 	}

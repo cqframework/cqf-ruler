@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 
 @Interceptor
 public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Interceptor {
@@ -37,7 +39,7 @@ public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Inte
 			}
 
 			String base64 = authHeader.substring("Basic ".length());
-			String base64decoded = new String(Base64.getDecoder().decode(base64));
+			String base64decoded = new String(Base64.getDecoder().decode(base64), UTF_8);
 			String[] parts = base64decoded.split(":");
 
 			if(parts.length <= 1) {
