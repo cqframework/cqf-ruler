@@ -85,5 +85,4 @@ public class CrProperties {
 			this.care_gaps_composition_section_author = careGapsCompositionSectionAuthor;
 		}
 	}
-
 }
