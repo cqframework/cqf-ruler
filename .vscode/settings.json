@@ -66,5 +66,6 @@
 		"**/.factorypath": true
 	},
 	"files.eol": "\r\n",
-	"editor.formatOnSave": true
+	"editor.formatOnSave": true,
+	"thunder-client.saveToWorkspace": true
 }

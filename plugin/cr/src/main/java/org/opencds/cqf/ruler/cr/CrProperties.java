@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "hapi.fhir.cr")
 public class CrProperties {
 	private boolean enabled = true;
+	private boolean threaded_care_gaps_enabled = true;
 	private MeasureReportConfiguration measure_report;
 
 	private SecurityConfiguration security_configuration;
@@ -19,6 +20,14 @@ public class CrProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public boolean getThreadedCareGapsEnabled() {
+		return threaded_care_gaps_enabled;
+	}
+
+	public void setThreadedCareGapsEnabled(boolean enabled) {
+		this.threaded_care_gaps_enabled = enabled;
 	}
 
 	public SecurityConfiguration getSecurityConfiguration() {

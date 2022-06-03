@@ -28,6 +28,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 	private static final String periodEndValid = "2019-12-31";
 	private static final String subjectPatientValid = "Patient/numer-EXM125";
 	private static final String subjectGroupValid = "Group/gic-gr-1";
+	private static final String subjectGroupParallelValid = "Group/gic-gr-parallel";
 	private static final String statusValid = "open-gap";
 	private static final String statusValidSecond = "closed-gap";
 	private static final String measureIdValid = "BreastCancerScreeningFHIR";
@@ -50,6 +51,11 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 	}
 
 	private void beforeEachMeasure() throws Exception {
+		loadTransaction("BreastCancerScreeningFHIR-bundle.json");
+	}
+
+	private void beforeEachParallelMeasure() throws Exception {
+		loadResource("gic-gr-parallel.json");
 		loadTransaction("BreastCancerScreeningFHIR-bundle.json");
 	}
 
@@ -460,5 +466,24 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 				.execute();
 
 		assertNotNull(result);
+	}
+
+	@SuppressWarnings("java:S5778")
+	@Test
+	public void testParallelMultiSubject() throws Exception {
+		beforeEachParallelMeasure();
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
+		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
+		params.addParameter().setName("subject").setValue(new StringType(subjectGroupParallelValid));
+		params.addParameter().setName("status").setValue(new StringType(statusValid));
+		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+
+		getClient().operation().onType(Measure.class).named("$care-gaps")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Parameters.class)
+			.execute();
 	}
 }
