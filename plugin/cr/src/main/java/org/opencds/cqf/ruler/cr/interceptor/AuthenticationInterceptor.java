@@ -5,7 +5,6 @@ import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.slf4j.Logger;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Base64;
 
 
 @Interceptor
@@ -37,7 +37,7 @@ public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Inte
 			}
 
 			String base64 = authHeader.substring("Basic ".length());
-			String base64decoded = new String(Base64.decodeBase64(base64));
+			String base64decoded = new String(Base64.getDecoder().decode(base64));
 			String[] parts = base64decoded.split(":");
 
 			if(parts.length <= 1) {
