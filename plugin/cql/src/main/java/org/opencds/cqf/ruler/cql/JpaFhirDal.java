@@ -1,13 +1,19 @@
 package org.opencds.cqf.ruler.cql;
 
+import ca.uhn.fhir.model.api.IQueryParameterType;
+import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
+//import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
+import org.cqframework.fhir.api.FhirDal
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.UriParam;
+//import ca.uhn.fhir.rest.param.UriParam;
+
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class JpaFhirDal implements FhirDal {
@@ -45,16 +51,29 @@ public class JpaFhirDal implements FhirDal {
 
 	}
 
-	// TODO: the search interfaces need some work
 	@Override
-	public Iterable<IBaseResource> search(String theResourceType) {
-		return this.daoRegistry.getResourceDao(theResourceType).search(SearchParameterMap.newSynchronous())
-				.getAllResources();
+	public IBaseBundle search(String theResourceType, Map<String, List<IQueryParameterType>> theSearchParameters) {
+		SearchParameterMap searchParameterMap = new SearchParameterMap();
+		for(Map.Entry<String, List<IQueryParameterType>> entry : theSearchParameters.entrySet()) {
+			String keyValue = entry.getKey();
+			for(IQueryParameterType value : entry.getValue()) {
+				searchParameterMap.add(keyValue, value);
+			}
+		}
+
+		return (IBaseBundle) this.daoRegistry.getResourceDao(theResourceType).search(searchParameterMap).getAllResources();
 	}
 
-	@Override
-	public Iterable<IBaseResource> searchByUrl(String theResourceType, String theUrl) {
-		return this.daoRegistry.getResourceDao(theResourceType)
-				.search(SearchParameterMap.newSynchronous().add("url", new UriParam(theUrl))).getAllResources();
-	}
+	// TODO: the search interfaces need some work
+	//@Override
+	//public Iterable<IBaseResource> search(String theResourceType) {
+	//	return this.daoRegistry.getResourceDao(theResourceType).search(SearchParameterMap.newSynchronous())
+	//			.getAllResources();
+	//}
+
+	//@Override
+	//public Iterable<IBaseResource> searchByUrl(String theResourceType, String theUrl) {
+	//	return this.daoRegistry.getResourceDao(theResourceType)
+	//			.search(SearchParameterMap.newSynchronous().add("url", new UriParam(theUrl))).getAllResources();
+	//}
 }
