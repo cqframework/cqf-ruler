@@ -37,7 +37,7 @@ public class SecurityProperties {
 
 	public static class BasicAuth {
 
-		private boolean enabled;
+		private boolean enabled = false;
 		private String username;
 		private String password;
 
@@ -53,17 +53,30 @@ public class SecurityProperties {
 			return this.username;
 		}
 
-		public void setUsername(String username) { this.username = username; }
+		public void setUsername(String username) {
+			this.username = username;
+		}
 
 		public String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) { this.password = password; }
+		public void setPassword(String password) {
+			this.password = password;
+		}
 	}
 
 	public class OAuth {
 		private boolean securityCors = true;
+		private boolean enabled = false;
+
+		public boolean getEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
 
 		public boolean getSecurityCors() {
 			return securityCors;
