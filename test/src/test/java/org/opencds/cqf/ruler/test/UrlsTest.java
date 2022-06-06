@@ -7,31 +7,31 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.test.utility.Urls;
 
-public class UrlsTest  {
-    @Test
-    public void testClientUrlWithTemplate() {
+public class UrlsTest {
+	@Test
+	public void testClientUrlWithTemplate() {
 
-        String template = "http://localhost:%d/fhir";
-        Integer port = 8084;
-        String url = Urls.getUrl(template, port);
+		String template = "http://localhost:%d/fhir";
+		Integer port = 8084;
+		String url = Urls.getUrl(template, port);
 
-        String[] schemes = {"http","https"};
-        UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
-        
-        assertTrue(urlValidator.isValid(url));
+		String[] schemes = { "http", "https" };
+		UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
 
-        assertEquals("http://localhost:8084/fhir", url);
-    }
+		assertTrue(urlValidator.isValid(url));
 
-    @Test
-    public void testClientUrlWithoutTemplate() {
+		assertEquals("http://localhost:8084/fhir", url);
+	}
 
-        Integer port = 8084;
-        String url = Urls.getUrl(port);
+	@Test
+	public void testClientUrlWithoutTemplate() {
 
-        String[] schemes = {"http","https"};
-        UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
-        
-        assertTrue(urlValidator.isValid(url));
-    }
+		Integer port = 8084;
+		String url = Urls.getUrl(port);
+
+		String[] schemes = { "http", "https" };
+		UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
+
+		assertTrue(urlValidator.isValid(url));
+	}
 }

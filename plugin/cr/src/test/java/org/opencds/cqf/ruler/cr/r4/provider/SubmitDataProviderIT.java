@@ -44,11 +44,11 @@ public class SubmitDataProviderIT extends DaoIntegrationTest {
 	@Test
 	public void testSubmitDataNoId() {
 		// Create a MR and a resource
-		MeasureReport mr = newResource(MeasureReport.class).setMeasure("Measure/123");
+		MeasureReport mr = newResource(MeasureReport.class).setMeasure("Measure/A123");
 		Observation obs = newResource(Observation.class).setValue(new StringType("ABC"));
 
 		// Submit it
-		mySubmitDataProvider.submitData(new SystemRequestDetails(), new IdType("Measure", "123"), mr,
+		mySubmitDataProvider.submitData(new SystemRequestDetails(), new IdType("Measure", "A123"), mr,
 				Lists.newArrayList(obs));
 
 		// Check if they made it to the db
@@ -58,7 +58,7 @@ public class SubmitDataProviderIT extends DaoIntegrationTest {
 
 		MeasureReport savedMr = search(MeasureReport.class, Searches.all()).single();
 		assertNotNull(savedMr);
-		assertEquals("Measure/123", savedMr.getMeasure());
+		assertEquals("Measure/A123", savedMr.getMeasure());
 	}
 
 }
