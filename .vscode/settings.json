@@ -67,5 +67,6 @@
 	},
 	"files.eol": "\r\n",
 	"editor.formatOnSave": true,
-	"thunder-client.saveToWorkspace": true
+	"thunder-client.saveToWorkspace": true,
+	"java.jdt.ls.vmargs": "-noverify -Xmx2G -XX:+UseG1GC -XX:+UseStringDeduplication"
 }

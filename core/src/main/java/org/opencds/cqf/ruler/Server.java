@@ -75,6 +75,20 @@ public class Server extends BaseJpaRestfulServer {
 		// >=5.7.0 we need to remove this
 		this.registerProvider(valueSetOperationProvider);
 
+		log.info("Loading operation providers from plugins");
+		Map<String, OperationProvider> providers = applicationContext.getBeansOfType(OperationProvider.class);
+		for (OperationProvider o : providers.values()) {
+			log.info("Registering {}", o.getClass().getName());
+			this.registerProvider(o);
+		}
+
+		log.info("Loading interceptors from plugins");
+		Map<String, Interceptor> interceptors = applicationContext.getBeansOfType(Interceptor.class);
+		for (Interceptor o : interceptors.values()) {
+			log.info("Registering {} interceptor", o.getClass().getName());
+			this.registerInterceptor(o);
+		}
+		
 		log.info("Loading metadata extenders from plugins");
 		Map<String, MetadataExtender> extenders = applicationContext.getBeansOfType(MetadataExtender.class);
 		for (MetadataExtender o : extenders.values()) {
@@ -120,18 +134,5 @@ public class Server extends BaseJpaRestfulServer {
 			}
 		}
 
-		log.info("Loading operation providers from plugins");
-		Map<String, OperationProvider> providers = applicationContext.getBeansOfType(OperationProvider.class);
-		for (OperationProvider o : providers.values()) {
-			log.info("Registering {}", o.getClass().getName());
-			this.registerProvider(o);
-		}
-
-		log.info("Loading interceptors from plugins");
-		Map<String, Interceptor> interceptors = applicationContext.getBeansOfType(Interceptor.class);
-		for (Interceptor o : interceptors.values()) {
-			log.info("Registering {} interceptor", o.getClass().getName());
-			this.registerInterceptor(o);
-		}
 	}
 }

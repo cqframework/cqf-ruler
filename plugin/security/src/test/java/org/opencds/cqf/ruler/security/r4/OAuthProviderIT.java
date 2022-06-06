@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { OAuthProviderIT.class,
 		SecurityConfig.class }, properties = {
-				"hapi.fhir.fhir_version=r4"
+				"hapi.fhir.fhir_version=r4", "hapi.fhir.security.oauth.enabled=true"
 		})
 public class OAuthProviderIT extends RestIntegrationTest {
 	@Test
