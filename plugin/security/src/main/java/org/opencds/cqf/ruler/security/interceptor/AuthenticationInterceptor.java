@@ -50,12 +50,6 @@ public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Inte
 			String username = parts[0];
 			String password = parts[1];
 
-			/*
-			 * Here we test for a hardcoded username & password. This is
-			 * not typically how you would implement this in a production
-			 * system of course..
-			 */
-
 			if (!StringUtils.equals(username.trim(), securityProperties.getBasicAuth().getUsername().trim()) ||
 					!StringUtils.equals(password.trim(), securityProperties.getBasicAuth().getPassword().trim())) {
 				throw new AuthenticationException("Invalid username or password");
