@@ -7,7 +7,7 @@ public class SecurityProperties {
 
 	private boolean enabled = false;
 
-	private SecurityConfiguration security_configuration;
+	private BasicAuth basic_auth;
 
 	public boolean getEnabled() {
 		return enabled;
@@ -17,12 +17,12 @@ public class SecurityProperties {
 		this.enabled = enabled;
 	}
 
-	public SecurityConfiguration getSecurityConfiguration() {
-		return this.security_configuration;
+	public BasicAuth getBasicAuth() {
+		return this.basic_auth;
 	}
 
-	public void setSecurityConfiguration(SecurityConfiguration security_configuration) {
-		this.security_configuration = security_configuration;
+	public void setBasicAuth(BasicAuth basic_auth) {
+		this.basic_auth = basic_auth;
 	}
 
 	private OAuth oAuth = new OAuth();
@@ -35,7 +35,7 @@ public class SecurityProperties {
 		this.oAuth = oAuth;
 	}
 
-	public static class SecurityConfiguration {
+	public static class BasicAuth {
 
 		private boolean enabled;
 		private String username;

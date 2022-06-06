@@ -2,7 +2,7 @@ hapi:
   fhir:
     security:
       enabled: true
-      security_configuration:
+      basic_auth:
         enabled: false
         username: someuser
         password: thepassword

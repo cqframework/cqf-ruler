@@ -28,7 +28,7 @@ public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Inte
 	@Hook(Pointcut.SERVER_INCOMING_REQUEST_POST_PROCESSED)
 	public boolean incomingRequestPostProcessed(RequestDetails theRequestDetails, HttpServletRequest theRequest,
 															  HttpServletResponse theResponse) throws AuthenticationException {
-		if(securityProperties.getSecurityConfiguration().getEnabled()) {
+		if(securityProperties.getBasicAuth().getEnabled()) {
 			String authHeader = theRequest.getHeader("Authorization");
 
 			myLog.info("incoming request intercepted");
@@ -55,8 +55,8 @@ public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Inte
 			 * system of course..
 			 */
 
-			if (!StringUtils.equals(username.trim(), securityProperties.getSecurityConfiguration().getUsername().trim()) ||
-				!StringUtils.equals(password.trim(), securityProperties.getSecurityConfiguration().getPassword().trim())) {
+			if (!StringUtils.equals(username.trim(), securityProperties.getBasicAuth().getUsername().trim()) ||
+				!StringUtils.equals(password.trim(), securityProperties.getBasicAuth().getPassword().trim())) {
 				throw new AuthenticationException(643 + "Invalid username or password");
 			}
 
