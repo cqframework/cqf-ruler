@@ -1,6 +1,9 @@
 package org.opencds.cqf.ruler.cql;
 
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import org.cqframework.fhir.api.FhirService;
+import org.cqframework.fhir.api.JpaFhirCapabilities;
+import org.cqframework.fhir.api.JpaFhirTransactions;
 
 @SuppressWarnings("unchecked")
 public class JpaFhirPlatform implements org.cqframework.fhir.api.FhirPlatform {
@@ -17,27 +20,27 @@ public class JpaFhirPlatform implements org.cqframework.fhir.api.FhirPlatform {
 
     @Override
     public org.cqframework.fhir.api.FhirDal dal() {
-        org.cqframework.fhir.api.JpaFhirDal fhirDal = new org.cqframework.fhir.api.JpaFhirDal();
+        JpaFhirDal jpaFhirDal = new JpaFhirDal(daoRegistry, requestDetails);
 
-        return fhirDal;
+        return jpaFhirDal;
     }
 
     @Override
     public org.cqframework.fhir.api.FhirCapabilities capabilities() {
-
-        org.cqframework.fhir.api.JpaFhirCapabilities jpaFhirCapabilities = new org.cqframework.fhir.api.JpaFhirCapabilities();
+        JpaFhirCapabilities jpaFhirCapabilities = new JpaFhirCapabilities(daoRegistry, requestDetails);
         return jpaFhirCapabilities;
     }
 
     @Override
     public org.cqframework.fhir.api.FhirTransactions transactions() {
 
-        org.cqframework.fhir.api.JpaFhirTransactions jpaFhirTransactions = new org.cqframework.fhir.api.JpaFhirTransactions();
+        JpaFhirTransactions jpaFhirTransactions = new org.cqframework.fhir.api.JpaFhirTransactions(daoRegistry, requestDetails);
         return jpaFhirTransactions;
     }
 
     @Override
-    public void getService() {
+    public FhirService getService() {
 
-    }
+		 return null;
+	 }
 }
