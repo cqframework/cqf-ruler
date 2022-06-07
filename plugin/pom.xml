@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
@@ -11,6 +12,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>atr</module>
 		<module>cds-hooks</module>
 		<module>cpg</module>
 		<module>case-reporting</module>
@@ -65,30 +67,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 			</plugin>
-			<!-- TODO: Move this to a plugin example -->
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<configuration>
-					<shadedArtifactAttached>true</shadedArtifactAttached>
-					<filters>
-						<filter>
-							<artifact>*:*</artifact>
-							<excludes>
-								<exclude>META-INF/*</exclude>
-							</excludes>
-						</filter>
-					</filters>
-					<artifactSet>
-						These are dependencies included in the base project, so never need to be included by plugins
-						<excludes>
-							<exclude>ca.uhn.hapi.fhir:*</exclude>
-							<exclude>org.slf4j:*</exclude>
-							<exclude>com.fasterxml.jackson.module:jackson-module-scala_2.11:*</exclude>
-						</excludes>
-					</artifactSet>
-				</configuration>
-			</plugin> -->
 		</plugins>
 	</build>
 </project>
