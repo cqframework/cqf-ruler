@@ -14,7 +14,9 @@
 				"-XX:TieredStopAtLevel=1",
 				"-Dspring.main.lazy-initialization=true",
 				"-Ddebug=true",
-				"-Dloader.debug=true"
+				"-Dloader.debug=true",
+				"-Dhapi.fhir.bulk_export_enabled=false",
+				"-Dspring.batch.job.enabled=false"
 			],
 			"stepFilters": {
 				"classNameFilters": [
@@ -38,14 +40,18 @@
 			"mainClass": "org.opencds.cqf.ruler.Application",
 			"projectName": "cqf-ruler-server",
 			"vmArgs": [
-				"-XX:TieredStopAtLevel=1",
-				"-Dspring.main.lazy-initialization=true",
-				"-Ddebug=true",
-				"-Dloader.debug=true",
+				// "-XX:TieredStopAtLevel=1",
+				// "-Dspring.main.lazy-initialization=true",
+				// "-Ddebug=true",
+				// "-Dloader.debug=true",
 				"-Dspring.datasource.url=jdbc:postgresql://localhost:5432/postgres",
+				// "-Dspring.datasource.url=jdbc:postgresql://demo-cluster-postgresql.cluster-c4xrrem9krur.us-west-2.rds.amazonaws.com:5432/postgres",
 				"-Dspring.datasource.username=postgres",
 				"-Dspring.datasource.password=",
-				"-Dspring.datasource.driverClassName=org.postgresql.Driver"
+				"-Dspring.datasource.driverClassName=org.postgresql.Driver",
+				"-Dspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQL10Dialect",
+				"-Dhapi.fhir.bulk_export_enabled=false",
+				"-Dspring.batch.job.enabled=false"
 			],
 			"stepFilters": {
 				"classNameFilters": [
@@ -73,7 +79,9 @@
 				"-Dspring.main.lazy-initialization=true",
 				"-Ddebug=true",
 				"-Dloader.debug=true",
-				"-Dhapi.fhir.fhir_version=DSTU3"
+				"-Dhapi.fhir.fhir_version=DSTU3",
+				"-Dhapi.fhir.bulk_export_enabled=false",
+				"-Dspring.batch.job.enabled=false"
 			],
 			"stepFilters": {
 				"classNameFilters": [

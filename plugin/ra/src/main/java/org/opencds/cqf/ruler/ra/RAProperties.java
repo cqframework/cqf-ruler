@@ -19,7 +19,7 @@ public class RAProperties {
 		this.enabled = enabled;
 	}
 
-	private Report report = new Report();
+	private Report report;
 
 	public Report getReport() {
 		return report;
