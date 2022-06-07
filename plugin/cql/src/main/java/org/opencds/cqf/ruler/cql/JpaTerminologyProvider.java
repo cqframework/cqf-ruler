@@ -76,12 +76,10 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 		// This could possibly be refactored into a single call to the underlying HAPI
 		// Terminology service. Need to think through that..,
 		IBaseResource vs;
-		if (hasUrlId(valueSet)) {
-			if (hasVersion(valueSet) || hasVersionedCodeSystem(valueSet)) {
-				throw new UnsupportedOperationException(String.format(
-						"Could not expand value set %s; version and code system bindings are not supported at this time.",
-						valueSet.getId()));
-			}
+		if (hasUrlId(valueSet) && (hasVersion(valueSet) || hasVersionedCodeSystem(valueSet))) {
+			throw new UnsupportedOperationException(String.format(
+					"Could not expand value set %s; version and code system bindings are not supported at this time.",
+					valueSet.getId()));
 		}
 
 		VersionedIdentifier vsId = new VersionedIdentifier().withId(valueSet.getId()).withVersion(valueSet.getVersion());
