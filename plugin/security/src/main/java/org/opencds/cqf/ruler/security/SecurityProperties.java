@@ -7,12 +7,22 @@ public class SecurityProperties {
 
 	private boolean enabled = false;
 
+	private BasicAuth basic_auth;
+
 	public boolean getEnabled() {
 		return enabled;
 	}
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public BasicAuth getBasicAuth() {
+		return this.basic_auth;
+	}
+
+	public void setBasicAuth(BasicAuth basic_auth) {
+		this.basic_auth = basic_auth;
 	}
 
 	private OAuth oAuth = new OAuth();
@@ -25,8 +35,48 @@ public class SecurityProperties {
 		this.oAuth = oAuth;
 	}
 
+	public static class BasicAuth {
+
+		private boolean enabled = false;
+		private String username;
+		private String password;
+
+		public boolean getEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getUsername() {
+			return this.username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
+		}
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+	}
+
 	public class OAuth {
 		private boolean securityCors = true;
+		private boolean enabled = false;
+
+		public boolean getEnabled() {
+			return enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
 
 		public boolean getSecurityCors() {
 			return securityCors;

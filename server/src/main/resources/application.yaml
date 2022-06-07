@@ -184,8 +184,13 @@ hapi:
 
       ## Security settings
       security:
-         enabled: false
+         # enabled: true
+         basic_auth:
+            enabled: false
+            username: someuser
+            password: thepassword
          oauth:
+            enabled: false
             securityCors: true
             securityUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
             securityExtAuthUrl: authorize
