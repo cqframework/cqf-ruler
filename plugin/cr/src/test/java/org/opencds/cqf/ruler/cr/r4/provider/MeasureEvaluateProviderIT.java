@@ -245,10 +245,12 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		Library library = getClient().read().resource(Library.class).withId("example-manifest").execute();
 		assertNotNull(library);
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("reportType").setValue(new StringType("individual"));
-		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM124"));
-		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
+		Parameters params = newParameters(
+			newPart("periodStart", "2019-01-01"),
+			newPart("periodEnd", "2020-01-01"),
+			newPart("reportType", "individual"),
+			newPart("subject", "Patient/numer-EXM124"),
+			newPart("lastReceivedOn", "2019-12-12"));
 
 		MeasureReport  returnMeasureReportVersion7 = getClient().operation()
 			.onInstance(new IdType("Measure", "measure-EXM124-7.0.000"))
