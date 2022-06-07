@@ -1,12 +1,5 @@
 package org.opencds.cqf.ruler.test;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-
-import java.io.IOException;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -23,19 +16,24 @@ import org.springframework.test.context.TestPropertySource;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.dao.IFulltextSearchSvc;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 @Import(Application.class)
 @TestPropertySource(properties = {
+		"debug=true",
+		"loader.debug=true",
 		"scheduling_disabled=true",
 		"spring.main.allow-bean-definition-overriding=true",
 		"spring.batch.job.enabled=false",
+		// "spring.jpa.properties.hibernate.show_sql=true",
+		// "spring.jpa.properties.hibernate.format_sql=true",
+		// "spring.jpa.properties.hibernate.use_sql_comments=true",
 		"hapi.fhir.allow_external_references=true",
 		"hapi.fhir.enforce_referential_integrity_on_write=false",
 		"hapi.fhir.auto_create_placeholder_reference_targets=true",
 		"hapi.fhir.client_id_strategy=ANY",
-		"spring.datasource.url=jdbc:h2:mem:db",
 		"spring.main.lazy-initialization=true",
 		"spring.flyway.enabled=false" })
 @TestInstance(Lifecycle.PER_CLASS)
@@ -52,6 +50,9 @@ public class RestIntegrationTest implements ResourceLoader, ResourceCreator, IdC
 
 	@Autowired
 	DaoRegistry myDaoRegistry;
+
+	@Autowired
+	IFulltextSearchSvc myFulltextSearchSvc;
 
 	@LocalServerPort
 	private int myPort;
@@ -84,17 +85,6 @@ public class RestIntegrationTest implements ResourceLoader, ResourceCreator, IdC
 
 	protected AppProperties getAppProperties() {
 		return myAppProperties;
-	}
-
-	protected void stubResourceForUrl(String location, String url) throws IOException {
-		String resourceString = stringFromResource(location);
-		stubFor(
-				get(urlEqualTo(url))
-						.willReturn(
-								aResponse()
-										.withStatus(200)
-										.withBody(resourceString)
-										.withHeader("Content-Type", "application/fhir+json; charset=utf-8")));
 	}
 
 	@BeforeEach

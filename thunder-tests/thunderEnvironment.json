@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "9f4fc82f-e53b-4247-bd68-f9559c235c03",
+    "name": "Digital Quality Measures",
+    "default": true,
+    "sortNum": 10000,
+    "created": "2022-05-31T22:06:34.755Z",
+    "modified": "2022-05-31T22:06:57.857Z",
+    "data": [
+      {
+        "name": "dQMServer",
+        "value": "http://localhost:8080/fhir/"
+      }
+    ]
+  }
+]

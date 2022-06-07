@@ -2102,7 +2102,7 @@
 			},
 			"request": {
 				"method": "PUT",
-				"url": "http://localhost:8080/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.424"
+				"url": "ValueSet/2.16.840.1.113883.3.117.1.7.1.424"
 			}
 		},
 		{

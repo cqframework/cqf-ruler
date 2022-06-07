@@ -118,7 +118,7 @@ public class ProcessMessageProvider extends DaoRegistryOperationProvider {
 					theRequestDetails.getFhirServerBase(), null, null);
 			Bundle transactionBundle = (Bundle) newBundleFactory.getResourceBundle();
 			for (BundleEntryComponent entry : transactionBundle.getEntry()) {
-				UriType uri = new UriType(theRequestDetails.getFhirServerBase() + "/" + entry.getResource().fhirType()
+				UriType uri = new UriType(entry.getResource().fhirType()
 						+ "/" + entry.getResource().getIdElement().getIdPart());
 				Enumeration<HTTPVerb> method = new Enumeration<>(new HTTPVerbEnumFactory());
 				method.setValue(HTTPVerb.PUT);
