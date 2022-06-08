@@ -1,0 +1,25 @@
+{
+	"resourceType": "Library",
+	"id": "multiversion-manifest",
+	"url": "http://alphora.com/fhir/Library/multiversion-manifest",
+	"type": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/library-type",
+				"code": "asset-collection"
+			}
+		]
+	},
+	"relatedArtifact": [
+		{
+			"type": "depends-on",
+			"display": "Measure in effect",
+			"resource": "http://hl7.org/fhir/us/cqfmeasures/Measure/multiversion|2.0.0"
+		},
+		{
+			"type": "depends-on",
+			"display": "Library in effect",
+			"resource": "http://fhir.org/guides/dbcg/connectathon/Library/multiversion|2.0.0"
+		}
+	]
+}

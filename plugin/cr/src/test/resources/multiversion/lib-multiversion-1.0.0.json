@@ -1,0 +1,227 @@
+{
+	"resourceType": "Library",
+	"id": "multiversion-1.0.0",
+	"extension": [
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-populationBasis",
+			"valueCode": "Encounter"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-softwaresystem",
+			"valueReference": {
+				"reference": "#cqf-tooling"
+			}
+		}
+	],
+	"url": "http://fhir.org/guides/dbcg/connectathon/Library/multiversion",
+	"version": "1.0.0",
+	"name": "multiversion",
+	"status": "active",
+	"experimental": true,
+	"type": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/library-type",
+				"code": "logic-library"
+			}
+		]
+	},
+	"relatedArtifact": [
+		{
+			"type": "depends-on",
+			"resource": "http://hl7.org/fhir/Library/FHIR-ModelInfo|4.0.1"
+		},
+		{
+			"type": "depends-on",
+			"resource": "http://hl7.org/fhir/Library/FHIRHelpers|4.0.1"
+		},
+		{
+			"type": "depends-on",
+			"resource": "http://hl7.org/fhir/Library/Hospice|2.0.000"
+		},
+		{
+			"type": "depends-on",
+			"resource": "http://hl7.org/fhir/Library/AdultOutpatientEncounters|2.0.000"
+		},
+		{
+			"type": "depends-on",
+			"resource": "http://fhir.org/guides/dbcg/connectathon/Library/MATGlobalCommonFunctions|5.0.000"
+		},
+		{
+			"type": "depends-on",
+			"resource": "http://fhir.org/guides/dbcg/connectathon/Library/SupplementalDataElements|2.0.0"
+		},
+		{
+			"type": "depends-on",
+			"resource": "http://snomed.info/sct/731000124108|http://snomed.info/sct/731000124108/version/201709"
+		},
+		{
+			"type": "depends-on",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1014"
+		},
+		{
+			"type": "depends-on",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1017"
+		},
+		{
+			"type": "depends-on",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.110.12.1059"
+		}
+	],
+	"parameter": [
+		{
+			"name": "Measurement Period",
+			"use": "in",
+			"min": 0,
+			"max": "1",
+			"type": "Period"
+		},
+		{
+			"name": "Patient",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "Patient"
+		},
+		{
+			"name": "SDE Ethnicity",
+			"use": "out",
+			"min": 0,
+			"max": "*",
+			"type": "Coding"
+		},
+		{
+			"name": "SDE Payer",
+			"use": "out",
+			"min": 0,
+			"max": "*",
+			"type": "Any"
+		},
+		{
+			"name": "SDE Race",
+			"use": "out",
+			"min": 0,
+			"max": "*",
+			"type": "Coding"
+		},
+		{
+			"name": "SDE Sex",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "Coding"
+		},
+		{
+			"name": "Initial Population",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "boolean"
+		},
+		{
+			"name": "Denominator",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "boolean"
+		},
+		{
+			"name": "Absence of Cervix",
+			"use": "out",
+			"min": 0,
+			"max": "*",
+			"type": "Any"
+		},
+		{
+			"name": "Denominator Exclusion",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "boolean"
+		},
+		{
+			"name": "Cervical Cytology Within 3 Years",
+			"use": "out",
+			"min": 0,
+			"max": "*",
+			"type": "Observation"
+		},
+		{
+			"name": "HPV Test Within 5 Years for Women Age 30 and Older",
+			"use": "out",
+			"min": 0,
+			"max": "*",
+			"type": "Observation"
+		},
+		{
+			"name": "Numerator",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "boolean"
+		}
+	],
+	"dataRequirement": [
+		{
+			"type": "Procedure",
+			"profile": [
+				"http://hl7.org/fhir/StructureDefinition/Procedure"
+			],
+			"codeFilter": [
+				{
+					"path": "code",
+					"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.198.12.1014"
+				}
+			]
+		},
+		{
+			"type": "Condition",
+			"profile": [
+				"http://hl7.org/fhir/StructureDefinition/Condition"
+			],
+			"codeFilter": [
+				{
+					"path": "code",
+					"code": [
+						{
+							"system": "http://snomed.info/sct/731000124108",
+							"version": "http://snomed.info/sct/731000124108/version/201709",
+							"code": "37687000",
+							"display": "Congenital absence of cervix (disorder)"
+						}
+					]
+				}
+			]
+		},
+		{
+			"type": "Observation",
+			"profile": [
+				"http://hl7.org/fhir/StructureDefinition/Observation"
+			],
+			"codeFilter": [
+				{
+					"path": "code",
+					"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.108.12.1017"
+				}
+			]
+		},
+		{
+			"type": "Observation",
+			"profile": [
+				"http://hl7.org/fhir/StructureDefinition/Observation"
+			],
+			"codeFilter": [
+				{
+					"path": "code",
+					"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.110.12.1059"
+				}
+			]
+		}
+	],
+	"content": [
+		{
+			"contentType": "text/cql",
+			"data": "bGlicmFyeSBtdWx0aXZlcnNpb24gdmVyc2lvbiAnMS4wLjAnCgoKLyoKQmFzZWQgb24gQ01TMTI0djcgLSBDZXJ2aWNhbCBDYW5jZXIgU2NyZWVuaW5nCiovCgovKgpUaGlzIGV4YW1wbGUgaXMgYSB3b3JrIGluIHByb2dyZXNzIGFuZCBzaG91bGQgbm90IGJlIGNvbnNpZGVyZWQgYSBmaW5hbCBzcGVjaWZpY2F0aW9uCm9yIHJlY29tbWVuZGF0aW9uIGZvciBndWlkYW5jZS4gVGhpcyBleGFtcGxlIHdpbGwgaGVscCBndWlkZSBhbmQgZGlyZWN0IHRoZSBwcm9jZXNzCm9mIGZpbmRpbmcgY29udmVudGlvbnMgYW5kIHVzYWdlIHBhdHRlcm5zIHRoYXQgbWVldCB0aGUgbmVlZHMgb2YgdGhlIHZhcmlvdXMgc3Rha2Vob2xkZXJzCmluIHRoZSBtZWFzdXJlIGRldmVsb3BtZW50IGNvbW11bml0eS4KKi8KCnVzaW5nIEZISVIgdmVyc2lvbiAnNC4wLjEnCgppbmNsdWRlIEZISVJIZWxwZXJzIHZlcnNpb24gJzQuMC4xJyBjYWxsZWQgRkhJUkhlbHBlcnMKaW5jbHVkZSBIb3NwaWNlIHZlcnNpb24gJzIuMC4wMDAnIGNhbGxlZCBIb3NwaWNlCmluY2x1ZGUgQWR1bHRPdXRwYXRpZW50RW5jb3VudGVycyB2ZXJzaW9uICcyLjAuMDAwJyBjYWxsZWQgQWR1bHRPdXRwYXRpZW50RW5jb3VudGVycwppbmNsdWRlIE1BVEdsb2JhbENvbW1vbkZ1bmN0aW9ucyB2ZXJzaW9uICc1LjAuMDAwJyBjYWxsZWQgR2xvYmFsCmluY2x1ZGUgU3VwcGxlbWVudGFsRGF0YUVsZW1lbnRzIHZlcnNpb24gJzIuMC4wJyBjYWxsZWQgU0RFCgpjb2Rlc3lzdGVtICJTTk9NRURDVDoyMDE3LTA5IjogJ2h0dHA6Ly9zbm9tZWQuaW5mby9zY3QvNzMxMDAwMTI0MTA4JyB2ZXJzaW9uICdodHRwOi8vc25vbWVkLmluZm8vc2N0LzczMTAwMDEyNDEwOC92ZXJzaW9uLzIwMTcwOScKCnZhbHVlc2V0ICJIeXN0ZXJlY3RvbXkgd2l0aCBObyBSZXNpZHVhbCBDZXJ2aXgiOiAnaHR0cDovL2N0cy5ubG0ubmloLmdvdi9maGlyL1ZhbHVlU2V0LzIuMTYuODQwLjEuMTEzODgzLjMuNDY0LjEwMDMuMTk4LjEyLjEwMTQnCnZhbHVlc2V0ICJQYXAgVGVzdCI6ICdodHRwOi8vY3RzLm5sbS5uaWguZ292L2ZoaXIvVmFsdWVTZXQvMi4xNi44NDAuMS4xMTM4ODMuMy40NjQuMTAwMy4xMDguMTIuMTAxNycKdmFsdWVzZXQgIkhQViBUZXN0IjogJ2h0dHA6Ly9jdHMubmxtLm5paC5nb3YvZmhpci9WYWx1ZVNldC8yLjE2Ljg0MC4xLjExMzg4My4zLjQ2NC4xMDAzLjExMC4xMi4xMDU5JwoKY29kZSAiQ29uZ2VuaXRhbCBhYnNlbmNlIG9mIGNlcnZpeCAoZGlzb3JkZXIpIjogJzM3Njg3MDAwJyBmcm9tICJTTk9NRURDVDoyMDE3LTA5IiBkaXNwbGF5ICdDb25nZW5pdGFsIGFic2VuY2Ugb2YgY2Vydml4IChkaXNvcmRlciknCgpwYXJhbWV0ZXIgIk1lYXN1cmVtZW50IFBlcmlvZCIgSW50ZXJ2YWw8RGF0ZVRpbWU+CiAgZGVmYXVsdCBJbnRlcnZhbFtAMjAxOS0wMS0wMVQwMDowMDowMC4wLCBAMjAyMC0wMS0wMVQwMDowMDowMC4wKQoKY29udGV4dCBQYXRpZW50CgpkZWZpbmUgIlNERSBFdGhuaWNpdHkiOgogIFNERS4iU0RFIEV0aG5pY2l0eSIKCmRlZmluZSAiU0RFIFBheWVyIjoKICBTREUuIlNERSBQYXllciIKCmRlZmluZSAiU0RFIFJhY2UiOgogIFNERS4iU0RFIFJhY2UiCgpkZWZpbmUgIlNERSBTZXgiOgogIFNERS4iU0RFIFNleCIKCmRlZmluZSAiSW5pdGlhbCBQb3B1bGF0aW9uIjoKCVBhdGllbnQuZ2VuZGVyID0gJ2ZlbWFsZScKCQlhbmQgR2xvYmFsLiJDYWxlbmRhckFnZUluWWVhcnNBdCIoRkhJUkhlbHBlcnMuVG9EYXRlKFBhdGllbnQuYmlydGhEYXRlKSwgc3RhcnQgb2YgIk1lYXN1cmVtZW50IFBlcmlvZCIpIGluIEludGVydmFsWzIzLCA2NF0KCQlhbmQgZXhpc3RzIEFkdWx0T3V0cGF0aWVudEVuY291bnRlcnMuIlF1YWxpZnlpbmcgRW5jb3VudGVycyIKCmRlZmluZSAiRGVub21pbmF0b3IiOgoJIkluaXRpYWwgUG9wdWxhdGlvbiIKCmRlZmluZSAiRGVub21pbmF0b3IgRXhjbHVzaW9uIjoKCUhvc3BpY2UuIkhhcyBIb3NwaWNlIgoJCW9yIGV4aXN0cyAiQWJzZW5jZSBvZiBDZXJ2aXgiCgpkZWZpbmUgIkFic2VuY2Ugb2YgQ2Vydml4IjoKICAoW1Byb2NlZHVyZTogIkh5c3RlcmVjdG9teSB3aXRoIE5vIFJlc2lkdWFsIENlcnZpeCJdIE5vQ2Vydml4UHJvY2VkdXJlCiAgIHdoZXJlIEdsb2JhbC4iTm9ybWFsaXplIEludGVydmFsIihOb0NlcnZpeFByb2NlZHVyZS5wZXJmb3JtZWQpIGVuZHMgb24gb3IgYmVmb3JlIGVuZCBvZiAiTWVhc3VyZW1lbnQgUGVyaW9kIgogICAgIGFuZCBOb0NlcnZpeFByb2NlZHVyZS5zdGF0dXMgPSAnY29tcGxldGVkJwogICAgICkKICB1bmlvbiBbQ29uZGl0aW9uIDogIkNvbmdlbml0YWwgYWJzZW5jZSBvZiBjZXJ2aXggKGRpc29yZGVyKSJdIE5vQ2Vydml4QmlydGgKCQl3aGVyZSBHbG9iYWwuIk5vcm1hbGl6ZSBJbnRlcnZhbCIoTm9DZXJ2aXhCaXJ0aC5vbnNldCkgc3RhcnRzIG9uIG9yIGJlZm9yZSBlbmQgb2YgIk1lYXN1cmVtZW50IFBlcmlvZCIKICAvLyAgICBhbmQgTm9DZXJ2aXhCaXJ0aC5jbGluaWNhbFN0YXR1cyB+IFRvQ29uY2VwdChHbG9iYWwuImFjdGl2ZSIpIGJlY2F1c2UgdGhpcyBpcyBhbiBleGNsdWlvbiwgYWxsIHN0YXR1c2VzIGFyZSBhY2NlcHRhYmxlCgpkZWZpbmUgIk51bWVyYXRvciI6CgkiQ2VydmljYWwgQ3l0b2xvZ3kgV2l0aGluIDMgWWVhcnMiCgpkZWZpbmUgIkNlcnZpY2FsIEN5dG9sb2d5IFdpdGhpbiAzIFllYXJzIjoKCVtPYnNlcnZhdGlvbjogIlBhcCBUZXN0Il0gQ2VydmljYWxDeXRvbG9neQoJCXdoZXJlIENlcnZpY2FsQ3l0b2xvZ3kudmFsdWUgaXMgbm90IG51bGwKCQkJYW5kIENlcnZpY2FsQ3l0b2xvZ3kuc3RhdHVzIGluIHsgJ2ZpbmFsJywgJ2FtZW5kZWQnLCAnY29ycmVjdGVkJywgJ3ByZWxpbWluYXJ5JyB9CgkJICBhbmQgR2xvYmFsLiJOb3JtYWxpemUgSW50ZXJ2YWwiKENlcnZpY2FsQ3l0b2xvZ3kuZWZmZWN0aXZlKSBlbmRzIDMgeWVhcnMgb3IgbGVzcyBvbiBvciBiZWZvcmUgZW5kIG9mICJNZWFzdXJlbWVudCBQZXJpb2QiCgpkZWZpbmUgIkhQViBUZXN0IFdpdGhpbiA1IFllYXJzIGZvciBXb21lbiBBZ2UgMzAgYW5kIE9sZGVyIjoKCVtPYnNlcnZhdGlvbjogIkhQViBUZXN0Il0gSFBWVGVzdAogICAgICB3aGVyZSBIUFZUZXN0LnZhbHVlIGlzIG5vdCBudWxsCiAgICAgICAgYW5kIEhQVlRlc3Quc3RhdHVzIGluIHsgJ2ZpbmFsJywgJ2FtZW5kZWQnLCAnY29ycmVjdGVkJywgJ3ByZWxpbWluYXJ5JyB9CiAgICAgICAgYW5kICBHbG9iYWwuIkNhbGVuZGFyQWdlSW5ZZWFyc0F0IihGSElSSGVscGVycy5Ub0RhdGUoUGF0aWVudC5iaXJ0aERhdGUpLCBzdGFydCBvZiBHbG9iYWwuIk5vcm1hbGl6ZSBJbnRlcnZhbCIoSFBWVGVzdC5lZmZlY3RpdmUpKT49IDMwCiAgICAgICAgYW5kIEdsb2JhbC4iTm9ybWFsaXplIEludGVydmFsIihIUFZUZXN0LmVmZmVjdGl2ZSkgZW5kcyA1IHllYXJzIG9yIGxlc3Mgb24gb3IgYmVmb3JlIGVuZCBvZiAiTWVhc3VyZW1lbnQgUGVyaW9kIgo="
+		}
+	]
+}

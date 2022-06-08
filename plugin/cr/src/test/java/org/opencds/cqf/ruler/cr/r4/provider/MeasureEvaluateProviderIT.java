@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
+import ca.uhn.fhir.context.FhirContext;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
@@ -233,69 +235,82 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 	@Test
 	public void testMeasureEvaluateMultiVersionWithManifestHeader() throws Exception {
 
-		String bundleAsTextVersion7 = stringFromResource( "multiversion/EXM124-7.0.000-bundle.json");
-		String bundleAsTextVersion9 = stringFromResource( "multiversion/EXM124-9.0.000-bundle.json");
-		Bundle bundleVersion7 = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsTextVersion7);
-		Bundle bundleVersion9 = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsTextVersion9);
-		getClient().transaction().withBundle(bundleVersion7).execute();
-		getClient().transaction().withBundle(bundleVersion9).execute();
+		String bundleAsText = stringFromResource( "multiversion/multiversion-common-bundle.json");
+		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
+		getClient().transaction().withBundle(bundle).execute();
 
-		loadResource("multiversion/Library-example-manifest.json");
+		loadResource("multiversion/measure-multiversion-1.0.0.json");
+		loadResource("multiversion/measure-multiversion-2.0.0.json");
+		loadResource("multiversion/lib-multiversion-1.0.0.json");
+		loadResource("multiversion/lib-multiversion-2.0.0.json");
 
-		Library library = getClient().read().resource(Library.class).withId("example-manifest").execute();
+		loadResource("multiversion/Library-multiversion-manifest.json");
+
+		Library library = getClient().read().resource(Library.class).withId("multiversion-manifest").execute();
 		assertNotNull(library);
 
 		Parameters params = newParameters(
 			newPart("periodStart", "2019-01-01"),
 			newPart("periodEnd", "2020-01-01"),
 			newPart("reportType", "individual"),
-			newPart("subject", "Patient/numer-EXM124"),
-			newPart("lastReceivedOn", "2019-12-12"));
+			newPart("subject", "Patient/numer-EXM124"));
 
-		MeasureReport  returnMeasureReportVersion7 = getClient().operation()
-			.onInstance(new IdType("Measure", "measure-EXM124-7.0.000"))
+		MeasureReport  measureReportWithoutManifest = getClient().operation()
+			.onInstance(new IdType("Measure", "measure-multiversion-1.0.0"))
 			.named("$evaluate-measure")
 			.withParameters(params)
 			.returnResourceType(MeasureReport.class)
-			.withAdditionalHeader("X-Manifest", "http://example.org/fhir/Library/example-manifest")
 			.execute();
 
-		assertNotNull(returnMeasureReportVersion7);
+		MeasureReport  measureReportWithManifest = getClient().operation()
+			.onInstance(new IdType("Measure", "measure-multiversion-1.0.0"))
+			.named("$evaluate-measure")
+			.withParameters(params)
+			.returnResourceType(MeasureReport.class)
+			.withAdditionalHeader("X-Manifest", "http://alphora.com/fhir/Library/multiversion-manifest")
+			.execute();
 
+		assertNotNull(measureReportWithoutManifest);
+		assertNotNull(measureReportWithManifest);
+		assertEquals(BigDecimal.valueOf(0.0), measureReportWithoutManifest.getGroupFirstRep().getMeasureScore().getValue());
+		assertEquals(BigDecimal.valueOf(1.0), measureReportWithManifest.getGroupFirstRep().getMeasureScore().getValue());
 	}
 
 	@Test
 	public void testGeneralApiMeasureEvaluateMultiVersionWithManifestHeader() throws Exception {
 
-		String bundleAsTextVersion7 = stringFromResource( "multiversion/EXM124-7.0.000-bundle.json");
-		String bundleAsTextVersion9 = stringFromResource( "multiversion/EXM124-9.0.000-bundle.json");
-		Bundle bundleVersion7 = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsTextVersion7);
-		Bundle bundleVersion9 = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsTextVersion9);
-		getClient().transaction().withBundle(bundleVersion7).execute();
-		getClient().transaction().withBundle(bundleVersion9).execute();
+		String bundleAsText = stringFromResource( "multiversion/multiversion-common-bundle.json");
+		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
+		getClient().transaction().withBundle(bundle).execute();
 
-		loadResource("multiversion/Library-example-manifest.json");
+		loadResource("multiversion/measure-multiversion-1.0.0.json");
+		loadResource("multiversion/measure-multiversion-2.0.0.json");
+		loadResource("multiversion/lib-multiversion-1.0.0.json");
+		loadResource("multiversion/lib-multiversion-2.0.0.json");
 
-		Library library = getClient().read().resource(Library.class).withId("example-manifest").execute();
+		loadResource("multiversion/Library-multiversion-manifest.json");
+
+		Library library = getClient().read().resource(Library.class).withId("multiversion-manifest").execute();
 		assertNotNull(library);
 
 		Parameters params = new Parameters();
-		params.addParameter().setName("measure").setValue(new StringType("http://hl7.org/fhir/us/cqfmeasures/Measure/EXM124"));
+		params.addParameter().setName("measure").setValue(new StringType("http://hl7.org/fhir/us/cqfmeasures/Measure/multiversion"));
 		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
 		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
 		params.addParameter().setName("reportType").setValue(new StringType("individual"));
 		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM124"));
 		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
 
-		MeasureReport  returnMeasureReportVersion7 = getClient().operation()
+		MeasureReport  measureReport = getClient().operation()
 			.onType(Measure.class)
 			.named("$evaluate-measure")
 			.withParameters(params)
 			.returnResourceType(MeasureReport.class)
-			.withAdditionalHeader("X-Manifest", "http://example.org/fhir/Library/example-manifest")
+			.withAdditionalHeader("X-Manifest", "http://alphora.com/fhir/Library/multiversion-manifest")
 			.execute();
 
-		assertNotNull(returnMeasureReportVersion7);
+		assertNotNull(measureReport);
+		assertEquals(BigDecimal.valueOf(1.0), measureReport.getGroupFirstRep().getMeasureScore().getValue());
 
 	}
 
