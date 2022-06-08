@@ -153,10 +153,12 @@ hapi:
 
       ## CQL Settings
       cql:
-         # enabled: true
-         # cql_logging_enabled: false
-         # use_embedded_cql_translator_content: true
-         #cqlTranslatorOptions:
+         enabled: true
+         engine:
+            # debug_logging_enabled: false
+            options: "EnableExpressionCaching"
+         # use_embedded_libraries: true
+         # translator:
          #    analyzeDataRequirements: false
          #    collapseDataRequirements: true
          # options: "EnableAnnotations,EnableLocators,DisableListDemotion,DisableListPromotion"

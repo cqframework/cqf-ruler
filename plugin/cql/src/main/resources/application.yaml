@@ -1,9 +1,0 @@
-hapi:
-  fhir:
-    cql:
-      enabled: true
-      use_embedded_translator_content: true
-      cql_logging_enabled: false
-      cqlTranslatorOptions:
-        analyzeDataRequirements: true
-        collapseDataRequirements: true

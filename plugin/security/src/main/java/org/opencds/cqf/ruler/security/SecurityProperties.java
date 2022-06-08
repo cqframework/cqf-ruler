@@ -9,7 +9,7 @@ public class SecurityProperties {
 
 	private BasicAuth basic_auth;
 
-	public boolean getEnabled() {
+	public boolean isEnabled() {
 		return enabled;
 	}
 
@@ -41,7 +41,7 @@ public class SecurityProperties {
 		private String username;
 		private String password;
 
-		public boolean getEnabled() {
+		public boolean isEnabled() {
 			return enabled;
 		}
 
@@ -70,7 +70,7 @@ public class SecurityProperties {
 		private boolean securityCors = true;
 		private boolean enabled = false;
 
-		public boolean getEnabled() {
+		public boolean isEnabled() {
 			return enabled;
 		}
 

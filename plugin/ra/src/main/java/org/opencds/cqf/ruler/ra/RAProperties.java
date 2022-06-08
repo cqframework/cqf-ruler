@@ -11,7 +11,7 @@ public class RAProperties {
 
 	private boolean enabled = true;
 
-	public boolean getEnabled() {
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
