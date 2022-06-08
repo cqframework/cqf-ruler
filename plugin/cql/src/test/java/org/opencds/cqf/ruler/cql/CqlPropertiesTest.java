@@ -25,7 +25,7 @@ public class CqlPropertiesTest {
 	// correctly to the configuration
 	@Test
 	public void cqlPropertiesAreSet() {
-		assertFalse(cqlProperties.isEnabled());
+		assertTrue(cqlProperties.isEnabled());
 		assertFalse(cqlProperties.useEmbeddedLibraries());
 
 		assertTrue(cqlProperties.getEngine().isDebugLoggingEnabled());

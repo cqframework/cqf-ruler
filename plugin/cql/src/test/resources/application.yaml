@@ -1,7 +1,6 @@
 hapi:
    fhir:
       cql:
-         enabled: false
          use_embedded_libraries: false
          engine:
             debug_logging_enabled: true
