@@ -104,7 +104,6 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 
 		Map<String, String> urlVersionManifestMap = (Map<String, String>) requestDetails.getUserData().get("manifest");
 
-		// should there be another $evaluate-measure signature that considers measure id or canonical!
 		Measure measure = read(theId);
 
 		if (urlVersionManifestMap != null) {

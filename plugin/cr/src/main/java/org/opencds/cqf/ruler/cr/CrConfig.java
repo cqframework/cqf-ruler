@@ -34,9 +34,7 @@ public class CrConfig {
 	}
 
 	@Bean
-	ManifestInterceptor manifestInterceptor() {
-		return new ManifestInterceptor();
-	}
+	public ManifestInterceptor manifestInterceptor() { return new ManifestInterceptor(); }
 
 	@Bean
 	@Conditional(OnDSTU3Condition.class)
