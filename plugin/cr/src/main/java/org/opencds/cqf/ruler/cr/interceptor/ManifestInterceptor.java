@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cr.interceptor;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
@@ -45,14 +46,28 @@ public class ManifestInterceptor implements org.opencds.cqf.ruler.api.Intercepto
 
 	//https://github.com/HL7/Content-Management-Infrastructure-IG/blob/main/input/pages/version-manifest.md#x-manifest-header
 	private void processManifest(String manifest, RequestDetails theRequestDetails) {
-		Library assetCollectionManifest = read(new IdType(manifest), theRequestDetails);
-		if (assetCollectionManifest != null) {
-			ourLog.info("Manifest library found : {}", assetCollectionManifest.getUrl());
 
-			Map<String, String> urlVersionManifestMap = new HashMap<>();
-			populateResourceVersionMap(assetCollectionManifest, urlVersionManifestMap);
-			theRequestDetails.getUserData().put("manifest", urlVersionManifestMap);
+		if(getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
+			Library assetCollectionManifest = read(new IdType(manifest), theRequestDetails);
+			if (assetCollectionManifest != null) {
+				ourLog.info("Manifest library found : {}", assetCollectionManifest.getUrl());
+
+				Map<String, String> urlVersionManifestMap = new HashMap<>();
+				populateResourceVersionMap(assetCollectionManifest, urlVersionManifestMap);
+				theRequestDetails.getUserData().put("manifest", urlVersionManifestMap);
+			}
+		} else if(getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3)
+		{
+			org.hl7.fhir.dstu3.model.Library assetCollectionManifest = read(new IdType(manifest), theRequestDetails);
+			if (assetCollectionManifest != null) {
+				ourLog.info("Manifest library found : {}", assetCollectionManifest.getUrl());
+
+				Map<String, String> urlVersionManifestMap = new HashMap<>();
+				populateResourceVersionMapDstu3(assetCollectionManifest, urlVersionManifestMap);
+				theRequestDetails.getUserData().put("manifest", urlVersionManifestMap);
+			}
 		}
+
 	}
 
 	private Map<String, String> populateResourceVersionMap(Library library, Map<String, String> resourceVersionMap) {
@@ -60,6 +75,23 @@ public class ManifestInterceptor implements org.opencds.cqf.ruler.api.Intercepto
 			library.getRelatedArtifact().forEach(item -> {
 				String version = Canonicals.getVersion(item.getResource());
 				String url = Canonicals.getUrl(item.getResource());
+
+				if (StringUtils.isNotBlank(url)) {
+					if (StringUtils.isNotBlank(version)) {
+						resourceVersionMap.put(url, version);
+					}
+				}
+			});
+		}
+		return resourceVersionMap;
+	}
+
+	private Map<String, String> populateResourceVersionMapDstu3(org.hl7.fhir.dstu3.model.Library library,
+																			 Map<String, String> resourceVersionMap) {
+		if (library.hasRelatedArtifact()) {
+			library.getRelatedArtifact().forEach(item -> {
+				String version = Canonicals.getVersion(item.getResource().getReference());
+				String url = Canonicals.getUrl(item.getResource().getReference());
 
 				if (StringUtils.isNotBlank(url)) {
 					if (StringUtils.isNotBlank(version)) {
