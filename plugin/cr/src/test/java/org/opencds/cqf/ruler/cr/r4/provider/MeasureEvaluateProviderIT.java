@@ -235,8 +235,8 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 	@Test
 	public void testMeasureEvaluateMultiVersionWithManifestHeader() throws Exception {
 
-		String bundleAsText = stringFromResource( "multiversion/multiversion-common-bundle.json");
-		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
+		String bundleAsText = stringFromResource("multiversion/multiversion-common-bundle.json");
+		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
 		loadResource("multiversion/measure-multiversion-1.0.0.json");
@@ -255,14 +255,14 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 			newPart("reportType", "individual"),
 			newPart("subject", "Patient/numer-EXM124"));
 
-		MeasureReport  measureReportWithoutManifest = getClient().operation()
+		MeasureReport measureReportWithoutManifest = getClient().operation()
 			.onInstance(new IdType("Measure", "measure-multiversion-1.0.0"))
 			.named("$evaluate-measure")
 			.withParameters(params)
 			.returnResourceType(MeasureReport.class)
 			.execute();
 
-		MeasureReport  measureReportWithManifest = getClient().operation()
+		MeasureReport measureReportWithManifest = getClient().operation()
 			.onInstance(new IdType("Measure", "measure-multiversion-1.0.0"))
 			.named("$evaluate-measure")
 			.withParameters(params)
@@ -279,8 +279,8 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 	@Test
 	public void testGeneralApiMeasureEvaluateMultiVersionWithManifestHeader() throws Exception {
 
-		String bundleAsText = stringFromResource( "multiversion/multiversion-common-bundle.json");
-		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
+		String bundleAsText = stringFromResource("multiversion/multiversion-common-bundle.json");
+		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
 		loadResource("multiversion/measure-multiversion-1.0.0.json");
@@ -293,15 +293,14 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		Library library = getClient().read().resource(Library.class).withId("multiversion-manifest").execute();
 		assertNotNull(library);
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("measure").setValue(new StringType("http://hl7.org/fhir/us/cqfmeasures/Measure/multiversion"));
-		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
-		params.addParameter().setName("reportType").setValue(new StringType("individual"));
-		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM124"));
-		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
+		Parameters params = newParameters(
+			newPart("measure", "http://hl7.org/fhir/us/cqfmeasures/Measure/multiversion"),
+			newPart("periodStart", "2019-01-01"),
+			newPart("periodEnd", "2020-01-01"),
+			newPart("reportType", "individual"),
+			newPart("subject", "Patient/numer-EXM124"));
 
-		MeasureReport  measureReport = getClient().operation()
+		MeasureReport measureReport = getClient().operation()
 			.onType(Measure.class)
 			.named("$evaluate-measure")
 			.withParameters(params)
@@ -313,5 +312,4 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		assertEquals(BigDecimal.valueOf(1.0), measureReport.getGroupFirstRep().getMeasureScore().getValue());
 
 	}
-
 }
