@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Strings;
@@ -208,16 +209,30 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			throw new NotImplementedException("Non subject parameters have not been implemented.");
 		}
 
+      List<CompletableFuture<Parameters.ParametersParameterComponent>> futures = new ArrayList<>();
+
 		Parameters result = initializeResult();
-		(patients)
+
+		if (crProperties.getThreadedCareGapsEnabled()) {
+			(patients)
 				.forEach(
-						patient -> {
-							Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails,
-									periodStart, periodEnd, patient, status, measures, organization);
-							if (patientParameter != null) {
-								result.addParameter(patientParameter);
-							}
-						});
+					patient -> {
+						futures.add(CompletableFuture.supplyAsync(() -> patientReports(theRequestDetails,
+							periodStart, periodEnd, patient, status, measures, organization)));
+					});
+
+			futures.forEach(x -> result.addParameter(x.join()));
+		} else {
+			(patients)
+				.forEach(
+					patient -> {
+						Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails,
+							periodStart, periodEnd, patient, status, measures, organization);
+						if (patientParameter != null) {
+							result.addParameter(patientParameter);
+						}
+					});
+		}
 
 		return result;
 	}

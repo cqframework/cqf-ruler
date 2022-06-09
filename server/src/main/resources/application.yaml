@@ -13,11 +13,10 @@ spring:
       check-location: false
       baselineOnMigrate: true
    datasource:
-      url: "jdbc:h2:file:./target/database/h2"
-      #url: jdbc:h2:mem:test_mem
+      url: "jdbc:hsqldb:file:./target/database/hsql"
       username: sa
       password: null
-      driverClassName: org.h2.Driver
+      # driverClassName: org.h2.Driver
       max-active: 15
    jpa:
       properties:
@@ -185,8 +184,13 @@ hapi:
 
       ## Security settings
       security:
-         enabled: false
+         # enabled: true
+         basic_auth:
+            enabled: false
+            username: someuser
+            password: thepassword
          oauth:
+            enabled: false
             securityCors: true
             securityUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
             securityExtAuthUrl: authorize

@@ -3,10 +3,15 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+
+import java.util.Optional;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Parameters;
@@ -33,12 +38,12 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
-		params.addParameter().setName("reportType").setValue(new StringType("individual"));
-		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM104"));
-		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
+		Parameters params = newParameters(
+				newPart("periodStart", "2019-01-01"),
+				newPart("periodEnd", "2020-01-01"),
+				newPart("reportType", "individual"),
+				newPart("subject", "Patient/numer-EXM104"),
+				newPart("lastReceivedOn", "2019-12-12"));
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
@@ -50,6 +55,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		assertNotNull(returnMeasureReport);
 	}
 
+	@Disabled("$expand not working on server")
 	@Test
 	public void testMeasureEvaluateWithTerminologyEndpoint() throws Exception {
 		String bundleAsText = stringFromResource("Exm104FhirR4MeasureBundle.json");
@@ -160,12 +166,11 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		}
 
 		assertNotNull(enrolledDuringParticipationPeriodObs);
-		assertTrue(enrolledDuringParticipationPeriodObs.getValueCodeableConcept().getCodingFirstRep().getCode()
-				.equals(Boolean.toString(enrolledDuringParticipationPeriod).toLowerCase()));
+		assertEquals(Boolean.toString(enrolledDuringParticipationPeriod).toLowerCase(),
+				enrolledDuringParticipationPeriodObs.getValueCodeableConcept().getCodingFirstRep().getCode());
 
 		assertNotNull(participationPeriodObs);
-		assertTrue(
-				participationPeriodObs.getValueCodeableConcept().getCodingFirstRep().getCode().equals(participationPeriod));
+		assertEquals(participationPeriod, participationPeriodObs.getValueCodeableConcept().getCodingFirstRep().getCode());
 	}
 
 	@Test
@@ -188,6 +193,43 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				"Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
 	}
 
+	@Test
+	public void testClientNonPatientBasedMeasureEvaluate() throws Exception {
+		String bundleAsText = stringFromResource("ClientNonPatientBasedMeasureBundle.json");
+		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
+		getClient().transaction().withBundle(bundle).execute();
+
+		Measure measure = getClient().read().resource(Measure.class).withId("InitialInpatientPopulation").execute();
+		assertNotNull(measure);
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
+		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
+		params.addParameter().setName("reportType").setValue(new StringType("subject"));
+		params.addParameter().setName("subject").setValue(new StringType("Patient/97f27374-8a5c-4aa1-a26f-5a1ab03caa47"));
+
+		MeasureReport returnMeasureReport = getClient().operation()
+				.onInstance(new IdType("Measure", "InitialInpatientPopulation"))
+				.named("$evaluate-measure")
+				.withParameters(params)
+				.returnResourceType(MeasureReport.class)
+				.execute();
+
+		assertNotNull(returnMeasureReport);
+
+		String populationName = "initial-population";
+		int expectedCount = 2;
+
+		Optional<MeasureReport.MeasureReportGroupPopulationComponent> population = returnMeasureReport.getGroup().get(0)
+				.getPopulation().stream().filter(x -> x.hasCode() && x.getCode().hasCoding()
+						&& x.getCode().getCoding().get(0).getCode().equals(populationName))
+				.findFirst();
+
+		assertTrue(population.isPresent(), String.format("Unable to locate a population with id \"%s\"", populationName));
+		assertEquals(population.get().getCount(), expectedCount,
+				String.format("expected count for population \"%s\" did not match", populationName));
+	}
+
 	@Disabled("The cql/elm in the Bundles is incorrect. It references ValueSets by localhost url, which is not valid")
 	@Test
 	public void testMeasureEvaluateMultiVersion() throws Exception {
@@ -197,10 +239,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		Bundle bundleVersion9 = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsTextVersion9);
 		getClient().transaction().withBundle(bundleVersion7).execute();
 		getClient().transaction().withBundle(bundleVersion9).execute();
-
 		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
 		params.addParameter().setName("reportType").setValue(new StringType("individual"));
 		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM124"));
 		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
