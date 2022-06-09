@@ -103,7 +103,8 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "additionalData") Bundle additionalData,
 			@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
-		Map<?, ?> urlVersionManifestMap = (Map<?, ?>) (requestDetails.getUserData().get("manifest"));
+		@SuppressWarnings("unchecked")
+		Map<String, String> urlVersionManifestMap = (Map<String, String>) (requestDetails.getUserData().get("manifest"));
 
 		Measure measure = read(theId);
 
@@ -168,7 +169,8 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		   @OperationParam(name = "additionalData") Bundle additionalData,
 		   @OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
-		Map<?, ?> urlVersionManifestMap = (Map<?, ?>) (requestDetails.getUserData().get("manifest"));
+		@SuppressWarnings("unchecked")
+		Map<String, String> urlVersionManifestMap = (Map<String, String>) (requestDetails.getUserData().get("manifest"));
 
 		Measure theMeasure = search(Measure.class, Searches.byCanonical(measure), requestDetails).firstOrNull();
 
@@ -195,7 +197,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		return report;
 	}
 
-	private Measure validateMeasureVersion(Measure measure, Map<?, ?> urlVersionManifestMap,
+	private Measure validateMeasureVersion(Measure measure, Map<String, String> urlVersionManifestMap,
 														RequestDetails requestDetails) {
 		if (measure.hasUrl()) {
 			if (StringUtils.isBlank(Canonicals.getVersion(measure.getUrl())) &&

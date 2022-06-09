@@ -59,7 +59,8 @@ public class JpaFhirDal implements FhirDal {
 	public Iterable<IBaseResource> searchByUrl(String theResourceType, String theUrl) {
 		SearchParameterMap searchParameterMap = SearchParameterMap.newSynchronous();
 		searchParameterMap.add("url", new UriParam(theUrl));
-		Map<?, ?> urlVersionManifestMap = (Map<?, ?>) (requestDetails.getUserData().get("manifest"));
+		@SuppressWarnings("unchecked")
+		Map<String, String> urlVersionManifestMap = (Map<String, String>) (requestDetails.getUserData().get("manifest"));
 		if (urlVersionManifestMap != null && urlVersionManifestMap.containsKey(theUrl)) {
 			searchParameterMap.add("version", new TokenParam((String)urlVersionManifestMap.get(theUrl)));
 		}
