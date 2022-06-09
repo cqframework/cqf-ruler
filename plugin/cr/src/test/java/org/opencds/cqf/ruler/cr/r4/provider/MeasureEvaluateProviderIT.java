@@ -9,7 +9,6 @@ import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import ca.uhn.fhir.context.FhirContext;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
@@ -20,7 +19,6 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.StringType;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;

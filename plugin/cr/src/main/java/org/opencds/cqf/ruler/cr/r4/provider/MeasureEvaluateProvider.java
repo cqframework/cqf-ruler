@@ -18,6 +18,7 @@ import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
+import org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
@@ -116,7 +117,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		LibraryContentProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 
-		org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor(
+		R4MeasureProcessor measureProcessor = new R4MeasureProcessor(
 				null, this.dataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider,
 				fhirDal, measureEvaluationOptions, cqlOptions,
 				this.globalLibraryCache);
@@ -181,7 +182,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		LibraryContentProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 
-		org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor(
+		R4MeasureProcessor measureProcessor = new R4MeasureProcessor(
 			null, this.dataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider,
 			fhirDal, measureEvaluationOptions, cqlOptions,
 			this.globalLibraryCache);
