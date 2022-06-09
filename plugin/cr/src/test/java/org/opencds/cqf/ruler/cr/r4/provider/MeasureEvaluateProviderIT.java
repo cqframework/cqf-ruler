@@ -260,6 +260,11 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 			.returnResourceType(MeasureReport.class)
 			.execute();
 
+		assertNotNull(measureReportWithoutManifest);
+		// without manifest header the score is 0.0 from measure-multiversion-1.0.0
+		assertEquals(BigDecimal.valueOf(0.0), measureReportWithoutManifest.getGroupFirstRep().getMeasureScore().getValue());
+
+
 		MeasureReport measureReportWithManifest = getClient().operation()
 			.onInstance(new IdType("Measure", "measure-multiversion-1.0.0"))
 			.named("$evaluate-measure")
@@ -268,9 +273,8 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 			.withAdditionalHeader("X-Manifest", "http://alphora.com/fhir/Library/multiversion-manifest")
 			.execute();
 
-		assertNotNull(measureReportWithoutManifest);
 		assertNotNull(measureReportWithManifest);
-		assertEquals(BigDecimal.valueOf(0.0), measureReportWithoutManifest.getGroupFirstRep().getMeasureScore().getValue());
+		// with manifest header the score is 1.0 from measure-multiversion-1.0.0 as manifest introduce to use version 2.0.0
 		assertEquals(BigDecimal.valueOf(1.0), measureReportWithManifest.getGroupFirstRep().getMeasureScore().getValue());
 	}
 
@@ -291,6 +295,7 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		Library library = getClient().read().resource(Library.class).withId("multiversion-manifest").execute();
 		assertNotNull(library);
 
+		// this test use canonical instead of measure id and manifest header dictates the specific version
 		Parameters params = newParameters(
 			newPart("measure", "http://hl7.org/fhir/us/cqfmeasures/Measure/multiversion"),
 			newPart("periodStart", "2019-01-01"),
