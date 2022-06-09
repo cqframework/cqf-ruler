@@ -103,7 +103,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "additionalData") Bundle additionalData,
 			@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
-		Map<String, String> urlVersionManifestMap = (Map<String, String>) requestDetails.getUserData().get("manifest");
+		Map<String, String> urlVersionManifestMap = (Map<String, String>) (requestDetails.getUserData().get("manifest"));
 
 		Measure measure = read(theId);
 
@@ -168,7 +168,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 		   @OperationParam(name = "additionalData") Bundle additionalData,
 		   @OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
-		Map<String, String> urlVersionManifestMap = (Map<String, String>) requestDetails.getUserData().get("manifest");
+		Map<String, String> urlVersionManifestMap = (Map<String, String>) (requestDetails.getUserData().get("manifest"));
 
 		Measure theMeasure = search(Measure.class, Searches.byCanonical(measure), requestDetails).firstOrNull();
 
