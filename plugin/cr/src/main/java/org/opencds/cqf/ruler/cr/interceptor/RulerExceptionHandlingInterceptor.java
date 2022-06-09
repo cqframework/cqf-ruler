@@ -5,6 +5,7 @@ import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,13 +25,15 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 		HttpServletRequest theServletRequest,
 		HttpServletResponse theServletResponse) throws IOException {
 
-
-		theServletResponse.setStatus(theException.getStatusCode());
-
-		// Provide a response ourself
-		theServletResponse.setContentType("text/plain");
-		theServletResponse.getWriter().append("Failed to process!");
-		theServletResponse.getWriter().close();
+		System.out.println(((OperationOutcome)(theException.getOperationOutcome())));
+//
+//		System.out.println("Nazmul:"+ theException.getOperationOutcome());
+//		theServletResponse.setStatus(theException.getStatusCode());
+//
+//		// Provide a response ourself
+//		theServletResponse.setContentType("text/json");
+//		theServletResponse.getWriter().append(theException.getOperationOutcome());
+//		theServletResponse.getWriter().close();
 
 		return false;
 	}
