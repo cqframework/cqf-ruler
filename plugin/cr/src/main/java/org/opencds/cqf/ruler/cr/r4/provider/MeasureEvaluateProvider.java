@@ -141,7 +141,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 	 *
 	 * @param requestDetails The details (such as tenant) of this request. Usually
 	 *                       auto-populated HAPI.
-	 * @param measure        canonical or id of the Measure to evaluate
+	 * @param measure        canonical of the Measure to evaluate
 	 * @param periodStart    The start of the reporting period
 	 * @param periodEnd      The end of the reporting period
 	 * @param reportType     The type of MeasureReport to generate
