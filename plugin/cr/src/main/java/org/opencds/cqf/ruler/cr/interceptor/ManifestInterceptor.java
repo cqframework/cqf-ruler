@@ -38,39 +38,38 @@ public class ManifestInterceptor implements org.opencds.cqf.ruler.api.Intercepto
 			ourLog.info("Request with manifest: {}", manifest);
 
 			if(manifest != null) {
-				processManifest(manifest, theRequestDetails);
+				Map<String, String> urlVersionManifestMap = new HashMap<>();
+				try {
+					processManifest(manifest, theRequestDetails, urlVersionManifestMap);
+				} catch (Exception e) {
+					ourLog.info("Manifest processing failed : {}", e.getMessage());
+				}
+				if (!urlVersionManifestMap.isEmpty()) {
+					theRequestDetails.getUserData().put("manifest", urlVersionManifestMap);
+				}
 			}
 
 		}
 	}
 
 	//https://github.com/HL7/Content-Management-Infrastructure-IG/blob/main/input/pages/version-manifest.md#x-manifest-header
-	private void processManifest(String manifest, RequestDetails theRequestDetails) {
+	private void processManifest(String manifest, RequestDetails theRequestDetails, Map<String, String> urlVersionManifestMap) {
 
-		if(getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
-			Library assetCollectionManifest = read(new IdType(manifest), theRequestDetails);
-			if (assetCollectionManifest != null) {
-				ourLog.info("Manifest library found : {}", assetCollectionManifest.getUrl());
-
-				Map<String, String> urlVersionManifestMap = new HashMap<>();
-				populateResourceVersionMap(assetCollectionManifest, urlVersionManifestMap);
-				theRequestDetails.getUserData().put("manifest", urlVersionManifestMap);
+		if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
+			Library manifestLibrary = read(new IdType(manifest), theRequestDetails);
+			if (manifestLibrary != null) {
+				populateResourceVersionMapR4(manifestLibrary, urlVersionManifestMap);
 			}
-		} else if(getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3)
-		{
-			org.hl7.fhir.dstu3.model.Library assetCollectionManifest = read(new IdType(manifest), theRequestDetails);
-			if (assetCollectionManifest != null) {
-				ourLog.info("Manifest library found : {}", assetCollectionManifest.getUrl());
-
-				Map<String, String> urlVersionManifestMap = new HashMap<>();
-				populateResourceVersionMapDstu3(assetCollectionManifest, urlVersionManifestMap);
-				theRequestDetails.getUserData().put("manifest", urlVersionManifestMap);
+		} else if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3) {
+			org.hl7.fhir.dstu3.model.Library manifestLibrary = read(new IdType(manifest), theRequestDetails);
+			if (manifestLibrary != null) {
+				populateResourceVersionMapDstu3(manifestLibrary, urlVersionManifestMap);
 			}
 		}
-
 	}
 
-	private Map<String, String> populateResourceVersionMap(Library library, Map<String, String> resourceVersionMap) {
+	private void populateResourceVersionMapR4(Library library, Map<String, String> resourceVersionMap) {
+		ourLog.info("Manifest library found : {}", library.getUrl());
 		if (library.hasRelatedArtifact()) {
 			library.getRelatedArtifact().forEach(item -> {
 				String version = Canonicals.getVersion(item.getResource());
@@ -83,11 +82,11 @@ public class ManifestInterceptor implements org.opencds.cqf.ruler.api.Intercepto
 				}
 			});
 		}
-		return resourceVersionMap;
 	}
 
-	private Map<String, String> populateResourceVersionMapDstu3(org.hl7.fhir.dstu3.model.Library library,
+	private void populateResourceVersionMapDstu3(org.hl7.fhir.dstu3.model.Library library,
 																			 Map<String, String> resourceVersionMap) {
+		ourLog.info("Manifest library found : {}", library.getUrl());
 		if (library.hasRelatedArtifact()) {
 			library.getRelatedArtifact().forEach(item -> {
 				String version = Canonicals.getVersion(item.getResource().getReference());
@@ -100,7 +99,6 @@ public class ManifestInterceptor implements org.opencds.cqf.ruler.api.Intercepto
 				}
 			});
 		}
-		return resourceVersionMap;
 	}
 
 	@Override
