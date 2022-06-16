@@ -127,7 +127,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			myLog.info("Library read failed as measure.getLibrary() is not an ID, fall back to search as canonical");
 		}
 		if (library == null) {
-			library = search(Library.class, Searches.byCanonical(libraryIdOrCanonical), theRequestDetails).firstOrNull();
+			library = fetchDependencyLibrary(libraryIdOrCanonical, theRequestDetails);
 		}
 		return library;
 	}
