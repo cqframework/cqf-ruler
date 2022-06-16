@@ -120,13 +120,13 @@
 						}
 					}
 				],
-				"url": "http://localhost:8080/fhir/Library/LibraryEvaluationTest",
+				"url": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTest",
 				"version": "1.0.000",
 				"name": "LibraryEvaluationTest",
 				"relatedArtifact": [
 					{
 						"type": "depends-on",
-						"resource": "http://localhost:8080/fhir/Library/LibraryEvaluationTestDependency|1.0.000"
+						"resource": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency|1.0.000"
 					}
 				],
 				"parameter": [
@@ -223,13 +223,13 @@
 						}
 					}
 				],
-				"url": "http://localhost:8080/fhir/Library/LibraryEvaluationTest",
+				"url": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTest",
 				"version": "2.0.000",
 				"name": "LibraryEvaluationTest",
 				"relatedArtifact": [
 					{
 						"type": "depends-on",
-						"resource": "http://localhost:8080/fhir/Library/LibraryEvaluationTestDependency"
+						"resource": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency"
 					}
 				],
 				"parameter": [
@@ -326,7 +326,7 @@
 						}
 					}
 				],
-				"url": "http://localhost:8080/fhir/Library/LibraryEvaluationTestDependency",
+				"url": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency",
 				"version": "1.0.000",
 				"name": "LibraryEvaluationTestDependency",
 				"relatedArtifact": [
@@ -404,7 +404,7 @@
 						}
 					}
 				],
-				"url": "http://localhost:8080/fhir/Library/LibraryEvaluationTestDependency",
+				"url": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency",
 				"version": "2.0.000",
 				"name": "LibraryEvaluationTestDependency",
 				"relatedArtifact": [
