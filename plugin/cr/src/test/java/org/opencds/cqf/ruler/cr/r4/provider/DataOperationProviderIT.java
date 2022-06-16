@@ -47,11 +47,12 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 
 		Library library = getClient().read().resource(Library.class).withId("LibraryEvaluationTest").execute();
 		assertNotNull(library);
-		assertEquals( "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency|1.0.000",library.getRelatedArtifact().get(0).getResource());
+		assertEquals("http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency|1.0.000",
+			library.getRelatedArtifact().get(0).getResource());
 
 		Library library2 = getClient().read().resource(Library.class).withId("LibraryEvaluationTest2").execute();
 		assertNotNull(library2);
-		assertEquals( "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency",
+		assertEquals("http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency",
 			library2.getRelatedArtifact().get(0).getResource());
 
 		assertEquals(library.getUrl(), library2.getUrl());
