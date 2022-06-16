@@ -40,6 +40,54 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
+	public void testR4LibraryDataRequirementsNonManifestMultiVersionOperation() throws IOException {
+		String bundleAsText = stringFromResource( "DataReqLibraryTransactionBundleMultiVersionR4.json");
+		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
+		getClient().transaction().withBundle(bundle).execute();
+
+		Library library = getClient().read().resource(Library.class).withId("LibraryEvaluationTest").execute();
+		assertNotNull(library);
+		assertEquals( "http://localhost:8080/fhir/Library/LibraryEvaluationTestDependency|1.0.000",library.getRelatedArtifact().get(0).getResource());
+
+		Library library2 = getClient().read().resource(Library.class).withId("LibraryEvaluationTest2").execute();
+		assertNotNull(library2);
+		assertEquals( "http://localhost:8080/fhir/Library/LibraryEvaluationTestDependency",
+			library2.getRelatedArtifact().get(0).getResource());
+
+		assertEquals(library.getUrl(), library2.getUrl());
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("target").setValue(new StringType("dummy"));
+
+		Library returnLibrary1 = getClient().operation()
+			.onInstance(new IdType("Library", "LibraryEvaluationTest"))
+			.named("$data-requirements")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
+
+		assertNotNull(returnLibrary1);
+
+		assertTrue(returnLibrary1.getRelatedArtifact().stream().anyMatch(
+			x -> (x.getType().toString().equals("DEPENDSON") &&
+				x.getResource().equals("Library/LibraryEvaluationTestDependency|1.0.000"))));
+
+
+		Library returnLibrary2 = getClient().operation()
+			.onInstance(new IdType("Library", "LibraryEvaluationTest2"))
+			.named("$data-requirements")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
+
+		assertNotNull(returnLibrary2);
+
+		assertTrue(returnLibrary2.getRelatedArtifact().stream().anyMatch(
+			x -> (x.getType().toString().equals("DEPENDSON") &&
+				x.getResource().equals("Library/LibraryEvaluationTestDependency|2.0.000"))));
+	}
+
+	@Test
 	public void testR4LibraryFhirQueryPattern() throws IOException {
 		String bundleAsText = stringFromResource("ExmLogicTransactionBundle.json");
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
