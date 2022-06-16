@@ -18,6 +18,15 @@ public class CanonicalsTest {
 	}
 
 	@Test
+	public void fullCanonicalUrlWithoutHash() {
+		String testUrl = "http://fhir.acme.com/Questionnaire/example|1.0";
+
+		assertEquals("http://fhir.acme.com/Questionnaire/example", Canonicals.getUrl(testUrl));
+		assertEquals("example", Canonicals.getIdPart(testUrl));
+		assertEquals("1.0", Canonicals.getVersion(testUrl));
+	}
+
+	@Test
 	public void partialCanonicalUrl() {
 		String testUrl = "http://fhir.acme.com/Questionnaire/example";
 
