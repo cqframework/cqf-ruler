@@ -123,13 +123,6 @@
 				"url": "http://localhost:8080/fhir/Library/LibraryEvaluationTestDependency",
 				"version": "1.0.000",
 				"name": "LibraryEvaluationTestDependency",
-				"relatedArtifact": [
-					{
-						"type": "depends-on",
-						"display": "FHIR model information",
-						"resource": "http://fhir.org/guides/cqf/common/Library/FHIR-ModelInfo|4.0.1"
-					}
-				],
 				"parameter": [
 					{
 						"name": "Patient",
@@ -196,12 +189,9 @@
 				"relatedArtifact": [
 					{
 						"type": "depends-on",
-						"display": "FHIR model information",
-						"resource": "http://fhir.org/guides/cqf/common/Library/FHIR-ModelInfo|4.0.1"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency|1.0.000"
+						"resource": {
+							"reference": "Library/LibraryEvaluationTestDependency"
+						}
 					}
 				],
 				"parameter": [
