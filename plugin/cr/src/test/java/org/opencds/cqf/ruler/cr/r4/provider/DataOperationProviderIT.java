@@ -7,13 +7,14 @@ import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { DataOperationProviderIT.class,
@@ -26,8 +27,7 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("target").setValue(new StringType("dummy"));
+		Parameters params = newParameters(newPart("target", "dummy"));
 
 		Library returnLibrary = getClient().operation()
 			.onInstance(new IdType("Library", "LibraryEvaluationTest"))
@@ -57,8 +57,8 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 
 		assertEquals(library.getUrl(), library2.getUrl());
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("target").setValue(new StringType("dummy"));
+		Parameters params = newParameters(
+			newPart("target", "dummy"));
 
 		Library returnLibrary1 = getClient().operation()
 			.onInstance(new IdType("Library", "LibraryEvaluationTest"))
@@ -94,8 +94,7 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("target").setValue(new StringType("dummy"));
+		Parameters params = newParameters(newPart("target", "dummy"));
 
 		Library returnLibrary = getClient().operation().onInstance(new IdType("Library", "EXMLogic"))
 			.named("$data-requirements")
@@ -139,9 +138,9 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("startPeriod").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("endPeriod").setValue(new StringType("2020-01-01"));
+		Parameters params = newParameters(
+			newPart("startPeriod", "2019-01-01"),
+			newPart("endPeriod", "2020-01-01"));
 
 		Library returnLibrary = getClient().operation().onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
 			.named("$data-requirements")
@@ -158,9 +157,9 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("startPeriod").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("endPeriod").setValue(new StringType("2020-01-01"));
+		Parameters params = newParameters(
+			newPart("startPeriod", "2019-01-01"),
+			newPart("endPeriod", "2020-01-01"));
 
 		Library returnLibrary = getClient().operation().onInstance(new IdType("Measure", "measure-exm"))
 			.named("$data-requirements")
@@ -204,8 +203,7 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("target").setValue(new StringType("dummy"));
+		Parameters params = newParameters(newPart("target", "dummy"));
 
 		Library returnLibrary = getClient().operation().onInstance(new IdType("Library", "LibraryEvaluationTest"))
 			.named("$data-requirements")
