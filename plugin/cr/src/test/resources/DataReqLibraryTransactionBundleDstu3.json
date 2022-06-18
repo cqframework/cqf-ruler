@@ -120,7 +120,7 @@
 						}
 					}
 				],
-				"url": "http://localhost:8080/fhir/Library/LibraryEvaluationTestDependency",
+				"url": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency",
 				"version": "1.0.000",
 				"name": "LibraryEvaluationTestDependency",
 				"parameter": [
@@ -183,7 +183,7 @@
 						}
 					}
 				],
-				"url": "http://localhost:8080/fhir/Library/LibraryEvaluationTest",
+				"url": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTest",
 				"version": "1.0.000",
 				"name": "LibraryEvaluationTest",
 				"relatedArtifact": [
