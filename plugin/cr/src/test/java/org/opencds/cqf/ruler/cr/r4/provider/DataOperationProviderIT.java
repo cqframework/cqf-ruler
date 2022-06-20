@@ -7,13 +7,14 @@ import org.hl7.fhir.r4.model.DataRequirement;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { DataOperationProviderIT.class,
@@ -26,8 +27,7 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("target").setValue(new StringType("dummy"));
+		Parameters params = newParameters(newPart("target", "dummy"));
 
 		Library returnLibrary = getClient().operation()
 			.onInstance(new IdType("Library", "LibraryEvaluationTest"))
@@ -40,13 +40,61 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
+	public void testR4LibraryDataRequirementsNonManifestMultiVersionOperation() throws IOException {
+		String bundleAsText = stringFromResource( "DataReqLibraryTransactionBundleMultiVersionR4.json");
+		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
+		getClient().transaction().withBundle(bundle).execute();
+
+		Library library = getClient().read().resource(Library.class).withId("LibraryEvaluationTest").execute();
+		assertNotNull(library);
+		assertEquals("http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency|1.0.000",
+			library.getRelatedArtifact().get(0).getResource());
+
+		Library library2 = getClient().read().resource(Library.class).withId("LibraryEvaluationTest2").execute();
+		assertNotNull(library2);
+		assertEquals("http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency",
+			library2.getRelatedArtifact().get(0).getResource());
+
+		assertEquals(library.getUrl(), library2.getUrl());
+
+		Parameters params = newParameters(
+			newPart("target", "dummy"));
+
+		Library returnLibrary1 = getClient().operation()
+			.onInstance(new IdType("Library", "LibraryEvaluationTest"))
+			.named("$data-requirements")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
+
+		assertNotNull(returnLibrary1);
+
+		assertTrue(returnLibrary1.getRelatedArtifact().stream().anyMatch(
+			x -> (x.getType().toString().equals("DEPENDSON") &&
+				x.getResource().equals("Library/LibraryEvaluationTestDependency|1.0.000"))));
+
+
+		Library returnLibrary2 = getClient().operation()
+			.onInstance(new IdType("Library", "LibraryEvaluationTest2"))
+			.named("$data-requirements")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
+
+		assertNotNull(returnLibrary2);
+
+		assertTrue(returnLibrary2.getRelatedArtifact().stream().anyMatch(
+			x -> (x.getType().toString().equals("DEPENDSON") &&
+				x.getResource().equals("Library/LibraryEvaluationTestDependency|2.0.000"))));
+	}
+
+	@Test
 	public void testR4LibraryFhirQueryPattern() throws IOException {
 		String bundleAsText = stringFromResource("ExmLogicTransactionBundle.json");
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("target").setValue(new StringType("dummy"));
+		Parameters params = newParameters(newPart("target", "dummy"));
 
 		Library returnLibrary = getClient().operation().onInstance(new IdType("Library", "EXMLogic"))
 			.named("$data-requirements")
@@ -90,9 +138,9 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("startPeriod").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("endPeriod").setValue(new StringType("2020-01-01"));
+		Parameters params = newParameters(
+			newPart("startPeriod", "2019-01-01"),
+			newPart("endPeriod", "2020-01-01"));
 
 		Library returnLibrary = getClient().operation().onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
 			.named("$data-requirements")
@@ -109,9 +157,9 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("startPeriod").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("endPeriod").setValue(new StringType("2020-01-01"));
+		Parameters params = newParameters(
+			newPart("startPeriod", "2019-01-01"),
+			newPart("endPeriod", "2020-01-01"));
 
 		Library returnLibrary = getClient().operation().onInstance(new IdType("Measure", "measure-exm"))
 			.named("$data-requirements")
@@ -155,8 +203,7 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle)getFhirContext().newJsonParser().parseResource(bundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("target").setValue(new StringType("dummy"));
+		Parameters params = newParameters(newPart("target", "dummy"));
 
 		Library returnLibrary = getClient().operation().onInstance(new IdType("Library", "LibraryEvaluationTest"))
 			.named("$data-requirements")
