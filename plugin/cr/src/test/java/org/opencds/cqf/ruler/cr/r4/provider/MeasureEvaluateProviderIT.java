@@ -55,7 +55,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		assertNotNull(returnMeasureReport);
 	}
 
-	@Disabled("$expand not working on server")
 	@Test
 	public void testMeasureEvaluateWithTerminologyEndpoint() throws Exception {
 		String bundleAsText = stringFromResource("Exm104FhirR4MeasureBundle.json");
@@ -67,16 +66,20 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.withNoParameters(Parameters.class).execute();
 
 		String terminologyAsText = stringFromResource("Endpoint.json");
-		Endpoint terminologyEndpoint = (Endpoint) getFhirContext().newJsonParser().parseResource(terminologyAsText);
-		terminologyEndpoint.setAddress(this.getServerBase());
+		Endpoint terminologyEndpointValid = (Endpoint) getFhirContext().newJsonParser().parseResource(terminologyAsText);
+		terminologyEndpointValid.setAddress(this.getServerBase());
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
-		params.addParameter().setName("reportType").setValue(new StringType("individual"));
-		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM104"));
-		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
-		params.addParameter().setName("terminologyEndpoint").setResource(terminologyEndpoint);
+		Endpoint terminologyEndpointInvalid = (Endpoint) getFhirContext().newJsonParser().parseResource(terminologyAsText);
+		terminologyEndpointInvalid.setAddress("https://tx.example.org/fhir234");
+
+		Parameters params = newParameters(
+			newPart("periodStart", "2019-01-01"),
+			newPart("periodEnd", "2020-01-01"),
+			newPart("reportType", "individual"),
+			newPart("subject", "Patient/numer-EXM104"),
+			newPart("lastReceivedOn", "2019-12-12"),
+			newPart("terminologyEndpoint", terminologyEndpointValid));
+
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
