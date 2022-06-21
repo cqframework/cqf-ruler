@@ -74,10 +74,7 @@ public class Canonicals {
 			return null;
 		}
 
-		int lastIndex = Math.min(theCanonical.lastIndexOf("|"), theCanonical.lastIndexOf("#"));
-		if (lastIndex == -1) {
-			lastIndex = theCanonical.length();
-		}
+		int lastIndex = calculateLastIndex(theCanonical);
 
 		return theCanonical.substring(theCanonical.lastIndexOf("/") + 1, lastIndex);
 	}
@@ -146,10 +143,7 @@ public class Canonicals {
 			return null;
 		}
 
-		int lastIndex = Math.min(theCanonical.lastIndexOf("|"), theCanonical.lastIndexOf("#"));
-		if (lastIndex == -1) {
-			lastIndex = theCanonical.length();
-		}
+		int lastIndex = calculateLastIndex(theCanonical);
 
 		return theCanonical.substring(0, lastIndex);
 	}
@@ -218,4 +212,19 @@ public class Canonicals {
 		String fragment = getFragment(theCanonical);
 		return new CanonicalParts(url, id, resourceType, version, fragment);
 	}
+
+	private static int calculateLastIndex(String theCanonical) {
+		int lastIndexOfBar = theCanonical.lastIndexOf("|");
+		int lastIndexOfHash = theCanonical.lastIndexOf("#");
+
+		int lastIndex = theCanonical.length();
+		int mul = lastIndexOfBar * lastIndexOfHash;
+		if (mul > 1) {
+			lastIndex = Math.min(lastIndexOfBar, lastIndexOfHash);
+		} else if (mul < 0) {
+			lastIndex = Math.max(lastIndexOfBar, lastIndexOfHash);
+		}
+		return lastIndex;
+	}
+
 }
