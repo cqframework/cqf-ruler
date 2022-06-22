@@ -32,6 +32,27 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	@Test
+	public void testMeasureEvaluateWithXmlAdditionalData() throws Exception {
+		String mainBundleAsText = stringFromResource("ClientNonPatientBasedMeasureBundle.json");
+		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(mainBundleAsText);
+		getClient().transaction().withBundle(bundle).execute();
+
+		String parametersAsText = stringFromResource("Parameters.xml");
+		Parameters parameters = (Parameters) getFhirContext().newXmlParser().parseResource(parametersAsText);
+
+		loadResource("Patient-hypo.json");
+
+		MeasureReport returnMeasureReport = getClient().operation()
+			.onInstance(new IdType("Measure", "InitialInpatientPopulation"))
+			.named("$evaluate-measure")
+			.withParameters(parameters)
+			.returnResourceType(MeasureReport.class)
+			.execute();
+
+		assertNotNull(returnMeasureReport);
+	}
+
+	@Test
 	public void testMeasureEvaluate() throws Exception {
 		String bundleAsText = stringFromResource("Exm104FhirR4MeasureBundle.json");
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
@@ -110,27 +131,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.withParameters(params)
 				.returnResourceType(MeasureReport.class)
 				.execute();
-
-		assertNotNull(returnMeasureReport);
-	}
-
-	@Test
-	public void testMeasureEvaluateWithXmlAdditionalData() throws Exception {
-		String mainBundleAsText = stringFromResource("InitialInpatientPopulation-bundle.json");
-		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(mainBundleAsText);
-		getClient().transaction().withBundle(bundle).execute();
-
-		String parametersAsText = stringFromResource("Parameters.xml");
-		Parameters parameters = (Parameters) getFhirContext().newXmlParser().parseResource(parametersAsText);
-
-		loadResource("Patient-hypo.json");
-
-		MeasureReport returnMeasureReport = getClient().operation()
-			.onInstance(new IdType("Measure", "InitialInpatientPopulation"))
-			.named("$evaluate-measure")
-			.withParameters(parameters)
-			.returnResourceType(MeasureReport.class)
-			.execute();
 
 		assertNotNull(returnMeasureReport);
 	}
