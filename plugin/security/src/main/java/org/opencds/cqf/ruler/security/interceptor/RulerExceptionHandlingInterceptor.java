@@ -1,4 +1,4 @@
-package org.opencds.cqf.ruler.cr.interceptor;
+package org.opencds.cqf.ruler.security.interceptor;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -37,7 +37,7 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 
 	@Hook(Pointcut.SERVER_HANDLE_EXCEPTION)
 	public boolean handleException(RequestDetails theRequestDetails, BaseServerResponseException theException,
-			HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws IOException {
+											 HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws IOException {
 
 		IBaseOperationOutcome operationOutcome = theException.getOperationOutcome();
 		if(operationOutcome == null || theException instanceof AuthenticationException) {
@@ -56,7 +56,7 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 	}
 
 	private void updateResponse(HttpServletResponse theServletResponse, BaseServerResponseException theException,
-		  String output) throws IOException {
+										 String output) throws IOException {
 		theServletResponse.setStatus(theException.getStatusCode());
 		theServletResponse.setContentType("text/json");
 		theServletResponse.getWriter().append(output);
