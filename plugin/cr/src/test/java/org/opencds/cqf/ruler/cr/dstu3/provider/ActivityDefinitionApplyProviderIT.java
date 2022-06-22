@@ -13,16 +13,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
-import org.opencds.cqf.ruler.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ActivityDefinitionApplyProviderIT.class,
-		CrConfig.class, CqlConfig.class, DevToolsConfig.class }, properties = {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
+		ActivityDefinitionApplyProviderIT.class,
+		CrConfig.class, CqlConfig.class }, properties = {
 				"hapi.fhir.fhir_version=dstu3",
 		})
 public class ActivityDefinitionApplyProviderIT extends RestIntegrationTest {

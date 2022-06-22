@@ -21,13 +21,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
-import org.opencds.cqf.ruler.devtools.DevToolsConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
 		MeasureEvaluateProviderIT.class,
-		CrConfig.class, CqlConfig.class, DevToolsConfig.class }, properties = {
+		CrConfig.class, CqlConfig.class }, properties = {
 				"hapi.fhir.fhir_version=r4"
 		})
 public class MeasureEvaluateProviderIT extends RestIntegrationTest {
