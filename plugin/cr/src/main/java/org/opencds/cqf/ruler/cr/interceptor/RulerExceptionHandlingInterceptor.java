@@ -9,6 +9,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import org.apache.commons.lang3.StringUtils;
+import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ import java.io.IOException;
 
 @Interceptor
 public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.api.Interceptor, DaoRegistryUser {
-	private final Logger ourLog = LoggerFactory.getLogger(RulerExceptionHandlingInterceptor.class);
+	private final Logger myLog = LoggerFactory.getLogger(RulerExceptionHandlingInterceptor.class);
 
 	@Autowired
 	private DaoRegistry myDaoRegistry;
@@ -42,40 +43,47 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 		HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws IOException {
 
 		IBaseOperationOutcome operationOutcome = theException.getOperationOutcome();
-		String actualCause = getCause(theException).getMessage();
+		if(operationOutcome == null || theException instanceof AuthenticationException) {
+			throw theException;
+		} else {
+			Throwable causedBy = getCause(theException);
+			String actualCause = causedBy.getMessage();
 
-		if (StringUtils.isNotBlank(actualCause)) {
-			if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
-				org.hl7.fhir.r4.model.OperationOutcome outcome = (org.hl7.fhir.r4.model.OperationOutcome) operationOutcome;
-				if (!outcome.getIssue().isEmpty()) {
-					org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
-					if (comp != null && comp.getDiagnostics() != null &&
-						comp.getDiagnostics().contains(actualCause)) {
-						comp.setDiagnostics(actualCause);
+			if (StringUtils.isNotBlank(actualCause)) {
+				if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
+					org.hl7.fhir.r4.model.OperationOutcome outcome = (org.hl7.fhir.r4.model.OperationOutcome) operationOutcome;
+					if (outcome != null && !outcome.getIssue().isEmpty()) {
+						org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
+						if (comp != null && comp.getDiagnostics() != null &&
+							comp.getDiagnostics().contains(actualCause)) {
+							comp.setDiagnostics(actualCause);
+							System.out.println("actual cause:" + actualCause);
+							operationOutcome = outcome;
+						}
 					}
-				}
-			} else if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3) {
-				org.hl7.fhir.dstu3.model.OperationOutcome outcome = (org.hl7.fhir.dstu3.model.OperationOutcome) operationOutcome;
-				if (!outcome.getIssue().isEmpty()) {
-					org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
-					if (comp != null && comp.getDiagnostics() != null &&
-						comp.getDiagnostics().contains(actualCause)) {
-						comp.setDiagnostics(actualCause);
+				} else if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3) {
+					org.hl7.fhir.dstu3.model.OperationOutcome outcome = (org.hl7.fhir.dstu3.model.OperationOutcome) operationOutcome;
+					if (!outcome.getIssue().isEmpty()) {
+						org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
+						if (comp != null && comp.getDiagnostics() != null &&
+							comp.getDiagnostics().contains(actualCause)) {
+							comp.setDiagnostics(actualCause);
+							operationOutcome = outcome;
+						}
 					}
 				}
 			}
+
+			theServletResponse.setStatus(theException.getStatusCode());
+			theServletResponse.setContentType("text/json");
+			theServletResponse.getWriter().append(
+				getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(operationOutcome));
+			theServletResponse.getWriter().close();
 		}
-
-		theServletResponse.setStatus(theException.getStatusCode());
-		theServletResponse.setContentType("text/json");
-		theServletResponse.getWriter().append(
-			getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(operationOutcome));
-		theServletResponse.getWriter().close();
-
 		return false;
 	}
 
-	Throwable getCause(Throwable e) {
+	private Throwable getCause(Throwable e) {
 		Throwable cause = null;
 		Throwable result = e;
 

@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.security.interceptor;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.hl7.fhir.r4.model.Bundle;
@@ -36,7 +37,7 @@ public class AuthenticatorInterceptorIT extends RestIntegrationTest {
 		String bundleAsText = stringFromResource("test-bundle.json");
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
 
-		assertThrows(AuthenticationException.class, () -> {
+		assertThrows(Exception.class, () -> {
 			getClient().transaction().withBundle(bundle).execute();
 		});
 	}
@@ -46,7 +47,8 @@ public class AuthenticatorInterceptorIT extends RestIntegrationTest {
 		String bundleAsText = stringFromResource("test-bundle.json");
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
 
-		assertThrows(AuthenticationException.class, () -> {
+
+		assertThrows(Exception.class, () -> {
 			getClient().transaction().withBundle(bundle)
 				.withAdditionalHeader("Authorization", "Basic blahblah")
 				.execute();

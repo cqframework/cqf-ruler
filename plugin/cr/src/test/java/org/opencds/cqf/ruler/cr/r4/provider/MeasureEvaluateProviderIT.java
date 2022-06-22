@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -66,11 +67,12 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.withNoParameters(Parameters.class).execute();
 
 		String terminologyAsText = stringFromResource("Endpoint.json");
+
 		Endpoint terminologyEndpointValid = (Endpoint) getFhirContext().newJsonParser().parseResource(terminologyAsText);
 		terminologyEndpointValid.setAddress(this.getServerBase());
 
 		Endpoint terminologyEndpointInvalid = (Endpoint) getFhirContext().newJsonParser().parseResource(terminologyAsText);
-		terminologyEndpointInvalid.setAddress("https://tx.example.org/fhir234");
+		terminologyEndpointInvalid.setAddress("https://tx.nhsnlink.org/fhir234");
 
 		Parameters params = newParameters(
 			newPart("periodStart", "2019-01-01"),
@@ -80,7 +82,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 			newPart("lastReceivedOn", "2019-12-12"),
 			newPart("terminologyEndpoint", terminologyEndpointValid));
 
-
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
 				.named("$evaluate-measure")
@@ -89,6 +90,27 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.execute();
 
 		assertNotNull(returnMeasureReport);
+
+		Parameters paramsWithInvalidTerminology = newParameters(
+			newPart("periodStart", "2019-01-01"),
+			newPart("periodEnd", "2020-01-01"),
+			newPart("reportType", "individual"),
+			newPart("subject", "Patient/numer-EXM104"),
+			newPart("lastReceivedOn", "2019-12-12"),
+			newPart("terminologyEndpoint", terminologyEndpointInvalid));
+
+		Exception ex = assertThrows(Exception.class, () -> {
+			getClient().operation()
+				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
+				.named("$evaluate-measure")
+				.withParameters(paramsWithInvalidTerminology)
+				.returnResourceType(MeasureReport.class)
+				.execute();
+		});
+
+		//prints : HTTP 500 : Unexpected exception caught during execution: ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException: HTTP 404
+		//instead of : Failed to call access method: org.opencds.cqf.cql.engine.exception.CqlException: Unexpected exception caught during execution: ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException: HTTP 404
+		assertEquals("HTTP 500 : Unexpected exception caught during execution: ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException: HTTP 404 ", ex.getMessage());
 	}
 
 	@Test
