@@ -40,46 +40,81 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 
 	@Hook(Pointcut.SERVER_HANDLE_EXCEPTION)
 	public boolean handleException(RequestDetails theRequestDetails, BaseServerResponseException theException,
-		HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws IOException {
+			HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws IOException {
 
 		IBaseOperationOutcome operationOutcome = theException.getOperationOutcome();
 		if(operationOutcome == null || theException instanceof AuthenticationException) {
-			throw theException;
+			updateResponse(theServletResponse, theException, generateOperationOutcome(theException));
 		} else {
 			Throwable causedBy = getCause(theException);
 			String actualCause = causedBy.getMessage();
 
 			if (StringUtils.isNotBlank(actualCause)) {
-				if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
-					org.hl7.fhir.r4.model.OperationOutcome outcome = (org.hl7.fhir.r4.model.OperationOutcome) operationOutcome;
-					if (outcome != null && !outcome.getIssue().isEmpty()) {
-						org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
-						if (comp != null && comp.getDiagnostics() != null &&
-							comp.getDiagnostics().contains(actualCause)) {
-							comp.setDiagnostics(actualCause);
-							operationOutcome = outcome;
-						}
-					}
-				} else if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3) {
-					org.hl7.fhir.dstu3.model.OperationOutcome outcome = (org.hl7.fhir.dstu3.model.OperationOutcome) operationOutcome;
-					if (!outcome.getIssue().isEmpty()) {
-						org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
-						if (comp != null && comp.getDiagnostics() != null &&
-							comp.getDiagnostics().contains(actualCause)) {
-							comp.setDiagnostics(actualCause);
-							operationOutcome = outcome;
-						}
-					}
-				}
+				updateOperationOutcome(operationOutcome, actualCause);
 			}
-
-			theServletResponse.setStatus(theException.getStatusCode());
-			theServletResponse.setContentType("text/json");
-			theServletResponse.getWriter().append(
+			updateResponse(theServletResponse, theException,
 				getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(operationOutcome));
-			theServletResponse.getWriter().close();
 		}
 		return false;
+	}
+
+	private void updateResponse(HttpServletResponse theServletResponse, BaseServerResponseException theException,
+		  String output) throws IOException {
+		theServletResponse.setStatus(theException.getStatusCode());
+		theServletResponse.setContentType("text/json");
+		theServletResponse.getWriter().append(output);
+		theServletResponse.getWriter().close();
+	}
+
+	private IBaseOperationOutcome updateOperationOutcome(IBaseOperationOutcome operationOutcome, String actualCause) {
+		if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
+			org.hl7.fhir.r4.model.OperationOutcome outcome = (org.hl7.fhir.r4.model.OperationOutcome) operationOutcome;
+			if (outcome != null && !outcome.getIssue().isEmpty()) {
+				org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
+				if (comp != null && comp.getDiagnostics() != null &&
+					comp.getDiagnostics().contains(actualCause)) {
+					comp.setDiagnostics(actualCause);
+					operationOutcome = outcome;
+				}
+			}
+		} else if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3) {
+			org.hl7.fhir.dstu3.model.OperationOutcome outcome = (org.hl7.fhir.dstu3.model.OperationOutcome) operationOutcome;
+			if (!outcome.getIssue().isEmpty()) {
+				org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
+				if (comp != null && comp.getDiagnostics() != null &&
+					comp.getDiagnostics().contains(actualCause)) {
+					comp.setDiagnostics(actualCause);
+					operationOutcome = outcome;
+				}
+			}
+		}
+		return  operationOutcome;
+	}
+
+	private String generateOperationOutcome(BaseServerResponseException theException) {
+
+		String operationOutcome = "";
+
+		if(getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
+			org.hl7.fhir.r4.model.OperationOutcome opOutcome = new org.hl7.fhir.r4.model.OperationOutcome();
+			org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent ooComp = new org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent();
+			ooComp.setCode(org.hl7.fhir.r4.model.OperationOutcome.IssueType.EXCEPTION);
+			ooComp.setSeverity(org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR);
+			ooComp.setDiagnostics(theException.getMessage());
+			opOutcome.addIssue(ooComp);
+			theException.setOperationOutcome(opOutcome);
+			operationOutcome = getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(opOutcome);
+		} else  if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3) {
+			org.hl7.fhir.dstu3.model.OperationOutcome opOutcome = new org.hl7.fhir.dstu3.model.OperationOutcome();
+			org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent ooComp = new org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent();
+			ooComp.setCode(org.hl7.fhir.dstu3.model.OperationOutcome.IssueType.EXCEPTION);
+			ooComp.setSeverity(org.hl7.fhir.dstu3.model.OperationOutcome.IssueSeverity.ERROR);
+			ooComp.setDiagnostics(theException.getMessage());
+			opOutcome.addIssue();
+			theException.setOperationOutcome(opOutcome);
+			operationOutcome = getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(opOutcome);
+		}
+		return operationOutcome;
 	}
 
 	private Throwable getCause(Throwable e) {
