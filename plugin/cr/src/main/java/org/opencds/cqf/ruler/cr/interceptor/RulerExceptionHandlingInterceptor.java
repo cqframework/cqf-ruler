@@ -57,7 +57,6 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 						if (comp != null && comp.getDiagnostics() != null &&
 							comp.getDiagnostics().contains(actualCause)) {
 							comp.setDiagnostics(actualCause);
-							System.out.println("actual cause:" + actualCause);
 							operationOutcome = outcome;
 						}
 					}
