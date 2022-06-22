@@ -12,7 +12,7 @@ public class CrProperties {
 
 	private MeasureEvaluationOptions measure_evaluation = MeasureEvaluationOptions.defaultOptions();
 
-	public boolean getEnabled() {
+	public boolean isEnabled() {
 		return enabled;
 	}
 

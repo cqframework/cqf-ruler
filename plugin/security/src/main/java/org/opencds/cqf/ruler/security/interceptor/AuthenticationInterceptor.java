@@ -29,7 +29,7 @@ public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Inte
 	@Hook(Pointcut.SERVER_INCOMING_REQUEST_POST_PROCESSED)
 	public boolean incomingRequestPostProcessed(RequestDetails theRequestDetails, HttpServletRequest theRequest,
 			HttpServletResponse theResponse) throws AuthenticationException {
-		if (securityProperties.getBasicAuth().getEnabled()) {
+		if (securityProperties.getBasicAuth().isEnabled()) {
 			String authHeader = theRequest.getHeader("Authorization");
 
 			myLog.info("incoming request intercepted");

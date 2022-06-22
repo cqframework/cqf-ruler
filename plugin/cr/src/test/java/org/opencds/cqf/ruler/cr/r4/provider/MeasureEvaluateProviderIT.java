@@ -30,8 +30,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
 		MeasureEvaluateProviderIT.class,
 		CrConfig.class, CqlConfig.class, DevToolsConfig.class, SecurityConfig.class }, properties = {
-				"hapi.fhir.fhir_version=r4", "hapi.fhir.security.enabled=true"
-		})
+				"hapi.fhir.fhir_version=r4", "hapi.fhir.security.enabled=true" })
+
 public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	@Test
