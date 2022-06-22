@@ -120,16 +120,9 @@
 						}
 					}
 				],
-				"url": "http://localhost:8080/fhir/Library/LibraryEvaluationTestDependency",
+				"url": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency",
 				"version": "1.0.000",
 				"name": "LibraryEvaluationTestDependency",
-				"relatedArtifact": [
-					{
-						"type": "depends-on",
-						"display": "FHIR model information",
-						"resource": "http://fhir.org/guides/cqf/common/Library/FHIR-ModelInfo|4.0.1"
-					}
-				],
 				"parameter": [
 					{
 						"name": "Patient",
@@ -190,18 +183,15 @@
 						}
 					}
 				],
-				"url": "http://localhost:8080/fhir/Library/LibraryEvaluationTest",
+				"url": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTest",
 				"version": "1.0.000",
 				"name": "LibraryEvaluationTest",
 				"relatedArtifact": [
 					{
 						"type": "depends-on",
-						"display": "FHIR model information",
-						"resource": "http://fhir.org/guides/cqf/common/Library/FHIR-ModelInfo|4.0.1"
-					},
-					{
-						"type": "depends-on",
-						"resource": "http://fhir.org/guides/cqf/common/Library/LibraryEvaluationTestDependency|1.0.000"
+						"resource": {
+							"reference": "Library/LibraryEvaluationTestDependency"
+						}
 					}
 				],
 				"parameter": [

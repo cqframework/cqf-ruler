@@ -18,12 +18,18 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 @EnableAutoConfiguration(exclude = QuartzAutoConfiguration.class)
 @Import(DaoOnlyConfig.class)
 @TestPropertySource(properties = {
+		"debug=true",
+		"loader.debug=true",
 		"scheduling_disabled=true",
 		"spring.main.allow-bean-definition-overriding=true",
 		"spring.batch.job.enabled=false",
+		// "spring.jpa.properties.hibernate.show_sql=true",
+		// "spring.jpa.properties.hibernate.format_sql=true",
+		// "spring.jpa.properties.hibernate.use_sql_comments=true",
 		"hapi.fhir.allow_external_references=true",
 		"hapi.fhir.enforce_referential_integrity_on_write=false",
-		"spring.datasource.url=jdbc:h2:mem:db",
+		"hapi.fhir.auto_create_placeholder_reference_targets=true",
+		"hapi.fhir.client_id_strategy=ANY",
 		"spring.main.lazy-initialization=true",
 		"spring.flyway.enabled=false" })
 @TestInstance(Lifecycle.PER_CLASS)

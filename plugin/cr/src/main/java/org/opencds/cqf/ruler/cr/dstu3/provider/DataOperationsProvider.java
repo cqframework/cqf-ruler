@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.IdType;
@@ -23,7 +24,6 @@ import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
-import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryManagerFactory;
@@ -43,7 +43,6 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import org.springframework.util.StringUtils;
 
 public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	private Logger myLog = LoggerFactory.getLogger(DataOperationsProvider.class);
@@ -61,7 +60,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	private AdapterFactory adapterFactory;
 
 	@Autowired
-	private CqlConfig cqlConfig;
+	private CqlTranslatorOptions cqlTranslatorOptions;
 
 	@Operation(name = "$data-requirements", idempotent = true, type = Library.class)
 	public Library dataRequirements(@IdParam IdType theId, @OperationParam(name = "target") String target,
@@ -104,7 +103,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		Library library = null;
 
 		try {
-			read(new IdType(libraryIdOrCanonical), theRequestDetails);
+			library = read(new IdType(libraryIdOrCanonical), theRequestDetails);
 		} catch (Exception e) {
 			myLog.info("Library read failed as measure.getLibrary() is not an ID, fall back to search as canonical");
 		}
@@ -140,7 +139,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	private CqlTranslator translateLibrary(Library library, LibraryManager libraryManager) {
 		CqlTranslator translator = Translators.getTranslator(
 				new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
-				libraryManager.getModelManager());
+				libraryManager.getModelManager(), cqlTranslatorOptions);
 
 		if (!translator.getErrors().isEmpty()) {
 			throw new CqlTranslatorException(Translators.errorsToString(translator.getErrors()));
@@ -153,7 +152,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		CqlTranslator translator = translateLibrary(library, libraryManager);
 
 		return DataRequirements.getModuleDefinitionLibraryDstu3(measure, libraryManager,
-				translator.getTranslatedLibrary(), cqlConfig.cqlProperties().getOptions().getCqlTranslatorOptions());
+				translator.getTranslatedLibrary(), cqlTranslatorOptions);
 	}
 
 	private Library processDataRequirements(Library library, RequestDetails theRequestDetails) {
@@ -161,7 +160,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		CqlTranslator translator = translateLibrary(library, libraryManager);
 
 		return DataRequirements.getModuleDefinitionLibraryDstu3(libraryManager,
-				translator.getTranslatedLibrary(), cqlConfig.cqlProperties().getOptions().getCqlTranslatorOptions());
+				translator.getTranslatedLibrary(), cqlTranslatorOptions);
 	}
 
 	private List<Library> fetchDependencyLibraries(Library library, RequestDetails theRequestDetails) {
@@ -181,9 +180,10 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			RequestDetails theRequestDetails) {
 		for (RelatedArtifact relatedArtifact : library.getRelatedArtifact()) {
 			if (relatedArtifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON)
-					&& relatedArtifact.hasResource()) {
-				IdType id = Ids.newId(Library.class, relatedArtifact.getResource().getReference());
-				if(id != null && StringUtils.hasText(id.getId())) {
+				&& relatedArtifact.hasResource()) {
+				String reference = relatedArtifact.getResource().getReference();
+				IdType id = Ids.newId(Library.class, reference.substring(reference.indexOf("/") + 1));
+				if (id != null) {
 					Library lib = search(Library.class, Searches.byId(id), theRequestDetails).firstOrNull();
 					if (lib != null) {
 						resources.putIfAbsent(lib.getId(), lib);

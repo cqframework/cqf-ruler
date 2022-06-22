@@ -8,10 +8,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.CqlTranslatorException;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
+import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.exceptions.FHIRException;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.IdType;
@@ -24,7 +28,7 @@ import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
-import org.opencds.cqf.ruler.cql.CqlConfig;
+import org.opencds.cqf.cql.evaluator.fhir.adapter.LibraryAdapter;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
@@ -73,7 +77,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	ModelResolver myModelResolver;
 
 	@Autowired
-	private CqlConfig cqlConfig;
+	CqlTranslatorOptions cqlTranslatorOptions;
 
 	@Operation(name = "$data-requirements", idempotent = true, type = Library.class)
 	public Library dataRequirements(@IdParam IdType theId,
@@ -123,7 +127,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			myLog.info("Library read failed as measure.getLibrary() is not an ID, fall back to search as canonical");
 		}
 		if (library == null) {
-			library = search(Library.class, Searches.byCanonical(libraryIdOrCanonical), theRequestDetails).firstOrNull();
+			library = fetchDependencyLibrary(libraryIdOrCanonical, theRequestDetails);
 		}
 		return library;
 	}
@@ -153,7 +157,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	private CqlTranslator translateLibrary(Library library, LibraryManager libraryManager) {
 		CqlTranslator translator = Translators.getTranslator(
 				new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
-				libraryManager.getModelManager());
+				libraryManager.getModelManager(), cqlTranslatorOptions);
 		if (!translator.getErrors().isEmpty()) {
 			throw new CqlTranslatorException(Translators.errorsToString(translator.getErrors()));
 		}
@@ -167,7 +171,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		// TODO: Pass the server's capability statement
 		// TODO: Enable passing a capability statement as a parameter to the operation
 		return DataRequirements.getModuleDefinitionLibraryR4(libraryManager, translator.getTranslatedLibrary(),
-				cqlConfig.cqlProperties().getOptions().getCqlTranslatorOptions(), searchParameterResolver,
+				cqlTranslatorOptions, searchParameterResolver,
 				jpaTerminologyProviderFactory.create(theRequestDetails),
 				myModelResolver, null);
 	}
@@ -179,7 +183,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 		// TODO: Pass the server's capability statement
 		// TODO: Enable passing a capabiliity statement as a parameter to the operation
 		return DataRequirements.getModuleDefinitionLibraryR4(measure, libraryManager, translator.getTranslatedLibrary(),
-				cqlConfig.cqlProperties().getOptions().getCqlTranslatorOptions(), searchParameterResolver,
+				cqlTranslatorOptions, searchParameterResolver,
 				jpaTerminologyProviderFactory.create(theRequestDetails),
 				myModelResolver, null);
 	}
@@ -204,17 +208,42 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 					&& relatedArtifact.hasResource()) {
 
 				// FHIR R4+, resource is defined as a canonical
-				String resourceString = relatedArtifact.getResource();
-				CanonicalParts parts = Canonicals.getParts(resourceString);
-				if (parts.resourceType().equals("Library")) {
-					Library lib = search(Library.class, Searches.byCanonical(resourceString), theRequestDetails)
-							.firstOrNull();
-					if (lib != null) {
-						resources.putIfAbsent(lib.getId(), lib);
-						queue.add(lib);
-					}
+				String resourceCanonical = relatedArtifact.getResource();
+				Library lib = fetchDependencyLibrary(resourceCanonical, theRequestDetails);
+				if (lib != null) {
+					resources.putIfAbsent(lib.getId(), lib);
+					queue.add(lib);
 				}
 			}
 		}
+	}
+
+	private Library fetchDependencyLibrary(String resourceCanonical, RequestDetails theRequestDetails) {
+
+		Library library = null;
+		CanonicalParts parts = Canonicals.getParts(resourceCanonical);
+
+		if (parts.resourceType().equals("Library")) {
+			List<IBaseResource> list = search(Library.class, Searches.byCanonical(resourceCanonical), theRequestDetails)
+				.getAllResources();
+			if (list != null && !list.isEmpty()) {
+
+
+				if (list.size() == 1) {
+					library = (Library) list.get(0);
+				} else {
+					LibraryAdapter libAdapter = adapterFactory.createLibrary(list.get(0));
+					VersionedIdentifier identifier = new VersionedIdentifier();
+					if (StringUtils.isNotBlank(libAdapter.getName())) {
+						identifier.setId(libAdapter.getName());
+					}
+					if (StringUtils.isNotBlank(parts.version())) {
+						identifier.setVersion(parts.version());
+					}
+					library = (Library) libraryVersionSelector.select(identifier, list);
+				}
+			}
+		}
+		return library;
 	}
 }

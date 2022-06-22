@@ -3,7 +3,6 @@ package org.opencds.cqf.ruler.utility;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,7 +10,6 @@ import java.util.stream.Collectors;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
 
-import ca.uhn.fhir.context.ConfigurationException;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
 public class TypedBundleProvider<T extends IBaseResource> implements IBundleProvider {
@@ -58,18 +56,9 @@ public class TypedBundleProvider<T extends IBaseResource> implements IBundleProv
 				.collect(Collectors.toList());
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<T> getAllResourcesTyped() {
-		List<T> retVal = new ArrayList<>();
-
-		Integer size = size();
-		if (size == null) {
-			throw new ConfigurationException(
-					"Attempt to request all resources from an asynchronous search result.  The SearchParameterMap for this search probably should have been synchronous.");
-		}
-		if (size > 0) {
-			retVal.addAll(getResourcesTyped(0, size));
-		}
-		return retVal;
+		return myInnerProvider.getAllResources().stream().map(x -> (T) x).collect(Collectors.toList());
 	}
 
 	/**
@@ -79,9 +68,10 @@ public class TypedBundleProvider<T extends IBaseResource> implements IBundleProv
 	 * @return the Resource found.
 	 */
 	public T single() {
-		checkState(this.myInnerProvider.size() > 0, "No resources found");
-		checkState(this.myInnerProvider.size() == 1, "More than one resource found");
-		return firstOrNull();
+		List<T> resources = getResourcesTyped(0, 2);
+		checkState(!resources.isEmpty(), "No resources found");
+		checkState(resources.size() == 1, "More than one resource found");
+		return resources.get(0);
 	}
 
 	/**
@@ -90,10 +80,12 @@ public class TypedBundleProvider<T extends IBaseResource> implements IBundleProv
 	 * @return the first Resource found or null
 	 */
 	public T firstOrNull() {
-		if (this.myInnerProvider.size() != null && this.myInnerProvider.size() == 0) {
+		List<T> resources = getResourcesTyped(0, 1);
+
+		if (resources.isEmpty()) {
 			return null;
 		}
 
-		return getResourcesTyped(0, 1).get(0);
+		return resources.get(0);
 	}
 }
