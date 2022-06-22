@@ -37,9 +37,11 @@ public class AuthenticatorInterceptorIT extends RestIntegrationTest {
 		String bundleAsText = stringFromResource("test-bundle.json");
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
 
-		assertThrows(Exception.class, () -> {
+		Exception ex = assertThrows(AuthenticationException.class, () -> {
 			getClient().transaction().withBundle(bundle).execute();
 		});
+
+		assertEquals("HTTP 401 : Missing or invalid Authorization header", ex.getMessage());
 	}
 
 	@Test
@@ -48,10 +50,12 @@ public class AuthenticatorInterceptorIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
 
 
-		assertThrows(Exception.class, () -> {
+		Exception ex = assertThrows(AuthenticationException.class, () -> {
 			getClient().transaction().withBundle(bundle)
 				.withAdditionalHeader("Authorization", "Basic blahblah")
 				.execute();
 		});
+
+		assertEquals("HTTP 401 : Missing or invalid Authorization header", ex.getMessage());
 	}
 }
