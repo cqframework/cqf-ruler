@@ -12,8 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +21,6 @@ import java.io.IOException;
 
 @Interceptor
 public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.api.Interceptor, DaoRegistryUser {
-	private final Logger myLog = LoggerFactory.getLogger(RulerExceptionHandlingInterceptor.class);
 
 	@Autowired
 	private DaoRegistry myDaoRegistry;
