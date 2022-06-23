@@ -3,7 +3,6 @@ package org.opencds.cqf.ruler.cql;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.cqframework.fhir.api.FhirService;
 import org.cqframework.fhir.api.JpaFhirCapabilities;
-import org.cqframework.fhir.api.JpaFhirTransactions;
 
 @SuppressWarnings("unchecked")
 public class JpaFhirPlatform implements org.cqframework.fhir.api.FhirPlatform {
@@ -34,7 +33,7 @@ public class JpaFhirPlatform implements org.cqframework.fhir.api.FhirPlatform {
     @Override
     public org.cqframework.fhir.api.FhirTransactions transactions() {
 
-        JpaFhirTransactions jpaFhirTransactions = new org.cqframework.fhir.api.JpaFhirTransactions(daoRegistry, requestDetails);
+        JpaFhirTransactions jpaFhirTransactions = new JpaFhirTransactions(daoRegistry, requestDetails);
         return jpaFhirTransactions;
     }
 

@@ -4,7 +4,7 @@ import ca.uhn.fhir.model.api.IQueryParameterType;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
-import org.cqframework.fhir.api.FhirDal
+import org.cqframework.fhir.api.FhirDal;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.rest.api.server.RequestDetails;

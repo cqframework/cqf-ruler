@@ -1,4 +1,4 @@
-package org.cqframework.fhir.api;
+package org.opencds.cqf.ruler.cql;
 
 import org.hl7.fhir.instance.model.api.IBaseConformance;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;

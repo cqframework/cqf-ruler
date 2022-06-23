@@ -1,8 +1,7 @@
-package org.cqframework.fhir.api;
+package org.opencds.cqf.ruler.cql;
 
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 
 @SuppressWarnings("unchecked")
 public class JpaFhirTransactions implements org.cqframework.fhir.api.FhirTransactions {
@@ -19,6 +18,6 @@ public class JpaFhirTransactions implements org.cqframework.fhir.api.FhirTransac
 
     @Override
     public IBaseBundle transaction(IBaseBundle theTransaction) {
-        return this.daoRegistry.getResourceDao(theTransaction.fhirType()).create(theTransaction, requestDetails);
+        return null;  //this.daoRegistry.getResourceDao(theTransaction.fhirType()).create(theTransaction, requestDetails);
     }
 }
