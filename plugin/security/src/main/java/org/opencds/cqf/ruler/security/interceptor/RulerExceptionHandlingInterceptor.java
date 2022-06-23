@@ -9,7 +9,6 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 import org.apache.commons.lang3.StringUtils;
-import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 											 HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws IOException {
 
 		IBaseOperationOutcome operationOutcome = theException.getOperationOutcome();
-		if(operationOutcome == null || theException instanceof AuthenticationException) {
+		if (operationOutcome == null) {
 			updateResponse(theServletResponse, theException, generateOperationOutcome(theException));
 		} else {
 			Throwable causedBy = getCause(theException);
