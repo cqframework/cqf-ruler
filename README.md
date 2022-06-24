@@ -121,7 +121,7 @@ Inquires for commercial support can be directed to [info@alphora.com](info@alpho
 
 [CQF Tooling](https://github.com/cqframework/cqf-tooling) - Provides several operations that the cqf-ruler exposes are services, such as $refresh-generated content.
 
-[CQL Support for Atom](https://atom.io/packages/language-cql) - Open source CQL IDE with syntax highlighting, linting, and local CQL evaluation.
+[CQL Support for VS Code](https://marketplace.visualstudio.com/items?itemName=cqframework.cql) - CQL IDE plugin with syntax highlighting, linting, and local CQL evaluation.
 
 ## License
 
