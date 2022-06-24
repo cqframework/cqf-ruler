@@ -32,12 +32,12 @@
 	</developers>
 
 	<modules>
+    <module>core</module>
 		<!-- <module>example</module> -->
 		<module>external</module>
-		<module>test</module>
-		<module>core</module>
-		<module>plugin</module>
+    <module>plugin</module>
 		<module>server</module>
+		<module>test</module>
 	</modules>
 
 	<scm>

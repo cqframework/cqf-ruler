@@ -13,6 +13,7 @@
 	"java.test.defaultConfig": "test-config",
 	"java.checkstyle.configuration": "${workspaceFolder}/config/checkstyle/checkstyle.xml",
 	"java.checkstyle.version": "9.2.1",
+	"java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
 	"cSpell.enabledLanguageIds": [
 		"java",
 		"json",
@@ -34,6 +35,7 @@
 		"autoconfigure",
 		"BCSEHEDISMY",
 		"CAREGAP",
+		"cdshooks",
 		"Checkstyle",
 		"classpath",
 		"Codeable",
@@ -50,6 +52,7 @@
 		"mgsc",
 		"multiversion",
 		"mvnw",
+		"NOCHANGE",
 		"numer",
 		"opencds",
 		"pdmp",
