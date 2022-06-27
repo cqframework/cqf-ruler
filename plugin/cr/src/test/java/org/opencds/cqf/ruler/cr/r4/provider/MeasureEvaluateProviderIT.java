@@ -107,10 +107,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.returnResourceType(MeasureReport.class)
 				.execute();
 		});
-
-		//prints : HTTP 500 : Unexpected exception caught during execution: ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException: HTTP 404
-		//instead of : Failed to call access method: org.opencds.cqf.cql.engine.exception.CqlException: Unexpected exception caught during execution: ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException: HTTP 404
-		assertEquals("HTTP 500 : Unexpected exception caught during execution: ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException: HTTP 404 ", ex.getMessage());
 	}
 
 	@Test
