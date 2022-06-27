@@ -33,6 +33,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 	private static final String statusValidSecond = "closed-gap";
 	private static final String measureIdValid = "BreastCancerScreeningFHIR";
 	private static final String measureUrlValid = "http://ecqi.healthit.gov/ecqms/Measure/BreastCancerScreeningFHIR";
+	private static final String measureUrl = "http://ecqi.healthit.gov/ecqms/Measure/ColorectalCancerScreeningsFHIR";
 	// TODO: spec probably needs to be updated to allow a full identifier, not just
 	// a string
 	private static final String measureIdentifierValid = "80366f35-e0a0-4ba7-a746-ad5760b79e01";
@@ -467,6 +468,32 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 		assertNotNull(result);
 	}
+
+	@Test
+	public void testMeasures() throws Exception {
+		beforeEachMultipleMeasures();
+
+		Parameters params = new Parameters();
+		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
+		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
+		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
+		params.addParameter().setName("status").setValue(new StringType(statusValid));
+		params.addParameter().setName("status").setValue(new StringType(statusValidSecond));
+		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+		// params.addParameter().setName("measureIdentifier")
+		// .setValue(new StringType(measureIdentifierValid));
+		params.addParameter().setName("measureUrl").setValue(new StringType(measureUrlValid));
+		params.addParameter().setName("measureId").setValue(new StringType("ColorectalCancerScreeningsFHIR"));
+
+		Parameters result = getClient().operation().onType(Measure.class).named("$care-gaps")
+			.withParameters(params)
+			.useHttpGet()
+			.returnResourceType(Parameters.class)
+			.execute();
+
+		assertNotNull(result);
+	}
+
 
 	@SuppressWarnings("java:S5778")
 	@Test

@@ -28,7 +28,7 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 	void validateParameters(RequestDetails theRequestDetails);
 
 	default List<Measure> getMeasures(List<String> measureIds, List<String> measureIdentifiers,
-			List<CanonicalType> measureCanonicals, RequestDetails theRequestDetails) {
+			List<CanonicalType> measureCanonicals, Map<String, String> urlVersionManifestMap, RequestDetails theRequestDetails) {
 		boolean hasMeasureIds = measureIds != null && !measureIds.isEmpty();
 		boolean hasMeasureIdentifiers = measureIdentifiers != null && !measureIdentifiers.isEmpty();
 		boolean hasMeasureUrls = measureCanonicals != null && !measureCanonicals.isEmpty();
@@ -52,8 +52,15 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 		}
 
 		if (hasMeasureUrls) {
-			measureList.addAll(search(Measure.class, Searches.byCanonicals(measureCanonicals), theRequestDetails)
-					.getAllResourcesTyped());
+			measureCanonicals.forEach(measureCanonical -> {
+				if (urlVersionManifestMap.containsKey(measureCanonical)) {
+					measureList.add(search(Measure.class, Searches.byCanonical(measureCanonical.getValue(),
+						(String) urlVersionManifestMap.get(measureCanonical)), theRequestDetails).firstOrNull());
+				} else {
+					measureList.addAll(search(Measure.class, Searches.byCanonicals(measureCanonicals), theRequestDetails)
+						.getAllResourcesTyped());
+				}
+			});
 		}
 
 		Map<String, Measure> result = new HashMap<>();

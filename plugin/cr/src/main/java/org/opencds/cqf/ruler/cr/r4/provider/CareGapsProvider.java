@@ -197,9 +197,11 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		validateConfiguration(theRequestDetails);
 		validateParameters(theRequestDetails);
 
+		Map<String, String> urlVersionManifestMap = (Map<String, String>) (theRequestDetails.getUserData().get("manifest"));
+
 		// TODO: filter by topic.
 		// TODO: filter by program.
-		List<Measure> measures = ensureMeasures(getMeasures(measureId, measureIdentifier, measureUrl, theRequestDetails));
+		List<Measure> measures = ensureMeasures(getMeasures(measureId, measureIdentifier, measureUrl, urlVersionManifestMap, theRequestDetails));
 
 		List<Patient> patients;
 		if (!Strings.isNullOrEmpty(subject)) {
