@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.opencds.cqf.cql.engine.elm.execution.InEvaluator;
-import org.opencds.cqf.cql.engine.elm.execution.IncludesEvaluator;
+//import org.opencds.cqf.cql.engine.elm.execution.InEvaluator;
+//import org.opencds.cqf.cql.engine.elm.execution.IncludesEvaluator;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.retrieve.TerminologyAwareRetrieveProvider;
 import org.opencds.cqf.cql.engine.runtime.Code;
@@ -76,14 +76,14 @@ public class PrefetchDataProviderStu3 extends TerminologyAwareRetrieveProvider {
                     DateTime date = dateObject instanceof DateTime ? (DateTime) dateObject : null;
                     Interval dateInterval = dateObject instanceof Interval ? (Interval) dateObject : null;
                     String precision = PrefetchDataProviderHelper.getPrecision(Arrays.asList(dateRange, date));
-                    if (date != null && !(InEvaluator.in(date, dateRange, precision))) {
-                        includeResource = false;
-                    }
+//                    if (date != null && !(InEvaluator.in(date, dateRange, precision))) {
+//                        includeResource = false;
+//                    }
                     // TODO - add precision to includes evaluator
-                    else if (dateInterval != null
-                            && !(IncludesEvaluator.includes(dateRange, dateInterval, precision))) {
-                        includeResource = false;
-                    }
+//                    else if (dateInterval != null
+//                            && !(IncludesEvaluator.includes(dateRange, dateInterval, precision))) {
+//                        includeResource = false;
+//                    }
                 } else {
                     if (dateHighPath == null && dateLowPath == null) {
                         throw new IllegalArgumentException(
@@ -103,9 +103,9 @@ public class PrefetchDataProviderStu3 extends TerminologyAwareRetrieveProvider {
                     Interval interval = new Interval(lowDate, true, highDate, true);
 
                     // TODO - add precision to includes evaluator
-                    if (!IncludesEvaluator.includes(dateRange, interval, precision)) {
-                        includeResource = false;
-                    }
+//                    if (!IncludesEvaluator.includes(dateRange, interval, precision)) {
+//                        includeResource = false;
+//                    }
                 }
             }
 
