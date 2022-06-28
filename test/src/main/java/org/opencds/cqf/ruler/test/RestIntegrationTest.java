@@ -88,7 +88,7 @@ public class RestIntegrationTest implements ResourceLoader, ResourceCreator, IdC
 	}
 
 	@BeforeEach
-	void baseBeforeEach() {
+	public void baseBeforeEach() {
 		myCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		myCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
 		myServerBase = "http://localhost:" + myPort + "/fhir/";
@@ -100,4 +100,6 @@ public class RestIntegrationTest implements ResourceLoader, ResourceCreator, IdC
 	void baseAfterAll() {
 		myDbService.resetDatabase();
 	}
+
+	public void afterEach() { myDbService.resetDatabase(); }
 }
