@@ -43,11 +43,13 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 			updateResponse(theServletResponse, theException, generateOperationOutcome(theException));
 		} else {
 			Throwable causedBy = getCause(theException);
-			String actualCause = causedBy.getMessage();
+			String actualCause = new StringBuilder(causedBy.getMessage())
+				.append(causedBy.getClass().getSimpleName()).toString();
 
 			if (StringUtils.isNotBlank(actualCause)) {
 				updateOperationOutcome(operationOutcome, actualCause);
 			}
+
 			updateResponse(theServletResponse, theException,
 				getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(operationOutcome));
 		}
@@ -67,8 +69,7 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 			org.hl7.fhir.r4.model.OperationOutcome outcome = (org.hl7.fhir.r4.model.OperationOutcome) operationOutcome;
 			if (outcome != null && !outcome.getIssue().isEmpty()) {
 				org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
-				if (comp != null && comp.getDiagnostics() != null &&
-					comp.getDiagnostics().contains(actualCause)) {
+				if (comp != null && comp.getDiagnostics() != null) {
 					comp.setDiagnostics(actualCause);
 					operationOutcome = outcome;
 				}

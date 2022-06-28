@@ -107,6 +107,8 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.returnResourceType(MeasureReport.class)
 				.execute();
 		});
+
+		assertEquals("HTTP 500 : HTTP 404 ResourceNotFoundException", ex.getMessage());
 	}
 
 	@Test
