@@ -38,12 +38,10 @@ public class MeasureEvaluateAdditionalDataIT extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnMeasureReport);
-		afterEach();
 	}
 
 	@Test
 	public void testMeasureEvaluateWithAdditionalData() throws Exception {
-		baseBeforeEach();
 
 		String mainBundleAsText = stringFromResource("Exm104FhirR4MeasurePartBundle.json");
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(mainBundleAsText);
