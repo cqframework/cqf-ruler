@@ -1,7 +1,6 @@
 package org.opencds.cqf.ruler.cpg.dstu3.provider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +8,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.BooleanType;
 import org.hl7.fhir.dstu3.model.Bundle;
@@ -20,6 +23,7 @@ import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.dstu3.model.PrimitiveType;
+import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Type;
@@ -158,10 +162,9 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 
 	/**
 	 * Evaluates a CQL expression and returns the results as a Parameters resource.
-	 * 
+	 *
 	 * @param theRequestDetails   the {@link RequestDetails RequestDetails}
-	 * @param subject             ***Only Patient is supported as of now*** Subject
-	 *                            for which the expression will be
+	 * @param subject             Subject for which the expression will be
 	 *                            evaluated. This corresponds to the context in
 	 *                            which the expression will be evaluated and is
 	 *                            represented as a relative FHIR id (e.g.
@@ -169,7 +172,9 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	 *                            and context value for the evaluation
 	 * @param expression          Expression to be evaluated. Note that this is an
 	 *                            expression of CQL, not the text of a library with
-	 *                            definition statements.
+	 *                            definition statements. If the content parameter is
+	 *                            set, the expression will be the name of the
+	 *                            expression to be evaluated.
 	 * @param parameters          Any input parameters for the expression.
 	 *                            {@link Parameters} Parameters defined in this
 	 *                            input will be made available by name to the CQL
@@ -219,6 +224,10 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	 *                            evaluation will attempt to use the server on which
 	 *                            the operation is being performed as the
 	 *                            terminology server.
+	 * @param content             The CQL library content. If this and the
+	 *                            expression
+	 *                            parameter are set, only the expression specified
+	 *                            will be evaluated.
 	 * @return The result of evaluating the given expression, returned as a FHIR
 	 *         type, either a {@link Resource} resource, or a FHIR-defined type
 	 *         corresponding to the CQL return type, as defined in the Using CQL
@@ -229,9 +238,10 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	 */
 	@Operation(name = "$cql")
 	@Description(shortDefinition = "$cql", value = "Evaluates a CQL expression and returns the results as a Parameters resource. Defined: http://build.fhir.org/ig/HL7/cqf-recommendations/OperationDefinition-cpg-cql.html", example = "$cql?expression=5*5")
-	public Parameters evaluate(RequestDetails theRequestDetails,
+	public Parameters evaluate(
+			RequestDetails theRequestDetails,
 			@OperationParam(name = "subject", max = 1) String subject,
-			@OperationParam(name = "expression", min = 1, max = 1) String expression,
+			@OperationParam(name = "expression", max = 1) String expression,
 			@OperationParam(name = "parameters", max = 1) Parameters parameters,
 			@OperationParam(name = "library") List<Parameters> library,
 			@OperationParam(name = "useServerData", max = 1) BooleanType useServerData,
@@ -239,15 +249,83 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "prefetchData") List<Parameters> prefetchData,
 			@OperationParam(name = "dataEndpoint", max = 1) Endpoint dataEndpoint,
 			@OperationParam(name = "contentEndpoint", max = 1) Endpoint contentEndpoint,
-			@OperationParam(name = "terminologyEndpoint", max = 1) Endpoint terminologyEndpoint) {
-
+			@OperationParam(name = "terminologyEndpoint", max = 1) Endpoint terminologyEndpoint,
+			@OperationParam(name = "content", max = 1) String content) {
 		if (prefetchData != null) {
 			throw new NotImplementedException("prefetchData is not yet supported.");
 		}
+
 		if (useServerData == null) {
 			useServerData = new BooleanType(true);
 		}
-		List<LibraryParameter> libraryParameters = new ArrayList<>();
+
+		List<CqlExecutionProvider.LibraryParameter> includedLibraries = resolveIncludedLibraries(library);
+
+		String id = "LocalLibrary";
+		String version = "1.0.0";
+
+		if (!StringUtils.isBlank(content)) {
+			ModelManager manager = new ModelManager();
+			org.hl7.elm.r1.Library lib = CqlTranslator.fromText(content, manager, new LibraryManager(manager))
+					.getTranslatedLibrary().getLibrary();
+
+			id = lib.getIdentifier().getId();
+			version = lib.getIdentifier().getVersion();
+		}
+
+		VersionedIdentifier localLibraryIdentifier = new VersionedIdentifier().withId(id).withVersion(version);
+		globalLibraryCache.remove(localLibraryIdentifier);
+
+		CqlEngine engine = setupEngine(
+				expression, content, includedLibraries, parameters, contentEndpoint, dataEndpoint,
+				terminologyEndpoint, data, useServerData.booleanValue(), theRequestDetails);
+
+		Map<String, Object> inputParameters = new HashMap<>();
+		if (parameters != null) {
+			for (Parameters.ParametersParameterComponent pc : parameters.getParameter()) {
+				inputParameters.put(pc.getName(), pc.getValue());
+			}
+		}
+
+		String context;
+		String contextValue;
+		if (!StringUtils.isBlank(subject)) {
+			Reference ref = new Reference(subject);
+			context = ref.getReferenceElement().getResourceType();
+			contextValue = ref.getReferenceElement().getIdPart();
+		} else {
+			context = "Unspecified";
+			contextValue = "null";
+		}
+
+		EvaluationResult evalResult = engine.evaluate(
+				localLibraryIdentifier, null, Pair.of(context, contextValue), inputParameters, this.getDebugMap());
+
+		/*
+		 *
+		 * If expression and no content:
+		 * Create Library on the fly
+		 * Evaluate the specified expression (raw CQL)
+		 *
+		 * If content and no expression:
+		 * Evaluate all expressions in the content
+		 *
+		 * If content and expression:
+		 * Evaluate only the expression named by the expression parameter
+		 *
+		 */
+
+		if (StringUtils.isBlank(content)) {
+			return resolveResult(theRequestDetails, evalResult, "return");
+		} else if (StringUtils.isBlank(expression)) {
+			return resolveResults(theRequestDetails, evalResult);
+		} else {
+			return resolveResult(theRequestDetails, evalResult, expression);
+		}
+	}
+
+	private List<CqlExecutionProvider.LibraryParameter> resolveIncludedLibraries(List<Parameters> library) {
+		List<CqlExecutionProvider.LibraryParameter> libraryParameters = new ArrayList<>();
 		if (library != null) {
 			for (Parameters libraryParameter : library) {
 				String url = null;
@@ -261,81 +339,45 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 							name = ((StringType) param.getValue()).asStringValue();
 							break;
 						default:
-							throw new IllegalArgumentException(
-									"Only url and name parts are allowed for Parameter: library");
+							throw new IllegalArgumentException("Only url and name parts are allowed for library parameter");
 					}
 				}
 				if (url == null) {
-					throw new IllegalArgumentException("If library parameter must provide a url parameter part.");
+					throw new IllegalArgumentException("The library parameter must provide a url parameter part.");
 				}
-				libraryParameters.add(new LibraryParameter().withUrl(url).withName(name));
+				libraryParameters.add(new CqlExecutionProvider.LibraryParameter().withUrl(url).withName(name));
 			} // Remove LocalLibrary from cache first...
 		}
-		VersionedIdentifier localLibraryIdentifier = new VersionedIdentifier().withId("LocalLibrary")
-				.withVersion("1.0.0");
-		globalLibraryCache.remove(localLibraryIdentifier);
 
-		CqlEngine engine = setupEngine(localLibraryIdentifier, expression, libraryParameters, subject, parameters,
-				contentEndpoint,
-				dataEndpoint, terminologyEndpoint, data, useServerData.booleanValue(), theRequestDetails);
-		Map<String, Object> resolvedParameters = new HashMap<String, Object>();
-		if (parameters != null) {
-			for (Parameters.ParametersParameterComponent pc : parameters.getParameter()) {
-				resolvedParameters.put(pc.getName(), pc.getValue());
-			}
-		}
-		String contextType = subject != null ? subject.substring(0, subject.lastIndexOf("/") - 1) : null;
-		String subjectId = subject != null ? subject.substring(0, subject.lastIndexOf("/") - 1) : null;
-		EvaluationResult evalResult = engine.evaluate(localLibraryIdentifier, null,
-				Pair.of(contextType != null ? contextType : "Unspecified", subjectId == null ? "null" : subject),
-				resolvedParameters, this.getDebugMap());
-
-		if (evalResult != null && evalResult.expressionResults != null) {
-			if (evalResult.expressionResults.size() > 1) {
-				logger.debug("Evaluation resulted in more than one expression result.  ");
-			}
-
-			Parameters result = new Parameters();
-			resolveResult(theRequestDetails, evalResult, result);
-			return result;
-		}
-		return null;
+		return libraryParameters;
 	}
 
-	private CqlEngine setupEngine(VersionedIdentifier localLibraryIdentifier, String expression,
-			List<LibraryParameter> library, String subject,
-			Parameters parameters, Endpoint contentEndpoint, Endpoint dataEndpoint, Endpoint terminologyEndpoint,
-			Bundle data, boolean useServerData,
+	private CqlEngine setupEngine(
+			String expression, String content, List<CqlExecutionProvider.LibraryParameter> includedLibraries,
+			Parameters parameters, Endpoint contentEndpoint, Endpoint dataEndpoint,
+			Endpoint terminologyEndpoint, Bundle data, boolean useServerData,
 			RequestDetails theRequestDetails) {
 		JpaFhirDal jpaFhirDal = jpaFhirDalFactory.create(theRequestDetails);
 
-		// temporary LibraryLoader to resolve library dependencies when building
-		// includes
 		List<LibraryContentProvider> libraryProviders = new ArrayList<>();
 		libraryProviders.add(jpaLibraryContentProviderFactory.create(theRequestDetails));
+
 		if (contentEndpoint != null) {
-			libraryProviders
-					.add(fhirRestLibraryContentProviderFactory.create(contentEndpoint.getAddress(), contentEndpoint
-							.getHeader().stream().map(PrimitiveType::asStringValue).collect(Collectors.toList())));
+			libraryProviders.add(fhirRestLibraryContentProviderFactory.create(contentEndpoint.getAddress(), contentEndpoint
+					.getHeader().stream().map(PrimitiveType::asStringValue).collect(Collectors.toList())));
 		}
-		LibraryLoader tempLibraryLoader = libraryLoaderFactory.create(
-				new ArrayList<>(libraryProviders));
 
-		String cql = buildCqlLibrary(library, jpaFhirDal, tempLibraryLoader, expression, parameters, theRequestDetails);
+		// temporary LibraryLoader to resolve library dependencies when building
+		// includes
+		LibraryLoader tempLibraryLoader = libraryLoaderFactory.create(new ArrayList<>(libraryProviders));
 
-		libraryProviders.add(new InMemoryLibraryContentProvider(Arrays.asList(cql)));
-		LibraryLoader libraryLoader = libraryLoaderFactory.create(
-				new ArrayList<>(libraryProviders));
+		String cql = !StringUtils.isBlank(content)
+				? content
+				: buildCqlLibrary(includedLibraries, jpaFhirDal, tempLibraryLoader, expression, parameters);
+		libraryProviders.add(new InMemoryLibraryContentProvider(Collections.singletonList(cql)));
+		LibraryLoader libraryLoader = libraryLoaderFactory.create(new ArrayList<>(libraryProviders));
 
-		return setupEngine(subject, parameters, dataEndpoint, terminologyEndpoint, data, useServerData, libraryLoader,
-				localLibraryIdentifier, theRequestDetails);
-	}
-
-	private CqlEngine setupEngine(String subject, Parameters parameters, Endpoint dataEndpoint,
-			Endpoint terminologyEndpoint, Bundle data, boolean useServerData, LibraryLoader libraryLoader,
-			VersionedIdentifier libraryIdentifier, RequestDetails theRequestDetails) {
 		TerminologyProvider terminologyProvider;
-
 		if (terminologyEndpoint != null) {
 			IGenericClient client = Clients.forEndpoint(getFhirContext(), terminologyEndpoint);
 			terminologyProvider = new Dstu3FhirTerminologyProvider(client);
@@ -343,7 +385,6 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			terminologyProvider = jpaTerminologyProviderFactory.create(theRequestDetails);
 		}
 
-		DataProvider dataProvider;
 		List<RetrieveProvider> retrieveProviderList = new ArrayList<>();
 		if (useServerData) {
 			JpaFhirRetrieveProvider jpaRetriever = new JpaFhirRetrieveProvider(getDaoRegistry(),
@@ -355,18 +396,20 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			}
 			retrieveProviderList.add(jpaRetriever);
 		}
+
 		if (dataEndpoint != null) {
 			IGenericClient client = Clients.forEndpoint(dataEndpoint);
 			RestFhirRetrieveProvider restRetriever = new RestFhirRetrieveProvider(
-					new SearchParameterResolver(getFhirContext()),
-					client);
+					new SearchParameterResolver(getFhirContext()), client);
 			restRetriever.setTerminologyProvider(terminologyProvider);
-			if (terminologyEndpoint == null || (terminologyEndpoint != null
-					&& !terminologyEndpoint.getAddress().equals(dataEndpoint.getAddress()))) {
+
+			if (terminologyEndpoint == null || !terminologyEndpoint.getAddress().equals(dataEndpoint.getAddress())) {
 				restRetriever.setExpandValueSets(true);
 			}
+
 			retrieveProviderList.add(restRetriever);
 		}
+
 		if (data != null) {
 			BundleRetrieveProvider bundleRetriever = new BundleRetrieveProvider(getFhirContext(), data);
 			bundleRetriever.setTerminologyProvider(terminologyProvider);
@@ -374,23 +417,22 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		}
 
 		PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(retrieveProviderList);
-		dataProvider = new CompositeDataProvider(myModelResolver, priorityProvider);
+		DataProvider dataProvider = new CompositeDataProvider(myModelResolver, priorityProvider);
+
 		return new CqlEngine(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider),
 				terminologyProvider);
 	}
 
-	private String buildCqlLibrary(List<LibraryParameter> library, JpaFhirDal jpaFhirDal, LibraryLoader libraryLoader,
-			String expression,
-			Parameters parameters,
-			RequestDetails theRequestDetails) {
-		String cql = null;
+	private String buildCqlLibrary(List<CqlExecutionProvider.LibraryParameter> includedLibraries, JpaFhirDal jpaFhirDal,
+			LibraryLoader libraryLoader, String expression, Parameters parameters) {
+		String cql;
 		logger.debug("Constructing expression for local evaluation");
 
 		StringBuilder sb = new StringBuilder();
 
 		constructHeader(sb);
 		constructUsings(sb);
-		constructIncludes(sb, jpaFhirDal, library, libraryLoader, theRequestDetails);
+		constructIncludes(sb, jpaFhirDal, includedLibraries, libraryLoader);
 		constructParameters(sb, parameters);
 		constructExpression(sb, expression);
 
@@ -401,71 +443,48 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	}
 
 	private void constructHeader(StringBuilder sb) {
-		sb.append("library LocalLibrary version \'1.0.0\'\n\n");
+		sb.append("library LocalLibrary version '1.0.0'\n\n");
 	}
 
 	private void constructUsings(StringBuilder sb) {
-		String version = getFhirVersion();
-		sb.append(String.format("using FHIR version \'%s\'\n", version));
+		sb.append(String.format("using FHIR version '%s'\n\n", getFhirVersion()));
 	}
 
 	private String getFhirVersion() {
-		String version = "";
-		switch (this.getFhirContext().getVersion().getVersion().getFhirVersionString()) {
-			case "3.0.2":
-				version = "3.0.1";
-				break;
-			default:
-				version = this.getFhirContext().getVersion().getVersion().getFhirVersionString();
-				break;
-		}
-		return version;
+		// Needed to hardcode the fhir version here to get passed translation error:
+		// Could not load model information for model FHIR, version 3.0.2 because
+		// version 3.0.1 is already loaded
+		return "3.0.1";
 	}
 
 	private void constructParameters(StringBuilder sb, Parameters parameters) {
-		if (parameters == null) {
-			return;
-		}
-		for (ParametersParameterComponent param : parameters.getParameter()) {
-			sb.append("parameter \"" + param.getName() + "\" " + param.getValue().fhirType() + "\n");
+		if (parameters != null) {
+			for (ParametersParameterComponent param : parameters.getParameter()) {
+				sb.append("parameter \"").append(param.getName()).append("\" ").append(param.getValue().fhirType())
+						.append("\n");
+			}
 		}
 	}
 
 	private void constructIncludes(StringBuilder sb, JpaFhirDal jpaFhirDal, List<LibraryParameter> library,
-			LibraryLoader libraryLoader,
-			RequestDetails requestDetails) {
-		StringBuilder builder = new StringBuilder();
-		builder.append("include FHIRHelpers version " + "\'" + getFhirVersion() + "\'" + "\n");
-		for (LibraryParameter libraryParameter : library) {
-
-			if (builder.length() > 0) {
-				builder.append(" ");
-			}
-
-			builder.append("include ");
-
-			String libraryName = resolveLibraryName(requestDetails, jpaFhirDal, libraryParameter, libraryLoader);
-
-			builder.append(libraryName);
+			LibraryLoader libraryLoader) {
+		sb.append("include FHIRHelpers version ").append("'").append(getFhirVersion()).append("'").append("\n");
+		for (CqlExecutionProvider.LibraryParameter libraryParameter : library) {
+			String libraryName = resolveLibraryName(jpaFhirDal, libraryParameter, libraryLoader);
+			sb.append("include ").append(libraryName);
 
 			if (Canonicals.getVersion(libraryParameter.url) != null) {
-				builder.append(" version '");
-				builder.append(Canonicals.getVersion(libraryParameter.url));
-				builder.append("'");
+				sb.append(" version '").append(Canonicals.getVersion(libraryParameter.url)).append("'");
 			}
-
-			builder.append(" called ");
-			builder.append(libraryName + "\n");
+			sb.append(" called ").append(libraryName).append("\n");
 		}
-		sb.append(builder.toString());
 	}
 
 	private void constructExpression(StringBuilder sb, String expression) {
 		sb.append(String.format("\ndefine \"return\":\n       %s", expression));
 	}
 
-	private String resolveLibraryName(RequestDetails requestDetails, JpaFhirDal jpaFhirDal,
-			LibraryParameter libraryParameter,
+	private String resolveLibraryName(JpaFhirDal jpaFhirDal, LibraryParameter libraryParameter,
 			LibraryLoader libraryLoader) {
 		String libraryName;
 		if (libraryParameter.name == null) {
@@ -475,12 +494,14 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			if (version != null) {
 				libraryIdentifier.setVersion(version);
 			}
+
 			org.cqframework.cql.elm.execution.Library executionLibrary = null;
 			try {
 				executionLibrary = libraryLoader.load(libraryIdentifier);
 			} catch (Exception e) {
 				logger.debug("Unable to load executable library {}", libraryParameter.name);
 			}
+
 			if (executionLibrary != null) {
 				libraryName = executionLibrary.getIdentifier().getId();
 			} else {
@@ -490,13 +511,36 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		} else {
 			libraryName = libraryParameter.name;
 		}
+
 		return libraryName;
 	}
 
+	private Parameters resolveResults(RequestDetails theRequestDetails, EvaluationResult evalResult) {
+		Parameters results = null;
+		if (evalResult != null && evalResult.expressionResults != null) {
+			if (evalResult.expressionResults.size() > 1) {
+				logger.debug("Evaluation resulted in more than one expression result.  ");
+			}
+
+			results = new Parameters();
+
+			for (Map.Entry<String, Object> expressionResults : evalResult.expressionResults.entrySet()) {
+				results.addParameter()
+						.setName(expressionResults.getKey())
+						.setResource(resolveResult(theRequestDetails, evalResult, expressionResults.getKey()));
+			}
+		}
+
+		return results;
+	}
+
 	@SuppressWarnings("unchecked")
-	private void resolveResult(RequestDetails theRequestDetails, EvaluationResult evalResult, Parameters result) {
-		try {
-			Object res = evalResult.forExpression("return");
+	private Parameters resolveResult(RequestDetails theRequestDetails, EvaluationResult evalResult, String expression) {
+		Parameters expressionResult = null;
+
+		if (evalResult != null && evalResult.expressionResults != null) {
+			expressionResult = new Parameters();
+			Object result = evalResult.forExpression(expression);
 			// String location = String.format("[%d:%d]",
 			// locations.get(def.getName()).get(0),
 			// locations.get(def.getName()).get(1));
@@ -506,33 +550,36 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			// ? "Definition successfully validated"
 			// : def.getExpression().evaluate(context);
 
-			if (res == null) {
-				result.addParameter().setName("value").setValue(new StringType("null"));
-			} else if (res instanceof List<?>) {
-				if (!((List<?>) res).isEmpty() && ((List<?>) res).get(0) instanceof Resource) {
-					result.addParameter().setName("value")
-							.setResource(
-									bundler.bundle((Iterable<Resource>) res, theRequestDetails.getFhirServerBase()));
-				} else {
-					result.addParameter().setName("value").setValue(new StringType(res.toString()));
-				}
-			} else if (res instanceof Iterable) {
-				result.addParameter().setName("value")
-						.setResource(bundler.bundle((Iterable<Resource>) res, theRequestDetails.getFhirServerBase()));
-			} else if (res instanceof Resource) {
-				result.addParameter().setName("value").setResource((Resource) res);
-			} else if (res instanceof Type) {
-				result.addParameter().setName("value").setValue((Type) res);
-			} else {
-				result.addParameter().setName("value").setValue(new StringType(res.toString()));
+			if (result == null) {
+				expressionResult.addParameter().setName("value").setValue(new StringType("null"));
 			}
-			result.addParameter().setName("resultType").setValue(new StringType(resolveType(res)));
-		} catch (RuntimeException re) {
-			re.printStackTrace();
 
-			String message = re.getMessage() != null ? re.getMessage() : re.getClass().getName();
-			result.addParameter().setName("error").setValue(new StringType(message));
+			else if (result instanceof Iterable) {
+				if (((Iterable<?>) result).iterator().hasNext()
+						&& ((Iterable<?>) result).iterator().next() instanceof Resource) {
+					expressionResult.addParameter()
+							.setName("value")
+							.setResource(bundler.bundle((Iterable<Resource>) result, theRequestDetails.getFhirServerBase()));
+				} else {
+					expressionResult.addParameter().setName("value").setValue(new StringType(result.toString()));
+				}
+			}
+
+			else if (result instanceof Resource) {
+				expressionResult.addParameter().setName("value").setResource((Resource) result);
+			}
+
+			else if (result instanceof Type) {
+				expressionResult.addParameter().setName("value").setValue((Type) result);
+			}
+
+			else {
+				expressionResult.addParameter().setName("value").setValue(new StringType(result.toString()));
+			}
+			expressionResult.addParameter().setName("resultType").setValue(new StringType(resolveType(result)));
 		}
+
+		return expressionResult;
 	}
 
 	private String resolveType(Object result) {

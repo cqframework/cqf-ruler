@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.cpg.dstu3.provider;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.hl7.fhir.dstu3.model.BooleanType;
@@ -32,6 +34,7 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 		assertTrue(((StringType) results.getParameter().get(1).getValue()).asStringValue().equals("Integer"));
 		logger.debug("Results: ", results);
 	}
+
 	@Test
 	public void testSimpleRetrieveCqlExecutionProvider() throws Exception {
 		Parameters params = new Parameters();
@@ -130,5 +133,92 @@ public class CqlExecutionProviderIT extends RestIntegrationTest {
 		assertTrue(results.getParameter().get(1).getValue() instanceof StringType);
 		assertTrue(((StringType) results.getParameter().get(1).getValue()).asStringValue().equals("Boolean"));
 		logger.debug("Results: ", results);
+	}
+
+	@Test
+	public void testCqlExecutionProviderWithContent() throws Exception {
+		Parameters params = new Parameters();
+		params.addParameter().setName("subject").setValue(new StringType("Patient/SimplePatient"));
+		params.addParameter()
+				.setName("content")
+				.setValue(
+						new StringType(
+								"library SimpleR4Library\n" +
+										"\n" +
+										"using FHIR version '3.0.1'\n" +
+										"\n" +
+										"include FHIRHelpers version '3.0.1' called FHIRHelpers\n" +
+										"\n" +
+										"context Patient\n" +
+										"\n" +
+										"define simpleBooleanExpression: true\n" +
+										"\n" +
+										"define observationRetrieve: [Observation]\n" +
+										"\n" +
+										"define observationHasCode: not IsNull(([Observation]).code)\n" +
+										"\n" +
+										"define \"Initial Population\": observationHasCode\n" +
+										"\n" +
+										"define \"Denominator\": \"Initial Population\"\n" +
+										"\n" +
+										"define \"Numerator\": \"Denominator\""));
+
+		String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
+		loadResource(packagePrefix + "SimpleObservation.json");
+		loadResource(packagePrefix + "SimplePatient.json");
+
+		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
+
+		assertFalse(results.isEmpty());
+		assertEquals(7, results.getParameter().size());
+		assertTrue(results.getParameter().get(1).hasName());
+		assertEquals("simpleBooleanExpression", results.getParameter().get(1).getName());
+		assertTrue(results.getParameter().get(1).getResource() instanceof Parameters);
+		Parameters innerResult = (Parameters) results.getParameter().get(1).getResource();
+		assertFalse(innerResult.isEmpty());
+		assertTrue(innerResult.getParameter().get(0).hasValue());
+		assertEquals("true", innerResult.getParameter().get(0).getValue().primitiveValue());
+	}
+
+	@Test
+	public void testCqlExecutionProviderWithContentAndExpression() throws Exception {
+		Parameters params = new Parameters();
+		params.addParameter().setName("subject").setValue(new StringType("Patient/SimplePatient"));
+		params.addParameter().setName("expression").setValue(new StringType("Numerator"));
+		params.addParameter()
+				.setName("content")
+				.setValue(
+						new StringType(
+								"library SimpleR4Library\n" +
+										"\n" +
+										"using FHIR version '3.0.1'\n" +
+										"\n" +
+										"include FHIRHelpers version '3.0.1' called FHIRHelpers\n" +
+										"\n" +
+										"context Patient\n" +
+										"\n" +
+										"define simpleBooleanExpression: true\n" +
+										"\n" +
+										"define observationRetrieve: [Observation]\n" +
+										"\n" +
+										"define observationHasCode: not IsNull(([Observation]).code)\n" +
+										"\n" +
+										"define \"Initial Population\": observationHasCode\n" +
+										"\n" +
+										"define \"Denominator\": \"Initial Population\"\n" +
+										"\n" +
+										"define \"Numerator\": \"Denominator\""));
+
+		String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
+		loadResource(packagePrefix + "SimpleObservation.json");
+		loadResource(packagePrefix + "SimplePatient.json");
+
+		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
+
+		assertFalse(results.isEmpty());
+		assertEquals(2, results.getParameter().size());
+		assertTrue(results.getParameter().get(0).hasName());
+		assertTrue(results.getParameter().get(0).hasValue());
+		assertEquals("true", results.getParameter().get(0).getValue().primitiveValue());
 	}
 }
