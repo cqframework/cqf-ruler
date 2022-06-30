@@ -96,6 +96,13 @@ public class Searches {
 		return search;
 	}
 
+	public static <C extends IPrimitiveType<String>> SearchParameterMap byCanonical(C theCanonicalType) {
+		checkNotNull(theCanonicalType);
+		checkArgument(theCanonicalType.hasValue());
+
+		return byCanonical(theCanonicalType.getValue());
+	}
+
 	public static SearchParameterMap byCanonical(String theCanonical, String version) {
 		checkNotNull(theCanonical);
 
@@ -105,14 +112,6 @@ public class Searches {
 		}
 
 		return search;
-	}
-
-
-	public static <C extends IPrimitiveType<String>> SearchParameterMap byCanonical(C theCanonicalType) {
-		checkNotNull(theCanonicalType);
-		checkArgument(theCanonicalType.hasValue());
-
-		return byCanonical(theCanonicalType.getValue());
 	}
 
 	// TODO: use versioned version
