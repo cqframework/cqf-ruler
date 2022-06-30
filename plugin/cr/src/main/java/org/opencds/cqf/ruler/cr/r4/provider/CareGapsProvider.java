@@ -197,6 +197,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		validateConfiguration(theRequestDetails);
 		validateParameters(theRequestDetails);
 
+		@SuppressWarnings("unchecked")
 		Map<String, String> urlVersionManifestMap = (Map<String, String>) (theRequestDetails.getUserData().get("manifest"));
 
 		// TODO: filter by topic.
