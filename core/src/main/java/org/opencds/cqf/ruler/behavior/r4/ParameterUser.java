@@ -53,9 +53,9 @@ public interface ParameterUser extends DaoRegistryUser, IdCreator {
 
 		if (hasMeasureUrls) {
 			measureCanonicals.forEach(measureCanonical -> {
-				if (urlVersionManifestMap.containsKey(measureCanonical)) {
+				if (urlVersionManifestMap != null && urlVersionManifestMap.containsKey(measureCanonical.getValue())) {
 					measureList.add(search(Measure.class, Searches.byCanonical(measureCanonical.getValue(),
-						(String) urlVersionManifestMap.get(measureCanonical)), theRequestDetails).firstOrNull());
+						(String) urlVersionManifestMap.get(measureCanonical.getValue())), theRequestDetails).firstOrNull());
 				} else {
 					measureList.addAll(search(Measure.class, Searches.byCanonicals(measureCanonicals), theRequestDetails)
 						.getAllResourcesTyped());

@@ -3,7 +3,10 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
 
+import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
@@ -53,6 +56,11 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	private void beforeEachMeasure() throws Exception {
 		loadTransaction("BreastCancerScreeningFHIR-bundle.json");
+	}
+
+	private void beforeMultiVersionMeasure() throws Exception {
+		loadTransaction("ColorectalCancerScreeningsFHIR-bundle.json");
+		loadResource("multiversion/Caregaps-Library-multiversion-manifest.json");
 	}
 
 	private void beforeEachParallelMeasure() throws Exception {
@@ -445,24 +453,24 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testMeasures() throws Exception {
-		beforeEachMultipleMeasures();
+	public void testMeasuresWithManifest() throws Exception {
+		beforeMultiVersionMeasure();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValidSecond));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
-		// params.addParameter().setName("measureIdentifier")
-		// .setValue(new StringType(measureIdentifierValid));
-		params.addParameter().setName("measureUrl").setValue(new StringType(measureUrlValid));
-		params.addParameter().setName("measureId").setValue(new StringType("ColorectalCancerScreeningsFHIR"));
+		Parameters params = newParameters(
+			newPart("periodStart", periodStartValid),
+			newPart("periodEnd", periodEndValid),
+			newPart("subject", subjectPatientValid),
+			newPart("status", statusValid),
+			newPart("status", statusValidSecond),
+			newPart("measureUrl", measureUrl));
+
+		Library library = getClient().read().resource(Library.class).withId("caregaps-library-multiversion-manifest").execute();
+		assertNotNull(library);
 
 		Parameters result = getClient().operation().onType(Measure.class).named("$care-gaps")
 				.withParameters(params)
 				.useHttpGet()
+			   .withAdditionalHeader("X-Manifest", "http://alphora.com/fhir/Library/caregaps-library-multiversion-manifest")
 				.returnResourceType(Parameters.class)
 				.execute();
 

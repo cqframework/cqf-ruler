@@ -1,0 +1,25 @@
+{
+	"resourceType": "Library",
+	"id": "caregaps-library-multiversion-manifest",
+	"url": "http://alphora.com/fhir/Library/caregaps-library-multiversion-manifest",
+	"type": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/library-type",
+				"code": "asset-collection"
+			}
+		]
+	},
+	"relatedArtifact": [
+		{
+			"type": "depends-on",
+			"display": "Measure in effect",
+			"resource": "http://ecqi.healthit.gov/ecqms/Measure/ColorectalCancerScreeningsFHIR|0.0.002"
+		},
+		{
+			"type": "depends-on",
+			"display": "Library in effect",
+			"resource": "http://ecqi.healthit.gov/ecqms/Library/ColorectalCancerScreeningsFHIR|0.0.002"
+		}
+	]
+}
