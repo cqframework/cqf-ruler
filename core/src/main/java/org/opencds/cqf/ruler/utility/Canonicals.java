@@ -73,6 +73,7 @@ public class Canonicals {
 		if (!theCanonical.contains("/")) {
 			return null;
 		}
+
 		int lastIndex = calculateLastIndex(theCanonical);
 
 		return theCanonical.substring(theCanonical.lastIndexOf("/") + 1, lastIndex);
@@ -141,6 +142,7 @@ public class Canonicals {
 		if (!theCanonical.contains("/")) {
 			return null;
 		}
+
 		int lastIndex = calculateLastIndex(theCanonical);
 
 		return theCanonical.substring(0, lastIndex);
@@ -200,20 +202,6 @@ public class Canonicals {
 		return getParts(theCanonicalType.getValue());
 	}
 
-	private static int calculateLastIndex(String theCanonical) {
-		int lastIndexOfBar = theCanonical.lastIndexOf("|");
-		int lastIndexOfHash = theCanonical.lastIndexOf("#");
-
-		int lastIndex = theCanonical.length();
-		int mul = lastIndexOfBar * lastIndexOfHash;
-		if (mul > 1) {
-			lastIndex = Math.min(lastIndexOfBar, lastIndexOfHash);
-		} else if (mul < 0 ) {
-			lastIndex = Math.max(lastIndexOfBar, lastIndexOfHash);
-		}
-		return lastIndex;
-	}
-
 	public static CanonicalParts getParts(String theCanonical) {
 		checkNotNull(theCanonical);
 
@@ -224,4 +212,19 @@ public class Canonicals {
 		String fragment = getFragment(theCanonical);
 		return new CanonicalParts(url, id, resourceType, version, fragment);
 	}
+
+	private static int calculateLastIndex(String theCanonical) {
+		int lastIndexOfBar = theCanonical.lastIndexOf("|");
+		int lastIndexOfHash = theCanonical.lastIndexOf("#");
+
+		int lastIndex = theCanonical.length();
+		int mul = lastIndexOfBar * lastIndexOfHash;
+		if (mul > 1) {
+			lastIndex = Math.min(lastIndexOfBar, lastIndexOfHash);
+		} else if (mul < 0) {
+			lastIndex = Math.max(lastIndexOfBar, lastIndexOfHash);
+		}
+		return lastIndex;
+	}
+
 }

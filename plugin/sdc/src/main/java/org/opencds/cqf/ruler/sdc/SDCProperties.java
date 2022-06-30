@@ -5,104 +5,104 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "hapi.fhir.sdc")
 public class SDCProperties {
 
-    private boolean enabled = true;
+	private boolean enabled = true;
 
-    public boolean getEnabled() {
-        return this.enabled;
-    }
+	public boolean isEnabled() {
+		return this.enabled;
+	}
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
-    private Extract extract = new Extract();
+	private Extract extract = new Extract();
 
-    public Extract getExtract() {
-        return extract;
-    }
+	public Extract getExtract() {
+		return extract;
+	}
 
-    public void setExtract(Extract extract) {
-        this.extract = extract;
-    }
+	public void setExtract(Extract extract) {
+		this.extract = extract;
+	}
 
-    public static class Extract {
+	public static class Extract {
 
-        private String endpoint;
-        private String username;
-        private String password;
+		private String endpoint;
+		private String username;
+		private String password;
 
-        public String getEndpoint() {
-            return endpoint;
-        }
+		public String getEndpoint() {
+			return endpoint;
+		}
 
-        public void setEndpoint(String endpoint) {
-            this.endpoint = endpoint;
-        }
+		public void setEndpoint(String endpoint) {
+			this.endpoint = endpoint;
+		}
 
-        public String getUsername() {
-            return username;
-        }
+		public String getUsername() {
+			return username;
+		}
 
-        public void setUsername(String username) {
-            this.username = username;
-        }
+		public void setUsername(String username) {
+			this.username = username;
+		}
 
-        public String getPassword() {
-            return password;
-        }
+		public String getPassword() {
+			return password;
+		}
 
-        public void setPassword(String password) {
-            this.password = password;
-        }
-    }
+		public void setPassword(String password) {
+			this.password = password;
+		}
+	}
 
-	 private Transform transform = new Transform();
+	private Transform transform = new Transform();
 
-	 public Transform getTransform() {
-		 return transform;
-	 }
+	public Transform getTransform() {
+		return transform;
+	}
 
-	 public void setTransform(Transform newTransform) {
-		 transform = newTransform;
-	 }
+	public void setTransform(Transform newTransform) {
+		transform = newTransform;
+	}
 
-	 public static class Transform {
+	public static class Transform {
 
-		 private String replaceCode;
-		 private String username;
-		 private String password;
-		 private String endpoint;
+		private String replaceCode;
+		private String username;
+		private String password;
+		private String endpoint;
 
-		 public String getReplaceCode() {
-			 return replaceCode;
-		 }
+		public String getReplaceCode() {
+			return replaceCode;
+		}
 
-		 public void setReplaceCode(String newReplaceCode) {
-			 replaceCode = newReplaceCode;
-		 }
+		public void setReplaceCode(String newReplaceCode) {
+			replaceCode = newReplaceCode;
+		}
 
-		 public String getUsername() {
-			 return username;
-		 }
+		public String getUsername() {
+			return username;
+		}
 
-		 public void setUsername(String newUsername) {
-			 username = newUsername;
-		 }
+		public void setUsername(String newUsername) {
+			username = newUsername;
+		}
 
-		 public String getPassword() {
-			 return password;
-		 }
+		public String getPassword() {
+			return password;
+		}
 
-		 public void setPassword(String newPassword) {
-			 password = newPassword;
-		 }
+		public void setPassword(String newPassword) {
+			password = newPassword;
+		}
 
-		 public String getEndpoint() {
-			 return endpoint;
-		 }
+		public String getEndpoint() {
+			return endpoint;
+		}
 
-		 public void setEndpoint(String newEndpoint) {
-			 endpoint = newEndpoint;
-		 }
-	 }
+		public void setEndpoint(String newEndpoint) {
+			endpoint = newEndpoint;
+		}
+	}
 }
