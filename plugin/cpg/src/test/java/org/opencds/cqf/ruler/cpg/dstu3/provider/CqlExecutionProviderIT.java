@@ -23,7 +23,6 @@ import java.io.IOException;
 		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 class CqlExecutionProviderIT extends RestIntegrationTest {
 
-//	private static final Logger logger = LoggerFactory.getLogger(CqlExecutionProviderIT.class);
 	private String packagePrefix = "org/opencds/cqf/ruler/cpg/dstu3/provider/";
 
 	@BeforeEach
@@ -39,9 +38,6 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getValue() instanceof IntegerType);
 		assertEquals("25", ((IntegerType) results.getParameter().get(0).getValue()).asStringValue());
-//		assertTrue(results.getParameter().get(1).getValue() instanceof StringType);
-//		assertTrue(((StringType) results.getParameter().get(1).getValue()).asStringValue().equals("Integer"));
-//		logger.debug("Results: ", results);
 	}
 
 	// TODO: getting strange error: Translation of library expression failed with the following message: Could not resolve type name Observation.
@@ -53,7 +49,6 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 //		loadResource(packagePrefix + "SimpleObservation.json");
 //		loadResource(packagePrefix + "SimplePatient.json");
 //		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
-////		logger.debug("Results: ", results);
 //	}
 
 	@Test
@@ -70,9 +65,6 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getValue() instanceof BooleanType);
 		assertEquals("true", ((BooleanType) results.getParameter().get(0).getValue()).asStringValue());
-//		assertTrue(results.getParameter().get(1).getValue() instanceof StringType);
-//		assertTrue(((StringType) results.getParameter().get(1).getValue()).asStringValue().equals("Boolean"));
-//		logger.debug("Results: ", results);
 	}
 
 	@Test
@@ -90,11 +82,6 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("useServerData").setValue(new BooleanType(false));
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getResource() instanceof Observation);
-//		assertTrue(((Bundle) results.getParameter().get(0).getResource()).getEntry().get(0)
-//				.getResource() instanceof Observation);
-//		assertTrue(results.getParameter().get(1).getValue() instanceof StringType);
-//		assertTrue(((StringType) results.getParameter().get(1).getValue()).asStringValue().equals("List"));
-//		logger.debug("Results: ", results);
 	}
 
 	@Test
@@ -113,11 +100,6 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("useServerData").setValue(new BooleanType(false));
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getResource() instanceof Observation);
-//		assertTrue(((Bundle) results.getParameter().get(0).getResource()).getEntry().get(0)
-//				.getResource() instanceof Observation);
-//		assertTrue(results.getParameter().get(1).getValue() instanceof StringType);
-//		assertTrue(((StringType) results.getParameter().get(1).getValue()).asStringValue().equals("List"));
-//		logger.debug("Results: ", results);
 	}
 
 	@Test
@@ -130,9 +112,6 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getValue() instanceof BooleanType);
 		assertEquals("true", ((BooleanType) results.getParameter().get(0).getValue()).asStringValue());
-//		assertTrue(results.getParameter().get(1).getValue() instanceof StringType);
-//		assertTrue(((StringType) results.getParameter().get(1).getValue()).asStringValue().equals("Boolean"));
-//		logger.debug("Results: ", results);
 	}
 
 	@Test
@@ -166,6 +145,7 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 
 		assertFalse(results.isEmpty());
+		// TODO: For some reason the observationRetrieve expression result is not being retrieved, uncomment once issue is resolved
 //		assertEquals(7, results.getParameter().size());
 //		assertTrue(results.getParameter().get(1).hasName());
 //		assertEquals("simpleBooleanExpression", results.getParameter().get(1).getName());
@@ -208,9 +188,9 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 
 		assertFalse(results.isEmpty());
-//		assertEquals(2, results.getParameter().size());
-//		assertTrue(results.getParameter().get(0).hasName());
-//		assertTrue(results.getParameter().get(0).hasValue());
-//		assertEquals("true", results.getParameter().get(0).getValue().primitiveValue());
+		assertEquals(1, results.getParameter().size());
+		assertTrue(results.getParameter().get(0).hasName());
+		assertTrue(results.getParameter().get(0).hasValue());
+		assertEquals("true", results.getParameter().get(0).getValue().primitiveValue());
 	}
 }

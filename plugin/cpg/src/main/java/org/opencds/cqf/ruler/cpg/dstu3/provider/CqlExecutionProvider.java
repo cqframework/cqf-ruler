@@ -14,15 +14,14 @@ import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
+import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.BooleanType;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Endpoint;
-import org.hl7.fhir.dstu3.model.Library;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent;
 import org.hl7.fhir.dstu3.model.PrimitiveType;
-import org.hl7.fhir.dstu3.model.Resource;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
@@ -78,7 +77,6 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
  */
 public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 
-//	private static final Logger logger = LoggerFactory.getLogger(CqlExecutionProvider.class);
 //	@Autowired
 //	private CqlProperties myCqlProperties;
 	@Autowired
@@ -94,7 +92,19 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	@Autowired
 	ModelResolver myModelResolver;
 	@Autowired
-	Map<VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache;
+	Map<VersionedIdentifier, Library> globalLibraryCache;
+
+	private String subject;
+	private String expression;
+	private Parameters parameters;
+	private List<Parameters> includedLibraries;
+	private boolean useServerData;
+	private Bundle data;
+	private Endpoint dataEndpoint;
+	private Endpoint libraryContentEndpoint;
+	private Endpoint terminologyEndpoint;
+	private String content;
+	private AdapterFactory adapterFactory = new AdapterFactory();
 
 //	/**
 //	 * Data to be made available to the library evaluation, organized as prefetch
@@ -137,17 +147,6 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 //		}
 //	}
 
-	private String subject;
-	private String expression;
-	private Parameters parameters;
-	private List<Parameters> includedLibraries;
-	private boolean useServerData;
-	private Bundle data;
-	private Endpoint dataEndpoint;
-	private Endpoint libraryContentEndpoint;
-	private Endpoint terminologyEndpoint;
-	private String content;
-
 	/**
 	 * Evaluates a CQL expression and returns the results as a Parameters resource.
 	 *
@@ -173,7 +172,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	 *                            represented with a List in the input CQL. If a
 	 *                            parameter has parts, it is represented as a Tuple
 	 *                            in the input CQL.
-	 * @param library             A library to be included. The {@link Library}
+	 * @param library             A library to be included. The {@link org.hl7.fhir.dstu3.model.Library}
 	 *                            library is resolved by url and made available by
 	 *                            name within the expression to be evaluated.
 	 * @param useServerData       Whether to use data from the server performing the
@@ -217,7 +216,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	 *                            parameter are set, only the expression specified
 	 *                            will be evaluated.
 	 * @return The result of evaluating the given expression, returned as a FHIR
-	 *         type, either a {@link Resource} resource, or a FHIR-defined type
+	 *         type, either a {@link org.hl7.fhir.dstu3.model.Resource} resource, or a FHIR-defined type
 	 *         corresponding to the CQL return type, as defined in the Using CQL
 	 *         section of the CPG Implementation guide. If the result is a List of
 	 *         resources, the result will be a {@link Bundle} Bundle . If the result
@@ -286,7 +285,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		TerminologyProvider terminologyProvider = resolveTerminologyProvider(requestDetails);
 		DataProvider dataProvider = resolveDataProvider(terminologyProvider);
 		CqlEvaluator cqlEvaluator = new CqlEvaluator(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider, Collections.singleton(CqlEngine.Options.EnableExpressionCaching));
-		LibraryEvaluator libraryEvaluator = new LibraryEvaluator(new CqlFhirParametersConverter(this.getFhirContext(), new AdapterFactory(), new FhirTypeConverterFactory().create(FhirVersionEnum.DSTU3)), cqlEvaluator);
+		LibraryEvaluator libraryEvaluator = new LibraryEvaluator(new CqlFhirParametersConverter(this.getFhirContext(), this.adapterFactory, new FhirTypeConverterFactory().create(FhirVersionEnum.DSTU3)), cqlEvaluator);
 		return (Parameters) libraryEvaluator.evaluate(resolveLibraryIdentifier(), resolveContextParameter(), this.parameters, this.expression == null ? null : Collections.singleton(this.expression));
 	}
 
@@ -380,23 +379,23 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		return new ExpressionEvaluator(
 			this.getFhirContext(),
 			new CqlFhirParametersConverter(
-				this.getFhirContext(), new AdapterFactory(), new FhirTypeConverterFactory().create(FhirVersionEnum.DSTU3)
+				this.getFhirContext(), this.adapterFactory, new FhirTypeConverterFactory().create(FhirVersionEnum.DSTU3)
 			),
 			resolveLibraryContentProviderFactory(), resolveDataProviderFactory(), resolveTerminologyProviderFactory(),
-			new EndpointConverter(new AdapterFactory()), new FhirModelResolverFactory(), CqlEvaluatorBuilder::new);
+			new EndpointConverter(this.adapterFactory), new FhirModelResolverFactory(), CqlEvaluatorBuilder::new);
 	}
 
 	private LibraryContentProviderFactory resolveLibraryContentProviderFactory() {
 		return new org.opencds.cqf.cql.evaluator.builder.library.LibraryContentProviderFactory(
-			this.getFhirContext(), new AdapterFactory(),
+			this.getFhirContext(), this.adapterFactory,
 			Collections.singleton(resolveFhirRestLibraryContentProviderFactory()),
-			new LibraryVersionSelector(new AdapterFactory())
+			new LibraryVersionSelector(this.adapterFactory)
 		);
 	}
 
 	private FhirRestLibraryContentProviderFactory resolveFhirRestLibraryContentProviderFactory() {
 		return new FhirRestLibraryContentProviderFactory(
-			new ClientFactory(this.getFhirContext()), new AdapterFactory(), new LibraryVersionSelector(new AdapterFactory())
+			new ClientFactory(this.getFhirContext()), this.adapterFactory, new LibraryVersionSelector(this.adapterFactory)
 		);
 	}
 
