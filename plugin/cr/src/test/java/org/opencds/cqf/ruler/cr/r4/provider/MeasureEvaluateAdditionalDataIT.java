@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
 	MeasureEvaluateAdditionalDataIT.class, CrConfig.class, CqlConfig.class }, properties = {
 	"hapi.fhir.fhir_version=r4"
 })
