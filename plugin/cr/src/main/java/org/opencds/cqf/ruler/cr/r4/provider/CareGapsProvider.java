@@ -9,9 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.regex.Pattern;
-
-import com.google.common.base.Strings;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -51,6 +50,8 @@ import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Strings;
 
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -129,6 +130,9 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 
 	@Autowired
 	private CrProperties crProperties;
+
+	@Autowired
+	private Executor cqlExecutor;
 
 	/**
 	 * Implements the <a href=
@@ -209,29 +213,29 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			throw new NotImplementedException("Non subject parameters have not been implemented.");
 		}
 
-      List<CompletableFuture<Parameters.ParametersParameterComponent>> futures = new ArrayList<>();
+		List<CompletableFuture<Parameters.ParametersParameterComponent>> futures = new ArrayList<>();
 
 		Parameters result = initializeResult();
 
 		if (crProperties.getThreadedCareGapsEnabled()) {
 			(patients)
-				.forEach(
-					patient -> {
-						futures.add(CompletableFuture.supplyAsync(() -> patientReports(theRequestDetails,
-							periodStart, periodEnd, patient, status, measures, organization)));
-					});
+					.forEach(
+							patient -> {
+								futures.add(CompletableFuture.supplyAsync(() -> patientReports(theRequestDetails,
+										periodStart, periodEnd, patient, status, measures, organization), cqlExecutor));
+							});
 
 			futures.forEach(x -> result.addParameter(x.join()));
 		} else {
 			(patients)
-				.forEach(
-					patient -> {
-						Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails,
-							periodStart, periodEnd, patient, status, measures, organization);
-						if (patientParameter != null) {
-							result.addParameter(patientParameter);
-						}
-					});
+					.forEach(
+							patient -> {
+								Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails,
+										periodStart, periodEnd, patient, status, measures, organization);
+								if (patientParameter != null) {
+									result.addParameter(patientParameter);
+								}
+							});
 		}
 
 		return result;

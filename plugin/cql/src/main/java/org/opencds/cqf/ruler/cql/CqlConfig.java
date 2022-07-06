@@ -3,6 +3,8 @@ package org.opencds.cqf.ruler.cql;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
@@ -48,6 +50,8 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.concurrent.DelegatingSecurityContextExecutor;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -320,5 +324,15 @@ public class CqlConfig {
 	@Conditional(OnR5Condition.class)
 	public ITermReadSvcR5 termReadSvcR5() {
 		return new PreExpandedTermReadSvcR5();
+	}
+
+	@Bean(name = "cqlExecutor")
+	public Executor cqlExecutor() {
+		CqlForkJoinWorkerThreadFactory factory = new CqlForkJoinWorkerThreadFactory();
+		ForkJoinPool myCommonPool = new ForkJoinPool(Math.min(32767, Runtime.getRuntime().availableProcessors()), factory,
+				null, false);
+
+		return new DelegatingSecurityContextExecutor(myCommonPool,
+				SecurityContextHolder.getContext());
 	}
 }
