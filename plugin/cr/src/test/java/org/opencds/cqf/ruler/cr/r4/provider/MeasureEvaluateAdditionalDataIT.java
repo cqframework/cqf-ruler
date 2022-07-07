@@ -6,9 +6,10 @@ import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
-import org.opencds.cqf.ruler.test.RestIntegrationTest;
+import org.opencds.cqf.ruler.test.RestUnitTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -17,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 	MeasureEvaluateAdditionalDataIT.class, CrConfig.class, CqlConfig.class }, properties = {
 	"hapi.fhir.fhir_version=r4"
 })
-public class MeasureEvaluateAdditionalDataIT extends RestIntegrationTest {
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+public class MeasureEvaluateAdditionalDataIT extends RestUnitTest {
 
 	@Test
 	public void testMeasureEvaluateWithXmlAdditionalData() throws Exception {
