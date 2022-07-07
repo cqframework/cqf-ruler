@@ -7,7 +7,6 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInstance;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.behavior.IdCreator;
 import org.opencds.cqf.ruler.behavior.ResourceCreator;
@@ -16,6 +15,7 @@ import org.opencds.cqf.ruler.test.behavior.ResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 @Import(Application.class)
@@ -31,14 +31,14 @@ import org.springframework.test.context.TestPropertySource;
 	"hapi.fhir.client_id_strategy=ANY",
 	"spring.main.lazy-initialization=true",
 	"spring.flyway.enabled=false" })
-@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class RestUnitTest implements ResourceLoader, ResourceCreator, IdCreator {
 
 	@Autowired
 	AppProperties myAppProperties;
 
 	@Autowired
-	static TestDbService myDbService;
+	TestDbService myDbService;
 
 	@Autowired
 	private FhirContext myCtx;
@@ -93,8 +93,6 @@ public class RestUnitTest implements ResourceLoader, ResourceCreator, IdCreator 
 
 	@AfterEach
 	void baseAfterEach() {
-		if (myDbService != null) {
-			myDbService.resetDatabase();
-		}
+		myDbService.resetDatabase();
 	}
 }
