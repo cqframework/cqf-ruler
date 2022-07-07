@@ -87,33 +87,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		assertNotNull(returnMeasureReport);
 	}
 
-	@Test
-	public void testMeasureEvaluateWithAdditionalData() throws Exception {
-		String mainBundleAsText = stringFromResource("Exm104FhirR4MeasurePartBundle.json");
-		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(mainBundleAsText);
-		getClient().transaction().withBundle(bundle).execute();
-
-		String additionalBundleAsText = stringFromResource("Exm104FhirR4MeasureAdditionalData.json");
-		Bundle additionalData = (Bundle) getFhirContext().newJsonParser().parseResource(additionalBundleAsText);
-
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
-		params.addParameter().setName("reportType").setValue(new StringType("subject"));
-		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM104"));
-		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
-		params.addParameter().setName("additionalData").setResource(additionalData);
-
-		MeasureReport returnMeasureReport = getClient().operation()
-				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
-				.named("$evaluate-measure")
-				.withParameters(params)
-				.returnResourceType(MeasureReport.class)
-				.execute();
-
-		assertNotNull(returnMeasureReport);
-	}
-
 	private void runWithPatient(String measureId, String patientId, int initialPopulationCount, int denominatorCount,
 			int denominatorExclusionCount, int numeratorCount, boolean enrolledDuringParticipationPeriod,
 			String participationPeriod) {
