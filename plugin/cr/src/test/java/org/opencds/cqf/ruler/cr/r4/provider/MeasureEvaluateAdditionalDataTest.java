@@ -1,5 +1,7 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MeasureReport;
@@ -9,17 +11,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
-import org.opencds.cqf.ruler.test.RestUnitTest;
+import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-	MeasureEvaluateAdditionalDataTest.class, CrConfig.class, CqlConfig.class }, properties = {
-	"hapi.fhir.fhir_version=r4"
-})
+		MeasureEvaluateAdditionalDataTest.class, CrConfig.class, CqlConfig.class }, properties = {
+				"hapi.fhir.fhir_version=r4"
+		})
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public class MeasureEvaluateAdditionalDataTest extends RestUnitTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+public class MeasureEvaluateAdditionalDataTest extends RestIntegrationTest {
 
 	@Test
 	public void testMeasureEvaluateWithXmlAdditionalData() throws Exception {
@@ -33,11 +35,11 @@ public class MeasureEvaluateAdditionalDataTest extends RestUnitTest {
 		loadResource("Patient-hypo.json");
 
 		MeasureReport returnMeasureReport = getClient().operation()
-			.onInstance(new IdType("Measure", "InitialInpatientPopulation"))
-			.named("$evaluate-measure")
-			.withParameters(parameters)
-			.returnResourceType(MeasureReport.class)
-			.execute();
+				.onInstance(new IdType("Measure", "InitialInpatientPopulation"))
+				.named("$evaluate-measure")
+				.withParameters(parameters)
+				.returnResourceType(MeasureReport.class)
+				.execute();
 
 		assertNotNull(returnMeasureReport);
 	}
@@ -61,11 +63,11 @@ public class MeasureEvaluateAdditionalDataTest extends RestUnitTest {
 		params.addParameter().setName("additionalData").setResource(additionalData);
 
 		MeasureReport returnMeasureReport = getClient().operation()
-			.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
-			.named("$evaluate-measure")
-			.withParameters(params)
-			.returnResourceType(MeasureReport.class)
-			.execute();
+				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
+				.named("$evaluate-measure")
+				.withParameters(params)
+				.returnResourceType(MeasureReport.class)
+				.execute();
 
 		assertNotNull(returnMeasureReport);
 	}
