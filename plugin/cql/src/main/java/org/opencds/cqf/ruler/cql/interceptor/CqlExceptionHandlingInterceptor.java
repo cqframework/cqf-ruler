@@ -1,4 +1,14 @@
-package org.opencds.cqf.ruler.security.interceptor;
+package org.opencds.cqf.ruler.cql.interceptor;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
+import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -8,18 +18,9 @@ import ca.uhn.fhir.interceptor.api.Pointcut;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
-import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 
 @Interceptor
-public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.api.Interceptor, DaoRegistryUser {
+public class CqlExceptionHandlingInterceptor implements org.opencds.cqf.ruler.api.Interceptor, DaoRegistryUser {
 
 	@Autowired
 	private DaoRegistry myDaoRegistry;
@@ -36,7 +37,7 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 
 	@Hook(Pointcut.SERVER_HANDLE_EXCEPTION)
 	public boolean handleException(RequestDetails theRequestDetails, BaseServerResponseException theException,
-											 HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws IOException {
+			HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws IOException {
 
 		IBaseOperationOutcome operationOutcome = theException.getOperationOutcome();
 		if (operationOutcome == null) {
@@ -44,20 +45,20 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 		} else {
 			Throwable causedBy = getCause(theException);
 			String actualCause = new StringBuilder(causedBy.getMessage())
-				.append(causedBy.getClass().getSimpleName()).toString();
+					.append(causedBy.getClass().getSimpleName()).toString();
 
 			if (StringUtils.isNotBlank(actualCause)) {
 				updateOperationOutcome(operationOutcome, actualCause);
 			}
 
 			updateResponse(theServletResponse, theException,
-				getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(operationOutcome));
+					getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(operationOutcome));
 		}
 		return false;
 	}
 
 	private void updateResponse(HttpServletResponse theServletResponse, BaseServerResponseException theException,
-										 String output) throws IOException {
+			String output) throws IOException {
 		theServletResponse.setStatus(theException.getStatusCode());
 		theServletResponse.setContentType("text/json");
 		theServletResponse.getWriter().append(output);
@@ -71,7 +72,6 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 				org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
 				if (comp != null && comp.getDiagnostics() != null) {
 					comp.setDiagnostics(actualCause);
-					operationOutcome = outcome;
 				}
 			}
 		} else if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3) {
@@ -79,20 +79,19 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 			if (!outcome.getIssue().isEmpty()) {
 				org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
 				if (comp != null && comp.getDiagnostics() != null &&
-					comp.getDiagnostics().contains(actualCause)) {
+						comp.getDiagnostics().contains(actualCause)) {
 					comp.setDiagnostics(actualCause);
-					operationOutcome = outcome;
 				}
 			}
 		}
-		return  operationOutcome;
+		return operationOutcome;
 	}
 
 	private String generateOperationOutcome(BaseServerResponseException theException) {
 
 		String operationOutcome = "";
 
-		if(getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
+		if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
 			org.hl7.fhir.r4.model.OperationOutcome opOutcome = new org.hl7.fhir.r4.model.OperationOutcome();
 			org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent ooComp = new org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent();
 			ooComp.setCode(org.hl7.fhir.r4.model.OperationOutcome.IssueType.EXCEPTION);
@@ -101,7 +100,7 @@ public class RulerExceptionHandlingInterceptor implements org.opencds.cqf.ruler.
 			opOutcome.addIssue(ooComp);
 			theException.setOperationOutcome(opOutcome);
 			operationOutcome = getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(opOutcome);
-		} else  if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3) {
+		} else if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3) {
 			org.hl7.fhir.dstu3.model.OperationOutcome opOutcome = new org.hl7.fhir.dstu3.model.OperationOutcome();
 			org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent ooComp = new org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent();
 			ooComp.setCode(org.hl7.fhir.dstu3.model.OperationOutcome.IssueType.EXCEPTION);

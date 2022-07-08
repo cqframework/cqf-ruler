@@ -4,7 +4,6 @@ import org.opencds.cqf.ruler.api.MetadataExtender;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.security.interceptor.AuthenticationInterceptor;
-import org.opencds.cqf.ruler.security.interceptor.RulerExceptionHandlingInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -17,11 +16,6 @@ public class SecurityConfig {
 	@Bean
 	public SecurityProperties OAuthProperties() {
 		return new SecurityProperties();
-	}
-
-	@Bean
-	public RulerExceptionHandlingInterceptor rulerExceptionHandlingInterceptor() {
-		return new RulerExceptionHandlingInterceptor();
 	}
 
 	@Bean

@@ -1,8 +1,8 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
@@ -22,13 +22,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
-import org.opencds.cqf.ruler.security.SecurityConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
 		MeasureEvaluateProviderIT.class,
-		CrConfig.class, CqlConfig.class, SecurityConfig.class }, properties = {
+		CrConfig.class, CqlConfig.class }, properties = {
 				"hapi.fhir.fhir_version=r4", "hapi.fhir.security.enabled=true" })
 
 public class MeasureEvaluateProviderIT extends RestIntegrationTest {
@@ -71,16 +70,17 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		Endpoint terminologyEndpointValid = (Endpoint) getFhirContext().newJsonParser().parseResource(terminologyAsText);
 		terminologyEndpointValid.setAddress(this.getServerBase());
 
-		Endpoint terminologyEndpointInvalid = (Endpoint) getFhirContext().newJsonParser().parseResource(terminologyAsText);
+		Endpoint terminologyEndpointInvalid = (Endpoint) getFhirContext().newJsonParser()
+				.parseResource(terminologyAsText);
 		terminologyEndpointInvalid.setAddress("https://tx.nhsnlink.org/fhir234");
 
 		Parameters params = newParameters(
-			newPart("periodStart", "2019-01-01"),
-			newPart("periodEnd", "2020-01-01"),
-			newPart("reportType", "individual"),
-			newPart("subject", "Patient/numer-EXM104"),
-			newPart("lastReceivedOn", "2019-12-12"),
-			newPart("terminologyEndpoint", terminologyEndpointValid));
+				newPart("periodStart", "2019-01-01"),
+				newPart("periodEnd", "2020-01-01"),
+				newPart("reportType", "individual"),
+				newPart("subject", "Patient/numer-EXM104"),
+				newPart("lastReceivedOn", "2019-12-12"),
+				newPart("terminologyEndpoint", terminologyEndpointValid));
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
@@ -92,24 +92,27 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		assertNotNull(returnMeasureReport);
 
 		Parameters paramsWithInvalidTerminology = newParameters(
-			newPart("periodStart", "2019-01-01"),
-			newPart("periodEnd", "2020-01-01"),
-			newPart("reportType", "individual"),
-			newPart("subject", "Patient/numer-EXM104"),
-			newPart("lastReceivedOn", "2019-12-12"),
-			newPart("terminologyEndpoint", terminologyEndpointInvalid));
+				newPart("periodStart", "2019-01-01"),
+				newPart("periodEnd", "2020-01-01"),
+				newPart("reportType", "individual"),
+				newPart("subject", "Patient/numer-EXM104"),
+				newPart("lastReceivedOn", "2019-12-12"),
+				newPart("terminologyEndpoint", terminologyEndpointInvalid));
 
 		Exception ex = assertThrows(Exception.class, () -> {
 			getClient().operation()
-				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
-				.named("$evaluate-measure")
-				.withParameters(paramsWithInvalidTerminology)
-				.returnResourceType(MeasureReport.class)
-				.execute();
+					.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
+					.named("$evaluate-measure")
+					.withParameters(paramsWithInvalidTerminology)
+					.returnResourceType(MeasureReport.class)
+					.execute();
 		});
 
-		//the message become specific instead of:
-		//Failed to call access method: org.opencds.cqf.cql.engine.exception.CqlException: Unexpected exception caught during execution: ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException: HTTP 404
+		// the message become specific instead of:
+		// Failed to call access method:
+		// org.opencds.cqf.cql.engine.exception.CqlException: Unexpected exception
+		// caught during execution:
+		// ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException: HTTP 404
 		assertEquals("HTTP 500 : HTTP 404 ResourceNotFoundException", ex.getMessage());
 	}
 
