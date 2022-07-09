@@ -36,6 +36,7 @@ import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.spring.fhir.adapter.AdapterConfiguration;
 import org.opencds.cqf.ruler.cql.dstu2.PreExpandedTermReadSvcDstu2;
 import org.opencds.cqf.ruler.cql.dstu3.PreExpandedTermReadSvcDstu3;
+import org.opencds.cqf.ruler.cql.interceptor.CqlExceptionHandlingInterceptor;
 import org.opencds.cqf.ruler.cql.r4.PreExpandedTermReadSvcR4;
 import org.opencds.cqf.ruler.cql.r5.PreExpandedTermReadSvcR5;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU2Condition;
@@ -82,6 +83,11 @@ public class CqlConfig {
 	@Bean
 	public CqlOptions cqlOptions() {
 		return cqlProperties().getOptions();
+	}
+
+	@Bean
+	public CqlExceptionHandlingInterceptor cqlExceptionHandlingInterceptor() {
+		return new CqlExceptionHandlingInterceptor();
 	}
 
 	@Bean

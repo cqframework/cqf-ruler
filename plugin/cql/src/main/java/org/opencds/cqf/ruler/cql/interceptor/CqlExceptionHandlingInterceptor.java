@@ -1,17 +1,17 @@
 package org.opencds.cqf.ruler.cql.interceptor;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
+import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Interceptor;
 import ca.uhn.fhir.interceptor.api.Pointcut;
@@ -39,87 +39,73 @@ public class CqlExceptionHandlingInterceptor implements org.opencds.cqf.ruler.ap
 	public boolean handleException(RequestDetails theRequestDetails, BaseServerResponseException theException,
 			HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws IOException {
 
+		CqlException cqlException = getCqlException(theException);
+		if (cqlException == null) {
+			return true;
+		}
+
 		IBaseOperationOutcome operationOutcome = theException.getOperationOutcome();
-		if (operationOutcome == null) {
-			updateResponse(theServletResponse, theException, generateOperationOutcome(theException));
-		} else {
-			Throwable causedBy = getCause(theException);
-			String actualCause = new StringBuilder(causedBy.getMessage())
-					.append(causedBy.getClass().getSimpleName()).toString();
-
-			if (StringUtils.isNotBlank(actualCause)) {
-				updateOperationOutcome(operationOutcome, actualCause);
-			}
-
-			updateResponse(theServletResponse, theException,
-					getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(operationOutcome));
-		}
-		return false;
-	}
-
-	private void updateResponse(HttpServletResponse theServletResponse, BaseServerResponseException theException,
-			String output) throws IOException {
-		theServletResponse.setStatus(theException.getStatusCode());
-		theServletResponse.setContentType("text/json");
-		theServletResponse.getWriter().append(output);
-		theServletResponse.getWriter().close();
-	}
-
-	private IBaseOperationOutcome updateOperationOutcome(IBaseOperationOutcome operationOutcome, String actualCause) {
-		if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
-			org.hl7.fhir.r4.model.OperationOutcome outcome = (org.hl7.fhir.r4.model.OperationOutcome) operationOutcome;
-			if (outcome != null && !outcome.getIssue().isEmpty()) {
-				org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
-				if (comp != null && comp.getDiagnostics() != null) {
-					comp.setDiagnostics(actualCause);
-				}
-			}
-		} else if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3) {
-			org.hl7.fhir.dstu3.model.OperationOutcome outcome = (org.hl7.fhir.dstu3.model.OperationOutcome) operationOutcome;
-			if (!outcome.getIssue().isEmpty()) {
-				org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent comp = outcome.getIssue().get(0);
-				if (comp != null && comp.getDiagnostics() != null &&
-						comp.getDiagnostics().contains(actualCause)) {
-					comp.setDiagnostics(actualCause);
-				}
+		if (operationOutcome != null) {
+			String cqlMessage = this.getCqlMessage(cqlException);
+			switch (operationOutcome.getStructureFhirVersionEnum()) {
+				case DSTU3:
+					updateOutcome((org.hl7.fhir.dstu3.model.OperationOutcome) operationOutcome, cqlMessage);
+					break;
+				case R4:
+					updateOutcome((org.hl7.fhir.r4.model.OperationOutcome) operationOutcome, cqlMessage);
+					break;
+				case R5:
+					updateOutcome((org.hl7.fhir.r5.model.OperationOutcome) operationOutcome, cqlMessage);
+					break;
+				default:
+					break;
 			}
 		}
-		return operationOutcome;
+
+		return true;
 	}
 
-	private String generateOperationOutcome(BaseServerResponseException theException) {
-
-		String operationOutcome = "";
-
-		if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.R4) {
-			org.hl7.fhir.r4.model.OperationOutcome opOutcome = new org.hl7.fhir.r4.model.OperationOutcome();
-			org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent ooComp = new org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent();
-			ooComp.setCode(org.hl7.fhir.r4.model.OperationOutcome.IssueType.EXCEPTION);
-			ooComp.setSeverity(org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.ERROR);
-			ooComp.setDiagnostics(theException.getMessage());
-			opOutcome.addIssue(ooComp);
-			theException.setOperationOutcome(opOutcome);
-			operationOutcome = getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(opOutcome);
-		} else if (getFhirContext().getVersion().getVersion() == FhirVersionEnum.DSTU3) {
-			org.hl7.fhir.dstu3.model.OperationOutcome opOutcome = new org.hl7.fhir.dstu3.model.OperationOutcome();
-			org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent ooComp = new org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent();
-			ooComp.setCode(org.hl7.fhir.dstu3.model.OperationOutcome.IssueType.EXCEPTION);
-			ooComp.setSeverity(org.hl7.fhir.dstu3.model.OperationOutcome.IssueSeverity.ERROR);
-			ooComp.setDiagnostics(theException.getMessage());
-			opOutcome.addIssue();
-			theException.setOperationOutcome(opOutcome);
-			operationOutcome = getFhirContext().newJsonParser().setPrettyPrint(true).encodeResourceToString(opOutcome);
-		}
-		return operationOutcome;
+	private void updateOutcome(org.hl7.fhir.dstu3.model.OperationOutcome operationOutcome, String cqlCause) {
+		operationOutcome.getIssueFirstRep().setDiagnostics(cqlCause);
 	}
 
-	private Throwable getCause(Throwable e) {
-		Throwable cause = null;
-		Throwable result = e;
+	private void updateOutcome(org.hl7.fhir.r4.model.OperationOutcome operationOutcome, String cqlCause) {
+		operationOutcome.getIssueFirstRep().setDiagnostics(cqlCause);
+	}
 
-		while (null != (cause = result.getCause()) && (result != cause)) {
-			result = cause;
+	private void updateOutcome(org.hl7.fhir.r5.model.OperationOutcome operationOutcome, String cqlCause) {
+		operationOutcome.getIssueFirstRep().setDiagnostics(cqlCause);
+	}
+
+	private String getCqlMessage(CqlException cqlException) {
+		String message = cqlException.getMessage();
+
+		if (cqlException.getSourceLocator() != null) {
+			message += "\nat CQL source location: " + cqlException.getSourceLocator().toString();
 		}
-		return result;
+
+		if (cqlException.getCause() != null) {
+			message += "\ncaused by: " + cqlException.getCause().getMessage();
+		}
+
+		return message;
+	}
+
+	private CqlException getCqlException(BaseServerResponseException theException) {
+		if (theException.getCause() instanceof CqlException) {
+			return (CqlException) theException.getCause();
+		} else if (theException.getCause() instanceof InvocationTargetException) {
+			InvocationTargetException ite = (InvocationTargetException) theException.getCause();
+
+			if (ite.getCause() instanceof CqlException) {
+				return (CqlException) ite.getCause();
+			}
+
+			if (ite.getTargetException() instanceof CqlException) {
+				return (CqlException) ite.getTargetException();
+			}
+		}
+
+		return null;
 	}
 }

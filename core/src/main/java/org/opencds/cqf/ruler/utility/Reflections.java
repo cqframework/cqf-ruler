@@ -42,9 +42,9 @@ public class Reflections {
 
 		FhirContext fhirContext = FhirContext.forCached(FhirVersions.forClass(theBaseTypeClass));
 		if (theBaseTypeClass.isInstance(IBaseResource.class)) {
-			@SuppressWarnings("unchecked")
+			Class<? extends IBaseResource> theIBaseResourceClass = theBaseTypeClass.asSubclass(IBaseResource.class);
 			RuntimeResourceDefinition resourceDefinition = fhirContext
-					.getResourceDefinition((Class<? extends IBaseResource>) theBaseTypeClass);
+					.getResourceDefinition(theIBaseResourceClass);
 			return resourceDefinition.getChildByName(theChildName).getAccessor();
 		} else {
 			BaseRuntimeElementDefinition<?> elementDefinition = fhirContext.getElementDefinition(theBaseTypeClass);
@@ -63,7 +63,6 @@ public class Reflections {
 	 * @return a function for accessing the "theChildName" property of the
 	 *         BaseType
 	 */
-	@SuppressWarnings("unchecked")
 	public static <BaseType extends IBase, ReturnType> Function<BaseType, ReturnType> getPrimitiveFunction(
 			final Class<? extends BaseType> theBaseTypeClass, String theChildName) {
 		checkNotNull(theBaseTypeClass);
@@ -75,7 +74,9 @@ public class Reflections {
 			if (!value.isPresent()) {
 				return null;
 			} else {
-				return ((IPrimitiveType<ReturnType>) value.get()).getValue();
+				@SuppressWarnings("unchecked")
+				ReturnType x = ((IPrimitiveType<ReturnType>) value.get()).getValue();
+				return x;
 			}
 		};
 	}
@@ -91,7 +92,6 @@ public class Reflections {
 	 * @return a function for accessing the "theChildName" property of the
 	 *         BaseType
 	 */
-	@SuppressWarnings("unchecked")
 	public static <BaseType extends IBase, ReturnType extends List<? extends IBase>> Function<BaseType, ReturnType> getFunction(
 			final Class<? extends BaseType> theBaseTypeClass, String theChildName) {
 		checkNotNull(theBaseTypeClass);
@@ -99,7 +99,9 @@ public class Reflections {
 
 		IAccessor accessor = getAccessor(theBaseTypeClass, theChildName);
 		return r -> {
-			return (ReturnType) accessor.getValues(r);
+			@SuppressWarnings("unchecked")
+			ReturnType x = (ReturnType) accessor.getValues(r);
+			return x;
 		};
 	}
 
