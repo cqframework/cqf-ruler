@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
-import org.opencds.cqf.ruler.test.RestIntegrationTest;
+import org.opencds.cqf.ruler.test.RestFunctionalTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -21,7 +21,7 @@ import org.springframework.test.annotation.DirtiesContext;
 		})
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class MeasureEvaluateAdditionalDataTest extends RestIntegrationTest {
+public class MeasureEvaluateAdditionalDataTest extends RestFunctionalTest {
 
 	@Test
 	public void testMeasureEvaluateWithXmlAdditionalData() throws Exception {
