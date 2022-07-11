@@ -24,14 +24,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {  ReportProviderIT.class,
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ReportProviderIT.class,
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 public class ReportProviderIT extends RestIntegrationTest {
 	@Autowired
 	private RAProperties myRaProperties;
 
 	@BeforeEach
-	void beforeEach() {
+	public void beforeEach() {
 		String ourServerBase = Urls.getUrl(myRaProperties.getReport().getEndpoint(), getPort());
 		myRaProperties.getReport().setEndpoint(ourServerBase);
 	}
@@ -200,7 +200,7 @@ public class ReportProviderIT extends RestIntegrationTest {
 					.returnResourceType(Parameters.class)
 					.execute();
 		});
-	 }
+	}
 
 	// TODO: add the count of patients returned
 	@Test

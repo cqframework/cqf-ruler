@@ -6,10 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -29,6 +25,10 @@ import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 		CdsHooksConfig.class }, properties = {
@@ -38,7 +38,7 @@ public class CdsHooksServletIT extends RestIntegrationTest {
 	String ourCdsBase;
 
 	@BeforeEach
-	void beforeEach() {
+	public void beforeEach() {
 		ourCdsBase = "http://localhost:" + getPort() + "/cds-services";
 	}
 

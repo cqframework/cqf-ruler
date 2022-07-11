@@ -7,6 +7,7 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.opencds.cqf.ruler.cql.CqlConfig;
@@ -22,6 +23,17 @@ import org.springframework.test.annotation.DirtiesContext;
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class MeasureEvaluateAdditionalDataTest extends RestIntegrationTest {
+
+	@Override
+	public void baseAfterAll() {
+		// Intentionally empty to override the base class behavior of resetting once per
+		// test suite
+	}
+
+	@AfterEach
+	public void afterEach() {
+		getDbService().resetDatabase();
+	}
 
 	@Test
 	public void testMeasureEvaluateWithXmlAdditionalData() throws Exception {
