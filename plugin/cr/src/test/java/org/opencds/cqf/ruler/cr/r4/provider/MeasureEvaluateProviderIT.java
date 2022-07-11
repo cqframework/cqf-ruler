@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
@@ -27,8 +28,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
 		MeasureEvaluateProviderIT.class,
 		CrConfig.class, CqlConfig.class }, properties = {
-				"hapi.fhir.fhir_version=r4"
-		})
+				"hapi.fhir.fhir_version=r4", "hapi.fhir.security.enabled=true" })
+
 public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	@Test
@@ -54,7 +55,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 		assertNotNull(returnMeasureReport);
 	}
 
-	@Disabled("$expand not working on server")
 	@Test
 	public void testMeasureEvaluateWithTerminologyEndpoint() throws Exception {
 		String bundleAsText = stringFromResource("Exm104FhirR4MeasureBundle.json");
@@ -66,16 +66,21 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.withNoParameters(Parameters.class).execute();
 
 		String terminologyAsText = stringFromResource("Endpoint.json");
-		Endpoint terminologyEndpoint = (Endpoint) getFhirContext().newJsonParser().parseResource(terminologyAsText);
-		terminologyEndpoint.setAddress(this.getServerBase());
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
-		params.addParameter().setName("reportType").setValue(new StringType("individual"));
-		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM104"));
-		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
-		params.addParameter().setName("terminologyEndpoint").setResource(terminologyEndpoint);
+		Endpoint terminologyEndpointValid = (Endpoint) getFhirContext().newJsonParser().parseResource(terminologyAsText);
+		terminologyEndpointValid.setAddress(this.getServerBase());
+
+		Endpoint terminologyEndpointInvalid = (Endpoint) getFhirContext().newJsonParser()
+				.parseResource(terminologyAsText);
+		terminologyEndpointInvalid.setAddress("https://tx.nhsnlink.org/fhir234");
+
+		Parameters params = newParameters(
+				newPart("periodStart", "2019-01-01"),
+				newPart("periodEnd", "2020-01-01"),
+				newPart("reportType", "individual"),
+				newPart("subject", "Patient/numer-EXM104"),
+				newPart("lastReceivedOn", "2019-12-12"),
+				newPart("terminologyEndpoint", terminologyEndpointValid));
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
@@ -85,6 +90,25 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.execute();
 
 		assertNotNull(returnMeasureReport);
+
+		Parameters paramsWithInvalidTerminology = newParameters(
+				newPart("periodStart", "2019-01-01"),
+				newPart("periodEnd", "2020-01-01"),
+				newPart("reportType", "individual"),
+				newPart("subject", "Patient/numer-EXM104"),
+				newPart("lastReceivedOn", "2019-12-12"),
+				newPart("terminologyEndpoint", terminologyEndpointInvalid));
+
+		Exception ex = assertThrows(Exception.class, () -> {
+			getClient().operation()
+					.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
+					.named("$evaluate-measure")
+					.withParameters(paramsWithInvalidTerminology)
+					.returnResourceType(MeasureReport.class)
+					.execute();
+		});
+
+		assertTrue(ex.getMessage().contains("Error performing expansion"));
 	}
 
 	private void runWithPatient(String measureId, String patientId, int initialPopulationCount, int denominatorCount,

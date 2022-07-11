@@ -62,8 +62,8 @@
 
 		<!-- CQL Support -->
 		<cqframework.version>1.5.8</cqframework.version>
-		<cql-engine.version>1.5.5</cql-engine.version>
-		<cql-evaluator.version>1.4.4-SNAPSHOT</cql-evaluator.version>
+		<cql-engine.version>1.5.8-SNAPSHOT</cql-engine.version>
+		<cql-evaluator.version>1.4.5-SNAPSHOT</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
 		<fhir_core_version>5.5.7</fhir_core_version>

@@ -50,7 +50,7 @@ public class PreExpandedTermReadSvcR4IT extends DaoIntegrationTest {
 	}
 
 	private Patient patient() {
-		return newResource(Patient.class, "ABC");
+		return newResource("Patient/ABC");
 	}
 
 	private Observation observation() {

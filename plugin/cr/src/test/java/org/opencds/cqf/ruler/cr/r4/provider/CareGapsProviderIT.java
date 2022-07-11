@@ -44,28 +44,28 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 	private static final String subjectReferenceInvalid = "Measure/gic-sub-1";
 
 	@BeforeEach
-	void beforeEach() throws Exception {
+	public void beforeEach() {
 		loadResource("Alphora-organization.json");
 		loadResource("AlphoraAuthor-organization.json");
 		loadResource("numer-EXM125-patient.json");
 	}
 
-	private void beforeEachMeasure() throws Exception {
+	private void beforeEachMeasure() {
 		loadTransaction("BreastCancerScreeningFHIR-bundle.json");
 	}
 
-	private void beforeEachParallelMeasure() throws Exception {
+	private void beforeEachParallelMeasure() {
 		loadResource("gic-gr-parallel.json");
 		loadTransaction("BreastCancerScreeningFHIR-bundle.json");
 	}
 
-	private void beforeEachMultipleMeasures() throws Exception {
+	private void beforeEachMultipleMeasures() {
 		loadTransaction("BreastCancerScreeningFHIR-bundle.json");
 		loadTransaction("ColorectalCancerScreeningsFHIR-bundle.json");
 	}
 
 	@Test
-	public void testMinimalParametersValid() throws Exception {
+	public void testMinimalParametersValid() {
 		beforeEachMeasure();
 
 		Parameters params = new Parameters();
@@ -481,9 +481,9 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
 		getClient().operation().onType(Measure.class).named("$care-gaps")
-			.withParameters(params)
-			.useHttpGet()
-			.returnResourceType(Parameters.class)
-			.execute();
+				.withParameters(params)
+				.useHttpGet()
+				.returnResourceType(Parameters.class)
+				.execute();
 	}
 }

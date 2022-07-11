@@ -79,12 +79,12 @@ public class PrefetchDataProviderDstu2 extends TerminologyAwareRetrieveProvider 
                     Interval dateInterval = dateObject instanceof Interval ? (Interval) dateObject : null;
                     String precision = PrefetchDataProviderHelper.getPrecision(Arrays.asList(dateRange, date));
 
-                    if (date != null && !(InEvaluator.in(date, dateRange, precision))) {
+                    if (date != null && !(InEvaluator.in(date, dateRange, precision, null))) {
                         includeResource = false;
                     }
                     // TODO - add precision to includes evaluator
                     else if (dateInterval != null
-                            && !(IncludesEvaluator.includes(dateRange, dateInterval, precision))) {
+                            && !(IncludesEvaluator.includes(dateRange, dateInterval, precision, null))) {
                         includeResource = false;
                     }
                 } else {
@@ -106,7 +106,7 @@ public class PrefetchDataProviderDstu2 extends TerminologyAwareRetrieveProvider 
                     Interval interval = new Interval(lowDate, true, highDate, true);
 
                     // TODO - add precision to includes evaluator
-                    if (!IncludesEvaluator.includes(dateRange, interval, precision)) {
+                    if (!IncludesEvaluator.includes(dateRange, interval, precision, null)) {
                         includeResource = false;
                     }
                 }

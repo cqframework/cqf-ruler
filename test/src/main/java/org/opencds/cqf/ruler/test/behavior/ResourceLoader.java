@@ -27,19 +27,16 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public interface ResourceLoader extends DaoRegistryUser {
 
-	default Object loadTransaction(String theLocation)
-			throws IOException {
-		IBaseBundle resource = (IBaseBundle)readResource(theLocation);
+	default Object loadTransaction(String theLocation) {
+		IBaseBundle resource = (IBaseBundle) readResource(theLocation);
 		return transaction(resource, new SystemRequestDetails());
 	}
 
-	default IBaseResource readResource(String theLocation)
-			throws IOException {
+	default IBaseResource readResource(String theLocation) {
 		String resourceString = stringFromResource(theLocation);
 		if (theLocation.endsWith("json")) {
 			return parseResource("json", resourceString);
-		}
-		else {
+		} else {
 			return parseResource("xml", resourceString);
 		}
 	}
@@ -61,18 +58,16 @@ public interface ResourceLoader extends DaoRegistryUser {
 		return parser.parseResource(resourceString);
 	}
 
-	default IBaseResource loadResource(String theLocation)
-			throws IOException {
+	default IBaseResource loadResource(String theLocation) {
 		String resourceString = stringFromResource(theLocation);
 		if (theLocation.endsWith("json")) {
 			return loadResource("json", resourceString);
-		}
-		else {
+		} else {
 			return loadResource("xml", resourceString);
 		}
 	}
 
-	default IBaseResource loadResource(String encoding, String resourceString) throws IOException {
+	default IBaseResource loadResource(String encoding, String resourceString) {
 		IBaseResource resource = parseResource(encoding, resourceString);
 		if (getDaoRegistry() == null) {
 			return resource;
@@ -82,26 +77,36 @@ public interface ResourceLoader extends DaoRegistryUser {
 		return resource;
 	}
 
-	default String stringFromResource(String theLocation) throws IOException {
+	@SuppressWarnings("java:S112")
+	default String stringFromResource(String theLocation) {
 		InputStream is = null;
-		if (theLocation.startsWith(File.separator)) {
-			is = new FileInputStream(theLocation);
-		} else {
-			DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-			Resource resource = resourceLoader.getResource(theLocation);
-			is = resource.getInputStream();
+		try {
+			if (theLocation.startsWith(File.separator)) {
+				is = new FileInputStream(theLocation);
+			} else {
+				DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+				Resource resource = resourceLoader.getResource(theLocation);
+				is = resource.getInputStream();
+			}
+			return IOUtils.toString(is, StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			throw new RuntimeException(String.format("Error loading resource from %s", theLocation), e);
 		}
-		return IOUtils.toString(is, StandardCharsets.UTF_8);
+
 	}
 
-	//TODO: is this OK to suppress?
-	//It causes the following error:
-	//[ERROR] High: Usage of GetResource in org.opencds.cqf.ruler.test.behavior.ResourceLoader.uploadTests(String) may be unsafe if class is extended [org.opencds.cqf.ruler.test.behavior.ResourceLoader] At ResourceLoader.java:[line 97] UI_INHERITANCE_UNSAFE_GETRESOURCE
+	// TODO: is this OK to suppress?
+	// It causes the following error:
+	// [ERROR] High: Usage of GetResource in
+	// org.opencds.cqf.ruler.test.behavior.ResourceLoader.uploadTests(String) may be
+	// unsafe if class is extended
+	// [org.opencds.cqf.ruler.test.behavior.ResourceLoader] At
+	// ResourceLoader.java:[line 97] UI_INHERITANCE_UNSAFE_GETRESOURCE
 	@SuppressFBWarnings("UI_INHERITANCE_UNSAFE_GETRESOURCE")
 	default Map<String, IBaseResource> uploadTests(String testDirectory) throws URISyntaxException, IOException {
 		URL url = this.getClass().getResource(testDirectory);
 		File testDir = new File(url.toURI());
-		if(!testDir.exists()) {
+		if (!testDir.exists()) {
 			throw new IllegalArgumentException(String.format("test directory %s does not exist.", testDirectory));
 		}
 		return uploadTests(testDir.listFiles());
