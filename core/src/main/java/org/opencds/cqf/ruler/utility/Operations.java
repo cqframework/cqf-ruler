@@ -88,9 +88,8 @@ public class Operations {
 	 * @return the full url as a String
 	 */
 	public static String getFullUrl(String serverAddress, String fhirType, String elementId) {
-		String fullUrl = String.format("%s%s/%s", serverAddress + (serverAddress.endsWith("/") ? "" : "/"), fhirType,
+		return String.format("%s%s/%s", serverAddress + (serverAddress.endsWith("/") ? "" : "/"), fhirType,
 				elementId);
-		return fullUrl;
 	}
 
 	/**
