@@ -52,6 +52,10 @@ public class RiskAssessmentProvider extends DaoRegistryOperationProvider {
 		)
 	);
 
+	private String evidenceStatusDateUrl = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus";
+
+	private String visited;
+
 	@Operation(name = "$risk-assessment", idempotent = true, type = Measure.class)
 	public MeasureReport riskAssessment(
 		RequestDetails requestDetails, @IdParam IdType theId,
@@ -70,8 +74,6 @@ public class RiskAssessmentProvider extends DaoRegistryOperationProvider {
 			lastReceivedOn, productLine, additionalData, terminologyEndpoint
 		);
 
-		//Measure measure = read(theId);
-
 		/*
 		*
 		* Historic Gap Closed = Measure Score 1, Historic Stratifier true
@@ -88,6 +90,7 @@ public class RiskAssessmentProvider extends DaoRegistryOperationProvider {
 
 		for (MeasureReport.MeasureReportGroupComponent group : evaluateResult.getGroup()) {
 			CodeableConcept hccCode = group.getCode();
+			visited = null;
 			for (MeasureReport.MeasureReportGroupStratifierComponent stratifier : group.getStratifier()) {
 				CodeableConcept stratifierPopCode = stratifier.getCodeFirstRep();
 				for (MeasureReport.StratifierGroupComponent stratum : stratifier.getStratum()) {
@@ -112,11 +115,27 @@ public class RiskAssessmentProvider extends DaoRegistryOperationProvider {
 	private MeasureReport.MeasureReportGroupComponent resolveGroup(CodeableConcept hccCode, CodeableConcept value, Quantity score, Extension extension) {
 		MeasureReport.MeasureReportGroupComponent group = new MeasureReport.MeasureReportGroupComponent();
 		if (value != null && value.hasText() && value.getText().equalsIgnoreCase("true")) {
+			if (visited != null) {
+				throw new RuntimeException(String.format(
+					"Disjoint populations found. The %s and %s populations are cannot be included in the same group",
+					visited, ((CodeableConcept) extension.getValue()).getCodingFirstRep().getCode())
+				);
+			}
+			if (((CodeableConcept) extension.getValue()).getCodingFirstRep().getCode().equalsIgnoreCase("net-new")
+				&& score.hasValue() && score.getValue().intValue() == 0) {
+				throw new RuntimeException("Invalid open gap detected for net-new population");
+			}
 			group
 				.setCode(hccCode)
 				.addExtension(extension).addExtension(score.hasValue() && score.getValue().intValue() == 1 ? closedGapExtension : openGapExtension);
+			visited = ((CodeableConcept) extension.getValue()).getCodingFirstRep().getCode();
 		}
 		return group.isEmpty() ? null : group;
+	}
+
+	private Extension resolveEvidenceStatusDate() {
+		// TODO
+		return new Extension();
 	}
 
 }
