@@ -117,7 +117,7 @@ public class RiskAssessmentProvider extends DaoRegistryOperationProvider {
 		if (value != null && value.hasText() && value.getText().equalsIgnoreCase("true")) {
 			if (visited != null) {
 				throw new RuntimeException(String.format(
-					"Disjoint populations found. The %s and %s populations are cannot be included in the same group",
+					"Disjoint populations found. The %s and %s populations cannot be included in the same group",
 					visited, ((CodeableConcept) extension.getValue()).getCodingFirstRep().getCode())
 				);
 			}
