@@ -1,0 +1,256 @@
+{
+	"resourceType": "MeasureReport",
+	"language": "en",
+	"contained": [
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-ef8da0b3-9080-41e2-b9b3-d68855edb4bf-org.hl7.fhir.r4.model.encounter@1d80f8c2",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "historic-encounter"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "historic-encounter"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Encounter@1d80f8c2"
+					}
+				]
+			}
+		},
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-ccd99867-c5a5-4ebd-af25-56fa51b20a14-org.hl7.fhir.r4.model.condition@42f3809f",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "historic-diagnosis"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "historic-diagnosis"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Condition@42f3809f"
+					}
+				]
+			}
+		},
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-2b28ca39-d3c2-41da-8901-2985e6c96841-org.hl7.fhir.r4.model.encounter@392ceba1",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "closed-gap-encounter"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "closed-gap-encounter"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Encounter@392ceba1"
+					}
+				]
+			}
+		},
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-e3fe294f-3396-4ada-a9fc-399f88a62605-org.hl7.fhir.r4.model.condition@20d57fb3",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "closed-gap-diagnosis"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "closed-gap-diagnosis"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Condition@20d57fb3"
+					}
+				]
+			}
+		}
+	],
+	"extension": [
+		{
+			"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+			"valueString": "A proof of concept for using CQL to evaluate CMS-HCC Models"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Encounter/hist-closed2-HCC189"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Condition/hist-closed2-HCC189"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Encounter/hist-closed-HCC189"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Condition/hist-closed-HCC189"
+		}
+	],
+	"status": "complete",
+	"type": "individual",
+	"measure": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC",
+	"subject": {
+		"reference": "Patient/hist-closed-HCC189"
+	},
+	"date": "2022-07-12T13:31:20-06:00",
+	"period": {
+		"start": "2022-01-01T00:00:00-07:00",
+		"end": "2022-12-31T23:59:59-07:00"
+	},
+	"improvementNotation": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/measure-improvement-notation",
+				"code": "increase",
+				"display": "A higher rate indicates better performance"
+			}
+		]
+	},
+	"group": [
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"system": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
+								"code": "historic"
+							}
+						]
+					}
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"system": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
+								"code": "closed-gap"
+							}
+						]
+					}
+				}
+			],
+			"code": {
+				"coding": [
+					{
+						"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+						"code": "189",
+						"display": "Amputation Status, Lower Limb/Amputation Complications"
+					}
+				]
+			}
+		}
+	],
+	"evaluatedResource": [
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				}
+			],
+			"reference": "Encounter/hist-closed-HCC189"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "denominator"
+				}
+			],
+			"reference": "Patient/hist-closed-HCC189"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				}
+			],
+			"reference": "Encounter/hist-closed2-HCC189"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				}
+			],
+			"reference": "Condition/hist-closed2-HCC189"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				}
+			],
+			"reference": "Condition/hist-closed-HCC189"
+		}
+	]
+}

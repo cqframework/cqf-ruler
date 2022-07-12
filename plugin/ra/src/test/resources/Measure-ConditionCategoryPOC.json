@@ -1,0 +1,888 @@
+{
+	"resourceType": "Measure",
+	"id": "ConditionCategoryPOC",
+	"meta": {
+		"profile": [ "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-model-measure", "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/computable-measure-cqfm" ]
+	},
+	"language": "en",
+	"contained": [ {
+		"resourceType": "Library",
+		"id": "effective-data-requirements",
+		"extension": [ {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Historic Diagnosis"
+			}, {
+				"url": "statement",
+				"valueString": "define \"Historic Diagnosis\":\n  if \"Historic Population\" then\n    \"HCC189 Historic Encounter Diagnosis\".HCCDiagnosis\n  else null as Condition"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 0
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Net-New Diagnosis"
+			}, {
+				"url": "statement",
+				"valueString": "define \"Net-New Diagnosis\":\n  if \"Net-New Population\" then\n    \"HCC189 Encounter Diagnosis\".HCCDiagnosis\n  else null as Condition"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 1
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Closed Gap Encounter"
+			}, {
+				"url": "statement",
+				"valueString": "// SDE\ndefine \"Closed Gap Encounter\":\n  if not \"Denominator Exclusions\"then\n    \"HCC189 Encounter Diagnosis\".HCCEncounter\n  else null as Encounter"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 2
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Historic Encounter"
+			}, {
+				"url": "statement",
+				"valueString": "// SDE\ndefine \"Historic Encounter\":\n  if \"Historic Population\" then\n    \"HCC189 Historic Encounter Diagnosis\".HCCEncounter\n  else null as Encounter"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 3
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Net-New Encounter"
+			}, {
+				"url": "statement",
+				"valueString": "// SDE\ndefine \"Net-New Encounter\":\n  if \"Net-New Population\" then\n    \"HCC189 Encounter Diagnosis\".HCCEncounter\n  else null as Encounter"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 4
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Suspecting Algorithm"
+			}, {
+				"url": "statement",
+				"valueString": "/** \nSuspected population may be defined by organizations that create suspecting algorithms.\nThis placeholder definition is included for information only */\n// SDEdefine \"Suspecting Algorithm\":\n  null"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 5
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "MedicareAdvantage"
+			}, {
+				"url": "name",
+				"valueString": "HCC Qualifying Encounters with Eligible Providers"
+			}, {
+				"url": "statement",
+				"valueString": "define \"HCC Qualifying Encounters with Eligible Providers\":\n  (\n    [Encounter: \"Office Visit\"]\n    \t\tunion [Encounter: \"Annual Wellness Visit\"]\n    \t\tunion [Encounter: \"Preventive Care Services - Established Office Visit, 18 and Up\"]\n    \t\tunion [Encounter: \"Preventive Care Services-Initial Office Visit, 18 and Up\"]\n    \t\tunion [Encounter: \"Hospice care ambulatory\"]\n        union [Encounter: \"Emergency Department Visit\"]\n        union [Encounter: \"Encounter Inpatient\"]\n        union [Encounter: \"Acute Inpatient\"]\n        union [Encounter: \"Nonacute Inpatient\"]\n        union [Encounter: \"Observation\"]\n  ) ValidEncounter where ValidEncounter.status  = 'finished'"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 6
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "MedicareAdvantage"
+			}, {
+				"url": "name",
+				"valueString": "Clinical Evaluation Period"
+			}, {
+				"url": "statement",
+				"valueString": "define \"Clinical Evaluation Period\":\n  \"Measurement Period\""
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 7
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "MedicareAdvantage"
+			}, {
+				"url": "name",
+				"valueString": "HCC Qualifying Encounters with Eligible Providers outside Clinical Evaluation Period"
+			}, {
+				"url": "statement",
+				"valueString": "define \"HCC Qualifying Encounters with Eligible Providers outside Clinical Evaluation Period\":\n    \"HCC Qualifying Encounters with Eligible Providers\" QualifyingEncounter \n        where not (Global.\"Normalize Interval\"(QualifyingEncounter.period) during \"Clinical Evaluation Period\")"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 8
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "HCC189 Historic Encounter Diagnosis"
+			}, {
+				"url": "statement",
+				"valueString": "/** Patient has an Encounter Diagnosis of \"Acquired absence of right great toe\": 'Z89.411' outside of the Clinical Evaluation Period (could be prior or after) **/\ndefine \"HCC189 Historic Encounter Diagnosis\":    \n  from \n  MedicareAdvantage.\"HCC Qualifying Encounters with Eligible Providers outside Clinical Evaluation Period\" HCCEncounter,\n    ([Condition] C where C.code in \"Example Acquired Lower Limb Deformities\") HCCDiagnosis\n     where HCCDiagnosis in Global.EncounterDiagnosis(HCCEncounter)"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 9
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "HCC189 Exclusions"
+			}, {
+				"url": "statement",
+				"valueString": "/** Patient has an Encounter Diagnosis of the following exclusion conditions during Clinical Evaluation Period\nM20 Acquired deformities of fingers and toes\nM21 Other acquired deformities of limbs */\ndefine \"HCC189 Exclusions\":\n  from\n  MedicareAdvantage.\"HCC Qualifying Encounters with Eligible Providers\" Encounter,\n    ([Condition] C where C.code in \"Example HCC189 Exclusion\") Diagnosis\n      where Diagnosis in Global.EncounterDiagnosis(Encounter)"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 10
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Denominator Exclusions"
+			}, {
+				"url": "statement",
+				"valueString": "define \"Denominator Exclusions\":\n  exists \"HCC189 Exclusions\""
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 11
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Historic Population"
+			}, {
+				"url": "statement",
+				"valueString": "// Stratifier\ndefine \"Historic Population\":\n  exists \"HCC189 Historic Encounter Diagnosis\"\n    and not \"Denominator Exclusions\""
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 12
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Closed Gap Diagnosis"
+			}, {
+				"url": "statement",
+				"valueString": "// SDE\ndefine \"Closed Gap Diagnosis\":\n  if not \"Denominator Exclusions\" then\n    \"HCC189 Encounter Diagnosis\".HCCDiagnosis\n  else null as Condition"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 13
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Suspected Population"
+			}, {
+				"url": "statement",
+				"valueString": "// Stratifier\ndefine \"Suspected Population\":\n  false\n    and not \"Denominator Exclusions\""
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 14
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Numerator"
+			}, {
+				"url": "statement",
+				"valueString": "define \"Numerator\":\n  exists \"Closed Gap Encounter\"\n    and not \"Denominator Exclusions\""
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 15
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Exclusion Encounter"
+			}, {
+				"url": "statement",
+				"valueString": "// SDE\ndefine \"Exclusion Encounter\":\n  \"HCC189 Exclusions\""
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 16
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "MedicareAdvantage"
+			}, {
+				"url": "name",
+				"valueString": "Qualifying Member"
+			}, {
+				"url": "statement",
+				"valueString": "define \"Qualifying Member\":\n    AgeInYearsAt(date from start of \"Clinical Evaluation Period\") >=65"
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 17
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Qualifying Members"
+			}, {
+				"url": "statement",
+				"valueString": "/** Medicare Advantage patients who are age 65 years and older and have an eligible encounter */\ndefine \"Qualifying Members\":\n  MedicareAdvantage.\"Qualifying Member\"\n    and exists MedicareAdvantage.\"HCC Qualifying Encounters with Eligible Providers\""
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 18
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Initial Population"
+			}, {
+				"url": "statement",
+				"valueString": "define \"Initial Population\":\n  \"Qualifying Members\""
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 19
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Net-New Population"
+			}, {
+				"url": "statement",
+				"valueString": "// Stratifier\ndefine \"Net-New Population\":\n  exists \"Closed Gap Encounter\"\n    and not \"Historic Population\"\n    and not \"Denominator Exclusions\""
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 20
+			} ]
+		}, {
+			"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-logicDefinition",
+			"extension": [ {
+				"url": "libraryName",
+				"valueString": "HCC189"
+			}, {
+				"url": "name",
+				"valueString": "Denominator"
+			}, {
+				"url": "statement",
+				"valueString": "define \"Denominator\":\n  \"Initial Population\"\n    and (\n      \"Historic Population\" \n        or \"Suspected Population\" \n        or \"Net-New Population\" \n        or exists \"Closed Gap Encounter\"\n    )\n    and not \"Denominator Exclusions\""
+			}, {
+				"url": "displaySequence",
+				"valueInteger": 21
+			} ]
+		} ],
+		"status": "active",
+		"type": {
+			"coding": [ {
+				"system": "http://terminology.hl7.org/CodeSystem/library-type",
+				"code": "module-definition"
+			} ]
+		},
+		"relatedArtifact": [ {
+			"type": "depends-on",
+			"display": "Library MedicareAdvantage",
+			"resource": "http://hl7.org/fhir/us/davinci-ra/Library/MedicareAdvantage|0.0.001"
+		}, {
+			"type": "depends-on",
+			"display": "Library FHIRHelpers",
+			"resource": "http://hl7.org/fhir/us/davinci-ra/Library/FHIRHelpers|4.0.001"
+		}, {
+			"type": "depends-on",
+			"display": "Library Global",
+			"resource": "http://hl7.org/fhir/us/davinci-ra/Library/MATGlobalCommonFunctionsFHIR4|6.1.000"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Office Visit",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Annual Wellness Visit",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.3.1240"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Preventive Care Services - Established Office Visit, 18 and Up",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1025"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Preventive Care Services-Initial Office Visit, 18 and Up",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1023"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Hospice care ambulatory",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1108.15"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Emergency Department Visit",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.292"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Encounter Inpatient",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Acute Inpatient",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1083"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Nonacute Inpatient",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1084"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Observation",
+			"resource": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1086"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Example Acquired Lower Limb Deformities",
+			"resource": "http://hl7.org/fhir/us/davinci-ra/ValueSet/example-acquired-lower-limb-deformities"
+		}, {
+			"type": "depends-on",
+			"display": "Value set Example HCC189 Exclusion",
+			"resource": "http://hl7.org/fhir/us/davinci-ra/ValueSet/example-hcc189-exclusion"
+		} ],
+		"parameter": [ {
+			"name": "Measurement Period",
+			"use": "in",
+			"min": 0,
+			"max": "1",
+			"type": "Period"
+		}, {
+			"name": "Historic Diagnosis",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "Any"
+		}, {
+			"name": "Net-New Diagnosis",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "Any"
+		}, {
+			"name": "Closed Gap Encounter",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "Any"
+		}, {
+			"name": "Historic Encounter",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "Any"
+		}, {
+			"name": "Net-New Encounter",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "Any"
+		}, {
+			"name": "Suspecting Algorithm",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "Any"
+		}, {
+			"name": "Historic Population",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "boolean"
+		}, {
+			"name": "Closed Gap Diagnosis",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "Any"
+		}, {
+			"name": "Suspected Population",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "boolean"
+		}, {
+			"name": "Numerator",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "boolean"
+		}, {
+			"name": "Exclusion Encounter",
+			"use": "out",
+			"min": 0,
+			"max": "*",
+			"type": "Any"
+		}, {
+			"name": "Denominator",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "boolean"
+		}, {
+			"name": "Initial Population",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "boolean"
+		}, {
+			"name": "Net-New Population",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "boolean"
+		}, {
+			"name": "Denominator Exclusions",
+			"use": "out",
+			"min": 0,
+			"max": "1",
+			"type": "boolean"
+		} ],
+		"dataRequirement": [ {
+			"profile": [ "http://hl7.org/fhir/EncounterStatus" ],
+			"mustSupport": [ "value" ]
+		}, {
+			"type": "Encounter",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Encounter" ],
+			"mustSupport": [ "type" ],
+			"codeFilter": [ {
+				"path": "type",
+				"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001"
+			} ]
+		}, {
+			"type": "Encounter",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Encounter" ],
+			"mustSupport": [ "type" ],
+			"codeFilter": [ {
+				"path": "type",
+				"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.3.1240"
+			} ]
+		}, {
+			"type": "Encounter",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Encounter" ],
+			"mustSupport": [ "type" ],
+			"codeFilter": [ {
+				"path": "type",
+				"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1025"
+			} ]
+		}, {
+			"type": "Encounter",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Encounter" ],
+			"mustSupport": [ "type" ],
+			"codeFilter": [ {
+				"path": "type",
+				"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1023"
+			} ]
+		}, {
+			"type": "Encounter",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Encounter" ],
+			"mustSupport": [ "type" ],
+			"codeFilter": [ {
+				"path": "type",
+				"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1108.15"
+			} ]
+		}, {
+			"type": "Encounter",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Encounter" ],
+			"mustSupport": [ "type" ],
+			"codeFilter": [ {
+				"path": "type",
+				"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.117.1.7.1.292"
+			} ]
+		}, {
+			"type": "Encounter",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Encounter" ],
+			"mustSupport": [ "type" ],
+			"codeFilter": [ {
+				"path": "type",
+				"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.666.5.307"
+			} ]
+		}, {
+			"type": "Encounter",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Encounter" ],
+			"mustSupport": [ "type" ],
+			"codeFilter": [ {
+				"path": "type",
+				"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1083"
+			} ]
+		}, {
+			"type": "Encounter",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Encounter" ],
+			"mustSupport": [ "type" ],
+			"codeFilter": [ {
+				"path": "type",
+				"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1084"
+			} ]
+		}, {
+			"type": "Encounter",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Encounter" ],
+			"mustSupport": [ "type" ],
+			"codeFilter": [ {
+				"path": "type",
+				"valueSet": "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1086"
+			} ]
+		}, {
+			"type": "dateTime",
+			"profile": [ "http://hl7.org/fhir/dateTime" ],
+			"mustSupport": [ "value" ]
+		}, {
+			"type": "instant",
+			"profile": [ "http://hl7.org/fhir/instant" ],
+			"mustSupport": [ "value" ]
+		}, {
+			"type": "date",
+			"profile": [ "http://hl7.org/fhir/date" ],
+			"mustSupport": [ "value" ]
+		}, {
+			"type": "Patient",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Patient" ]
+		}, {
+			"type": "Patient",
+			"profile": [ "http://hl7.org/fhir/Patient" ],
+			"mustSupport": [ "birthDate" ]
+		}, {
+			"type": "Range",
+			"profile": [ "http://hl7.org/fhir/Range" ],
+			"mustSupport": [ "low", "high" ]
+		}, {
+			"type": "id",
+			"profile": [ "http://hl7.org/fhir/id" ],
+			"mustSupport": [ "value" ]
+		}, {
+			"type": "string",
+			"profile": [ "http://hl7.org/fhir/string" ],
+			"mustSupport": [ "value" ]
+		}, {
+			"type": "Condition",
+			"profile": [ "http://hl7.org/fhir/StructureDefinition/Condition" ],
+			"mustSupport": [ "id", "code" ]
+		} ]
+	} ],
+	"extension": [ {
+		"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-softwaresystem",
+		"valueReference": {
+			"reference": "Device/cqf-tooling"
+		}
+	}, {
+		"id": "effective-data-requirements",
+		"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-effectiveDataRequirements",
+		"valueReference": {
+			"reference": "#effective-data-requirements"
+		}
+	} ],
+	"url": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC",
+	"identifier": [ {
+		"use": "temp",
+		"system": "http://example.org/fhir/server",
+		"value": "CMS-HCC"
+	} ],
+	"version": "0.0.001",
+	"name": "ConditionCategoryPOC",
+	"title": "Condition Category Proof Of Concept",
+	"status": "draft",
+	"experimental": true,
+	"date": "2022-07-12",
+	"publisher": "HL7 International - Clinical Quality Information Work Group",
+	"contact": [ {
+		"telecom": [ {
+			"system": "url",
+			"value": "http://www.hl7.org/Special/committees/cqi/index.cfm"
+		} ]
+	} ],
+	"description": "A proof of concept for using CQL to evaluate CMS-HCC Models",
+	"effectivePeriod": {
+		"start": "2022-01-01",
+		"end": "2022-12-31"
+	},
+	"library": [ "http://hl7.org/fhir/us/davinci-ra/Library/HCC189" ],
+	"disclaimer": "This is a proof of concept and not intended for actual use.",
+	"scoring": {
+		"coding": [ {
+			"system": "http://terminology.hl7.org/CodeSystem/measure-scoring",
+			"code": "proportion",
+			"display": "Proportion"
+		} ]
+	},
+	"type": [ {
+		"coding": [ {
+			"system": "http://terminology.hl7.org/CodeSystem/measure-type",
+			"code": "outcome"
+		} ]
+	} ],
+	"improvementNotation": {
+		"coding": [ {
+			"system": "http://terminology.hl7.org/CodeSystem/measure-improvement-notation",
+			"code": "increase",
+			"display": "A higher rate indicates better performance"
+		} ]
+	},
+	"group": [ {
+		"code": {
+			"coding": [ {
+				"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+				"code": "189",
+				"display": "Amputation Status, Lower Limb/Amputation Complications"
+			} ]
+		},
+		"population": [ {
+			"id": "44dda657-2a78-4760-aee4-a81b2e070c69",
+			"code": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+					"code": "initial-population",
+					"display": "Initial Population"
+				} ]
+			},
+			"description": "Age 65 years and older with (risk adjustable) eligible encounters.",
+			"criteria": {
+				"language": "text/cql-identifier",
+				"expression": "Initial Population"
+			}
+		}, {
+			"id": "3a8aff03-feea-4087-8e56-95891395466b",
+			"code": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+					"code": "denominator",
+					"display": "Denominator"
+				} ]
+			},
+			"description": "The Initial Population, minus Exclusions that have Historic, Suspected, Net New, or Closed HCC189 Gaps.",
+			"criteria": {
+				"language": "text/cql-identifier",
+				"expression": "Denominator"
+			}
+		}, {
+			"id": "a3654276-be9f-4233-aa0d-26d00b1336e4",
+			"code": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+					"code": "denominator-exclusion",
+					"display": "Denominator Exclusion"
+				} ]
+			},
+			"description": "A Condition that excludes the HCC189 Condition.",
+			"criteria": {
+				"language": "text/cql-identifier",
+				"expression": "Denominator Exclusions"
+			}
+		}, {
+			"id": "dfc5e656-55ab-4cfc-a073-757b03a7417f",
+			"code": {
+				"coding": [ {
+					"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+					"code": "numerator",
+					"display": "Numerator"
+				}, {
+					"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/evidence-status",
+					"code": "closed-gap"
+				} ]
+			},
+			"description": "An Encounter with a HCC189 Condition within the Clinical Evaluation Period.",
+			"criteria": {
+				"language": "text/cql-identifier",
+				"expression": "Numerator"
+			}
+		} ],
+		"stratifier": [ {
+			"id": "9ab5f42e-dfa3-4504-993f-28199056cff6",
+			"code": {
+				"coding": [ {
+					"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type",
+					"code": "historic"
+				} ]
+			},
+			"criteria": {
+				"language": "text/cql.identifier",
+				"expression": "Historic Population"
+			}
+		}, {
+			"id": "97e4df34-75d5-4874-942f-d24a5e2dd794",
+			"code": {
+				"coding": [ {
+					"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type",
+					"code": "suspected"
+				} ]
+			},
+			"criteria": {
+				"language": "text/cql.identifier",
+				"expression": "Suspected Population"
+			}
+		}, {
+			"id": "f1788d06-d229-424f-ab11-d6009c022bce",
+			"code": {
+				"coding": [ {
+					"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type",
+					"code": "net-new"
+				} ]
+			},
+			"criteria": {
+				"language": "text/cql.identifier",
+				"expression": "Net-New Population"
+			}
+		} ]
+	} ],
+	"supplementalData": [ {
+		"id": "53739093-31d2-4bf2-a749-6d5170b205e4",
+		"usage": [ {
+			"coding": [ {
+				"system": "http://terminology.hl7.org/CodeSystem/measure-data-usage",
+				"code": "supplemental-data"
+			} ]
+		} ],
+		"criteria": {
+			"language": "text/cql.identifier",
+			"expression": "Exclusion Encounter"
+		}
+	}, {
+		"id": "ef8da0b3-9080-41e2-b9b3-d68855edb4bf",
+		"usage": [ {
+			"coding": [ {
+				"system": "http://terminology.hl7.org/CodeSystem/measure-data-usage",
+				"code": "supplemental-data"
+			} ]
+		} ],
+		"criteria": {
+			"language": "text/cql.identifier",
+			"expression": "Historic Encounter"
+		}
+	}, {
+		"id": "ccd99867-c5a5-4ebd-af25-56fa51b20a14",
+		"usage": [ {
+			"coding": [ {
+				"system": "http://terminology.hl7.org/CodeSystem/measure-data-usage",
+				"code": "supplemental-data"
+			} ]
+		} ],
+		"criteria": {
+			"language": "text/cql.identifier",
+			"expression": "Historic Diagnosis"
+		}
+	}, {
+		"id": "6b0213b3-ae61-4b68-869c-fbbf550365d4",
+		"usage": [ {
+			"coding": [ {
+				"system": "http://terminology.hl7.org/CodeSystem/measure-data-usage",
+				"code": "supplemental-data"
+			} ]
+		} ],
+		"criteria": {
+			"language": "text/cql.identifier",
+			"expression": "Net-New Encounter"
+		}
+	}, {
+		"id": "fbd27696-c18c-4adf-ba0a-96e6c63d64ad",
+		"usage": [ {
+			"coding": [ {
+				"system": "http://terminology.hl7.org/CodeSystem/measure-data-usage",
+				"code": "supplemental-data"
+			} ]
+		} ],
+		"criteria": {
+			"language": "text/cql.identifier",
+			"expression": "Net-New Diagnosis"
+		}
+	}, {
+		"id": "44fde183-23ab-43ce-a10e-1ab48f57cbd5",
+		"usage": [ {
+			"coding": [ {
+				"system": "http://terminology.hl7.org/CodeSystem/measure-data-usage",
+				"code": "supplemental-data"
+			} ]
+		} ],
+		"criteria": {
+			"language": "text/cql.identifier",
+			"expression": "Suspecting Algorithm"
+		}
+	}, {
+		"id": "2b28ca39-d3c2-41da-8901-2985e6c96841",
+		"usage": [ {
+			"coding": [ {
+				"system": "http://terminology.hl7.org/CodeSystem/measure-data-usage",
+				"code": "supplemental-data"
+			} ]
+		} ],
+		"criteria": {
+			"language": "text/cql.identifier",
+			"expression": "Closed Gap Encounter"
+		}
+	}, {
+		"id": "e3fe294f-3396-4ada-a9fc-399f88a62605",
+		"usage": [ {
+			"coding": [ {
+				"system": "http://terminology.hl7.org/CodeSystem/measure-data-usage",
+				"code": "supplemental-data"
+			} ]
+		} ],
+		"criteria": {
+			"language": "text/cql.identifier",
+			"expression": "Closed Gap Diagnosis"
+		}
+	} ]
+}

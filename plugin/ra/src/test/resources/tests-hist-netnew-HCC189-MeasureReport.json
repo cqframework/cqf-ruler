@@ -1,0 +1,238 @@
+{
+	"resourceType": "MeasureReport",
+	"language": "en",
+	"contained": [
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-6b0213b3-ae61-4b68-869c-fbbf550365d4-org.hl7.fhir.r4.model.encounter@259d52c",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "net-new-encounter"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "net-new-encounter"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Encounter@259d52c"
+					}
+				]
+			}
+		},
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-fbd27696-c18c-4adf-ba0a-96e6c63d64ad-org.hl7.fhir.r4.model.condition@7cdff3a1",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "net-new-diagnosis"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "net-new-diagnosis"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Condition@7cdff3a1"
+					}
+				]
+			}
+		},
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-2b28ca39-d3c2-41da-8901-2985e6c96841-org.hl7.fhir.r4.model.encounter@259d52c",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "closed-gap-encounter"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "closed-gap-encounter"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Encounter@259d52c"
+					}
+				]
+			}
+		},
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-e3fe294f-3396-4ada-a9fc-399f88a62605-org.hl7.fhir.r4.model.condition@7cdff3a1",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "closed-gap-diagnosis"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "closed-gap-diagnosis"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Condition@7cdff3a1"
+					}
+				]
+			}
+		}
+	],
+	"extension": [
+		{
+			"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+			"valueString": "A proof of concept for using CQL to evaluate CMS-HCC Models"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Encounter/netnew-HCC189"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Condition/netnew-HCC189"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Encounter/netnew-HCC189"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Condition/netnew-HCC189"
+		}
+	],
+	"status": "complete",
+	"type": "individual",
+	"measure": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC",
+	"subject": {
+		"reference": "Patient/netnew-HCC189"
+	},
+	"date": "2022-07-12T13:33:56-06:00",
+	"period": {
+		"start": "2022-01-01T00:00:00-07:00",
+		"end": "2022-12-31T23:59:59-07:00"
+	},
+	"improvementNotation": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/measure-improvement-notation",
+				"code": "increase",
+				"display": "A higher rate indicates better performance"
+			}
+		]
+	},
+	"group": [
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"system": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
+								"code": "net-new"
+							}
+						]
+					}
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"system": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
+								"code": "closed-gap"
+							}
+						]
+					}
+				}
+			],
+			"code": {
+				"coding": [
+					{
+						"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+						"code": "189",
+						"display": "Amputation Status, Lower Limb/Amputation Complications"
+					}
+				]
+			}
+		}
+	],
+	"evaluatedResource": [
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				}
+			],
+			"reference": "Condition/netnew-HCC189"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "denominator"
+				}
+			],
+			"reference": "Patient/netnew-HCC189"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				}
+			],
+			"reference": "Encounter/netnew-HCC189"
+		}
+	]
+}

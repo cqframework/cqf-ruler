@@ -21,4 +21,10 @@ public class RAConfig {
 	public OperationProvider r4ReportProvider() {
 		return new org.opencds.cqf.ruler.ra.r4.ReportProvider();
 	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public OperationProvider r4RiskAssessmentProvider() {
+		return new org.opencds.cqf.ruler.ra.r4.RiskAssessmentProvider();
+	}
 }

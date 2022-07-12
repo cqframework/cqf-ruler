@@ -1,0 +1,179 @@
+{
+	"resourceType": "MeasureReport",
+	"language": "en",
+	"contained": [
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-ef8da0b3-9080-41e2-b9b3-d68855edb4bf-org.hl7.fhir.r4.model.encounter@188292cb",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "historic-encounter"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "historic-encounter"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Encounter@188292cb"
+					}
+				]
+			}
+		},
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-ccd99867-c5a5-4ebd-af25-56fa51b20a14-org.hl7.fhir.r4.model.condition@4bd2877",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "historic-diagnosis"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "historic-diagnosis"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Condition@4bd2877"
+					}
+				]
+			}
+		}
+	],
+	"extension": [
+		{
+			"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+			"valueString": "A proof of concept for using CQL to evaluate CMS-HCC Models"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Encounter/hist-open2-HCC189"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Condition/hist-open2-HCC189"
+		}
+	],
+	"status": "complete",
+	"type": "individual",
+	"measure": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC",
+	"subject": {
+		"reference": "Patient/hist-open-HCC189"
+	},
+	"date": "2022-07-12T12:59:58-06:00",
+	"period": {
+		"start": "2022-01-01T00:00:00-07:00",
+		"end": "2022-12-31T23:59:59-07:00"
+	},
+	"improvementNotation": {
+		"coding": [
+			{
+				"system": "http://terminology.hl7.org/CodeSystem/measure-improvement-notation",
+				"code": "increase",
+				"display": "A higher rate indicates better performance"
+			}
+		]
+	},
+	"group": [
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"system": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
+								"code": "historic"
+							}
+						]
+					}
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
+					"valueCodeableConcept": {
+						"coding": [
+							{
+								"system": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
+								"code": "open-gap"
+							}
+						]
+					}
+				}
+			],
+			"code": {
+				"coding": [
+					{
+						"system": "http://terminology.hl7.org/CodeSystem/cmshcc",
+						"code": "189",
+						"display": "Amputation Status, Lower Limb/Amputation Complications"
+					}
+				]
+			}
+		}
+	],
+	"evaluatedResource": [
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				},
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "denominator"
+				}
+			],
+			"reference": "Patient/hist-open-HCC189"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				}
+			],
+			"reference": "Encounter/hist-open-HCC189"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				}
+			],
+			"reference": "Encounter/hist-open2-HCC189"
+		},
+		{
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-populationReference",
+					"valueString": "initial-population"
+				}
+			],
+			"reference": "Condition/hist-open2-HCC189"
+		}
+	]
+}

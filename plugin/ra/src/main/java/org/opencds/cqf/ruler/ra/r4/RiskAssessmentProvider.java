@@ -4,22 +4,55 @@ import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Attachment;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
-import org.hl7.fhir.r4.model.Parameters;
-import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
+import org.hl7.fhir.r4.model.Quantity;
 import org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collections;
 
 public class RiskAssessmentProvider extends DaoRegistryOperationProvider {
+	@Autowired
+	MeasureEvaluateProvider measureEvaluateProvider;
 
-	@Operation(name = "$risk-assessment")
+	private String suspectTypeUrl = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType";
+	private Extension historicExtension = new Extension().setUrl(suspectTypeUrl).setValue(
+		new CodeableConcept().setCoding(
+			Collections.singletonList(new Coding().setCode("historic").setSystem(suspectTypeUrl))
+		)
+	);
+	private Extension suspectedExtension = new Extension().setUrl(suspectTypeUrl).setValue(
+		new CodeableConcept().setCoding(
+			Collections.singletonList(new Coding().setCode("suspected").setSystem(suspectTypeUrl))
+		)
+	);
+	private Extension netNewExtension = new Extension().setUrl(suspectTypeUrl).setValue(
+		new CodeableConcept().setCoding(
+			Collections.singletonList(new Coding().setCode("net-new").setSystem(suspectTypeUrl))
+		)
+	);
+
+	private String evidenceStatusUrl = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus";
+	private Extension closedGapExtension = new Extension().setUrl(evidenceStatusUrl).setValue(
+		new CodeableConcept().setCoding(
+			Collections.singletonList(new Coding().setCode("closed-gap").setSystem(evidenceStatusUrl))
+		)
+	);
+	private Extension openGapExtension = new Extension().setUrl(evidenceStatusUrl).setValue(
+		new CodeableConcept().setCoding(
+			Collections.singletonList(new Coding().setCode("open-gap").setSystem(evidenceStatusUrl))
+		)
+	);
+
+	@Operation(name = "$risk-assessment", idempotent = true, type = Measure.class)
 	public MeasureReport riskAssessment(
 		RequestDetails requestDetails, @IdParam IdType theId,
 		@OperationParam(name = "periodStart") String periodStart,
@@ -32,41 +65,58 @@ public class RiskAssessmentProvider extends DaoRegistryOperationProvider {
 		@OperationParam(name = "additionalData") Bundle additionalData,
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint)
 	{
-
-		MeasureEvaluateProvider provider = new MeasureEvaluateProvider();
-		MeasureReport evaluateResult = provider.evaluateMeasure(
+		MeasureReport evaluateResult = measureEvaluateProvider.evaluateMeasure(
 			requestDetails, theId, periodStart, periodEnd, reportType, subject, practitioner,
 			lastReceivedOn, productLine, additionalData, terminologyEndpoint
 		);
 
+		//Measure measure = read(theId);
+
+		/*
+		*
+		* Historic Gap Closed = Measure Score 1, Historic Stratifier true
+		* Historic Gap Open = Measure Score 0, Historic Stratifier true
+		* Net New = Measure Score 1, Net-New Stratifier true
+		* Suspected Gap Closed = Measure Score 1, Suspected Stratifier true
+		* Suspected Gap Open = Measure Score 0, Suspected Stratifier true
+		*
+		* */
+
 		MeasureReport riskAssessmentResult = new MeasureReport();
+		evaluateResult.copyValues(riskAssessmentResult);
+		riskAssessmentResult.getGroup().clear();
 
-		Measure evaluatedMeasure = read(theId);
-		Library primaryLibrary;
-		if (evaluatedMeasure.hasLibrary()) {
-			primaryLibrary = read(new IdType().setValue(evaluatedMeasure.getLibrary().get(0).getId()));
-		}
-		else throw new RuntimeException("The Measure/$risk-assessment operation requires the specified measure to have a reference to a primary library");
-
-		String content = null;
-		if (primaryLibrary.hasContent()) {
-			for (Attachment a : primaryLibrary.getContent()) {
-				if (a.hasContentType() && a.getContentType().equals("text/cql")) {
-					content = new String(a.getData());
+		for (MeasureReport.MeasureReportGroupComponent group : evaluateResult.getGroup()) {
+			CodeableConcept hccCode = group.getCode();
+			for (MeasureReport.MeasureReportGroupStratifierComponent stratifier : group.getStratifier()) {
+				CodeableConcept stratifierPopCode = stratifier.getCodeFirstRep();
+				for (MeasureReport.StratifierGroupComponent stratum : stratifier.getStratum()) {
+					CodeableConcept value = stratum.getValue();
+					Quantity score = stratum.getMeasureScore();
+					if (stratifierPopCode.hasCoding() && stratifierPopCode.getCodingFirstRep().getCode().equals("historic")) {
+						riskAssessmentResult.addGroup(resolveGroup(hccCode, value, score, historicExtension));
+					}
+					else if (stratifierPopCode.hasCoding() && stratifierPopCode.getCodingFirstRep().getCode().equals("suspected")) {
+						riskAssessmentResult.addGroup(resolveGroup(hccCode, value, score, suspectedExtension));
+					}
+					else if (stratifierPopCode.hasCoding() && stratifierPopCode.getCodingFirstRep().getCode().equals("net-new")) {
+						riskAssessmentResult.addGroup(resolveGroup(hccCode, value, score, netNewExtension));
+					}
 				}
 			}
 		}
-		if (StringUtils.isBlank(content)) throw new RuntimeException("The Measure/$risk-assessment operation requires the primary library to include cql content");
-
-		CqlExecutionProvider cqlExecutionProvider = new CqlExecutionProvider();
-//		Parameters conditionCategoryResult = cqlExecutionProvider.evaluate(
-//			requestDetails, subject, "Condition Category", null, null, null,
-//			null, null, null, null, terminologyEndpoint, content
-//		);
-
-		// TODO: Add MeasureReport group extension for HCC code based on result returned from the $cql operation
 
 		return riskAssessmentResult;
+	}
+
+	private MeasureReport.MeasureReportGroupComponent resolveGroup(CodeableConcept hccCode, CodeableConcept value, Quantity score, Extension extension) {
+		MeasureReport.MeasureReportGroupComponent group = new MeasureReport.MeasureReportGroupComponent();
+		if (value != null && value.hasText() && value.getText().equalsIgnoreCase("true")) {
+			group
+				.setCode(hccCode)
+				.addExtension(extension).addExtension(score.hasValue() && score.getValue().intValue() == 1 ? closedGapExtension : openGapExtension);
+		}
+		return group.isEmpty() ? null : group;
 	}
 
 }
