@@ -231,6 +231,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 			this.processedReport = new MeasureReport();
 			this.unprocessedReport.copyValues(this.processedReport);
 			this.processedReport.getGroup().clear();
+			this.processedReport.setMeta(new Meta().addProfile("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport"));
 		}
 
 		void createIssue(String issue) {
