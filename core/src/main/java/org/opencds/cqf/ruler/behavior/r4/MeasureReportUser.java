@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.behavior.IdCreator;
@@ -13,20 +15,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public interface MeasureReportUser extends DaoRegistryUser, IdCreator {
-	static final Logger ourLog = LoggerFactory.getLogger(ParameterUser.class);
+	Logger ourLog = LoggerFactory.getLogger(ParameterUser.class);
 
-	public static final String MEASUREREPORT_IMPROVEMENT_NOTATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-improvement-notation";
-	public static final String MEASUREREPORT_MEASURE_POPULATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-population";
+	String MEASUREREPORT_IMPROVEMENT_NOTATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-improvement-notation";
+	String MEASUREREPORT_MEASURE_POPULATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-population";
 
-	public default Map<String, Resource> getEvaluatedResources(org.hl7.fhir.r4.model.MeasureReport report) {
+	default Map<String, Resource> getEvaluatedResources(org.hl7.fhir.r4.model.MeasureReport report) {
 		Map<String, Resource> resources = new HashMap<>();
 		getEvaluatedResources(report, resources);
 
 		return resources;
 	}
 
-	public default MeasureReportUser getEvaluatedResources(org.hl7.fhir.r4.model.MeasureReport report,
-			Map<String, Resource> resources) {
+	default MeasureReportUser getEvaluatedResources(org.hl7.fhir.r4.model.MeasureReport report,
+																	Map<String, Resource> resources) {
 		report.getEvaluatedResource().forEach(evaluatedResource -> {
 			IIdType resourceId = evaluatedResource.getReferenceElement();
 			if (resourceId.getResourceType() == null || resources.containsKey(Ids.simple(resourceId))) {
@@ -40,5 +42,14 @@ public interface MeasureReportUser extends DaoRegistryUser, IdCreator {
 		});
 
 		return this;
+	}
+
+	default OperationOutcome generateIssue(String severity, String issue) {
+		OperationOutcome error = new OperationOutcome();
+		error.addIssue()
+			.setSeverity(OperationOutcome.IssueSeverity.fromCode(severity))
+			.setCode(OperationOutcome.IssueType.PROCESSING)
+			.setDetails(new CodeableConcept().setText(issue));
+		return error;
 	}
 }

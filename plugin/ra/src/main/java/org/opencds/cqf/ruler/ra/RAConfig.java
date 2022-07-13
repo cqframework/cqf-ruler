@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.ra;
 
 import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
+import org.opencds.cqf.ruler.ra.r4.RiskAdjustmentProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -20,5 +21,11 @@ public class RAConfig {
 	@Conditional(OnR4Condition.class)
 	public OperationProvider r4ReportProvider() {
 		return new org.opencds.cqf.ruler.ra.r4.ReportProvider();
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public OperationProvider r4RiskAdjustmentProvider() {
+		return new RiskAdjustmentProvider();
 	}
 }
