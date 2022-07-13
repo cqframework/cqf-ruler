@@ -1,4 +1,5 @@
 package org.opencds.cqf.ruler.ra.r4;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
@@ -50,9 +51,14 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		assertTrue(resultParams.getParameterFirstRep().hasName());
 		assertEquals("Patient/hist-open-HCC189", resultParams.getParameterFirstRep().getName());
 		assertTrue(resultParams.getParameterFirstRep().hasResource());
-		assertTrue(resultParams.getParameterFirstRep().getResource() instanceof MeasureReport);
+		assertTrue(resultParams.getParameterFirstRep().getResource() instanceof Bundle);
 
-		MeasureReport response = (MeasureReport) resultParams.getParameterFirstRep().getResource();
+		Bundle raBundle = (Bundle) resultParams.getParameterFirstRep().getResource();
+
+		assertTrue(raBundle.hasEntry());
+		assertTrue(raBundle.getEntryFirstRep().getResource() instanceof MeasureReport);
+
+		MeasureReport response = (MeasureReport) raBundle.getEntryFirstRep().getResource();
 
 		assertFalse(response.getGroup().isEmpty());
 		assertEquals(1, response.getGroup().size());
@@ -101,9 +107,14 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		assertTrue(resultParams.getParameterFirstRep().hasName());
 		assertEquals("Patient/hist-closed-HCC189", resultParams.getParameterFirstRep().getName());
 		assertTrue(resultParams.getParameterFirstRep().hasResource());
-		assertTrue(resultParams.getParameterFirstRep().getResource() instanceof MeasureReport);
+		assertTrue(resultParams.getParameterFirstRep().getResource() instanceof Bundle);
 
-		MeasureReport response = (MeasureReport) resultParams.getParameterFirstRep().getResource();
+		Bundle raBundle = (Bundle) resultParams.getParameterFirstRep().getResource();
+
+		assertTrue(raBundle.hasEntry());
+		assertTrue(raBundle.getEntryFirstRep().getResource() instanceof MeasureReport);
+
+		MeasureReport response = (MeasureReport) raBundle.getEntryFirstRep().getResource();
 
 		assertFalse(response.getGroup().isEmpty());
 		assertEquals(1, response.getGroup().size());
@@ -152,9 +163,14 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		assertTrue(resultParams.getParameterFirstRep().hasName());
 		assertEquals("Patient/netnew-HCC189", resultParams.getParameterFirstRep().getName());
 		assertTrue(resultParams.getParameterFirstRep().hasResource());
-		assertTrue(resultParams.getParameterFirstRep().getResource() instanceof MeasureReport);
+		assertTrue(resultParams.getParameterFirstRep().getResource() instanceof Bundle);
 
-		MeasureReport response = (MeasureReport) resultParams.getParameterFirstRep().getResource();
+		Bundle raBundle = (Bundle) resultParams.getParameterFirstRep().getResource();
+
+		assertTrue(raBundle.hasEntry());
+		assertTrue(raBundle.getEntryFirstRep().getResource() instanceof MeasureReport);
+
+		MeasureReport response = (MeasureReport) raBundle.getEntryFirstRep().getResource();
 
 		assertFalse(response.getGroup().isEmpty());
 		assertEquals(1, response.getGroup().size());

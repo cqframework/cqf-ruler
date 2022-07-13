@@ -6,21 +6,25 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.ParamPrefixEnum;
 import ca.uhn.fhir.rest.param.ReferenceParam;
+import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.MeasureReport;
+import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.Resource;
+import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.TypedBundleProvider;
 import java.util.Collections;
+import java.util.Map;
 
-public class RiskAdjustmentProvider extends DaoRegistryOperationProvider {
+public class RiskAdjustmentProvider extends DaoRegistryOperationProvider implements MeasureReportUser {
 
 	private static String suspectTypeUrl = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType";
 	private static String evidenceStatusUrl = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus";
@@ -63,7 +67,6 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider {
 
 		if (!riskAdjustmentParameters.hasParameter()) {
 			riskAdjustmentParameters.addParameter().setName(subject).setResource(generateIssue(String.format("No MeasureReport resource found for subject: %s", subject)));
-			return riskAdjustmentParameters;
 		}
 
 		return riskAdjustmentParameters;
@@ -133,6 +136,10 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider {
 			.setCode(OperationOutcome.IssueType.PROCESSING)
 			.setDetails(new CodeableConcept().setText(issue));
 		return error;
+	}
+
+	private void bundleReport() {
+
 	}
 
 	private static class RiskAdjustmentGroup {
@@ -212,7 +219,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider {
 		}
 	}
 
-	private static class RiskAdjustmentReturnElement {
+	private class RiskAdjustmentReturnElement {
 		String reference;
 		MeasureReport unprocessedReport;
 		MeasureReport processedReport;
@@ -231,7 +238,17 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider {
 		}
 
 		Resource getRiskAdjustmentOutcome() {
-			return this.error == null ? this.processedReport : this.error;
+			return this.error == null ? bundleReport() : this.error;
+		}
+
+		private Bundle bundleReport() {
+			Bundle raBundle = new Bundle().setType(Bundle.BundleType.COLLECTION);
+			raBundle.setMeta(new Meta().addProfile("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle"));
+			raBundle.addEntry().setResource(processedReport);
+			for (Map.Entry<String, Resource> evaluatedResources : getEvaluatedResources(processedReport).entrySet()) {
+				raBundle.addEntry().setResource(evaluatedResources.getValue());
+			}
+			return raBundle;
 		}
 	}
 
