@@ -20,7 +20,6 @@ import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.opencds.cqf.ruler.utility.Operations;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
