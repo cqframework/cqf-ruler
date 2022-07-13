@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.ra.r4;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,12 +26,12 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	void beforeEach() {
 		String ourServerBase = Urls.getUrl(myRaProperties.getReport().getEndpoint(), getPort());
 		myRaProperties.getReport().setEndpoint(ourServerBase);
+		loadTransaction("ConditionCategoryPOC-bundle.json");
 	}
 
 	@Test
 	void riskAssessmentHistoricOpen() {
 		loadTransaction("tests-hist-open-HCC189-bundle.json");
-		loadResource("tests-hist-open-HCC189-MeasureReport.json");
 
 		Parameters params = newParameters(
 			newPart("periodStart", "2022-01-01"),
@@ -40,7 +41,7 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		);
 
 		Parameters resultParams = getClient().operation()
-			.onType(MeasureReport.class)
+			.onInstance(new IdType("Measure", "ConditionCategoryPOC"))
 			.named("$risk-adjustment")
 			.withParameters(params)
 			.returnResourceType(Parameters.class)
@@ -86,7 +87,6 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	@Test
 	void riskAssessmentHistoricClosed() {
 		loadTransaction("tests-hist-closed-HCC189-bundle.json");
-		loadResource("tests-hist-closed-HCC189-MeasureReport.json");
 
 		Parameters params = newParameters(
 			newPart("periodStart", "2022-01-01"),
@@ -96,7 +96,7 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		);
 
 		Parameters resultParams = getClient().operation()
-			.onType(MeasureReport.class)
+			.onInstance(new IdType("Measure", "ConditionCategoryPOC"))
 			.named("$risk-adjustment")
 			.withParameters(params)
 			.returnResourceType(Parameters.class)
@@ -142,7 +142,6 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	@Test
 	void riskAssessmentHistoricNetNew() {
 		loadTransaction("tests-netnew-HCC189-bundle.json");
-		loadResource("tests-hist-netnew-HCC189-MeasureReport.json");
 
 		Parameters params = newParameters(
 			newPart("periodStart", "2022-01-01"),
@@ -152,7 +151,7 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		);
 
 		Parameters resultParams = getClient().operation()
-			.onType(MeasureReport.class)
+			.onInstance(new IdType("Measure", "ConditionCategoryPOC"))
 			.named("$risk-adjustment")
 			.withParameters(params)
 			.returnResourceType(Parameters.class)

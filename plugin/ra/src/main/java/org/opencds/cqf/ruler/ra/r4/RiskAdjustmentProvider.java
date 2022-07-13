@@ -1,16 +1,15 @@
 package org.opencds.cqf.ruler.ra.r4;
 
-import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
+import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.param.DateParam;
-import ca.uhn.fhir.rest.param.ParamPrefixEnum;
-import ca.uhn.fhir.rest.param.ReferenceParam;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Observation;
@@ -19,12 +18,18 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
+import org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.opencds.cqf.ruler.utility.TypedBundleProvider;
+import org.opencds.cqf.ruler.utility.Operations;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.Collections;
 import java.util.Map;
 
 public class RiskAdjustmentProvider extends DaoRegistryOperationProvider implements MeasureReportUser {
+
+	@Autowired
+	MeasureEvaluateProvider measureEvaluateProvider;
 
 	private static String suspectTypeUrl = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType";
 	private static String evidenceStatusUrl = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus";
@@ -32,42 +37,48 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 
 	private String visited;
 
-	@Operation(name = "$risk-adjustment", idempotent = true, type = MeasureReport.class)
+	@Operation(name = "$risk-adjustment", idempotent = true, type = Measure.class)
 	public Parameters riskAdjustment(
-		@OperationParam(name = "type", min = 1) String type,
-		@OperationParam(name = "periodStart", min = 1) String periodStart,
-		@OperationParam(name = "periodEnd", min = 1) String periodEnd,
-		@OperationParam(name = "subject", min = 1) String subject)
-	{
-		if (!type.equalsIgnoreCase("report")) {
-			org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
+		RequestDetails requestDetails,
+		@IdParam IdType theId,
+		@OperationParam(name = "type") String type,
+		@OperationParam(name = "periodStart") String periodStart,
+		@OperationParam(name = "periodEnd") String periodEnd,
+		@OperationParam(name = "subject") String subject) {
+
+		if (type == null || periodStart == null || periodEnd == null || subject == null) {
+			return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
 				org.opencds.cqf.ruler.utility.r4.Parameters.newPart(
-					subject, generateIssue(String.format("The $risk-adjustment operation is not implemented for %s type parameter on this server", type))
+					"invalid parameters", generateIssue(
+						"error",
+						String.format(
+							"Missing %s parameter", type == null ? "type" : periodStart == null ? "periodStart" : periodEnd == null ? "periodEnd" : "report"
+						)
+					)
 				)
 			);
 		}
 
-		TypedBundleProvider<MeasureReport> searchBundle = search(
-			MeasureReport.class,
-			new SearchParameterMap()
-				.add("subject", new ReferenceParam(subject))
-				.add("period", new DateParam(ParamPrefixEnum.LESSTHAN_OR_EQUALS, new DateType(periodStart)))
-				.add("period", new DateParam(ParamPrefixEnum.GREATERTHAN_OR_EQUALS, new DateType(periodEnd)))
+		if (!type.equalsIgnoreCase("report")) {
+			org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
+				org.opencds.cqf.ruler.utility.r4.Parameters.newPart(
+					subject, generateIssue("error", String.format("The $risk-adjustment operation is not implemented for %s type parameter on this server", type))
+				)
+			);
+		}
+
+		MeasureReport unprocessedReport = measureEvaluateProvider.evaluateMeasure(
+			requestDetails, theId, periodStart, periodEnd, null, subject, null,
+			null, null, null, null
 		);
 
 		Parameters riskAdjustmentParameters = new Parameters();
 
-		for (MeasureReport unprocessedReport : searchBundle.getAllResourcesTyped()) {
-			RiskAdjustmentReturnElement riskAdjustmentReturnElement = new RiskAdjustmentReturnElement(unprocessedReport.getSubject().getReference(), unprocessedReport);
-			resolveRiskAdjustmentReport(riskAdjustmentReturnElement);
-			riskAdjustmentParameters.addParameter()
-				.setName(riskAdjustmentReturnElement.reference)
-				.setResource(riskAdjustmentReturnElement.getRiskAdjustmentOutcome());
-		}
-
-		if (!riskAdjustmentParameters.hasParameter()) {
-			riskAdjustmentParameters.addParameter().setName(subject).setResource(generateIssue(String.format("No MeasureReport resource found for subject: %s", subject)));
-		}
+		RiskAdjustmentReturnElement riskAdjustmentReturnElement = new RiskAdjustmentReturnElement(unprocessedReport.getSubject().getReference(), unprocessedReport);
+		resolveRiskAdjustmentReport(riskAdjustmentReturnElement);
+		riskAdjustmentParameters.addParameter()
+			.setName(riskAdjustmentReturnElement.reference)
+			.setResource(riskAdjustmentReturnElement.getRiskAdjustmentOutcome());
 
 		return riskAdjustmentParameters;
 	}
@@ -127,19 +138,6 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 			}
 		}
 		return null;
-	}
-
-	private static OperationOutcome generateIssue(String issue) {
-		OperationOutcome error = new OperationOutcome();
-		error.addIssue()
-			.setSeverity(OperationOutcome.IssueSeverity.ERROR)
-			.setCode(OperationOutcome.IssueType.PROCESSING)
-			.setDetails(new CodeableConcept().setText(issue));
-		return error;
-	}
-
-	private void bundleReport() {
-
 	}
 
 	private static class RiskAdjustmentGroup {
@@ -235,7 +233,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 		}
 
 		void createIssue(String issue) {
-			this.error = generateIssue(issue);
+			this.error = generateIssue("error" ,issue);
 		}
 
 		Resource getRiskAdjustmentOutcome() {
