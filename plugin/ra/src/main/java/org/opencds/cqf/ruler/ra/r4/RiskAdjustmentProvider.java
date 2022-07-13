@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.ra.r4;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -20,6 +21,7 @@ import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.utility.Operations;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
@@ -45,17 +47,17 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 		@OperationParam(name = "periodEnd") String periodEnd,
 		@OperationParam(name = "subject") String subject) {
 
-		if (type == null || periodStart == null || periodEnd == null || subject == null) {
-			return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-				org.opencds.cqf.ruler.utility.r4.Parameters.newPart(
-					"invalid parameters", generateIssue(
-						"error",
-						String.format(
-							"Missing %s parameter", type == null ? "type" : periodStart == null ? "periodStart" : periodEnd == null ? "periodEnd" : "report"
-						)
-					)
-				)
-			);
+		if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
+			try {
+				Operations.validateCardinality(requestDetails, "type", 1);
+				Operations.validateCardinality(requestDetails, "periodStart", 1);
+				Operations.validateCardinality(requestDetails, "periodEnd", 1);
+				Operations.validateCardinality(requestDetails, "subject", 1);
+			} catch (Exception e) {
+				return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
+					org.opencds.cqf.ruler.utility.r4.Parameters.newPart("Invalid parameters", generateIssue("error", e.getMessage()))
+				);
+			}
 		}
 
 		if (!type.equalsIgnoreCase("report")) {
