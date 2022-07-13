@@ -1,10 +1,11 @@
 {
 	"resourceType": "MeasureReport",
+	"id": "hist-open-HCC189",
 	"language": "en",
 	"contained": [
 		{
 			"resourceType": "Observation",
-			"id": "sde-observation-ef8da0b3-9080-41e2-b9b3-d68855edb4bf-org.hl7.fhir.r4.model.encounter@188292cb",
+			"id": "sde-observation-ef8da0b3-9080-41e2-b9b3-d68855edb4bf-org.hl7.fhir.r4.model.encounter@51d5ce97",
 			"extension": [
 				{
 					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
@@ -27,14 +28,14 @@
 			"valueCodeableConcept": {
 				"coding": [
 					{
-						"code": "org.hl7.fhir.r4.model.Encounter@188292cb"
+						"code": "org.hl7.fhir.r4.model.Encounter@51d5ce97"
 					}
 				]
 			}
 		},
 		{
 			"resourceType": "Observation",
-			"id": "sde-observation-ccd99867-c5a5-4ebd-af25-56fa51b20a14-org.hl7.fhir.r4.model.condition@4bd2877",
+			"id": "sde-observation-ccd99867-c5a5-4ebd-af25-56fa51b20a14-org.hl7.fhir.r4.model.condition@1e827fbd",
 			"extension": [
 				{
 					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
@@ -57,7 +58,97 @@
 			"valueCodeableConcept": {
 				"coding": [
 					{
-						"code": "org.hl7.fhir.r4.model.Condition@4bd2877"
+						"code": "org.hl7.fhir.r4.model.Condition@1e827fbd"
+					}
+				]
+			}
+		},
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-2b28ca39-d3c2-41da-8901-2985e6c96841-org.hl7.fhir.r4.model.encounter@51d5ce97",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "evidence-status-encounter"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "evidence-status-encounter"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Encounter@51d5ce97"
+					}
+				]
+			}
+		},
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-e3fe294f-3396-4ada-a9fc-399f88a62605-org.hl7.fhir.r4.model.condition@1e827fbd",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "evidence-status-diagnosis"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "evidence-status-diagnosis"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "org.hl7.fhir.r4.model.Condition@1e827fbd"
+					}
+				]
+			}
+		},
+		{
+			"resourceType": "Observation",
+			"id": "sde-observation-91d7fbe5-4c2e-40fd-bbd3-d5594164b6e1-primitive-2020-01-31",
+			"extension": [
+				{
+					"url": "http://hl7.org/fhir/StructureDefinition/cqf-measureInfo",
+					"extension": [
+						{
+							"url": "measure",
+							"valueCanonical": "https://build.fhir.org/ig/HL7/davinci-ra/ConditionCategoryPOC"
+						},
+						{
+							"url": "populationId",
+							"valueString": "evidence-status-date"
+						}
+					]
+				}
+			],
+			"status": "final",
+			"code": {
+				"text": "evidence-status-date"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"code": "2020-01-31"
 					}
 				]
 			}
@@ -75,6 +166,14 @@
 		{
 			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
 			"valueString": "Condition/hist-open2-HCC189"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Encounter/hist-open2-HCC189"
+		},
+		{
+			"url": "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData",
+			"valueString": "Condition/hist-open2-HCC189"
 		}
 	],
 	"status": "complete",
@@ -83,7 +182,7 @@
 	"subject": {
 		"reference": "Patient/hist-open-HCC189"
 	},
-	"date": "2022-07-12T12:59:58-06:00",
+	"date": "2022-07-12T20:10:58-06:00",
 	"period": {
 		"start": "2022-01-01T00:00:00-07:00",
 		"end": "2022-12-31T23:59:59-07:00"
@@ -99,30 +198,6 @@
 	},
 	"group": [
 		{
-			"extension": [
-				{
-					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
-					"valueCodeableConcept": {
-						"coding": [
-							{
-								"system": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-suspectType",
-								"code": "historic"
-							}
-						]
-					}
-				},
-				{
-					"url": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
-					"valueCodeableConcept": {
-						"coding": [
-							{
-								"system": "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatus",
-								"code": "open-gap"
-							}
-						]
-					}
-				}
-			],
 			"code": {
 				"coding": [
 					{
@@ -131,10 +206,427 @@
 						"display": "Amputation Status, Lower Limb/Amputation Complications"
 					}
 				]
-			}
+			},
+			"population": [
+				{
+					"id": "44dda657-2a78-4760-aee4-a81b2e070c69",
+					"extension": [
+						{
+							"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+							"valueString": "Age 65 years and older with (risk adjustable) eligible encounters."
+						}
+					],
+					"code": {
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+								"code": "initial-population",
+								"display": "Initial Population"
+							}
+						]
+					},
+					"count": 1
+				},
+				{
+					"id": "3a8aff03-feea-4087-8e56-95891395466b",
+					"extension": [
+						{
+							"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+							"valueString": "The Initial Population, minus Exclusions that have Historic, Suspected, Net New, or Closed HCC189 Gaps."
+						}
+					],
+					"code": {
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+								"code": "denominator",
+								"display": "Denominator"
+							}
+						]
+					},
+					"count": 1
+				},
+				{
+					"id": "a3654276-be9f-4233-aa0d-26d00b1336e4",
+					"extension": [
+						{
+							"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+							"valueString": "A Condition that excludes the HCC189 Condition."
+						}
+					],
+					"code": {
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+								"code": "denominator-exclusion",
+								"display": "Denominator Exclusion"
+							}
+						]
+					},
+					"count": 0
+				},
+				{
+					"id": "dfc5e656-55ab-4cfc-a073-757b03a7417f",
+					"extension": [
+						{
+							"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+							"valueString": "An Encounter with a HCC189 Condition within the Clinical Evaluation Period."
+						}
+					],
+					"code": {
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+								"code": "numerator",
+								"display": "Numerator"
+							},
+							{
+								"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/evidence-status",
+								"code": "closed-gap"
+							}
+						]
+					},
+					"count": 0
+				}
+			],
+			"measureScore": {
+				"value": 0
+			},
+			"stratifier": [
+				{
+					"id": "9ab5f42e-dfa3-4504-993f-28199056cff6",
+					"code": [
+						{
+							"coding": [
+								{
+									"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type",
+									"code": "historic"
+								}
+							]
+						}
+					],
+					"stratum": [
+						{
+							"value": {
+								"text": "true"
+							},
+							"population": [
+								{
+									"id": "44dda657-2a78-4760-aee4-a81b2e070c69",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "Age 65 years and older with (risk adjustable) eligible encounters."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "initial-population",
+												"display": "Initial Population"
+											}
+										]
+									},
+									"count": 1
+								},
+								{
+									"id": "3a8aff03-feea-4087-8e56-95891395466b",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "The Initial Population, minus Exclusions that have Historic, Suspected, Net New, or Closed HCC189 Gaps."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "denominator",
+												"display": "Denominator"
+											}
+										]
+									},
+									"count": 1
+								},
+								{
+									"id": "a3654276-be9f-4233-aa0d-26d00b1336e4",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "A Condition that excludes the HCC189 Condition."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "denominator-exclusion",
+												"display": "Denominator Exclusion"
+											}
+										]
+									},
+									"count": 0
+								},
+								{
+									"id": "dfc5e656-55ab-4cfc-a073-757b03a7417f",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "An Encounter with a HCC189 Condition within the Clinical Evaluation Period."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "numerator",
+												"display": "Numerator"
+											},
+											{
+												"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/evidence-status",
+												"code": "closed-gap"
+											}
+										]
+									},
+									"count": 0
+								}
+							],
+							"measureScore": {
+								"value": 0
+							}
+						}
+					]
+				},
+				{
+					"id": "97e4df34-75d5-4874-942f-d24a5e2dd794",
+					"code": [
+						{
+							"coding": [
+								{
+									"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type",
+									"code": "suspected"
+								}
+							]
+						}
+					],
+					"stratum": [
+						{
+							"value": {
+								"text": "false"
+							},
+							"population": [
+								{
+									"id": "44dda657-2a78-4760-aee4-a81b2e070c69",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "Age 65 years and older with (risk adjustable) eligible encounters."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "initial-population",
+												"display": "Initial Population"
+											}
+										]
+									},
+									"count": 1
+								},
+								{
+									"id": "3a8aff03-feea-4087-8e56-95891395466b",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "The Initial Population, minus Exclusions that have Historic, Suspected, Net New, or Closed HCC189 Gaps."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "denominator",
+												"display": "Denominator"
+											}
+										]
+									},
+									"count": 1
+								},
+								{
+									"id": "a3654276-be9f-4233-aa0d-26d00b1336e4",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "A Condition that excludes the HCC189 Condition."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "denominator-exclusion",
+												"display": "Denominator Exclusion"
+											}
+										]
+									},
+									"count": 0
+								},
+								{
+									"id": "dfc5e656-55ab-4cfc-a073-757b03a7417f",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "An Encounter with a HCC189 Condition within the Clinical Evaluation Period."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "numerator",
+												"display": "Numerator"
+											},
+											{
+												"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/evidence-status",
+												"code": "closed-gap"
+											}
+										]
+									},
+									"count": 0
+								}
+							],
+							"measureScore": {
+								"value": 0
+							}
+						}
+					]
+				},
+				{
+					"id": "f1788d06-d229-424f-ab11-d6009c022bce",
+					"code": [
+						{
+							"coding": [
+								{
+									"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/suspect-type",
+									"code": "net-new"
+								}
+							]
+						}
+					],
+					"stratum": [
+						{
+							"value": {
+								"text": "false"
+							},
+							"population": [
+								{
+									"id": "44dda657-2a78-4760-aee4-a81b2e070c69",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "Age 65 years and older with (risk adjustable) eligible encounters."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "initial-population",
+												"display": "Initial Population"
+											}
+										]
+									},
+									"count": 1
+								},
+								{
+									"id": "3a8aff03-feea-4087-8e56-95891395466b",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "The Initial Population, minus Exclusions that have Historic, Suspected, Net New, or Closed HCC189 Gaps."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "denominator",
+												"display": "Denominator"
+											}
+										]
+									},
+									"count": 1
+								},
+								{
+									"id": "a3654276-be9f-4233-aa0d-26d00b1336e4",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "A Condition that excludes the HCC189 Condition."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "denominator-exclusion",
+												"display": "Denominator Exclusion"
+											}
+										]
+									},
+									"count": 0
+								},
+								{
+									"id": "dfc5e656-55ab-4cfc-a073-757b03a7417f",
+									"extension": [
+										{
+											"url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-MeasureReport.population.description",
+											"valueString": "An Encounter with a HCC189 Condition within the Clinical Evaluation Period."
+										}
+									],
+									"code": {
+										"coding": [
+											{
+												"system": "http://terminology.hl7.org/CodeSystem/measure-population",
+												"code": "numerator",
+												"display": "Numerator"
+											},
+											{
+												"system": "http://hl7.org/fhir/us/davinci-ra/CodeSystem/evidence-status",
+												"code": "closed-gap"
+											}
+										]
+									},
+									"count": 0
+								}
+							],
+							"measureScore": {
+								"value": 0
+							}
+						}
+					]
+				}
+			]
 		}
 	],
 	"evaluatedResource": [
+		{
+			"reference": "#sde-observation-ef8da0b3-9080-41e2-b9b3-d68855edb4bf-org.hl7.fhir.r4.model.encounter@51d5ce97"
+		},
+		{
+			"reference": "#sde-observation-ccd99867-c5a5-4ebd-af25-56fa51b20a14-org.hl7.fhir.r4.model.condition@1e827fbd"
+		},
+		{
+			"reference": "#sde-observation-2b28ca39-d3c2-41da-8901-2985e6c96841-org.hl7.fhir.r4.model.encounter@51d5ce97"
+		},
+		{
+			"reference": "#sde-observation-e3fe294f-3396-4ada-a9fc-399f88a62605-org.hl7.fhir.r4.model.condition@1e827fbd"
+		},
+		{
+			"reference": "#sde-observation-91d7fbe5-4c2e-40fd-bbd3-d5594164b6e1-primitive-2020-01-31"
+		},
 		{
 			"extension": [
 				{
