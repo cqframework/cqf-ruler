@@ -2,9 +2,9 @@ package org.opencds.cqf.ruler.cpg.r4.provider;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import ca.uhn.fhir.context.FhirVersionEnum;
 import org.apache.commons.lang3.NotImplementedException;
@@ -21,54 +21,33 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
-import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
-import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.CqlEngine;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.fhir.converter.FhirTypeConverterFactory;
-import org.opencds.cqf.cql.engine.fhir.retrieve.RestFhirRetrieveProvider;
+import org.opencds.cqf.cql.engine.fhir.retrieve.R4FhirQueryGenerator;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
-import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
-import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.CqlEvaluator;
-import org.opencds.cqf.cql.evaluator.builder.CqlEvaluatorBuilder;
-import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
-import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
-import org.opencds.cqf.cql.evaluator.builder.LibraryContentProviderFactory;
-import org.opencds.cqf.cql.evaluator.builder.TerminologyProviderFactory;
-import org.opencds.cqf.cql.evaluator.builder.data.FhirModelResolverFactory;
-import org.opencds.cqf.cql.evaluator.builder.data.FhirRestRetrieveProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProviderFactory;
-import org.opencds.cqf.cql.evaluator.builder.terminology.FhirRestTerminologyProviderFactory;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvider;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
-import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
-import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
-import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
-import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
-import org.opencds.cqf.cql.evaluator.fhir.ClientFactory;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.library.CqlFhirParametersConverter;
 import org.opencds.cqf.cql.evaluator.library.LibraryEvaluator;
+import org.opencds.cqf.ruler.cpg.r4.R4LibraryUser;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
-import org.opencds.cqf.ruler.cql.JpaFhirRetrieveProvider;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
-import org.opencds.cqf.ruler.utility.Clients;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 /**
  * This class is used to provide an {@link DaoRegistryOperationProvider
@@ -94,18 +73,6 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	ModelResolver myModelResolver;
 	@Autowired
 	Map<VersionedIdentifier, Library> globalLibraryCache;
-
-	private String subject;
-	private String expression;
-	private Parameters parameters;
-	private List<Parameters> includedLibraries;
-	private boolean useServerData;
-	private Bundle data;
-	private Endpoint dataEndpoint;
-	private Endpoint libraryContentEndpoint;
-	private Endpoint terminologyEndpoint;
-	private String content;
-	private AdapterFactory adapterFactory = new AdapterFactory();
 
 //	/**
 //	 * Data to be made available to the library evaluation, organized as prefetch
@@ -251,174 +218,54 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			throw new IllegalArgumentException("The $cql operation requires the expression parameter and/or content parameter to exist");
 		}
 
-		// TODO: Evaluator requires headers... remove once addressed
 		Endpoint defaultEndpoint = new Endpoint().setAddress(theRequestDetails.getFhirServerBase()).setHeader(Collections.singletonList(new StringType("Content-Type: application/json")));
 
-		this.subject = subject;
-		this.expression = expression;
-		this.parameters = parameters;
-		this.includedLibraries = library;
-		this.useServerData = useServerData.booleanValue();
-		this.data = data;
-		this.dataEndpoint = dataEndpoint == null ? defaultEndpoint : dataEndpoint;
-		this.libraryContentEndpoint = contentEndpoint == null ? defaultEndpoint : contentEndpoint;
-		this.terminologyEndpoint = terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint;
-		this.content = content;
+		dataEndpoint = dataEndpoint == null ? defaultEndpoint : dataEndpoint;
+		contentEndpoint = contentEndpoint == null ? defaultEndpoint : contentEndpoint;
+		terminologyEndpoint = terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint;
 
-		/*
-		 *
-		 * If expression and no content:
-		 * Evaluate the specified expression (raw CQL)
-		 *
-		 * If content and no expression:
-		 * Evaluate all expressions in the content
-		 *
-		 * If content and expression:
-		 * Evaluate only the expression named by the expression parameter
-		 *
-		 */
+		R4LibraryUser libraryUser = new R4LibraryUser(getDaoRegistry(), getFhirContext(), myModelResolver, libraryLoaderFactory, jpaLibraryContentProviderFactory,
+			fhirRestLibraryContentProviderFactory, jpaTerminologyProviderFactory, new AdapterFactory(), subject, expression == null ? null : Collections.singletonList(expression), parameters,
+			useServerData, data, dataEndpoint, contentEndpoint, terminologyEndpoint, content);
 
-		return StringUtils.isBlank(this.content) ? evaluateExpression() : evaluateLibrary(theRequestDetails);
+		return StringUtils.isBlank(content) ? evaluateExpression(libraryUser, library) : evaluateLibrary(theRequestDetails, libraryUser);
 	}
 
-	private Parameters evaluateLibrary(RequestDetails requestDetails) {
-		LibraryLoader libraryLoader = resolveLibraryLoader(requestDetails);
-		TerminologyProvider terminologyProvider = resolveTerminologyProvider(requestDetails);
-		DataProvider dataProvider = resolveDataProvider(terminologyProvider);
+	private Parameters evaluateLibrary(RequestDetails requestDetails, R4LibraryUser libraryUser) {
+		LibraryLoader libraryLoader = libraryUser.resolveLibraryLoader(requestDetails);
+		TerminologyProvider terminologyProvider = libraryUser.resolveTerminologyProvider(requestDetails);
+		DataProvider dataProvider = libraryUser.resolveDataProvider(terminologyProvider, new R4FhirQueryGenerator(new SearchParameterResolver(getFhirContext()), terminologyProvider, myModelResolver));
 		CqlEvaluator cqlEvaluator = new CqlEvaluator(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider, Collections.singleton(CqlEngine.Options.EnableExpressionCaching));
-		LibraryEvaluator libraryEvaluator = new LibraryEvaluator(new CqlFhirParametersConverter(this.getFhirContext(), this.adapterFactory, new FhirTypeConverterFactory().create(FhirVersionEnum.R4)), cqlEvaluator);
-		return (Parameters) libraryEvaluator.evaluate(resolveLibraryIdentifier(), resolveContextParameter(), this.parameters, this.expression == null ? null : Collections.singleton(this.expression));
+		LibraryEvaluator libraryEvaluator = new LibraryEvaluator(new CqlFhirParametersConverter(this.getFhirContext(), libraryUser.getAdapterFactory(), new FhirTypeConverterFactory().create(FhirVersionEnum.R4)), cqlEvaluator);
+		return (Parameters) libraryEvaluator.evaluate(resolveLibraryIdentifier(libraryUser.getContent()), resolveContextParameter(libraryUser.getSubject()), libraryUser.getParameters(), libraryUser.getExpression() == null ? null : new HashSet<>(libraryUser.getExpression()));
 	}
 
-	private Parameters evaluateExpression() {
-		return (Parameters) resolveExpressionEvaluator().evaluate(
-			this.expression, this.parameters, this.subject, resolveIncludedLibraries(), this.useServerData,
-			this.data, null, this.dataEndpoint, this.libraryContentEndpoint, this.terminologyEndpoint
+	private Parameters evaluateExpression(R4LibraryUser libraryUser, List<Parameters> includedLibraries) {
+		return (Parameters) libraryUser.resolveExpressionEvaluator().evaluate(
+			libraryUser.getExpression().get(0), libraryUser.getParameters(), libraryUser.getSubject(), resolveIncludedLibraries(includedLibraries), libraryUser.getUseServerData().getValue(),
+			libraryUser.getData(), null, libraryUser.getDataEndpoint(), libraryUser.getLibraryContentEndpoint(), libraryUser.getTerminologyEndpoint()
 		);
 	}
 
-
-	private LibraryLoader resolveLibraryLoader(RequestDetails requestDetails) {
-		List<LibraryContentProvider> libraryProviders = new ArrayList<>();
-		libraryProviders.add(jpaLibraryContentProviderFactory.create(requestDetails));
-
-		if (this.libraryContentEndpoint != null) {
-			libraryProviders.add(
-				fhirRestLibraryContentProviderFactory.create(
-					this.libraryContentEndpoint.getAddress(),
-					this.libraryContentEndpoint.getHeader().stream().map(PrimitiveType::asStringValue).collect(Collectors.toList())
-				)
-			);
-		}
-
-		if (!StringUtils.isBlank(this.content)) {
-			libraryProviders.add(
-				new InMemoryLibraryContentProvider(Collections.singletonList(this.content))
-			);
-		}
-
-		return libraryLoaderFactory.create(new ArrayList<>(libraryProviders));
-	}
-
-	private TerminologyProvider resolveTerminologyProvider(RequestDetails requestDetails) {
-		return terminologyEndpoint != null
-			? new R4FhirTerminologyProvider(Clients.forEndpoint(getFhirContext(), this.terminologyEndpoint))
-			: jpaTerminologyProviderFactory.create(requestDetails);
-	}
-
-	private DataProvider resolveDataProvider(TerminologyProvider terminologyProvider) {
-		List<RetrieveProvider> retrieveProviderList = new ArrayList<>();
-		if (useServerData) {
-			JpaFhirRetrieveProvider jpaRetriever = new JpaFhirRetrieveProvider(getDaoRegistry(),
-				new SearchParameterResolver(getFhirContext()));
-			jpaRetriever.setTerminologyProvider(terminologyProvider);
-			if (terminologyEndpoint != null) {
-				jpaRetriever.setExpandValueSets(true);
-			}
-			retrieveProviderList.add(jpaRetriever);
-		}
-
-		if (dataEndpoint != null) {
-			IGenericClient client = Clients.forEndpoint(dataEndpoint);
-			RestFhirRetrieveProvider restRetriever = new RestFhirRetrieveProvider(
-				new SearchParameterResolver(getFhirContext()), client);
-			restRetriever.setTerminologyProvider(terminologyProvider);
-
-			if (terminologyEndpoint == null || !terminologyEndpoint.getAddress().equals(dataEndpoint.getAddress())) {
-				restRetriever.setExpandValueSets(true);
-			}
-
-			retrieveProviderList.add(restRetriever);
-		}
-
-		if (data != null) {
-			BundleRetrieveProvider bundleRetriever = new BundleRetrieveProvider(getFhirContext(), data);
-			bundleRetriever.setTerminologyProvider(terminologyProvider);
-			retrieveProviderList.add(bundleRetriever);
-		}
-
-		PriorityRetrieveProvider priorityProvider = new PriorityRetrieveProvider(retrieveProviderList);
-		return new CompositeDataProvider(myModelResolver, priorityProvider);
-	}
-
-	private VersionedIdentifier resolveLibraryIdentifier() {
+	private VersionedIdentifier resolveLibraryIdentifier(String content) {
 			ModelManager manager = new ModelManager();
-			TranslatedLibrary library = CqlTranslator.fromText(this.content, manager, new LibraryManager(manager))
+			TranslatedLibrary library = CqlTranslator.fromText(content, manager, new LibraryManager(manager))
 					.getTranslatedLibrary();
 			return new VersionedIdentifier().withId(library.getIdentifier().getId()).withVersion(library.getIdentifier().getVersion());
 	}
 
-	private Pair<String, Object> resolveContextParameter() {
-		if (StringUtils.isBlank(this.subject)) return null;
+	private Pair<String, Object> resolveContextParameter(String subject) {
+		if (StringUtils.isBlank(subject)) return null;
 		Reference subjectReference = new Reference(subject);
-		// TODO: this needs work for non-patient references
 		return Pair.of(subjectReference.getType(), subjectReference.getReference());
 	}
 
-	private ExpressionEvaluator resolveExpressionEvaluator() {
-		return new ExpressionEvaluator(
-			this.getFhirContext(),
-			new CqlFhirParametersConverter(
-				this.getFhirContext(), this.adapterFactory, new FhirTypeConverterFactory().create(FhirVersionEnum.R4)
-			),
-			resolveLibraryContentProviderFactory(), resolveDataProviderFactory(), resolveTerminologyProviderFactory(),
-			new EndpointConverter(this.adapterFactory), new FhirModelResolverFactory(), CqlEvaluatorBuilder::new);
-	}
-
-	private LibraryContentProviderFactory resolveLibraryContentProviderFactory() {
-		return new org.opencds.cqf.cql.evaluator.builder.library.LibraryContentProviderFactory(
-			this.getFhirContext(), this.adapterFactory,
-			Collections.singleton(resolveFhirRestLibraryContentProviderFactory()),
-			new LibraryVersionSelector(this.adapterFactory)
-		);
-	}
-
-	private FhirRestLibraryContentProviderFactory resolveFhirRestLibraryContentProviderFactory() {
-		return new FhirRestLibraryContentProviderFactory(
-			new ClientFactory(this.getFhirContext()), this.adapterFactory, new LibraryVersionSelector(this.adapterFactory)
-		);
-	}
-
-	private DataProviderFactory resolveDataProviderFactory() {
-		return new org.opencds.cqf.cql.evaluator.builder.data.DataProviderFactory(
-			this.getFhirContext(), Collections.singleton(new FhirModelResolverFactory()),
-			Collections.singleton(new FhirRestRetrieveProviderFactory(this.getFhirContext(), new ClientFactory(this.getFhirContext())))
-		);
-	}
-
-	private TerminologyProviderFactory resolveTerminologyProviderFactory() {
-		return new org.opencds.cqf.cql.evaluator.builder.terminology.TerminologyProviderFactory(
-			this.getFhirContext(),
-			Collections.singleton(new FhirRestTerminologyProviderFactory(this.getFhirContext(), new ClientFactory(this.getFhirContext())))
-		);
-	}
-
-	private List<Pair<String, String>> resolveIncludedLibraries() {
-		if (this.includedLibraries != null) {
+	private List<Pair<String, String>> resolveIncludedLibraries(List<Parameters> includedLibraries) {
+		if (includedLibraries != null) {
 			List<Pair<String, String>> libraries = new ArrayList<>();
 			String name = null;
 			String url = null;
-			for (Parameters parameters : this.includedLibraries) {
+			for (Parameters parameters : includedLibraries) {
 				for (ParametersParameterComponent parameterComponent : parameters.getParameter()) {
 					if (parameterComponent.getName().equalsIgnoreCase("url")) url = parameterComponent.getValue().primitiveValue();
 					if (parameterComponent.getName().equalsIgnoreCase("name")) name = parameterComponent.getValue().primitiveValue();

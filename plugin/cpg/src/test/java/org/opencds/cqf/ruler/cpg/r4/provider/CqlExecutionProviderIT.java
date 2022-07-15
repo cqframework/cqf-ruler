@@ -7,10 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
+import org.hl7.fhir.r4.model.Condition;
 import org.hl7.fhir.r4.model.DateType;
 import org.hl7.fhir.r4.model.IntegerType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,8 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 	void setup() throws IOException {
 		loadResource(packagePrefix + "SimpleR4Library.json");
 		loadResource(packagePrefix + "SimplePatient.json");
+		loadResource(packagePrefix + "SimpleObservation.json");
+		loadResource(packagePrefix + "SimpleCondition.json");
 	}
 
 	@Test
@@ -195,5 +199,44 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		assertTrue(results.getParameter().get(0).hasName());
 		assertTrue(results.getParameter().get(0).hasValue());
 		assertEquals("true", results.getParameter().get(0).getValue().primitiveValue());
+	}
+
+	@Test
+	void testContentRetrieveWithInlineCode() {
+		Parameters params = new Parameters();
+		params.addParameter().setName("subject").setValue(new StringType("SimplePatient"));
+		params.addParameter()
+			.setName("content")
+			.setValue(
+				new StringType(
+					"library AsthmaTest version '1.0.0'\n" +
+						"\n" +
+						"using FHIR version '4.0.1'\n" +
+						"\n" +
+						"include FHIRHelpers version '4.0.1'\n" +
+						"\n" +
+						"codesystem \"SNOMED\": 'http://snomed.info/sct'\n" +
+						"\n" +
+						"code \"Asthma\": '195967001' from \"SNOMED\"\n" +
+						"\n" +
+						"context Patient\n" +
+						"\n" +
+						"define \"Asthma Diagnosis\":\n" +
+						"    [Condition: \"Asthma\"]\n" +
+						"\n" +
+						"define \"Has Asthma Diagnosis\":\n" +
+						"    exists(\"Asthma Diagnosis\")\n")
+			);
+
+		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
+
+		assertTrue(results.hasParameter());
+		assertEquals(3, results.getParameter().size());
+		assertTrue(results.getParameterFirstRep().hasResource());
+		assertTrue(results.getParameterFirstRep().getResource() instanceof Patient);
+		assertTrue(results.getParameter().get(1).hasResource());
+		assertTrue(results.getParameter().get(1).getResource() instanceof Condition);
+		assertTrue(results.getParameter().get(2).hasValue());
+		assertTrue(((BooleanType) results.getParameter().get(2).getValue()).booleanValue());
 	}
 }

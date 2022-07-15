@@ -17,16 +17,13 @@ import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.IOException;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CqlExecutionProviderIT.class,
-		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CqlExecutionProviderIT.class, CpgConfig.class }, properties = { "hapi.fhir.fhir_version=dstu3" })
 class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	private String packagePrefix = "org/opencds/cqf/ruler/cpg/dstu3/provider/";
 
 	@BeforeEach
-	void setup() throws IOException {
+	void setup() {
 		loadResource(packagePrefix + "SimpleDstu3Library.json");
 		loadResource(packagePrefix + "SimplePatient.json");
 	}
@@ -68,7 +65,7 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	void testDataBundleCqlExecutionProvider() throws Exception {
+	void testDataBundleCqlExecutionProvider() {
 		Parameters params = new Parameters();
 		Parameters libraryParameter = new Parameters();
 		libraryParameter.addParameter().setName("url")
@@ -85,7 +82,7 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	void testDataBundleCqlExecutionProviderWithSubject() throws Exception {
+	void testDataBundleCqlExecutionProviderWithSubject() {
 		Parameters params = new Parameters();
 		Parameters libraryParameter = new Parameters();
 		params.addParameter().setName("subject").setValue(new StringType("SimplePatient"));
