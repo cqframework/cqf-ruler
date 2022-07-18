@@ -1,42 +1,26 @@
 package org.opencds.cqf.ruler.cpg.r4.provider;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import ca.uhn.fhir.context.FhirVersionEnum;
-import org.apache.commons.lang3.NotImplementedException;
+import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.cqframework.cql.cql2elm.CqlTranslator;
-import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.ModelManager;
-import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
+import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.hl7.fhir.r4.model.BooleanType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent;
-import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.StringType;
-import org.opencds.cqf.cql.engine.data.DataProvider;
-import org.opencds.cqf.cql.engine.execution.CqlEngine;
-import org.opencds.cqf.cql.engine.execution.LibraryLoader;
-import org.opencds.cqf.cql.engine.fhir.converter.FhirTypeConverterFactory;
-import org.opencds.cqf.cql.engine.fhir.retrieve.R4FhirQueryGenerator;
-import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
-import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.evaluator.CqlEvaluator;
 import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProviderFactory;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory;
-import org.opencds.cqf.cql.evaluator.library.CqlFhirParametersConverter;
-import org.opencds.cqf.cql.evaluator.library.LibraryEvaluator;
-import org.opencds.cqf.ruler.cpg.r4.R4LibraryUser;
+import org.opencds.cqf.ruler.cpg.CqlEvaluationHelper;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
@@ -56,9 +40,6 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
  * Created by Bryn on 1/16/2017.
  */
 public class CqlExecutionProvider extends DaoRegistryOperationProvider {
-
-//	@Autowired
-//	private CqlProperties myCqlProperties;
 	@Autowired
 	private LibraryLoaderFactory libraryLoaderFactory;
 	@Autowired
@@ -118,7 +99,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	/**
 	 * Evaluates a CQL expression and returns the results as a Parameters resource.
 	 * 
-	 * @param theRequestDetails   the {@link RequestDetails RequestDetails}
+	 * @param requestDetails   the {@link RequestDetails RequestDetails}
 	 * @param subject             Subject for which the expression will be
 	 *                            evaluated. This corresponds to the context in
 	 *                            which the expression will be evaluated and is
@@ -194,7 +175,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 	@Operation(name = "$cql")
 	@Description(shortDefinition = "$cql", value = "Evaluates a CQL expression and returns the results as a Parameters resource. Defined: http://build.fhir.org/ig/HL7/cqf-recommendations/OperationDefinition-cpg-cql.html", example = "$cql?expression=5*5")
 	public Parameters evaluate(
-		RequestDetails theRequestDetails,
+		RequestDetails requestDetails,
 		@OperationParam(name = "subject", max = 1) String subject,
 		@OperationParam(name = "expression", max = 1) String expression,
 		@OperationParam(name = "parameters", max = 1) Parameters parameters,
@@ -206,82 +187,22 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		@OperationParam(name = "contentEndpoint", max = 1) Endpoint contentEndpoint,
 		@OperationParam(name = "terminologyEndpoint", max = 1) Endpoint terminologyEndpoint,
 		@OperationParam(name = "content", max = 1) String content) {
-		if (prefetchData != null) {
-			throw new NotImplementedException("prefetchData is not yet supported.");
-		}
-
-		if (useServerData == null) {
-			useServerData = new BooleanType(true);
-		}
-
-		if (expression == null && content == null) {
-			throw new IllegalArgumentException("The $cql operation requires the expression parameter and/or content parameter to exist");
-		}
-
-		Endpoint defaultEndpoint = new Endpoint().setAddress(theRequestDetails.getFhirServerBase()).setHeader(Collections.singletonList(new StringType("Content-Type: application/json")));
-
-		dataEndpoint = dataEndpoint == null ? defaultEndpoint : dataEndpoint;
-		contentEndpoint = contentEndpoint == null ? defaultEndpoint : contentEndpoint;
-		terminologyEndpoint = terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint;
-
-		R4LibraryUser libraryUser = new R4LibraryUser(getDaoRegistry(), getFhirContext(), myModelResolver, libraryLoaderFactory, jpaLibraryContentProviderFactory,
-			fhirRestLibraryContentProviderFactory, jpaTerminologyProviderFactory, new AdapterFactory(), subject, expression == null ? null : Collections.singletonList(expression), parameters,
-			useServerData, data, dataEndpoint, contentEndpoint, terminologyEndpoint, content);
-
-		return StringUtils.isBlank(content) ? evaluateExpression(libraryUser, library) : evaluateLibrary(theRequestDetails, libraryUser);
-	}
-
-	private Parameters evaluateLibrary(RequestDetails requestDetails, R4LibraryUser libraryUser) {
-		LibraryLoader libraryLoader = libraryUser.resolveLibraryLoader(requestDetails);
-		TerminologyProvider terminologyProvider = libraryUser.resolveTerminologyProvider(requestDetails);
-		DataProvider dataProvider = libraryUser.resolveDataProvider(terminologyProvider, new R4FhirQueryGenerator(new SearchParameterResolver(getFhirContext()), terminologyProvider, myModelResolver));
-		CqlEvaluator cqlEvaluator = new CqlEvaluator(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider, Collections.singleton(CqlEngine.Options.EnableExpressionCaching));
-		LibraryEvaluator libraryEvaluator = new LibraryEvaluator(new CqlFhirParametersConverter(this.getFhirContext(), libraryUser.getAdapterFactory(), new FhirTypeConverterFactory().create(FhirVersionEnum.R4)), cqlEvaluator);
-		return (Parameters) libraryEvaluator.evaluate(resolveLibraryIdentifier(libraryUser.getContent()), resolveContextParameter(libraryUser.getSubject()), libraryUser.getParameters(), libraryUser.getExpression() == null ? null : new HashSet<>(libraryUser.getExpression()));
-	}
-
-	private Parameters evaluateExpression(R4LibraryUser libraryUser, List<Parameters> includedLibraries) {
-		return (Parameters) libraryUser.resolveExpressionEvaluator().evaluate(
-			libraryUser.getExpression().get(0), libraryUser.getParameters(), libraryUser.getSubject(), resolveIncludedLibraries(includedLibraries), libraryUser.getUseServerData().getValue(),
-			libraryUser.getData(), null, libraryUser.getDataEndpoint(), libraryUser.getLibraryContentEndpoint(), libraryUser.getTerminologyEndpoint()
+		String contentUrl = contentEndpoint != null ? contentEndpoint.getAddress() : null;
+		List<String> contentHeaders = contentEndpoint != null && contentEndpoint.hasHeader() ? contentEndpoint.getHeader().stream().map(PrimitiveType::getValue).collect(Collectors.toList()) : Collections.singletonList("Content-Type: application/json");
+		CqlEvaluationHelper evaluationHelper = new CqlEvaluationHelper(
+			getFhirContext(), myModelResolver, new AdapterFactory(), useServerData == null || useServerData.booleanValue(), data, dataEndpoint, contentEndpoint, terminologyEndpoint,
+			content, libraryLoaderFactory, jpaLibraryContentProviderFactory.create(requestDetails), contentEndpoint != null ? fhirRestLibraryContentProviderFactory.create(contentUrl, contentHeaders) : null,
+			getFhirContext().newRestfulGenericClient(requestDetails.getFhirServerBase()), jpaTerminologyProviderFactory.create(requestDetails), getDaoRegistry()
 		);
-	}
-
-	private VersionedIdentifier resolveLibraryIdentifier(String content) {
-			ModelManager manager = new ModelManager();
-			TranslatedLibrary library = CqlTranslator.fromText(content, manager, new LibraryManager(manager))
-					.getTranslatedLibrary();
-			return new VersionedIdentifier().withId(library.getIdentifier().getId()).withVersion(library.getIdentifier().getVersion());
-	}
-
-	private Pair<String, Object> resolveContextParameter(String subject) {
-		if (StringUtils.isBlank(subject)) return null;
-		Reference subjectReference = new Reference(subject);
-		return Pair.of(subjectReference.getType(), subjectReference.getReference());
-	}
-
-	private List<Pair<String, String>> resolveIncludedLibraries(List<Parameters> includedLibraries) {
-		if (includedLibraries != null) {
-			List<Pair<String, String>> libraries = new ArrayList<>();
-			String name = null;
-			String url = null;
-			for (Parameters parameters : includedLibraries) {
-				for (ParametersParameterComponent parameterComponent : parameters.getParameter()) {
-					if (parameterComponent.getName().equalsIgnoreCase("url")) url = parameterComponent.getValue().primitiveValue();
-					if (parameterComponent.getName().equalsIgnoreCase("name")) name = parameterComponent.getValue().primitiveValue();
-				}
-				libraries.add(Pair.of(url, name));
-			}
-			return libraries;
+		if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
+			IBaseOperationOutcome outcome = evaluationHelper.validateOperationParameters(requestDetails, "subject", "expression", "parameters", "library", "useServerData", "data", "prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint", "content");
+			if (outcome != null) return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error", (OperationOutcome) outcome));
 		}
-		return null;
+		if (prefetchData != null) return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error", (OperationOutcome) evaluationHelper.createIssue("invalid parameters", "prefetchData is not yet supported")));
+		if (expression == null && content == null) return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error", (OperationOutcome) evaluationHelper.createIssue("invalid parameters", "The $cql operation requires the expression parameter and/or content parameter to exist")));
+		Endpoint defaultEndpoint = new Endpoint().setAddress(requestDetails.getFhirServerBase()).setHeader(Collections.singletonList(new StringType("Content-Type: application/json")));
+		return StringUtils.isBlank(content)
+			? (Parameters) evaluationHelper.getExpressionEvaluator().evaluate(expression, parameters == null ? new Parameters() : parameters, subject, evaluationHelper.resolveIncludedLibraries(library), useServerData == null || useServerData.booleanValue(), data, null, dataEndpoint == null ? defaultEndpoint : dataEndpoint, contentEndpoint == null ? defaultEndpoint : contentEndpoint, terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint)
+			: (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(evaluationHelper.resolveLibraryIdentifier(content, null), evaluationHelper.resolveContextParameter(subject), parameters, expression == null ? null : Collections.singleton(expression));
 	}
-
-//	private DebugMap getDebugMap() {
-//		DebugMap debugMap = new DebugMap();
-//		if (myCqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled()) {
-//			debugMap.setIsLoggingEnabled(true);
-//		}
-//		return debugMap;
-//	}
 }

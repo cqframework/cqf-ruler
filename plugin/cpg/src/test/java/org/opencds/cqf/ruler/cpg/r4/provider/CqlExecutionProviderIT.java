@@ -20,16 +20,12 @@ import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.IOException;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CqlExecutionProviderIT.class,
-		CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CqlExecutionProviderIT.class, CpgConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class CqlExecutionProviderIT extends RestIntegrationTest {
-
 	private String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
 
 	@BeforeEach
-	void setup() throws IOException {
+	void setup() {
 		loadResource(packagePrefix + "SimpleR4Library.json");
 		loadResource(packagePrefix + "SimplePatient.json");
 		loadResource(packagePrefix + "SimpleObservation.json");
@@ -45,41 +41,35 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		assertEquals("25", ((IntegerType) results.getParameter("return")).asStringValue());
 	}
 
-	// TODO: getting strange error: Translation of library expression failed with the following message: Could not resolve type name Observation.
-	//@Test
-//	void testSimpleRetrieveCqlExecutionProvider() throws Exception {
-//		Parameters params = new Parameters();
-//		params.addParameter().setName("subject").setValue(new StringType("SimplePatient"));
-//		params.addParameter().setName("expression")
-//				.setValue(new StringType("[Observation] O where O.status = 'final'"));
-//		String packagePrefix = "org/opencds/cqf/ruler/cpg/r4/provider/";
-//		loadResource(packagePrefix + "SimpleObservation.json");
-//		loadResource(packagePrefix + "SimplePatient.json");
-//		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
-//	}
+	@Test
+	void testSimpleRetrieveCqlExecutionProvider() {
+		Parameters params = new Parameters();
+		params.addParameter().setName("subject").setValue(new StringType("SimplePatient"));
+		params.addParameter().setName("expression").setValue(new StringType("[Observation]"));
+		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
+		// TODO: result is always null...
+		// assertTrue(results.hasParameter());
+	}
 
 	@Test
 	void testReferencedLibraryCqlExecutionProvider() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("subject").setValue(new StringType("SimplePatient"));
 		Parameters libraryParameter = new Parameters();
-		libraryParameter.addParameter().setName("url")
-				.setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
+		libraryParameter.addParameter().setName("url").setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
 		libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleR4Library"));
 		params.addParameter().setName("library").setResource(libraryParameter);
-		params.addParameter().setName("expression")
-				.setValue(new StringType("SimpleR4Library.\"simpleBooleanExpression\""));
+		params.addParameter().setName("expression").setValue(new StringType("SimpleR4Library.\"simpleBooleanExpression\""));
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 		assertTrue(results.getParameter("return") instanceof BooleanType);
-		assertEquals("true", ((BooleanType) results.getParameter("return")).asStringValue());
+		assertTrue(((BooleanType) results.getParameter("return")).booleanValue());
 	}
 
 	@Test
-	void testDataBundleCqlExecutionProvider() throws Exception {
+	void testDataBundleCqlExecutionProvider() {
 		Parameters params = new Parameters();
 		Parameters libraryParameter = new Parameters();
-		libraryParameter.addParameter().setName("url")
-				.setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
+		libraryParameter.addParameter().setName("url").setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
 		libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleR4Library"));
 		params.addParameter().setName("library").setResource(libraryParameter);
 		params.addParameter().setName("expression").setValue(new StringType("SimpleR4Library.\"observationRetrieve\""));
@@ -91,14 +81,11 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	void testDataBundleCqlExecutionProviderWithSubject() throws Exception {
+	void testDataBundleCqlExecutionProviderWithSubject() {
 		Parameters params = new Parameters();
 		Parameters libraryParameter = new Parameters();
-		// Evaluator expects just the id and not a FHIR reference
-//		params.addParameter().setName("subject").setValue(new StringType("Patient/SimplePatient"));
 		params.addParameter().setName("subject").setValue(new StringType("SimplePatient"));
-		libraryParameter.addParameter().setName("url")
-				.setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
+		libraryParameter.addParameter().setName("url").setValue(new CanonicalType(this.getClient().getServerBase() + "Library/SimpleR4Library"));
 		libraryParameter.addParameter().setName("name").setValue(new StringType("SimpleR4Library"));
 		params.addParameter().setName("library").setResource(libraryParameter);
 		params.addParameter().setName("expression").setValue(new StringType("SimpleR4Library.\"observationRetrieve\""));
@@ -118,7 +105,7 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("parameters").setResource(evaluationParams);
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 		assertTrue(results.getParameter("return") instanceof BooleanType);
-		assertEquals("true", ((BooleanType) results.getParameter("return")).asStringValue());
+		assertTrue(((BooleanType) results.getParameter("return")).booleanValue());
 	}
 
 	@Test
@@ -152,15 +139,28 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 		Parameters results = getClient().operation().onServer().named("$cql").withParameters(params).execute();
 
 		assertFalse(results.isEmpty());
-		// TODO: For some reason the observationRetrieve expression result is not being retrieved, uncomment once issue is resolved
-//		assertEquals(7, results.getParameter().size());
-//		assertTrue(results.getParameter().get(1).hasName());
-//		assertEquals("simpleBooleanExpression", results.getParameter().get(1).getName());
-//		assertTrue(results.getParameter().get(1).getResource() instanceof Parameters);
-//		Parameters innerResult = (Parameters) results.getParameter().get(1).getResource();
-//		assertFalse(innerResult.isEmpty());
-//		assertTrue(innerResult.getParameter().get(0).hasValue());
-//		assertEquals("true", innerResult.getParameter().get(0).getValue().primitiveValue());
+		assertEquals(7, results.getParameter().size());
+		assertTrue(results.hasParameter("Patient"));
+		assertTrue(results.getParameter().get(0).hasResource());
+		assertTrue(results.getParameter().get(0).getResource() instanceof Patient);
+		assertTrue(results.hasParameter("simpleBooleanExpression"));
+		assertTrue(results.getParameter("simpleBooleanExpression") instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("simpleBooleanExpression")).booleanValue());
+		assertTrue(results.hasParameter("observationRetrieve"));
+		assertTrue(results.getParameter().get(2).hasResource());
+		assertTrue(results.getParameter().get(2).getResource() instanceof Observation);
+		assertTrue(results.hasParameter("observationHasCode"));
+		assertTrue(results.getParameter("observationHasCode") instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("observationHasCode")).booleanValue());
+		assertTrue(results.hasParameter("Initial Population"));
+		assertTrue(results.getParameter("Initial Population") instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("Initial Population")).booleanValue());
+		assertTrue(results.hasParameter("Numerator"));
+		assertTrue(results.getParameter("Numerator") instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("Numerator")).booleanValue());
+		assertTrue(results.hasParameter("Denominator"));
+		assertTrue(results.getParameter("Denominator") instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("Denominator")).booleanValue());
 	}
 
 	@Test
@@ -196,9 +196,8 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 
 		assertFalse(results.isEmpty());
 		assertEquals(1, results.getParameter().size());
-		assertTrue(results.getParameter().get(0).hasName());
-		assertTrue(results.getParameter().get(0).hasValue());
-		assertEquals("true", results.getParameter().get(0).getValue().primitiveValue());
+		assertTrue(results.getParameter("Numerator") instanceof BooleanType);
+		assertTrue(((BooleanType) results.getParameter("Numerator")).booleanValue());
 	}
 
 	@Test
