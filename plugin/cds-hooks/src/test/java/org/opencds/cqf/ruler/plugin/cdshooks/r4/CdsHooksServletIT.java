@@ -1,9 +1,5 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -21,7 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cdshooks.CdsHooksConfig;
+import org.opencds.cqf.ruler.cdshooks.CdsServiceInterceptor;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -29,21 +27,22 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-		CdsHooksConfig.class }, properties = {
-				"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"
-		})
-public class CdsHooksServletIT extends RestIntegrationTest {
-	String ourCdsBase;
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class, CdsHooksConfig.class }, properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
+class CdsHooksServletIT extends RestIntegrationTest {
+	@Autowired
+	CdsServiceInterceptor cdsServiceInterceptor;
+	private String ourCdsBase;
 
 	@BeforeEach
-	public void beforeEach() {
+	void beforeEach() {
 		ourCdsBase = "http://localhost:" + getPort() + "/cds-services";
 	}
 
 	@Test
-	public void testGetCdsServices() throws IOException {
+	void testGetCdsServices() throws IOException {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpGet request = new HttpGet(ourCdsBase);
 		request.addHeader("Content-Type", "application/json");
@@ -51,8 +50,32 @@ public class CdsHooksServletIT extends RestIntegrationTest {
 	}
 
 	@Test
+	void testCdsServicesCache() {
+		loadTransaction("Screening-bundle-r4.json");
+		loadTransaction("HelloWorldPatientView-bundle.json");
+		PlanDefinition p1 = (PlanDefinition) loadResource("Screening-plandefinition.json");
+		PlanDefinition p2 = (PlanDefinition) loadResource("HelloWorld-plandefinition.json");
+
+		cdsServiceInterceptor.insert(p1);
+		assertEquals(1, cdsServiceInterceptor.getCdsServiceCache().get().size());
+
+		cdsServiceInterceptor.insert(p2);
+		assertEquals(2, cdsServiceInterceptor.getCdsServiceCache().get().size());
+
+		cdsServiceInterceptor.delete(p1);
+		assertEquals(1, cdsServiceInterceptor.getCdsServiceCache().get().size());
+
+		assertEquals("HelloWorldPatientView", cdsServiceInterceptor.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
+		PlanDefinition updatedP2 = new PlanDefinition();
+		p2.copyValues(updatedP2);
+		updatedP2.setName("HelloWorldPatientView-updated");
+		cdsServiceInterceptor.update(p2, updatedP2);
+		assertEquals("HelloWorldPatientView-updated", cdsServiceInterceptor.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
+	}
+
+	@Test
 	// TODO: Debug delay in Client.search().
-	public void testCdsServicesRequest() throws IOException {
+	void testCdsServicesRequest() throws IOException {
 		// Server Load
 		loadTransaction("Screening-bundle-r4.json");
 		Patient ourPatient = getClient().read().resource(Patient.class).withId("HighRiskIDUPatient").execute();
@@ -61,7 +84,7 @@ public class CdsHooksServletIT extends RestIntegrationTest {
 		PlanDefinition ourPlanDefinition = getClient().read().resource(PlanDefinition.class)
 				.withId("plandefinition-Screening").execute();
 		assertNotNull(ourPlanDefinition);
-		Bundle getPlanDefinitions = null;
+		Bundle getPlanDefinitions;
 		int tries = 0;
 		do {
 			// Can take up to 10 seconds for HAPI to reindex searches

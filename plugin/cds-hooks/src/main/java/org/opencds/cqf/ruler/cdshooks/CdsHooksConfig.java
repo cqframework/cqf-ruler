@@ -1,9 +1,6 @@
 package org.opencds.cqf.ruler.cdshooks;
 
-import java.util.concurrent.atomic.AtomicReference;
-
-import com.google.gson.JsonArray;
-
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
@@ -33,9 +30,9 @@ public class CdsHooksConfig {
 		return new ProviderConfiguration(cdsProperties, cqlProperties);
 	}
 
-	@Bean(name = "globalCdsServiceCache")
-	public AtomicReference<JsonArray> cdsServiceCache() {
-		return new AtomicReference<>();
+	@Bean
+	public CdsServiceInterceptor cdsServiceInterceptor(DaoRegistry daoRegistry) {
+		return new CdsServiceInterceptor(daoRegistry);
 	}
 
 	@Bean
