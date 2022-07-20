@@ -2,9 +2,7 @@ package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.List;
 
-import ca.uhn.fhir.jpa.cache.IResourceChangeEvent;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -12,8 +10,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cdshooks.CdsHooksConfig;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
+import org.opencds.cqf.ruler.plugin.cdshooks.ResourceChangeEvent;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,6 +62,8 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		ResourceChangeEvent rce = new ResourceChangeEvent();
 		rce.setCreatedResourceIds(Collections.singletonList(p1.getIdElement()));
 
+		cdsServicesCache.clearCache();
+
 		cdsServicesCache.handleChange(rce);
 		assertEquals(1, cdsServicesCache.getCdsServiceCache().get().size());
 
@@ -91,6 +92,11 @@ class CdsHooksServletIT extends RestIntegrationTest {
 	void testCdsServicesRequest() throws IOException {
 		// Server Load
 		loadTransaction("Screening-bundle-r4.json");
+
+		ResourceChangeEvent rce = new ResourceChangeEvent();
+		rce.setUpdatedResourceIds(Collections.singletonList(new IdType("plandefinition-Screening")));
+		cdsServicesCache.handleChange(rce);
+
 		Patient ourPatient = getClient().read().resource(Patient.class).withId("HighRiskIDUPatient").execute();
 		assertNotNull(ourPatient);
 		assertEquals("HighRiskIDUPatient", ourPatient.getIdElement().getIdPart());
@@ -165,43 +171,4 @@ class CdsHooksServletIT extends RestIntegrationTest {
 				.getAsString();
 		assertEquals("Patient/" + expectedPatientID, actualPatientID);
 	}
-
-	private static class ResourceChangeEvent implements IResourceChangeEvent {
-		private List<IIdType> createdResourceIds;
-		private List<IIdType> updatedResourceIds;
-		private List<IIdType> deletedResourceIds;
-
-		@Override
-		public List<IIdType> getCreatedResourceIds() {
-			return this.createdResourceIds;
-		}
-
-		void setCreatedResourceIds(List<IIdType> createdResourceIds) {
-			this.createdResourceIds = createdResourceIds;
-		}
-
-		@Override
-		public List<IIdType> getUpdatedResourceIds() {
-			return this.updatedResourceIds;
-		}
-
-		void setUpdatedResourceIds(List<IIdType> updatedResourceIds) {
-			this.updatedResourceIds = updatedResourceIds;
-		}
-
-		@Override
-		public List<IIdType> getDeletedResourceIds() {
-			return this.deletedResourceIds;
-		}
-
-		void setDeletedResourceIds(List<IIdType> deletedResourceIds) {
-			this.deletedResourceIds = deletedResourceIds;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return false;
-		}
-	}
-
 }

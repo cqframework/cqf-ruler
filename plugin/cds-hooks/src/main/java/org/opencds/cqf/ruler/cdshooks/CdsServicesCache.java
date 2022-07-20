@@ -37,6 +37,10 @@ public class CdsServicesCache implements IResourceChangeListener {
 		return this.cdsServiceCache;
 	}
 
+	public void clearCache() {
+		this.cdsServiceCache = new AtomicReference<>(new JsonArray());
+	}
+
 	@Override
 	public void handleInit(Collection<IIdType> collection) {
 
