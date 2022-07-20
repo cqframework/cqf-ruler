@@ -1,7 +1,10 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
+import ca.uhn.fhir.jpa.cache.IResourceChangeEvent;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -9,6 +12,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PlanDefinition;
@@ -17,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cdshooks.CdsHooksConfig;
-import org.opencds.cqf.ruler.cdshooks.CdsServiceInterceptor;
+import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class, CdsHooksConfig.class }, properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
 class CdsHooksServletIT extends RestIntegrationTest {
 	@Autowired
-	CdsServiceInterceptor cdsServiceInterceptor;
+	CdsServicesCache cdsServicesCache;
 	private String ourCdsBase;
 
 	@BeforeEach
@@ -56,21 +60,30 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		PlanDefinition p1 = (PlanDefinition) loadResource("Screening-plandefinition.json");
 		PlanDefinition p2 = (PlanDefinition) loadResource("HelloWorld-plandefinition.json");
 
-		cdsServiceInterceptor.insert(p1);
-		assertEquals(1, cdsServiceInterceptor.getCdsServiceCache().get().size());
+		ResourceChangeEvent rce = new ResourceChangeEvent();
+		rce.setCreatedResourceIds(Collections.singletonList(p1.getIdElement()));
 
-		cdsServiceInterceptor.insert(p2);
-		assertEquals(2, cdsServiceInterceptor.getCdsServiceCache().get().size());
+		cdsServicesCache.handleChange(rce);
+		assertEquals(1, cdsServicesCache.getCdsServiceCache().get().size());
 
-		cdsServiceInterceptor.delete(p1);
-		assertEquals(1, cdsServiceInterceptor.getCdsServiceCache().get().size());
+		rce.setCreatedResourceIds(Collections.singletonList(p2.getIdElement()));
+		cdsServicesCache.handleChange(rce);
+		assertEquals(2, cdsServicesCache.getCdsServiceCache().get().size());
 
-		assertEquals("HelloWorldPatientView", cdsServiceInterceptor.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
+		rce.setCreatedResourceIds(null);
+		rce.setDeletedResourceIds(Collections.singletonList(p1.getIdElement()));
+		cdsServicesCache.handleChange(rce);
+		assertEquals(1, cdsServicesCache.getCdsServiceCache().get().size());
+
+		assertEquals("HelloWorldPatientView", cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
 		PlanDefinition updatedP2 = new PlanDefinition();
 		p2.copyValues(updatedP2);
 		updatedP2.setName("HelloWorldPatientView-updated");
-		cdsServiceInterceptor.update(p2, updatedP2);
-		assertEquals("HelloWorldPatientView-updated", cdsServiceInterceptor.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
+		update(updatedP2);
+		rce.setDeletedResourceIds(null);
+		rce.setUpdatedResourceIds(Collections.singletonList(updatedP2.getIdElement()));
+		cdsServicesCache.handleChange(rce);
+		assertEquals("HelloWorldPatientView-updated", cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
 	}
 
 	@Test
@@ -151,6 +164,44 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		String actualPatientID = suggestionsActivityResource.get("subject").getAsJsonObject().get("reference")
 				.getAsString();
 		assertEquals("Patient/" + expectedPatientID, actualPatientID);
+	}
+
+	private static class ResourceChangeEvent implements IResourceChangeEvent {
+		private List<IIdType> createdResourceIds;
+		private List<IIdType> updatedResourceIds;
+		private List<IIdType> deletedResourceIds;
+
+		@Override
+		public List<IIdType> getCreatedResourceIds() {
+			return this.createdResourceIds;
+		}
+
+		void setCreatedResourceIds(List<IIdType> createdResourceIds) {
+			this.createdResourceIds = createdResourceIds;
+		}
+
+		@Override
+		public List<IIdType> getUpdatedResourceIds() {
+			return this.updatedResourceIds;
+		}
+
+		void setUpdatedResourceIds(List<IIdType> updatedResourceIds) {
+			this.updatedResourceIds = updatedResourceIds;
+		}
+
+		@Override
+		public List<IIdType> getDeletedResourceIds() {
+			return this.deletedResourceIds;
+		}
+
+		void setDeletedResourceIds(List<IIdType> deletedResourceIds) {
+			this.deletedResourceIds = deletedResourceIds;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return false;
+		}
 	}
 
 }

@@ -26,7 +26,7 @@ import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
-import org.opencds.cqf.ruler.cdshooks.CdsServiceInterceptor;
+import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.evaluation.EvaluationContext;
 import org.opencds.cqf.ruler.cdshooks.evaluation.Stu3EvaluationContext;
 import org.opencds.cqf.ruler.cdshooks.hooks.Hook;
@@ -97,7 +97,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private ModelResolver modelResolver;
 
 	@Autowired
-	CdsServiceInterceptor cdsServiceInterceptor;
+	CdsServicesCache cdsServicesCache;
 
 	protected ProviderConfiguration getProviderConfiguration() {
 		return this.providerConfiguration;
@@ -316,12 +316,12 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	}
 
 	private JsonArray getServicesArray() {
-		return this.cdsServiceInterceptor.getCdsServiceCache().get();
+		return this.cdsServicesCache.getCdsServiceCache().get();
 	}
 
 	private JsonObject getServices() {
 		JsonObject services = new JsonObject();
-		services.add("services", this.cdsServiceInterceptor.getCdsServiceCache().get());
+		services.add("services", this.cdsServicesCache.getCdsServiceCache().get());
 		return services;
 	}
 

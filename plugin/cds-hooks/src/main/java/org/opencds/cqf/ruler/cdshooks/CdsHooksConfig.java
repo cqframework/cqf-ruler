@@ -1,6 +1,8 @@
 package org.opencds.cqf.ruler.cdshooks;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
@@ -31,8 +33,10 @@ public class CdsHooksConfig {
 	}
 
 	@Bean
-	public CdsServiceInterceptor cdsServiceInterceptor(DaoRegistry daoRegistry) {
-		return new CdsServiceInterceptor(daoRegistry);
+	public CdsServicesCache cdsServiceInterceptor(IResourceChangeListenerRegistry resourceChangeListenerRegistry, DaoRegistry daoRegistry) {
+		CdsServicesCache listener = new CdsServicesCache(daoRegistry);
+		resourceChangeListenerRegistry.registerResourceResourceChangeListener("PlanDefinition", SearchParameterMap.newSynchronous(), listener, 1000);
+		return listener;
 	}
 
 	@Bean
