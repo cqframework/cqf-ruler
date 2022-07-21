@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,7 +26,7 @@ import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
-import org.opencds.cqf.ruler.cdshooks.discovery.DiscoveryResolutionR4;
+import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.evaluation.EvaluationContext;
 import org.opencds.cqf.ruler.cdshooks.evaluation.R4EvaluationContext;
 import org.opencds.cqf.ruler.cdshooks.hooks.Hook;
@@ -81,6 +80,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	@Autowired
 	private LibraryLoaderFactory libraryLoaderFactory;
+
 	@Autowired
 	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
 
@@ -97,7 +97,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private ModelResolver modelResolver;
 
 	@Autowired
-	private AtomicReference<JsonArray> services;
+	CdsServicesCache cdsServicesCache;
 
 	protected ProviderConfiguration getProviderConfiguration() {
 		return this.providerConfiguration;
@@ -119,6 +119,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			throws ServletException, IOException {
 
 		logger.info(request.getRequestURI());
+
 		if (!request.getRequestURL().toString().endsWith("/cds-services")
 				&& !request.getRequestURL().toString().endsWith("/cds-services/")) {
 			logger.error(request.getRequestURI());
@@ -132,8 +133,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	@Override
 	@SuppressWarnings("deprecation")
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		logger.info(request.getRequestURI());
 
 		try {
@@ -317,21 +317,13 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	}
 
 	private JsonArray getServicesArray() {
-		JsonArray cachedServices = this.services.get();
-		if (cachedServices == null || cachedServices.size() == 0) {
-			cachedServices = getServices().get("services").getAsJsonArray();
-			services.set(cachedServices);
-		}
-
-		return cachedServices;
+		return this.cdsServicesCache.getCdsServiceCache().get();
 	}
 
 	private JsonObject getServices() {
-		DiscoveryResolutionR4 discoveryResolutionR4 = new DiscoveryResolutionR4(daoRegistry);
-
-		discoveryResolutionR4.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
-
-		return discoveryResolutionR4.resolve().getAsJson();
+		JsonObject services = new JsonObject();
+		services.add("services", this.cdsServicesCache.getCdsServiceCache().get());
+		return services;
 	}
 
 	private String toJsonResponse(List<CdsCard> cards) {

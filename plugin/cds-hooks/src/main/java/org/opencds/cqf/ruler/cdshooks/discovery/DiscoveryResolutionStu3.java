@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.cdshooks.discovery;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonObject;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.DataRequirement;
@@ -205,6 +206,10 @@ public class DiscoveryResolutionStu3 implements DaoRegistryUser  {
 		}
 
 		return response;
+	}
+
+	public JsonObject resolveService(PlanDefinition planDefinition) {
+		return new DiscoveryElementStu3(planDefinition, getPrefetchUrlList(planDefinition)).getAsJson();
 	}
 
 	private String mapCodePathToSearchParam(String dataType, String path) {

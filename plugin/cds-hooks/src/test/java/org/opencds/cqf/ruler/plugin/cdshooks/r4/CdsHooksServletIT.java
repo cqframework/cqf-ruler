@@ -1,10 +1,7 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
+import java.util.Collections;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -14,6 +11,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +19,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cdshooks.CdsHooksConfig;
+import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
+import org.opencds.cqf.ruler.plugin.cdshooks.ResourceChangeEvent;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -29,21 +30,22 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-		CdsHooksConfig.class }, properties = {
-				"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"
-		})
-public class CdsHooksServletIT extends RestIntegrationTest {
-	String ourCdsBase;
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class, CdsHooksConfig.class }, properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
+class CdsHooksServletIT extends RestIntegrationTest {
+	@Autowired
+	CdsServicesCache cdsServicesCache;
+	private String ourCdsBase;
 
 	@BeforeEach
-	public void beforeEach() {
+	void beforeEach() {
 		ourCdsBase = "http://localhost:" + getPort() + "/cds-services";
 	}
 
 	@Test
-	public void testGetCdsServices() throws IOException {
+	void testGetCdsServices() throws IOException {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpGet request = new HttpGet(ourCdsBase);
 		request.addHeader("Content-Type", "application/json");
@@ -51,17 +53,57 @@ public class CdsHooksServletIT extends RestIntegrationTest {
 	}
 
 	@Test
+	void testCdsServicesCache() {
+		loadTransaction("Screening-bundle-r4.json");
+		loadTransaction("HelloWorldPatientView-bundle.json");
+		PlanDefinition p1 = (PlanDefinition) loadResource("Screening-plandefinition.json");
+		PlanDefinition p2 = (PlanDefinition) loadResource("HelloWorld-plandefinition.json");
+
+		ResourceChangeEvent rce = new ResourceChangeEvent();
+		rce.setCreatedResourceIds(Collections.singletonList(p1.getIdElement()));
+
+		cdsServicesCache.clearCache();
+
+		cdsServicesCache.handleChange(rce);
+		assertEquals(1, cdsServicesCache.getCdsServiceCache().get().size());
+
+		rce.setCreatedResourceIds(Collections.singletonList(p2.getIdElement()));
+		cdsServicesCache.handleChange(rce);
+		assertEquals(2, cdsServicesCache.getCdsServiceCache().get().size());
+
+		rce.setCreatedResourceIds(null);
+		rce.setDeletedResourceIds(Collections.singletonList(p1.getIdElement()));
+		cdsServicesCache.handleChange(rce);
+		assertEquals(1, cdsServicesCache.getCdsServiceCache().get().size());
+
+		assertEquals("HelloWorldPatientView", cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
+		PlanDefinition updatedP2 = new PlanDefinition();
+		p2.copyValues(updatedP2);
+		updatedP2.setName("HelloWorldPatientView-updated");
+		update(updatedP2);
+		rce.setDeletedResourceIds(null);
+		rce.setUpdatedResourceIds(Collections.singletonList(updatedP2.getIdElement()));
+		cdsServicesCache.handleChange(rce);
+		assertEquals("HelloWorldPatientView-updated", cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
+	}
+
+	@Test
 	// TODO: Debug delay in Client.search().
-	public void testCdsServicesRequest() throws IOException {
+	void testCdsServicesRequest() throws IOException {
 		// Server Load
 		loadTransaction("Screening-bundle-r4.json");
+
+		ResourceChangeEvent rce = new ResourceChangeEvent();
+		rce.setUpdatedResourceIds(Collections.singletonList(new IdType("plandefinition-Screening")));
+		cdsServicesCache.handleChange(rce);
+
 		Patient ourPatient = getClient().read().resource(Patient.class).withId("HighRiskIDUPatient").execute();
 		assertNotNull(ourPatient);
 		assertEquals("HighRiskIDUPatient", ourPatient.getIdElement().getIdPart());
 		PlanDefinition ourPlanDefinition = getClient().read().resource(PlanDefinition.class)
 				.withId("plandefinition-Screening").execute();
 		assertNotNull(ourPlanDefinition);
-		Bundle getPlanDefinitions = null;
+		Bundle getPlanDefinitions;
 		int tries = 0;
 		do {
 			// Can take up to 10 seconds for HAPI to reindex searches
@@ -129,5 +171,4 @@ public class CdsHooksServletIT extends RestIntegrationTest {
 				.getAsString();
 		assertEquals("Patient/" + expectedPatientID, actualPatientID);
 	}
-
 }
