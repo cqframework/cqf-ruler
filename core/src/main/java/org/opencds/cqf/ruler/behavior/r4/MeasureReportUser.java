@@ -71,7 +71,9 @@ public interface MeasureReportUser extends DaoRegistryUser, IdCreator {
 		if (report.hasExtension()) {
 			for (Extension extension : report.getExtension()) {
 				if (extension.hasUrl() && extension.getUrl().equals(SDE_EXTENSION_URL)) {
-					Reference sdeRef = extension.hasValue() && extension.getValue() instanceof Reference ? (Reference) extension.getValue() : null;
+					Reference sdeRef = extension.hasValue() && extension.getValue() instanceof Reference
+							? (Reference) extension.getValue()
+							: null;
 					if (sdeRef != null && sdeRef.hasReference() && !sdeRef.getReference().startsWith("#")) {
 						IdType sdeId = new IdType(sdeRef.getReference());
 						if (!resources.containsKey(Ids.simple(sdeId))) {

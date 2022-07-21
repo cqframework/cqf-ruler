@@ -58,7 +58,8 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-public class CareGapsProvider extends DaoRegistryOperationProvider implements ParameterUser, ConfigurationUser, ResourceCreator, MeasureReportUser {
+public class CareGapsProvider extends DaoRegistryOperationProvider
+		implements ParameterUser, ConfigurationUser, ResourceCreator, MeasureReportUser {
 	private static final Logger ourLog = LoggerFactory.getLogger(CareGapsProvider.class);
 	@Autowired
 	private MeasureEvaluateProvider measureEvaluateProvider;
@@ -221,17 +222,19 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 			futures.forEach(x -> result.addParameter(x.join()));
 		} else {
 			(patients).forEach(
-				patient -> {
-					Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails, periodStart, periodEnd, patient, status, measures, organization);
-					if (patientParameter != null) {
-						result.addParameter(patientParameter);
-					}
-				});
+					patient -> {
+						Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails,
+								periodStart, periodEnd, patient, status, measures, organization);
+						if (patientParameter != null) {
+							result.addParameter(patientParameter);
+						}
+					});
 		}
 		return result;
 	}
 
-	private <T extends Resource> T putConfiguredResource(Class<T> theResourceClass, String theId, String theKey, RequestDetails theRequestDetails) {
+	private <T extends Resource> T putConfiguredResource(Class<T> theResourceClass, String theId, String theKey,
+			RequestDetails theRequestDetails) {
 		T resource = search(theResourceClass, Searches.byId(theId), theRequestDetails).firstOrNull();
 		if (resource != null) {
 			configuredResources.put(theKey, resource);
@@ -241,15 +244,25 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 
 	@Override
 	public void validateConfiguration(RequestDetails theRequestDetails) {
-		checkNotNull(crProperties.getMeasureReport(), "The measure_report setting is required for the $care-gaps operation.");
-		checkArgument(!Strings.isNullOrEmpty(crProperties.getMeasureReport().getReporter()), "The measure_report.care_gaps_reporter setting is required for the $care-gaps operation.");
-		checkArgument(!Strings.isNullOrEmpty(crProperties.getMeasureReport().getCompositionAuthor()), "The measure_report.care_gaps_composition_section_author setting is required for the $care-gaps operation.");
+		checkNotNull(crProperties.getMeasureReport(),
+				"The measure_report setting is required for the $care-gaps operation.");
+		checkArgument(!Strings.isNullOrEmpty(crProperties.getMeasureReport().getReporter()),
+				"The measure_report.care_gaps_reporter setting is required for the $care-gaps operation.");
+		checkArgument(!Strings.isNullOrEmpty(crProperties.getMeasureReport().getCompositionAuthor()),
+				"The measure_report.care_gaps_composition_section_author setting is required for the $care-gaps operation.");
 
-		Resource configuredReporter = putConfiguredResource(Organization.class, crProperties.getMeasureReport().getReporter(), "care_gaps_reporter", theRequestDetails);
-		Resource configuredAuthor = putConfiguredResource(Organization.class, crProperties.getMeasureReport().getCompositionAuthor(), "care_gaps_composition_section_author", theRequestDetails);
+		Resource configuredReporter = putConfiguredResource(Organization.class,
+				crProperties.getMeasureReport().getReporter(), "care_gaps_reporter", theRequestDetails);
+		Resource configuredAuthor = putConfiguredResource(Organization.class,
+				crProperties.getMeasureReport().getCompositionAuthor(), "care_gaps_composition_section_author",
+				theRequestDetails);
 
-		checkNotNull(configuredReporter, String.format("The %s Resource is configured as the measure_report.care_gaps_reporter but the Resource could not be read.", crProperties.getMeasureReport().getReporter()));
-		checkNotNull(configuredAuthor, String.format("The %s Resource is configured as the measure_report.care_gaps_composition_section_author but the Resource could not be read.", crProperties.getMeasureReport().getCompositionAuthor()));
+		checkNotNull(configuredReporter, String.format(
+				"The %s Resource is configured as the measure_report.care_gaps_reporter but the Resource could not be read.",
+				crProperties.getMeasureReport().getReporter()));
+		checkNotNull(configuredAuthor, String.format(
+				"The %s Resource is configured as the measure_report.care_gaps_composition_section_author but the Resource could not be read.",
+				crProperties.getMeasureReport().getCompositionAuthor()));
 	}
 
 	@SuppressWarnings("squid:S1192") // warning for using the same string value more than 5 times
@@ -285,26 +298,32 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 	}
 
 	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
-	private Parameters.ParametersParameterComponent patientReports(RequestDetails requestDetails, String periodStart, String periodEnd, Patient patient, List<String> status, List<Measure> measures, String organization) {
+	private Parameters.ParametersParameterComponent patientReports(RequestDetails requestDetails, String periodStart,
+			String periodEnd, Patient patient, List<String> status, List<Measure> measures, String organization) {
 		// TODO: add organization to report, if it exists.
 		Composition composition = getComposition(patient);
 		List<DetectedIssue> detectedIssues = new ArrayList<>();
 		Map<String, Resource> evalPlusSDE = new HashMap<>();
-		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, status, measures, composition, detectedIssues, evalPlusSDE);
+		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, status, measures,
+				composition, detectedIssues, evalPlusSDE);
 
 		if (reports.isEmpty()) {
 			return null;
 		}
 
-		return initializePatientParameter(patient).setResource(addBundleEntries(requestDetails.getFhirServerBase(), composition, detectedIssues, reports, evalPlusSDE));
+		return initializePatientParameter(patient).setResource(
+				addBundleEntries(requestDetails.getFhirServerBase(), composition, detectedIssues, reports, evalPlusSDE));
 	}
 
 	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
-	private List<MeasureReport> getReports(RequestDetails requestDetails, String periodStart, String periodEnd, Patient patient, List<String> status, List<Measure> measures, Composition composition, List<DetectedIssue> detectedIssues, Map<String, Resource> evalPlusSDE) {
+	private List<MeasureReport> getReports(RequestDetails requestDetails, String periodStart, String periodEnd,
+			Patient patient, List<String> status, List<Measure> measures, Composition composition,
+			List<DetectedIssue> detectedIssues, Map<String, Resource> evalPlusSDE) {
 		List<MeasureReport> reports = new ArrayList<>();
 		MeasureReport report;
 		for (Measure measure : measures) {
-			report = measureEvaluateProvider.evaluateMeasure(requestDetails, measure.getIdElement(), periodStart, periodEnd, "patient", Ids.simple(patient), null, null, null, null, null);
+			report = measureEvaluateProvider.evaluateMeasure(requestDetails, measure.getIdElement(), periodStart,
+					periodEnd, "patient", Ids.simple(patient), null, null, null, null, null);
 			if (!report.hasGroup()) {
 				ourLog.info("Report does not include a group so skipping.\nSubject: {}\nMeasure: {}",
 						Ids.simple(patient),
@@ -354,7 +373,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider implements Pa
 		return patientParameter;
 	}
 
-	private Bundle addBundleEntries(String serverBase, Composition composition, List<DetectedIssue> detectedIssues, List<MeasureReport> reports, Map<String, Resource> evalPlusSDE) {
+	private Bundle addBundleEntries(String serverBase, Composition composition, List<DetectedIssue> detectedIssues,
+			List<MeasureReport> reports, Map<String, Resource> evalPlusSDE) {
 		Bundle reportBundle = getBundle();
 		reportBundle.addEntry(getBundleEntry(serverBase, composition));
 		reports.forEach(report -> reportBundle.addEntry(getBundleEntry(serverBase, report)));
