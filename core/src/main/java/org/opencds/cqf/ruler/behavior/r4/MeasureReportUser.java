@@ -3,6 +3,7 @@ package org.opencds.cqf.ruler.behavior.r4;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -34,9 +35,31 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 public interface MeasureReportUser extends DaoRegistryUser, IdCreator {
 	Logger ourLog = LoggerFactory.getLogger(ParameterUser.class);
 
-	String MEASUREREPORT_IMPROVEMENT_NOTATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-improvement-notation";
-	String MEASUREREPORT_MEASURE_POPULATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-population";
-	String SDE_EXTENSION_URL = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData";
+	static final String MEASUREREPORT_IMPROVEMENT_NOTATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-improvement-notation";
+	static final String MEASUREREPORT_MEASURE_POPULATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-population";
+	static final String MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_SYSTEM = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData";
+	static final String MEASUREREPORT_SUPPLEMENTALDATA_SEARCHPARAMETER_URL = "http://hl7.org/fhir/us/davinci-deqm/SearchParameter/measurereport-supplemental-data";
+	static final String MEASUREREPORT_SUPPLEMENTALDATA_SEARCHPARAMETER_VERSION = "0.1.0";
+
+	static final List<ContactDetail> CQI_CONTACTDETAIL = new ArrayList<ContactDetail>() {
+		{
+			add(
+					new ContactDetail()
+							.addTelecom(
+									new ContactPoint()
+											.setSystem(ContactPointSystem.URL)
+											.setValue("http://www.hl7.org/Special/committees/cqi/index.cfm")));
+		}
+	};
+
+	static final List<CodeableConcept> US_JURISDICTION_CODING = new ArrayList<CodeableConcept>() {
+		{
+			add(
+					new CodeableConcept()
+							.addCoding(
+									new Coding("urn:iso:std:iso:3166", "US", "United States of America")));
+		}
+	};
 
 	default Map<String, Resource> getEvaluatedResources(MeasureReport report) {
 		Map<String, Resource> resources = new HashMap<>();
@@ -97,47 +120,36 @@ public interface MeasureReportUser extends DaoRegistryUser, IdCreator {
 
 	default void ensureSupplementalDataElementSearchParameter(RequestDetails requestDetails) {
 		if (!search(SearchParameter.class,
-				Searches.byUrl("http://hl7.org/fhir/us/davinci-deqm/SearchParameter/measurereport-supplemental-data",
-						"0.1.0"),
+				Searches.byUrl(MEASUREREPORT_SUPPLEMENTALDATA_SEARCHPARAMETER_URL,
+						MEASUREREPORT_SUPPLEMENTALDATA_SEARCHPARAMETER_VERSION),
 				requestDetails).isEmpty())
 			return;
-
-		ArrayList<ContactDetail> contact = new ArrayList<>();
-		contact.add(
-				new ContactDetail()
-						.addTelecom(
-								new ContactPoint()
-										.setSystem(ContactPointSystem.URL)
-										.setValue("http://www.hl7.org/Special/committees/cqi/index.cfm")));
-
-		ArrayList<CodeableConcept> jurisdiction = new ArrayList<>();
-		jurisdiction.add(
-				new CodeableConcept()
-						.addCoding(
-								new Coding("urn:iso:std:iso:3166", "US", "United States of America")));
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear();
 		calendar.set(2022, 7, 20);
 
 		SearchParameter searchParameter = new SearchParameter()
-				.setUrl("http://hl7.org/fhir/us/davinci-deqm/SearchParameter/measurereport-supplemental-data")
-				.setVersion("0.1.0")
+				.setUrl(MEASUREREPORT_SUPPLEMENTALDATA_SEARCHPARAMETER_URL)
+				.setVersion(MEASUREREPORT_SUPPLEMENTALDATA_SEARCHPARAMETER_VERSION)
 				.setName("DEQMMeasureReportSupplementalData")
 				.setStatus(PublicationStatus.ACTIVE)
 				.setDate(calendar.getTime())
 				.setPublisher("HL7 International - Clinical Quality Information Work Group")
-				.setContact(contact)
+				.setContact(CQI_CONTACTDETAIL)
 				.setDescription(
-						"Returns resources (supplemental data) from references on extensions on the MeasureReport with urls matching http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData.")
-				.setJurisdiction(jurisdiction)
+						String.format(
+								"Returns resources (supplemental data) from references on extensions on the MeasureReport with urls matching %s.",
+								MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_SYSTEM))
+				.setJurisdiction(US_JURISDICTION_CODING)
 				.addBase("MeasureReport")
 				.setCode("supplemental-data")
 				.setType(SearchParamType.REFERENCE)
 				.setExpression(
-						"MeasureReport.extension('http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData').value")
+						String.format("MeasureReport.extension('%s').value", MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_SYSTEM))
 				.setXpath(
-						"f:MeasureReport/f:extension[@url='http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData'].value")
+						String.format("f:MeasureReport/f:extension[@url='%s'].value",
+								MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_SYSTEM))
 				.setXpathUsage(XPathUsageType.NORMAL);
 
 		searchParameter.setId("deqm-measurereport-supplemental-data");
