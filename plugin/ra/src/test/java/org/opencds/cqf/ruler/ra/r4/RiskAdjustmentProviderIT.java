@@ -17,9 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RiskAdjustmentProviderIT.class,
-
-	RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RiskAdjustmentProviderIT.class, RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	@Autowired
 	private RAProperties myRaProperties;

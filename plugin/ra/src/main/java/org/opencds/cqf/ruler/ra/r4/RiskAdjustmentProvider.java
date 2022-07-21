@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.ra.r4;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.hl7.fhir.r4.model.Bundle;
@@ -251,7 +252,10 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 			raBundle.setMeta(
 					new Meta().addProfile("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle"));
 			raBundle.addEntry().setResource(processedReport);
-			for (Map.Entry<String, Resource> evaluatedResources : getEvaluatedResources(processedReport).entrySet()) {
+
+			Map<String, Resource> evalPlusSDE = new HashMap<>();
+			getEvaluatedResources(processedReport, evalPlusSDE).getSDE(processedReport, evalPlusSDE);
+			for (Map.Entry<String, Resource> evaluatedResources : evalPlusSDE.entrySet()) {
 				raBundle.addEntry().setResource(evaluatedResources.getValue());
 			}
 			return raBundle;
