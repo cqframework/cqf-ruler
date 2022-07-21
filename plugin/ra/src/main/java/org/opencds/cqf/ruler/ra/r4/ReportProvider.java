@@ -58,6 +58,8 @@ public class ReportProvider extends DaoRegistryOperationProvider
 			@OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {
 
 		validateParameters(periodStart, periodEnd, subject);
+		ensureSupplementalDataElementSearchParameter(requestDetails);
+
 		Parameters result = newResource(Parameters.class, subject.replace("/", "-") + "-report");
 		Date periodStartDate = Operations.resolveRequestDate(periodStart, true);
 		Date periodEndDate = Operations.resolveRequestDate(periodEnd, false);
