@@ -37,7 +37,7 @@ public interface MeasureReportUser extends DaoRegistryUser, IdCreator {
 
 	static final String MEASUREREPORT_IMPROVEMENT_NOTATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-improvement-notation";
 	static final String MEASUREREPORT_MEASURE_POPULATION_SYSTEM = "http://terminology.hl7.org/CodeSystem/measure-population";
-	static final String MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_SYSTEM = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData";
+	static final String MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-supplementalData";
 	static final String MEASUREREPORT_SUPPLEMENTALDATA_SEARCHPARAMETER_URL = "http://hl7.org/fhir/us/davinci-deqm/SearchParameter/measurereport-supplemental-data";
 	static final String MEASUREREPORT_SUPPLEMENTALDATA_SEARCHPARAMETER_VERSION = "0.1.0";
 
@@ -93,7 +93,7 @@ public interface MeasureReportUser extends DaoRegistryUser, IdCreator {
 	default MeasureReportUser getSDE(MeasureReport report, Map<String, Resource> resources) {
 		if (report.hasExtension()) {
 			for (Extension extension : report.getExtension()) {
-				if (extension.hasUrl() && extension.getUrl().equals(MEASUREREPORT_SUPPLEMENTALDATA_SEARCHPARAMETER_URL)) {
+				if (extension.hasUrl() && extension.getUrl().equals(MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_EXTENSION)) {
 					Reference sdeRef = extension.hasValue() && extension.getValue() instanceof Reference
 							? (Reference) extension.getValue()
 							: null;
@@ -140,16 +140,17 @@ public interface MeasureReportUser extends DaoRegistryUser, IdCreator {
 				.setDescription(
 						String.format(
 								"Returns resources (supplemental data) from references on extensions on the MeasureReport with urls matching %s.",
-								MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_SYSTEM))
+								MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_EXTENSION))
 				.setJurisdiction(US_JURISDICTION_CODING)
 				.addBase("MeasureReport")
 				.setCode("supplemental-data")
 				.setType(SearchParamType.REFERENCE)
 				.setExpression(
-						String.format("MeasureReport.extension('%s').value", MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_SYSTEM))
+						String.format("MeasureReport.extension('%s').value",
+								MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_EXTENSION))
 				.setXpath(
 						String.format("f:MeasureReport/f:extension[@url='%s'].value",
-								MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_SYSTEM))
+								MEASUREREPORT_MEASURE_SUPPLEMENTALDATA_EXTENSION))
 				.setXpathUsage(XPathUsageType.NORMAL);
 
 		searchParameter.setId("deqm-measurereport-supplemental-data");
