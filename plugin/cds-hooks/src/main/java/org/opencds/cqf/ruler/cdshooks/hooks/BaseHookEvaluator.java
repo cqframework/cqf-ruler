@@ -9,6 +9,8 @@ import org.cqframework.cql.elm.execution.ParameterDef;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.execution.Context;
+import org.opencds.cqf.cql.engine.fhir.retrieve.Dstu3FhirQueryGenerator;
+import org.opencds.cqf.cql.engine.fhir.retrieve.R4FhirQueryGenerator;
 import org.opencds.cqf.cql.engine.fhir.retrieve.RestFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
@@ -28,7 +30,7 @@ public abstract class BaseHookEvaluator<P extends IBaseResource> {
 
     protected ModelResolver modelResolver;
 
-    public BaseHookEvaluator(ModelResolver modelResolver) {
+    protected BaseHookEvaluator(ModelResolver modelResolver) {
         this.modelResolver = modelResolver;
     }
 
@@ -44,23 +46,29 @@ public abstract class BaseHookEvaluator<P extends IBaseResource> {
             }
         }
 
-        // Remote data retriever
-        RestFhirRetrieveProvider remoteRetriever = new RestFhirRetrieveProvider(
-                new SearchParameterResolver(context.getFhirContext()), context.getHookFhirClient());
+        SearchParameterResolver srp = new SearchParameterResolver(context.getFhirContext());
+        RestFhirRetrieveProvider remoteRetriever = new RestFhirRetrieveProvider(srp, modelResolver,
+          context.getHookFhirClient());
 
         remoteRetriever.setTerminologyProvider(context.getContext().resolveTerminologyProvider());
         remoteRetriever.setExpandValueSets(context.getProviderConfiguration().getExpandValueSets());
         remoteRetriever.setMaxCodesPerQuery(context.getProviderConfiguration().getMaxCodesPerQuery());
-        remoteRetriever.setSearchStyle(context.getProviderConfiguration().getSearchStyle());
+       remoteRetriever.setSearchStyle(context.getProviderConfiguration().getSearchStyle());
+       remoteRetriever.setModelResolver(modelResolver);
 
         TerminologyAwareRetrieveProvider prefetchRetriever;
         if (context.getFhirVersion() == FhirVersionEnum.DSTU3) {
             prefetchRetriever = new PrefetchDataProviderStu3(context.getPrefetchResources(), modelResolver);
+            remoteRetriever.setFhirQueryGenerator(
+              new Dstu3FhirQueryGenerator(srp, context.getContext().resolveTerminologyProvider(), modelResolver));
         } else if (context.getFhirVersion() == FhirVersionEnum.DSTU2) {
             prefetchRetriever = new PrefetchDataProviderDstu2(context.getPrefetchResources(), modelResolver);
+            // TODO: We need a dstu2 version
         }
         else {
             prefetchRetriever = new PrefetchDataProviderR4(context.getPrefetchResources(), modelResolver);
+            remoteRetriever.setFhirQueryGenerator(
+              new R4FhirQueryGenerator(srp, context.getContext().resolveTerminologyProvider(), modelResolver));
         }
 
         // TODO: Get the "system" terminology provider.
