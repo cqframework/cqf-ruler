@@ -93,7 +93,7 @@ public interface MeasureReportUser extends DaoRegistryUser, IdCreator {
 	default MeasureReportUser getSDE(MeasureReport report, Map<String, Resource> resources) {
 		if (report.hasExtension()) {
 			for (Extension extension : report.getExtension()) {
-				if (extension.hasUrl() && extension.getUrl().equals(SDE_EXTENSION_URL)) {
+				if (extension.hasUrl() && extension.getUrl().equals(MEASUREREPORT_SUPPLEMENTALDATA_SEARCHPARAMETER_URL)) {
 					Reference sdeRef = extension.hasValue() && extension.getValue() instanceof Reference
 							? (Reference) extension.getValue()
 							: null;
