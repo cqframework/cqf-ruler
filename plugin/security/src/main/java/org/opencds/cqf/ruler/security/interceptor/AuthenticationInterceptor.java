@@ -21,7 +21,7 @@ import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 
 @Interceptor
 public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Interceptor {
-	private static final String KUBERNETES_STARTUP_PROBE_PATH = "/fhir/metadata";
+	private static final String METADATA_PATH = "/fhir/metadata";
 	private final Logger myLog = LoggerFactory.getLogger(AuthenticationInterceptor.class);
 
 	@Autowired
@@ -30,8 +30,11 @@ public class AuthenticationInterceptor implements org.opencds.cqf.ruler.api.Inte
 	@Hook(Pointcut.SERVER_INCOMING_REQUEST_POST_PROCESSED)
 	public boolean incomingRequestPostProcessed(RequestDetails theRequestDetails, HttpServletRequest theRequest,
 			HttpServletResponse theResponse) throws AuthenticationException {
+		// The METADATA_PATH is used as a probe in various deployment scenarios and
+		// needs to be excluded to enable correct functionality of the probe(s) in the
+		// case where basic auth is enabled.
 		if (!securityProperties.getBasicAuth().isEnabled()
-				|| theRequest.getRequestURI().equals(KUBERNETES_STARTUP_PROBE_PATH)) {
+				|| theRequest.getRequestURI().equals(METADATA_PATH)) {
 			return true;
 		}
 
