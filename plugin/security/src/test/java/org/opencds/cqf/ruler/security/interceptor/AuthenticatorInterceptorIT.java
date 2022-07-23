@@ -62,7 +62,7 @@ public class AuthenticatorInterceptorIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testKubernetesStartupProbe() throws Exception {
+	public void testDeploymentProbeException() throws Exception {
 		String serverBase = getClient().getServerBase();
 		URL url = new URL(String.format("%smetadata", serverBase));
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
