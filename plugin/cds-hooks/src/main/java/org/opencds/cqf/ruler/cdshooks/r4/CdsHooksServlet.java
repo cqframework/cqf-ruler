@@ -71,31 +71,22 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 	@Autowired
 	private CqlProperties cqlProperties;
-
 	@Autowired
 	private DaoRegistry daoRegistry;
-
 	@Autowired
 	private AppProperties myAppProperties;
-
 	@Autowired
 	private LibraryLoaderFactory libraryLoaderFactory;
-
 	@Autowired
 	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
-
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
-
 	@Autowired
 	private JpaDataProviderFactory fhirRetrieveProviderFactory;
-
 	@Autowired
 	JpaTerminologyProviderFactory myJpaTerminologyProviderFactory;
-
 	@Autowired
 	private ModelResolver modelResolver;
-
 	@Autowired
 	CdsServicesCache cdsServicesCache;
 
@@ -196,17 +187,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 					new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
 
 			Context context = new Context(elm);
-
 			context.setDebugMap(this.getDebugMap());
 
 			// provider case
 			// No tenant information available for cds-hooks
 			TerminologyProvider serverTerminologyProvider = myJpaTerminologyProviderFactory.create(requestDetails);
-
-			context.registerDataProvider("http://hl7.org/fhir",
-					fhirRetrieveProviderFactory.create(requestDetails, serverTerminologyProvider)); // TODO make sure tooling
-																																// handles remote
-
 			context.registerTerminologyProvider(serverTerminologyProvider);
 			context.registerLibraryLoader(libraryLoader);
 			context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
@@ -218,15 +203,10 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 					planDefinition, this.getProviderConfiguration(), this.modelResolver);
 
 			this.setAccessControlHeaders(response);
-
 			response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
-
 			R4HookEvaluator evaluator = new R4HookEvaluator(this.modelResolver);
-
 			String jsonResponse = toJsonResponse(evaluator.evaluate(evaluationContext));
-
 			logger.info(jsonResponse);
-
 			response.getWriter().println(jsonResponse);
 		} catch (BaseServerResponseException e) {
 			this.setAccessControlHeaders(response);

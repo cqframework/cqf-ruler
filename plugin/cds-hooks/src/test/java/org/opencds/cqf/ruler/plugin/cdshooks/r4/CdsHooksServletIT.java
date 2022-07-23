@@ -10,7 +10,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.PlanDefinition;
@@ -33,7 +32,9 @@ import com.google.gson.JsonObject;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class, CdsHooksConfig.class }, properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes =
+	{ Application.class, CdsHooksConfig.class },
+	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
 class CdsHooksServletIT extends RestIntegrationTest {
 	@Autowired
 	CdsServicesCache cdsServicesCache;
@@ -45,11 +46,14 @@ class CdsHooksServletIT extends RestIntegrationTest {
 	}
 
 	@Test
-	void testGetCdsServices() throws IOException {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpGet request = new HttpGet(ourCdsBase);
-		request.addHeader("Content-Type", "application/json");
-		assertEquals(200, httpClient.execute(request).getStatusLine().getStatusCode());
+	void testGetCdsServices() {
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			HttpGet request = new HttpGet(ourCdsBase);
+			request.addHeader("Content-Type", "application/json");
+			assertEquals(200, httpClient.execute(request).getStatusLine().getStatusCode());
+		} catch (IOException ioe) {
+			fail(ioe.getMessage());
+		}
 	}
 
 	@Test
@@ -76,7 +80,9 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		cdsServicesCache.handleChange(rce);
 		assertEquals(1, cdsServicesCache.getCdsServiceCache().get().size());
 
-		assertEquals("HelloWorldPatientView", cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
+		assertEquals(
+			"HelloWorldPatientView",
+			cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
 		PlanDefinition updatedP2 = new PlanDefinition();
 		p2.copyValues(updatedP2);
 		updatedP2.setName("HelloWorldPatientView-updated");
@@ -84,12 +90,97 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		rce.setDeletedResourceIds(null);
 		rce.setUpdatedResourceIds(Collections.singletonList(updatedP2.getIdElement()));
 		cdsServicesCache.handleChange(rce);
-		assertEquals("HelloWorldPatientView-updated", cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
+		assertEquals(
+			"HelloWorldPatientView-updated",
+			cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
 	}
 
 	@Test
-	// TODO: Debug delay in Client.search().
-	void testCdsServicesRequest() throws IOException {
+	void testOpioidRecommendation08OrderSignWithoutPrefetch() {
+		loadTransaction("opioidcds-08-order-sign-artifact-bundle.json");
+		loadResource("opioidcds-08-patient.json");
+		loadResource("opioidcds-08-medication.json");
+
+		ResourceChangeEvent rce = new ResourceChangeEvent();
+		rce.setCreatedResourceIds(
+			Collections.singletonList(new IdType("PlanDefinition/opioidcds-08-order-sign")));
+		cdsServicesCache.handleChange(rce);
+
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			String cdsHooksRequestString = stringFromResource("opioidcds-08-request.json");
+			Gson jsonParser = new Gson();
+			JsonObject cdsHooksRequestObject = jsonParser.fromJson(cdsHooksRequestString, JsonObject.class);
+			cdsHooksRequestObject.addProperty("fhirServer", getServerBase());
+
+			HttpPost request = new HttpPost(ourCdsBase + "/opioidcds-08-order-sign");
+			request.setEntity(new StringEntity(cdsHooksRequestObject.toString()));
+			request.addHeader("Content-Type", "application/json");
+
+			CloseableHttpResponse response = httpClient.execute(request);
+			validateOpioidRecommendation08OrderSignResponse(EntityUtils.toString(response.getEntity()));
+		} catch (IOException ioe) {
+			fail(ioe.getMessage());
+		}
+	}
+
+	@Test
+	void testOpioidRecommendation08OrderSignWithPrefetch() {
+		loadTransaction("opioidcds-08-order-sign-artifact-bundle.json");
+		loadResource("opioidcds-08-medication.json");
+
+		ResourceChangeEvent rce = new ResourceChangeEvent();
+		rce.setCreatedResourceIds(
+				Collections.singletonList(new IdType("PlanDefinition/opioidcds-08-order-sign")));
+		cdsServicesCache.handleChange(rce);
+
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			String cdsHooksRequestString = stringFromResource("opioidcds-08-request-prefetch.json");
+			Gson jsonParser = new Gson();
+			JsonObject cdsHooksRequestObject = jsonParser.fromJson(cdsHooksRequestString, JsonObject.class);
+			cdsHooksRequestObject.addProperty("fhirServer", getServerBase());
+
+			HttpPost request = new HttpPost(ourCdsBase + "/opioidcds-08-order-sign");
+			request.setEntity(new StringEntity(cdsHooksRequestObject.toString()));
+			request.addHeader("Content-Type", "application/json");
+
+			CloseableHttpResponse response = httpClient.execute(request);
+			validateOpioidRecommendation08OrderSignResponse(EntityUtils.toString(response.getEntity()));
+		} catch (IOException ioe) {
+			fail(ioe.getMessage());
+		}
+	}
+
+	private void validateOpioidRecommendation08OrderSignResponse(String cardsString) {
+		Gson jsonParser = new Gson();
+		JsonObject cardsObject = jsonParser.fromJson(cardsString, JsonObject.class);
+		assertTrue(cardsObject.has("cards"));
+
+		JsonArray cardsArray = cardsObject.get("cards").getAsJsonArray();
+		assertFalse(cardsArray.isEmpty());
+		assertEquals(1, cardsArray.size());
+		assertTrue(cardsArray.get(0).isJsonObject());
+
+		JsonObject card = cardsArray.get(0).getAsJsonObject();
+		assertTrue(card.has("summary"));
+		assertTrue(card.get("summary").isJsonPrimitive());
+		assertEquals(
+				"Incorporate into the management plan strategies to mitigate risk; including considering offering naloxone when factors that increase risk for opioid overdose are present",
+				card.get("summary").getAsString());
+		assertTrue(card.has("indicator"));
+		assertTrue(card.get("indicator").isJsonPrimitive());
+		assertEquals("warning", card.get("indicator").getAsString());
+		assertTrue(card.has("detail"));
+		assertTrue(card.get("detail").isJsonPrimitive());
+		assertEquals(
+				"Consider offering naloxone given following risk factor(s) for opioid overdose: Average MME (180.0 '{MME}/d') >= 50 mg/d.",
+				card.get("detail").getAsString());
+		assertTrue(card.has("links"));
+		assertTrue(card.get("links").isJsonArray());
+		assertEquals(2, card.get("links").getAsJsonArray().size());
+	}
+
+	@Test
+	void testCdsServicesRequest() {
 		// Server Load
 		loadTransaction("Screening-bundle-r4.json");
 
@@ -98,26 +189,6 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		cdsServicesCache.handleChange(rce);
 
 		Patient ourPatient = getClient().read().resource(Patient.class).withId("HighRiskIDUPatient").execute();
-		assertNotNull(ourPatient);
-		assertEquals("HighRiskIDUPatient", ourPatient.getIdElement().getIdPart());
-		PlanDefinition ourPlanDefinition = getClient().read().resource(PlanDefinition.class)
-				.withId("plandefinition-Screening").execute();
-		assertNotNull(ourPlanDefinition);
-		Bundle getPlanDefinitions;
-		int tries = 0;
-		do {
-			// Can take up to 10 seconds for HAPI to reindex searches
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			tries++;
-			getPlanDefinitions = getClient().search().forResource(PlanDefinition.class).returnBundle(Bundle.class)
-					.execute();
-		} while (getPlanDefinitions.getEntry().size() == 0 && tries < 15);
-		assertTrue(getPlanDefinitions.hasEntry());
 
 		// Update fhirServer Base
 		String jsonHooksRequest = stringFromResource("request-HighRiskIDUPatient.json");
@@ -126,49 +197,52 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		jsonRequestObject.addProperty("fhirServer", getServerBase());
 
 		// Setup Client
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpPost request = new HttpPost(ourCdsBase + "/plandefinition-Screening");
-		request.setEntity(new StringEntity(jsonRequestObject.toString()));
-		request.addHeader("Content-Type", "application/json");
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			HttpPost request = new HttpPost(ourCdsBase + "/plandefinition-Screening");
+			request.setEntity(new StringEntity(jsonRequestObject.toString()));
+			request.addHeader("Content-Type", "application/json");
 
-		CloseableHttpResponse response = httpClient.execute(request);
-		String result = EntityUtils.toString(response.getEntity());
+			CloseableHttpResponse response = httpClient.execute(request);
+			String result = EntityUtils.toString(response.getEntity());
 
-		Gson gsonResponse = new Gson();
-		JsonObject jsonResponseObject = gsonResponse.fromJson(result, JsonObject.class);
+			Gson gsonResponse = new Gson();
+			JsonObject jsonResponseObject = gsonResponse.fromJson(result, JsonObject.class);
 
-		// Ensure Cards
-		assertNotNull(jsonResponseObject.get("cards"));
-		JsonArray cards = jsonResponseObject.get("cards").getAsJsonArray();
+			// Ensure Cards
+			assertNotNull(jsonResponseObject.get("cards"));
+			JsonArray cards = jsonResponseObject.get("cards").getAsJsonArray();
 
-		// Ensure Patient Detail
-		assertNotNull(cards.get(0).getAsJsonObject().get("detail"));
-		String patientName = cards.get(0).getAsJsonObject().get("detail").getAsString();
-		assertEquals("Ashley Madelyn", patientName);
+			// Ensure Patient Detail
+			assertNotNull(cards.get(0).getAsJsonObject().get("detail"));
+			String patientName = cards.get(0).getAsJsonObject().get("detail").getAsString();
+			assertEquals("Ashley Madelyn", patientName);
 
-		// Ensure Summary
-		assertNotNull(cards.get(1));
-		assertNotNull(cards.get(1).getAsJsonObject().get("summary"));
-		String recommendation = cards.get(1).getAsJsonObject().get("summary").getAsString();
-		assertEquals(
+			// Ensure Summary
+			assertNotNull(cards.get(1));
+			assertNotNull(cards.get(1).getAsJsonObject().get("summary"));
+			String recommendation = cards.get(1).getAsJsonObject().get("summary").getAsString();
+			assertEquals(
 				"HIV Screening Recommended due to patient being at High Risk for HIV and over three months have passed since previous screening.",
 				recommendation);
 
-		// Ensure Activity Definition / Suggestions
-		assertNotNull(cards.get(1).getAsJsonObject().get("suggestions"));
-		JsonArray suggestions = cards.get(1).getAsJsonObject().get("suggestions").getAsJsonArray();
-		assertNotNull(suggestions.get(0));
-		assertNotNull(suggestions.get(0).getAsJsonObject().get("actions"));
-		JsonArray actions = suggestions.get(0).getAsJsonObject().get("actions").getAsJsonArray();
-		assertNotNull(actions.get(0));
-		assertNotNull(actions.get(0).getAsJsonObject().get("resource"));
-		JsonObject suggestionsActivityResource = actions.get(0).getAsJsonObject().get("resource").getAsJsonObject();
-		assertNotNull(suggestionsActivityResource.get("resourceType"));
-		assertEquals("ServiceRequest", suggestionsActivityResource.get("resourceType").getAsString());
-		assertNotNull(suggestionsActivityResource.get("subject"));
-		String expectedPatientID = ourPatient.getIdElement().getIdPart();
-		String actualPatientID = suggestionsActivityResource.get("subject").getAsJsonObject().get("reference")
+			// Ensure Activity Definition / Suggestions
+			assertNotNull(cards.get(1).getAsJsonObject().get("suggestions"));
+			JsonArray suggestions = cards.get(1).getAsJsonObject().get("suggestions").getAsJsonArray();
+			assertNotNull(suggestions.get(0));
+			assertNotNull(suggestions.get(0).getAsJsonObject().get("actions"));
+			JsonArray actions = suggestions.get(0).getAsJsonObject().get("actions").getAsJsonArray();
+			assertNotNull(actions.get(0));
+			assertNotNull(actions.get(0).getAsJsonObject().get("resource"));
+			JsonObject suggestionsActivityResource = actions.get(0).getAsJsonObject().get("resource").getAsJsonObject();
+			assertNotNull(suggestionsActivityResource.get("resourceType"));
+			assertEquals("ServiceRequest", suggestionsActivityResource.get("resourceType").getAsString());
+			assertNotNull(suggestionsActivityResource.get("subject"));
+			String expectedPatientID = ourPatient.getIdElement().getIdPart();
+			String actualPatientID = suggestionsActivityResource.get("subject").getAsJsonObject().get("reference")
 				.getAsString();
-		assertEquals("Patient/" + expectedPatientID, actualPatientID);
+			assertEquals("Patient/" + expectedPatientID, actualPatientID);
+		} catch (IOException ioe) {
+			fail(ioe.getMessage());
+		}
 	}
 }

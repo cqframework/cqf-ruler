@@ -1,0 +1,234 @@
+{
+	"resourceType": "Medication",
+	"id": "eAfgatAovleK4GXF4MnFNxg3",
+	"code": {
+		"coding": [
+			{
+				"system": "http://www.whocc.no/atc",
+				"code": "N02AA01"
+			},
+			{
+				"system": "urn:oid:2.16.840.1.113883.6.208",
+				"code": "4092"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "7052"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "30236"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "151999"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "152164"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "152356"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "153664"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "203240"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "203354"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "203355"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "203356"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "203357"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "203358"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "219576"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "219632"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "225993"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "352452"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "885779"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "892672"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "892673"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "1745876"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "1871435"
+			},
+			{
+				"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+				"code": "2055303"
+			}
+		],
+		"text": "MORPHINE 30 MG IMMEDIATE RELEASE TABLET"
+	},
+	"form": {
+		"coding": [
+			{
+				"system": "urn:oid:1.2.840.114350.1.13.246.3.7.4.698288.310",
+				"code": "Tab",
+				"display": "Tablet"
+			}
+		],
+		"text": "Tablet"
+	},
+	"ingredient": [
+		{
+			"itemCodeableConcept": {
+				"coding": [
+					{
+						"system": "http://www.whocc.no/atc",
+						"code": "N02AA01"
+					},
+					{
+						"system": "urn:oid:2.16.840.1.113883.6.208",
+						"code": "4092"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "7052"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "30236"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "151999"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "152164"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "152356"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "153664"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "203240"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "203354"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "203355"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "203356"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "203357"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "203358"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "219576"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "219632"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "225993"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "352452"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "885779"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "892672"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "892673"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "1745876"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "1871435"
+					},
+					{
+						"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+						"code": "2055303"
+					}
+				],
+				"text": "MORPHINE 30 MG IMMEDIATE RELEASE TABLET"
+			},
+			"strength": {
+				"numerator": {
+					"value": 30,
+					"unit": "mg",
+					"system": "http://unitsofmeasure.org",
+					"code": "mg"
+				},
+				"denominator": {
+					"value": 30,
+					"unit": "mg",
+					"system": "http://unitsofmeasure.org",
+					"code": "mg"
+				}
+			}
+		}
+	]
+}
