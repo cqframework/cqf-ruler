@@ -1,0 +1,163 @@
+{
+	"hookInstance": "1f49a608-fc9e-11ec-8db3-f203ed674d20",
+	"fhirServer": "http://localhost:8080/fhir",
+	"hook": "order-sign",
+	"context": {
+		"patientId": "egICGav-o1PPZqCGJ02G0rZfgFquWZ3QQeahd8KF154c3",
+		"encounterId": "eLpmT6.mtTSVA4r7aKiaomQ3",
+		"userId": "PractitionerRole/e7v8x8KnybWo0qlpVS6j9Ig3",
+		"draftOrders": {
+			"resourceType": "Bundle",
+			"type": "collection",
+			"entry": [
+				{
+					"resource": {
+						"resourceType": "MedicationRequest",
+						"id": "eIdRHpjeEzbLS3ZcGmRmVZ8bbravWOED29hdNLJSFBrBdzDWOqd1a5MMIjQ874tKP8pBlftzNEoXvBpLw3-HLG.mXMk2EBbb0mQQchsUGubXTALDN6umdJmr2GnF3bS4FgSrc5ZsddJhasJiv.H11Qg8jd56-KfANXTJT48RrzudQ9sa5U10W1E6s2LoiBImg3",
+						"status": "draft",
+						"intent": "order",
+						"category": [
+							{
+								"coding": [
+									{
+										"system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+										"code": "community",
+										"display": "Community"
+									}
+								],
+								"text": "Community"
+							}
+						],
+						"medicationReference": {
+							"reference": "Medication/eAfgatAovleK4GXF4MnFNxg3",
+							"display": "Morphine Sulfate 50 MG [Kadian]"
+						},
+						"subject": {
+							"reference": "Patient/egICGav-o1PPZqCGJ02G0rZfgFquWZ3QQeahd8KF154c3",
+							"display": "Cdshookstwo, Ashley"
+						},
+						"encounter": {
+							"reference": "Encounter/eLpmT6.mtTSVA4r7aKiaomQ3"
+						},
+						"requester": {
+							"reference": "Practitioner/euVn9muFUSk04uKRd0o6-Yg3",
+							"type": "Practitioner",
+							"display": "Richard Louis Altman, MD"
+						},
+						"recorder": {
+							"reference": "Practitioner/euVn9muFUSk04uKRd0o6-Yg3",
+							"type": "Practitioner",
+							"display": "Richard Louis Altman, MD"
+						},
+						"dosageInstruction": [
+							{
+								"text": "Take 1 tablet by mouth every 4 hours as needed for Pain.",
+								"patientInstruction": "Take 1 tablet by mouth every 4 hours as needed for Pain.",
+								"timing": {
+									"repeat": {
+										"boundsPeriod": {
+											"start": "2022-07-05T06:00:00Z"
+										},
+										"frequency": 1,
+										"period": 4,
+										"periodUnit": "h"
+									},
+									"code": {
+										"text": "Q4H PRN"
+									}
+								},
+								"asNeededBoolean": true,
+								"route": {
+									"coding": [
+										{
+											"system": "urn:oid:1.2.840.114350.1.13.246.3.7.4.798268.7025",
+											"code": "15",
+											"display": "Oral"
+										}
+									],
+									"text": "Oral"
+								},
+								"method": {
+									"text": "Take"
+								},
+								"doseAndRate": [
+									{
+										"type": {
+											"coding": [
+												{
+													"system": "http://epic.com/CodeSystem/dose-rate-type",
+													"code": "calculated",
+													"display": "calculated"
+												}
+											],
+											"text": "calculated"
+										},
+										"doseQuantity": {
+											"value": 30,
+											"unit": "mg",
+											"system": "http://unitsofmeasure.org",
+											"code": "mg"
+										}
+									},
+									{
+										"type": {
+											"coding": [
+												{
+													"system": "http://epic.com/CodeSystem/dose-rate-type",
+													"code": "admin-amount",
+													"display": "admin-amount"
+												}
+											],
+											"text": "admin-amount"
+										},
+										"doseQuantity": {
+											"value": 1,
+											"unit": "tablet",
+											"system": "http://unitsofmeasure.org",
+											"code": "{tbl}"
+										}
+									},
+									{
+										"type": {
+											"coding": [
+												{
+													"system": "http://epic.com/CodeSystem/dose-rate-type",
+													"code": "ordered",
+													"display": "ordered"
+												}
+											],
+											"text": "ordered"
+										},
+										"doseQuantity": {
+											"value": 30,
+											"unit": "mg",
+											"system": "http://unitsofmeasure.org",
+											"code": "mg"
+										}
+									}
+								]
+							}
+						],
+						"dispenseRequest": {
+							"validityPeriod": {
+								"start": "2022-07-05T06:00:00Z",
+								"end": "2022-08-19T06:00:00Z"
+							},
+							"numberOfRepeatsAllowed": 0,
+							"quantity": {
+								"value": 175,
+								"unit": "tablet"
+							},
+							"expectedSupplyDuration": {
+								"value": 30,
+								"unit": "Day",
+								"system": "http://unitsofmeasure.org",
+								"code": "d"
+							}
+						}
+					}
+				}
+			]
+		}
+	}
+}
