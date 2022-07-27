@@ -1,13 +1,16 @@
 package org.opencds.cqf.ruler.cql;
 
+import ca.uhn.fhir.rest.annotation.Operation;
 import org.hl7.fhir.r5.model.Enumerations;
 import org.hl7.fhir.r5.model.Library;
 import org.hl7.fhir.r5.model.RelatedArtifact;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
+@Repository
 public class RepositoryService {
 
     private String majorVersion = "0";
@@ -17,6 +20,7 @@ public class RepositoryService {
     public RepositoryService() {
     }
 
+	@Operation(name = "$createNewVersion", idempotent = true, type = Library.class)
 	 public Library createNewVersion(Library currentLibrary) {
 		 List<RelatedArtifact> relatedArtifactList = currentLibrary.getRelatedArtifact();
 		 List<RelatedArtifact> updatedRelatedArtifactsList = new ArrayList<RelatedArtifact>();

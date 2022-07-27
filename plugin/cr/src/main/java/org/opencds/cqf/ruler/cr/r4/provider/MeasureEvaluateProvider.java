@@ -107,7 +107,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 
 		DataProvider dataProvider = this.jpaDataProviderFactory.create(requestDetails, terminologyProvider);
 		LibraryContentProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
-		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
+		FhirDal fhirDal = (FhirDal) this.fhirDalFactory.create(requestDetails);
 
 		org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor(
 				null, this.dataProviderFactory, null, null, null, terminologyProvider, libraryContentProvider, dataProvider,
