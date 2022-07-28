@@ -198,7 +198,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 
 		CqlEvaluationHelper evaluationHelper = new CqlEvaluationHelper(getFhirContext(), myModelResolver,
 				new AdapterFactory(), useServerData == null || useServerData.booleanValue(), data,
-				remoteData, remoteContent, remoteTerminology, null, libraryLoaderFactory,
+				remoteData, remoteContent, remoteTerminology, content, libraryLoaderFactory,
 				jpaLibraryContentProviderFactory.create(requestDetails), contentProvider,
 				jpaTerminologyProviderFactory.create(requestDetails), getDaoRegistry());
 
