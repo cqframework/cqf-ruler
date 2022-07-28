@@ -3,10 +3,10 @@ package org.opencds.cqf.ruler.cpg.dstu3.provider;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.elm.execution.Library;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.BooleanType;
@@ -14,13 +14,14 @@ import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Endpoint;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Parameters;
-import org.hl7.fhir.dstu3.model.PrimitiveType;
 import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProviderFactory;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.dstu3.AdapterFactory;
 import org.opencds.cqf.ruler.cpg.CqlEvaluationHelper;
+import org.opencds.cqf.ruler.cpg.dstu3.util.RemoteEndpoint;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
@@ -182,22 +183,60 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		@OperationParam(name = "contentEndpoint", max = 1) Endpoint contentEndpoint,
 		@OperationParam(name = "terminologyEndpoint", max = 1) Endpoint terminologyEndpoint,
 		@OperationParam(name = "content", max = 1) String content) {
-		String contentUrl = contentEndpoint != null ? contentEndpoint.getAddress() : null;
-		List<String> contentHeaders = contentEndpoint != null && contentEndpoint.hasHeader() ? contentEndpoint.getHeader().stream().map(PrimitiveType::getValue).collect(Collectors.toList()) : Collections.singletonList("Content-Type: application/json");
-		CqlEvaluationHelper evaluationHelper = new CqlEvaluationHelper(
-			getFhirContext(), myModelResolver, new AdapterFactory(), useServerData == null || useServerData.booleanValue(), data, dataEndpoint, contentEndpoint, terminologyEndpoint,
-			content, libraryLoaderFactory, jpaLibraryContentProviderFactory.create(requestDetails), contentEndpoint != null ? fhirRestLibraryContentProviderFactory.create(contentUrl, contentHeaders) : null,
-			getFhirContext().newRestfulGenericClient(requestDetails.getFhirServerBase()), jpaTerminologyProviderFactory.create(requestDetails), getDaoRegistry()
-		);
+
+		Pair<String, List<String>> remoteData = RemoteEndpoint.resolveRemoteEndpoint(dataEndpoint);
+		Pair<String, List<String>> remoteContent = RemoteEndpoint.resolveRemoteEndpoint(contentEndpoint);
+		Pair<String, List<String>> remoteTerminology = RemoteEndpoint.resolveRemoteEndpoint(terminologyEndpoint);
+		LibraryContentProvider contentProvider = remoteContent != null
+				? fhirRestLibraryContentProviderFactory.create(remoteContent.getLeft(), remoteContent.getRight())
+				: null;
+
+		CqlEvaluationHelper evaluationHelper = new CqlEvaluationHelper(getFhirContext(), myModelResolver,
+				new AdapterFactory(), useServerData == null || useServerData.booleanValue(), data,
+				remoteData, remoteContent, remoteTerminology, null, libraryLoaderFactory,
+				jpaLibraryContentProviderFactory.create(requestDetails), contentProvider,
+				jpaTerminologyProviderFactory.create(requestDetails), getDaoRegistry());
+
 		if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
-			IBaseOperationOutcome outcome = evaluationHelper.validateOperationParameters(requestDetails, "subject", "expression", "parameters", "library", "useServerData", "data", "prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint", "content");
-			if (outcome != null) return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("error", (OperationOutcome) outcome));
+			IBaseOperationOutcome outcome = evaluationHelper.validateOperationParameters(requestDetails,
+					"subject", "expression", "parameters", "library", "useServerData", "data",
+					"prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint", "content");
+			if (outcome != null) {
+				return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
+						org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart(
+								"error", (OperationOutcome) outcome));
+			}
 		}
-		if (prefetchData != null) return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("error", (OperationOutcome) evaluationHelper.createIssue("invalid parameters", "prefetchData is not yet supported")));
-		if (expression == null && content == null) return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("error", (OperationOutcome) evaluationHelper.createIssue("invalid parameters", "The $cql operation requires the expression parameter and/or content parameter to exist")));
-		Endpoint defaultEndpoint = new Endpoint().setAddress(requestDetails.getFhirServerBase()).setHeader(Collections.singletonList(new StringType("Content-Type: application/json")));
-		return StringUtils.isBlank(content)
-			? (Parameters) evaluationHelper.getExpressionEvaluator().evaluate(expression, parameters == null ? new Parameters() : parameters, subject, evaluationHelper.resolveIncludedLibraries(library), useServerData == null || useServerData.booleanValue(), data, null, dataEndpoint == null ? defaultEndpoint : dataEndpoint, contentEndpoint == null ? defaultEndpoint : contentEndpoint, terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint)
-			: (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(evaluationHelper.resolveLibraryIdentifier(content, null), evaluationHelper.resolveContextParameter(subject), parameters, expression == null ? null : Collections.singleton(expression));
+
+		if (prefetchData != null) {
+			return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
+					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart(
+							"error", (OperationOutcome) evaluationHelper.createIssue(
+									"invalid parameters", "prefetchData is not yet supported")));
+		}
+
+		if (expression == null && content == null) {
+			return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
+					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("error",
+							(OperationOutcome) evaluationHelper.createIssue("invalid parameters",
+									"The $cql operation requires the expression parameter and/or content parameter to exist")));
+		}
+
+		if (StringUtils.isBlank(content)) {
+			Endpoint defaultEndpoint = new Endpoint().setAddress(requestDetails.getFhirServerBase())
+					.setHeader(Collections.singletonList(new StringType("Content-Type: application/json")));
+			return (Parameters) evaluationHelper.getExpressionEvaluator().evaluate(expression,
+					parameters == null ? new Parameters() : parameters, subject,
+					evaluationHelper.resolveIncludedLibraries(library),
+					useServerData == null || useServerData.booleanValue(), data, null,
+					dataEndpoint == null ? defaultEndpoint : dataEndpoint,
+					contentEndpoint == null ? defaultEndpoint : contentEndpoint,
+					terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint);
+		}
+
+		return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(
+				evaluationHelper.resolveLibraryIdentifier(content, null),
+				evaluationHelper.resolveContextParameter(subject), parameters,
+				expression == null ? null : Collections.singleton(expression));
 	}
 }

@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.CqlTranslator;
@@ -14,7 +15,6 @@ import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import org.hl7.fhir.instance.model.api.IDomainResource;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.data.DataProvider;
 import org.opencds.cqf.cql.engine.execution.CqlEngine;
@@ -25,6 +25,7 @@ import org.opencds.cqf.cql.engine.fhir.retrieve.Dstu3FhirQueryGenerator;
 import org.opencds.cqf.cql.engine.fhir.retrieve.R4FhirQueryGenerator;
 import org.opencds.cqf.cql.engine.fhir.retrieve.RestFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
+import org.opencds.cqf.cql.engine.fhir.terminology.Dstu3FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.retrieve.RetrieveProvider;
@@ -59,10 +60,7 @@ import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Operations;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class CqlEvaluationHelper {
 	private FhirContext fhirContext;
@@ -70,9 +68,9 @@ public class CqlEvaluationHelper {
 	private AdapterFactory adapterFactory;
 	private boolean useServerData;
 	private IBaseBundle data;
-	private IDomainResource dataEndpoint;
-	private IDomainResource contentEndpoint;
-	private IDomainResource terminologyEndpoint;
+	private Pair<String, List<String>> dataEndpoint;
+	private Pair<String, List<String>> contentEndpoint;
+	private Pair<String, List<String>> terminologyEndpoint;
 	private String content;
 
 	private ClientFactory clientFactory;
@@ -89,7 +87,12 @@ public class CqlEvaluationHelper {
 	private TerminologyProvider terminologyProvider;
 	private DataProvider dataProvider;
 
-	public CqlEvaluationHelper(FhirContext fhirContext, ModelResolver modelResolver, AdapterFactory adapterFactory, boolean useServerData, IBaseBundle data, IDomainResource dataEndpoint, IDomainResource contentEndpoint, IDomainResource terminologyEndpoint, String content, LibraryLoaderFactory libraryLoaderFactory, JpaLibraryContentProvider jpaContentProvider, LibraryContentProvider restContentProvider, IGenericClient client, JpaTerminologyProvider jpaTerminologyProvider, DaoRegistry daoRegistry) {
+	public CqlEvaluationHelper(FhirContext fhirContext, ModelResolver modelResolver, AdapterFactory adapterFactory,
+							   boolean useServerData, IBaseBundle data, Pair<String, List<String>> dataEndpoint,
+							   Pair<String, List<String>> contentEndpoint, Pair<String, List<String>> terminologyEndpoint,
+							   String content, LibraryLoaderFactory libraryLoaderFactory,
+							   JpaLibraryContentProvider jpaContentProvider, LibraryContentProvider restContentProvider,
+							   JpaTerminologyProvider jpaTerminologyProvider, DaoRegistry daoRegistry) {
 		this.fhirContext = fhirContext;
 		this.modelResolver = modelResolver;
 		this.adapterFactory = adapterFactory;
@@ -103,30 +106,34 @@ public class CqlEvaluationHelper {
 		this.clientFactory = new ClientFactory(fhirContext);
 		this.libraryVersionSelector = new LibraryVersionSelector(adapterFactory);
 		this.searchParameterResolver = new SearchParameterResolver(fhirContext);
-		this.parametersConverter = new CqlFhirParametersConverter(fhirContext, adapterFactory, new FhirTypeConverterFactory().create(fhirContext.getVersion().getVersion()));
+		this.parametersConverter = new CqlFhirParametersConverter(fhirContext, adapterFactory,
+				new FhirTypeConverterFactory().create(fhirContext.getVersion().getVersion()));
 		this.cqlEngineOptions = Collections.singleton(CqlEngine.Options.EnableExpressionCaching);
 		this.retrieveProviders = new ArrayList<>();
 		this.libraryContentProviders = new ArrayList<>();
 
-		setup(libraryLoaderFactory, jpaContentProvider, restContentProvider, client, jpaTerminologyProvider, daoRegistry);
+		setup(libraryLoaderFactory, jpaContentProvider, restContentProvider, jpaTerminologyProvider, daoRegistry);
 	}
 
-	private void setup(LibraryLoaderFactory libraryLoaderFactory, JpaLibraryContentProvider jpaContentProvider, LibraryContentProvider restContentProvider, IGenericClient client, JpaTerminologyProvider jpaTerminologyProvider, DaoRegistry daoRegistry) {
+	private void setup(LibraryLoaderFactory libraryLoaderFactory, JpaLibraryContentProvider jpaContentProvider,
+					   LibraryContentProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
+					   DaoRegistry daoRegistry) {
 		setupLibraryLoader(libraryLoaderFactory, jpaContentProvider, restContentProvider);
-		setupTerminologyProvider(client, jpaTerminologyProvider);
+		setupTerminologyProvider(jpaTerminologyProvider);
 		if (fhirContext.equals(FhirContext.forDstu3())) {
-			this.queryGenerator = new Dstu3FhirQueryGenerator(searchParameterResolver, terminologyProvider, modelResolver);
+			this.queryGenerator = new Dstu3FhirQueryGenerator(
+					searchParameterResolver, terminologyProvider, modelResolver);
 		}
 		else {
-			this.queryGenerator = new R4FhirQueryGenerator(searchParameterResolver, terminologyProvider, modelResolver);
+			this.queryGenerator = new R4FhirQueryGenerator(
+					searchParameterResolver, terminologyProvider, modelResolver);
 		}
-		setupDataProvider(daoRegistry, client);
+		setupDataProvider(daoRegistry);
 	}
 
-	private void setupLibraryLoader(LibraryLoaderFactory libraryLoaderFactory, JpaLibraryContentProvider jpaContentProvider, LibraryContentProvider restContentProvider) {
-//		if (data != null) {
-//			libraryContentProviders.add(new BundleFhirLibraryContentProvider(fhirContext, data, adapterFactory, libraryVersionSelector));
-//		}
+	private void setupLibraryLoader(LibraryLoaderFactory libraryLoaderFactory,
+									JpaLibraryContentProvider jpaContentProvider,
+									LibraryContentProvider restContentProvider) {
 		if (!StringUtils.isBlank(content)) {
 			libraryContentProviders.add(new InMemoryLibraryContentProvider(Collections.singletonList(content)));
 		}
@@ -139,11 +146,18 @@ public class CqlEvaluationHelper {
 		libraryLoader = libraryLoaderFactory.create(libraryContentProviders);
 	}
 
-	private void setupTerminologyProvider(IGenericClient client, JpaTerminologyProvider jpaTerminologyProvider) {
-		terminologyProvider = terminologyEndpoint != null ? new R4FhirTerminologyProvider(client) : jpaTerminologyProvider;
+	private void setupTerminologyProvider(JpaTerminologyProvider jpaTerminologyProvider) {
+		if (terminologyEndpoint != null) {
+			IGenericClient remoteClient = resolveRemoteClient(terminologyEndpoint);
+			terminologyProvider = fhirContext.equals(FhirContext.forDstu3())
+					? new Dstu3FhirTerminologyProvider(remoteClient) : new R4FhirTerminologyProvider(remoteClient);
+		}
+		else {
+			terminologyProvider = jpaTerminologyProvider;
+		}
 	}
 
-	private void setupDataProvider(DaoRegistry daoRegistry, IGenericClient client) {
+	private void setupDataProvider(DaoRegistry daoRegistry) {
 		if (data != null) {
 			BundleRetrieveProvider bundleRetriever = new BundleRetrieveProvider(fhirContext, data);
 			bundleRetriever.setTerminologyProvider(terminologyProvider);
@@ -158,7 +172,8 @@ public class CqlEvaluationHelper {
 			retrieveProviders.add(jpaRetriever);
 		}
 		if (dataEndpoint != null) {
-			RestFhirRetrieveProvider restRetriever = new RestFhirRetrieveProvider(searchParameterResolver, client);
+			RestFhirRetrieveProvider restRetriever = new RestFhirRetrieveProvider(
+					searchParameterResolver, resolveRemoteClient(dataEndpoint));
 			restRetriever.setModelResolver(modelResolver);
 			restRetriever.setFhirQueryGenerator(queryGenerator);
 			restRetriever.setTerminologyProvider(terminologyProvider);
@@ -169,20 +184,46 @@ public class CqlEvaluationHelper {
 	}
 
 	public ExpressionEvaluator getExpressionEvaluator() {
-		Set<TypedLibraryContentProviderFactory> libraryFactories = Collections.singleton(new FhirRestLibraryContentProviderFactory(clientFactory, adapterFactory, libraryVersionSelector));
-		Set<TypedRetrieveProviderFactory> retrieveFactories = Collections.singleton(new FhirRestRetrieveProviderFactory(fhirContext, clientFactory));
-		Set<TypedTerminologyProviderFactory> terminologyFactories = Collections.singleton(new FhirRestTerminologyProviderFactory(fhirContext, clientFactory));
+		Set<TypedLibraryContentProviderFactory> libraryFactories = Collections.singleton(
+				new FhirRestLibraryContentProviderFactory(clientFactory, adapterFactory, libraryVersionSelector));
+		Set<TypedRetrieveProviderFactory> retrieveFactories = Collections.singleton(
+				new FhirRestRetrieveProviderFactory(fhirContext, clientFactory));
+		Set<TypedTerminologyProviderFactory> terminologyFactories = Collections.singleton(
+				new FhirRestTerminologyProviderFactory(fhirContext, clientFactory));
 		FhirModelResolverFactory fhirFactory = new FhirModelResolverFactory();
 		EndpointConverter endpointConverter = new EndpointConverter(adapterFactory);
-		LibraryContentProviderFactory libraryContentFactory = new org.opencds.cqf.cql.evaluator.builder.library.LibraryContentProviderFactory(fhirContext, adapterFactory, libraryFactories, libraryVersionSelector);
-		DataProviderFactory dataFactory = new DataProviderFactory(fhirContext, Collections.singleton(fhirFactory), retrieveFactories);
-		TerminologyProviderFactory terminologyFactory = new TerminologyProviderFactory(fhirContext, terminologyFactories);
-		return new ExpressionEvaluator(fhirContext, parametersConverter, libraryContentFactory, dataFactory, terminologyFactory, endpointConverter, fhirFactory, CqlEvaluatorBuilder::new);
+		LibraryContentProviderFactory libraryContentFactory =
+				new org.opencds.cqf.cql.evaluator.builder.library.LibraryContentProviderFactory(
+						fhirContext, adapterFactory, libraryFactories, libraryVersionSelector);
+		DataProviderFactory dataFactory =
+				new DataProviderFactory(fhirContext, Collections.singleton(fhirFactory), retrieveFactories);
+		TerminologyProviderFactory terminologyFactory =
+				new TerminologyProviderFactory(fhirContext, terminologyFactories);
+		return new ExpressionEvaluator(fhirContext, parametersConverter, libraryContentFactory, dataFactory,
+				terminologyFactory, endpointConverter, fhirFactory, CqlEvaluatorBuilder::new);
 	}
 
 	public LibraryEvaluator getLibraryEvaluator() {
-		CqlEvaluator cqlEvaluator = new CqlEvaluator(libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider), terminologyProvider, cqlEngineOptions);
+		CqlEvaluator cqlEvaluator = new CqlEvaluator(
+				libraryLoader, Collections.singletonMap("http://hl7.org/fhir", dataProvider),
+				terminologyProvider, cqlEngineOptions);
 		return new LibraryEvaluator(parametersConverter, cqlEvaluator);
+	}
+
+	public IGenericClient resolveRemoteClient(Pair<String, List<String>> endpoint) {
+		IGenericClient remoteClient = fhirContext.newRestfulGenericClient(endpoint.getLeft());
+		if (endpoint.getRight() != null) {
+			AdditionalRequestHeadersInterceptor headerInterceptor = new AdditionalRequestHeadersInterceptor();
+			for (String header : endpoint.getRight()) {
+				// NOTE: this may be too simple for more complex headers...
+				String[] headerNameAndValue = header.split(":");
+				if (headerNameAndValue.length == 2) {
+					headerInterceptor.addHeaderValue(headerNameAndValue[0], headerNameAndValue[1]);
+				}
+			}
+			remoteClient.registerInterceptor(headerInterceptor);
+		}
+		return remoteClient;
 	}
 
 	public Pair<String, Object> resolveContextParameter(String subject) {
@@ -194,20 +235,31 @@ public class CqlEvaluationHelper {
 	public VersionedIdentifier resolveLibraryIdentifier(String content, IBaseResource library) {
 		if (!StringUtils.isBlank(content)) {
 			ModelManager manager = new ModelManager();
-			TranslatedLibrary translatedLibrary = CqlTranslator.fromText(content, manager, new LibraryManager(manager)).getTranslatedLibrary();
-			return new VersionedIdentifier().withId(translatedLibrary.getIdentifier().getId()).withVersion(translatedLibrary.getIdentifier().getVersion());
+			TranslatedLibrary translatedLibrary =
+					CqlTranslator.fromText(content, manager, new LibraryManager(manager)).getTranslatedLibrary();
+			return new VersionedIdentifier()
+					.withId(translatedLibrary.getIdentifier().getId())
+					.withVersion(translatedLibrary.getIdentifier().getVersion());
 		}
 		else if (library instanceof org.hl7.fhir.dstu3.model.Library) {
 			org.hl7.fhir.dstu3.model.Library dstu3Library = (org.hl7.fhir.dstu3.model.Library) library;
 			return new VersionedIdentifier()
-				.withId(dstu3Library.hasUrl() ? Canonicals.getIdPart(dstu3Library.getUrl()) : dstu3Library.hasName() ? dstu3Library.getName() : null)
-				.withVersion(dstu3Library.hasVersion() ? dstu3Library.getVersion() : dstu3Library.hasUrl() ? Canonicals.getVersion(dstu3Library.getUrl()) : null);
+				.withId(dstu3Library.hasUrl()
+						? Canonicals.getIdPart(dstu3Library.getUrl())
+						: dstu3Library.hasName() ? dstu3Library.getName() : null)
+				.withVersion(dstu3Library.hasVersion()
+						? dstu3Library.getVersion() : dstu3Library.hasUrl()
+						? Canonicals.getVersion(dstu3Library.getUrl()) : null);
 		}
 		else {
 			org.hl7.fhir.r4.model.Library r4Library = (org.hl7.fhir.r4.model.Library) library;
 			return new VersionedIdentifier()
-				.withId(r4Library.hasUrl() ? Canonicals.getIdPart(r4Library.getUrl()) : r4Library.hasName() ? r4Library.getName() : null)
-				.withVersion(r4Library.hasVersion() ? r4Library.getVersion() : r4Library.hasUrl() ? Canonicals.getVersion(r4Library.getUrl()) : null);
+				.withId(r4Library.hasUrl()
+						? Canonicals.getIdPart(r4Library.getUrl())
+						: r4Library.hasName() ? r4Library.getName() : null)
+				.withVersion(r4Library.hasVersion()
+						? r4Library.getVersion() : r4Library.hasUrl()
+						? Canonicals.getVersion(r4Library.getUrl()) : null);
 		}
 	}
 
@@ -218,15 +270,25 @@ public class CqlEvaluationHelper {
 			String url = null;
 			for (Object parameters : includedLibraries) {
 				if (parameters instanceof org.hl7.fhir.dstu3.model.Parameters) {
-					for (org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameterComponent : ((org.hl7.fhir.dstu3.model.Parameters) parameters).getParameter()) {
-						if (parameterComponent.getName().equalsIgnoreCase("url")) url = parameterComponent.getValue().primitiveValue();
-						if (parameterComponent.getName().equalsIgnoreCase("name")) name = parameterComponent.getValue().primitiveValue();
+					for (org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameterComponent
+							: ((org.hl7.fhir.dstu3.model.Parameters) parameters).getParameter()) {
+						if (parameterComponent.getName().equalsIgnoreCase("url")) {
+							url = parameterComponent.getValue().primitiveValue();
+						}
+						if (parameterComponent.getName().equalsIgnoreCase("name")) {
+							name = parameterComponent.getValue().primitiveValue();
+						}
 					}
 				}
 				else {
-					for (org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent parameterComponent : ((org.hl7.fhir.r4.model.Parameters) parameters).getParameter()) {
-						if (parameterComponent.getName().equalsIgnoreCase("url")) url = parameterComponent.getValue().primitiveValue();
-						if (parameterComponent.getName().equalsIgnoreCase("name")) name = parameterComponent.getValue().primitiveValue();
+					for (org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent parameterComponent
+							: ((org.hl7.fhir.r4.model.Parameters) parameters).getParameter()) {
+						if (parameterComponent.getName().equalsIgnoreCase("url")) {
+							url = parameterComponent.getValue().primitiveValue();
+						}
+						if (parameterComponent.getName().equalsIgnoreCase("name")) {
+							name = parameterComponent.getValue().primitiveValue();
+						}
 					}
 				}
 				libraries.add(Pair.of(url, name));
