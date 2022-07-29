@@ -63,23 +63,23 @@ import org.opencds.cqf.ruler.utility.Operations;
 import java.util.*;
 
 public class CqlEvaluationHelper {
-	private FhirContext fhirContext;
-	private ModelResolver modelResolver;
-	private AdapterFactory adapterFactory;
-	private boolean useServerData;
-	private IBaseBundle data;
-	private Pair<String, List<String>> dataEndpoint;
-	private Pair<String, List<String>> contentEndpoint;
-	private Pair<String, List<String>> terminologyEndpoint;
-	private String content;
+	private final FhirContext fhirContext;
+	private final ModelResolver modelResolver;
+	private final AdapterFactory adapterFactory;
+	private final boolean useServerData;
+	private final IBaseBundle data;
+	private final EndpointInfo dataEndpoint;
+	private final EndpointInfo contentEndpoint;
+	private final EndpointInfo terminologyEndpoint;
+	private final String content;
 
-	private ClientFactory clientFactory;
-	private LibraryVersionSelector libraryVersionSelector;
-	private SearchParameterResolver searchParameterResolver;
-	private CqlFhirParametersConverter parametersConverter;
-	private Set<CqlEngine.Options> cqlEngineOptions;
-	private List<RetrieveProvider> retrieveProviders;
-	private List<LibraryContentProvider> libraryContentProviders;
+	private final ClientFactory clientFactory;
+	private final LibraryVersionSelector libraryVersionSelector;
+	private final SearchParameterResolver searchParameterResolver;
+	private final CqlFhirParametersConverter parametersConverter;
+	private final Set<CqlEngine.Options> cqlEngineOptions;
+	private final List<RetrieveProvider> retrieveProviders;
+	private final List<LibraryContentProvider> libraryContentProviders;
 
 	private BaseFhirQueryGenerator queryGenerator;
 
@@ -88,11 +88,11 @@ public class CqlEvaluationHelper {
 	private DataProvider dataProvider;
 
 	public CqlEvaluationHelper(FhirContext fhirContext, ModelResolver modelResolver, AdapterFactory adapterFactory,
-							   boolean useServerData, IBaseBundle data, Pair<String, List<String>> dataEndpoint,
-							   Pair<String, List<String>> contentEndpoint, Pair<String, List<String>> terminologyEndpoint,
-							   String content, LibraryLoaderFactory libraryLoaderFactory,
-							   JpaLibraryContentProvider jpaContentProvider, LibraryContentProvider restContentProvider,
-							   JpaTerminologyProvider jpaTerminologyProvider, DaoRegistry daoRegistry) {
+							   boolean useServerData, IBaseBundle data, EndpointInfo dataEndpoint,
+							   EndpointInfo contentEndpoint, EndpointInfo terminologyEndpoint, String content,
+							   LibraryLoaderFactory libraryLoaderFactory, JpaLibraryContentProvider jpaContentProvider,
+							   LibraryContentProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
+							   DaoRegistry daoRegistry) {
 		this.fhirContext = fhirContext;
 		this.modelResolver = modelResolver;
 		this.adapterFactory = adapterFactory;
@@ -210,16 +210,12 @@ public class CqlEvaluationHelper {
 		return new LibraryEvaluator(parametersConverter, cqlEvaluator);
 	}
 
-	public IGenericClient resolveRemoteClient(Pair<String, List<String>> endpoint) {
-		IGenericClient remoteClient = fhirContext.newRestfulGenericClient(endpoint.getLeft());
-		if (endpoint.getRight() != null) {
+	public IGenericClient resolveRemoteClient(EndpointInfo endpoint) {
+		IGenericClient remoteClient = fhirContext.newRestfulGenericClient(endpoint.getAddress());
+		if (endpoint.getHeaders() != null) {
 			AdditionalRequestHeadersInterceptor headerInterceptor = new AdditionalRequestHeadersInterceptor();
-			for (String header : endpoint.getRight()) {
-				// NOTE: this may be too simple for more complex headers...
-				String[] headerNameAndValue = header.split(":");
-				if (headerNameAndValue.length == 2) {
-					headerInterceptor.addHeaderValue(headerNameAndValue[0], headerNameAndValue[1]);
-				}
+			for (EndpointInfo.HeaderInfo header : endpoint.getHeaderNameValuePairs()) {
+				headerInterceptor.addHeaderValue(header.getName(), header.getValue());
 			}
 			remoteClient.registerInterceptor(headerInterceptor);
 		}

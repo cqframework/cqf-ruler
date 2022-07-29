@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
-import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.hl7.fhir.r4.model.BooleanType;
@@ -20,6 +19,7 @@ import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProvi
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory;
 import org.opencds.cqf.ruler.cpg.CqlEvaluationHelper;
+import org.opencds.cqf.ruler.cpg.EndpointInfo;
 import org.opencds.cqf.ruler.cpg.r4.util.RemoteEndpoint;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
@@ -128,11 +128,11 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 		@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
-		Pair<String, List<String>> remoteData = RemoteEndpoint.resolveRemoteEndpoint(dataEndpoint);
-		Pair<String, List<String>> remoteContent = RemoteEndpoint.resolveRemoteEndpoint(contentEndpoint);
-		Pair<String, List<String>> remoteTerminology = RemoteEndpoint.resolveRemoteEndpoint(terminologyEndpoint);
+		EndpointInfo remoteData = RemoteEndpoint.resolveRemoteEndpoint(dataEndpoint);
+		EndpointInfo remoteContent = RemoteEndpoint.resolveRemoteEndpoint(contentEndpoint);
+		EndpointInfo remoteTerminology = RemoteEndpoint.resolveRemoteEndpoint(terminologyEndpoint);
 		LibraryContentProvider contentProvider = remoteContent != null
-				? fhirRestLibraryContentProviderFactory.create(remoteContent.getLeft(), remoteContent.getRight())
+				? fhirRestLibraryContentProviderFactory.create(remoteContent.getAddress(), remoteContent.getHeaders())
 				: null;
 
 		CqlEvaluationHelper evaluationHelper = new CqlEvaluationHelper(getFhirContext(), myModelResolver,
