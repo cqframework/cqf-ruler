@@ -33,6 +33,7 @@ import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.CqlEvaluator;
 import org.opencds.cqf.cql.evaluator.builder.CqlEvaluatorBuilder;
 import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
+import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
 import org.opencds.cqf.cql.evaluator.builder.LibraryContentProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.data.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.data.FhirModelResolverFactory;
@@ -214,7 +215,7 @@ public class CqlEvaluationHelper {
 		IGenericClient remoteClient = fhirContext.newRestfulGenericClient(endpoint.getAddress());
 		if (endpoint.getHeaders() != null) {
 			AdditionalRequestHeadersInterceptor headerInterceptor = new AdditionalRequestHeadersInterceptor();
-			for (EndpointInfo.HeaderInfo header : endpoint.getHeaderNameValuePairs()) {
+			for (HeaderInfo header : getHeaderNameValuePairs(endpoint.getHeaders())) {
 				headerInterceptor.addHeaderValue(header.getName(), header.getValue());
 			}
 			remoteClient.registerInterceptor(headerInterceptor);
@@ -322,5 +323,35 @@ public class CqlEvaluationHelper {
 			}
 		}
 		return null;
+	}
+
+	public List<HeaderInfo> getHeaderNameValuePairs(List<String> headers) {
+		List<HeaderInfo> headerNameValuePairs = new ArrayList<>();
+		for (String header : headers) {
+			// NOTE: assuming the headers will be key value pairs separated by a colon (key: value)
+			String[] headerNameAndValue = header.split("\\s*:\\s*");
+			if (headerNameAndValue.length == 2) {
+				headerNameValuePairs.add(new HeaderInfo(headerNameAndValue[0], headerNameAndValue[1]));
+			}
+		}
+		return headerNameValuePairs;
+	}
+
+	static class HeaderInfo {
+		private final String name;
+		private final String value;
+
+		public HeaderInfo(String name, String value) {
+			this.name = name;
+			this.value = value;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getValue() {
+			return value;
+		}
 	}
 }

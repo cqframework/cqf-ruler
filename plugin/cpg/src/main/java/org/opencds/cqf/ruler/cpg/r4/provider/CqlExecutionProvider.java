@@ -16,12 +16,12 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
+import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
 import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProviderFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory;
 import org.opencds.cqf.ruler.cpg.CqlEvaluationHelper;
-import org.opencds.cqf.ruler.cpg.EndpointInfo;
-import org.opencds.cqf.ruler.cpg.r4.util.RemoteEndpoint;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
@@ -189,9 +189,12 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		@OperationParam(name = "terminologyEndpoint", max = 1) Endpoint terminologyEndpoint,
 		@OperationParam(name = "content", max = 1) String content) {
 
-		EndpointInfo remoteData = RemoteEndpoint.resolveRemoteEndpoint(dataEndpoint);
-		EndpointInfo remoteContent = RemoteEndpoint.resolveRemoteEndpoint(contentEndpoint);
-		EndpointInfo remoteTerminology = RemoteEndpoint.resolveRemoteEndpoint(terminologyEndpoint);
+		EndpointInfo remoteData = dataEndpoint != null
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(contentEndpoint) : null;
+		EndpointInfo remoteContent = contentEndpoint != null
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(dataEndpoint) : null;
+		EndpointInfo remoteTerminology = terminologyEndpoint != null
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(terminologyEndpoint) : null;
 		LibraryContentProvider contentProvider = remoteContent != null
 				? fhirRestLibraryContentProviderFactory.create(remoteContent.getAddress(), remoteContent.getHeaders())
 				: null;

@@ -15,12 +15,12 @@ import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
+import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
 import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProviderFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.dstu3.AdapterFactory;
 import org.opencds.cqf.ruler.cpg.CqlEvaluationHelper;
-import org.opencds.cqf.ruler.cpg.EndpointInfo;
-import org.opencds.cqf.ruler.cpg.dstu3.util.RemoteEndpoint;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
@@ -128,9 +128,12 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 		@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
-		EndpointInfo remoteData = RemoteEndpoint.resolveRemoteEndpoint(dataEndpoint);
-		EndpointInfo remoteContent = RemoteEndpoint.resolveRemoteEndpoint(contentEndpoint);
-		EndpointInfo remoteTerminology = RemoteEndpoint.resolveRemoteEndpoint(terminologyEndpoint);
+		EndpointInfo remoteData = dataEndpoint != null
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(contentEndpoint) : null;
+		EndpointInfo remoteContent = contentEndpoint != null
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(dataEndpoint) : null;
+		EndpointInfo remoteTerminology = terminologyEndpoint != null
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(terminologyEndpoint) : null;
 		LibraryContentProvider contentProvider = remoteContent != null
 				? fhirRestLibraryContentProviderFactory.create(remoteContent.getAddress(), remoteContent.getHeaders())
 				: null;
