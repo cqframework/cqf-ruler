@@ -4,6 +4,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.cache.IResourceChangeEvent;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListener;
+import ca.uhn.fhir.jpa.cache.ResourceChangeEvent;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -43,19 +44,22 @@ public class CdsServicesCache implements IResourceChangeListener {
 
 	@Override
 	public void handleInit(Collection<IIdType> collection) {
-
+		handleChange(ResourceChangeEvent.fromCreatedResourceIds(collection));
 	}
 
 	@Override
 	public void handleChange(IResourceChangeEvent iResourceChangeEvent) {
 		if (iResourceChangeEvent == null) return;
-		if (iResourceChangeEvent.getCreatedResourceIds() != null && !iResourceChangeEvent.getCreatedResourceIds().isEmpty()) {
+		if (iResourceChangeEvent.getCreatedResourceIds() != null
+				&& !iResourceChangeEvent.getCreatedResourceIds().isEmpty()) {
 			insert(iResourceChangeEvent.getCreatedResourceIds());
 		}
-		if (iResourceChangeEvent.getUpdatedResourceIds() != null && !iResourceChangeEvent.getUpdatedResourceIds().isEmpty()) {
+		if (iResourceChangeEvent.getUpdatedResourceIds() != null
+				&& !iResourceChangeEvent.getUpdatedResourceIds().isEmpty()) {
 			update(iResourceChangeEvent.getUpdatedResourceIds());
 		}
-		if (iResourceChangeEvent.getDeletedResourceIds() != null && !iResourceChangeEvent.getDeletedResourceIds().isEmpty()) {
+		if (iResourceChangeEvent.getDeletedResourceIds() != null
+				&& !iResourceChangeEvent.getDeletedResourceIds().isEmpty()) {
 			delete(iResourceChangeEvent.getDeletedResourceIds());
 		}
 	}
@@ -67,7 +71,8 @@ public class CdsServicesCache implements IResourceChangeListener {
 				if (resource instanceof PlanDefinition) {
 					cdsServiceCache.get().add(discoveryResolutionR4.resolveService((PlanDefinition) resource));
 				} else if (resource instanceof org.hl7.fhir.dstu3.model.PlanDefinition) {
-					cdsServiceCache.get().add(discoveryResolutionStu3.resolveService((org.hl7.fhir.dstu3.model.PlanDefinition) resource));
+					cdsServiceCache.get().add(
+							discoveryResolutionStu3.resolveService((org.hl7.fhir.dstu3.model.PlanDefinition) resource));
 				}
 			} catch (Exception e) {
 				logger.info(String.format("Failed to create service for %s", id.getIdPart()));
