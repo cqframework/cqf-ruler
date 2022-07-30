@@ -1,10 +1,8 @@
 package org.opencds.cqf.ruler.cpg.r4.provider;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
@@ -16,9 +14,11 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.PrimitiveType;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
+import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
 import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProviderFactory;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory;
 import org.opencds.cqf.ruler.cpg.CqlEvaluationHelper;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
@@ -127,18 +127,44 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 		@OperationParam(name = "dataEndpoint") Endpoint dataEndpoint,
 		@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
-		String contentUrl = contentEndpoint != null ? contentEndpoint.getAddress() : null;
-		List<String> contentHeaders = contentEndpoint != null && contentEndpoint.hasHeader() ? contentEndpoint.getHeader().stream().map(PrimitiveType::getValue).collect(Collectors.toList()) : Collections.singletonList("Content-Type: application/json");
-		CqlEvaluationHelper evaluationHelper = new CqlEvaluationHelper(
-			getFhirContext(), myModelResolver, new AdapterFactory(), useServerData == null || useServerData.booleanValue(), data, dataEndpoint, contentEndpoint, terminologyEndpoint,
-			null, libraryLoaderFactory, jpaLibraryContentProviderFactory.create(requestDetails), contentEndpoint != null ? fhirRestLibraryContentProviderFactory.create(contentUrl, contentHeaders) : null,
-			getFhirContext().newRestfulGenericClient(requestDetails.getFhirServerBase()), jpaTerminologyProviderFactory.create(requestDetails), getDaoRegistry()
-		);
+
+		EndpointInfo remoteData = dataEndpoint != null
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(contentEndpoint) : null;
+		EndpointInfo remoteContent = contentEndpoint != null
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(dataEndpoint) : null;
+		EndpointInfo remoteTerminology = terminologyEndpoint != null
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(terminologyEndpoint) : null;
+		LibraryContentProvider contentProvider = remoteContent != null
+				? fhirRestLibraryContentProviderFactory.create(remoteContent.getAddress(), remoteContent.getHeaders())
+				: null;
+
+		CqlEvaluationHelper evaluationHelper = new CqlEvaluationHelper(getFhirContext(), myModelResolver,
+				new AdapterFactory(), useServerData == null || useServerData.booleanValue(), data,
+				remoteData, remoteContent, remoteTerminology, null, libraryLoaderFactory,
+				jpaLibraryContentProviderFactory.create(requestDetails), contentProvider,
+				jpaTerminologyProviderFactory.create(requestDetails), getDaoRegistry());
+
 		if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
-			IBaseOperationOutcome outcome = evaluationHelper.validateOperationParameters(requestDetails, "subject", "expression", "parameters", "useServerData", "data", "prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint");
-			if (outcome != null) return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error", (OperationOutcome) outcome));
+			IBaseOperationOutcome outcome = evaluationHelper.validateOperationParameters(requestDetails,
+					"subject", "expression", "parameters", "useServerData", "data",
+					"prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint");
+
+			if (outcome != null) {
+				return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
+						org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error", (OperationOutcome) outcome));
+			}
 		}
-		if (prefetchData != null) return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error", (OperationOutcome) evaluationHelper.createIssue("invalid parameters", "prefetchData is not yet supported")));
-		return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(evaluationHelper.resolveLibraryIdentifier(null, read(theId)), evaluationHelper.resolveContextParameter(subject), parameters, expression == null ? null : new HashSet<>(expression));
+
+		if (prefetchData != null) {
+			return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
+					org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error",
+							(OperationOutcome) evaluationHelper.createIssue("invalid parameters",
+									"prefetchData is not yet supported")));
+		}
+
+		return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(
+				evaluationHelper.resolveLibraryIdentifier(null, read(theId)),
+				evaluationHelper.resolveContextParameter(subject), parameters,
+				expression == null ? null : new HashSet<>(expression));
 	}
 }
