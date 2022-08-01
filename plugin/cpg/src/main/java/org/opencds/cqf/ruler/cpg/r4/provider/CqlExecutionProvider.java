@@ -190,9 +190,9 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 		@OperationParam(name = "content", max = 1) String content) {
 
 		EndpointInfo remoteData = dataEndpoint != null
-				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(contentEndpoint) : null;
-		EndpointInfo remoteContent = contentEndpoint != null
 				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(dataEndpoint) : null;
+		EndpointInfo remoteContent = contentEndpoint != null
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(contentEndpoint) : null;
 		EndpointInfo remoteTerminology = terminologyEndpoint != null
 				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(terminologyEndpoint) : null;
 		LibraryContentProvider contentProvider = remoteContent != null

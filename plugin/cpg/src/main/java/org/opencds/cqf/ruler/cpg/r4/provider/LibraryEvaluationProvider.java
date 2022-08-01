@@ -129,9 +129,9 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
 		EndpointInfo remoteData = dataEndpoint != null
-				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(contentEndpoint) : null;
-		EndpointInfo remoteContent = contentEndpoint != null
 				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(dataEndpoint) : null;
+		EndpointInfo remoteContent = contentEndpoint != null
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(contentEndpoint) : null;
 		EndpointInfo remoteTerminology = terminologyEndpoint != null
 				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(terminologyEndpoint) : null;
 		LibraryContentProvider contentProvider = remoteContent != null
