@@ -58,7 +58,7 @@
 
 	<properties>
 		<cqf-tooling.version>1.4.0</cqf-tooling.version>
-		<cqframework.version>1.5.8</cqframework.version>
+		<cqframework.version>1.5.11-SNAPSHOT</cqframework.version>
 
 		<!-- CQL Support -->
 		<cql-engine.version>1.5.5</cql-engine.version>
