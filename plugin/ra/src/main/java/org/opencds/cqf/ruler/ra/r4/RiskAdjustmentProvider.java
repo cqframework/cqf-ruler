@@ -40,8 +40,8 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 
 	private String visited;
 
-	@Operation(name = "$risk-adjustment", idempotent = true, type = Measure.class)
-	public Parameters riskAdjustment(
+	@Operation(name = "$evaluate-risk-condition-category", idempotent = true, type = Measure.class)
+	public Parameters evaluateRiskConditionCategory(
 			RequestDetails requestDetails,
 			@IdParam IdType theId,
 			@OperationParam(name = "type") String type,

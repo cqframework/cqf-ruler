@@ -94,7 +94,7 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	private Parameters callOperation(Parameters requestParameters) {
 		return getClient().operation()
 				.onInstance(new IdType("Measure", "ConditionCategoryPOC"))
-				.named("$risk-adjustment")
+				.named("$evaluate-risk-condition-category")
 				.withParameters(requestParameters)
 				.returnResourceType(Parameters.class)
 				.execute();
