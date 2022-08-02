@@ -137,9 +137,12 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 
 	private Extension resolveEvidenceStatusDate(RiskAdjustmentReturnElement riskAdjustmentReturnElement) {
 		for (Resource contained : riskAdjustmentReturnElement.unprocessedReport.getContained()) {
-			if (contained instanceof Observation && ((Observation) contained).hasCode()
-					&& ((Observation) contained).getCode().hasText()
-					&& ((Observation) contained).getCode().getText().equalsIgnoreCase("evidence-status-date")
+			if (!(contained instanceof Observation)) continue;
+			Observation containedObservation = (Observation) contained;
+			if (containedObservation.hasCode() && containedObservation.getCode().hasCoding()
+					&& containedObservation.getCode().getCodingFirstRep().hasSystem()
+					&& containedObservation.getCode().getCodingFirstRep().getSystem().equals(
+							"http://terminology.hl7.org/CodeSystem/measure-data-usage")
 					&& ((Observation) contained).hasValueCodeableConcept()
 					&& ((Observation) contained).getValueCodeableConcept().hasCoding()
 					&& ((Observation) contained).getValueCodeableConcept().getCodingFirstRep().hasCode()) {

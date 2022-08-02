@@ -42,7 +42,6 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	@Disabled("Known issue: https://github.com/DBCG/cqf-ruler/issues/571")
 	void riskAssessmentHistoricOpen() {
 		loadTransaction("tests-hist-open-HCC189-bundle.json");
 
@@ -57,7 +56,6 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	@Disabled("Known issue: https://github.com/DBCG/cqf-ruler/issues/571")
 	void riskAssessmentHistoricClosed() {
 		loadTransaction("tests-hist-closed-HCC189-bundle.json");
 
@@ -72,7 +70,6 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	@Disabled("Known issue: https://github.com/DBCG/cqf-ruler/issues/571")
 	void riskAssessmentHistoricNetNew() {
 		loadTransaction("tests-netnew-HCC189-bundle.json");
 
