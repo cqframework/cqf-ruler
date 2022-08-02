@@ -224,6 +224,7 @@ hapi:
             searchStyle: GET
          prefetch:
             maxUriLength: 8000
+         useRemoteData: true
 #elasticsearch:
 #  debug:
 #    pretty_print_json_log: false

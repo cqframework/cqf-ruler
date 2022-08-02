@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cdshooks.evaluation;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.opencds.cqf.cql.engine.fhir.retrieve.Dstu3FhirQueryGenerator;
@@ -129,7 +130,9 @@ public abstract class EvaluationContext<T extends IBaseResource> {
             }
             // TODO: Get the "system" terminology provider.
             prefetchRetriever.setTerminologyProvider(context.resolveTerminologyProvider());
-            PriorityRetrieveProvider priorityRetrieveProvider = new PriorityRetrieveProvider(Arrays.asList(prefetchRetriever, remoteRetriever));
+            PriorityRetrieveProvider priorityRetrieveProvider = providerConfiguration.getUseRemoteData()
+                    ? new PriorityRetrieveProvider(Arrays.asList(prefetchRetriever, remoteRetriever))
+                    : new PriorityRetrieveProvider(Collections.singletonList(prefetchRetriever));
             remoteProvider = new CompositeDataProvider(modelResolver, priorityRetrieveProvider);
         }
         return remoteProvider;

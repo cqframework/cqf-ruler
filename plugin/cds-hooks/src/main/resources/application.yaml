@@ -8,4 +8,5 @@ hapi:
             searchStyle: GET
          prefetch:
             maxUriLength: 8000
+         useRemoteData: true
 

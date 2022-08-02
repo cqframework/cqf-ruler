@@ -80,4 +80,14 @@ public class CdsHooksProperties {
 			this.maxUriLength = maxUriLength;
 		}
 	}
+
+	private boolean useRemoteData;
+
+	public boolean isUseRemoteData() {
+		return useRemoteData;
+	}
+
+	public void setUseRemoteData(boolean useRemoteData) {
+		this.useRemoteData = useRemoteData;
+	}
 }

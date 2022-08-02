@@ -19,8 +19,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cdshooks.CdsHooksConfig;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
+import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.plugin.cdshooks.ResourceChangeEvent;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
+import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -38,6 +40,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class CdsHooksServletIT extends RestIntegrationTest {
 	@Autowired
 	CdsServicesCache cdsServicesCache;
+	@Autowired
+	ProviderConfiguration providerConfiguration;
 	private String ourCdsBase;
 
 	@BeforeEach
@@ -123,6 +127,21 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		}
 	}
 
+	// This test should fail when useRemoteData is false as it needs to reach out to the specified
+	// FHIR server to resolve a Medication resource that is not provided in the prefetch template
+	@Test
+	void testOpioidRecommendation08OrderSignWithPrefetchFailWithoutRemoteDataRetrieval() {
+		providerConfiguration.setUseRemoteData(false);
+		try {
+			testOpioidRecommendation08OrderSignWithPrefetch();
+		} catch (AssertionFailedError e) {
+			// pass
+			providerConfiguration.setUseRemoteData(true);
+			return;
+		}
+		fail();
+	}
+
 	@Test
 	void testOpioidRecommendation08OrderSignWithPrefetch() {
 		loadTransaction("opioidcds-08-order-sign-artifact-bundle.json");
@@ -177,6 +196,15 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		assertTrue(card.has("links"));
 		assertTrue(card.get("links").isJsonArray());
 		assertEquals(2, card.get("links").getAsJsonArray().size());
+	}
+
+	// This test should pass when useRemoteData is false as all
+	// the necessary resources are provided in the prefetch
+	@Test
+	void testCdsServicesRequestWithoutRemoteDataRetrieval() {
+		providerConfiguration.setUseRemoteData(false);
+		testCdsServicesRequest();
+		providerConfiguration.setUseRemoteData(true);
 	}
 
 	@Test

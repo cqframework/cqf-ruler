@@ -8,21 +8,23 @@ import ca.uhn.fhir.rest.api.SearchStyleEnum;
 public class ProviderConfiguration {
 
 	public static final ProviderConfiguration DEFAULT_PROVIDER_CONFIGURATION = new ProviderConfiguration(true, 64,
-			SearchStyleEnum.GET, 8000, false);
+			SearchStyleEnum.GET, 8000, false, true);
 
 	private int maxCodesPerQuery;
 	private SearchStyleEnum searchStyle;
 	private boolean expandValueSets;
 	private int maxUriLength;
 	private boolean cqlLoggingEnabled;
+	private boolean useRemoteData;
 
 	public ProviderConfiguration(boolean expandValueSets, int maxCodesPerQuery, SearchStyleEnum searchStyle,
-			int maxUriLength, boolean cqlLoggingEnabled) {
+			int maxUriLength, boolean cqlLoggingEnabled, boolean useRemoteData) {
 		this.maxCodesPerQuery = maxCodesPerQuery;
 		this.searchStyle = searchStyle;
 		this.expandValueSets = expandValueSets;
 		this.maxUriLength = maxUriLength;
 		this.cqlLoggingEnabled = cqlLoggingEnabled;
+		this.useRemoteData = useRemoteData;
 	}
 
 	public ProviderConfiguration(CdsHooksProperties cdsProperties, CqlProperties cqlProperties) {
@@ -31,6 +33,7 @@ public class ProviderConfiguration {
 		this.searchStyle = cdsProperties.getFhirServer().getSearchStyle();
 		this.maxUriLength = cdsProperties.getPrefetch().getMaxUriLength();
 		this.cqlLoggingEnabled = cqlProperties.getOptions().getCqlEngineOptions().isDebugLoggingEnabled();
+		this.useRemoteData = cdsProperties.isUseRemoteData();
 	}
 
 	public int getMaxCodesPerQuery() {
@@ -51,5 +54,13 @@ public class ProviderConfiguration {
 
 	public boolean getCqlLoggingEnabled() {
 		return this.cqlLoggingEnabled;
+	}
+
+	public boolean getUseRemoteData() {
+		return this.useRemoteData;
+	}
+
+	public void setUseRemoteData(boolean useRemoteData) {
+		this.useRemoteData = useRemoteData;
 	}
 }
