@@ -22,5 +22,10 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>info.cqframework</groupId>
+			<artifactId>cqf-fhir</artifactId>
+			<version>${cqframework.version}</version>
+		</dependency>
 	</dependencies>
 </project>
