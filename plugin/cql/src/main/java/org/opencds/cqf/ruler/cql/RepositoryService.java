@@ -3,7 +3,7 @@ package org.opencds.cqf.ruler.cql;
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+//import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r5.model.Enumerations;
 import org.hl7.fhir.r5.model.Library;
@@ -11,7 +11,7 @@ import org.hl7.fhir.r5.model.RelatedArtifact;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
@@ -27,12 +27,12 @@ public class RepositoryService extends DaoRegistryOperationProvider {
     public RepositoryService() {
     }
 
-	 @SuppressFBWarnings(value = "DLS_DEAD_LOCAL_STORE")
+	 //@SuppressFBWarnings(value = "DLS_DEAD_LOCAL_STORE")
 	 @Operation(name = "$createNewVersion", idempotent = true, type = Library.class)
 	 @Description(shortDefinition = "$createNewVersion", value = "Create a new library version")
 		 public Library createNewVersion(@OperationParam(name = "currentLibrary") Library currentLibrary) throws FHIRException {
 		 List<RelatedArtifact> relatedArtifactList = currentLibrary.getRelatedArtifact();
-		 List<RelatedArtifact> updatedRelatedArtifactsList = new ArrayList<RelatedArtifact>();
+		 //List<RelatedArtifact> updatedRelatedArtifactsList = new ArrayList<RelatedArtifact>();
 		 Library newLibrary = new Library();
 
 		 for (RelatedArtifact ra : relatedArtifactList) {
