@@ -5,9 +5,9 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 //import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.r5.model.Enumerations;
-import org.hl7.fhir.r5.model.Library;
-import org.hl7.fhir.r5.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
