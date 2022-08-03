@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.opencds.cqf.ruler.api.OperationProvider;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -320,5 +321,11 @@ public class CqlConfig {
 	@Conditional(OnR5Condition.class)
 	public ITermReadSvcR5 termReadSvcR5() {
 		return new PreExpandedTermReadSvcR5();
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public RepositoryService r4RepositoryServiceProvider() {
+		return new RepositoryService();
 	}
 }
