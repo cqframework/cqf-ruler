@@ -94,7 +94,7 @@ public class EvaluationHelper {
         return ret;
     }
 
-    public static List<Object> resolvePrefetchResources(Hook hook, FhirContext fhirContext, IGenericClient client, SearchStyleEnum searchStyle) throws IOException {
+    public static List<Object> resolvePrefetchResources(Hook hook, FhirContext fhirContext, IGenericClient client, SearchStyleEnum searchStyle) {
         List<Object> prefetchResources = new ArrayList<>();
         List<String> prefetchElementsToFetch = new ArrayList<>();
         Gson gson = new GsonBuilder().create();

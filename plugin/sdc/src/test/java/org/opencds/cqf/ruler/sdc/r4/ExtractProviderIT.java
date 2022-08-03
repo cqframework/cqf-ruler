@@ -22,7 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 
-
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 		SDCConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
@@ -31,7 +30,7 @@ public class ExtractProviderIT extends RestIntegrationTest {
 	private SDCProperties mySdcProperties;
 
 	@BeforeEach
-	void beforeEach() {
+	public void beforeEach() {
 		String ourServerBase = "http://localhost:" + getPort() + "/fhir/";
 		mySdcProperties.getExtract().setEndpoint(ourServerBase);
 	}
@@ -44,8 +43,8 @@ public class ExtractProviderIT extends RestIntegrationTest {
 
 		loadResource(examplePatient);
 		loadResource(exampleQuestionnaire);
-		QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) loadResource(exampleQR);		
-		
+		QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) loadResource(exampleQR);
+
 		Parameters params = new Parameters();
 		params.addParameter().setName("questionnaireResponse").setResource(questionnaireResponse);
 
@@ -64,7 +63,7 @@ public class ExtractProviderIT extends RestIntegrationTest {
 
 		// Ensure the Observations were saved to the local server
 		for (Bundle.BundleEntryComponent bec : actual.getEntry()) {
-				assertEquals("201 Created", bec.getResponse().getStatus());
+			assertEquals("201 Created", bec.getResponse().getStatus());
 		}
 	}
 

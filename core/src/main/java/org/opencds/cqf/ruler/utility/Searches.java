@@ -55,14 +55,14 @@ public class Searches {
 		checkNotNull(theName);
 		checkNotNull(theVersion);
 
-		return byName(theName).add(VERSION_SP, new StringParam(theVersion));
+		return byName(theName).add(VERSION_SP, new TokenParam(theVersion));
 	}
 
 	public static SearchParameterMap byUrl(String theUrl, String theVersion) {
 		checkNotNull(theUrl);
 		checkNotNull(theVersion);
 
-		return byParam(URL_SP, new UriParam(theUrl)).add(VERSION_SP, new StringParam(theVersion));
+		return byParam(URL_SP, new UriParam(theUrl)).add(VERSION_SP, new TokenParam(theVersion));
 	}
 
 	public static SearchParameterMap byUrl(String theUrl) {
@@ -101,6 +101,17 @@ public class Searches {
 		checkArgument(theCanonicalType.hasValue());
 
 		return byCanonical(theCanonicalType.getValue());
+	}
+
+	public static SearchParameterMap byCanonical(String theCanonical, String version) {
+		checkNotNull(theCanonical);
+
+		SearchParameterMap search = byUrl(Canonicals.getUrl(theCanonical));
+		if (version != null) {
+			search.add(VERSION_SP, new TokenParam(version));
+		}
+
+		return search;
 	}
 
 	// TODO: use versioned version

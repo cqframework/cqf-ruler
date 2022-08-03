@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.dstu3.model.IdType;
+import org.hl7.fhir.dstu3.model.StringType;
 import org.opencds.cqf.ruler.utility.Ids;
 
 public class Parameters {
@@ -40,6 +41,16 @@ public class Parameters {
 	}
 
 	public static org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent newPart(String name,
+			String value, org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent... parts) {
+		checkNotNull(name);
+		checkNotNull(value);
+
+		org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent c = newPart(name, parts);
+		c.setValue(new StringType(value));
+		return c;
+	}
+
+	public static org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent newPart(String name,
 			org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent... parts) {
 		checkNotNull(name);
 
@@ -53,7 +64,8 @@ public class Parameters {
 	}
 
 	public static org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent newPart(String name,
-			org.hl7.fhir.dstu3.model.Type value, org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent... parts) {
+			org.hl7.fhir.dstu3.model.Type value,
+			org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent... parts) {
 		checkNotNull(name);
 		checkNotNull(value);
 

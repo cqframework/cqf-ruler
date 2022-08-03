@@ -1,0 +1,280 @@
+{
+	"resourceType": "Bundle",
+	"id": "example-rec-10-no-screenings",
+	"type": "transaction",
+	"entry": [
+		{
+			"resource": {
+				"resourceType": "Patient",
+				"id": "example-rec-10-no-screenings",
+				"text": {
+					"status": "extensions",
+					"div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"example-rec-10-no-screenings\" </p></div><blockquote><p><b>Data Date-Roller Extension</b></p><p><b>value</b>: 2022-04-28</p><p><b>value</b>: 30.0 days<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM code d = 'd')</span></p></blockquote><p><b>name</b>: no-screenings example-rec-10 </p><p><b>gender</b>: female</p><p><b>birthDate</b>: 1982-01-07</p></div>"
+				},
+				"extension": [
+					{
+						"url": "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/dataDateRoller",
+						"extension": [
+							{
+								"url": "dateLastUpdated",
+								"valueDateTime": "2022-04-28"
+							},
+							{
+								"url": "frequency",
+								"valueDuration": {
+									"value": 30.0,
+									"unit": "days",
+									"system": "http://unitsofmeasure.org",
+									"code": "d"
+								}
+							}
+						]
+					}
+				],
+				"name": [
+					{
+						"family": "example-rec-10",
+						"given": [
+							"no-screenings"
+						]
+					}
+				],
+				"gender": "female",
+				"birthDate": "1982-01-07"
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Patient/example-rec-10-no-screenings"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "Encounter",
+				"id": "example-rec-10-no-screenings-prefetch",
+				"text": {
+					"status": "extensions",
+					"div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"example-rec-10-no-screenings-prefetch\" </p></div><blockquote><p><b>Data Date-Roller Extension</b></p><p><b>value</b>: 2022-04-28</p><p><b>value</b>: 30.0 days<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM code d = 'd')</span></p></blockquote><p><b>status</b>: finished</p><p><b>class</b>: ambulatory (Details: http://terminology.hl7.org/CodeSystem/v3-ActCode code AMB = 'ambulatory', stated as 'ambulatory')</p><p><b>subject</b>: <a href=\"#Patient_example-rec-10-no-screenings\">See above (Patient/example-rec-10-no-screenings)</a></p><p><b>period</b>: 2022-01-28 --&gt; 2022-01-28</p></div>"
+				},
+				"extension": [
+					{
+						"url": "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/dataDateRoller",
+						"extension": [
+							{
+								"url": "dateLastUpdated",
+								"valueDateTime": "2022-04-28"
+							},
+							{
+								"url": "frequency",
+								"valueDuration": {
+									"value": 30.0,
+									"unit": "days",
+									"system": "http://unitsofmeasure.org",
+									"code": "d"
+								}
+							}
+						]
+					}
+				],
+				"status": "finished",
+				"class": {
+					"system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+					"code": "AMB",
+					"display": "ambulatory"
+				},
+				"subject": {
+					"reference": "Patient/example-rec-10-no-screenings"
+				},
+				"period": {
+					"start": "2022-01-28",
+					"end": "2022-01-28"
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Encounter/example-rec-10-no-screenings-prefetch"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "MedicationRequest",
+				"id": "example-rec-10-no-screenings-prefetch",
+				"text": {
+					"status": "extensions",
+					"div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><div style=\"display: inline-block; background-color: #d9e0e7; padding: 6px; margin: 4px; border: 1px solid #8da1b4; border-radius: 5px; line-height: 60%\"><p style=\"margin-bottom: 0px\">Resource \"example-rec-10-no-screenings-prefetch\" </p></div><blockquote><p><b>Data Date-Roller Extension</b></p><p><b>value</b>: 2022-04-28</p><p><b>value</b>: 30.0 days<span style=\"background: LightGoldenRodYellow\"> (Details: UCUM code d = 'd')</span></p></blockquote><p><b>status</b>: active</p><p><b>intent</b>: order</p><p><b>category</b>: Outpatient <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"CodeSystem-medicationrequest-category.html\">Medication request  category  codes</a>#outpatient)</span></p><p><b>medication</b>: oxyCODONE HCl 10 MG 12HR Extended Release Oral Tablet <span style=\"background: LightGoldenRodYellow; margin: 4px; border: 1px solid khaki\"> (<a href=\"http://terminology.hl7.org/3.1.0/CodeSystem-v3-rxNorm.html\">RxNorm</a>#1049502)</span></p><p><b>subject</b>: <a href=\"#Patient_example-rec-10-no-screenings\">See above (Patient/example-rec-10-no-screenings)</a></p><p><b>encounter</b>: <a href=\"#Encounter_example-rec-10-no-screenings-prefetch\">See above (Encounter/example-rec-10-no-screenings-prefetch)</a></p><p><b>authoredOn</b>: 2022-01-28</p><blockquote><p><b>dispenseRequest</b></p><p><b>validityPeriod</b>: 2022-01-28 --&gt; 2022-04-28</p><p><b>numberOfRepeatsAllowed</b>: 3</p></blockquote></div>"
+				},
+				"extension": [
+					{
+						"url": "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/dataDateRoller",
+						"extension": [
+							{
+								"url": "dateLastUpdated",
+								"valueDateTime": "2022-04-28"
+							},
+							{
+								"url": "frequency",
+								"valueDuration": {
+									"value": 30.0,
+									"unit": "days",
+									"system": "http://unitsofmeasure.org",
+									"code": "d"
+								}
+							}
+						]
+					}
+				],
+				"status": "active",
+				"intent": "order",
+				"category": [
+					{
+						"coding": [
+							{
+								"system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+								"code": "outpatient"
+							}
+						]
+					}
+				],
+				"medicationCodeableConcept": {
+					"coding": [
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "1049502",
+							"display": "oxyCODONE HCl 10 MG 12HR Extended Release Oral Tablet"
+						}
+					]
+				},
+				"subject": {
+					"reference": "Patient/example-rec-10-no-screenings"
+				},
+				"encounter": {
+					"reference": "Encounter/example-rec-10-no-screenings-prefetch"
+				},
+				"authoredOn": "2022-01-28",
+				"dosageInstruction": [
+					{
+						"timing": {
+							"repeat": {
+								"frequency": 3,
+								"period": 1.0,
+								"periodUnit": "d"
+							}
+						},
+						"asNeededBoolean": false,
+						"doseAndRate": [
+							{
+								"doseQuantity": {
+									"value": 1.0,
+									"unit": "tablet"
+								}
+							}
+						]
+					}
+				],
+				"dispenseRequest": {
+					"validityPeriod": {
+						"start": "2022-01-28",
+						"end": "2022-04-28"
+					},
+					"numberOfRepeatsAllowed": 3,
+					"expectedSupplyDuration": {
+						"value": 27.0,
+						"unit": "d"
+					}
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"url": "MedicationRequest/example-rec-10-no-screenings-prefetch"
+			}
+		},
+		{
+			"resource": {
+				"resourceType": "MedicationRequest",
+				"extension": [
+					{
+						"url": "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/dataDateRoller",
+						"extension": [
+							{
+								"url": "dateLastUpdated",
+								"valueDateTime": "2022-04-28"
+							},
+							{
+								"url": "frequency",
+								"valueDuration": {
+									"value": 30.0,
+									"unit": "days",
+									"system": "http://unitsofmeasure.org",
+									"code": "d"
+								}
+							}
+						]
+					}
+				],
+				"id": "example-rec-10-no-screenings-context",
+				"status": "active",
+				"intent": "order",
+				"category": {
+					"coding": [
+						{
+							"system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+							"code": "community"
+						}
+					]
+				},
+				"medicationCodeableConcept": {
+					"coding": [
+						{
+							"system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+							"code": "197696",
+							"display": "72 HR Fentanyl 0.075 MG/HR Transdermal System"
+						}
+					]
+				},
+				"subject": {
+					"reference": "Patient/example-rec-10-no-screenings"
+				},
+				"encounter": {
+					"reference": "Encounter/example-rec-10-no-screenings-context"
+				},
+				"authoredOn": "2022-04-28",
+				"dosageInstruction": [
+					{
+						"timing": {
+							"repeat": {
+								"frequency": 1,
+								"period": 12.0,
+								"periodUnit": "d"
+							}
+						},
+						"asNeededBoolean": false,
+						"doseAndRate": {
+							"doseQuantity": {
+								"value": 1.0,
+								"unit": "patch",
+								"system": "http://unitsofmeasure.org",
+								"code": "{patch}"
+							}
+						}
+					}
+				],
+				"dispenseRequest": {
+					"validityPeriod": {
+						"start": "2022-04-28",
+						"end": "2022-07-28"
+					},
+					"numberOfRepeatsAllowed": 3,
+					"expectedSupplyDuration": {
+						"value": 30.0,
+						"unit": "days",
+						"system": "http://unitsofmeasure.org",
+						"code": "d"
+					}
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"url": "MedicationRequest/example-rec-10-no-screenings-context"
+			}
+		}
+	]
+}

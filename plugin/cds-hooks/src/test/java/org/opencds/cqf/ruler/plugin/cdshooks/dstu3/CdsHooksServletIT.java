@@ -5,10 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import java.util.Collections;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -20,23 +17,29 @@ import org.apache.http.util.EntityUtils;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Patient;
 import org.hl7.fhir.dstu3.model.PlanDefinition;
+import org.hl7.fhir.r4.model.IdType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.cdshooks.CdsHooksConfig;
+import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
+import org.opencds.cqf.ruler.plugin.cdshooks.ResourceChangeEvent;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
-		CdsHooksConfig.class }, properties = {
-				"hapi.fhir.fhir_version=dstu3",
-		})
-public class CdsHooksServletIT extends RestIntegrationTest {
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
-	String ourCdsBase;
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class, CdsHooksConfig.class }, properties = {"hapi.fhir.fhir_version=dstu3", "hapi.fhir.security.basic_auth.enabled=false"})
+class CdsHooksServletIT extends RestIntegrationTest {
+	@Autowired
+	CdsServicesCache cdsServicesCache;
+	private String ourCdsBase;
 
 	@BeforeEach
 	void beforeEach() {
@@ -44,7 +47,7 @@ public class CdsHooksServletIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testGetCdsServices() throws IOException {
+	void testGetCdsServices() throws IOException {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpGet request = new HttpGet(ourCdsBase);
 		request.addHeader("Content-Type", "application/json");
@@ -53,10 +56,15 @@ public class CdsHooksServletIT extends RestIntegrationTest {
 
 	@Test
 	// TODO: Add Opioid Tests once $apply-cql is implemented.
-	public void testCdsServicesRequest() throws IOException {
+	void testCdsServicesRequest() throws IOException {
 		// Server Load
 		loadTransaction("HelloWorldPatientView-bundle.json");
 		loadResource("hello-world-patient-view-patient.json");
+
+		ResourceChangeEvent rce = new ResourceChangeEvent();
+		rce.setUpdatedResourceIds(Collections.singletonList(new IdType("hello-world-patient-view")));
+		cdsServicesCache.handleChange(rce);
+
 		Patient ourPatient = getClient().read().resource(Patient.class).withId("patient-hello-world-patient-view")
 				.execute();
 		assertNotNull(ourPatient);
@@ -64,7 +72,7 @@ public class CdsHooksServletIT extends RestIntegrationTest {
 		PlanDefinition ourPlanDefinition = getClient().read().resource(PlanDefinition.class)
 				.withId("hello-world-patient-view").execute();
 		assertNotNull(ourPlanDefinition);
-		Bundle getPlanDefinitions = null;
+		Bundle getPlanDefinitions;
 		int tries = 0;
 		do {
 			// Can take up to 10 seconds for HAPI to reindex searches

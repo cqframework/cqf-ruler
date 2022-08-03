@@ -7,20 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import org.apache.http.entity.ContentType;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
@@ -29,13 +20,13 @@ import org.hl7.fhir.dstu3.model.PlanDefinition;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.exception.CqlException;
+import org.opencds.cqf.cql.engine.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
-import org.opencds.cqf.cql.engine.fhir.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
-import org.opencds.cqf.ruler.cdshooks.discovery.DiscoveryResolutionStu3;
+import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.evaluation.EvaluationContext;
 import org.opencds.cqf.ruler.cdshooks.evaluation.Stu3EvaluationContext;
 import org.opencds.cqf.ruler.cdshooks.hooks.Hook;
@@ -55,6 +46,14 @@ import org.opencds.cqf.ruler.utility.Ids;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -98,7 +97,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private ModelResolver modelResolver;
 
 	@Autowired
-	private AtomicReference<JsonArray> services;
+	CdsServicesCache cdsServicesCache;
 
 	protected ProviderConfiguration getProviderConfiguration() {
 		return this.providerConfiguration;
@@ -140,7 +139,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			// validate that we are dealing with JSON
 			if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
 				throw new ServletException(
-						String.format("Invalid content type %s. Please use application/json.", request.getContentType()));
+						String.format("Invalid content type %s. Please use application/json.",
+								request.getContentType()));
 			}
 
 			String baseUrl = this.myAppProperties.getServer_address();
@@ -204,8 +204,9 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			TerminologyProvider serverTerminologyProvider = myJpaTerminologyProviderFactory.create(requestDetails);
 
 			context.registerDataProvider("http://hl7.org/fhir",
-					fhirRetrieveProviderFactory.create(requestDetails, serverTerminologyProvider)); // TODO make sure tooling
-																																// handles remote
+					fhirRetrieveProviderFactory.create(requestDetails, serverTerminologyProvider)); // TODO make sure
+																									// tooling
+																									// handles remote
 			context.registerTerminologyProvider(serverTerminologyProvider);
 			context.registerLibraryLoader(libraryLoader);
 			context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
@@ -315,21 +316,13 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	}
 
 	private JsonArray getServicesArray() {
-		JsonArray cachedServices = this.services.get();
-		if (cachedServices == null || cachedServices.size() == 0) {
-			cachedServices = getServices().get("services").getAsJsonArray();
-			services.set(cachedServices);
-		}
-
-		return cachedServices;
+		return this.cdsServicesCache.getCdsServiceCache().get();
 	}
 
 	private JsonObject getServices() {
-		DiscoveryResolutionStu3 discoveryResolutionStu3 = new DiscoveryResolutionStu3(daoRegistry);
-
-		discoveryResolutionStu3.setMaxUriLength(this.getProviderConfiguration().getMaxUriLength());
-
-		return discoveryResolutionStu3.resolve().getAsJson();
+		JsonObject services = new JsonObject();
+		services.add("services", this.cdsServicesCache.getCdsServiceCache().get());
+		return services;
 	}
 
 	private String toJsonResponse(List<CdsCard> cards) {
@@ -353,8 +346,9 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						this.myAppProperties.getCors().getAllowed_origin().stream().findFirst().get());
 				resp.setHeader("Access-Control-Allow-Methods",
 						String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
-				resp.setHeader("Access-Control-Allow-Headers", String.join(", ", Arrays.asList("x-fhir-starter", "Origin",
-						"Accept", "X-Requested-With", "Content-Type", "Authorization", "Cache-Control")));
+				resp.setHeader("Access-Control-Allow-Headers",
+						String.join(", ", Arrays.asList("x-fhir-starter", "Origin",
+								"Accept", "X-Requested-With", "Content-Type", "Authorization", "Cache-Control")));
 				resp.setHeader("Access-Control-Expose-Headers",
 						String.join(", ", Arrays.asList("Location", "Content-Location")));
 				resp.setHeader("Access-Control-Max-Age", "86400");

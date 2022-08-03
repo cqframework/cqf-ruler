@@ -10,8 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
-import org.opencds.cqf.ruler.devtools.DevToolsConfig;
-import org.opencds.cqf.ruler.devtools.dstu3.CodeSystemUpdateProvider;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ExpressionEvaluationIT.class,
-		CrConfig.class, CqlConfig.class, DevToolsConfig.class }, properties = {
+		CrConfig.class, CqlConfig.class }, properties = {
 				"hapi.fhir.fhir_version=dstu3",
 		})
 public class ExpressionEvaluationIT extends RestIntegrationTest {
@@ -27,15 +25,11 @@ public class ExpressionEvaluationIT extends RestIntegrationTest {
 	@Autowired
 	private ExpressionEvaluation expressionEvaluation;
 
-	@Autowired
-	private CodeSystemUpdateProvider codeSystemUpdateProvider;
-
 	private Map<String, IBaseResource> planDefinitions;
 
 	@BeforeEach
 	public void setup() throws Exception {
 		uploadTests("valueset");
-		codeSystemUpdateProvider.updateCodeSystems();
 		uploadTests("library");
 		planDefinitions = uploadTests("plandefinition");
 	}

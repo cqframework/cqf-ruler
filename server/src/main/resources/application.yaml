@@ -154,9 +154,11 @@ hapi:
       ## CQL Settings
       cql:
          # enabled: true
-         # cql_logging_enabled: false
-         # use_embedded_cql_translator_content: true
-         #cqlTranslatorOptions:
+         engine:
+            # debug_logging_enabled: false
+            options: "EnableExpressionCaching"
+         # use_embedded_libraries: true
+         # translator:
          #    analyzeDataRequirements: false
          #    collapseDataRequirements: true
          # options: "EnableAnnotations,EnableLocators,DisableListDemotion,DisableListPromotion"
@@ -184,8 +186,13 @@ hapi:
 
       ## Security settings
       security:
-         enabled: false
+         # enabled: true
+         basic_auth:
+            enabled: false
+            username: someuser
+            password: thepassword
          oauth:
+            enabled: false
             securityCors: true
             securityUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
             securityExtAuthUrl: authorize

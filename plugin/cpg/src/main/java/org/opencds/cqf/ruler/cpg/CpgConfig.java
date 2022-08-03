@@ -44,6 +44,12 @@ public class CpgConfig {
 	}
 
 	@Bean
+	@Conditional(OnDSTU3Condition.class)
+	public OperationProvider dstu3LibraryEvaluationProvider() {
+		return new org.opencds.cqf.ruler.cpg.dstu3.provider.LibraryEvaluationProvider();
+	}
+
+	@Bean
 	@Conditional(OnR4Condition.class)
 	public FhirRestLibraryContentProviderFactory r4FhirRestibraryContentProviderFactory() {
 		org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory r4AdapterFactory = new org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory();

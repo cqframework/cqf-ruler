@@ -36,7 +36,6 @@ import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -181,9 +180,10 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			RequestDetails theRequestDetails) {
 		for (RelatedArtifact relatedArtifact : library.getRelatedArtifact()) {
 			if (relatedArtifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON)
-					&& relatedArtifact.hasResource()) {
-				IdType id = Ids.newId(Library.class, relatedArtifact.getResource().getReference());
-				if (id != null && StringUtils.hasText(id.getId())) {
+				&& relatedArtifact.hasResource()) {
+				String reference = relatedArtifact.getResource().getReference();
+				IdType id = Ids.newId(Library.class, reference.substring(reference.indexOf("/") + 1));
+				if (id != null) {
 					Library lib = search(Library.class, Searches.byId(id), theRequestDetails).firstOrNull();
 					if (lib != null) {
 						resources.putIfAbsent(lib.getId(), lib);

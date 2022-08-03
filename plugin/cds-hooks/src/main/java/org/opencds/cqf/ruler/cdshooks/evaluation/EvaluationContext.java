@@ -1,9 +1,16 @@
 package org.opencds.cqf.ruler.cdshooks.evaluation;
 
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
+import org.opencds.cqf.cql.engine.fhir.retrieve.Dstu3FhirQueryGenerator;
+import org.opencds.cqf.cql.engine.fhir.retrieve.R4FhirQueryGenerator;
+import org.opencds.cqf.cql.engine.retrieve.TerminologyAwareRetrieveProvider;
+import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
 import org.opencds.cqf.ruler.cdshooks.hooks.Hook;
+import org.opencds.cqf.ruler.cdshooks.providers.PrefetchDataProviderDstu2;
+import org.opencds.cqf.ruler.cdshooks.providers.PrefetchDataProviderR4;
+import org.opencds.cqf.ruler.cdshooks.providers.PrefetchDataProviderStu3;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.exceptions.NotImplementedException;
 
@@ -15,9 +22,6 @@ import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.engine.fhir.retrieve.RestFhirRetrieveProvider;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
-import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.engine.fhir.terminology.Dstu3FhirTerminologyProvider;
-import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
@@ -28,45 +32,37 @@ import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 public abstract class EvaluationContext<T extends IBaseResource> {
 
     // Provided
-    private Hook hook;
-    private FhirVersionEnum fhirVersion;
-    private FhirContext fhirContext;
+    private final Hook hook;
+    private final FhirVersionEnum fhirVersion;
+    private final FhirContext fhirContext;
     private DataProvider systemProvider;
-    private Context context;
-    private T planDefinition;
-    private Library library;
+    private final Context context;
+    private final T planDefinition;
+    private final Library library;
+    private final IGenericClient client;
+    private final ProviderConfiguration providerConfiguration;
+    private final ModelResolver modelResolver;
 
     // Requires resolution
     private DataProvider remoteProvider;
     private List<Object> contextResources;
     private List<Object> prefetchResources;
 
-    private IGenericClient client;
-
-    private ProviderConfiguration providerConfiguration;
-
-    private ModelResolver modelResolver;
-
     public EvaluationContext(Hook hook, FhirVersionEnum fhirVersion, IGenericClient fhirClient, Context context,
             Library library, T planDefinition, ProviderConfiguration providerConfiguration, ModelResolver modelResolver) {
-
         // How to determine if it's a local server?
         // Local Server url?
         // Need a DataRetriever for that.
         // Otherwise, it's a remote data retriver.
-
         this.hook = hook;
         this.fhirVersion = fhirVersion;
         this.fhirContext = FhirContext.forCached(fhirVersion);
         this.context = context;
         this.planDefinition = planDefinition;
         this.library = library;
-
         this.client = fhirClient;
-
         this.providerConfiguration = providerConfiguration;
         this.modelResolver = modelResolver;
-
         context.registerDataProvider("http://hl7.org/fhir", getDataProvider());
     }
 
@@ -102,33 +98,39 @@ public abstract class EvaluationContext<T extends IBaseResource> {
 
     private DataProvider getDataProvider() {
         if (remoteProvider == null) {
-            ModelResolver resolver = modelResolver;
-            TerminologyProvider terminologyProvider;
+            SearchParameterResolver srp = new SearchParameterResolver(fhirContext);
+            RestFhirRetrieveProvider remoteRetriever = new RestFhirRetrieveProvider(srp, modelResolver,
+                getHookFhirClient());
+            remoteRetriever.setTerminologyProvider(context.resolveTerminologyProvider());
+            remoteRetriever.setExpandValueSets(providerConfiguration.getExpandValueSets());
+            remoteRetriever.setMaxCodesPerQuery(providerConfiguration.getMaxCodesPerQuery());
+            remoteRetriever.setSearchStyle(providerConfiguration.getSearchStyle());
+            remoteRetriever.setModelResolver(modelResolver);
+            TerminologyAwareRetrieveProvider prefetchRetriever;
             switch (fhirVersion) {
                 case DSTU2:
-                    terminologyProvider = new Dstu3FhirTerminologyProvider(this.getSystemFhirClient());
+                    // TODO: We need a dstu2 version remote data and terminology providers
+                    prefetchRetriever = new PrefetchDataProviderDstu2(getPrefetchResources(), modelResolver);
                     break;
                 case DSTU3:
-                    terminologyProvider = new Dstu3FhirTerminologyProvider(this.getSystemFhirClient());
+                    prefetchRetriever = new PrefetchDataProviderStu3(getPrefetchResources(), modelResolver);
+                    remoteRetriever.setFhirQueryGenerator(
+                        new Dstu3FhirQueryGenerator(srp, context.resolveTerminologyProvider(), modelResolver));
                     break;
                 case R4:
-                    terminologyProvider = new R4FhirTerminologyProvider(this.getSystemFhirClient());
+                    prefetchRetriever = new PrefetchDataProviderR4(getPrefetchResources(), modelResolver);
+                    remoteRetriever.setFhirQueryGenerator(
+                        new R4FhirQueryGenerator(srp, context.resolveTerminologyProvider(), modelResolver));
                     break;
                 default:
                     throw new NotImplementedException(
                             "This CDS Hooks implementation is not configured for FHIR version: "
                                     + fhirVersion.getFhirVersionString());
             }
-
-            RestFhirRetrieveProvider provider = new RestFhirRetrieveProvider(
-                    new SearchParameterResolver(this.fhirContext), this.getHookFhirClient());
-            provider.setTerminologyProvider(terminologyProvider);
-
-            provider.setExpandValueSets(this.providerConfiguration.getExpandValueSets());
-            provider.setMaxCodesPerQuery(this.providerConfiguration.getMaxCodesPerQuery());
-            provider.setSearchStyle(this.providerConfiguration.getSearchStyle());
-
-            this.remoteProvider = new CompositeDataProvider(resolver, provider);
+            // TODO: Get the "system" terminology provider.
+            prefetchRetriever.setTerminologyProvider(context.resolveTerminologyProvider());
+            PriorityRetrieveProvider priorityRetrieveProvider = new PriorityRetrieveProvider(Arrays.asList(prefetchRetriever, remoteRetriever));
+            remoteProvider = new CompositeDataProvider(modelResolver, priorityRetrieveProvider);
         }
         return remoteProvider;
     }
@@ -150,7 +152,7 @@ public abstract class EvaluationContext<T extends IBaseResource> {
         return contextResources;
     }
 
-    public List<Object> getPrefetchResources() throws IOException {
+    public List<Object> getPrefetchResources() {
         if (prefetchResources == null) {
             prefetchResources = EvaluationHelper.resolvePrefetchResources(hook, fhirContext, this.getHookFhirClient(), this.providerConfiguration.getSearchStyle());
             if (hook.getRequest().isApplyCql()) {
@@ -180,11 +182,9 @@ public abstract class EvaluationContext<T extends IBaseResource> {
         loggingInterceptor.setLogRequestSummary(true);
         loggingInterceptor.setLogRequestHeaders(true);
         loggingInterceptor.setLogRequestBody(true);
-
         loggingInterceptor.setLogResponseSummary(true);
         loggingInterceptor.setLogResponseHeaders(true);
         loggingInterceptor.setLogResponseBody(true);
-
         client.registerInterceptor(loggingInterceptor);
 
         return client;

@@ -9,9 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.regex.Pattern;
-
-import com.google.common.base.Strings;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -52,6 +51,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Strings;
+
 import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
@@ -59,18 +60,23 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class CareGapsProvider extends DaoRegistryOperationProvider
 		implements ParameterUser, ConfigurationUser, ResourceCreator, MeasureReportUser {
-
-	public static final Pattern CARE_GAPS_STATUS = Pattern
-			.compile("(open-gap|closed-gap|not-applicable)");
-	public static final String CARE_GAPS_REPORT_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/indv-measurereport-deqm";
-	public static final String CARE_GAPS_BUNDLE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-bundle-deqm";
-	public static final String CARE_GAPS_COMPOSITION_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-composition-deqm";
-	public static final String CARE_GAPS_DETECTEDISSUE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-detectedissue-deqm";
-	public static final String CARE_GAPS_GAP_STATUS_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-gapStatus";
-	public static final String CARE_GAPS_GAP_STATUS_SYSTEM = "http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-status";
+	private static final Logger ourLog = LoggerFactory.getLogger(CareGapsProvider.class);
+	@Autowired
+	private MeasureEvaluateProvider measureEvaluateProvider;
+	@Autowired
+	private CrProperties crProperties;
+	@Autowired
+	private Executor cqlExecutor;
+	private Map<String, Resource> configuredResources = new HashMap<>();
+	private static final Pattern CARE_GAPS_STATUS = Pattern.compile("(open-gap|closed-gap|not-applicable)");
+	private static final String CARE_GAPS_REPORT_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/indv-measurereport-deqm";
+	private static final String CARE_GAPS_BUNDLE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-bundle-deqm";
+	private static final String CARE_GAPS_COMPOSITION_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-composition-deqm";
+	private static final String CARE_GAPS_DETECTEDISSUE_PROFILE = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/gaps-detectedissue-deqm";
+	private static final String CARE_GAPS_GAP_STATUS_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-gapStatus";
+	private static final String CARE_GAPS_GAP_STATUS_SYSTEM = "http://hl7.org/fhir/us/davinci-deqm/CodeSystem/gaps-status";
 	public static final String CARE_GAPS_MEASUREREPORT_REPORTER_EXTENSION = "http://hl7.org/fhir/us/davinci-deqm/StructureDefinition/extension-reporterGroup";
-
-	protected static final Map<String, CodeableConceptSettings> CARE_GAPS_CODES;
+	private static final Map<String, CodeableConceptSettings> CARE_GAPS_CODES;
 	static {
 		CARE_GAPS_CODES = new HashMap<>();
 		CARE_GAPS_CODES.put("http://loinc.org/96315-7",
@@ -78,6 +84,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		CARE_GAPS_CODES.put("http://terminology.hl7.org/CodeSystem/v3-ActCode/CAREGAP", new CodeableConceptSettings()
 				.add("http://terminology.hl7.org/CodeSystem/v3-ActCode", "CAREGAP", "Care Gaps"));
 	}
+
 	// TODO: I guess this isn't available yet? Replace when we update to newer
 	// version of Java.
 	// = ofEntries(
@@ -96,7 +103,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 
 		private final String myValue;
 
-		private CareGapsStatusCode(final String theValue) {
+		CareGapsStatusCode(final String theValue) {
 			myValue = theValue;
 		}
 
@@ -121,14 +128,6 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			throw new IllegalArgumentException();
 		}
 	}
-
-	static final Logger ourLog = LoggerFactory.getLogger(CareGapsProvider.class);
-
-	@Autowired
-	private MeasureEvaluateProvider measureEvaluateProvider;
-
-	@Autowired
-	private CrProperties crProperties;
 
 	/**
 	 * Implements the <a href=
@@ -209,38 +208,33 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 			throw new NotImplementedException("Non subject parameters have not been implemented.");
 		}
 
-      List<CompletableFuture<Parameters.ParametersParameterComponent>> futures = new ArrayList<>();
-
+		ensureSupplementalDataElementSearchParameter(theRequestDetails);
+		List<CompletableFuture<Parameters.ParametersParameterComponent>> futures = new ArrayList<>();
 		Parameters result = initializeResult();
-
 		if (crProperties.getThreadedCareGapsEnabled()) {
 			(patients)
-				.forEach(
-					patient -> {
-						futures.add(CompletableFuture.supplyAsync(() -> patientReports(theRequestDetails,
-							periodStart, periodEnd, patient, status, measures, organization)));
-					});
+					.forEach(
+							patient -> {
+								futures.add(CompletableFuture.supplyAsync(() -> patientReports(theRequestDetails,
+										periodStart, periodEnd, patient, status, measures, organization), cqlExecutor));
+							});
 
 			futures.forEach(x -> result.addParameter(x.join()));
 		} else {
-			(patients)
-				.forEach(
+			(patients).forEach(
 					patient -> {
 						Parameters.ParametersParameterComponent patientParameter = patientReports(theRequestDetails,
-							periodStart, periodEnd, patient, status, measures, organization);
+								periodStart, periodEnd, patient, status, measures, organization);
 						if (patientParameter != null) {
 							result.addParameter(patientParameter);
 						}
 					});
 		}
-
 		return result;
 	}
 
-	private Map<String, Resource> configuredResources = new HashMap<>();
-
-	private <T extends Resource> T putConfiguredResource(Class<T> theResourceClass, String theId,
-			String theKey, RequestDetails theRequestDetails) {
+	private <T extends Resource> T putConfiguredResource(Class<T> theResourceClass, String theId, String theKey,
+			RequestDetails theRequestDetails) {
 		T resource = search(theResourceClass, Searches.byId(theId), theRequestDetails).firstOrNull();
 		if (resource != null) {
 			configuredResources.put(theKey, resource);
@@ -307,34 +301,29 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	private Parameters.ParametersParameterComponent patientReports(RequestDetails requestDetails, String periodStart,
 			String periodEnd, Patient patient, List<String> status, List<Measure> measures, String organization) {
 		// TODO: add organization to report, if it exists.
-
 		Composition composition = getComposition(patient);
 		List<DetectedIssue> detectedIssues = new ArrayList<>();
-		Map<String, Resource> evaluatedResources = new HashMap<>();
-
+		Map<String, Resource> evalPlusSDE = new HashMap<>();
 		List<MeasureReport> reports = getReports(requestDetails, periodStart, periodEnd, patient, status, measures,
-				composition, detectedIssues, evaluatedResources);
+				composition, detectedIssues, evalPlusSDE);
 
 		if (reports.isEmpty()) {
 			return null;
 		}
 
-		return initializePatientParameter(patient)
-				.setResource(addBundleEntries(requestDetails.getFhirServerBase(), composition,
-						detectedIssues, reports, evaluatedResources));
+		return initializePatientParameter(patient).setResource(
+				addBundleEntries(requestDetails.getFhirServerBase(), composition, detectedIssues, reports, evalPlusSDE));
 	}
 
 	@SuppressWarnings("squid:S00107") // warning for greater than 7 parameters
-	private List<MeasureReport> getReports(RequestDetails requestDetails, String periodStart,
-			String periodEnd, Patient patient, List<String> status, List<Measure> measures, Composition composition,
-			List<DetectedIssue> detectedIssues, Map<String, Resource> evaluatedResources) {
+	private List<MeasureReport> getReports(RequestDetails requestDetails, String periodStart, String periodEnd,
+			Patient patient, List<String> status, List<Measure> measures, Composition composition,
+			List<DetectedIssue> detectedIssues, Map<String, Resource> evalPlusSDE) {
 		List<MeasureReport> reports = new ArrayList<>();
-
-		MeasureReport report = null;
+		MeasureReport report;
 		for (Measure measure : measures) {
 			report = measureEvaluateProvider.evaluateMeasure(requestDetails, measure.getIdElement(), periodStart,
 					periodEnd, "patient", Ids.simple(patient), null, null, null, null, null);
-
 			if (!report.hasGroup()) {
 				ourLog.info("Report does not include a group so skipping.\nSubject: {}\nMeasure: {}",
 						Ids.simple(patient),
@@ -351,11 +340,8 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 
 			DetectedIssue detectedIssue = getDetectedIssue(patient, report, gapStatus);
 			detectedIssues.add(detectedIssue);
-
 			composition.addSection(getSection(measure, report, detectedIssue, gapStatus));
-
-			getEvaluatedResources(report, evaluatedResources);
-
+			getEvaluatedResources(report, evalPlusSDE).getSDE(report, evalPlusSDE);
 			reports.add(report);
 		}
 
@@ -383,26 +369,18 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		Parameters.ParametersParameterComponent patientParameter = Resources
 				.newBackboneElement(Parameters.ParametersParameterComponent.class)
 				.setName("return");
-
 		patientParameter.setId("subject-" + Ids.simplePart(patient));
-
 		return patientParameter;
 	}
 
 	private Bundle addBundleEntries(String serverBase, Composition composition, List<DetectedIssue> detectedIssues,
-			List<MeasureReport> reports, Map<String, Resource> evaluatedResources) {
+			List<MeasureReport> reports, Map<String, Resource> evalPlusSDE) {
 		Bundle reportBundle = getBundle();
 		reportBundle.addEntry(getBundleEntry(serverBase, composition));
-
 		reports.forEach(report -> reportBundle.addEntry(getBundleEntry(serverBase, report)));
-
-		detectedIssues.forEach(
-				detectedIssue -> reportBundle.addEntry(getBundleEntry(serverBase, detectedIssue)));
-
+		detectedIssues.forEach(detectedIssue -> reportBundle.addEntry(getBundleEntry(serverBase, detectedIssue)));
 		configuredResources.values().forEach(resource -> reportBundle.addEntry(getBundleEntry(serverBase, resource)));
-
-		evaluatedResources.values().forEach(resource -> reportBundle.addEntry(getBundleEntry(serverBase, resource)));
-
+		evalPlusSDE.values().forEach(resource -> reportBundle.addEntry(getBundleEntry(serverBase, resource)));
 		return reportBundle;
 	}
 
@@ -436,7 +414,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 		String narrative = String.format(HTML_DIV_PARAGRAPH_CONTENT,
 				gapStatus == CareGapsStatusCode.CLOSED_GAP ? "No detected issues."
 						: String.format("Issues detected.  See %s for details.", Ids.simple(detectedIssue)));
-		return new CompositionSectionComponentBuilder<Composition.SectionComponent>(Composition.SectionComponent.class)
+		return new CompositionSectionComponentBuilder<>(Composition.SectionComponent.class)
 				.withTitle(measure.hasTitle() ? measure.getTitle() : measure.getUrl())
 				.withFocus(Ids.simple(report))
 				.withText(new NarrativeSettings(narrative))
@@ -445,14 +423,14 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	private Bundle getBundle() {
-		return new BundleBuilder<Bundle>(Bundle.class)
+		return new BundleBuilder<>(Bundle.class)
 				.withProfile(CARE_GAPS_BUNDLE_PROFILE)
 				.withType(BundleType.DOCUMENT.toString())
 				.build();
 	}
 
 	private Composition getComposition(Patient patient) {
-		return new CompositionBuilder<Composition>(Composition.class)
+		return new CompositionBuilder<>(Composition.class)
 				.withProfile(CARE_GAPS_COMPOSITION_PROFILE)
 				.withType(CARE_GAPS_CODES.get("http://loinc.org/96315-7"))
 				.withStatus(Composition.CompositionStatus.FINAL.toString())
@@ -466,7 +444,7 @@ public class CareGapsProvider extends DaoRegistryOperationProvider
 	}
 
 	private DetectedIssue getDetectedIssue(Patient patient, MeasureReport report, CareGapsStatusCode gapStatus) {
-		return new DetectedIssueBuilder<DetectedIssue>(DetectedIssue.class)
+		return new DetectedIssueBuilder<>(DetectedIssue.class)
 				.withProfile(CARE_GAPS_DETECTEDISSUE_PROFILE)
 				.withStatus(DetectedIssue.DetectedIssueStatus.FINAL.toString())
 				.withCode(CARE_GAPS_CODES.get("http://terminology.hl7.org/CodeSystem/v3-ActCode/CAREGAP"))

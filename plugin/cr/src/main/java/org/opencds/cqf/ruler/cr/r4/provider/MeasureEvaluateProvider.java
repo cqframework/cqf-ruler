@@ -17,6 +17,7 @@ import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
+import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
@@ -32,7 +33,8 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
 
-public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
+public class MeasureEvaluateProvider extends DaoRegistryOperationProvider
+		implements MeasureReportUser {
 	@Autowired
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 
@@ -93,6 +95,8 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider {
 			@OperationParam(name = "productLine") String productLine,
 			@OperationParam(name = "additionalData") Bundle additionalData,
 			@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
+
+		ensureSupplementalDataElementSearchParameter(requestDetails);
 
 		Measure measure = read(theId);
 
