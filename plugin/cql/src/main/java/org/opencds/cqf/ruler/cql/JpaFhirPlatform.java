@@ -2,7 +2,7 @@ package org.opencds.cqf.ruler.cql;
 
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.cqframework.fhir.api.FhirService;
-import org.cqframework.fhir.api.JpaFhirCapabilities;
+//import org.cqframework.fhir.api.JpaFhirCapabilities;
 
 @SuppressWarnings("unchecked")
 public class JpaFhirPlatform implements org.cqframework.fhir.api.FhirPlatform {

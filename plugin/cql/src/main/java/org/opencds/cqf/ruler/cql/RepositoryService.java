@@ -1,17 +1,21 @@
 package org.opencds.cqf.ruler.cql;
 
+import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r5.model.Enumerations;
 import org.hl7.fhir.r5.model.Library;
 import org.hl7.fhir.r5.model.RelatedArtifact;
-import org.springframework.stereotype.Repository;
+//import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+//import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
-@Repository
-public class RepositoryService {
+public class RepositoryService {  //extends DaoRegistryOperationProvider {
 
     private String majorVersion = "0";
     private String minorVersion = "0";
@@ -20,27 +24,29 @@ public class RepositoryService {
     public RepositoryService() {
     }
 
-	@Operation(name = "$createNewVersion", idempotent = true, type = Library.class)
-	 public Library createNewVersion(Library currentLibrary) {
+	 @SuppressFBWarnings(value = "DLS_DEAD_LOCAL_STORE")
+	 @Operation(name = "$createNewVersion", idempotent = true, type = Library.class)
+	 @Description(shortDefinition = "$createNewVersion", value = "Create a new library version")
+		 public Library createNewVersion(@OperationParam(name = "currentLibrary") Library currentLibrary) throws FHIRException {
 		 List<RelatedArtifact> relatedArtifactList = currentLibrary.getRelatedArtifact();
 		 List<RelatedArtifact> updatedRelatedArtifactsList = new ArrayList<RelatedArtifact>();
 		 Library newLibrary = new Library();
 
 		 for (RelatedArtifact ra : relatedArtifactList) {
-			 if (ra.equals(RelatedArtifact.RelatedArtifactType.COMPOSEDOF)) {
+			 if (ra.getType().ordinal() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF.ordinal()) {
 				 RelatedArtifact newRA = new RelatedArtifact();
-				 if (ra.getType().equals("PlanDefinition")) {
+				 if (ra.getType().toString().equals("PlanDefinition")) {
 					 ra.setResource("http://ersd.aimsplatform.org/fhir/PlanDefinition/us-ecr-");
 					 currentLibrary.addRelatedArtifact(ra);
 					 newLibrary = createNewVersionData(currentLibrary);
 					 newLibrary.setVersion("1.0.0");
-				 } else if (ra.getType().equals("Library")) {
+				 } else if (ra.getType().toString().equals("Library")) {
 					 ra.setResource("http://ersd.aimsplatform.org/fhir/Library/us-ecr-rctc");
 					 currentLibrary.addRelatedArtifact(ra);
 					 newLibrary = createNewVersionData(currentLibrary);
 					 newLibrary.setVersion("1.0.0");
-				 } else if (ra.getType().equals("ValueSet")) {
-					 ra.setResource("hhttp://hl7.org/fhir/us/ecr/ValueSet/lotc");
+				 } else if (ra.getType().toString().equals("ValueSet")) {
+					 ra.setResource("http://hl7.org/fhir/us/ecr/ValueSet/lotc");
 					 currentLibrary.addRelatedArtifact(ra);
 					 newLibrary = createNewVersionDataVS(currentLibrary);
 					 newLibrary.setVersion("1.0.0");
@@ -48,19 +54,19 @@ public class RepositoryService {
 				 if (newRA == null) {
 					 relatedArtifactList.add(newRA);
 				 }
-			 } else if (ra.equals(RelatedArtifact.RelatedArtifactType.DEPENDSON)) {
+			 } else if (ra.getType().ordinal() == RelatedArtifact.RelatedArtifactType.DEPENDSON.ordinal()) {
 				 RelatedArtifact newRA = new RelatedArtifact();
-				 if (ra.getType().equals("PlanDefinition")) {
+				 if (ra.getType().toString().equals("PlanDefinition")) {
 					 ra.setResource("http://cts.nlm.nih.gov/fhir/PlanDefinition/2.16");
 					 currentLibrary.addRelatedArtifact(ra);
 					 newLibrary = createNewVersionData(currentLibrary);
 					 newLibrary.setVersion(null);
-				 } else if (ra.getType().equals("Library")) {
+				 } else if (ra.getType().toString().equals("Library")) {
 					 ra.setResource("http://cts.nlm.nih.gov/fhir/Library");
 					 currentLibrary.addRelatedArtifact(ra);
 					 newLibrary = createNewVersionData(currentLibrary);
 					 newLibrary.setVersion(null);
-				 } else if (ra.getType().equals("ValueSet")) {
+				 } else if (ra.getType().toString().equals("ValueSet")) {
 					 ra.setResource("http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.4");
 					 currentLibrary.addRelatedArtifact(ra);
 					 newLibrary = createNewVersionDataVS(currentLibrary);
