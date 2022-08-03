@@ -8,14 +8,18 @@ import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r5.model.Enumerations;
 import org.hl7.fhir.r5.model.Library;
 import org.hl7.fhir.r5.model.RelatedArtifact;
-//import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
-public class RepositoryService {  //extends DaoRegistryOperationProvider {
+public class RepositoryService extends DaoRegistryOperationProvider {
+
+	@Autowired
+	private CqlConfig cqlConfig;
 
     private String majorVersion = "0";
     private String minorVersion = "0";
