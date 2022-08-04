@@ -13,7 +13,7 @@ import org.cqframework.cql.cql2elm.ModelManager;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.ICompositeType;
-import org.hl7.fhir.r5.model.Library;
+//import org.hl7.fhir.r5.model.Library;
 import org.opencds.cqf.cql.engine.data.CompositeDataProvider;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu2FhirModelResolver;
 import org.opencds.cqf.cql.engine.fhir.model.Dstu3FhirModelResolver;
@@ -297,11 +297,6 @@ public class CqlConfig {
 		return new LibraryVersionSelector(adapterFactory);
 	}
 
-	@Bean
-	public Library createNewVersion(Library newLibrary) {
-		return new Library();
-	}
-
 	// This overrides the base HAPI cql provider.
 	@Bean
 	@Primary
@@ -353,4 +348,9 @@ public class CqlConfig {
 	public RepositoryService r4RepositoryServiceProvider() {
 		return new RepositoryService();
 	}
+
+	//@Bean
+	//public Library createNewVersion(Library newLibrary) {
+	//return new Library();
+	//}
 }
