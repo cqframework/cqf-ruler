@@ -37,6 +37,16 @@ public class DataOperationProviderIT extends RestIntegrationTest {
 			.execute();
 
 		assertNotNull(returnLibrary);
+
+		Library returnLibrary2 = getClient().operation()
+			.onInstance(new IdType("Library", "pertinencetag"))
+			.named("$data-requirements")
+			.withParameters(params)
+			.returnResourceType(Library.class)
+			.execute();
+
+		assertNotNull(returnLibrary2);
+		assertNotNull(returnLibrary2.getDataRequirement().get(1).getExtensionByUrl("http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-pertinence"));
 	}
 
 	@Test
