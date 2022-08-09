@@ -6,6 +6,8 @@ import org.opencds.cqf.ruler.cpg.CpgConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = { LibraryEvaluationProviderIT.class, CpgConfig.class },
@@ -19,10 +21,9 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		loadResource(packagePrefix + "SimplePatient.json");
 		loadResource(packagePrefix + "SimpleCondition.json");
 		loadResource(packagePrefix + "AsthmaTest.json");
-		Parameters params = org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-			org.opencds.cqf.ruler.utility.r4.Parameters.newPart(
-					"subject", new StringType("Patient/SimplePatient"))
-		);
+		Parameters params = newParameters(
+			newPart("subject", new StringType("Patient/SimplePatient")));
+
 		Parameters result = getClient().operation()
 			.onInstance(new IdType("Library", "AsthmaTest"))
 			.named("$evaluate")
@@ -40,10 +41,9 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		loadResource(packagePrefix + "SimplePatient.json");
 		loadResource(packagePrefix + "SimpleObservation.json");
 		loadResource(packagePrefix + "SimpleR4Library.json");
-		Parameters params = org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-			org.opencds.cqf.ruler.utility.r4.Parameters.newPart(
-					"subject", new StringType("Patient/SimplePatient"))
-		);
+		Parameters params = newParameters(
+				newPart("subject", new StringType("Patient/SimplePatient")));
+
 		Parameters result = getClient().operation()
 			.onInstance(new IdType("Library", "SimpleR4Library"))
 			.named("$evaluate")
@@ -64,12 +64,11 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 	void testSimpleLibraryWithBundle() {
 		loadResource(packagePrefix + "SimpleR4Library.json");
 		Bundle data = (Bundle) loadResource(packagePrefix + "SimpleDataBundle.json");
-		Parameters params = org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-			org.opencds.cqf.ruler.utility.r4.Parameters.newPart("subject", "SimplePatient"),
-			org.opencds.cqf.ruler.utility.r4.Parameters.newPart("data", data),
-			org.opencds.cqf.ruler.utility.r4.Parameters.newPart(
-					"useServerData", new BooleanType(false))
-		);
+		Parameters params = newParameters(
+				newPart("subject", "SimplePatient"),
+				newPart("data", data),
+				newPart("useServerData", new BooleanType(false)));
+
 		Parameters result = getClient().operation()
 			.onInstance(new IdType("Library", "SimpleR4Library"))
 			.named("$evaluate")
@@ -91,10 +90,10 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		loadTransaction(packagePrefix + "OpioidCDSREC10-artifact-bundle.json");
 		loadTransaction(packagePrefix + "OpioidCDSREC10-patient-data-bundle.json");
 
-		Parameters params = org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-			org.opencds.cqf.ruler.utility.r4.Parameters.newPart(
-					"subject", new StringType("Patient/example-rec-10-no-screenings"))
+		Parameters params = newParameters(
+				newPart("subject", new StringType("Patient/example-rec-10-no-screenings"))
 		);
+
 		Parameters result = getClient().operation()
 			.onInstance(new IdType("Library", "OpioidCDSREC10PatientView"))
 			.named("$evaluate")
@@ -135,5 +134,24 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		assertTrue(result.hasParameter("Urine Drug Screening Request"));
 		assertTrue(result.getParameter().get(9).hasResource());
 		assertTrue(result.getParameter().get(9).getResource() instanceof ServiceRequest);
+	}
+
+	@Test
+	void testErrorLibrary() {
+		loadResource(packagePrefix + "ErrorLibrary.json");
+		Parameters results = getClient().operation()
+				.onInstance(new IdType("Library", "ErrorLibrary"))
+				.named("$evaluate")
+				.withParameters(newParameters())
+				.returnResourceType(Parameters.class)
+				.execute();
+
+		assertTrue(results.hasParameter());
+		assertTrue(results.getParameterFirstRep().hasName());
+		assertEquals("evaluation error", results.getParameterFirstRep().getName());
+		assertTrue(results.getParameterFirstRep().hasResource());
+		assertTrue(results.getParameterFirstRep().getResource() instanceof OperationOutcome);
+		assertEquals("Unsupported interval point type for FHIR conversion java.lang.Integer",
+				((OperationOutcome) results.getParameterFirstRep().getResource()).getIssueFirstRep().getDetails().getText());
 	}
 }

@@ -32,6 +32,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart;
+
 public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
@@ -149,15 +152,12 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 					"subject", "expression", "parameters", "useServerData", "data",
 					"prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint");
 
-			if (outcome != null) return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
-					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart(
-							"error", (OperationOutcome) outcome));
+			if (outcome != null) return newParameters(newPart("error", (OperationOutcome) outcome));
 		}
 
-		if (prefetchData != null) return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
-				org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("invalid parameters",
-						(OperationOutcome) evaluationHelper.createIssue("error",
-								"prefetchData is not yet supported")));
+		if (prefetchData != null) return newParameters(newPart("invalid parameters",
+				(OperationOutcome) evaluationHelper.createIssue("error",
+						"prefetchData is not yet supported")));
 
 		VersionedIdentifier libraryIdentifier = evaluationHelper.resolveLibraryIdentifier(null, read(theId));
 		globalLibraryCache.remove(libraryIdentifier);
@@ -168,10 +168,8 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 					expression == null ? null : new HashSet<>(expression));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
-					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("evaluation error",
-							(OperationOutcome) evaluationHelper.createIssue("error",
-									e.getMessage())));
+			return newParameters(newPart("evaluation error",
+					(OperationOutcome) evaluationHelper.createIssue("error", e.getMessage())));
 		}
 	}
 }
