@@ -150,17 +150,28 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 					"prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint");
 
 			if (outcome != null) return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
-					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("error", (OperationOutcome) outcome));
+					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart(
+							"error", (OperationOutcome) outcome));
 		}
 
 		if (prefetchData != null) return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
-				org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("error",
-						(OperationOutcome) evaluationHelper.createIssue("invalid parameters",
+				org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("invalid parameters",
+						(OperationOutcome) evaluationHelper.createIssue("error",
 								"prefetchData is not yet supported")));
 
-		return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(
-				evaluationHelper.resolveLibraryIdentifier(null, read(theId)),
-				evaluationHelper.resolveContextParameter(subject), parameters,
-				expression == null ? null : new HashSet<>(expression));
+		VersionedIdentifier libraryIdentifier = evaluationHelper.resolveLibraryIdentifier(null, read(theId));
+		globalLibraryCache.remove(libraryIdentifier);
+
+		try {
+			return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(libraryIdentifier,
+					evaluationHelper.resolveContextParameter(subject), parameters,
+					expression == null ? null : new HashSet<>(expression));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
+					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("evaluation error",
+							(OperationOutcome) evaluationHelper.createIssue("error",
+									e.getMessage())));
+		}
 	}
 }

@@ -41,6 +41,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
  * Created by Bryn on 1/16/2017.
  */
 public class CqlExecutionProvider extends DaoRegistryOperationProvider {
+
 	@Autowired
 	private LibraryLoaderFactory libraryLoaderFactory;
 	@Autowired
@@ -212,22 +213,22 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 
 			if (outcome != null) {
 				return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-						org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error", (OperationOutcome) outcome));
+						org.opencds.cqf.ruler.utility.r4.Parameters.newPart("invalid parameters", (OperationOutcome) outcome));
 			}
 		}
 
 		if (prefetchData != null) {
 			return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-					org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error",
+					org.opencds.cqf.ruler.utility.r4.Parameters.newPart("invalid parameters",
 							(OperationOutcome) evaluationHelper.createIssue(
-									"invalid parameters", "prefetchData is not yet supported")));
+									"warning", "prefetchData is not yet supported")));
 		}
 
 		if (expression == null && content == null) {
 			return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-					org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error",
+					org.opencds.cqf.ruler.utility.r4.Parameters.newPart("invalid parameters",
 							(OperationOutcome) evaluationHelper.createIssue(
-									"invalid parameters",
+									"error",
 									"The $cql operation requires the expression parameter and/or content parameter to exist")));
 		}
 
@@ -243,9 +244,19 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 					terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint);
 		}
 
-		return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(
-				evaluationHelper.resolveLibraryIdentifier(content, null),
-				evaluationHelper.resolveContextParameter(subject), parameters,
-				expression == null ? null : Collections.singleton(expression));
+		VersionedIdentifier libraryIdentifier = evaluationHelper.resolveLibraryIdentifier(content, null);
+		globalLibraryCache.remove(libraryIdentifier);
+
+		try {
+			return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(libraryIdentifier,
+					evaluationHelper.resolveContextParameter(subject), parameters,
+					expression == null ? null : Collections.singleton(expression));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
+					org.opencds.cqf.ruler.utility.r4.Parameters.newPart("evaluation error",
+							(OperationOutcome) evaluationHelper.createIssue("error",
+									e.getMessage())));
+		}
 	}
 }

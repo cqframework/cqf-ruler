@@ -213,15 +213,15 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 
 		if (prefetchData != null) {
 			return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
-					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart(
-							"error", (OperationOutcome) evaluationHelper.createIssue(
-									"invalid parameters", "prefetchData is not yet supported")));
+					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("invalid parameters",
+							(OperationOutcome) evaluationHelper.createIssue(
+									"error", "prefetchData is not yet supported")));
 		}
 
 		if (expression == null && content == null) {
 			return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
-					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("error",
-							(OperationOutcome) evaluationHelper.createIssue("invalid parameters",
+					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("invalid parameters",
+							(OperationOutcome) evaluationHelper.createIssue("error",
 									"The $cql operation requires the expression parameter and/or content parameter to exist")));
 		}
 
@@ -237,9 +237,19 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 					terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint);
 		}
 
-		return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(
-				evaluationHelper.resolveLibraryIdentifier(content, null),
-				evaluationHelper.resolveContextParameter(subject), parameters,
-				expression == null ? null : Collections.singleton(expression));
+		VersionedIdentifier libraryIdentifier = evaluationHelper.resolveLibraryIdentifier(content, null);
+		globalLibraryCache.remove(libraryIdentifier);
+
+		try {
+			return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(libraryIdentifier,
+					evaluationHelper.resolveContextParameter(subject), parameters,
+					expression == null ? null : Collections.singleton(expression));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters(
+					org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart("evaluation error",
+							(OperationOutcome) evaluationHelper.createIssue("error",
+									e.getMessage())));
+		}
 	}
 }
