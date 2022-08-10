@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.cpg;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
@@ -238,6 +239,9 @@ public class CqlEvaluationHelper {
 					.withId(translatedLibrary.getIdentifier().getId())
 					.withVersion(translatedLibrary.getIdentifier().getVersion());
 		}
+		else if (library == null) {
+			return null;
+		}
 		else if (library instanceof org.hl7.fhir.dstu3.model.Library) {
 			org.hl7.fhir.dstu3.model.Library dstu3Library = (org.hl7.fhir.dstu3.model.Library) library;
 			return new VersionedIdentifier()
@@ -296,7 +300,7 @@ public class CqlEvaluationHelper {
 	}
 
 	public IBaseOperationOutcome createIssue(String severity, String details) {
-		if (fhirContext.equals(FhirContext.forDstu3())) {
+		if (fhirContext.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
 			return new org.hl7.fhir.dstu3.model.OperationOutcome()
 				.addIssue(
 					new org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent()

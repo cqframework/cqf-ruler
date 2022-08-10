@@ -32,6 +32,9 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+
 public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
@@ -150,21 +153,27 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 					"prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint");
 
 			if (outcome != null) {
-				return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-						org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error", (OperationOutcome) outcome));
+				return newParameters(newPart("error", (OperationOutcome) outcome));
 			}
 		}
 
 		if (prefetchData != null) {
-			return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-					org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error",
-							(OperationOutcome) evaluationHelper.createIssue("invalid parameters",
-									"prefetchData is not yet supported")));
+			return newParameters(newPart("invalid parameters",
+					(OperationOutcome) evaluationHelper.createIssue("error",
+							"prefetchData is not yet supported")));
 		}
 
-		return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(
-				evaluationHelper.resolveLibraryIdentifier(null, read(theId)),
-				evaluationHelper.resolveContextParameter(subject), parameters,
-				expression == null ? null : new HashSet<>(expression));
+		VersionedIdentifier libraryIdentifier = evaluationHelper.resolveLibraryIdentifier(null, read(theId));
+		globalLibraryCache.remove(libraryIdentifier);
+
+		try {
+			return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(libraryIdentifier,
+					evaluationHelper.resolveContextParameter(subject), parameters,
+					expression == null ? null : new HashSet<>(expression));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return newParameters(newPart("evaluation error",
+					(OperationOutcome) evaluationHelper.createIssue("error", e.getMessage())));
+		}
 	}
 }
