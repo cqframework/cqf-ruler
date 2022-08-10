@@ -4,7 +4,10 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
+import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
+import org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider;
 import org.opencds.cqf.ruler.cql.CqlProperties;
+import org.opencds.cqf.ruler.cr.r4.provider.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,21 @@ public class CdsHooksConfig {
 		resourceChangeListenerRegistry.registerResourceResourceChangeListener("PlanDefinition", SearchParameterMap.newSynchronous(), listener, 1000);
 		return listener;
 	}
+
+	@Bean
+	public LibraryEvaluationProvider libraryEvaluationProvider() {
+		return new LibraryEvaluationProvider();
+	}
+
+	@Bean
+	public CqlExecutionProvider cqlExecutionProvider() {
+		return new CqlExecutionProvider();
+	}
+
+//	@Bean
+//	public ActivityDefinitionApplyProvider activityDefinitionApplyProvider() {
+//		return new ActivityDefinitionApplyProvider();
+//	}
 
 	@Bean
 	@Conditional(OnDSTU3Condition.class)

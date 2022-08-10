@@ -213,21 +213,21 @@ class CdsHooksServletIT extends RestIntegrationTest {
 			JsonArray cards = jsonResponseObject.get("cards").getAsJsonArray();
 
 			// Ensure Patient Detail
-			assertNotNull(cards.get(0).getAsJsonObject().get("detail"));
-			String patientName = cards.get(0).getAsJsonObject().get("detail").getAsString();
+			assertNotNull(cards.get(1).getAsJsonObject().get("detail"));
+			String patientName = cards.get(1).getAsJsonObject().get("detail").getAsString();
 			assertEquals("Ashley Madelyn", patientName);
 
 			// Ensure Summary
-			assertNotNull(cards.get(1));
-			assertNotNull(cards.get(1).getAsJsonObject().get("summary"));
-			String recommendation = cards.get(1).getAsJsonObject().get("summary").getAsString();
+			assertNotNull(cards.get(0));
+			assertNotNull(cards.get(0).getAsJsonObject().get("summary"));
+			String recommendation = cards.get(0).getAsJsonObject().get("summary").getAsString();
 			assertEquals(
 				"HIV Screening Recommended due to patient being at High Risk for HIV and over three months have passed since previous screening.",
 				recommendation);
 
 			// Ensure Activity Definition / Suggestions
-			assertNotNull(cards.get(1).getAsJsonObject().get("suggestions"));
-			JsonArray suggestions = cards.get(1).getAsJsonObject().get("suggestions").getAsJsonArray();
+			assertNotNull(cards.get(0).getAsJsonObject().get("suggestions"));
+			JsonArray suggestions = cards.get(0).getAsJsonObject().get("suggestions").getAsJsonArray();
 			assertNotNull(suggestions.get(0));
 			assertNotNull(suggestions.get(0).getAsJsonObject().get("actions"));
 			JsonArray actions = suggestions.get(0).getAsJsonObject().get("actions").getAsJsonArray();
