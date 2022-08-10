@@ -47,6 +47,7 @@ public class Cards {
                 @JsonGetter("resource")
                 @JsonRawValue
                 public String getResource() {
+                    if (resource == null) return null;
                     return parser.setPrettyPrint(true).encodeResourceToString(resource);
                 }
             }

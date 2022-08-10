@@ -35,7 +35,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class, CdsHooksConfig.class }, properties = {"hapi.fhir.fhir_version=dstu3", "hapi.fhir.security.basic_auth.enabled=false"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = { Application.class, CdsHooksConfig.class },
+		properties = {"hapi.fhir.fhir_version=dstu3", "hapi.fhir.security.basic_auth.enabled=false"})
 class CdsHooksServletIT extends RestIntegrationTest {
 	@Autowired
 	CdsServicesCache cdsServicesCache;
@@ -55,7 +57,6 @@ class CdsHooksServletIT extends RestIntegrationTest {
 	}
 
 	@Test
-	// TODO: Add Opioid Tests once $apply-cql is implemented.
 	void testCdsServicesRequest() throws IOException {
 		// Server Load
 		loadTransaction("HelloWorldPatientView-bundle.json");

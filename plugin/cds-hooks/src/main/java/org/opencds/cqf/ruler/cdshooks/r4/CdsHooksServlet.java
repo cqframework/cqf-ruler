@@ -311,6 +311,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 											}
 											else if (xx.getPath().endsWith("description")) {
 												card.detail = dynamicValueResult.toString();
+												if (card.suggestions != null
+														&& card.suggestions.get(0).actions != null) {
+													card.suggestions.get(0).actions.get(0).description =
+															dynamicValueResult.toString();
+												}
 											}
 											else if (xx.getPath().endsWith("extension")) {
 												card.indicator = dynamicValueResult.toString();
