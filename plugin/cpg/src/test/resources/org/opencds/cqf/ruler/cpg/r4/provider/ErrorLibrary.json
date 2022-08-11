@@ -1,0 +1,14 @@
+{
+  "resourceType": "Library",
+  "id": "ErrorLibrary",
+  "name": "ErrorLibrary",
+  "version": "0.0.1",
+  "status": "active",
+  "experimental": false,
+  "content": [
+    {
+      "contentType": "text/cql",
+      "data": "bGlicmFyeSBFcnJvckxpYnJhcnkgdmVyc2lvbiAnMC4wLjEnCgpkZWZpbmUgIkVycm9yIjogSW50ZXJ2YWxbMSw1XQ=="
+    }
+  ]
+}
