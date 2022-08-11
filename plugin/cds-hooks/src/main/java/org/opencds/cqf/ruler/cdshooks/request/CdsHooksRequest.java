@@ -1,7 +1,14 @@
 package org.opencds.cqf.ruler.cdshooks.request;
 
-import com.fasterxml.jackson.annotation.*;
-import com.google.gson.*;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 
 import java.util.HashMap;
 import java.util.List;

@@ -17,7 +17,15 @@ import ca.uhn.fhir.parser.LenientErrorHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.entity.ContentType;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.exception.DataProviderException;
@@ -31,7 +39,6 @@ import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
 import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
 import org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider;
 import org.opencds.cqf.ruler.cql.CqlProperties;
-import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cr.r4.provider.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.ruler.external.AppProperties;
 import org.opencds.cqf.ruler.utility.Canonicals;
@@ -49,7 +56,6 @@ import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
 
 public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
-
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
@@ -67,8 +73,6 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
 	@Autowired
-	JpaTerminologyProviderFactory myJpaTerminologyProviderFactory;
-	@Autowired
 	private ModelResolver modelResolver;
 	@Autowired
 	CdsServicesCache cdsServicesCache;
@@ -77,7 +81,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		return this.providerConfiguration;
 	}
 
-	private SystemRequestDetails requestDetails;
+	private final SystemRequestDetails requestDetails = new SystemRequestDetails();
 
 	// CORS Pre-flight
 	@Override
@@ -126,16 +130,16 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			Parameters parameters = null;
 			if (cdsHooksRequest instanceof CdsHooksRequest.OrderSelect) {
 				patientId = ((CdsHooksRequest.OrderSelect) cdsHooksRequest).context.patientId;
-				parameters = CdsHooksResources.getParameters(
+				parameters = CdsHooksUtil.getParameters(
 						((CdsHooksRequest.OrderSelect) cdsHooksRequest).context.draftOrders);
 			} else if (cdsHooksRequest instanceof CdsHooksRequest.OrderSign) {
 				patientId = ((CdsHooksRequest.OrderSign) cdsHooksRequest).context.patientId;
-				parameters = CdsHooksResources.getParameters(
+				parameters = CdsHooksUtil.getParameters(
 						((CdsHooksRequest.OrderSign) cdsHooksRequest).context.draftOrders);
 			} else {
 				patientId = cdsHooksRequest.context.patientId;
 			}
-			List<String> expressions = CdsHooksResources.getExpressions(servicePlan);
+			List<String> expressions = CdsHooksUtil.getExpressions(servicePlan);
 			BooleanType useServerData = null;
 			Endpoint remoteDataEndpoint = null;
 			if (cdsHooksRequest.fhirServer != null && !cdsHooksRequest.fhirServer.equals(baseUrl)) {
@@ -146,9 +150,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 							+ cdsHooksRequest.fhirAuthorization.accessToken);
 				}
 			}
-			Bundle data = CdsHooksResources.getPrefetchResources(cdsHooksRequest);
+			Bundle data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);
 
-			requestDetails = new SystemRequestDetails();
 			requestDetails.setFhirServerBase(baseUrl);
 			Parameters evaluationResult = libraryEvaluator.evaluate(requestDetails, logicId, patientId,
 					expressions, parameters, useServerData, data, null, remoteDataEndpoint,
@@ -201,11 +204,13 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		// links - listed on each card
 		if (servicePlan.hasRelatedArtifact()) {
 			servicePlan.getRelatedArtifact().forEach(
-					x -> {
+					ra -> {
 						Cards.Card.Link link = new Cards.Card.Link();
-						if (x.hasDisplay()) link.label = x.getDisplay();
-						if (x.hasUrl()) link.url = x.getUrl();
-						if (x.hasExtension()) link.type = x.getExtensionFirstRep().getValue().primitiveValue();
+						if (ra.hasDisplay()) link.label = ra.getDisplay();
+						if (ra.hasUrl()) link.url = ra.getUrl();
+						if (ra.hasExtension()) {
+							link.type = ra.getExtensionFirstRep().getValue().primitiveValue();
+						}
 						else link.type = "absolute"; // default
 						links.add(link);
 					}
@@ -220,24 +225,24 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		Cards.Card card = new Cards.Card();
 		if (links != null) card.links = links;
 		actions.forEach(
-				x -> {
+				action -> {
 					AtomicBoolean conditionMet = new AtomicBoolean(false);
-					if (x.hasCondition()) {
-						x.getCondition().forEach(
-								xx -> {
-									if (xx.hasExpression() && xx.getExpression().hasLanguage()
-											&& xx.getExpression().hasExpression()) {
+					if (action.hasCondition()) {
+						action.getCondition().forEach(
+								condition -> {
+									if (condition.hasExpression() && condition.getExpression().hasLanguage()
+											&& condition.getExpression().hasExpression()) {
 										Type conditionResult;
-										if (xx.getExpression().getLanguage().equals("text/cql.identifier")) {
+										if (condition.getExpression().getLanguage().equals("text/cql.identifier")) {
 											conditionResult = evaluationResults.getParameter(
-													xx.getExpression().getExpression());
+													condition.getExpression().getExpression());
 										}
-										else if (xx.getExpression().getLanguage().equals("text/cql")) {
+										else if (condition.getExpression().getLanguage().equals("text/cql")) {
 											conditionResult = cqlEvaluator.evaluate(requestDetails,
-													patientId, xx.getExpression().getExpression(), null,
+													patientId, condition.getExpression().getExpression(),
 													null, null, null, null,
 													null, null, null,
-													null).getParameter("return");
+													null, null).getParameter("return");
 										}
 										else conditionResult = new BooleanType(false);
 										conditionMet.set(conditionResult.isPrimitive()
@@ -247,11 +252,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						);
 					}
 					if (conditionMet.get()) {
-						if (x.hasTitle()) card.summary = x.getTitle();
-						if (x.hasDescription()) card.detail = x.getDescription();
-						if (x.hasDocumentation()) {
+						if (action.hasTitle()) card.summary = action.getTitle();
+						if (action.hasDescription()) card.detail = action.getDescription();
+						if (action.hasDocumentation()) {
 							Cards.Card.Source source = new Cards.Card.Source();
-							RelatedArtifact documentation = x.getDocumentationFirstRep();
+							RelatedArtifact documentation = action.getDocumentationFirstRep();
 							if (documentation.hasDisplay()) source.label = documentation.getDisplay();
 							if (documentation.hasUrl()) source.uri = documentation.getUrl();
 							if (documentation.hasDocument() && documentation.getDocument().hasUrl()) {
@@ -259,28 +264,31 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 							}
 							card.source = source;
 						}
-						if (x.hasSelectionBehavior()) card.selectionBehavior = x.getSelectionBehavior().toCode();
-						if (x.hasPrefix()) {
+						if (action.hasSelectionBehavior()) {
+							card.selectionBehavior = action.getSelectionBehavior().toCode();
+						}
+						if (action.hasPrefix()) {
 							Cards.Card.Suggestion suggestion = new Cards.Card.Suggestion();
 							Cards.Card.Suggestion.Action suggAction = new Cards.Card.Suggestion.Action();
-							suggestion.label = x.getPrefix();
+							suggestion.label = action.getPrefix();
 							boolean hasAction = false;
-							if (x.hasDescription()) {
-								suggAction.description = x.getDescription();
+							if (action.hasDescription()) {
+								suggAction.description = action.getDescription();
 								hasAction = true;
 							}
-							if (x.hasType() && x.getType().hasCoding() && x.getType().getCodingFirstRep().hasCode()
-									&& !x.getType().getCodingFirstRep().getCode().equals("fire-event")) {
-								String actionCode = x.getType().getCodingFirstRep().getCode();
+							if (action.hasType() && action.getType().hasCoding()
+									&& action.getType().getCodingFirstRep().hasCode()
+									&& !action.getType().getCodingFirstRep().getCode().equals("fire-event")) {
+								String actionCode = action.getType().getCodingFirstRep().getCode();
 								suggAction.type = actionCode.equals("remove") ? "delete" : actionCode;
 								hasAction = true;
 							}
-							if (x.hasDefinitionCanonicalType() &&
-									x.getDefinitionCanonicalType().getValue().contains("ActivityDefinition")) {
+							if (action.hasDefinitionCanonicalType() &&
+									action.getDefinitionCanonicalType().getValue().contains("ActivityDefinition")) {
 								suggAction.type = "create";
 								IdType definitionId = new IdType(
-										Canonicals.getResourceType(x.getDefinitionCanonicalType().getValue()),
-										Canonicals.getIdPart(x.getDefinitionCanonicalType().getValue()));
+										Canonicals.getResourceType(action.getDefinitionCanonicalType().getValue()),
+										Canonicals.getIdPart(action.getDefinitionCanonicalType().getValue()));
 								suggAction.resource = applyEvaluator.apply(requestDetails, definitionId,
 										patientId, null, null, null, null,
 										null, null, null, null);
@@ -289,27 +297,27 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 							if (hasAction) suggestion.actions = Collections.singletonList(suggAction);
 							card.suggestions = Collections.singletonList(suggestion);
 						}
-						if (x.hasDynamicValue()) {
-							x.getDynamicValue().forEach(
-									xx -> {
-										if (xx.hasPath() && xx.hasExpression() && xx.getExpression().hasLanguage()
-												&& xx.getExpression().hasExpression()) {
+						if (action.hasDynamicValue()) {
+							action.getDynamicValue().forEach(
+									dv -> {
+										if (dv.hasPath() && dv.hasExpression() && dv.getExpression().hasLanguage()
+												&& dv.getExpression().hasExpression()) {
 											Object dynamicValueResult;
-											if (xx.getExpression().getLanguage().equals("text/cql.identifier")) {
+											if (dv.getExpression().getLanguage().equals("text/cql.identifier")) {
 												dynamicValueResult = evaluationResults.getParameter(
-														xx.getExpression().getExpression());
+														dv.getExpression().getExpression());
 											}
 											else {
 												dynamicValueResult = cqlEvaluator.evaluate(requestDetails,
-														patientId, xx.getExpression().getExpression(), null,
+														patientId, dv.getExpression().getExpression(), null,
 														null, null, null, null,
 														null, null, null,
 														null).getParameter("return");
 											}
-											if (xx.getPath().endsWith("title")) {
+											if (dv.getPath().endsWith("title")) {
 												card.summary = dynamicValueResult.toString();
 											}
-											else if (xx.getPath().endsWith("description")) {
+											else if (dv.getPath().endsWith("description")) {
 												card.detail = dynamicValueResult.toString();
 												if (card.suggestions != null
 														&& card.suggestions.get(0).actions != null) {
@@ -317,7 +325,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 															dynamicValueResult.toString();
 												}
 											}
-											else if (xx.getPath().endsWith("extension")) {
+											else if (dv.getPath().endsWith("extension")) {
 												card.indicator = dynamicValueResult.toString();
 											}
 											else if (card.suggestions != null
@@ -325,14 +333,14 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 													&& card.suggestions.get((0)).actions.get(0).resource != null) {
 												modelResolver.setValue(
 														card.suggestions.get((0)).actions.get(0).resource,
-														xx.getPath(), dynamicValueResult);
+														dv.getPath(), dynamicValueResult);
 											}
 										}
 									}
 							);
 						}
-						if (x.hasAction()) {
-							resolveServicePlan(x.getAction(), evaluationResults, patientId, cards, links);
+						if (action.hasAction()) {
+							resolveServicePlan(action.getAction(), evaluationResults, patientId, cards, links);
 						}
 						cards.add(card);
 					}

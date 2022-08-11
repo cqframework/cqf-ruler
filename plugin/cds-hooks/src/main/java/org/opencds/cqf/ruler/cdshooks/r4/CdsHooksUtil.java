@@ -5,31 +5,25 @@ import ca.uhn.fhir.parser.JsonParser;
 import ca.uhn.fhir.parser.LenientErrorHandler;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.ParameterDefinition;
+import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.PlanDefinition;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
 
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
 
 import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
 
-public class CdsHooksResources {
-
-    /*
-
-    Cases:
-        remote server with prefetch (useServerData = false)
-            the least simple case
-            resolve data missing from prefetch into bundle -> call library/$evaluate specifying remote endpoint
-        remote server without prefetch
-            call library/$evaluate specifying remote endpoint
-        no remote server with prefetch
-            resolve data missing from prefetch into bundle -> call library/$evaluate
-        no remote server without prefetch
-            the simplest case
-            call library/$evaluate
-
-    */
+public class CdsHooksUtil {
 
     private static final JsonParser parser = new JsonParser(FhirContext.forR4(), new LenientErrorHandler());
 
