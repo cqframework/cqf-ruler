@@ -108,8 +108,9 @@ class OpioidRecommendation08IT extends RestIntegrationTest {
         JsonObject card = cardsArray.get(0).getAsJsonObject();
         assertTrue(card.has("summary"));
         assertTrue(card.get("summary").isJsonPrimitive());
+        // TODO: The returned value is longer than the allowed 140 characters - update recommendation or be more lenient
         assertEquals(
-                "Incorporate into the management plan strategies to mitigate risk; including considering offering naloxone when factors that increase risk for opioid overdose are present",
+                "Incorporate into the management plan strategies to mitigate risk; including considering offering naloxone when factors that increase risk fo",
                 card.get("summary").getAsString());
         assertTrue(card.has("indicator"));
         assertTrue(card.get("indicator").isJsonPrimitive());

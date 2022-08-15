@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.parser.JsonParser;
 import ca.uhn.fhir.parser.LenientErrorHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -34,6 +36,7 @@ import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
 import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
+import org.opencds.cqf.ruler.cdshooks.response.Card;
 import org.opencds.cqf.ruler.cdshooks.response.Cards;
 import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
 import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
@@ -53,7 +56,9 @@ import com.google.gson.JsonObject;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
 	private static final long serialVersionUID = 1L;
@@ -65,9 +70,9 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Autowired
 	private AppProperties myAppProperties;
 	@Autowired
-	private LibraryEvaluationProvider libraryEvaluator;
+	private CqlExecutionProvider cqlExecution;
 	@Autowired
-	private CqlExecutionProvider cqlEvaluator;
+	private LibraryEvaluationProvider libraryExecution;
 	@Autowired
 	private ActivityDefinitionApplyProvider applyEvaluator;
 	@Autowired
@@ -82,6 +87,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	}
 
 	private final SystemRequestDetails requestDetails = new SystemRequestDetails();
+	private final IParser jsonParser = new JsonParser(FhirContext.forR4(), new LenientErrorHandler()).setPrettyPrint(true);
+	private R4CqlExecution cqlExecutor;
 
 	// CORS Pre-flight
 	@Override
@@ -123,7 +130,17 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			CdsHooksRequest cdsHooksRequest = mapper.readValue(requestJson, CdsHooksRequest.class);
 			logRequestInfo(cdsHooksRequest, requestJson);
 
+			cqlExecutor = new R4CqlExecution(baseUrl);
+			requestDetails.setFhirServerBase(baseUrl);
+
 			PlanDefinition servicePlan = read(Ids.newId(PlanDefinition.class, service));
+			if (!servicePlan.hasLibrary()) {
+				cqlExecutor.setError(
+						"Logic library reference missing from PlanDefinition: " + servicePlan.getId());
+				response.getWriter().println(jsonParser.encodeResourceToString(cqlExecutor.getError()));
+				return;
+			}
+
 			IdType logicId = Ids.newId(Library.class, Canonicals.getIdPart(servicePlan.getLibrary().get(0)));
 
 			String patientId;
@@ -139,6 +156,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			} else {
 				patientId = cdsHooksRequest.context.patientId;
 			}
+
 			List<String> expressions = CdsHooksUtil.getExpressions(servicePlan);
 			BooleanType useServerData = null;
 			Endpoint remoteDataEndpoint = null;
@@ -152,19 +170,26 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			}
 			Bundle data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);
 
-			requestDetails.setFhirServerBase(baseUrl);
-			Parameters evaluationResult = libraryEvaluator.evaluate(requestDetails, logicId, patientId,
-					expressions, parameters, useServerData, data, null, remoteDataEndpoint,
-					null, null);
+			Parameters evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
+					expressions, parameters, useServerData, data, remoteDataEndpoint);
 
-			List<Cards.Card.Link> links = resolvePlanLinks(servicePlan);
-			List<Cards.Card> cards = new ArrayList<>();
+			if (cqlExecutor.isError()) {
+				response.getWriter().println(jsonParser.encodeResourceToString(cqlExecutor.getError()));
+				return;
+			}
+
+			List<Card.Link> links = resolvePlanLinks(servicePlan);
+			List<Card> cards = new ArrayList<>();
 
 			if (servicePlan.hasAction()) {
 				resolveServicePlan(servicePlan.getAction(), evaluationResult, patientId, cards, links);
 			}
 
-			Cards.parser = new JsonParser(getFhirContext(), new LenientErrorHandler());
+			if (cqlExecutor.isError()) {
+				response.getWriter().println(jsonParser.encodeResourceToString(cqlExecutor.getError()));
+				return;
+			}
+
 			Cards result = new Cards();
 			result.cards = cards;
 			// Using GSON pretty print format as Jackson's is ugly
@@ -199,19 +224,19 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		logger.info("cds-hooks cql_logging_enabled: {}", this.getProviderConfiguration().getCqlLoggingEnabled());
 	}
 
-	private List<Cards.Card.Link> resolvePlanLinks(PlanDefinition servicePlan) {
-		List<Cards.Card.Link> links = new ArrayList<>();
+	private List<Card.Link> resolvePlanLinks(PlanDefinition servicePlan) {
+		List<Card.Link> links = new ArrayList<>();
 		// links - listed on each card
 		if (servicePlan.hasRelatedArtifact()) {
 			servicePlan.getRelatedArtifact().forEach(
 					ra -> {
-						Cards.Card.Link link = new Cards.Card.Link();
-						if (ra.hasDisplay()) link.label = ra.getDisplay();
-						if (ra.hasUrl()) link.url = ra.getUrl();
+						Card.Link link = new Card.Link();
+						if (ra.hasDisplay()) link.setLabel(ra.getDisplay());
+						if (ra.hasUrl()) link.setUrl(ra.getUrl());
 						if (ra.hasExtension()) {
-							link.type = ra.getExtensionFirstRep().getValue().primitiveValue();
+							link.setType(ra.getExtensionFirstRep().getValue().primitiveValue());
 						}
-						else link.type = "absolute"; // default
+						else link.setType("absolute"); // default
 						links.add(link);
 					}
 			);
@@ -220,129 +245,155 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	}
 
 	private void resolveServicePlan(List<PlanDefinition.PlanDefinitionActionComponent> actions,
-									Parameters evaluationResults, String patientId, List<Cards.Card> cards,
-									List<Cards.Card.Link> links) {
-		Cards.Card card = new Cards.Card();
-		if (links != null) card.links = links;
+									Parameters evaluationResults, String patientId, List<Card> cards,
+									List<Card.Link> links) {
+		Card card = new Card();
+		Card.parser = jsonParser;
+		if (links != null) card.setLinks(links);
 		actions.forEach(
 				action -> {
-					AtomicBoolean conditionMet = new AtomicBoolean(false);
-					if (action.hasCondition()) {
-						action.getCondition().forEach(
-								condition -> {
-									if (condition.hasExpression() && condition.getExpression().hasLanguage()
-											&& condition.getExpression().hasExpression()) {
-										Type conditionResult;
-										if (condition.getExpression().getLanguage().equals("text/cql.identifier")) {
-											conditionResult = evaluationResults.getParameter(
-													condition.getExpression().getExpression());
-										}
-										else if (condition.getExpression().getLanguage().equals("text/cql")) {
-											conditionResult = cqlEvaluator.evaluate(requestDetails,
-													patientId, condition.getExpression().getExpression(),
-													null, null, null, null,
-													null, null, null,
-													null, null).getParameter("return");
-										}
-										else conditionResult = new BooleanType(false);
-										conditionMet.set(conditionResult.isPrimitive()
-												&& Boolean.parseBoolean(conditionResult.primitiveValue()));
-									}
-								}
-						);
-					}
-					if (conditionMet.get()) {
-						if (action.hasTitle()) card.summary = action.getTitle();
-						if (action.hasDescription()) card.detail = action.getDescription();
+					if (resolveCondition(action, evaluationResults, patientId).get()) {
+						if (action.hasTitle()) {
+							card.setSummary(action.getTitle());
+						}
+						if (action.hasDescription()) {
+							card.setDetail(action.getDescription());
+						}
 						if (action.hasDocumentation()) {
-							Cards.Card.Source source = new Cards.Card.Source();
-							RelatedArtifact documentation = action.getDocumentationFirstRep();
-							if (documentation.hasDisplay()) source.label = documentation.getDisplay();
-							if (documentation.hasUrl()) source.uri = documentation.getUrl();
-							if (documentation.hasDocument() && documentation.getDocument().hasUrl()) {
-								source.icon = documentation.getDocument().getUrl();
-							}
-							card.source = source;
+							card.setSource(resolveSource(action));
 						}
 						if (action.hasSelectionBehavior()) {
-							card.selectionBehavior = action.getSelectionBehavior().toCode();
+							card.setSelectionBehavior(action.getSelectionBehavior().toCode());
 						}
-						if (action.hasPrefix()) {
-							Cards.Card.Suggestion suggestion = new Cards.Card.Suggestion();
-							Cards.Card.Suggestion.Action suggAction = new Cards.Card.Suggestion.Action();
-							suggestion.label = action.getPrefix();
-							boolean hasAction = false;
-							if (action.hasDescription()) {
-								suggAction.description = action.getDescription();
-								hasAction = true;
-							}
-							if (action.hasType() && action.getType().hasCoding()
-									&& action.getType().getCodingFirstRep().hasCode()
-									&& !action.getType().getCodingFirstRep().getCode().equals("fire-event")) {
-								String actionCode = action.getType().getCodingFirstRep().getCode();
-								suggAction.type = actionCode.equals("remove") ? "delete" : actionCode;
-								hasAction = true;
-							}
-							if (action.hasDefinitionCanonicalType() &&
-									action.getDefinitionCanonicalType().getValue().contains("ActivityDefinition")) {
-								suggAction.type = "create";
-								IdType definitionId = new IdType(
-										Canonicals.getResourceType(action.getDefinitionCanonicalType().getValue()),
-										Canonicals.getIdPart(action.getDefinitionCanonicalType().getValue()));
-								suggAction.resource = applyEvaluator.apply(requestDetails, definitionId,
-										patientId, null, null, null, null,
-										null, null, null, null);
-								hasAction = true;
-							}
-							if (hasAction) suggestion.actions = Collections.singletonList(suggAction);
-							card.suggestions = Collections.singletonList(suggestion);
+						if (action.hasSelectionBehavior()) {
+							card.setSelectionBehavior(action.getSelectionBehavior().toCode());
+							Card.Suggestion suggestion = resolveSuggestions(action, patientId);
+							card.setSuggestions(Collections.singletonList(suggestion));
 						}
 						if (action.hasDynamicValue()) {
-							action.getDynamicValue().forEach(
-									dv -> {
-										if (dv.hasPath() && dv.hasExpression() && dv.getExpression().hasLanguage()
-												&& dv.getExpression().hasExpression()) {
-											Object dynamicValueResult;
-											if (dv.getExpression().getLanguage().equals("text/cql.identifier")) {
-												dynamicValueResult = evaluationResults.getParameter(
-														dv.getExpression().getExpression());
-											}
-											else {
-												dynamicValueResult = cqlEvaluator.evaluate(requestDetails,
-														patientId, dv.getExpression().getExpression(), null,
-														null, null, null, null,
-														null, null, null,
-														null).getParameter("return");
-											}
-											if (dv.getPath().endsWith("title")) {
-												card.summary = dynamicValueResult.toString();
-											}
-											else if (dv.getPath().endsWith("description")) {
-												card.detail = dynamicValueResult.toString();
-												if (card.suggestions != null
-														&& card.suggestions.get(0).actions != null) {
-													card.suggestions.get(0).actions.get(0).description =
-															dynamicValueResult.toString();
-												}
-											}
-											else if (dv.getPath().endsWith("extension")) {
-												card.indicator = dynamicValueResult.toString();
-											}
-											else if (card.suggestions != null
-													&& card.suggestions.get(0).actions != null
-													&& card.suggestions.get((0)).actions.get(0).resource != null) {
-												modelResolver.setValue(
-														card.suggestions.get((0)).actions.get(0).resource,
-														dv.getPath(), dynamicValueResult);
-											}
-										}
-									}
-							);
+							resolveDynamicActions(action, evaluationResults, patientId, card);
 						}
 						if (action.hasAction()) {
 							resolveServicePlan(action.getAction(), evaluationResults, patientId, cards, links);
 						}
 						cards.add(card);
+					}
+				}
+		);
+	}
+
+	public AtomicBoolean resolveCondition(PlanDefinition.PlanDefinitionActionComponent action,
+										  Parameters evaluationResults, String patientId) {
+		AtomicBoolean conditionMet = new AtomicBoolean(false);
+		if (action.hasCondition()) {
+			action.getCondition().forEach(
+					condition -> {
+						if (condition.hasExpression() && condition.getExpression().hasLanguage()
+								&& condition.getExpression().hasExpression()) {
+							Type conditionResult;
+							if (condition.getExpression().getLanguage().equals("text/cql.identifier")) {
+								conditionResult = evaluationResults.getParameter(
+										condition.getExpression().getExpression());
+							}
+							else if (condition.getExpression().getLanguage().equals("text/cql")) {
+								conditionResult = cqlExecutor.getExpressionExecution(cqlExecution,
+												patientId, condition.getExpression().getExpression())
+										.getParameter("return");
+							}
+							else conditionResult = new BooleanType(false);
+							if (conditionResult != null) {
+								conditionMet.set(conditionResult.isPrimitive()
+										&& Boolean.parseBoolean(conditionResult.primitiveValue()));
+							}
+						}
+					}
+			);
+		}
+		return conditionMet;
+	}
+
+	public Card.Source resolveSource(PlanDefinition.PlanDefinitionActionComponent action) {
+		Card.Source source = new Card.Source();
+		RelatedArtifact documentation = action.getDocumentationFirstRep();
+		if (documentation.hasDisplay()) {
+			source.setLabel(documentation.getDisplay());
+		}
+		if (documentation.hasUrl()) {
+			source.setUri(documentation.getUrl());
+		}
+		if (documentation.hasDocument() && documentation.getDocument().hasUrl()) {
+			source.setIcon(documentation.getDocument().getUrl());
+		}
+		return source;
+	}
+
+	public Card.Suggestion resolveSuggestions(PlanDefinition.PlanDefinitionActionComponent action, String patientId) {
+		Card.Suggestion suggestion = new Card.Suggestion();
+		Card.Suggestion.Action suggAction = new Card.Suggestion.Action();
+		if (action.hasPrefix()) suggestion.setLabel(action.getPrefix());
+		boolean hasAction = false;
+		if (action.hasDescription()) {
+			suggAction.setDescription(action.getDescription());
+			hasAction = true;
+		}
+		if (action.hasType() && action.getType().hasCoding()
+				&& action.getType().getCodingFirstRep().hasCode()
+				&& !action.getType().getCodingFirstRep().getCode().equals("fire-event")) {
+			String actionCode = action.getType().getCodingFirstRep().getCode();
+			suggAction.setType(actionCode);
+			hasAction = true;
+		}
+		if (action.hasDefinitionCanonicalType() &&
+				action.getDefinitionCanonicalType().getValue().contains("ActivityDefinition")) {
+			suggAction.setType("create");
+			IdType definitionId = new IdType(
+					Canonicals.getResourceType(action.getDefinitionCanonicalType().getValue()),
+					Canonicals.getIdPart(action.getDefinitionCanonicalType().getValue()));
+			suggAction.setResource(applyEvaluator.apply(requestDetails, definitionId,
+					patientId, null, null, null, null,
+					null, null, null, null));
+			hasAction = true;
+		}
+		if (hasAction) suggestion.setActions(Collections.singletonList(suggAction));
+		return suggestion;
+	}
+
+	public void resolveDynamicActions(PlanDefinition.PlanDefinitionActionComponent action,
+									  Parameters evaluationResults, String patientId, Card card) {
+		action.getDynamicValue().forEach(
+				dv -> {
+					if (dv.hasPath() && dv.hasExpression() && dv.getExpression().hasLanguage()
+							&& dv.getExpression().hasExpression()) {
+						Object dynamicValueResult;
+						if (dv.getExpression().getLanguage().equals("text/cql.identifier")) {
+							dynamicValueResult = evaluationResults.getParameter(
+									dv.getExpression().getExpression());
+						}
+						else {
+							dynamicValueResult = cqlExecutor.getExpressionExecution(cqlExecution,
+											patientId, dv.getExpression().getExpression())
+									.getParameter("return");
+						}
+						if (dynamicValueResult != null) {
+							if (dv.getPath().endsWith("title")) {
+								card.setSummary(dynamicValueResult.toString());
+							} else if (dv.getPath().endsWith("description")) {
+								card.setDetail(dynamicValueResult.toString());
+								if (card.getSuggestions() != null
+										&& card.getSuggestions().get(0).getActions() != null) {
+									card.getSuggestions().get(0).getActions().get(0).setDescription(
+											dynamicValueResult.toString());
+								}
+							} else if (dv.getPath().endsWith("extension")) {
+								card.setIndicator(dynamicValueResult.toString());
+							} else if (card.getSuggestions() != null
+									&& card.getSuggestions().get(0).getActions() != null
+									&& card.getSuggestions().get((0)).getActions().get(0).getResource() != null) {
+								modelResolver.setValue(
+										card.getSuggestions().get((0)).getActions().get(0).getResource(),
+										dv.getPath(), dynamicValueResult);
+							}
+						}
 					}
 				}
 		);

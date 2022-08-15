@@ -1,0 +1,12 @@
+{
+  "resourceType": "Library",
+  "id": "emptyLibrary",
+  "name": "emptyLibrary",
+  "status": "active",
+  "content": [
+    {
+      "contentType": "text/cql",
+      "data": "bGlicmFyeSBlbXB0eUxpYnJhcnk="
+    }
+  ]
+}

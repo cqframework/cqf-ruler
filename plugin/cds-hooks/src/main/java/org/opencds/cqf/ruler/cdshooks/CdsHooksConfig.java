@@ -53,8 +53,14 @@ public class CdsHooksConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider cqlExecutionProvider() {
+	public org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider r4CqlExecutionProvider() {
 		return new org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider();
+	}
+
+	@Bean
+	@Conditional(OnDSTU3Condition.class)
+	public org.opencds.cqf.ruler.cpg.dstu3.provider.CqlExecutionProvider dstu3CqlExecutionProvider() {
+		return new org.opencds.cqf.ruler.cpg.dstu3.provider.CqlExecutionProvider();
 	}
 
 

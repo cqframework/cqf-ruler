@@ -1,0 +1,10 @@
+{
+  "hook": "patient-view",
+  "hookInstance": "invalidPlanExpression",
+  "fhirServer": "https://cloud.alphora.com/sandbox/r4/cds/fhir",
+  "context": {
+    "patientId": "invalid-patient",
+    "encounterId": "invalid-encounter",
+    "userId": "invalid-user"
+  }
+}

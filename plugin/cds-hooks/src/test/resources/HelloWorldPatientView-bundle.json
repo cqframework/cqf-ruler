@@ -252,6 +252,7 @@
           "code": "create",
           "display": "Create"
         },
+        "selectionBehavior": "any",
         "dynamicValue": [ {
           "path": "action.title",
           "expression": "Get Title"
