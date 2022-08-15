@@ -619,6 +619,9 @@ public class Card {
              */
             @JsonGetter
             public String getResourceId() {
+                if (getType() != null && getType().equals("delete") && getResource() != null) {
+                    resourceId = getResource().getIdElement().getValue();
+                }
                 return resourceId;
             }
 
