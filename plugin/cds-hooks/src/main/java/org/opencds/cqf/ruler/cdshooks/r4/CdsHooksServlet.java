@@ -12,12 +12,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.parser.IParser;
-import ca.uhn.fhir.parser.JsonParser;
-import ca.uhn.fhir.parser.LenientErrorHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonParser;
 import org.apache.http.entity.ContentType;
 import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.Library;
@@ -85,9 +82,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	protected ProviderConfiguration getProviderConfiguration() {
 		return this.providerConfiguration;
 	}
-
 	private final SystemRequestDetails requestDetails = new SystemRequestDetails();
-	private final IParser jsonParser = new JsonParser(FhirContext.forR4(), new LenientErrorHandler()).setPrettyPrint(true);
 	private R4CqlExecution cqlExecutor;
 
 	// CORS Pre-flight
@@ -135,10 +130,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 
 			PlanDefinition servicePlan = read(Ids.newId(PlanDefinition.class, service));
 			if (!servicePlan.hasLibrary()) {
-				cqlExecutor.setError(
+				throw new ErrorHandling.CdsHooksError(
 						"Logic library reference missing from PlanDefinition: " + servicePlan.getId());
-				response.getWriter().println(jsonParser.encodeResourceToString(cqlExecutor.getError()));
-				return;
 			}
 
 			IdType logicId = Ids.newId(Library.class, Canonicals.getIdPart(servicePlan.getLibrary().get(0)));
@@ -173,11 +166,6 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			Parameters evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
 					expressions, parameters, useServerData, data, remoteDataEndpoint);
 
-			if (cqlExecutor.isError()) {
-				response.getWriter().println(jsonParser.encodeResourceToString(cqlExecutor.getError()));
-				return;
-			}
-
 			List<Card.Link> links = resolvePlanLinks(servicePlan);
 			List<Card> cards = new ArrayList<>();
 
@@ -185,16 +173,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				resolveServicePlan(servicePlan.getAction(), evaluationResult, patientId, cards, links);
 			}
 
-			if (cqlExecutor.isError()) {
-				response.getWriter().println(jsonParser.encodeResourceToString(cqlExecutor.getError()));
-				return;
-			}
-
 			Cards result = new Cards();
 			result.cards = cards;
 			// Using GSON pretty print format as Jackson's is ugly
 			String jsonResponse = new GsonBuilder().setPrettyPrinting().create().toJson(
-					com.google.gson.JsonParser.parseString(mapper.writeValueAsString(result)));
+					JsonParser.parseString(mapper.writeValueAsString(result)));
 			logger.info(jsonResponse);
 			response.getWriter().println(jsonResponse);
 		} catch (BaseServerResponseException e) {
@@ -248,7 +231,6 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 									Parameters evaluationResults, String patientId, List<Card> cards,
 									List<Card.Link> links) {
 		Card card = new Card();
-		Card.parser = jsonParser;
 		if (links != null) card.setLinks(links);
 		actions.forEach(
 				action -> {
@@ -330,6 +312,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	public Card.Suggestion resolveSuggestions(PlanDefinition.PlanDefinitionActionComponent action, String patientId) {
 		Card.Suggestion suggestion = new Card.Suggestion();
 		Card.Suggestion.Action suggAction = new Card.Suggestion.Action();
+		suggAction.fhirContext = getFhirContext();
 		if (action.hasPrefix()) suggestion.setLabel(action.getPrefix());
 		boolean hasAction = false;
 		if (action.hasDescription()) {

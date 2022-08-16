@@ -1,6 +1,8 @@
 package org.opencds.cqf.ruler.cdshooks.response;
 
-import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.JsonParser;
+import ca.uhn.fhir.parser.LenientErrorHandler;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,25 +10,24 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hl7.fhir.Coding;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class Card {
+    private static final Logger logger = LoggerFactory.getLogger(Card.class);
 
     // Member variables
 
     @JsonIgnore
     private static final int SUMMARY_SIZE = 140;
 
-    @JsonIgnore
-    public static IParser parser;
-
     /**
      * Unique identifier of the card. MAY be used for auditing and logging cards and
      * SHALL be included in any subsequent calls to the CDS service's feedback endpoint.
      */
     private String uuid;
-
 
     /**
      * One-sentence, &lt;140-character summary message for display to the user inside of this card.
@@ -128,7 +129,9 @@ public class Card {
     @JsonSetter
     public void setSummary(String summary) {
         if (summary.length() > SUMMARY_SIZE) {
-            summary = summary.substring(0, SUMMARY_SIZE);
+            logger.warn("The card summary exceeds the 140 character limit set by the CDS Hooks specification.");
+            // TODO: uncomment once gaps in Opioid recommendations are reconciled
+            //summary = summary.substring(0, SUMMARY_SIZE);
         }
         this.summary = summary;
     }
@@ -205,8 +208,10 @@ public class Card {
     public List<Suggestion> getSuggestions() throws ErrorHandling.CdsHooksError {
         if (suggestions == null) return null;
         if (this.getSelectionBehavior() == null) {
-            throw new ErrorHandling.CdsHooksError(
-                    "If suggestions are present, selectionBehavior MUST also be provided");
+            logger.warn("If suggestions are present, selectionBehavior MUST also be provided");
+            // TODO: uncomment once gaps in Opioid recommendations are reconciled
+            //throw new ErrorHandling.CdsHooksError(
+            //        "If suggestions are present, selectionBehavior MUST also be provided");
         }
         return suggestions;
     }
@@ -507,6 +512,9 @@ public class Card {
 
             // member variables
 
+            @JsonIgnore
+            public FhirContext fhirContext;
+
             /**
              * The type of action being performed. Allowed values are: create, update, delete.
              */
@@ -601,7 +609,7 @@ public class Card {
             @JsonRawValue
             public String getResourceString() {
                 if (resource == null) return null;
-                return parser.setPrettyPrint(true).encodeResourceToString(resource);
+                return new JsonParser(fhirContext, new LenientErrorHandler()).setPrettyPrint(true).encodeResourceToString(resource);
             }
 
             /**

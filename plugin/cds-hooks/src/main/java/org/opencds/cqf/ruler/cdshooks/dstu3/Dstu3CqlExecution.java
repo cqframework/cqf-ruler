@@ -4,12 +4,12 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hl7.fhir.dstu3.model.BooleanType;
 import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
 import org.hl7.fhir.dstu3.model.Endpoint;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.Type;
+import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.ruler.cpg.dstu3.provider.CqlExecutionProvider;
 import org.opencds.cqf.ruler.cpg.dstu3.provider.LibraryEvaluationProvider;
 
@@ -17,32 +17,19 @@ import java.util.List;
 import java.util.Optional;
 
 public class Dstu3CqlExecution {
-    private OperationOutcome error;
     private final RequestDetails requestDetails = new SystemRequestDetails();
 
     public Dstu3CqlExecution(String baseUrl) {
         this.requestDetails.setFhirServerBase(baseUrl);
     }
 
-    public OperationOutcome getError() {
-        return error;
-    }
-
-    public void setError(String errorMessage) {
-        error = new OperationOutcome();
-        error.addIssue().setSeverity(OperationOutcome.IssueSeverity.ERROR)
-                .setDetails(new CodeableConcept().setText(errorMessage));
-    }
-
-    public boolean isError() {
-        return error != null;
-    }
-
     private void checkError(Parameters result) {
         if (result.getParameter().stream().anyMatch(x -> x.getName().equals("evaluation error"))
                 && result.getParameter().get(0).hasResource()
                 && result.getParameter().get(0).getResource() instanceof OperationOutcome) {
-            error = (OperationOutcome) result.getParameter().get(0).getResource();
+            throw new CqlException(
+                    ((OperationOutcome) result.getParameter().get(0).getResource())
+                            .getIssueFirstRep().getDetails().getText());
         }
     }
 
@@ -58,18 +45,18 @@ public class Dstu3CqlExecution {
 
     public Parameters getExpressionExecution(CqlExecutionProvider cqlExecution, String patientId,
                                              String expression) {
-        Parameters executionResult = cqlExecution.evaluate(requestDetails,
-                patientId, expression, null, null, null,
-                null, null, null, null,
-                null, null);
-        checkError(executionResult);
-        // since there is no defined way to determine between a cql expression reference and cql expression
-        // we will not report errors for expression execution and assume null result is accurate
-        if (isError()) {
-            error = null;
+        try {
+            Parameters executionResult = cqlExecution.evaluate(requestDetails,
+                    patientId, expression, null, null, null,
+                    null, null, null, null,
+                    null, null);
+            checkError(executionResult);
+            return executionResult;
+        } catch (CqlException cqle) {
+            // since there is no defined way to determine between a cql expression reference and cql expression
+            // we will not report errors for expression execution and assume null result is accurate
             return null;
         }
-        return executionResult;
     }
 
     public Type getEvaluationResult(Parameters evaluationResults, String expressionName) {

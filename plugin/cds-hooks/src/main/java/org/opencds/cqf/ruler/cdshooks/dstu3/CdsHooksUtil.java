@@ -25,12 +25,11 @@ import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart;
 
 public class CdsHooksUtil {
 
-    private static final JsonParser parser = new JsonParser(FhirContext.forDstu3(), new LenientErrorHandler());
-
     // NOTE: Making an assumption here that the parameter in the CQL will be named "ContextPrescriptions"
     public static Parameters getParameters(JsonObject contextResources) {
         Parameters parameters = newParameters();
-        Bundle contextBundle = parser.parseResource(Bundle.class, contextResources.toString());
+        Bundle contextBundle = new JsonParser(FhirContext.forDstu3Cached(), new LenientErrorHandler())
+                .parseResource(Bundle.class, contextResources.toString());
         contextBundle.getEntry().forEach(
                 x -> parameters.addParameter(newPart("ContextPrescriptions", x.getResource())));
         if (parameters.getParameter().size() == 1) {
@@ -58,8 +57,8 @@ public class CdsHooksUtil {
         if (request.prefetch != null) {
             for (Map.Entry<String, JsonElement> entry : request.prefetch.resources.entrySet()) {
                 if (entry.getValue().isJsonObject()) {
-                    resource = (Resource) parser.parseResource(
-                            entry.getValue().getAsJsonObject().toString());
+                    resource = (Resource) new JsonParser(FhirContext.forDstu3Cached(), new LenientErrorHandler())
+                            .parseResource(entry.getValue().getAsJsonObject().toString());
                     if (resource instanceof Bundle) {
                         resourceMap.putAll(getResourcesFromBundle((Bundle) resource));
                     } else {
