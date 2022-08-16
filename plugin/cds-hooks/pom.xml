@@ -24,6 +24,10 @@
 			<artifactId>cqf-ruler-security</artifactId>
 			<version>0.5.1-SNAPSHOT</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.opencds.cqf.ruler</groupId>
+			<artifactId>cqf-ruler-cpg</artifactId>
+			<version>0.5.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>

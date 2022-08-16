@@ -1,9 +1,5 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.dstu3;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.IOException;
 import java.util.Collections;
 
@@ -34,8 +30,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class, CdsHooksConfig.class }, properties = {"hapi.fhir.fhir_version=dstu3", "hapi.fhir.security.basic_auth.enabled=false"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = { Application.class, CdsHooksConfig.class },
+		properties = {"hapi.fhir.fhir_version=dstu3", "hapi.fhir.security.basic_auth.enabled=false"})
 class CdsHooksServletIT extends RestIntegrationTest {
 	@Autowired
 	CdsServicesCache cdsServicesCache;
@@ -55,7 +57,6 @@ class CdsHooksServletIT extends RestIntegrationTest {
 	}
 
 	@Test
-	// TODO: Add Opioid Tests once $apply-cql is implemented.
 	void testCdsServicesRequest() throws IOException {
 		// Server Load
 		loadTransaction("HelloWorldPatientView-bundle.json");

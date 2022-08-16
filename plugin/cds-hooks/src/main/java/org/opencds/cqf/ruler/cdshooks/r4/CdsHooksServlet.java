@@ -1,72 +1,63 @@
 package org.opencds.cqf.ruler.cdshooks.r4;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonParser;
 import org.apache.http.entity.ContentType;
-import org.cqframework.cql.elm.execution.VersionedIdentifier;
-import org.hl7.fhir.r4.model.CanonicalType;
-import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.PlanDefinition;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.RelatedArtifact;
+import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.exception.DataProviderException;
-import org.opencds.cqf.cql.engine.execution.Context;
-import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
-import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
-import org.opencds.cqf.ruler.cdshooks.evaluation.EvaluationContext;
-import org.opencds.cqf.ruler.cdshooks.evaluation.R4EvaluationContext;
-import org.opencds.cqf.ruler.cdshooks.hooks.Hook;
-import org.opencds.cqf.ruler.cdshooks.hooks.HookFactory;
-import org.opencds.cqf.ruler.cdshooks.hooks.R4HookEvaluator;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
-import org.opencds.cqf.ruler.cdshooks.request.JsonHelper;
-import org.opencds.cqf.ruler.cdshooks.request.Request;
-import org.opencds.cqf.ruler.cdshooks.response.CdsCard;
+import org.opencds.cqf.ruler.cdshooks.request.CdsHooksRequest;
+import org.opencds.cqf.ruler.cdshooks.response.Card;
+import org.opencds.cqf.ruler.cdshooks.response.Cards;
+import org.opencds.cqf.ruler.cdshooks.response.ErrorHandling;
+import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
+import org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider;
 import org.opencds.cqf.ruler.cql.CqlProperties;
-import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
-import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
-import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
-import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
+import org.opencds.cqf.ruler.cr.r4.provider.ActivityDefinitionApplyProvider;
 import org.opencds.cqf.ruler.external.AppProperties;
+import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Ids;
-import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	private static final Logger logger = LoggerFactory.getLogger(CdsHooksServlet.class);
-
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
@@ -76,15 +67,13 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	@Autowired
 	private AppProperties myAppProperties;
 	@Autowired
-	private LibraryLoaderFactory libraryLoaderFactory;
+	private CqlExecutionProvider cqlExecution;
 	@Autowired
-	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
+	private LibraryEvaluationProvider libraryExecution;
+	@Autowired
+	private ActivityDefinitionApplyProvider applyEvaluator;
 	@Autowired
 	private ProviderConfiguration providerConfiguration;
-	@Autowired
-	private JpaDataProviderFactory fhirRetrieveProviderFactory;
-	@Autowired
-	JpaTerminologyProviderFactory myJpaTerminologyProviderFactory;
 	@Autowired
 	private ModelResolver modelResolver;
 	@Autowired
@@ -93,150 +82,112 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	protected ProviderConfiguration getProviderConfiguration() {
 		return this.providerConfiguration;
 	}
+	private final SystemRequestDetails requestDetails = new SystemRequestDetails();
+	private R4CqlExecution cqlExecutor;
 
 	// CORS Pre-flight
 	@Override
 	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		setAccessControlHeaders(resp);
-
+		ErrorHandling.setAccessControlHeaders(resp, myAppProperties);
 		resp.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
 		resp.setHeader("X-Content-Type-Options", "nosniff");
-
 		resp.setStatus(HttpServletResponse.SC_OK);
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
 		logger.info(request.getRequestURI());
-
 		if (!request.getRequestURL().toString().endsWith("/cds-services")
 				&& !request.getRequestURL().toString().endsWith("/cds-services/")) {
 			logger.error(request.getRequestURI());
 			throw new ServletException("This servlet is not configured to handle GET requests.");
 		}
-
-		this.setAccessControlHeaders(response);
+		ErrorHandling.setAccessControlHeaders(response, myAppProperties);
 		response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
 		response.getWriter().println(new GsonBuilder().setPrettyPrinting().create().toJson(getServices()));
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		logger.info(request.getRequestURI());
-
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		try {
-			// validate that we are dealing with JSON
 			if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
 				throw new ServletException(String.format("Invalid content type %s. Please use application/json.",
 						request.getContentType()));
 			}
-
-			String baseUrl = this.myAppProperties.getServer_address();
+			logger.info(request.getRequestURI());
+			String baseUrl = myAppProperties.getServer_address();
 			String service = request.getPathInfo().replace("/", "");
+			ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-			JsonParser parser = new JsonParser();
-			Request cdsHooksRequest = new Request(service, parser.parse(request.getReader()).getAsJsonObject(),
-					JsonHelper.getObjectRequired(getService(service), "prefetch"));
+			String requestJson = request.getReader().lines().collect(Collectors.joining());
+			CdsHooksRequest cdsHooksRequest = mapper.readValue(requestJson, CdsHooksRequest.class);
+			logRequestInfo(cdsHooksRequest, requestJson);
 
-			logger.info(cdsHooksRequest.getRequestJson().toString());
+			cqlExecutor = new R4CqlExecution(baseUrl);
+			requestDetails.setFhirServerBase(baseUrl);
 
-			Hook hook = HookFactory.createHook(cdsHooksRequest);
-
-			String hookName = hook.getRequest().getHook();
-			logger.info("cds-hooks hook: {}", hookName);
-			logger.info("cds-hooks hook instance: {}", hook.getRequest().getHookInstance());
-			logger.info("cds-hooks maxCodesPerQuery: {}", this.getProviderConfiguration().getMaxCodesPerQuery());
-			logger.info("cds-hooks expandValueSets: {}", this.getProviderConfiguration().getExpandValueSets());
-			logger.info("cds-hooks searchStyle: {}", this.getProviderConfiguration().getSearchStyle());
-			logger.info("cds-hooks prefetch maxUriLength: {}", this.getProviderConfiguration().getMaxUriLength());
-			logger.info("cds-hooks local server address: {}", baseUrl);
-			logger.info("cds-hooks fhir server address: {}", hook.getRequest().getFhirServerUrl());
-			logger.info("cds-hooks cql_logging_enabled: {}", this.getProviderConfiguration().getCqlLoggingEnabled());
-
-			PlanDefinition planDefinition = read(Ids.newId(PlanDefinition.class, hook.getRequest().getServiceName()));
-			AtomicBoolean planDefinitionHookMatchesRequestHook = new AtomicBoolean(false);
-
-			planDefinition.getAction().forEach(action -> {
-				action.getTrigger().forEach(trigger -> {
-					if (hookName.equals(trigger.getName())) {
-						planDefinitionHookMatchesRequestHook.set(true);
-						return;
-					}
-				});
-				if (planDefinitionHookMatchesRequestHook.get()) {
-					return;
-				}
-			});
-			if (!planDefinitionHookMatchesRequestHook.get()) {
-				throw new ServletException("ERROR: Request hook does not match the service called.");
+			PlanDefinition servicePlan = read(Ids.newId(PlanDefinition.class, service));
+			if (!servicePlan.hasLibrary()) {
+				throw new ErrorHandling.CdsHooksError(
+						"Logic library reference missing from PlanDefinition: " + servicePlan.getId());
 			}
 
-			// No tenant information available, so create local system request
-			RequestDetails requestDetails = new SystemRequestDetails();
+			IdType logicId = Ids.newId(Library.class, Canonicals.getIdPart(servicePlan.getLibrary().get(0)));
 
-			LibraryLoader libraryLoader = libraryLoaderFactory
-					.create(Lists.newArrayList(jpaLibraryContentProviderFactory.create(requestDetails)));
+			String patientId;
+			Parameters parameters = null;
+			if (cdsHooksRequest instanceof CdsHooksRequest.OrderSelect) {
+				patientId = ((CdsHooksRequest.OrderSelect) cdsHooksRequest).context.patientId;
+				parameters = CdsHooksUtil.getParameters(
+						((CdsHooksRequest.OrderSelect) cdsHooksRequest).context.draftOrders);
+			} else if (cdsHooksRequest instanceof CdsHooksRequest.OrderSign) {
+				patientId = ((CdsHooksRequest.OrderSign) cdsHooksRequest).context.patientId;
+				parameters = CdsHooksUtil.getParameters(
+						((CdsHooksRequest.OrderSign) cdsHooksRequest).context.draftOrders);
+			} else {
+				patientId = cdsHooksRequest.context.patientId;
+			}
 
-			CanonicalType canonical = planDefinition.getLibrary().get(0);
-			Library library = search(Library.class, Searches.byCanonical(canonical)).single();
+			List<String> expressions = CdsHooksUtil.getExpressions(servicePlan);
+			BooleanType useServerData = null;
+			Endpoint remoteDataEndpoint = null;
+			if (cdsHooksRequest.fhirServer != null && !cdsHooksRequest.fhirServer.equals(baseUrl)) {
+				useServerData = new BooleanType(false);
+				remoteDataEndpoint = new Endpoint().setAddress(cdsHooksRequest.fhirServer);
+				if (cdsHooksRequest.fhirAuthorization != null) {
+					remoteDataEndpoint.addHeader(cdsHooksRequest.fhirAuthorization.tokenType + ": "
+							+ cdsHooksRequest.fhirAuthorization.accessToken);
+				}
+			}
+			Bundle data = CdsHooksUtil.getPrefetchResources(cdsHooksRequest);
 
-			org.cqframework.cql.elm.execution.Library elm = libraryLoader.load(
-					new VersionedIdentifier().withId(library.getName()).withVersion(library.getVersion()));
+			Parameters evaluationResult = cqlExecutor.getLibraryExecution(libraryExecution, logicId, patientId,
+					expressions, parameters, useServerData, data, remoteDataEndpoint);
 
-			Context context = new Context(elm);
-			context.setDebugMap(this.getDebugMap());
+			List<Card.Link> links = resolvePlanLinks(servicePlan);
+			List<Card> cards = new ArrayList<>();
 
-			// provider case
-			// No tenant information available for cds-hooks
-			TerminologyProvider serverTerminologyProvider = myJpaTerminologyProviderFactory.create(requestDetails);
-			context.registerTerminologyProvider(serverTerminologyProvider);
-			context.registerLibraryLoader(libraryLoader);
-			context.setContextValue("Patient", hook.getRequest().getContext().getPatientId().replace("Patient/", ""));
-			context.setExpressionCaching(true);
+			if (servicePlan.hasAction()) {
+				resolveServicePlan(servicePlan.getAction(), evaluationResult, patientId, cards, links);
+			}
 
-			EvaluationContext<PlanDefinition> evaluationContext = new R4EvaluationContext(hook,
-					FhirContext.forCached(FhirVersionEnum.R4).newRestfulGenericClient(baseUrl),
-					context, elm,
-					planDefinition, this.getProviderConfiguration(), this.modelResolver);
-
-			this.setAccessControlHeaders(response);
-			response.setHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType());
-			R4HookEvaluator evaluator = new R4HookEvaluator(this.modelResolver);
-			String jsonResponse = toJsonResponse(evaluator.evaluate(evaluationContext));
+			Cards result = new Cards();
+			result.cards = cards;
+			// Using GSON pretty print format as Jackson's is ugly
+			String jsonResponse = new GsonBuilder().setPrettyPrinting().create().toJson(
+					JsonParser.parseString(mapper.writeValueAsString(result)));
 			logger.info(jsonResponse);
 			response.getWriter().println(jsonResponse);
 		} catch (BaseServerResponseException e) {
-			this.setAccessControlHeaders(response);
-			response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
-			response.getWriter().println("ERROR: Exception connecting to remote server.");
-			this.printMessageAndCause(e, response);
-			this.handleServerResponseException(e, response);
-			this.printStackTrack(e, response);
+			ErrorHandling.handleError(response, "ERROR: Exception connecting to remote server.", e, myAppProperties);
 			logger.error(e.toString());
 		} catch (DataProviderException e) {
-			this.setAccessControlHeaders(response);
-			response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
-			response.getWriter().println("ERROR: Exception in DataProvider.");
-			this.printMessageAndCause(e, response);
-			if (e.getCause() != null && (e.getCause() instanceof BaseServerResponseException)) {
-				this.handleServerResponseException((BaseServerResponseException) e.getCause(), response);
-			}
-
-			this.printStackTrack(e, response);
+			ErrorHandling.handleError(response,"ERROR: Exception in DataProvider.", e, myAppProperties);
 			logger.error(e.toString());
 		} catch (CqlException e) {
-			this.setAccessControlHeaders(response);
-			response.setStatus(500); // This will be overwritten with the correct status code downstream if needed.
-			response.getWriter().println("ERROR: Exception in CQL Execution.");
-			this.printMessageAndCause(e, response);
-			if (e.getCause() != null && (e.getCause() instanceof BaseServerResponseException)) {
-				this.handleServerResponseException((BaseServerResponseException) e.getCause(), response);
-			}
-
-			this.printStackTrack(e, response);
+			ErrorHandling.handleError(response,"ERROR: Exception in CQL Execution.", e, myAppProperties);
 			logger.error(e.toString());
 		} catch (Exception e) {
 			logger.error(e.toString());
@@ -244,96 +195,197 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		}
 	}
 
-	private void handleServerResponseException(BaseServerResponseException e, HttpServletResponse response)
-			throws IOException {
-		switch (e.getStatusCode()) {
-			case 401:
-			case 403:
-				response.getWriter().println("Precondition Failed. Remote FHIR server returned: " + e.getStatusCode());
-				response.getWriter().println(
-						"Ensure that the fhirAuthorization token is set or that the remote server allows unauthenticated access.");
-				response.setStatus(412);
-				break;
-			case 404:
-				response.getWriter().println("Precondition Failed. Remote FHIR server returned: " + e.getStatusCode());
-				response.getWriter().println("Ensure the resource exists on the remote server.");
-				response.setStatus(412);
-				break;
-			default:
-				response.getWriter().println("Unhandled Error in Remote FHIR server: " + e.getStatusCode());
-		}
+	private void logRequestInfo(CdsHooksRequest request, String jsonRequest) {
+		logger.info(jsonRequest);
+		logger.info("cds-hooks hook instance: {}", request.hookInstance);
+		logger.info("cds-hooks maxCodesPerQuery: {}", this.getProviderConfiguration().getMaxCodesPerQuery());
+		logger.info("cds-hooks expandValueSets: {}", this.getProviderConfiguration().getExpandValueSets());
+		logger.info("cds-hooks searchStyle: {}", this.getProviderConfiguration().getSearchStyle());
+		logger.info("cds-hooks prefetch maxUriLength: {}", this.getProviderConfiguration().getMaxUriLength());
+		logger.info("cds-hooks local server address: {}", myAppProperties.getServer_address());
+		logger.info("cds-hooks fhir server address: {}", request.fhirServer);
+		logger.info("cds-hooks cql_logging_enabled: {}", this.getProviderConfiguration().getCqlLoggingEnabled());
 	}
 
-	private void printMessageAndCause(Exception e, HttpServletResponse response) throws IOException {
-		if (e.getMessage() != null) {
-			response.getWriter().println(e.getMessage());
+	private List<Card.Link> resolvePlanLinks(PlanDefinition servicePlan) {
+		List<Card.Link> links = new ArrayList<>();
+		// links - listed on each card
+		if (servicePlan.hasRelatedArtifact()) {
+			servicePlan.getRelatedArtifact().forEach(
+					ra -> {
+						Card.Link link = new Card.Link();
+						if (ra.hasDisplay()) link.setLabel(ra.getDisplay());
+						if (ra.hasUrl()) link.setUrl(ra.getUrl());
+						if (ra.hasExtension()) {
+							link.setType(ra.getExtensionFirstRep().getValue().primitiveValue());
+						}
+						else link.setType("absolute"); // default
+						links.add(link);
+					}
+			);
 		}
-
-		if (e.getCause() != null && e.getCause().getMessage() != null) {
-			response.getWriter().println(e.getCause().getMessage());
-		}
+		return links;
 	}
 
-	private void printStackTrack(Exception e, HttpServletResponse response) throws IOException {
-		StringWriter sw = new StringWriter();
-		e.printStackTrace(new PrintWriter(sw));
-		String exceptionAsString = sw.toString();
-		response.getWriter().println(exceptionAsString);
-	}
-
-	private JsonObject getService(String service) {
-		JsonArray services = getServicesArray();
-		List<String> ids = new ArrayList<>();
-		for (JsonElement element : services) {
-			if (element.isJsonObject() && element.getAsJsonObject().has("id")) {
-				ids.add(element.getAsJsonObject().get("id").getAsString());
-				if (element.isJsonObject() && element.getAsJsonObject().get("id").getAsString().equals(service)) {
-					return element.getAsJsonObject();
+	private void resolveServicePlan(List<PlanDefinition.PlanDefinitionActionComponent> actions,
+									Parameters evaluationResults, String patientId, List<Card> cards,
+									List<Card.Link> links) {
+		Card card = new Card();
+		if (links != null) card.setLinks(links);
+		actions.forEach(
+				action -> {
+					if (resolveCondition(action, evaluationResults, patientId).get()) {
+						if (action.hasTitle()) {
+							card.setSummary(action.getTitle());
+						}
+						if (action.hasDescription()) {
+							card.setDetail(action.getDescription());
+						}
+						if (action.hasDocumentation()) {
+							card.setSource(resolveSource(action));
+						}
+						if (action.hasSelectionBehavior()) {
+							card.setSelectionBehavior(action.getSelectionBehavior().toCode());
+						}
+						if (action.hasSelectionBehavior()) {
+							card.setSelectionBehavior(action.getSelectionBehavior().toCode());
+							Card.Suggestion suggestion = resolveSuggestions(action, patientId);
+							card.setSuggestions(Collections.singletonList(suggestion));
+						}
+						if (action.hasDynamicValue()) {
+							resolveDynamicActions(action, evaluationResults, patientId, card);
+						}
+						if (action.hasAction()) {
+							resolveServicePlan(action.getAction(), evaluationResults, patientId, cards, links);
+						}
+						cards.add(card);
+					}
 				}
-			}
-		}
-		throw new InvalidRequestException(
-				"Cannot resolve service: " + service + "\nAvailable services: " + ids.toString());
+		);
 	}
 
-	private JsonArray getServicesArray() {
-		return this.cdsServicesCache.getCdsServiceCache().get();
+	public AtomicBoolean resolveCondition(PlanDefinition.PlanDefinitionActionComponent action,
+										  Parameters evaluationResults, String patientId) {
+		AtomicBoolean conditionMet = new AtomicBoolean(false);
+		if (action.hasCondition()) {
+			action.getCondition().forEach(
+					condition -> {
+						if (condition.hasExpression() && condition.getExpression().hasLanguage()
+								&& condition.getExpression().hasExpression()) {
+							Type conditionResult;
+							if (condition.getExpression().getLanguage().equals("text/cql.identifier")) {
+								conditionResult = evaluationResults.getParameter(
+										condition.getExpression().getExpression());
+							}
+							else if (condition.getExpression().getLanguage().equals("text/cql")) {
+								conditionResult = cqlExecutor.getExpressionExecution(cqlExecution,
+												patientId, condition.getExpression().getExpression())
+										.getParameter("return");
+							}
+							else conditionResult = new BooleanType(false);
+							if (conditionResult != null) {
+								conditionMet.set(conditionResult.isPrimitive()
+										&& Boolean.parseBoolean(conditionResult.primitiveValue()));
+							}
+						}
+					}
+			);
+		}
+		return conditionMet;
+	}
+
+	public Card.Source resolveSource(PlanDefinition.PlanDefinitionActionComponent action) {
+		Card.Source source = new Card.Source();
+		RelatedArtifact documentation = action.getDocumentationFirstRep();
+		if (documentation.hasDisplay()) {
+			source.setLabel(documentation.getDisplay());
+		}
+		if (documentation.hasUrl()) {
+			source.setUri(documentation.getUrl());
+		}
+		if (documentation.hasDocument() && documentation.getDocument().hasUrl()) {
+			source.setIcon(documentation.getDocument().getUrl());
+		}
+		return source;
+	}
+
+	public Card.Suggestion resolveSuggestions(PlanDefinition.PlanDefinitionActionComponent action, String patientId) {
+		Card.Suggestion suggestion = new Card.Suggestion();
+		Card.Suggestion.Action suggAction = new Card.Suggestion.Action();
+		suggAction.fhirContext = getFhirContext();
+		if (action.hasPrefix()) suggestion.setLabel(action.getPrefix());
+		boolean hasAction = false;
+		if (action.hasDescription()) {
+			suggAction.setDescription(action.getDescription());
+			hasAction = true;
+		}
+		if (action.hasType() && action.getType().hasCoding()
+				&& action.getType().getCodingFirstRep().hasCode()
+				&& !action.getType().getCodingFirstRep().getCode().equals("fire-event")) {
+			String actionCode = action.getType().getCodingFirstRep().getCode();
+			suggAction.setType(actionCode);
+			hasAction = true;
+		}
+		if (action.hasDefinitionCanonicalType() &&
+				action.getDefinitionCanonicalType().getValue().contains("ActivityDefinition")) {
+			suggAction.setType("create");
+			IdType definitionId = new IdType(
+					Canonicals.getResourceType(action.getDefinitionCanonicalType().getValue()),
+					Canonicals.getIdPart(action.getDefinitionCanonicalType().getValue()));
+			suggAction.setResource(applyEvaluator.apply(requestDetails, definitionId,
+					patientId, null, null, null, null,
+					null, null, null, null));
+			hasAction = true;
+		}
+		if (hasAction) suggestion.setActions(Collections.singletonList(suggAction));
+		return suggestion;
+	}
+
+	public void resolveDynamicActions(PlanDefinition.PlanDefinitionActionComponent action,
+									  Parameters evaluationResults, String patientId, Card card) {
+		action.getDynamicValue().forEach(
+				dv -> {
+					if (dv.hasPath() && dv.hasExpression() && dv.getExpression().hasLanguage()
+							&& dv.getExpression().hasExpression()) {
+						Object dynamicValueResult;
+						if (dv.getExpression().getLanguage().equals("text/cql.identifier")) {
+							dynamicValueResult = evaluationResults.getParameter(
+									dv.getExpression().getExpression());
+						}
+						else {
+							dynamicValueResult = cqlExecutor.getExpressionExecution(cqlExecution,
+											patientId, dv.getExpression().getExpression())
+									.getParameter("return");
+						}
+						if (dynamicValueResult != null) {
+							if (dv.getPath().endsWith("title")) {
+								card.setSummary(dynamicValueResult.toString());
+							} else if (dv.getPath().endsWith("description")) {
+								card.setDetail(dynamicValueResult.toString());
+								if (card.getSuggestions() != null
+										&& card.getSuggestions().get(0).getActions() != null) {
+									card.getSuggestions().get(0).getActions().get(0).setDescription(
+											dynamicValueResult.toString());
+								}
+							} else if (dv.getPath().endsWith("extension")) {
+								card.setIndicator(dynamicValueResult.toString());
+							} else if (card.getSuggestions() != null
+									&& card.getSuggestions().get(0).getActions() != null
+									&& card.getSuggestions().get((0)).getActions().get(0).getResource() != null) {
+								modelResolver.setValue(
+										card.getSuggestions().get((0)).getActions().get(0).getResource(),
+										dv.getPath(), dynamicValueResult);
+							}
+						}
+					}
+				}
+		);
 	}
 
 	private JsonObject getServices() {
 		JsonObject services = new JsonObject();
 		services.add("services", this.cdsServicesCache.getCdsServiceCache().get());
 		return services;
-	}
-
-	private String toJsonResponse(List<CdsCard> cards) {
-		JsonObject ret = new JsonObject();
-		JsonArray cardArray = new JsonArray();
-
-		for (CdsCard card : cards) {
-			cardArray.add(card.toJson());
-		}
-
-		ret.add("cards", cardArray);
-
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		return gson.toJson(ret);
-	}
-
-	private void setAccessControlHeaders(HttpServletResponse resp) {
-		if (this.myAppProperties.getCors() != null) {
-			if (this.myAppProperties.getCors().getAllow_Credentials()) {
-				resp.setHeader("Access-Control-Allow-Origin",
-						this.myAppProperties.getCors().getAllowed_origin().stream().findFirst().get());
-				resp.setHeader("Access-Control-Allow-Methods",
-						String.join(", ", Arrays.asList("GET", "HEAD", "POST", "OPTIONS")));
-				resp.setHeader("Access-Control-Allow-Headers", String.join(", ", Arrays.asList("x-fhir-starter", "Origin",
-						"Accept", "X-Requested-With", "Content-Type", "Authorization", "Cache-Control")));
-				resp.setHeader("Access-Control-Expose-Headers",
-						String.join(", ", Arrays.asList("Location", "Content-Location")));
-				resp.setHeader("Access-Control-Max-Age", "86400");
-			}
-		}
 	}
 
 	public DebugMap getDebugMap() {

@@ -1,0 +1,103 @@
+{
+  "hookInstance": "9d02e4d7-2d5b-492f-8f77-d76edb47168b",
+  "fhirServer": "https://cloud.alphora.com/sandbox/r4/cds/fhir",
+  "hook": "order-select",
+  "context": {
+    "userId": "Practitioner/example",
+    "patientId": "Patient/example-rec-04",
+    "encounterId": "Encounter/example-rec-04",
+    "selections": [ "MedicationRequest/example-rec-04-context" ],
+    "draftOrders": {
+      "resourceType": "Bundle",
+      "type": "collection",
+      "entry": [
+        {
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "extension": [
+              {
+                "url": "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/dataDateRoller",
+                "extension": [
+                  {
+                    "url": "dateLastUpdated",
+                    "valueDateTime": "2022-04-08"
+                  },
+                  {
+                    "url": "frequency",
+                    "valueDuration": {
+                      "value": 30.0,
+                      "unit": "days",
+                      "system": "http://unitsofmeasure.org",
+                      "code": "d"
+                    }
+                  }
+                ]
+              }
+            ],
+            "id": "example-rec-04-context",
+            "status": "active",
+            "intent": "order",
+            "category": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                  "code": "community"
+                }
+              ]
+            },
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1049502",
+                  "display": "12 HR Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet"
+                }
+              ]
+            },
+            "subject": {
+              "reference": "Patient/example-rec-04"
+            },
+            "encounter": {
+              "reference": "Encounter/example-rec-04"
+            },
+            "authoredOn": "2022-04-08",
+            "dosageInstruction": [
+              {
+                "timing": {
+                  "repeat": {
+                    "frequency": 1,
+                    "period": 3.0,
+                    "periodUnit": "d"
+                  }
+                },
+                "asNeededBoolean": false,
+                "doseAndRate": [{
+                  "doseQuantity": {
+                    "value": 1.0,
+                    "unit": "patch",
+                    "system" : "http://unitsofmeasure.org",
+                    "code" : "{patch}"
+                  }
+                }
+                ]
+              }
+            ],
+            "dispenseRequest": {
+              "validityPeriod": {
+                "start": "2022-04-08",
+                "end": "2022-07-08"
+              },
+              "numberOfRepeatsAllowed": 3,
+              "expectedSupplyDuration": {
+                "value": 30,
+                "unit": "days",
+                "system": "http://unitsofmeasure.org",
+                "code": "d"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
