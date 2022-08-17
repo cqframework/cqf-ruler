@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cdshooks.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -35,6 +36,8 @@ public class CdsHooksRequest {
     public Context context;
     @JsonProperty
     public Prefetch prefetch;
+    @JsonIgnore
+    public Object extension;
 
     public static class FhirAuthorization {
         @JsonProperty(value = "access_token", required = true)

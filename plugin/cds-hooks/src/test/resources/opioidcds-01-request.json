@@ -96,5 +96,9 @@
         }
       ]
     }
+  },
+  "extension": {
+    "com.example.timestamp": "2022-08-16T22:13:25Z",
+    "com.cds-hooks.sandbox.myextension-practitionerspecialty": "gastroenterology"
   }
 }

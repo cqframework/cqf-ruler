@@ -4,7 +4,6 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.cache.IResourceChangeListenerRegistry;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
-import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
 import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
@@ -13,14 +12,12 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cdshooks", name = "enabled", havingValue = "true", matchIfMissing = true)
-@ComponentScan(basePackageClasses = {CqlExecutionProvider.class})
 public class CdsHooksConfig {
 
 	@Autowired
