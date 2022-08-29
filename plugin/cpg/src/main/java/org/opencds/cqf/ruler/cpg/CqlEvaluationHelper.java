@@ -10,8 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.cql2elm.ModelManager;
-import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
+import org.cqframework.cql.cql2elm.model.CompiledLibrary;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
@@ -35,18 +36,17 @@ import org.opencds.cqf.cql.evaluator.CqlEvaluator;
 import org.opencds.cqf.cql.evaluator.builder.CqlEvaluatorBuilder;
 import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
 import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
-import org.opencds.cqf.cql.evaluator.builder.LibraryContentProviderFactory;
+import org.opencds.cqf.cql.evaluator.builder.LibrarySourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.data.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.data.FhirModelResolverFactory;
 import org.opencds.cqf.cql.evaluator.builder.data.FhirRestRetrieveProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.data.TypedRetrieveProviderFactory;
-import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProviderFactory;
-import org.opencds.cqf.cql.evaluator.builder.library.TypedLibraryContentProviderFactory;
+import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibrarySourceProviderFactory;
+import org.opencds.cqf.cql.evaluator.builder.library.TypedLibrarySourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.terminology.FhirRestTerminologyProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.terminology.TerminologyProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.terminology.TypedTerminologyProviderFactory;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvider;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibrarySourceProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
@@ -56,7 +56,7 @@ import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.library.CqlFhirParametersConverter;
 import org.opencds.cqf.cql.evaluator.library.LibraryEvaluator;
 import org.opencds.cqf.ruler.cql.JpaFhirRetrieveProvider;
-import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
+import org.opencds.cqf.ruler.cql.JpaLibrarySourceProvider;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProvider;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.utility.Canonicals;
@@ -81,7 +81,7 @@ public class CqlEvaluationHelper {
 	private final CqlFhirParametersConverter parametersConverter;
 	private final Set<CqlEngine.Options> cqlEngineOptions;
 	private final List<RetrieveProvider> retrieveProviders;
-	private final List<LibraryContentProvider> libraryContentProviders;
+	private final List<LibrarySourceProvider> libraryContentProviders;
 
 	private BaseFhirQueryGenerator queryGenerator;
 
@@ -92,8 +92,8 @@ public class CqlEvaluationHelper {
 	public CqlEvaluationHelper(FhirContext fhirContext, ModelResolver modelResolver, AdapterFactory adapterFactory,
 							   boolean useServerData, IBaseBundle data, EndpointInfo dataEndpoint,
 							   EndpointInfo contentEndpoint, EndpointInfo terminologyEndpoint, String content,
-							   LibraryLoaderFactory libraryLoaderFactory, JpaLibraryContentProvider jpaContentProvider,
-							   LibraryContentProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
+							   LibraryLoaderFactory libraryLoaderFactory, JpaLibrarySourceProvider jpaContentProvider,
+							   LibrarySourceProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
 							   DaoRegistry daoRegistry) {
 		this.fhirContext = fhirContext;
 		this.modelResolver = modelResolver;
@@ -117,8 +117,8 @@ public class CqlEvaluationHelper {
 		setup(libraryLoaderFactory, jpaContentProvider, restContentProvider, jpaTerminologyProvider, daoRegistry);
 	}
 
-	private void setup(LibraryLoaderFactory libraryLoaderFactory, JpaLibraryContentProvider jpaContentProvider,
-					   LibraryContentProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
+	private void setup(LibraryLoaderFactory libraryLoaderFactory, JpaLibrarySourceProvider jpaContentProvider,
+					   LibrarySourceProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
 					   DaoRegistry daoRegistry) {
 		setupLibraryLoader(libraryLoaderFactory, jpaContentProvider, restContentProvider);
 		setupTerminologyProvider(jpaTerminologyProvider);
@@ -134,10 +134,10 @@ public class CqlEvaluationHelper {
 	}
 
 	private void setupLibraryLoader(LibraryLoaderFactory libraryLoaderFactory,
-									JpaLibraryContentProvider jpaContentProvider,
-									LibraryContentProvider restContentProvider) {
+									JpaLibrarySourceProvider jpaContentProvider,
+											  LibrarySourceProvider restContentProvider) {
 		if (!StringUtils.isBlank(content)) {
-			libraryContentProviders.add(new InMemoryLibraryContentProvider(Collections.singletonList(content)));
+			libraryContentProviders.add(new InMemoryLibrarySourceProvider(Collections.singletonList(content)));
 		}
 		if (contentEndpoint != null) {
 			libraryContentProviders.add(restContentProvider);
@@ -186,16 +186,16 @@ public class CqlEvaluationHelper {
 	}
 
 	public ExpressionEvaluator getExpressionEvaluator() {
-		Set<TypedLibraryContentProviderFactory> libraryFactories = Collections.singleton(
-				new FhirRestLibraryContentProviderFactory(clientFactory, adapterFactory, libraryVersionSelector));
+		Set<TypedLibrarySourceProviderFactory> libraryFactories = Collections.singleton(
+				new FhirRestLibrarySourceProviderFactory(clientFactory, adapterFactory, libraryVersionSelector));
 		Set<TypedRetrieveProviderFactory> retrieveFactories = Collections.singleton(
 				new FhirRestRetrieveProviderFactory(fhirContext, clientFactory));
 		Set<TypedTerminologyProviderFactory> terminologyFactories = Collections.singleton(
 				new FhirRestTerminologyProviderFactory(fhirContext, clientFactory));
 		FhirModelResolverFactory fhirFactory = new FhirModelResolverFactory();
 		EndpointConverter endpointConverter = new EndpointConverter(adapterFactory);
-		LibraryContentProviderFactory libraryContentFactory =
-				new org.opencds.cqf.cql.evaluator.builder.library.LibraryContentProviderFactory(
+		LibrarySourceProviderFactory libraryContentFactory =
+				new org.opencds.cqf.cql.evaluator.builder.library.LibrarySourceProviderFactory(
 						fhirContext, adapterFactory, libraryFactories, libraryVersionSelector);
 		DataProviderFactory dataFactory =
 				new DataProviderFactory(fhirContext, Collections.singleton(fhirFactory), retrieveFactories);
@@ -233,7 +233,7 @@ public class CqlEvaluationHelper {
 	public VersionedIdentifier resolveLibraryIdentifier(String content, IBaseResource library) {
 		if (!StringUtils.isBlank(content)) {
 			ModelManager manager = new ModelManager();
-			TranslatedLibrary translatedLibrary =
+			CompiledLibrary translatedLibrary =
 					CqlTranslator.fromText(content, manager, new LibraryManager(manager)).getTranslatedLibrary();
 			return new VersionedIdentifier()
 					.withId(translatedLibrary.getIdentifier().getId())

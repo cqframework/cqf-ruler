@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.hl7.fhir.r4.model.BooleanType;
@@ -17,12 +18,11 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
 import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
-import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProviderFactory;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibrarySourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory;
 import org.opencds.cqf.ruler.cpg.CqlEvaluationHelper;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
-import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
+import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
@@ -40,9 +40,9 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 	@Autowired
 	private LibraryLoaderFactory libraryLoaderFactory;
 	@Autowired
-	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
+	private JpaLibrarySourceProviderFactory jpaLibraryContentProviderFactory;
 	@Autowired
-	private FhirRestLibraryContentProviderFactory fhirRestLibraryContentProviderFactory;
+	private FhirRestLibrarySourceProviderFactory fhirRestLibraryContentProviderFactory;
 	@Autowired
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 	@Autowired
@@ -137,7 +137,7 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(contentEndpoint) : null;
 		EndpointInfo remoteTerminology = terminologyEndpoint != null
 				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(terminologyEndpoint) : null;
-		LibraryContentProvider contentProvider = remoteContent != null
+		LibrarySourceProvider contentProvider = remoteContent != null
 				? fhirRestLibraryContentProviderFactory.create(remoteContent.getAddress(), remoteContent.getHeaders())
 				: null;
 

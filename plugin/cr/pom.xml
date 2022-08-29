@@ -10,6 +10,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>info.cqframework</groupId>
+			<artifactId>cql-to-elm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>info.cqframework</groupId>
 			<artifactId>elm-fhir</artifactId>
 		</dependency>
 		<dependency>

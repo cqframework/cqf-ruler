@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.google.common.base.Strings;
 
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.ActivityDefinition;
 import org.hl7.fhir.dstu3.model.DomainResource;
@@ -23,13 +24,12 @@ import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.execution.Context;
 import org.opencds.cqf.cql.engine.execution.LibraryLoader;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvider;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibrarySourceProvider;
 import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaFhirDal;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
-import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
+import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class ExpressionEvaluation {
 	@Autowired
 	private LibraryLoaderFactory libraryLoaderFactory;
 	@Autowired
-	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
+	private JpaLibrarySourceProviderFactory jpaLibraryContentProviderFactory;
 	@Autowired
 	private JpaDataProviderFactory jpaDataProviderFactory;
 	@Autowired
@@ -69,7 +69,7 @@ public class ExpressionEvaluation {
 		// temporary LibraryLoader to resolve library dependencies when building
 		// includes
 		LibraryLoader tempLibraryLoader = libraryLoaderFactory.create(
-				new ArrayList<LibraryContentProvider>(
+				new ArrayList<LibrarySourceProvider>(
 						Arrays.asList(
 								jpaLibraryContentProviderFactory.create(theRequest))));
 		String source = "";
@@ -125,10 +125,10 @@ public class ExpressionEvaluation {
 		}
 
 		LibraryLoader libraryLoader = libraryLoaderFactory.create(
-				new ArrayList<LibraryContentProvider>(
+				new ArrayList<LibrarySourceProvider>(
 						Arrays.asList(
 								jpaLibraryContentProviderFactory.create(theRequest),
-								new InMemoryLibraryContentProvider(Arrays.asList(source)))));
+								new InMemoryLibrarySourceProvider(Arrays.asList(source)))));
 
 		// Remove LocalLibrary from cache first...
 		VersionedIdentifier localLibraryIdentifier = new VersionedIdentifier().withId("LocalLibrary");

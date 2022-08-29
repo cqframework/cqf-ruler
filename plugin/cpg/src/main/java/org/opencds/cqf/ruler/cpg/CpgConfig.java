@@ -1,6 +1,6 @@
 package org.opencds.cqf.ruler.cpg;
 
-import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProviderFactory;
+import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibrarySourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.fhir.ClientFactory;
 import org.opencds.cqf.ruler.api.OperationProvider;
@@ -51,15 +51,15 @@ public class CpgConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public FhirRestLibraryContentProviderFactory r4FhirRestibraryContentProviderFactory() {
+	public FhirRestLibrarySourceProviderFactory r4FhirRestibraryContentProviderFactory() {
 		org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory r4AdapterFactory = new org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory();
-		return new FhirRestLibraryContentProviderFactory(new ClientFactory(FhirContext.forR4Cached()), r4AdapterFactory, new LibraryVersionSelector(r4AdapterFactory));
+		return new FhirRestLibrarySourceProviderFactory(new ClientFactory(FhirContext.forR4Cached()), r4AdapterFactory, new LibraryVersionSelector(r4AdapterFactory));
 	}
 
 	@Bean
 	@Conditional(OnDSTU3Condition.class)
-	public FhirRestLibraryContentProviderFactory dstu3FhirRestibraryContentProviderFactory() {
+	public FhirRestLibrarySourceProviderFactory dstu3FhirRestibraryContentProviderFactory() {
 		org.opencds.cqf.cql.evaluator.fhir.adapter.dstu3.AdapterFactory r4AdapterFactory = new org.opencds.cqf.cql.evaluator.fhir.adapter.dstu3.AdapterFactory();
-		return new FhirRestLibraryContentProviderFactory(new ClientFactory(FhirContext.forDstu3Cached()), r4AdapterFactory, new LibraryVersionSelector(r4AdapterFactory));
+		return new FhirRestLibrarySourceProviderFactory(new ClientFactory(FhirContext.forDstu3Cached()), r4AdapterFactory, new LibraryVersionSelector(r4AdapterFactory));
 	}
 }

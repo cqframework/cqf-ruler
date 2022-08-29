@@ -4,8 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import org.cqframework.cql.cql2elm.CqlTranslator;
-import org.cqframework.cql.cql2elm.CqlTranslatorException;
-import org.cqframework.cql.cql2elm.FhirLibrarySourceProvider;
+import org.cqframework.cql.cql2elm.CqlCompilerException;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
 import org.opencds.cqf.ruler.cql.utility.Translators;
@@ -87,11 +86,11 @@ public class CqlBuilder {
 			translator = CqlTranslator.fromStream(new ByteArrayInputStream(cql.getBytes()), modelManager, libraryManager);
 		}
 		catch (IOException e) {
-			throw new CqlTranslatorException("Error validating cql", e);
+			throw new CqlCompilerException("Error validating cql", e);
 		}
 
 		if(translator.getErrors().size() > 0 ) {
-			throw new CqlTranslatorException("Error validating cql: " + Translators.errorsToString(translator.getErrors()));
+			throw new CqlCompilerException("Error validating cql: " + Translators.errorsToString(translator.getErrors()));
 		}
   }
 

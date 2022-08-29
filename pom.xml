@@ -90,12 +90,12 @@
 		<cqf-tooling.version>1.4.4-SNAPSHOT</cqf-tooling.version>
 
 		<!-- CQL Support -->
-		<cqframework.version>1.5.11</cqframework.version>
-		<cql-engine.version>1.5.10-SNAPSHOT</cql-engine.version>
-		<cql-evaluator.version>1.4.7-SNAPSHOT</cql-evaluator.version>
+		<cqframework.version>2.1.0-SNAPSHOT</cqframework.version>
+		<cql-engine.version>2.0.0-SNAPSHOT</cql-engine.version>
+		<cql-evaluator.version>2.0.0-SNAPSHOT</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
-		<fhir_core_version>5.5.7</fhir_core_version>
+		<fhir_core_version>5.6.55</fhir_core_version>
 		<flexmark_version>0.62.2</flexmark_version>
 		<hapi_version>5.6.3</hapi_version>
 		<javax.version>8.0.1</javax.version>
