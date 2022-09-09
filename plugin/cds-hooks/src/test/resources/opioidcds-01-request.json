@@ -1,0 +1,104 @@
+{
+  "hookInstance": "6bc883b2-b795-4dcb-b661-34884a31d472",
+  "fhirServer": "https://cloud.alphora.com/sandbox/r4/cds/fhir",
+  "hook": "order-select",
+  "context": {
+    "userId": "Practitioner/example",
+    "patientId": "Patient/example-rec-01-true-no-prefetch",
+    "selections": [
+      "MedicationRequest/05f8cb26-2eb6-4124-b65d-bb1f13e21c49"
+    ],
+    "draftOrders": {
+      "resourceType":"Bundle",
+      "type": "collection",
+      "entry": [
+        {
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "extension": [
+              {
+                "url": "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/dataDateRoller",
+                "extension": [
+                  {
+                    "url": "dateLastUpdated",
+                    "valueDateTime": "2022-04-08"
+                  },
+                  {
+                    "url": "frequency",
+                    "valueDuration": {
+                      "value": 30.0,
+                      "unit": "days",
+                      "system": "http://unitsofmeasure.org",
+                      "code": "d"
+                    }
+                  }
+                ]
+              }
+            ],
+            "id": "05f8cb26-2eb6-4124-b65d-bb1f13e21c49",
+            "status": "active",
+            "intent": "order",
+            "category": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/fhir/CodeSystem/medicationdispense-category",
+                  "code": "community",
+                  "display": "Community"
+                }
+              ]
+            },
+            "medicationCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                  "code": "1010603",
+                  "display": "Suboxone 2 MG / 0.5 MG Sublingual Film"
+                }
+              ]
+            },
+            "subject": {
+              "reference": "Patient/example-rec-01-true-no-prefetch"
+            },
+            "encounter": {
+              "reference": "Encounter/example-rec-01-in-outpatient-opioid-context"
+            },
+            "authoredOn": "2022-04-08",
+            "dosageInstruction": [
+              {
+                "timing": {
+                  "repeat": {
+                    "frequency": 1,
+                    "period": 1.0,
+                    "periodUnit": "d"
+                  }
+                },
+                "asNeededBoolean": false,
+                "doseQuantity": {
+                  "value": 1.0,
+                  "unit": "film"
+                }
+              }
+            ],
+            "dispenseRequest": {
+              "validityPeriod": {
+                "start": "2022-04-08",
+                "end": "2022-07-08"
+              },
+              "numberOfRepeatsAllowed": 1,
+              "expectedSupplyDuration": {
+                "value": 30,
+                "unit": "days",
+                "system": "http://unitsofmeasure.org",
+                "code": "d"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "extension": {
+    "com.example.timestamp": "2022-08-16T22:13:25Z",
+    "com.cds-hooks.sandbox.myextension-practitionerspecialty": "gastroenterology"
+  }
+}

@@ -295,6 +295,45 @@
 				"method": "PUT",
 				"url": "Library/LibraryEvaluationTest"
 			}
+		},
+		{
+			"resource": {
+				"resourceType": "Library",
+				"id": "pertinencetag",
+				"extension": [
+					{
+						"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-softwaresystem",
+						"valueReference": {
+							"reference": "Device/cqf-tooling"
+						}
+					},
+					{
+						"url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-softwaresystem",
+						"valueReference": {
+							"reference": "cqf-tooling"
+						}
+					}
+				],
+				"url": "http://fhir.org/guides/cqf/common/Library/pertinencetag",
+				"name": "pertinencetag",
+				"relatedArtifact": [
+					{
+						"type": "depends-on",
+						"display": "FHIR model information",
+						"resource": "http://fhir.org/guides/cqf/common/Library/FHIR-ModelInfo|4.0.1"
+					}
+				],
+				"content": [
+					{
+						"contentType": "text/cql",
+						"data": "bGlicmFyeSBwZXJ0aW5lbmNldGFnCgp1c2luZyBGSElSIHZlcnNpb24gJzQuMC4xJwoKZGVmaW5lICJPYnNlcnZhdGlvbnMiOgogICAgICAgW09ic2VydmF0aW9uXQoKCi8vQHBlcnRpbmVuY2U6IHBhdGhvZ25vbW9uaWMKZGVmaW5lICJDb25kaXRpb25zIjoKICAgICAgICBbQ29uZGl0aW9uXQoKLy8gQHBlcnRpbmVuY2U6CmRlZmluZSAiTWVkaWNhdGlvbiBSZXF1ZXN0cyI6CiAgICAgICAgW01lZGljYXRpb25SZXF1ZXN0XQ=="
+					}
+				]
+			},
+			"request": {
+				"method": "PUT",
+				"url": "Library/pertinencetag"
+			}
 		}
 	]
 }

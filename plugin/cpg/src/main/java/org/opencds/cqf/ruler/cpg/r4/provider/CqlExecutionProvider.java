@@ -34,6 +34,9 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+
 /**
  * This class is used to provide an {@link DaoRegistryOperationProvider
  * OperationProvider}
@@ -41,6 +44,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
  * Created by Bryn on 1/16/2017.
  */
 public class CqlExecutionProvider extends DaoRegistryOperationProvider {
+
 	@Autowired
 	private LibraryLoaderFactory libraryLoaderFactory;
 	@Autowired
@@ -211,41 +215,47 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 					"data", "prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint", "content");
 
 			if (outcome != null) {
-				return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-						org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error", (OperationOutcome) outcome));
+				return newParameters(newPart("invalid parameters", (OperationOutcome) outcome));
 			}
 		}
 
 		if (prefetchData != null) {
-			return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-					org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error",
-							(OperationOutcome) evaluationHelper.createIssue(
-									"invalid parameters", "prefetchData is not yet supported")));
+			return newParameters(newPart("invalid parameters",
+					(OperationOutcome) evaluationHelper.createIssue(
+							"warning", "prefetchData is not yet supported")));
 		}
 
 		if (expression == null && content == null) {
-			return org.opencds.cqf.ruler.utility.r4.Parameters.newParameters(
-					org.opencds.cqf.ruler.utility.r4.Parameters.newPart("error",
-							(OperationOutcome) evaluationHelper.createIssue(
-									"invalid parameters",
-									"The $cql operation requires the expression parameter and/or content parameter to exist")));
+			return newParameters(newPart("invalid parameters",
+					(OperationOutcome) evaluationHelper.createIssue("error",
+							"The $cql operation requires the expression parameter and/or content parameter to exist")));
 		}
 
-		if (StringUtils.isBlank(content)) {
-			Endpoint defaultEndpoint = new Endpoint().setAddress(requestDetails.getFhirServerBase())
-					.setHeader(Collections.singletonList(new StringType("Content-Type: application/json")));
-			return (Parameters) evaluationHelper.getExpressionEvaluator().evaluate(expression,
-					parameters == null ? new Parameters() : parameters, subject,
-					evaluationHelper.resolveIncludedLibraries(library),
-					useServerData == null || useServerData.booleanValue(), data, null,
-					dataEndpoint == null ? defaultEndpoint : dataEndpoint,
-					contentEndpoint == null ? defaultEndpoint : contentEndpoint,
-					terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint);
-		}
+		try {
+			VersionedIdentifier libraryIdentifier = evaluationHelper.resolveLibraryIdentifier(content, null);
+			if (libraryIdentifier != null) {
+				globalLibraryCache.remove(libraryIdentifier);
+			}
 
-		return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(
-				evaluationHelper.resolveLibraryIdentifier(content, null),
-				evaluationHelper.resolveContextParameter(subject), parameters,
-				expression == null ? null : Collections.singleton(expression));
+			if (StringUtils.isBlank(content)) {
+				Endpoint defaultEndpoint = new Endpoint().setAddress(requestDetails.getFhirServerBase())
+						.setHeader(Collections.singletonList(new StringType("Content-Type: application/json")));
+				return (Parameters) evaluationHelper.getExpressionEvaluator().evaluate(expression,
+						parameters == null ? new Parameters() : parameters, subject,
+						evaluationHelper.resolveIncludedLibraries(library),
+						useServerData == null || useServerData.booleanValue(), data, null,
+						dataEndpoint == null ? defaultEndpoint : dataEndpoint,
+						contentEndpoint == null ? defaultEndpoint : contentEndpoint,
+						terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint);
+			}
+
+			return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(libraryIdentifier,
+					evaluationHelper.resolveContextParameter(subject), parameters,
+					expression == null ? null : Collections.singleton(expression));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return newParameters(newPart("evaluation error",
+					(OperationOutcome) evaluationHelper.createIssue("error", e.getMessage())));
+		}
 	}
 }

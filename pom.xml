@@ -4,7 +4,7 @@
 
 	<groupId>org.opencds.cqf.ruler</groupId>
 	<artifactId>cqf-ruler</artifactId>
-	<version>0.5.0-SNAPSHOT</version>
+	<version>0.5.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>cqf-ruler</name>
@@ -21,12 +21,42 @@
 	<developers>
 		<developer>
 			<name>Bryn Rhodes</name>
+			<organization>Alphora</organization>
 		</developer>
 		<developer>
 			<name>Chris Schuler</name>
+			<organization>Alphora</organization>
 		</developer>
 		<developer>
 			<name>Jonathan Percival</name>
+			<organization>Alphora</organization>
+		</developer>
+		<developer>
+			<name>Rob Reynolds</name>
+			<organization>Alphora</organization>
+		</developer>
+		<developer>
+			<name>Adam Stevenson</name>
+			<organization>Alphora</organization>
+		</developer>
+		<developer>
+			<name>Nazmul Karim</name>
+			<organization>Alphora</organization>
+		</developer>
+		<developer>
+			<name>Josh Reynolds</name>
+			<organization>Alphora</organization>
+		</developer>
+		<developer>
+			<name>Brenin Rhodes</name>
+			<organization>Alphora</organization>
+		</developer>
+		<developer>
+			<name>Zack Austin</name>
+			<organization>Alphora</organization>
+		</developer>
+		<developer>
+			<name>Justin McKelvy</name>
 			<organization>Alphora</organization>
 		</developer>
 	</developers>
@@ -63,6 +93,7 @@
 		<!-- CQL Support -->
 		<cql-engine.version>1.5.8-SNAPSHOT</cql-engine.version>
 		<cql-evaluator.version>1.4.6-SNAPSHOT</cql-evaluator.version>
+
 
 		<!-- Dependency Versions -->
 		<fhir_core_version>5.5.7</fhir_core_version>
@@ -563,7 +594,7 @@
 				<plugin>
 					<groupId>org.sonatype.plugins</groupId>
 					<artifactId>nexus-staging-maven-plugin</artifactId>
-					<version>1.6.8</version>
+					<version>1.6.12</version>
 					<extensions>true</extensions>
 					<configuration>
 						<serverId>ossrh</serverId>

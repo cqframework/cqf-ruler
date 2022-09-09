@@ -14,6 +14,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cdshooks", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -41,6 +42,7 @@ public class CdsHooksConfig {
 
 	@Bean
 	@Conditional(OnDSTU3Condition.class)
+	@DependsOn({"dstu3CqlExecutionProvider", "dstu3LibraryEvaluationProvider"})
 	public ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet> cdsHooksRegistrationBeanDstu3() {
 		org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet cdsHooksServlet = new org.opencds.cqf.ruler.cdshooks.dstu3.CdsHooksServlet();
 		beanFactory.autowireBean(cdsHooksServlet);
@@ -55,6 +57,7 @@ public class CdsHooksConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
+	@DependsOn({"r4CqlExecutionProvider", "r4LibraryEvaluationProvider"})
 	public ServletRegistrationBean<org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet> cdsHooksRegistrationBeanR4() {
 		org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet cdsHooksServlet = new org.opencds.cqf.ruler.cdshooks.r4.CdsHooksServlet();
 		beanFactory.autowireBean(cdsHooksServlet);

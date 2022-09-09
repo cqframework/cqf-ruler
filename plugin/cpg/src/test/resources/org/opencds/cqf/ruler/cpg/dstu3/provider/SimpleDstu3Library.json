@@ -5,14 +5,6 @@
 	"version": "0.0.1",
 	"status": "active",
 	"experimental": false,
-	"type": {
-		"coding": [
-			{
-				"system": "http://terminology.hl7.org/CodeSystem/library-type",
-				"code": "logic-library"
-			}
-		]
-	},
 	"date": "2021-04-23T15:32:03+00:00",
 	"publisher": "National Committee for Quality Assurance",
 	"description": "Simple Library for Testing Simple Expressions",

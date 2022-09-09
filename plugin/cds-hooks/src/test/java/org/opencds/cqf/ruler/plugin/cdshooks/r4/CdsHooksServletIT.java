@@ -29,7 +29,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes =
@@ -96,90 +98,6 @@ class CdsHooksServletIT extends RestIntegrationTest {
 	}
 
 	@Test
-	void testOpioidRecommendation08OrderSignWithoutPrefetch() {
-		loadTransaction("opioidcds-08-order-sign-artifact-bundle.json");
-		loadResource("opioidcds-08-patient.json");
-		loadResource("opioidcds-08-medication.json");
-
-		ResourceChangeEvent rce = new ResourceChangeEvent();
-		rce.setCreatedResourceIds(
-			Collections.singletonList(new IdType("PlanDefinition/opioidcds-08-order-sign")));
-		cdsServicesCache.handleChange(rce);
-
-		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-			String cdsHooksRequestString = stringFromResource("opioidcds-08-request.json");
-			Gson jsonParser = new Gson();
-			JsonObject cdsHooksRequestObject = jsonParser.fromJson(cdsHooksRequestString, JsonObject.class);
-			cdsHooksRequestObject.addProperty("fhirServer", getServerBase());
-
-			HttpPost request = new HttpPost(ourCdsBase + "/opioidcds-08-order-sign");
-			request.setEntity(new StringEntity(cdsHooksRequestObject.toString()));
-			request.addHeader("Content-Type", "application/json");
-
-			CloseableHttpResponse response = httpClient.execute(request);
-			validateOpioidRecommendation08OrderSignResponse(EntityUtils.toString(response.getEntity()));
-		} catch (IOException ioe) {
-			fail(ioe.getMessage());
-		}
-	}
-
-	@Test
-	void testOpioidRecommendation08OrderSignWithPrefetch() {
-		loadTransaction("opioidcds-08-order-sign-artifact-bundle.json");
-		loadResource("opioidcds-08-medication.json");
-
-		ResourceChangeEvent rce = new ResourceChangeEvent();
-		rce.setCreatedResourceIds(
-				Collections.singletonList(new IdType("PlanDefinition/opioidcds-08-order-sign")));
-		cdsServicesCache.handleChange(rce);
-
-		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-			String cdsHooksRequestString = stringFromResource("opioidcds-08-request-prefetch.json");
-			Gson jsonParser = new Gson();
-			JsonObject cdsHooksRequestObject = jsonParser.fromJson(cdsHooksRequestString, JsonObject.class);
-			cdsHooksRequestObject.addProperty("fhirServer", getServerBase());
-
-			HttpPost request = new HttpPost(ourCdsBase + "/opioidcds-08-order-sign");
-			request.setEntity(new StringEntity(cdsHooksRequestObject.toString()));
-			request.addHeader("Content-Type", "application/json");
-
-			CloseableHttpResponse response = httpClient.execute(request);
-			validateOpioidRecommendation08OrderSignResponse(EntityUtils.toString(response.getEntity()));
-		} catch (IOException ioe) {
-			fail(ioe.getMessage());
-		}
-	}
-
-	private void validateOpioidRecommendation08OrderSignResponse(String cardsString) {
-		Gson jsonParser = new Gson();
-		JsonObject cardsObject = jsonParser.fromJson(cardsString, JsonObject.class);
-		assertTrue(cardsObject.has("cards"));
-
-		JsonArray cardsArray = cardsObject.get("cards").getAsJsonArray();
-		assertFalse(cardsArray.isEmpty());
-		assertEquals(1, cardsArray.size());
-		assertTrue(cardsArray.get(0).isJsonObject());
-
-		JsonObject card = cardsArray.get(0).getAsJsonObject();
-		assertTrue(card.has("summary"));
-		assertTrue(card.get("summary").isJsonPrimitive());
-		assertEquals(
-				"Incorporate into the management plan strategies to mitigate risk; including considering offering naloxone when factors that increase risk for opioid overdose are present",
-				card.get("summary").getAsString());
-		assertTrue(card.has("indicator"));
-		assertTrue(card.get("indicator").isJsonPrimitive());
-		assertEquals("warning", card.get("indicator").getAsString());
-		assertTrue(card.has("detail"));
-		assertTrue(card.get("detail").isJsonPrimitive());
-		assertEquals(
-				"Consider offering naloxone given following risk factor(s) for opioid overdose: Average MME (180.0 '{MME}/d') >= 50 mg/d.",
-				card.get("detail").getAsString());
-		assertTrue(card.has("links"));
-		assertTrue(card.get("links").isJsonArray());
-		assertEquals(2, card.get("links").getAsJsonArray().size());
-	}
-
-	@Test
 	void testCdsServicesRequest() {
 		// Server Load
 		loadTransaction("Screening-bundle-r4.json");
@@ -213,21 +131,21 @@ class CdsHooksServletIT extends RestIntegrationTest {
 			JsonArray cards = jsonResponseObject.get("cards").getAsJsonArray();
 
 			// Ensure Patient Detail
-			assertNotNull(cards.get(0).getAsJsonObject().get("detail"));
-			String patientName = cards.get(0).getAsJsonObject().get("detail").getAsString();
+			assertNotNull(cards.get(1).getAsJsonObject().get("detail"));
+			String patientName = cards.get(1).getAsJsonObject().get("detail").getAsString();
 			assertEquals("Ashley Madelyn", patientName);
 
 			// Ensure Summary
-			assertNotNull(cards.get(1));
-			assertNotNull(cards.get(1).getAsJsonObject().get("summary"));
-			String recommendation = cards.get(1).getAsJsonObject().get("summary").getAsString();
+			assertNotNull(cards.get(0));
+			assertNotNull(cards.get(0).getAsJsonObject().get("summary"));
+			String recommendation = cards.get(0).getAsJsonObject().get("summary").getAsString();
 			assertEquals(
 				"HIV Screening Recommended due to patient being at High Risk for HIV and over three months have passed since previous screening.",
 				recommendation);
 
 			// Ensure Activity Definition / Suggestions
-			assertNotNull(cards.get(1).getAsJsonObject().get("suggestions"));
-			JsonArray suggestions = cards.get(1).getAsJsonObject().get("suggestions").getAsJsonArray();
+			assertNotNull(cards.get(0).getAsJsonObject().get("suggestions"));
+			JsonArray suggestions = cards.get(0).getAsJsonObject().get("suggestions").getAsJsonArray();
 			assertNotNull(suggestions.get(0));
 			assertNotNull(suggestions.get(0).getAsJsonObject().get("actions"));
 			JsonArray actions = suggestions.get(0).getAsJsonObject().get("actions").getAsJsonArray();

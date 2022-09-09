@@ -1,0 +1,26 @@
+{
+  "resourceType": "Patient",
+  "extension": [
+    {
+      "url": "http://fhir.org/guides/cdc/opioid-cds/StructureDefinition/dataDateRoller",
+      "extension": [
+        {
+          "url": "dateLastUpdated",
+          "valueDateTime": "2022-04-08"
+        },
+        {
+          "url": "frequency",
+          "valueDuration": {
+            "value": 30.0,
+            "unit": "days",
+            "system": "http://unitsofmeasure.org",
+            "code": "d"
+          }
+        }
+      ]
+    }
+  ],
+  "id": "example-rec-04",
+  "gender": "male",
+  "birthDate": "1982-01-07"
+}
