@@ -1,12 +1,11 @@
 package org.opencds.cqf.ruler.cdshooks;
 
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
-import ca.uhn.fhir.jpa.cache.IResourceChangeEvent;
-import ca.uhn.fhir.jpa.cache.IResourceChangeListener;
-import ca.uhn.fhir.jpa.cache.ResourceChangeEvent;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.PlanDefinition;
@@ -15,9 +14,14 @@ import org.opencds.cqf.ruler.cdshooks.discovery.DiscoveryResolutionStu3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.cache.IResourceChangeEvent;
+import ca.uhn.fhir.jpa.cache.IResourceChangeListener;
+import ca.uhn.fhir.jpa.cache.ResourceChangeEvent;
 
 public class CdsServicesCache implements IResourceChangeListener {
 	private static final Logger logger = LoggerFactory.getLogger(CdsServicesCache.class);
@@ -44,12 +48,14 @@ public class CdsServicesCache implements IResourceChangeListener {
 
 	@Override
 	public void handleInit(Collection<IIdType> collection) {
-		handleChange(ResourceChangeEvent.fromCreatedResourceIds(collection));
+		handleChange(ResourceChangeEvent.fromCreatedUpdatedDeletedResourceIds(new ArrayList<>(collection),
+				Collections.emptyList(), Collections.emptyList()));
 	}
 
 	@Override
 	public void handleChange(IResourceChangeEvent iResourceChangeEvent) {
-		if (iResourceChangeEvent == null) return;
+		if (iResourceChangeEvent == null)
+			return;
 		if (iResourceChangeEvent.getCreatedResourceIds() != null
 				&& !iResourceChangeEvent.getCreatedResourceIds().isEmpty()) {
 			insert(iResourceChangeEvent.getCreatedResourceIds());
@@ -95,8 +101,8 @@ public class CdsServicesCache implements IResourceChangeListener {
 				if (((JsonObject) cdsServiceCache.get().get(i)).get("id").getAsString().equals(id.getIdPart())) {
 					cdsServiceCache.get().remove(i);
 					break;
-				}
-				else logger.info(String.format("Failed to delete service for %s", id.getIdPart()));
+				} else
+					logger.info(String.format("Failed to delete service for %s", id.getIdPart()));
 			}
 		}
 	}

@@ -1,17 +1,17 @@
 package org.opencds.cqf.ruler.cpg;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.context.FhirVersionEnum;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.cqframework.cql.cql2elm.CqlTranslator;
 import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.cql2elm.ModelManager;
-import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
+import org.cqframework.cql.cql2elm.model.CompiledLibrary;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
@@ -35,18 +35,17 @@ import org.opencds.cqf.cql.evaluator.CqlEvaluator;
 import org.opencds.cqf.cql.evaluator.builder.CqlEvaluatorBuilder;
 import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
 import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
-import org.opencds.cqf.cql.evaluator.builder.LibraryContentProviderFactory;
+import org.opencds.cqf.cql.evaluator.builder.LibrarySourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.data.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.data.FhirModelResolverFactory;
 import org.opencds.cqf.cql.evaluator.builder.data.FhirRestRetrieveProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.data.TypedRetrieveProviderFactory;
-import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProviderFactory;
-import org.opencds.cqf.cql.evaluator.builder.library.TypedLibraryContentProviderFactory;
+import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibrarySourceProviderFactory;
+import org.opencds.cqf.cql.evaluator.builder.library.TypedLibrarySourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.terminology.FhirRestTerminologyProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.terminology.TerminologyProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.terminology.TypedTerminologyProviderFactory;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibraryContentProvider;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.InMemoryLibrarySourceProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.BundleRetrieveProvider;
 import org.opencds.cqf.cql.evaluator.engine.retrieve.PriorityRetrieveProvider;
@@ -56,13 +55,18 @@ import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.library.CqlFhirParametersConverter;
 import org.opencds.cqf.cql.evaluator.library.LibraryEvaluator;
 import org.opencds.cqf.ruler.cql.JpaFhirRetrieveProvider;
-import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
+import org.opencds.cqf.ruler.cql.JpaLibrarySourceProvider;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProvider;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Operations;
 
-import java.util.*;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.context.FhirVersionEnum;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
 
 public class CqlEvaluationHelper {
 	private final FhirContext fhirContext;
@@ -81,7 +85,7 @@ public class CqlEvaluationHelper {
 	private final CqlFhirParametersConverter parametersConverter;
 	private final Set<CqlEngine.Options> cqlEngineOptions;
 	private final List<RetrieveProvider> retrieveProviders;
-	private final List<LibraryContentProvider> libraryContentProviders;
+	private final List<LibrarySourceProvider> libraryContentProviders;
 
 	private BaseFhirQueryGenerator queryGenerator;
 
@@ -90,11 +94,11 @@ public class CqlEvaluationHelper {
 	private DataProvider dataProvider;
 
 	public CqlEvaluationHelper(FhirContext fhirContext, ModelResolver modelResolver, AdapterFactory adapterFactory,
-							   boolean useServerData, IBaseBundle data, EndpointInfo dataEndpoint,
-							   EndpointInfo contentEndpoint, EndpointInfo terminologyEndpoint, String content,
-							   LibraryLoaderFactory libraryLoaderFactory, JpaLibraryContentProvider jpaContentProvider,
-							   LibraryContentProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
-							   DaoRegistry daoRegistry) {
+			boolean useServerData, IBaseBundle data, EndpointInfo dataEndpoint,
+			EndpointInfo contentEndpoint, EndpointInfo terminologyEndpoint, String content,
+			LibraryLoaderFactory libraryLoaderFactory, JpaLibrarySourceProvider jpaContentProvider,
+			LibrarySourceProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
+			DaoRegistry daoRegistry) {
 		this.fhirContext = fhirContext;
 		this.modelResolver = modelResolver;
 		this.adapterFactory = adapterFactory;
@@ -117,16 +121,15 @@ public class CqlEvaluationHelper {
 		setup(libraryLoaderFactory, jpaContentProvider, restContentProvider, jpaTerminologyProvider, daoRegistry);
 	}
 
-	private void setup(LibraryLoaderFactory libraryLoaderFactory, JpaLibraryContentProvider jpaContentProvider,
-					   LibraryContentProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
-					   DaoRegistry daoRegistry) {
+	private void setup(LibraryLoaderFactory libraryLoaderFactory, JpaLibrarySourceProvider jpaContentProvider,
+			LibrarySourceProvider restContentProvider, JpaTerminologyProvider jpaTerminologyProvider,
+			DaoRegistry daoRegistry) {
 		setupLibraryLoader(libraryLoaderFactory, jpaContentProvider, restContentProvider);
 		setupTerminologyProvider(jpaTerminologyProvider);
 		if (fhirContext.equals(FhirContext.forDstu3())) {
 			this.queryGenerator = new Dstu3FhirQueryGenerator(
 					searchParameterResolver, terminologyProvider, modelResolver);
-		}
-		else {
+		} else {
 			this.queryGenerator = new R4FhirQueryGenerator(
 					searchParameterResolver, terminologyProvider, modelResolver);
 		}
@@ -134,15 +137,14 @@ public class CqlEvaluationHelper {
 	}
 
 	private void setupLibraryLoader(LibraryLoaderFactory libraryLoaderFactory,
-									JpaLibraryContentProvider jpaContentProvider,
-									LibraryContentProvider restContentProvider) {
+			JpaLibrarySourceProvider jpaContentProvider,
+			LibrarySourceProvider restContentProvider) {
 		if (!StringUtils.isBlank(content)) {
-			libraryContentProviders.add(new InMemoryLibraryContentProvider(Collections.singletonList(content)));
+			libraryContentProviders.add(new InMemoryLibrarySourceProvider(Collections.singletonList(content)));
 		}
 		if (contentEndpoint != null) {
 			libraryContentProviders.add(restContentProvider);
-		}
-		else {
+		} else {
 			libraryContentProviders.add(jpaContentProvider);
 		}
 		libraryLoader = libraryLoaderFactory.create(libraryContentProviders);
@@ -152,9 +154,9 @@ public class CqlEvaluationHelper {
 		if (terminologyEndpoint != null) {
 			IGenericClient remoteClient = resolveRemoteClient(terminologyEndpoint);
 			terminologyProvider = fhirContext.equals(FhirContext.forDstu3())
-					? new Dstu3FhirTerminologyProvider(remoteClient) : new R4FhirTerminologyProvider(remoteClient);
-		}
-		else {
+					? new Dstu3FhirTerminologyProvider(remoteClient)
+					: new R4FhirTerminologyProvider(remoteClient);
+		} else {
 			terminologyProvider = jpaTerminologyProvider;
 		}
 	}
@@ -170,7 +172,8 @@ public class CqlEvaluationHelper {
 			jpaRetriever.setModelResolver(modelResolver);
 			jpaRetriever.setFhirQueryGenerator(queryGenerator);
 			jpaRetriever.setTerminologyProvider(terminologyProvider);
-			if (terminologyEndpoint != null) jpaRetriever.setExpandValueSets(true);
+			if (terminologyEndpoint != null)
+				jpaRetriever.setExpandValueSets(true);
 			retrieveProviders.add(jpaRetriever);
 		}
 		if (dataEndpoint != null) {
@@ -179,28 +182,28 @@ public class CqlEvaluationHelper {
 			restRetriever.setModelResolver(modelResolver);
 			restRetriever.setFhirQueryGenerator(queryGenerator);
 			restRetriever.setTerminologyProvider(terminologyProvider);
-			if (terminologyEndpoint != null) restRetriever.setExpandValueSets(true);
+			if (terminologyEndpoint != null)
+				restRetriever.setExpandValueSets(true);
 			retrieveProviders.add(restRetriever);
 		}
 		dataProvider = new CompositeDataProvider(modelResolver, new PriorityRetrieveProvider(retrieveProviders));
 	}
 
 	public ExpressionEvaluator getExpressionEvaluator() {
-		Set<TypedLibraryContentProviderFactory> libraryFactories = Collections.singleton(
-				new FhirRestLibraryContentProviderFactory(clientFactory, adapterFactory, libraryVersionSelector));
+		Set<TypedLibrarySourceProviderFactory> libraryFactories = Collections.singleton(
+				new FhirRestLibrarySourceProviderFactory(clientFactory, adapterFactory, libraryVersionSelector));
 		Set<TypedRetrieveProviderFactory> retrieveFactories = Collections.singleton(
 				new FhirRestRetrieveProviderFactory(fhirContext, clientFactory));
 		Set<TypedTerminologyProviderFactory> terminologyFactories = Collections.singleton(
 				new FhirRestTerminologyProviderFactory(fhirContext, clientFactory));
 		FhirModelResolverFactory fhirFactory = new FhirModelResolverFactory();
 		EndpointConverter endpointConverter = new EndpointConverter(adapterFactory);
-		LibraryContentProviderFactory libraryContentFactory =
-				new org.opencds.cqf.cql.evaluator.builder.library.LibraryContentProviderFactory(
-						fhirContext, adapterFactory, libraryFactories, libraryVersionSelector);
-		DataProviderFactory dataFactory =
-				new DataProviderFactory(fhirContext, Collections.singleton(fhirFactory), retrieveFactories);
-		TerminologyProviderFactory terminologyFactory =
-				new TerminologyProviderFactory(fhirContext, terminologyFactories);
+		LibrarySourceProviderFactory libraryContentFactory = new org.opencds.cqf.cql.evaluator.builder.library.LibrarySourceProviderFactory(
+				fhirContext, adapterFactory, libraryFactories, libraryVersionSelector);
+		DataProviderFactory dataFactory = new DataProviderFactory(fhirContext, Collections.singleton(fhirFactory),
+				retrieveFactories);
+		TerminologyProviderFactory terminologyFactory = new TerminologyProviderFactory(fhirContext,
+				terminologyFactories);
 		return new ExpressionEvaluator(fhirContext, parametersConverter, libraryContentFactory, dataFactory,
 				terminologyFactory, endpointConverter, fhirFactory, CqlEvaluatorBuilder::new);
 	}
@@ -225,7 +228,8 @@ public class CqlEvaluationHelper {
 	}
 
 	public Pair<String, Object> resolveContextParameter(String subject) {
-		if (StringUtils.isBlank(subject)) return null;
+		if (StringUtils.isBlank(subject))
+			return null;
 		String[] reference = subject.split("/");
 		return Pair.of(reference.length > 1 ? reference[0] : "Patient", reference.length > 1 ? reference[1] : subject);
 	}
@@ -233,34 +237,35 @@ public class CqlEvaluationHelper {
 	public VersionedIdentifier resolveLibraryIdentifier(String content, IBaseResource library) {
 		if (!StringUtils.isBlank(content)) {
 			ModelManager manager = new ModelManager();
-			TranslatedLibrary translatedLibrary =
-					CqlTranslator.fromText(content, manager, new LibraryManager(manager)).getTranslatedLibrary();
+			CompiledLibrary translatedLibrary = CqlTranslator.fromText(content, manager, new LibraryManager(manager))
+					.getTranslatedLibrary();
 			return new VersionedIdentifier()
 					.withId(translatedLibrary.getIdentifier().getId())
 					.withVersion(translatedLibrary.getIdentifier().getVersion());
-		}
-		else if (library == null) {
+		} else if (library == null) {
 			return null;
-		}
-		else if (library instanceof org.hl7.fhir.dstu3.model.Library) {
+		} else if (library instanceof org.hl7.fhir.dstu3.model.Library) {
 			org.hl7.fhir.dstu3.model.Library dstu3Library = (org.hl7.fhir.dstu3.model.Library) library;
 			return new VersionedIdentifier()
-				.withId(dstu3Library.hasUrl()
-						? Canonicals.getIdPart(dstu3Library.getUrl())
-						: dstu3Library.hasName() ? dstu3Library.getName() : null)
-				.withVersion(dstu3Library.hasVersion()
-						? dstu3Library.getVersion() : dstu3Library.hasUrl()
-						? Canonicals.getVersion(dstu3Library.getUrl()) : null);
-		}
-		else {
+					.withId(dstu3Library.hasUrl()
+							? Canonicals.getIdPart(dstu3Library.getUrl())
+							: dstu3Library.hasName() ? dstu3Library.getName() : null)
+					.withVersion(dstu3Library.hasVersion()
+							? dstu3Library.getVersion()
+							: dstu3Library.hasUrl()
+									? Canonicals.getVersion(dstu3Library.getUrl())
+									: null);
+		} else {
 			org.hl7.fhir.r4.model.Library r4Library = (org.hl7.fhir.r4.model.Library) library;
 			return new VersionedIdentifier()
-				.withId(r4Library.hasUrl()
-						? Canonicals.getIdPart(r4Library.getUrl())
-						: r4Library.hasName() ? r4Library.getName() : null)
-				.withVersion(r4Library.hasVersion()
-						? r4Library.getVersion() : r4Library.hasUrl()
-						? Canonicals.getVersion(r4Library.getUrl()) : null);
+					.withId(r4Library.hasUrl()
+							? Canonicals.getIdPart(r4Library.getUrl())
+							: r4Library.hasName() ? r4Library.getName() : null)
+					.withVersion(r4Library.hasVersion()
+							? r4Library.getVersion()
+							: r4Library.hasUrl()
+									? Canonicals.getVersion(r4Library.getUrl())
+									: null);
 		}
 	}
 
@@ -271,8 +276,8 @@ public class CqlEvaluationHelper {
 			String url = null;
 			for (Object parameters : includedLibraries) {
 				if (parameters instanceof org.hl7.fhir.dstu3.model.Parameters) {
-					for (org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameterComponent
-							: ((org.hl7.fhir.dstu3.model.Parameters) parameters).getParameter()) {
+					for (org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameterComponent : ((org.hl7.fhir.dstu3.model.Parameters) parameters)
+							.getParameter()) {
 						if (parameterComponent.getName().equalsIgnoreCase("url")) {
 							url = parameterComponent.getValue().primitiveValue();
 						}
@@ -280,10 +285,9 @@ public class CqlEvaluationHelper {
 							name = parameterComponent.getValue().primitiveValue();
 						}
 					}
-				}
-				else {
-					for (org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent parameterComponent
-							: ((org.hl7.fhir.r4.model.Parameters) parameters).getParameter()) {
+				} else {
+					for (org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent parameterComponent : ((org.hl7.fhir.r4.model.Parameters) parameters)
+							.getParameter()) {
 						if (parameterComponent.getName().equalsIgnoreCase("url")) {
 							url = parameterComponent.getValue().primitiveValue();
 						}
@@ -302,23 +306,23 @@ public class CqlEvaluationHelper {
 	public IBaseOperationOutcome createIssue(String severity, String details) {
 		if (fhirContext.getVersion().getVersion() == FhirVersionEnum.DSTU3) {
 			return new org.hl7.fhir.dstu3.model.OperationOutcome()
-				.addIssue(
-					new org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent()
-						.setSeverity(org.hl7.fhir.dstu3.model.OperationOutcome.IssueSeverity.fromCode(severity))
-						.setDetails(new org.hl7.fhir.dstu3.model.CodeableConcept().setText(details))
-				);
-		}
-		else {
+					.addIssue(
+							new org.hl7.fhir.dstu3.model.OperationOutcome.OperationOutcomeIssueComponent()
+									.setSeverity(
+											org.hl7.fhir.dstu3.model.OperationOutcome.IssueSeverity.fromCode(severity))
+									.setDetails(new org.hl7.fhir.dstu3.model.CodeableConcept().setText(details)));
+		} else {
 			return new org.hl7.fhir.r4.model.OperationOutcome()
-				.addIssue(
-					new org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent()
-						.setSeverity(org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.fromCode(severity))
-						.setDetails(new org.hl7.fhir.r4.model.CodeableConcept().setText(details))
-				);
+					.addIssue(
+							new org.hl7.fhir.r4.model.OperationOutcome.OperationOutcomeIssueComponent()
+									.setSeverity(
+											org.hl7.fhir.r4.model.OperationOutcome.IssueSeverity.fromCode(severity))
+									.setDetails(new org.hl7.fhir.r4.model.CodeableConcept().setText(details)));
 		}
 	}
 
-	public IBaseOperationOutcome validateOperationParameters(RequestDetails requestDetails, String ... operationParmeters) {
+	public IBaseOperationOutcome validateOperationParameters(RequestDetails requestDetails,
+			String... operationParmeters) {
 		for (String operationParameter : operationParmeters) {
 			try {
 				Operations.validateCardinality(requestDetails, operationParameter, 0, 1);
@@ -332,7 +336,8 @@ public class CqlEvaluationHelper {
 	public List<HeaderInfo> getHeaderNameValuePairs(List<String> headers) {
 		List<HeaderInfo> headerNameValuePairs = new ArrayList<>();
 		for (String header : headers) {
-			// NOTE: assuming the headers will be key value pairs separated by a colon (key: value)
+			// NOTE: assuming the headers will be key value pairs separated by a colon (key:
+			// value)
 			String[] headerNameAndValue = header.split("\\s*:\\s*");
 			if (headerNameAndValue.length == 2) {
 				headerNameValuePairs.add(new HeaderInfo(headerNameAndValue[0], headerNameAndValue[1]));

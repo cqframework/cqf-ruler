@@ -1,10 +1,13 @@
 package org.opencds.cqf.ruler.cpg.dstu3.provider;
 
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.api.RequestTypeEnum;
-import ca.uhn.fhir.rest.api.server.RequestDetails;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.elm.execution.VersionedIdentifier;
 import org.hl7.fhir.dstu3.model.BooleanType;
 import org.hl7.fhir.dstu3.model.Bundle;
@@ -17,32 +20,30 @@ import org.hl7.fhir.instance.model.api.IBaseOperationOutcome;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
 import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
-import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibraryContentProviderFactory;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibrarySourceProviderFactory;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.dstu3.AdapterFactory;
 import org.opencds.cqf.ruler.cpg.CqlEvaluationHelper;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
-import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
+import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryLoaderFactory;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Operation;
+import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.rest.api.RequestTypeEnum;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
 	private LibraryLoaderFactory libraryLoaderFactory;
 	@Autowired
-	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
+	private JpaLibrarySourceProviderFactory jpaLibrarySourceProviderFactory;
 	@Autowired
-	private FhirRestLibraryContentProviderFactory fhirRestLibraryContentProviderFactory;
+	private FhirRestLibrarySourceProviderFactory fhirRestLibrarySourceProviderFactory;
 	@Autowired
 	private JpaTerminologyProviderFactory jpaTerminologyProviderFactory;
 	@Autowired
@@ -55,15 +56,17 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 	/**
 	 * Evaluates a CQL library and returns the results as a Parameters resource.
 	 *
-	 * @param requestDetails   	the {@link RequestDetails RequestDetails}
-	 * @param subject 				Subject for which the library will be evaluated.
-	 *                            This corresponds to the context in which the library
+	 * @param requestDetails      the {@link RequestDetails RequestDetails}
+	 * @param subject             Subject for which the library will be evaluated.
+	 *                            This corresponds to the context in which the
+	 *                            library
 	 *                            will be evaluated and is represented as a relative
 	 *                            FHIR id (e.g. Patient/123), which establishes both
 	 *                            the context and context value for the evaluation
-	 * @param expression          Expression(s) to be evaluated. If no expression names
+	 * @param expression          Expression(s) to be evaluated. If no expression
+	 *                            names
 	 *                            are provided, the operation evaluates all public
-	 *                               expression definitions in the library
+	 *                            expression definitions in the library
 	 * @param parameters          Any input parameters for the expression.
 	 *                            {@link Parameters} Parameters defined in this
 	 *                            input will be made available by name to the CQL
@@ -110,41 +113,49 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 	 *                            evaluation will attempt to use the server on which
 	 *                            the operation is being performed as the
 	 *                            terminology server
-	 * @return The results of the library evaluation, returned as a {@link Parameters} resource
-	 * 		  with a parameter for each named expression defined in the library. The value of
-	 * 		  each expression is returned as a FHIR type, either a resource, or a FHIR-defined
-	 * 		  type corresponding to the CQL return type, as defined in the Using CQL section of
-	 * 		  this implementation guide. If the result of an expression is a list of resources,
-	 * 		  that parameter will be repeated for each element in the result
+	 * @return The results of the library evaluation, returned as a
+	 *         {@link Parameters} resource
+	 *         with a parameter for each named expression defined in the library.
+	 *         The value of
+	 *         each expression is returned as a FHIR type, either a resource, or a
+	 *         FHIR-defined
+	 *         type corresponding to the CQL return type, as defined in the Using
+	 *         CQL section of
+	 *         this implementation guide. If the result of an expression is a list
+	 *         of resources,
+	 *         that parameter will be repeated for each element in the result
 	 */
 	@Operation(name = "$evaluate", idempotent = true, type = Library.class)
 	public Parameters evaluate(
-		RequestDetails requestDetails,
-		@IdParam IdType theId,
-		@OperationParam(name = "subject") String subject,
-		@OperationParam(name = "expression") List<String> expression,
-		@OperationParam(name = "parameters") Parameters parameters,
-		@OperationParam(name = "useServerData") BooleanType useServerData,
-		@OperationParam(name = "data") Bundle data,
-		@OperationParam(name = "prefetchData") List<Parameters> prefetchData,
-		@OperationParam(name = "dataEndpoint") Endpoint dataEndpoint,
-		@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
-		@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
+			RequestDetails requestDetails,
+			@IdParam IdType theId,
+			@OperationParam(name = "subject") String subject,
+			@OperationParam(name = "expression") List<String> expression,
+			@OperationParam(name = "parameters") Parameters parameters,
+			@OperationParam(name = "useServerData") BooleanType useServerData,
+			@OperationParam(name = "data") Bundle data,
+			@OperationParam(name = "prefetchData") List<Parameters> prefetchData,
+			@OperationParam(name = "dataEndpoint") Endpoint dataEndpoint,
+			@OperationParam(name = "contentEndpoint") Endpoint contentEndpoint,
+			@OperationParam(name = "terminologyEndpoint") Endpoint terminologyEndpoint) {
 
 		EndpointInfo remoteData = dataEndpoint != null
-				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(dataEndpoint) : null;
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(dataEndpoint)
+				: null;
 		EndpointInfo remoteContent = contentEndpoint != null
-				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(contentEndpoint) : null;
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(contentEndpoint)
+				: null;
 		EndpointInfo remoteTerminology = terminologyEndpoint != null
-				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(terminologyEndpoint) : null;
-		LibraryContentProvider contentProvider = remoteContent != null
-				? fhirRestLibraryContentProviderFactory.create(remoteContent.getAddress(), remoteContent.getHeaders())
+				? new EndpointConverter(new AdapterFactory()).getEndpointInfo(terminologyEndpoint)
+				: null;
+		LibrarySourceProvider contentProvider = remoteContent != null
+				? fhirRestLibrarySourceProviderFactory.create(remoteContent.getAddress(), remoteContent.getHeaders())
 				: null;
 
 		CqlEvaluationHelper evaluationHelper = new CqlEvaluationHelper(getFhirContext(), myModelResolver,
 				new AdapterFactory(), useServerData == null || useServerData.booleanValue(), data,
 				remoteData, remoteContent, remoteTerminology, null, libraryLoaderFactory,
-				jpaLibraryContentProviderFactory.create(requestDetails), contentProvider,
+				jpaLibrarySourceProviderFactory.create(requestDetails), contentProvider,
 				jpaTerminologyProviderFactory.create(requestDetails), getDaoRegistry());
 
 		if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
@@ -152,12 +163,14 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 					"subject", "expression", "parameters", "useServerData", "data",
 					"prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint");
 
-			if (outcome != null) return newParameters(newPart("error", (OperationOutcome) outcome));
+			if (outcome != null)
+				return newParameters(newPart("error", (OperationOutcome) outcome));
 		}
 
-		if (prefetchData != null) return newParameters(newPart("invalid parameters",
-				(OperationOutcome) evaluationHelper.createIssue("error",
-						"prefetchData is not yet supported")));
+		if (prefetchData != null)
+			return newParameters(newPart("invalid parameters",
+					(OperationOutcome) evaluationHelper.createIssue("error",
+							"prefetchData is not yet supported")));
 
 		VersionedIdentifier libraryIdentifier = evaluationHelper.resolveLibraryIdentifier(null, read(theId));
 		globalLibraryCache.remove(libraryIdentifier);

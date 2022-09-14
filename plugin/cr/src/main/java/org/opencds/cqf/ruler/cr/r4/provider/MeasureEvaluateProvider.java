@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 
 import java.util.Map;
 
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Extension;
@@ -14,13 +15,12 @@ import org.opencds.cqf.cql.engine.fhir.terminology.R4FhirTerminologyProvider;
 import org.opencds.cqf.cql.engine.terminology.TerminologyProvider;
 import org.opencds.cqf.cql.evaluator.CqlOptions;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
-import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
+import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Clients;
@@ -45,7 +45,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider
 	private DataProviderFactory dataProviderFactory;
 
 	@Autowired
-	private JpaLibraryContentProviderFactory libraryContentProviderFactory;
+	private JpaLibrarySourceProviderFactory libraryContentProviderFactory;
 
 	@Autowired
 	private JpaFhirDalFactory fhirDalFactory;
@@ -66,7 +66,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider
 	 * <a href="http://www.hl7.org/fhir/clinicalreasoning-module.html">FHIR Clinical
 	 * Reasoning Module</a>. This implementation aims to be compatible with the CQF
 	 * IG.
-	 * 
+	 *
 	 * @param requestDetails The details (such as tenant) of this request. Usually
 	 *                       auto-populated HAPI.
 	 * @param theId          the Id of the Measure to evaluate
@@ -110,7 +110,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider
 		}
 
 		DataProvider dataProvider = this.jpaDataProviderFactory.create(requestDetails, terminologyProvider);
-		LibraryContentProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
+		LibrarySourceProvider libraryContentProvider = this.libraryContentProviderFactory.create(requestDetails);
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 
 		org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor measureProcessor = new org.opencds.cqf.cql.evaluator.measure.r4.R4MeasureProcessor(
