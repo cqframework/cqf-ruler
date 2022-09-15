@@ -86,7 +86,7 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 		RequestDetails details = Mockito.mock(RequestDetails.class);
 		Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, endpoint.getIdElement(),
 				stringAndListParam, null, null);
-		validateOutcome(outcomeResource, "HTTP 404 : Resource ValueSet/" + "dne" + " is not known");
+		validateOutcome(outcomeResource, "HTTP 404 : HAPI-2001: Resource ValueSet/" + "dne" + " is not known");
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 		Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, endpoint.getIdElement(),
 				stringAndListParam, null, null);
 		validateOutcome(outcomeResource,
-				"HTTP 404 : Resource ValueSet/" + new ValueSet().getIdElement().getIdPart() + " is not known");
+				"HTTP 404 : HAPI-2001: Resource ValueSet/" + new ValueSet().getIdElement().getIdPart() + " is not known");
 	}
 
 	@Test
