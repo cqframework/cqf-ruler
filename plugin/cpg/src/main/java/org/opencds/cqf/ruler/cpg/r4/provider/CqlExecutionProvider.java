@@ -36,6 +36,7 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * This class is used to provide an {@link DaoRegistryOperationProvider
@@ -43,6 +44,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
  * implementation that supports cql expression evaluation
  * Created by Bryn on 1/16/2017.
  */
+@Configurable
 public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
