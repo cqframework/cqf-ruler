@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.cqframework.cql.cql2elm.CqlCompilerException;
 import org.cqframework.cql.cql2elm.CqlTranslator;
-import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.hl7.elm.r1.VersionedIdentifier;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IBaseResource;
@@ -24,13 +25,12 @@ import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibrarySourceProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.LibraryAdapter;
-import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
-import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
+import org.opencds.cqf.ruler.cql.JpaLibrarySourceProvider;
+import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryManagerFactory;
 import org.opencds.cqf.ruler.cql.utility.Translators;
@@ -56,7 +56,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	private Logger myLog = LoggerFactory.getLogger(DataOperationsProvider.class);
 
 	@Autowired
-	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
+	private JpaLibrarySourceProviderFactory jpaLibrarySourceProviderFactory;
 
 	@Autowired
 	private LibraryManagerFactory libraryManagerFactory;
@@ -133,7 +133,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	}
 
 	private LibraryManager createLibraryManager(Library library, RequestDetails theRequestDetails) {
-		JpaLibraryContentProvider jpaLibraryContentProvider = jpaLibraryContentProviderFactory.create(theRequestDetails);
+		JpaLibrarySourceProvider jpaLibrarySourceProvider = jpaLibrarySourceProviderFactory.create(theRequestDetails);
 
 		Bundle libraryBundle = new Bundle();
 		List<Library> listLib = fetchDependencyLibraries(library, theRequestDetails);
@@ -145,11 +145,11 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			libraryBundle.addEntry(component);
 		});
 
-		LibraryContentProvider bundleLibraryProvider = new BundleFhirLibraryContentProvider(this.getFhirContext(),
+		LibrarySourceProvider bundleLibraryProvider = new BundleFhirLibrarySourceProvider(this.getFhirContext(),
 				libraryBundle, adapterFactory, libraryVersionSelector);
 
-		List<LibraryContentProvider> sourceProviders = new ArrayList<>(
-				Arrays.asList(bundleLibraryProvider, jpaLibraryContentProvider));
+		List<LibrarySourceProvider> sourceProviders = new ArrayList<>(
+				Arrays.asList(bundleLibraryProvider, jpaLibrarySourceProvider));
 
 		return libraryManagerFactory.create(sourceProviders);
 	}
@@ -159,7 +159,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 				new ByteArrayInputStream(Libraries.getContent(library, "text/cql")), libraryManager,
 				libraryManager.getModelManager(), cqlTranslatorOptions);
 		if (!translator.getErrors().isEmpty()) {
-			throw new CqlTranslatorException(Translators.errorsToString(translator.getErrors()));
+			throw new CqlCompilerException(Translators.errorsToString(translator.getErrors()));
 		}
 		return translator;
 	}
@@ -225,9 +225,8 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 
 		if (parts.resourceType().equals("Library")) {
 			List<IBaseResource> list = search(Library.class, Searches.byCanonical(resourceCanonical), theRequestDetails)
-				.getAllResources();
+					.getAllResources();
 			if (list != null && !list.isEmpty()) {
-
 
 				if (list.size() == 1) {
 					library = (Library) list.get(0);

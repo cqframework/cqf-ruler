@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
-import org.cqframework.cql.cql2elm.model.TranslatedLibrary;
+import org.cqframework.cql.cql2elm.model.CompiledLibrary;
 import org.cqframework.cql.elm.requirements.fhir.DataRequirementsProcessor;
 import org.hl7.fhir.convertors.advisors.impl.BaseAdvisor_30_50;
 import org.hl7.fhir.convertors.advisors.impl.BaseAdvisor_40_50;
@@ -38,7 +38,7 @@ public class DataRequirements {
 
 	public static org.hl7.fhir.r5.model.Library getModuleDefinitionLibraryR5(org.hl7.fhir.r5.model.Measure measureToUse,
 			LibraryManager libraryManager,
-			TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+			CompiledLibrary translatedLibrary, CqlTranslatorOptions options) {
 
 		Set<String> expressionList = getExpressions(measureToUse);
 		DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
@@ -62,66 +62,77 @@ public class DataRequirements {
 		return expressionSet;
 	}
 
-	public static org.hl7.fhir.dstu3.model.Library getModuleDefinitionLibraryDstu3(org.hl7.fhir.dstu3.model.Measure measureToUse,
-																											 LibraryManager libraryManager,
-																											 TranslatedLibrary translatedLibrary,
-																											 CqlTranslatorOptions options) {
+	public static org.hl7.fhir.dstu3.model.Library getModuleDefinitionLibraryDstu3(
+			org.hl7.fhir.dstu3.model.Measure measureToUse,
+			LibraryManager libraryManager,
+			CompiledLibrary translatedLibrary,
+			CqlTranslatorOptions options) {
 		VersionConvertor_30_50 versionConvertor_30_50 = new VersionConvertor_30_50(new BaseAdvisor_30_50());
-		org.hl7.fhir.r5.model.Measure r5Measure = (org.hl7.fhir.r5.model.Measure)versionConvertor_30_50.convertResource(measureToUse);
+		org.hl7.fhir.r5.model.Measure r5Measure = (org.hl7.fhir.r5.model.Measure) versionConvertor_30_50
+				.convertResource(measureToUse);
 		Set<String> expressionList = getExpressions(r5Measure);
 		DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
-		org.hl7.fhir.r5.model.Library effectiveDataRequirements = dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, expressionList, true);
-		org.hl7.fhir.dstu3.model.Library stu3EffectiveDataRequirements = (org.hl7.fhir.dstu3.model.Library)versionConvertor_30_50.convertResource(effectiveDataRequirements);
+		org.hl7.fhir.r5.model.Library effectiveDataRequirements = dqReqTrans.gatherDataRequirements(libraryManager,
+				translatedLibrary, options, expressionList, true);
+		org.hl7.fhir.dstu3.model.Library stu3EffectiveDataRequirements = (org.hl7.fhir.dstu3.model.Library) versionConvertor_30_50
+				.convertResource(effectiveDataRequirements);
 		// TODO: Support dataRequirementFhirQueries in STU3
 		return stu3EffectiveDataRequirements;
 	}
 
 	public static org.hl7.fhir.dstu3.model.Library getModuleDefinitionLibraryDstu3(LibraryManager libraryManager,
-			TranslatedLibrary translatedLibrary, CqlTranslatorOptions options) {
+			CompiledLibrary translatedLibrary, CqlTranslatorOptions options) {
 		org.hl7.fhir.r5.model.Library libraryR5 = getModuleDefinitionLibraryR5(libraryManager, translatedLibrary,
 				options);
 
-		BaseAdvisor_30_50  baseAdvisor_30_50= new BaseAdvisor_30_50();
+		BaseAdvisor_30_50 baseAdvisor_30_50 = new BaseAdvisor_30_50();
 		VersionConvertor_30_50 versionConvertor_30_50 = new VersionConvertor_30_50(baseAdvisor_30_50);
 		org.hl7.fhir.dstu3.model.Library libraryDstu3 = null;
 		libraryDstu3 = (org.hl7.fhir.dstu3.model.Library) versionConvertor_30_50.convertResource(libraryR5);
 		// libraryR4 = this.addDataRequirementFhirQueries(libraryDstu3); // uncomment
 		// this when engine fhir query generation available
-		// There is no DSTU3 extension to support FHIRQueryPattern representation on a DataRequirement
+		// There is no DSTU3 extension to support FHIRQueryPattern representation on a
+		// DataRequirement
 		return libraryDstu3;
 	}
 
-	public static org.hl7.fhir.r4.model.Library getModuleDefinitionLibraryR4( org.hl7.fhir.r4.model.Measure measureToUse,
-																									  LibraryManager libraryManager,
-																									  TranslatedLibrary translatedLibrary,
-																									  CqlTranslatorOptions options,
-																									  SearchParameterResolver searchParameterResolver,
-																									  TerminologyProvider terminologyProvider,
-																									  ModelResolver modelResolver,
-																									  IBaseConformance capStatement) {
+	public static org.hl7.fhir.r4.model.Library getModuleDefinitionLibraryR4(org.hl7.fhir.r4.model.Measure measureToUse,
+			LibraryManager libraryManager,
+			CompiledLibrary translatedLibrary,
+			CqlTranslatorOptions options,
+			SearchParameterResolver searchParameterResolver,
+			TerminologyProvider terminologyProvider,
+			ModelResolver modelResolver,
+			IBaseConformance capStatement) {
 
 		VersionConvertor_40_50 versionConvertor_40_50 = new VersionConvertor_40_50(new BaseAdvisor_40_50());
-		org.hl7.fhir.r5.model.Measure r5Measure = (org.hl7.fhir.r5.model.Measure)versionConvertor_40_50.convertResource(measureToUse);
+		org.hl7.fhir.r5.model.Measure r5Measure = (org.hl7.fhir.r5.model.Measure) versionConvertor_40_50
+				.convertResource(measureToUse);
 		Set<String> expressionList = getExpressions(r5Measure);
 		DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
-		org.hl7.fhir.r5.model.Library effectiveDataRequirements = dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, expressionList, true);
-		org.hl7.fhir.r4.model.Library r4EffectiveDataRequirements = (org.hl7.fhir.r4.model.Library)versionConvertor_40_50.convertResource(effectiveDataRequirements);
-		r4EffectiveDataRequirements = addDataRequirementFhirQueries(r4EffectiveDataRequirements, searchParameterResolver, terminologyProvider, modelResolver, capStatement);
+		org.hl7.fhir.r5.model.Library effectiveDataRequirements = dqReqTrans.gatherDataRequirements(libraryManager,
+				translatedLibrary, options, expressionList, true);
+		org.hl7.fhir.r4.model.Library r4EffectiveDataRequirements = (org.hl7.fhir.r4.model.Library) versionConvertor_40_50
+				.convertResource(effectiveDataRequirements);
+		r4EffectiveDataRequirements = addDataRequirementFhirQueries(r4EffectiveDataRequirements, searchParameterResolver,
+				terminologyProvider, modelResolver, capStatement);
 		return r4EffectiveDataRequirements;
 	}
 
-	public static org.hl7.fhir.r4.model.Library getModuleDefinitionLibraryR4( LibraryManager libraryManager, TranslatedLibrary translatedLibrary,
-																									  CqlTranslatorOptions options,
-																									  SearchParameterResolver searchParameterResolver,
-																									  TerminologyProvider terminologyProvider,
-																									  ModelResolver modelResolver,
-																									  IBaseConformance capStatement) {
+	public static org.hl7.fhir.r4.model.Library getModuleDefinitionLibraryR4(LibraryManager libraryManager,
+			CompiledLibrary translatedLibrary,
+			CqlTranslatorOptions options,
+			SearchParameterResolver searchParameterResolver,
+			TerminologyProvider terminologyProvider,
+			ModelResolver modelResolver,
+			IBaseConformance capStatement) {
 		org.hl7.fhir.r5.model.Library libraryR5 = getModuleDefinitionLibraryR5(libraryManager, translatedLibrary,
-			options);
+				options);
 		VersionConvertor_40_50 versionConvertor_40_50 = new VersionConvertor_40_50(new BaseAdvisor_40_50());
 		org.hl7.fhir.r4.model.Library libraryR4 = (org.hl7.fhir.r4.model.Library) versionConvertor_40_50
 				.convertResource(libraryR5);
-		libraryR4 = addDataRequirementFhirQueries(libraryR4, searchParameterResolver, terminologyProvider, modelResolver, capStatement);
+		libraryR4 = addDataRequirementFhirQueries(libraryR4, searchParameterResolver, terminologyProvider, modelResolver,
+				capStatement);
 		return libraryR4;
 	}
 
@@ -129,7 +140,7 @@ public class DataRequirements {
 		String contextType = "Patient";
 
 		if (subject instanceof CodeableConcept) {
-			for (Coding c : ((CodeableConcept)subject).getCoding()) {
+			for (Coding c : ((CodeableConcept) subject).getCoding()) {
 				if ("http://hl7.org/fhir/resource-types".equals(c.getSystem())) {
 					contextType = c.getCode();
 				}
@@ -139,14 +150,15 @@ public class DataRequirements {
 	}
 
 	private static org.hl7.fhir.r4.model.Library addDataRequirementFhirQueries(org.hl7.fhir.r4.model.Library library,
-																										SearchParameterResolver searchParameterResolver,
-																										TerminologyProvider terminologyProvider,
-																										ModelResolver modelResolver,
-																										IBaseConformance capStatement) {
+			SearchParameterResolver searchParameterResolver,
+			TerminologyProvider terminologyProvider,
+			ModelResolver modelResolver,
+			IBaseConformance capStatement) {
 		List<org.hl7.fhir.r4.model.DataRequirement> dataReqs = library.getDataRequirement();
 
 		try {
-			BaseFhirQueryGenerator fhirQueryGenerator = new R4FhirQueryGenerator(searchParameterResolver, terminologyProvider, modelResolver);
+			BaseFhirQueryGenerator fhirQueryGenerator = new R4FhirQueryGenerator(searchParameterResolver,
+					terminologyProvider, modelResolver);
 
 			Map<String, Object> contextValues = new HashMap<String, Object>();
 			SubjectContext contextValue = getContextForSubject(library.getSubject());
@@ -172,7 +184,7 @@ public class DataRequirements {
 	}
 
 	public static org.hl7.fhir.r5.model.Library getModuleDefinitionLibraryR5(LibraryManager libraryManager,
-			TranslatedLibrary translatedLibrary,
+			CompiledLibrary translatedLibrary,
 			CqlTranslatorOptions options) {
 		DataRequirementsProcessor dqReqTrans = new DataRequirementsProcessor();
 		return dqReqTrans.gatherDataRequirements(libraryManager, translatedLibrary, options, null, true);

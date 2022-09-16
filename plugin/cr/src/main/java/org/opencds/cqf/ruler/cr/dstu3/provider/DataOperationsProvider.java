@@ -7,12 +7,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
-
+import org.cqframework.cql.cql2elm.CqlCompilerException;
 import org.cqframework.cql.cql2elm.CqlTranslator;
-import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.IdType;
 import org.hl7.fhir.dstu3.model.Library;
@@ -20,12 +19,11 @@ import org.hl7.fhir.dstu3.model.Measure;
 import org.hl7.fhir.dstu3.model.Reference;
 import org.hl7.fhir.dstu3.model.RelatedArtifact;
 import org.hl7.fhir.exceptions.FHIRException;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibraryContentProvider;
+import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.BundleFhirLibrarySourceProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.AdapterFactory;
-import org.opencds.cqf.ruler.cql.JpaLibraryContentProvider;
-import org.opencds.cqf.ruler.cql.JpaLibraryContentProviderFactory;
+import org.opencds.cqf.ruler.cql.JpaLibrarySourceProvider;
+import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.LibraryManagerFactory;
 import org.opencds.cqf.ruler.cql.utility.Translators;
 import org.opencds.cqf.ruler.cr.utility.DataRequirements;
@@ -36,6 +34,8 @@ import org.opencds.cqf.ruler.utility.Searches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Lists;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
@@ -48,7 +48,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	private Logger myLog = LoggerFactory.getLogger(DataOperationsProvider.class);
 
 	@Autowired
-	private JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory;
+	private JpaLibrarySourceProviderFactory jpaLibrarySourceProviderFactory;
 
 	@Autowired
 	private LibraryManagerFactory libraryManagerFactory;
@@ -115,7 +115,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 	}
 
 	private LibraryManager createLibraryManager(Library library, RequestDetails theRequestDetails) {
-		JpaLibraryContentProvider jpaLibraryContentProvider = jpaLibraryContentProviderFactory.create(theRequestDetails);
+		JpaLibrarySourceProvider jpaLibrarySourceProvider = jpaLibrarySourceProviderFactory.create(theRequestDetails);
 
 		Bundle libraryBundle = new Bundle();
 		List<Library> listLib = fetchDependencyLibraries(library, theRequestDetails);
@@ -127,11 +127,11 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			libraryBundle.addEntry(component);
 		});
 
-		LibraryContentProvider bundleLibraryProvider = new BundleFhirLibraryContentProvider(this.getFhirContext(),
+		LibrarySourceProvider bundleLibraryProvider = new BundleFhirLibrarySourceProvider(this.getFhirContext(),
 				libraryBundle, adapterFactory, libraryVersionSelector);
 
-		List<LibraryContentProvider> sourceProviders = Lists.newArrayList(bundleLibraryProvider,
-				jpaLibraryContentProvider);
+		List<LibrarySourceProvider> sourceProviders = Lists.newArrayList(bundleLibraryProvider,
+				jpaLibrarySourceProvider);
 
 		return libraryManagerFactory.create(sourceProviders);
 	}
@@ -142,7 +142,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 				libraryManager.getModelManager(), cqlTranslatorOptions);
 
 		if (!translator.getErrors().isEmpty()) {
-			throw new CqlTranslatorException(Translators.errorsToString(translator.getErrors()));
+			throw new CqlCompilerException(Translators.errorsToString(translator.getErrors()));
 		}
 		return translator;
 	}
@@ -180,7 +180,7 @@ public class DataOperationsProvider extends DaoRegistryOperationProvider {
 			RequestDetails theRequestDetails) {
 		for (RelatedArtifact relatedArtifact : library.getRelatedArtifact()) {
 			if (relatedArtifact.getType().equals(RelatedArtifact.RelatedArtifactType.DEPENDSON)
-				&& relatedArtifact.hasResource()) {
+					&& relatedArtifact.hasResource()) {
 				String reference = relatedArtifact.getResource().getReference();
 				IdType id = Ids.newId(Library.class, reference.substring(reference.indexOf("/") + 1));
 				if (id != null) {

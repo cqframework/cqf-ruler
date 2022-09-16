@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
 		<artifactId>cqf-ruler-plugin</artifactId>
-		<version>0.5.2-SNAPSHOT</version>
+		<version>0.6.0</version>
 	</parent>
 
 	<artifactId>cqf-ruler-cql</artifactId>
@@ -16,6 +16,15 @@
 		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
 			<artifactId>evaluator.spring</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.jackson-deps</artifactId>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>info.cqframework</groupId>
+			<artifactId>cql</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>

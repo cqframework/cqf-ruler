@@ -20,10 +20,6 @@
 		{
 			"contentType": "text/cql",
 			"data": "bGlicmFyeSBTaW1wbGVSNExpYnJhcnkgdmVyc2lvbiAnMC4wLjEnCgp1c2luZyBGSElSIHZlcnNpb24gJzQuMC4xJwoKaW5jbHVkZSBGSElSSGVscGVycyB2ZXJzaW9uICc0LjAuMScgY2FsbGVkIEZISVJIZWxwZXJzCgpjb250ZXh0IFBhdGllbnQKCmRlZmluZSBzaW1wbGVCb29sZWFuRXhwcmVzc2lvbjogdHJ1ZQoKZGVmaW5lIG9ic2VydmF0aW9uUmV0cmlldmU6IFtPYnNlcnZhdGlvbl0KCmRlZmluZSBvYnNlcnZhdGlvbkhhc0NvZGU6IG5vdCBJc051bGwoKFtPYnNlcnZhdGlvbl0pLmNvZGUpCgpkZWZpbmUgIkluaXRpYWwgUG9wdWxhdGlvbiI6IG9ic2VydmF0aW9uSGFzQ29kZQoKZGVmaW5lICJEZW5vbWluYXRvciI6ICJJbml0aWFsIFBvcHVsYXRpb24iCgpkZWZpbmUgIk51bWVyYXRvciI6ICJEZW5vbWluYXRvciIK"
-		},
-		{
-			"contentType": "application/elm+xml",
-			"data": ""
 		}
 	]
 }

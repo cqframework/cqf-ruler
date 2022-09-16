@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import org.cqframework.cql.cql2elm.CqlCompilerException;
 import org.cqframework.cql.cql2elm.CqlTranslator;
-import org.cqframework.cql.cql2elm.CqlTranslatorException;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
@@ -16,9 +16,9 @@ public class Translators {
 	private Translators() {
 	}
 
-	public static String errorsToString(Iterable<CqlTranslatorException> exceptions) {
+	public static String errorsToString(Iterable<CqlCompilerException> exceptions) {
 		ArrayList<String> errors = new ArrayList<>();
-		for (CqlTranslatorException error : exceptions) {
+		for (CqlCompilerException error : exceptions) {
 			TrackBack tb = error.getLocator();
 			String lines = tb == null ? "[n/a]"
 					: String.format("%s[%d:%d, %d:%d]",
@@ -39,7 +39,7 @@ public class Translators {
 			translator = CqlTranslator.fromStream(cqlStream, modelManager,
 					libraryManager,
 					cqlTranslatorOptions.getOptions()
-							.toArray(new CqlTranslator.Options[cqlTranslatorOptions.getOptions().size()]));
+							.toArray(new CqlTranslatorOptions.Options[cqlTranslatorOptions.getOptions().size()]));
 		} catch (IOException e) {
 			throw new IllegalArgumentException(
 					String.format("Errors occurred translating library: %s", e.getMessage()));
