@@ -22,12 +22,5 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.opencds.cqf.ruler</groupId>
-			<artifactId>cqf-ruler-test</artifactId>
-			<version>0.6.0</version>
-			<scope>test</scope>
-		</dependency>
-
 	</dependencies>
 </project>

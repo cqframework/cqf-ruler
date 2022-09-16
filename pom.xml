@@ -428,6 +428,13 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-runtime</artifactId>
+				<version>4.10.1</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-test-utilities</artifactId>
 				<version>${hapi_version}</version>
