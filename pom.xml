@@ -506,8 +506,9 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.8.1</version>
 					<configuration>
-						<source>1.8</source>
-						<target>1.8</target>
+						<source>11</source>
+						<target>11</target>
+						<release>11</release>
 						<failOnError>true</failOnError>
 						<failOnWarning>true</failOnWarning>
 						<compilerArgs>
@@ -561,11 +562,10 @@
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>3.3.1</version>
 					<configuration>
-						<source>8</source>
+						<source>11</source>
 						<failOnWarnings>true</failOnWarnings>
 						<failOnErrors>true</failOnErrors>
-						<!--TODO: Add missing Javadoc comments -->
-						<doclint>none</doclint>
+						<doclint>-missing</doclint>
 					</configuration>
 					<executions>
 						<execution>
@@ -626,7 +626,7 @@
 							<configuration>
 								<rules>
 									<requireJavaVersion>
-										<version>[9,)</version>
+										<version>[11,)</version>
 									</requireJavaVersion>
 									<!-- <DependencyConvergence /> -->
 									<requireMavenVersion>
@@ -890,25 +890,6 @@
 		</plugins>
 	</reporting>
 	<profiles>
-		<profile>
-			<id>java-9</id>
-			<activation>
-				<jdk>[9,)</jdk>
-			</activation>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-compiler-plugin</artifactId>
-							<configuration>
-								<release>8</release>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
 		<profile>
 			<id>release</id>
 			<build>

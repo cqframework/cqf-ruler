@@ -50,6 +50,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.concurrent.DelegatingSecurityContextExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -67,6 +68,7 @@ import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvcR4;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvcR5;
+import ca.uhn.fhir.jpa.validation.JpaValidationSupportChain;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cql", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -335,10 +337,20 @@ public class CqlConfig {
 	@Bean(name = "cqlExecutor")
 	public Executor cqlExecutor() {
 		CqlForkJoinWorkerThreadFactory factory = new CqlForkJoinWorkerThreadFactory();
-		ForkJoinPool myCommonPool = new ForkJoinPool(Math.min(32767, Runtime.getRuntime().availableProcessors()), factory,
+		ForkJoinPool myCommonPool = new ForkJoinPool(Math.min(32767, Runtime.getRuntime().availableProcessors()),
+				factory,
 				null, false);
 
 		return new DelegatingSecurityContextExecutor(myCommonPool,
 				SecurityContextHolder.getContext());
+	}
+
+	@Bean
+	@Lazy(false)
+	public IValidationSupport preExpandedValidationSupport(JpaValidationSupportChain jpaSupportChain,
+			FhirContext fhirContext) {
+		var preExpandedValidationSupport = new PreExpandedValidationSupport(fhirContext);
+		jpaSupportChain.addValidationSupport(0, preExpandedValidationSupport);
+		return preExpandedValidationSupport;
 	}
 }
