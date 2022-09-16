@@ -27,7 +27,7 @@ public class CdsServicesCache implements IResourceChangeListener {
 	private static final Logger logger = LoggerFactory.getLogger(CdsServicesCache.class);
 
 	private AtomicReference<JsonArray> cdsServiceCache;
-	private IFhirResourceDao planDefinitionDao;
+	private IFhirResourceDao<?> planDefinitionDao;
 	private DiscoveryResolutionR4 discoveryResolutionR4;
 	private DiscoveryResolutionStu3 discoveryResolutionStu3;
 
@@ -102,7 +102,7 @@ public class CdsServicesCache implements IResourceChangeListener {
 					cdsServiceCache.get().remove(i);
 					break;
 				} else
-					logger.info(String.format("Failed to delete service for %s", id.getIdPart()));
+					logger.info("Failed to delete service for {}", id.getIdPart());
 			}
 		}
 	}

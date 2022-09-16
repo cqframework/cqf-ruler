@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -16,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 				"hello.world.message=Howdy"
 		})
 public class HelloWorldProviderIT extends RestIntegrationTest {
-	@Test
+	// @Test
 	@Disabled(value = "There's a database configuration error that needs to be sorted out")
 	public void testHelloWorldConfig() {
 		var outcome = getClient()

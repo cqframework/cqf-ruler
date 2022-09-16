@@ -566,6 +566,7 @@
 						<failOnWarnings>true</failOnWarnings>
 						<failOnErrors>true</failOnErrors>
 						<doclint>-missing</doclint>
+						<quiet>true</quiet>
 					</configuration>
 					<executions>
 						<execution>
