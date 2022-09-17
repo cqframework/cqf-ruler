@@ -53,14 +53,12 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 	public Parameters evaluateRiskConditionCategory(
 			RequestDetails requestDetails,
 			@IdParam IdType theId,
-			@OperationParam(name = "type") String type,
 			@OperationParam(name = "periodStart") String periodStart,
 			@OperationParam(name = "periodEnd") String periodEnd,
 			@OperationParam(name = "subject") String subject) {
 
 		if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
 			try {
-				Operations.validateCardinality(requestDetails, "type", 1);
 				Operations.validateCardinality(requestDetails, "periodStart", 1);
 				Operations.validateCardinality(requestDetails, "periodEnd", 1);
 				Operations.validateCardinality(requestDetails, "subject", 1);
@@ -68,13 +66,6 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 				return newParameters(newPart("Invalid parameters",
 						generateIssue(ERROR, e.getMessage())));
 			}
-		}
-
-		if (!type.equalsIgnoreCase("report")) {
-			return newParameters(newPart(subject, generateIssue(
-					ERROR, String.format(
-							"The $davinci-ra.evaluate-measure operation is not implemented for %s type parameter on this server",
-							type))));
 		}
 
 		ensureSupplementalDataElementSearchParameter(requestDetails);
