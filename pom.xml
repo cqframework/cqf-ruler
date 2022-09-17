@@ -87,7 +87,7 @@
 	</distributionManagement>
 
 	<properties>
-		<cqf-tooling.version>2.0.0-SNAPSHOT</cqf-tooling.version>
+		<cqf-tooling.version>2.0.0</cqf-tooling.version>
 
 		<!-- CQL Support -->
 		<cqframework.version>2.1.0</cqframework.version>
