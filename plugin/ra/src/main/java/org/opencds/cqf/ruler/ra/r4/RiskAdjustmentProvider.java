@@ -1,5 +1,8 @@
 package org.opencds.cqf.ruler.ra.r4;
 
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,16 +25,13 @@ import org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Operations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import org.springframework.beans.factory.annotation.Configurable;
-
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
 
 @Configurable
 public class RiskAdjustmentProvider extends DaoRegistryOperationProvider implements MeasureReportUser {
@@ -49,7 +49,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 
 	private String visited;
 
-	@Operation(name = "$evaluate-risk-condition-category", idempotent = true, type = Measure.class)
+	@Operation(name = "$davinci-ra.evaluate-measure", idempotent = true, type = Measure.class)
 	public Parameters evaluateRiskConditionCategory(
 			RequestDetails requestDetails,
 			@IdParam IdType theId,
@@ -73,7 +73,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 		if (!type.equalsIgnoreCase("report")) {
 			return newParameters(newPart(subject, generateIssue(
 					ERROR, String.format(
-							"The $risk-adjustment operation is not implemented for %s type parameter on this server",
+							"The $davinci-ra.evaluate-measure operation is not implemented for %s type parameter on this server",
 							type))));
 		}
 
@@ -143,7 +143,8 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 
 	private Extension resolveEvidenceStatusDate(RiskAdjustmentReturnElement riskAdjustmentReturnElement) {
 		for (Resource contained : riskAdjustmentReturnElement.unprocessedReport.getContained()) {
-			if (!(contained instanceof Observation)) continue;
+			if (!(contained instanceof Observation))
+				continue;
 			Observation containedObservation = (Observation) contained;
 			if (containedObservation.hasCode() && containedObservation.getCode().hasCoding()
 					&& containedObservation.getCode().getCodingFirstRep().hasSystem()
