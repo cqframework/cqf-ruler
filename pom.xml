@@ -611,6 +611,7 @@
 					<extensions>true</extensions>
 					<configuration>
 						<serverId>ossrh</serverId>
+						<stagingProfileId>3c89ea0fc3e953</stagingProfileId>
 						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 						<autoReleaseAfterClose>true</autoReleaseAfterClose>
 					</configuration>
