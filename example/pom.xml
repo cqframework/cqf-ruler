@@ -6,6 +6,7 @@
 		<groupId>org.opencds.cqf.ruler</groupId>
 		<artifactId>cqf-ruler</artifactId>
 		<version>0.6.0</version>
+		<relativePath>../</relativePath>
 	</parent>
 
 	<groupId>com.example</groupId>
@@ -72,9 +73,8 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>3.0.0-M1</version>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
 					<configuration>
 						<skip>true</skip>
 					</configuration>

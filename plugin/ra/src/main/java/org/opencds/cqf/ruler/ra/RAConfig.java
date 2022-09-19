@@ -5,7 +5,6 @@ import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.ra.r4.AssistedServlet;
 import org.opencds.cqf.ruler.ra.r4.ResolveProvider;
 import org.opencds.cqf.ruler.ra.r4.RiskAdjustmentProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -17,8 +16,6 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnProperty(prefix = "hapi.fhir.ra", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class RAConfig {
 
-	@Autowired
-	AutowireCapableBeanFactory beanFactory;
 	@Bean
 	public RAProperties RAProperties() {
 		return new RAProperties();
@@ -44,7 +41,8 @@ public class RAConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public ServletRegistrationBean<AssistedServlet> assistedServletServletRegistrationBeanR4() {
+	public ServletRegistrationBean<AssistedServlet> assistedServletServletRegistrationBeanR4(
+			AutowireCapableBeanFactory beanFactory) {
 		AssistedServlet assistedServlet = new AssistedServlet();
 		beanFactory.autowireBean(assistedServlet);
 		ServletRegistrationBean<AssistedServlet> registrationBean = new ServletRegistrationBean<>();
