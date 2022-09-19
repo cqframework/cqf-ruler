@@ -467,6 +467,14 @@
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.0.0-M1</version>
+					<configuration>
+						<skip>true</skip>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-antrun-plugin</artifactId>
 					<version>3.0.0</version>
 				</plugin>
@@ -614,6 +622,15 @@
 						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 						<autoReleaseAfterClose>false</autoReleaseAfterClose>
 					</configuration>
+					<executions>
+						<execution>
+							<id>default-deploy</id>
+							<goals>
+								<goal>deploy</goal>
+							</goals>
+							<phase>deploy</phase>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
