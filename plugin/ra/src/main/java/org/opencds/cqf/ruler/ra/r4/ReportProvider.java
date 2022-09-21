@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IAnyResource;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -30,6 +31,9 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+
 public class ReportProvider extends DaoRegistryOperationProvider
 		implements ParameterUser, ResourceCreator, MeasureReportUser {
 	/**
@@ -53,11 +57,24 @@ public class ReportProvider extends DaoRegistryOperationProvider
 	@Operation(name = "$report", idempotent = true, type = MeasureReport.class)
 	public Parameters report(
 			RequestDetails requestDetails,
-			@OperationParam(name = "periodStart", min = 1, max = 1) String periodStart,
-			@OperationParam(name = "periodEnd", min = 1, max = 1) String periodEnd,
-			@OperationParam(name = "subject", min = 1, max = 1) String subject) throws FHIRException {
+			@OperationParam(name = "periodStart") String periodStart,
+			@OperationParam(name = "periodEnd") String periodEnd,
+			@OperationParam(name = "subject") String subject,
+			@OperationParam(name = "measureId") List<String> measureId,
+			@OperationParam(name = "measureIdentifier") List<String> measureIdentifier,
+			@OperationParam(name = "measureUrl") List<String> measureUrl) throws FHIRException {
 
-		validateParameters(periodStart, periodEnd, subject);
+		if (requestDetails.getRequestType() == RequestTypeEnum.GET) {
+			try {
+				validateParameters(requestDetails);
+				Operations.validatePattern("subject", subject, Operations.PATIENT_OR_GROUP_REFERENCE);
+				Operations.validatePeriod(requestDetails, "periodStart", "periodEnd");
+			} catch (Exception e) {
+				return newParameters(newPart("Invalid parameters",
+						generateIssue("error", e.getMessage())));
+			}
+		}
+
 		ensureSupplementalDataElementSearchParameter(requestDetails);
 
 		Parameters result = newResource(Parameters.class, subject.replace("/", "-") + "-report");
@@ -77,33 +94,11 @@ public class ReportProvider extends DaoRegistryOperationProvider
 		return result;
 	}
 
-	// TODO: implement this correctly
 	public void validateParameters(RequestDetails requestDetails) {
-
-	}
-
-	private Period validateParameters(String periodStart, String periodEnd, String subject) {
-		if (periodStart == null) {
-			throw new IllegalArgumentException("Parameter 'periodStart' is required.");
-		}
-		if (periodEnd == null) {
-			throw new IllegalArgumentException("Parameter 'periodEnd' is required.");
-		}
-		Date periodStartDate = Operations.resolveRequestDate(periodStart, true);
-		Date periodEndDate = Operations.resolveRequestDate(periodEnd, false);
-		if (periodStartDate.after(periodEndDate)) {
-			throw new IllegalArgumentException("Parameter 'periodStart' must be before 'periodEnd'.");
-		}
-
-		if (subject == null) {
-			throw new IllegalArgumentException("Parameter 'subject' is required.");
-		}
-		if (!subject.startsWith("Patient/") && !subject.startsWith("Group/")) {
-			throw new IllegalArgumentException(
-					"Parameter 'subject' must be in the format 'Patient/[id]' or 'Group/[id]'.");
-		}
-
-		return new Period().setStart(periodStartDate).setEnd(periodEndDate);
+		Operations.validateCardinality(requestDetails, "periodStart", 1);
+		Operations.validateCardinality(requestDetails, "periodEnd", 1);
+		Operations.validateCardinality(requestDetails, "subject", 1);
+		Operations.validateAtLeastOne(requestDetails, "measureId", "measureIdentifier", "measureUrl");
 	}
 
 	private static final String PATIENT_REPORT_PROFILE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-measurereport-bundle";

@@ -4,7 +4,7 @@
 
 	<groupId>org.opencds.cqf.ruler</groupId>
 	<artifactId>cqf-ruler</artifactId>
-	<version>0.5.2-SNAPSHOT</version>
+	<version>0.7.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>cqf-ruler</name>
@@ -87,18 +87,18 @@
 	</distributionManagement>
 
 	<properties>
-		<cqf-tooling.version>1.4.0</cqf-tooling.version>
-		<cqframework.version>1.5.11-SNAPSHOT</cqframework.version>
+
+		<cqf-tooling.version>2.0.0</cqf-tooling.version>
 
 		<!-- CQL Support -->
-		<cql-engine.version>1.5.8-SNAPSHOT</cql-engine.version>
-		<cql-evaluator.version>1.4.6-SNAPSHOT</cql-evaluator.version>
-
+		<cqframework.version>2.1.0</cqframework.version>
+		<cql-engine.version>2.0.0</cql-engine.version>
+		<cql-evaluator.version>2.0.0</cql-evaluator.version>
 
 		<!-- Dependency Versions -->
-		<fhir_core_version>5.5.7</fhir_core_version>
+		<fhir_core_version>5.6.36</fhir_core_version>
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>5.6.3</hapi_version>
+		<hapi_version>6.0.1</hapi_version>
 		<javax.version>8.0.1</javax.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -384,6 +384,12 @@
 				<artifactId>evaluator.spring</artifactId>
 				<version>${cql-evaluator.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.opencds.cqf.cql</groupId>
+				<artifactId>evaluator.jackson-deps</artifactId>
+				<version>${cql-evaluator.version}</version>
+				<type>pom</type>
+			</dependency>
 
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
@@ -423,6 +429,13 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-runtime</artifactId>
+				<version>4.10.1</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-test-utilities</artifactId>
 				<version>${hapi_version}</version>
@@ -453,6 +466,14 @@
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.0.0-M1</version>
+					<configuration>
+						<skip>true</skip>
+					</configuration>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-antrun-plugin</artifactId>
@@ -494,8 +515,9 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.8.1</version>
 					<configuration>
-						<source>1.8</source>
-						<target>1.8</target>
+						<source>11</source>
+						<target>11</target>
+						<release>11</release>
 						<failOnError>true</failOnError>
 						<failOnWarning>true</failOnWarning>
 						<compilerArgs>
@@ -549,11 +571,11 @@
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>3.3.1</version>
 					<configuration>
-						<source>8</source>
+						<source>11</source>
 						<failOnWarnings>true</failOnWarnings>
 						<failOnErrors>true</failOnErrors>
-						<!--TODO: Add missing Javadoc comments -->
-						<doclint>none</doclint>
+						<doclint>-missing</doclint>
+						<quiet>true</quiet>
 					</configuration>
 					<executions>
 						<execution>
@@ -599,8 +621,17 @@
 					<configuration>
 						<serverId>ossrh</serverId>
 						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-						<autoReleaseAfterClose>true</autoReleaseAfterClose>
+						<autoReleaseAfterClose>false</autoReleaseAfterClose>
 					</configuration>
+					<executions>
+						<execution>
+							<id>default-deploy</id>
+							<goals>
+								<goal>deploy</goal>
+							</goals>
+							<phase>deploy</phase>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -614,7 +645,7 @@
 							<configuration>
 								<rules>
 									<requireJavaVersion>
-										<version>[9,)</version>
+										<version>[11,)</version>
 									</requireJavaVersion>
 									<!-- <DependencyConvergence /> -->
 									<requireMavenVersion>
@@ -728,11 +759,6 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>3.0.0-M2</version>
-				</plugin>
-				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>build-helper-maven-plugin</artifactId>
 					<version>3.2.0</version>
@@ -828,10 +854,6 @@
 				<artifactId>maven-source-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 			</plugin>
@@ -878,25 +900,6 @@
 		</plugins>
 	</reporting>
 	<profiles>
-		<profile>
-			<id>java-9</id>
-			<activation>
-				<jdk>[9,)</jdk>
-			</activation>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-compiler-plugin</artifactId>
-							<configuration>
-								<release>8</release>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
 		<profile>
 			<id>release</id>
 			<build>

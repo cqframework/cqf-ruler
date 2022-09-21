@@ -3,11 +3,11 @@ package org.opencds.cqf.ruler.cr;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import org.cqframework.cql.cql2elm.CqlCompilerException;
 import org.cqframework.cql.cql2elm.CqlTranslator;
-import org.cqframework.cql.cql2elm.CqlTranslatorException;
-import org.cqframework.cql.cql2elm.FhirLibrarySourceProvider;
 import org.cqframework.cql.cql2elm.LibraryManager;
 import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.cql2elm.fhir.r4.FhirLibrarySourceProvider;
 import org.opencds.cqf.ruler.cql.utility.Translators;
 
 public class CqlBuilder {
@@ -65,13 +65,13 @@ public class CqlBuilder {
 
 	private String sdeRaceExpression() {
 		return "  (flatten (\n" +
-		"    Patient.extension Extension\n" +
-		"      where Extension.url = 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race'\n" +
-		"        return Extension.extension\n" +
-		"  )) E\n" +
-		"    where E.url = 'ombCategory'\n" +
-		"      or E.url = 'detailed'\n" +
-		"    return E.value as Coding\n\n";
+				"    Patient.extension Extension\n" +
+				"      where Extension.url = 'http://hl7.org/fhir/us/core/StructureDefinition/us-core-race'\n" +
+				"        return Extension.extension\n" +
+				"  )) E\n" +
+				"    where E.url = 'ombCategory'\n" +
+				"      or E.url = 'detailed'\n" +
+				"    return E.value as Coding\n\n";
 	}
 
 	private String cqlExpression(String name, String expression) {
@@ -85,14 +85,13 @@ public class CqlBuilder {
 		CqlTranslator translator;
 		try {
 			translator = CqlTranslator.fromStream(new ByteArrayInputStream(cql.getBytes()), modelManager, libraryManager);
-		}
-		catch (IOException e) {
-			throw new CqlTranslatorException("Error validating cql", e);
+		} catch (IOException e) {
+			throw new CqlCompilerException("Error validating cql", e);
 		}
 
-		if(translator.getErrors().size() > 0 ) {
-			throw new CqlTranslatorException("Error validating cql: " + Translators.errorsToString(translator.getErrors()));
+		if (translator.getErrors().size() > 0) {
+			throw new CqlCompilerException("Error validating cql: " + Translators.errorsToString(translator.getErrors()));
 		}
-  }
+	}
 
 }

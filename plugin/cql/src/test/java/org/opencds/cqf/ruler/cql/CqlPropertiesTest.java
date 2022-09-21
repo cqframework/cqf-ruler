@@ -3,7 +3,7 @@ package org.opencds.cqf.ruler.cql;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.cqframework.cql.cql2elm.CqlTranslator;
+import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.cql.engine.execution.CqlEngine;
@@ -34,7 +34,7 @@ public class CqlPropertiesTest {
 		assertTrue(cqlProperties.getTranslator().getAnalyzeDataRequirements());
 		assertTrue(cqlProperties.getTranslator().getCollapseDataRequirements());
 
-		assertTrue(cqlProperties.getTranslator().getOptions().contains(CqlTranslator.Options.EnableResultTypes));
+		assertTrue(cqlProperties.getTranslator().getOptions().contains(CqlTranslatorOptions.Options.EnableResultTypes));
 	}
 
 }

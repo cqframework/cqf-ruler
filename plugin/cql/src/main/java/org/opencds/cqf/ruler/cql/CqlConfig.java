@@ -9,7 +9,9 @@ import java.util.concurrent.ForkJoinPool;
 //import org.opencds.cqf.ruler.api.OperationProvider;
 import org.cqframework.cql.cql2elm.CqlTranslatorOptions;
 import org.cqframework.cql.cql2elm.LibraryManager;
+import org.cqframework.cql.cql2elm.LibrarySourceProvider;
 import org.cqframework.cql.cql2elm.ModelManager;
+import org.cqframework.cql.cql2elm.fhir.r4.FhirLibrarySourceProvider;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.ICompositeType;
@@ -26,8 +28,6 @@ import org.opencds.cqf.cql.evaluator.builder.Constants;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderComponents;
 import org.opencds.cqf.cql.evaluator.builder.DataProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.LibraryContentProvider;
-import org.opencds.cqf.cql.evaluator.cql2elm.content.fhir.EmbeddedFhirLibraryContentProvider;
 import org.opencds.cqf.cql.evaluator.cql2elm.model.CacheAwareModelManager;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
 import org.opencds.cqf.cql.evaluator.engine.execution.CacheAwareLibraryLoaderDecorator;
@@ -52,6 +52,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.concurrent.DelegatingSecurityContextExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -69,6 +70,7 @@ import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvcR4;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvcR5;
+import ca.uhn.fhir.jpa.validation.JpaValidationSupportChain;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cql", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -109,7 +111,7 @@ public class CqlConfig {
 
 	@Bean
 	public ModelManager modelManager(
-			Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache) {
+			Map<org.hl7.cql.model.ModelIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache) {
 		return new CacheAwareModelManager(globalModelCache);
 	}
 
@@ -118,7 +120,7 @@ public class CqlConfig {
 			ModelManager modelManager) {
 		return (providers) -> {
 			LibraryManager libraryManager = new LibraryManager(modelManager);
-			for (LibraryContentProvider provider : providers) {
+			for (LibrarySourceProvider provider : providers) {
 				libraryManager.getLibrarySourceLoader().registerProvider(provider);
 			}
 			return libraryManager;
@@ -190,8 +192,8 @@ public class CqlConfig {
 	}
 
 	@Bean
-	JpaLibraryContentProviderFactory jpaLibraryContentProviderFactory(DaoRegistry daoRegistry) {
-		return rd -> new JpaLibraryContentProvider(daoRegistry, rd);
+	JpaLibrarySourceProviderFactory jpaLibrarySourceProviderFactory(DaoRegistry daoRegistry) {
+		return rd -> new JpaLibrarySourceProvider(daoRegistry, rd);
 	}
 
 	@Bean
@@ -201,7 +203,7 @@ public class CqlConfig {
 		return lcp -> {
 
 			if (cqlProperties.getOptions().useEmbeddedLibraries()) {
-				lcp.add(new EmbeddedFhirLibraryContentProvider());
+				lcp.add(new FhirLibrarySourceProvider());
 			}
 
 			return new CacheAwareLibraryLoaderDecorator(
@@ -228,7 +230,7 @@ public class CqlConfig {
 	}
 
 	@Bean
-	public Map<org.hl7.elm.r1.VersionedIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache() {
+	public Map<org.hl7.cql.model.ModelIdentifier, org.cqframework.cql.cql2elm.model.Model> globalModelCache() {
 		return new ConcurrentHashMap<>();
 	}
 
@@ -343,14 +345,13 @@ public class CqlConfig {
 		return new DelegatingSecurityContextExecutor(myCommonPool,
 			SecurityContextHolder.getContext());
 	}
-	@Bean
-	@Conditional(OnR4Condition.class)
-	public RepositoryService r4RepositoryServiceProvider() {
-		return new RepositoryService();
-	}
 
-	//@Bean
-	//public Library createNewVersion(Library newLibrary) {
-	//return new Library();
-	//}
+	@Bean
+	@Lazy(false)
+	public IValidationSupport preExpandedValidationSupport(JpaValidationSupportChain jpaSupportChain,
+			FhirContext fhirContext) {
+		var preExpandedValidationSupport = new PreExpandedValidationSupport(fhirContext);
+		jpaSupportChain.addValidationSupport(0, preExpandedValidationSupport);
+		return preExpandedValidationSupport;
+	}
 }
