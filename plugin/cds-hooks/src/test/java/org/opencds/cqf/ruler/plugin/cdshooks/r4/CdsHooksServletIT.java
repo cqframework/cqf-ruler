@@ -97,7 +97,7 @@ class CdsHooksServletIT extends RestIntegrationTest {
 			cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
 	}
 
-	//@Test
+	@Test
 	void testCdsServicesRequest() {
 		// Server Load
 		loadTransaction("Screening-bundle-r4.json");
