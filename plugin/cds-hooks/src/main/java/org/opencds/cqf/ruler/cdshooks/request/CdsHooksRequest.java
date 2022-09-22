@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -50,6 +51,22 @@ public class CdsHooksRequest {
         public String scope;
         @JsonProperty(required = true)
         public String subject;
+
+        @JsonAnySetter
+        public void setExpiresIn(Object expiresIn) throws JsonProcessingException {
+            if (expiresIn instanceof String) {
+                this.expiresIn = Integer.parseInt((String) expiresIn);
+            }
+            else if (expiresIn instanceof Integer) {
+                this.expiresIn = (Integer) expiresIn;
+            }
+            else {
+                throw new JsonProcessingException(
+                        String.format(
+                                "The expires_in property accepts values of type String or Integer/ Found %s",
+                                expiresIn.getClass().getSimpleName())) {};
+            }
+        }
     }
 
     public static class Context {
