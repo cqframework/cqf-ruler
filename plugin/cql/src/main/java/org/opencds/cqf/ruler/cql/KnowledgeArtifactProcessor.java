@@ -14,6 +14,7 @@ import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Canonicals;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,12 +23,13 @@ import java.util.Map;
 
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
 public class KnowledgeArtifactProcessor  extends DaoRegistryOperationProvider {
-	// TODO: Autowire?
-	// private KnowledgeArtifactAdapter adapter;
+
+	@Autowired
+	private KnowledgeArtifactAdapter adapter;
 
 	public MetadataResource newVersion(MetadataResource resource, FhirDal fhirDal) {
 		MetadataResource newResource = null;
-		KnowledgeArtifactAdapter adapter = new KnowledgeArtifactAdapter(resource);
+		adapter = new KnowledgeArtifactAdapter(resource);
 		newResource = adapter.copy();
 		newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
 		newResource.setVersion(null);
@@ -35,8 +37,22 @@ public class KnowledgeArtifactProcessor  extends DaoRegistryOperationProvider {
 		for (RelatedArtifact ra : (List<RelatedArtifact>)adapter.getRelatedArtifact()) {
 			// If it is a composed-of relation then do a deep copy, else shallow
 			if (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF) {
-				// TODO: Canonical handling
-				if (ra.hasResource()) {
+				if(ra.hasUrl()) {
+					// Canonical handling
+					List<IQueryParameterType> list = new ArrayList<>();
+					list.add(new UriParam(ra.getResourceElement().getValueAsString()));
+
+					Map<String, List<IQueryParameterType>> searchParams = new HashMap<String, List<IQueryParameterType>>();
+					searchParams.put("url", list);
+					Bundle referencedResourceBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(ra.getUrl()), searchParams);
+					if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
+						Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
+						if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
+							MetadataResource referencedResource = (MetadataResource)referencedResourceEntry.getResource();
+							newVersion(referencedResource, fhirDal);
+						}
+					}
+				} else if (ra.hasResource()) {
 					CanonicalType canonical = ra.getResourceElement();
 					List<IQueryParameterType> list = new ArrayList<>();
 					list.add(new UriParam(ra.getResourceElement().getValueAsString()));
@@ -44,10 +60,7 @@ public class KnowledgeArtifactProcessor  extends DaoRegistryOperationProvider {
 					Map<String, List<IQueryParameterType>> searchParams = new HashMap<String, List<IQueryParameterType>>();
 					searchParams.put("url", list);
 					Bundle referencedResourceBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(canonical), searchParams);
-					if (!referencedResourceBundle.getEntry().isEmpty()) {
-						//TODO: Can I assume a single result here? Doubt it! If the reference had a version, then it would have
-						// returned just that version, right? It the reference wasn't version-specific, take the latest version?
-						// Maybe that's the default search behavior?
+					if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
 						Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
 						if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
 							MetadataResource referencedResource = (MetadataResource)referencedResourceEntry.getResource();
@@ -56,10 +69,6 @@ public class KnowledgeArtifactProcessor  extends DaoRegistryOperationProvider {
 					}
 				}
 			}
-//			else if (ra.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON) {
-//
-//			}
-
 			fhirDal.create(newResource);
 		}
 
