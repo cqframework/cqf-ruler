@@ -1,0 +1,82 @@
+{
+  "resourceType": "PlanDefinition",
+  "id": "unicode",
+  "url": "http://fhir.org/guides/ohsuhypertensionig/PlanDefinition/plandefinition-unicode",
+  "version": "0.1",
+  "name": "Unicode",
+  "title": "Simple unicode example for testing",
+  "type": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/plan-definition-type",
+        "code": "eca-rule",
+        "display": "ECA Rule"
+      }
+    ]
+  },
+  "status": "draft",
+  "date": "2020-02-04T00:00:00-08:00",
+  "publisher": "Oregon Health and Science University (OHSU)",
+  "description": "This PlanDefinition is for testing.",
+  "purpose": "The purpose of this is to test broken/suspect workflows.",
+  "usage": "This is to be used in conjunction with a patient-facing FHIR application.",
+  "jurisdiction": [
+    {
+      "coding": [
+        {
+          "system": "urn:iso:std:iso:3166",
+          "code": "US",
+          "display": "United States of America"
+        }
+      ]
+    }
+  ],
+  "library": [
+    "http://fhir.org/guides/ohsuhypertensionig/Library/Unicode"
+  ],
+  "action": [
+    {
+      "title": "In Population?",
+      "description": "Determines if patient in population.",
+      "trigger": [{
+        "type": "named-event",
+        "name":"patient-view"
+      }],
+      "condition": [
+        {
+          "kind": "applicability",
+          "expression": {
+            "description": "Determine if patient is in the recommendation.",
+            "language": "text/cql.identifier",
+            "expression": "In Population"
+          }
+        }
+      ],
+      "dynamicValue": [
+        {
+          "path": "action.title",
+          "expression": {
+            "description": "Applicable text for the Recommendation",
+            "language": "text/cql.identifier",
+            "expression": "Recommendation"
+          }
+        },
+        {
+          "path": "action.description",
+          "expression": {
+            "description": "Rationale for recommendation type.",
+            "language": "text/cql.identifier",
+            "expression": "Rationale"
+          }
+        },
+        {
+          "path": "action.extension",
+          "expression": {
+            "language": "text/cql.identifier",
+            "expression": "Indicator Status"
+          }
+        }
+      ]
+    }
+  ]
+}
