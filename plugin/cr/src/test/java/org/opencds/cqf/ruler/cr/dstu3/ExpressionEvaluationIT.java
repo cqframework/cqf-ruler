@@ -16,11 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { ExpressionEvaluationIT.class,
-		CrConfig.class, CqlConfig.class }, properties = {
-				"hapi.fhir.fhir_version=dstu3",
-		})
-public class ExpressionEvaluationIT extends RestIntegrationTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = { ExpressionEvaluationIT.class, CrConfig.class, CqlConfig.class },
+		properties = { "hapi.fhir.fhir_version=dstu3" })
+class ExpressionEvaluationIT extends RestIntegrationTest {
 
 	@Autowired
 	private ExpressionEvaluation expressionEvaluation;
@@ -35,7 +34,7 @@ public class ExpressionEvaluationIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testOpioidCdsPlanDefinitionDomain() throws Exception {
+	void testOpioidCdsPlanDefinitionDomain() throws Exception {
 		DomainResource plandefinition = (DomainResource) planDefinitions.get("opioidcds-10");
 		// Patient First
 		uploadTests("test/plandefinition/Rec10/Patient");
@@ -45,6 +44,6 @@ public class ExpressionEvaluationIT extends RestIntegrationTest {
 				"true", false,
 				patient.getIdElement().getIdPart(), new SystemRequestDetails());
 		assertTrue(isFormerSmoker instanceof Boolean);
-		assertTrue(((Boolean) isFormerSmoker).booleanValue());
+		assertTrue((Boolean) isFormerSmoker);
 	}
 }

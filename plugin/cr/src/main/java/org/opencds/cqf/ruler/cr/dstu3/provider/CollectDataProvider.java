@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.part;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 		report.setType(MeasureReportType.SUMMARY);
 		report.setGroup(null);
 
-		Parameters parameters = newParameters(newPart("measureReport", report));
+		Parameters parameters = parameters(part("measureReport", report));
 
 		addEvaluatedResourcesToParameters(report, parameters);
 
@@ -88,7 +88,7 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 		String listId = listReference.getReference().substring(1);
 		Optional<Resource> list = report.getContained().stream().filter(x -> x.getId().equals(listId)).findFirst();
 
-		if (!list.isPresent()) {
+		if (list.isEmpty()) {
 			return resources;
 		}
 
@@ -108,6 +108,6 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 
 	private void addEvaluatedResourcesToParameters(MeasureReport report, Parameters parameters) {
 		readEvaluatedResources(report)
-				.forEach(resource -> parameters.addParameter(newPart("resource", resource)));
+				.forEach(resource -> parameters.addParameter(part("resource", resource)));
 	}
 }

@@ -33,6 +33,7 @@ import com.google.gson.JsonObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -49,15 +50,18 @@ class CdsHooksServletIT extends RestIntegrationTest {
 	}
 
 	@Test
-	void testGetCdsServices() throws IOException {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpGet request = new HttpGet(ourCdsBase);
-		request.addHeader("Content-Type", "application/json");
-		assertEquals(200, httpClient.execute(request).getStatusLine().getStatusCode());
+	void testGetCdsServices() {
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			HttpGet request = new HttpGet(ourCdsBase);
+			request.addHeader("Content-Type", "application/json");
+			assertEquals(200, httpClient.execute(request).getStatusLine().getStatusCode());
+		} catch (IOException ioe) {
+			fail(ioe.getMessage());
+		}
 	}
 
 	@Test
-	void testCdsServicesRequest() throws IOException {
+	void testCdsServicesRequest() {
 		// Server Load
 		loadTransaction("HelloWorldPatientView-bundle.json");
 		loadResource("hello-world-patient-view-patient.json");
@@ -96,42 +100,45 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		jsonRequestObject.addProperty("fhirServer", getServerBase());
 
 		// Setup Client
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpPost request = new HttpPost(ourCdsBase + "/hello-world-patient-view");
-		request.setEntity(new StringEntity(jsonRequestObject.toString()));
-		request.addHeader("Content-Type", "application/json");
+		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+			HttpPost request = new HttpPost(ourCdsBase + "/hello-world-patient-view");
+			request.setEntity(new StringEntity(jsonRequestObject.toString()));
+			request.addHeader("Content-Type", "application/json");
 
-		CloseableHttpResponse response = httpClient.execute(request);
-		String result = EntityUtils.toString(response.getEntity());
+			CloseableHttpResponse response = httpClient.execute(request);
+			String result = EntityUtils.toString(response.getEntity());
 
-		Gson gsonResponse = new Gson();
-		JsonObject jsonResponseObject = gsonResponse.fromJson(result, JsonObject.class);
+			Gson gsonResponse = new Gson();
+			JsonObject jsonResponseObject = gsonResponse.fromJson(result, JsonObject.class);
 
-		// Ensure Cards
-		assertNotNull(jsonResponseObject.get("cards"));
-		JsonArray cards = jsonResponseObject.get("cards").getAsJsonArray();
+			// Ensure Cards
+			assertNotNull(jsonResponseObject.get("cards"));
+			JsonArray cards = jsonResponseObject.get("cards").getAsJsonArray();
 
-		// Ensure Patient Detail
-		assertNotNull(cards.get(0).getAsJsonObject().get("detail"));
-		String patientName = cards.get(0).getAsJsonObject().get("detail").getAsString();
-		assertEquals("The CDS Service is alive and communicating successfully!", patientName);
+			// Ensure Patient Detail
+			assertNotNull(cards.get(0).getAsJsonObject().get("detail"));
+			String patientName = cards.get(0).getAsJsonObject().get("detail").getAsString();
+			assertEquals("The CDS Service is alive and communicating successfully!", patientName);
 
-		// Ensure Summary
-		assertNotNull(cards.get(0));
-		assertNotNull(cards.get(0).getAsJsonObject().get("summary"));
-		String summary = cards.get(0).getAsJsonObject().get("summary").getAsString();
-		assertEquals("Hello World!", summary);
+			// Ensure Summary
+			assertNotNull(cards.get(0));
+			assertNotNull(cards.get(0).getAsJsonObject().get("summary"));
+			String summary = cards.get(0).getAsJsonObject().get("summary").getAsString();
+			assertEquals("Hello World!", summary);
 
-		// Ensure Activity Definition / Suggestions
-		assertNotNull(cards.get(0).getAsJsonObject().get("suggestions"));
-		JsonArray suggestions = cards.get(0).getAsJsonObject().get("suggestions").getAsJsonArray();
-		assertNotNull(suggestions.get(0));
-		assertNotNull(suggestions.get(0).getAsJsonObject().get("actions"));
-		JsonArray actions = suggestions.get(0).getAsJsonObject().get("actions").getAsJsonArray();
-		assertNotNull(actions.get(0));
-		assertNotNull(actions.get(0).getAsJsonObject().get("description"));
-		String suggestionsDescription = actions.get(0).getAsJsonObject().get("description").getAsString();
-		assertEquals("The CDS Service is alive and communicating successfully!", suggestionsDescription);
+			// Ensure Activity Definition / Suggestions
+			assertNotNull(cards.get(0).getAsJsonObject().get("suggestions"));
+			JsonArray suggestions = cards.get(0).getAsJsonObject().get("suggestions").getAsJsonArray();
+			assertNotNull(suggestions.get(0));
+			assertNotNull(suggestions.get(0).getAsJsonObject().get("actions"));
+			JsonArray actions = suggestions.get(0).getAsJsonObject().get("actions").getAsJsonArray();
+			assertNotNull(actions.get(0));
+			assertNotNull(actions.get(0).getAsJsonObject().get("description"));
+			String suggestionsDescription = actions.get(0).getAsJsonObject().get("description").getAsString();
+			assertEquals("The CDS Service is alive and communicating successfully!", suggestionsDescription);
+		} catch (IOException ioe) {
+			fail(ioe.getMessage());
+		}
 	}
 
 }

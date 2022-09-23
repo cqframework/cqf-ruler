@@ -2,12 +2,10 @@ package org.opencds.cqf.ruler.cpg.dstu3.provider;
 
 import org.hl7.fhir.dstu3.model.BooleanType;
 import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.DateType;
 import org.hl7.fhir.dstu3.model.IntegerType;
 import org.hl7.fhir.dstu3.model.Observation;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.Patient;
-import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,8 +16,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.booleanPart;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.datePart;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.part;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.stringPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = { CqlExecutionProviderIT.class, CpgConfig.class },
@@ -37,7 +38,7 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testSimpleArithmeticCqlExecutionProvider() {
-		Parameters params = newParameters(newPart("expression", new StringType("5 * 5")));
+		Parameters params = parameters(stringPart("expression", "5 * 5"));
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getValue() instanceof IntegerType);
@@ -46,9 +47,9 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testSimpleRetrieveCqlExecutionProvider() {
-		Parameters params = newParameters(
-				newPart("subject", new StringType("SimplePatient")),
-				newPart("expression", new StringType("[Observation]")));
+		Parameters params = parameters(
+				stringPart("subject", "SimplePatient"),
+				stringPart("expression", "[Observation]"));
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
 		// TODO: result is always null...
@@ -57,15 +58,13 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testReferencedLibraryCqlExecutionProvider() {
-		Parameters libraryParameter = newParameters(
-				newPart("url", new StringType(
-						this.getClient().getServerBase() + "Library/SimpleDstu3Library")),
-				newPart("name", new StringType("SimpleDstu3Library")));
-		Parameters params = newParameters(
-				newPart("subject", new StringType("SimplePatient")),
-				newPart("library", libraryParameter),
-				newPart("expression", new StringType(
-						"SimpleDstu3Library.\"simpleBooleanExpression\"")));
+		Parameters libraryParameter = parameters(
+				stringPart("url", this.getClient().getServerBase() + "Library/SimpleDstu3Library"),
+				stringPart("name", "SimpleDstu3Library"));
+		Parameters params = parameters(
+				stringPart("subject", "SimplePatient"),
+				part("library", libraryParameter),
+				stringPart("expression", "SimpleDstu3Library.\"simpleBooleanExpression\""));
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getValue() instanceof BooleanType);
@@ -74,16 +73,15 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testDataBundleCqlExecutionProvider() {
-		Parameters libraryParameter = newParameters(
-				newPart("url", new StringType(
-						this.getClient().getServerBase() + "Library/SimpleDstu3Library")),
-				newPart("name", new StringType("SimpleDstu3Library")));
+		Parameters libraryParameter = parameters(
+				stringPart("url", this.getClient().getServerBase() + "Library/SimpleDstu3Library"),
+				stringPart("name", "SimpleDstu3Library"));
 		Bundle data = (Bundle) loadResource(packagePrefix + "SimpleDataBundle.json");
-		Parameters params = newParameters(
-				newPart("library", libraryParameter),
-				newPart("expression", new StringType("SimpleDstu3Library.\"observationRetrieve\"")),
-				newPart("data", data),
-				newPart("useServerData", new BooleanType(false)));
+		Parameters params = parameters(
+				part("library", libraryParameter),
+				stringPart("expression", "SimpleDstu3Library.\"observationRetrieve\""),
+				part("data", data),
+				booleanPart("useServerData", false));
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getResource() instanceof Observation);
@@ -91,17 +89,16 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testDataBundleCqlExecutionProviderWithSubject() {
-		Parameters libraryParameter = newParameters(
-				newPart("url", new StringType(
-						this.getClient().getServerBase() + "Library/SimpleDstu3Library")),
-				newPart("name", new StringType("SimpleDstu3Library")));
+		Parameters libraryParameter = parameters(
+				stringPart("url", this.getClient().getServerBase() + "Library/SimpleDstu3Library"),
+				stringPart("name", "SimpleDstu3Library"));
 		Bundle data = (Bundle) loadResource(packagePrefix + "SimpleDataBundle.json");
-		Parameters params = newParameters(
-				newPart("subject", new StringType("SimplePatient")),
-				newPart("library", libraryParameter),
-				newPart("expression", new StringType("SimpleDstu3Library.\"observationRetrieve\"")),
-				newPart("data", data),
-				newPart("useServerData", new BooleanType(false)));
+		Parameters params = parameters(
+				stringPart("subject", "SimplePatient"),
+				part("library", libraryParameter),
+				stringPart("expression", "SimpleDstu3Library.\"observationRetrieve\""),
+				part("data", data),
+				booleanPart("useServerData", false));
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getResource() instanceof Observation);
@@ -109,11 +106,11 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testSimpleParametersCqlExecutionProvider() {
-		Parameters evaluationParams = newParameters(
-				newPart("%inputDate", new DateType("2019-11-01")));
-		Parameters params = newParameters(
-				newPart("expression", new StringType("year from %inputDate before 2020")),
-				newPart("parameters", evaluationParams));
+		Parameters evaluationParams = parameters(
+				datePart("%inputDate", "2019-11-01"));
+		Parameters params = parameters(
+				stringPart("expression", "year from %inputDate before 2020"),
+				part("parameters", evaluationParams));
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
 		assertTrue(results.getParameter().get(0).getValue() instanceof BooleanType);
@@ -122,9 +119,9 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testCqlExecutionProviderWithContent() {
-		Parameters params = newParameters(
-				newPart("subject", new StringType("Patient/SimplePatient")),
-				newPart("content", new StringType("library SimpleSTU3Library\n" +
+		Parameters params = parameters(
+				stringPart("subject", "Patient/SimplePatient"),
+				stringPart("content", "library SimpleSTU3Library\n" +
 								"\n" +
 								"using FHIR version '3.0.1'\n" +
 								"\n" +
@@ -142,7 +139,7 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 								"\n" +
 								"define \"Denominator\": \"Initial Population\"\n" +
 								"\n" +
-								"define \"Numerator\": \"Denominator\"")));
+								"define \"Numerator\": \"Denominator\""));
 
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
@@ -167,10 +164,10 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testCqlExecutionProviderWithContentAndExpression() {
-		Parameters params = newParameters(
-				newPart("subject", new StringType("Patient/SimplePatient")),
-				newPart("expression", new StringType("Numerator")),
-				newPart("content", new StringType("library SimpleSTU3Library\n" +
+		Parameters params = parameters(
+				stringPart("subject", "Patient/SimplePatient"),
+				stringPart("expression", "Numerator"),
+				stringPart("content", "library SimpleSTU3Library\n" +
 								"\n" +
 								"using FHIR version '3.0.1'\n" +
 								"\n" +
@@ -188,7 +185,7 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 								"\n" +
 								"define \"Denominator\": \"Initial Population\"\n" +
 								"\n" +
-								"define \"Numerator\": \"Denominator\"")));
+								"define \"Numerator\": \"Denominator\""));
 
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
@@ -202,7 +199,7 @@ class CqlExecutionProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testErrorExpression() {
-		Parameters params = newParameters(newPart("expression", new StringType("Interval[1,5]")));
+		Parameters params = parameters(stringPart("expression", "Interval[1,5]"));
 		Parameters results = getClient().operation().onServer().named("$cql")
 				.withParameters(params).execute();
 		assertTrue(results.hasParameter());

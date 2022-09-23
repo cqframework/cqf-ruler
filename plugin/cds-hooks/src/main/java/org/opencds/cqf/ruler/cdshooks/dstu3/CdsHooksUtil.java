@@ -20,18 +20,21 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.ArrayList;
 
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.part;
 
 public class CdsHooksUtil {
 
+    private CdsHooksUtil() {
+    }
+
     // NOTE: Making an assumption here that the parameter in the CQL will be named "ContextPrescriptions"
     public static Parameters getParameters(JsonObject contextResources) {
-        Parameters parameters = newParameters();
+        Parameters parameters = parameters();
         Bundle contextBundle = new JsonParser(FhirContext.forDstu3Cached(), new LenientErrorHandler())
                 .parseResource(Bundle.class, contextResources.toString());
         contextBundle.getEntry().forEach(
-                x -> parameters.addParameter(newPart("ContextPrescriptions", x.getResource())));
+                x -> parameters.addParameter(part("ContextPrescriptions", x.getResource())));
         if (parameters.getParameter().size() == 1) {
             Extension listExtension = new Extension(
                     "http://hl7.org/fhir/uv/cpg/StructureDefinition/cpg-parameterDefinition",

@@ -1,10 +1,9 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Map;
 
-import org.hl7.fhir.dstu3.model.CarePlan;
 import org.hl7.fhir.dstu3.model.DomainResource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,12 +16,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		PlanDefinitionApplyProviderIT.class,
-		CrConfig.class, CqlConfig.class }, properties = {
-				"hapi.fhir.fhir_version=dstu3",
-		})
-public class PlanDefinitionApplyProviderIT extends RestIntegrationTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = { PlanDefinitionApplyProviderIT.class,
+				CrConfig.class, CqlConfig.class },
+		properties = { "hapi.fhir.fhir_version=dstu3" })
+class PlanDefinitionApplyProviderIT extends RestIntegrationTest {
 
 	@Autowired
 	private PlanDefinitionApplyProvider planDefinitionApplyProvider;
@@ -37,7 +35,7 @@ public class PlanDefinitionApplyProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testPlanDefinitionApplyRec10NoScreenings() throws Exception {
+	void testPlanDefinitionApplyRec10NoScreenings() throws Exception {
 		DomainResource plandefinition = (DomainResource) planDefinitions.get("opioidcds-10");
 		// Patient First
 		uploadTests("test/plandefinition/Rec10/Patient");
@@ -46,6 +44,6 @@ public class PlanDefinitionApplyProviderIT extends RestIntegrationTest {
 		Object recommendation = planDefinitionApplyProvider.applyPlanDefinition(new SystemRequestDetails(),
 				plandefinition.getIdElement(), patient.getIdElement().getIdPart(), null, null, null, null, null, null, null,
 				null);
-		assertTrue(recommendation instanceof CarePlan);
+		assertNotNull(recommendation);
 	}
 }
