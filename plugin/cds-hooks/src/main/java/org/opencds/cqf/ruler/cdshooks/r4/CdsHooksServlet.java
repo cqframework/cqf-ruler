@@ -176,8 +176,10 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			Cards result = new Cards();
 			result.cards = cards;
 			// Using GSON pretty print format as Jackson's is ugly
-			String jsonResponse = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(JsonParser.parseString(mapper.writeValueAsString(result)));
+			String jsonResponse = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create()
+					.toJson(JsonParser.parseString(mapper.writeValueAsString(result)));
 			logger.info(jsonResponse);
+			response.setContentType("text/json;charset=UTF-8");
 			response.getWriter().println(jsonResponse);
 		} catch (BaseServerResponseException e) {
 			ErrorHandling.handleError(response, "ERROR: Exception connecting to remote server.", e, myAppProperties);

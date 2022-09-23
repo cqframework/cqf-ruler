@@ -1,0 +1,21 @@
+{
+  "resourceType": "Library",
+  "id": "Unicode",
+  "version": "0.1",
+  "name": "Unicode",
+  "status": "active",
+  "type": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/library-type",
+        "code": "logic-library"
+      }
+    ]
+  },
+  "content": [
+    {
+      "contentType": "text/cql",
+      "data": "bGlicmFyeSBVbmljb2RlIHZlcnNpb24gJzAuMScKCnVzaW5nIEZISVIgdmVyc2lvbiAnNC4wLjEnCgpjb250ZXh0IFBhdGllbnQKCmRlZmluZSAiSW4gUG9wdWxhdGlvbiI6CiAgdHJ1ZQoKZGVmaW5lICJSZWNvbW1lbmRhdGlvbiI6CiAgJ1RoaXMgY2hhcmFjdGVyIGlzIG5vdCBoYW5kbGVkOiDiiaUnCgpkZWZpbmUgIlJhdGlvbmFsZSI6CiAgJ05vbmUnCgpkZWZpbmUgIkluZGljYXRvciBTdGF0dXMiOgogICdpbmZvJwo="
+    }
+  ]
+}
