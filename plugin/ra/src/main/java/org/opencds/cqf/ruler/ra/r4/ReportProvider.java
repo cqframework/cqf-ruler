@@ -31,8 +31,8 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.ReferenceParam;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 
 public class ReportProvider extends DaoRegistryOperationProvider
 		implements ParameterUser, ResourceCreator, MeasureReportUser {
@@ -53,7 +53,6 @@ public class ReportProvider extends DaoRegistryOperationProvider
 	 *         Resources
 	 */
 	@Description(shortDefinition = "$report", value = "Implements the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-report.html\">$report</a> operation found in the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/index.html\">Da Vinci Risk Adjustment IG</a>.")
-
 	@Operation(name = "$report", idempotent = true, type = MeasureReport.class)
 	public Parameters report(
 			RequestDetails requestDetails,
@@ -70,7 +69,7 @@ public class ReportProvider extends DaoRegistryOperationProvider
 				Operations.validatePattern("subject", subject, Operations.PATIENT_OR_GROUP_REFERENCE);
 				Operations.validatePeriod(requestDetails, "periodStart", "periodEnd");
 			} catch (Exception e) {
-				return newParameters(newPart("Invalid parameters",
+				return parameters(part("Invalid parameters",
 						generateIssue("error", e.getMessage())));
 			}
 		}
@@ -132,13 +131,13 @@ public class ReportProvider extends DaoRegistryOperationProvider
 		patientReportBundle.setTimestamp(new Date());
 		patientReportBundle.setId(patientId + "-report");
 		patientReportBundle.setIdentifier(
-				new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID().toString()));
+				new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID()));
 
-		bundleEntries.entrySet().forEach(resource -> patientReportBundle.addEntry(
+		bundleEntries.forEach((key, value) -> patientReportBundle.addEntry(
 				new Bundle.BundleEntryComponent()
-						.setResource((Resource) resource.getValue())
-						.setFullUrl(Operations.getFullUrl(serverBase, resource.getValue().fhirType(),
-								resource.getValue().getIdElement().getIdPart()))));
+						.setResource((Resource) value)
+						.setFullUrl(Operations.getFullUrl(serverBase, value.fhirType(),
+								value.getIdElement().getIdPart()))));
 
 		Parameters.ParametersParameterComponent patientParameter = new Parameters.ParametersParameterComponent();
 		patientParameter.setResource(patientReportBundle);

@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cr.dstu3.provider;
 
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.getPartsByName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -25,13 +26,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
 @SpringBootTest(classes = { CollectDataProviderIT.class }, properties = { "hapi.fhir.fhir_version=dstu3", })
-public class CollectDataProviderIT extends DaoIntegrationTest {
+class CollectDataProviderIT extends DaoIntegrationTest {
 
 	@Autowired
 	CollectDataProvider collectDataProvider;
 
 	@Test
-	public void testCollectData() {
+	void testCollectData() {
 		// Create test Measure
 		String cql = CqlBuilder.newCqlLibrary("3.0.0")
 				.addExpression(
@@ -64,11 +65,11 @@ public class CollectDataProviderIT extends DaoIntegrationTest {
 		Parameters results = collectDataProvider.collectData(new SystemRequestDetails(), m.getIdElement(), "2019-01-01",
 				"2019-12-31", Ids.simple(john), null, null);
 
-		List<ParametersParameterComponent> resources = org.opencds.cqf.ruler.utility.dstu3.Parameters.getPartsByName(results, "resource");
+		List<ParametersParameterComponent> resources = getPartsByName(results, "resource");
 		assertEquals(1, resources.size());
 		assertEquals("Observation", resources.get(0).getResource().fhirType());
 
-		List<ParametersParameterComponent> reports = org.opencds.cqf.ruler.utility.dstu3.Parameters.getPartsByName(results, "measureReport");
+		List<ParametersParameterComponent> reports = getPartsByName(results, "measureReport");
 		assertEquals(1, reports.size());
 		assertEquals("MeasureReport", reports.get(0).getResource().fhirType());
 	}

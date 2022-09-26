@@ -1,8 +1,5 @@
 package org.opencds.cqf.ruler.ra.r4;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +29,9 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 
 @Configurable
 public class RiskAdjustmentProvider extends DaoRegistryOperationProvider implements MeasureReportUser {
@@ -63,8 +63,7 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 				Operations.validateCardinality(requestDetails, "periodEnd", 1);
 				Operations.validateCardinality(requestDetails, "subject", 1);
 			} catch (Exception e) {
-				return newParameters(newPart("Invalid parameters",
-						generateIssue(ERROR, e.getMessage())));
+				return parameters(part("Invalid parameters", generateIssue(ERROR, e.getMessage())));
 			}
 		}
 

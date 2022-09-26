@@ -22,7 +22,7 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 				"hapi.fhir.cr.measure_report.care_gaps_reporter=Organization/alphora",
 				"hapi.fhir.cr.measure_report.care_gaps_composition_section_author=Organization/alphora-author"
 		})
-public class CareGapsProviderIT extends RestIntegrationTest {
+class CareGapsProviderIT extends RestIntegrationTest {
 
 	private static final String periodStartValid = "2019-01-01";
 	private static final String periodEndValid = "2019-12-31";
@@ -44,7 +44,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 	private static final String subjectReferenceInvalid = "Measure/gic-sub-1";
 
 	@BeforeEach
-	public void beforeEach() {
+	void beforeEach() {
 		loadResource("Alphora-organization.json");
 		loadResource("AlphoraAuthor-organization.json");
 		loadResource("numer-EXM125-patient.json");
@@ -65,7 +65,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testMinimalParametersValid() {
+	void testMinimalParametersValid() {
 		beforeEachMeasure();
 
 		Parameters params = new Parameters();
@@ -86,25 +86,24 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testPeriodStartNull() throws Exception {
+	void testPeriodStartNull() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
 		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () -> {
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute();
-		});
+		assertThrows(InternalErrorException.class, () ->
+				getClient().operation().onType(Measure.class).named("$care-gaps")
+						.withParameters(params)
+						.useHttpGet()
+						.returnResourceType(Parameters.class)
+						.execute());
 	}
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testPeriodStartInvalid() throws Exception {
+	void testPeriodStartInvalid() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(dateInvalid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -112,36 +111,34 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () -> {
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute();
-		});
+		assertThrows(InternalErrorException.class, () ->
+				getClient().operation().onType(Measure.class).named("$care-gaps")
+						.withParameters(params)
+						.useHttpGet()
+						.returnResourceType(Parameters.class)
+						.execute());
 	}
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testPeriodEndNull() throws Exception {
+	void testPeriodEndNull() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () -> {
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute();
-		});
+		assertThrows(InternalErrorException.class, () ->
+				getClient().operation().onType(Measure.class).named("$care-gaps")
+						.withParameters(params)
+						.useHttpGet()
+						.returnResourceType(Parameters.class)
+						.execute());
 	}
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testPeriodEndInvalid() throws Exception {
+	void testPeriodEndInvalid() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(dateInvalid));
@@ -149,18 +146,17 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () -> {
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute();
-		});
+		assertThrows(InternalErrorException.class, () ->
+				getClient().operation().onType(Measure.class).named("$care-gaps")
+						.withParameters(params)
+						.useHttpGet()
+						.returnResourceType(Parameters.class)
+						.execute());
 	}
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testPeriodInvalid() throws Exception {
+	void testPeriodInvalid() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodEndValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodStartValid));
@@ -168,17 +164,16 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 	}
 
 	@Test
-	public void testSubjectGroupValid() throws Exception {
+	void testSubjectGroupValid() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -199,7 +194,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testSubjectInvalid() throws Exception {
+	void testSubjectInvalid() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -207,18 +202,17 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 	}
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testSubjectReferenceInvalid() throws Exception {
+	void testSubjectReferenceInvalid() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -226,18 +220,17 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 	}
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testSubjectAndPractitioner() throws Exception {
+	void testSubjectAndPractitioner() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -246,18 +239,17 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 		params.addParameter().setName("practitioner").setValue(new StringType(practitionerValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 	}
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testSubjectAndOrganization() throws Exception {
+	void testSubjectAndOrganization() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -266,17 +258,16 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 		params.addParameter().setName("organization").setValue(new StringType(organizationValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 	}
 
 	@Test
-	public void testPractitionerAndOrganization() throws Exception {
+	void testPractitionerAndOrganization() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -285,13 +276,12 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("organization").setValue(new StringType(organizationValid));
 		params.addParameter().setName("practitioner").setValue(new StringType(practitionerValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 		// TODO: implement practitioner and organization
 		// assertDoesNotThrow(() -> {
 		// getClient().operation().onType(Measure.class).named("$care-gaps")
@@ -303,7 +293,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testOrganizationOnly() throws Exception {
+	void testOrganizationOnly() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -311,13 +301,12 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 		params.addParameter().setName("organization").setValue(new StringType(organizationValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 		// TODO: implement organization
 		// assertDoesNotThrow(() -> {
 		// getClient().operation().onType(Measure.class).named("$care-gaps")
@@ -330,7 +319,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testPractitionerOnly() throws Exception {
+	void testPractitionerOnly() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -338,18 +327,17 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 		params.addParameter().setName("practitioner").setValue(new StringType(practitionerValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 	}
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testSubjectMultiple() throws Exception {
+	void testSubjectMultiple() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -358,36 +346,34 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 	}
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testNoMeasure() throws Exception {
+	void testNoMeasure() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
 		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 	}
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testStatusInvalid() throws Exception {
+	void testStatusInvalid() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
@@ -395,35 +381,33 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("status").setValue(new StringType(statusInvalid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 	}
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testStatusNull() throws Exception {
+	void testStatusNull() {
 		Parameters params = new Parameters();
 		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
 		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
 		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () -> {
+		assertThrows(InternalErrorException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute();
-		});
+					.execute());
 	}
 
 	@Test
-	public void testMultipleStatusValid() throws Exception {
+	void testMultipleStatusValid() {
 		beforeEachMeasure();
 
 		Parameters params = new Parameters();
@@ -444,7 +428,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testMeasures() throws Exception {
+	void testMeasures() {
 		beforeEachMultipleMeasures();
 
 		Parameters params = new Parameters();
@@ -470,7 +454,7 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 
 	@SuppressWarnings("java:S5778")
 	@Test
-	public void testParallelMultiSubject() throws Exception {
+	void testParallelMultiSubject() {
 		beforeEachParallelMeasure();
 
 		Parameters params = new Parameters();
@@ -480,10 +464,12 @@ public class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		getClient().operation().onType(Measure.class).named("$care-gaps")
+		Parameters result = getClient().operation().onType(Measure.class).named("$care-gaps")
 				.withParameters(params)
 				.useHttpGet()
 				.returnResourceType(Parameters.class)
 				.execute();
+
+		assertNotNull(result);
 	}
 }

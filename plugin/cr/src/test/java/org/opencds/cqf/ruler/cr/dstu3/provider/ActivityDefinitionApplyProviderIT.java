@@ -19,12 +19,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
-		ActivityDefinitionApplyProviderIT.class,
-		CrConfig.class, CqlConfig.class }, properties = {
-				"hapi.fhir.fhir_version=dstu3",
-		})
-public class ActivityDefinitionApplyProviderIT extends RestIntegrationTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = { ActivityDefinitionApplyProviderIT.class,
+				CrConfig.class, CqlConfig.class },
+		properties = { "hapi.fhir.fhir_version=dstu3" })
+class ActivityDefinitionApplyProviderIT extends RestIntegrationTest {
 
 	@Autowired
 	private ActivityDefinitionApplyProvider activityDefinitionApplyProvider;
@@ -37,7 +36,7 @@ public class ActivityDefinitionApplyProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testActivityDefinitionApply() throws Exception {
+	void testActivityDefinitionApply() throws Exception {
 		DomainResource activityDefinition = (DomainResource) activityDefinitions.get("opioidcds-risk-assessment-request");
 		// Patient First
 		Map<String, IBaseResource> resources = uploadTests("test/activitydefinition/Patient");

@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
 
 import java.util.Optional;
 
-import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Measure;
@@ -17,7 +17,6 @@ import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cql.CqlConfig;
@@ -25,25 +24,21 @@ import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, classes = {
-		MeasureEvaluateProviderIT.class,
-		CrConfig.class, CqlConfig.class }, properties = {
-				"hapi.fhir.fhir_version=r4", "hapi.fhir.security.enabled=true" })
-
-public class MeasureEvaluateProviderIT extends RestIntegrationTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
+		classes = { MeasureEvaluateProviderIT.class, CrConfig.class, CqlConfig.class },
+		properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.security.enabled=true" })
+class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	@Test
-	public void testMeasureEvaluate() throws Exception {
-		String bundleAsText = stringFromResource("Exm104FhirR4MeasureBundle.json");
-		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
-		getClient().transaction().withBundle(bundle).execute();
+	void testMeasureEvaluate() {
+		loadTransaction("Exm104FhirR4MeasureBundle.json");
 
-		Parameters params = newParameters(
-				newPart("periodStart", "2019-01-01"),
-				newPart("periodEnd", "2020-01-01"),
-				newPart("reportType", "individual"),
-				newPart("subject", "Patient/numer-EXM104"),
-				newPart("lastReceivedOn", "2019-12-12"));
+		Parameters params = parameters(
+				stringPart("periodStart", "2019-01-01"),
+				stringPart("periodEnd", "2020-01-01"),
+				stringPart("reportType", "individual"),
+				stringPart("subject", "Patient/numer-EXM104"),
+				stringPart("lastReceivedOn", "2019-12-12"));
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
@@ -56,31 +51,26 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testMeasureEvaluateWithTerminologyEndpoint() throws Exception {
-		String bundleAsText = stringFromResource("Exm104FhirR4MeasureBundle.json");
-		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
-		getClient().transaction().withBundle(bundle).execute();
+	void testMeasureEvaluateWithTerminologyEndpoint() {
+		loadTransaction("Exm104FhirR4MeasureBundle.json");
 
 		getClient().operation().onInstance(new IdType("ValueSet",
 				"2.16.840.1.114222.4.11.3591")).named("expand")
 				.withNoParameters(Parameters.class).execute();
 
-		String terminologyAsText = stringFromResource("Endpoint.json");
-
-		Endpoint terminologyEndpointValid = (Endpoint) getFhirContext().newJsonParser().parseResource(terminologyAsText);
+		Endpoint terminologyEndpointValid = (Endpoint) loadResource("Endpoint.json");
 		terminologyEndpointValid.setAddress(this.getServerBase());
 
-		Endpoint terminologyEndpointInvalid = (Endpoint) getFhirContext().newJsonParser()
-				.parseResource(terminologyAsText);
+		Endpoint terminologyEndpointInvalid = (Endpoint) loadResource("Endpoint.json");
 		terminologyEndpointInvalid.setAddress("https://tx.nhsnlink.org/fhir234");
 
-		Parameters params = newParameters(
-				newPart("periodStart", "2019-01-01"),
-				newPart("periodEnd", "2020-01-01"),
-				newPart("reportType", "individual"),
-				newPart("subject", "Patient/numer-EXM104"),
-				newPart("lastReceivedOn", "2019-12-12"),
-				newPart("terminologyEndpoint", terminologyEndpointValid));
+		Parameters params = parameters(
+				stringPart("periodStart", "2019-01-01"),
+				stringPart("periodEnd", "2020-01-01"),
+				stringPart("reportType", "individual"),
+				stringPart("subject", "Patient/numer-EXM104"),
+				stringPart("lastReceivedOn", "2019-12-12"),
+				part("terminologyEndpoint", terminologyEndpointValid));
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
@@ -91,22 +81,20 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 		assertNotNull(returnMeasureReport);
 
-		Parameters paramsWithInvalidTerminology = newParameters(
-				newPart("periodStart", "2019-01-01"),
-				newPart("periodEnd", "2020-01-01"),
-				newPart("reportType", "individual"),
-				newPart("subject", "Patient/numer-EXM104"),
-				newPart("lastReceivedOn", "2019-12-12"),
-				newPart("terminologyEndpoint", terminologyEndpointInvalid));
+		Parameters paramsWithInvalidTerminology = parameters(
+				stringPart("periodStart", "2019-01-01"),
+				stringPart("periodEnd", "2020-01-01"),
+				stringPart("reportType", "individual"),
+				stringPart("subject", "Patient/numer-EXM104"),
+				stringPart("lastReceivedOn", "2019-12-12"),
+				part("terminologyEndpoint", terminologyEndpointInvalid));
 
-		Exception ex = assertThrows(Exception.class, () -> {
-			getClient().operation()
-					.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
-					.named("$evaluate-measure")
-					.withParameters(paramsWithInvalidTerminology)
-					.returnResourceType(MeasureReport.class)
-					.execute();
-		});
+		Exception ex = assertThrows(Exception.class, () -> getClient().operation()
+				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))
+				.named("$evaluate-measure")
+				.withParameters(paramsWithInvalidTerminology)
+				.returnResourceType(MeasureReport.class)
+				.execute());
 
 		assertTrue(ex.getMessage().contains("Error performing expansion"));
 	}
@@ -114,13 +102,14 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 	private void runWithPatient(String measureId, String patientId, int initialPopulationCount, int denominatorCount,
 			int denominatorExclusionCount, int numeratorCount, boolean enrolledDuringParticipationPeriod,
 			String participationPeriod) {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType("2022-01-01"));
-		params.addParameter().setName("periodEnd").setValue(new StringType("2022-12-31"));
-		params.addParameter().setName("reportType").setValue(new StringType("individual"));
-		params.addParameter().setName("subject").setValue(new StringType(patientId));
+		Parameters params = parameters(
+				stringPart("periodStart", "2022-01-01"),
+				stringPart("periodEnd", "2022-12-31"),
+				stringPart("reportType", "individual"),
+				stringPart("subject", patientId));
 
-		MeasureReport returnMeasureReport = getClient().operation().onInstance(new IdType("Measure", measureId))
+		MeasureReport returnMeasureReport = getClient().operation()
+				.onInstance(new IdType("Measure", measureId))
 				.named("$evaluate-measure")
 				.withParameters(params)
 				.returnResourceType(MeasureReport.class)
@@ -153,10 +142,8 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				Observation o = (Observation) r;
 				if (o.getCode().getText().equals("Enrolled During Participation Period")) {
 					enrolledDuringParticipationPeriodObs = o;
-					continue;
 				} else if (o.getCode().getText().equals("Participation Period")) {
 					participationPeriodObs = o;
-					continue;
 				}
 			}
 		}
@@ -170,10 +157,8 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testBCSEHEDISMY2022() throws Exception {
-		String bundleAsText = stringFromResource("BCSEHEDISMY2022-bundle.json");
-		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
-		getClient().transaction().withBundle(bundle).execute();
+	void testBCSEHEDISMY2022() {
+		loadTransaction("BCSEHEDISMY2022-bundle.json");
 
 		runWithPatient("BCSEHEDISMY2022", "Patient/Patient-5", 0, 0, 0, 0, false,
 				"Interval[2020-10-01T00:00:00.000, 2022-12-31T23:59:59.999]");
@@ -190,19 +175,17 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testClientNonPatientBasedMeasureEvaluate() throws Exception {
-		String bundleAsText = stringFromResource("ClientNonPatientBasedMeasureBundle.json");
-		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsText);
-		getClient().transaction().withBundle(bundle).execute();
+	void testClientNonPatientBasedMeasureEvaluate() {
+		loadTransaction("ClientNonPatientBasedMeasureBundle.json");
 
 		Measure measure = getClient().read().resource(Measure.class).withId("InitialInpatientPopulation").execute();
 		assertNotNull(measure);
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
-		params.addParameter().setName("reportType").setValue(new StringType("subject"));
-		params.addParameter().setName("subject").setValue(new StringType("Patient/97f27374-8a5c-4aa1-a26f-5a1ab03caa47"));
+		Parameters params = parameters(
+				stringPart("periodStart", "2019-01-01"),
+				stringPart("periodEnd", "2020-01-01"),
+				stringPart("reportType", "subject"),
+				stringPart("subject", "Patient/97f27374-8a5c-4aa1-a26f-5a1ab03caa47"));
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "InitialInpatientPopulation"))
@@ -228,17 +211,13 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 
 	@Disabled("The cql/elm in the Bundles is incorrect. It references ValueSets by localhost url, which is not valid")
 	@Test
-	public void testMeasureEvaluateMultiVersion() throws Exception {
-		String bundleAsTextVersion7 = stringFromResource("multiversion/EXM124-7.0.000-bundle.json");
-		String bundleAsTextVersion9 = stringFromResource("multiversion/EXM124-9.0.000-bundle.json");
-		Bundle bundleVersion7 = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsTextVersion7);
-		Bundle bundleVersion9 = (Bundle) getFhirContext().newJsonParser().parseResource(bundleAsTextVersion9);
-		getClient().transaction().withBundle(bundleVersion7).execute();
-		getClient().transaction().withBundle(bundleVersion9).execute();
-		Parameters params = new Parameters();
-		params.addParameter().setName("reportType").setValue(new StringType("individual"));
-		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM124"));
-		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
+	void testMeasureEvaluateMultiVersion() {
+		loadTransaction("multiversion/EXM124-7.0.000-bundle.json");
+		loadTransaction("multiversion/EXM124-9.0.000-bundle.json");
+		Parameters params = parameters(
+				stringPart("reportType", "individual"),
+				stringPart("subject", "Patient/numer-EXM124"),
+				stringPart("lastReceivedOn", "2019-12-12"));
 
 		MeasureReport returnMeasureReportVersion7 = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM124-7.0.000"))
@@ -257,7 +236,6 @@ public class MeasureEvaluateProviderIT extends RestIntegrationTest {
 				.execute();
 
 		assertNotNull(returnMeasureReportVersion9);
-
 	}
 
 }

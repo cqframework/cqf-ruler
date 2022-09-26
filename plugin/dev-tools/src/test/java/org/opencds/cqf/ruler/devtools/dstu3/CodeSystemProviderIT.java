@@ -1,6 +1,7 @@
 package org.opencds.cqf.ruler.devtools.dstu3;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
@@ -8,7 +9,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -32,19 +34,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CodeSystemProviderIT.class,
-		DevToolsConfig.class }, properties = "hapi.fhir.fhir_version=dstu3")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = { CodeSystemProviderIT.class, DevToolsConfig.class },
+		properties = { "hapi.fhir.fhir_version=dstu3" })
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class CodeSystemProviderIT extends RestIntegrationTest {
-	private Logger log = LoggerFactory.getLogger(CodeSystemProviderIT.class);
+class CodeSystemProviderIT extends RestIntegrationTest {
+	private final Logger log = LoggerFactory.getLogger(CodeSystemProviderIT.class);
 
 	@Autowired
 	CodeSystemUpdateProvider codeSystemUpdateProvider;
 
-	private String icd10 = "http://hl7.org/fhir/sid/icd-10";
-	private String rxNormUrl = "http://www.nlm.nih.gov/research/umls/rxnorm";
-	private String snomedSctUrl = "http://snomed.info/sct";
-	private String cptUrl = "http://www.ama-assn.org/go/cpt";
+	private final String icd10 = "http://hl7.org/fhir/sid/icd-10";
+	private final String rxNormUrl = "http://www.nlm.nih.gov/research/umls/rxnorm";
 
 	@AfterEach
 	void tearDown() {
@@ -55,7 +56,7 @@ public class CodeSystemProviderIT extends RestIntegrationTest {
 
 	@Test
 	@Order(1)
-	public void testCodeSystemUpdateValueSetDNE() throws IOException {
+	void testCodeSystemUpdateValueSetDNE() {
 		ValueSet vs = (ValueSet) readResource("org/opencds/cqf/ruler/devtools/dstu3/valueset/AntithromboticTherapy.json");
 		OperationOutcome outcome = codeSystemUpdateProvider.updateCodeSystems(vs.getIdElement());
 		assertEquals(1, outcome.getIssue().size());
@@ -66,7 +67,7 @@ public class CodeSystemProviderIT extends RestIntegrationTest {
 
 	@Test
 	@Order(2)
-	public void testCodeSystemUpdateValueSetIdNull() {
+	void testCodeSystemUpdateValueSetIdNull() {
 		OperationOutcome outcome = codeSystemUpdateProvider.updateCodeSystems(new ValueSet().getIdElement());
 		assertEquals(1, outcome.getIssue().size());
 		OperationOutcomeIssueComponent issue = outcome.getIssue().get(0);
@@ -76,7 +77,7 @@ public class CodeSystemProviderIT extends RestIntegrationTest {
 
 	@Test
 	@Order(3)
-	public void testDSTU3RxNormCodeSystemUpdateById() throws IOException {
+	void testDSTU3RxNormCodeSystemUpdateById() {
 		log.info("Beginning Test DSTU3 RxNorm CodeSystemUpdate");
 		ValueSet vs = (ValueSet) loadResource("org/opencds/cqf/ruler/devtools/dstu3/valueset/AntithromboticTherapy.json");
 
@@ -94,17 +95,18 @@ public class CodeSystemProviderIT extends RestIntegrationTest {
 
 	@Test
 	@Order(4)
-	public void testDSTU3ICD10PerformCodeSystemUpdateByList() throws IOException {
+	void testDSTU3ICD10PerformCodeSystemUpdateByList() throws IOException {
 		log.info("Beginning Test DSTU3 ICD10 CodeSystemUpdate");
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				CodeSystemProviderIT.class.getResourceAsStream("valueset" + "/" + "AllPrimaryandSecondaryCancer.json")));
+				Objects.requireNonNull(CodeSystemProviderIT.class.getResourceAsStream(
+						"valueset" + "/" + "AllPrimaryandSecondaryCancer.json"))));
 		String resourceString = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 		reader.close();
 		ValueSet vs = (ValueSet) loadResource("json", resourceString);
 
 		assertEquals(0, performCodeSystemSearchByUrl(icd10).size());
-		codeSystemUpdateProvider.performCodeSystemUpdate(Arrays.asList(vs));
+		codeSystemUpdateProvider.performCodeSystemUpdate(Collections.singletonList(vs));
 		OperationOutcome outcome = codeSystemUpdateProvider.updateCodeSystems(vs.getIdElement());
 		for (OperationOutcomeIssueComponent issue : outcome.getIssue()) {
 			assertEquals(OperationOutcome.IssueSeverity.INFORMATION, issue.getSeverity());
@@ -118,12 +120,15 @@ public class CodeSystemProviderIT extends RestIntegrationTest {
 
 	@Test
 	@Order(5)
-	public void testDSTU3UpdateCodeSystems() throws IOException {
+	void testDSTU3UpdateCodeSystems() throws IOException {
 		log.info("Beginning Test DSTU3 Update Code Systems");
 
+		String cptUrl = "http://www.ama-assn.org/go/cpt";
 		assertEquals(0, performCodeSystemSearchByUrl(cptUrl).size());
 
-		File[] valuesets = new File(CodeSystemProviderIT.class.getResource("valueset").getPath()).listFiles();
+		File[] valuesets = new File(Objects.requireNonNull(
+				CodeSystemProviderIT.class.getResource("valueset")).getPath()).listFiles();
+		assertNotNull(valuesets);
 		for (File file : valuesets) {
 			if (file.isFile() && FilenameUtils.getExtension(file.getPath()).equals("json")) {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
@@ -148,6 +153,7 @@ public class CodeSystemProviderIT extends RestIntegrationTest {
 		}
 		assertEquals(1, performCodeSystemSearchByUrl(icd10).size());
 		assertEquals(1, performCodeSystemSearchByUrl(rxNormUrl).size());
+		String snomedSctUrl = "http://snomed.info/sct";
 		assertEquals(1, performCodeSystemSearchByUrl(snomedSctUrl).size());
 		assertEquals(1, performCodeSystemSearchByUrl(cptUrl).size());
 

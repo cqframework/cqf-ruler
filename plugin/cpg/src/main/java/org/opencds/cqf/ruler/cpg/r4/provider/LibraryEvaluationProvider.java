@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.cpg.r4.provider;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +35,9 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
@@ -164,12 +166,12 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 					"prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint");
 
 			if (outcome != null) {
-				return newParameters(newPart("error", (OperationOutcome) outcome));
+				return parameters(part("error", (OperationOutcome) outcome));
 			}
 		}
 
 		if (prefetchData != null) {
-			return newParameters(newPart("invalid parameters",
+			return parameters(part("invalid parameters",
 					(OperationOutcome) evaluationHelper.createIssue("error",
 							"prefetchData is not yet supported")));
 		}
@@ -183,7 +185,7 @@ public class LibraryEvaluationProvider extends DaoRegistryOperationProvider {
 					expression == null ? null : new HashSet<>(expression));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return newParameters(newPart("evaluation error",
+			return parameters(part("evaluation error",
 					(OperationOutcome) evaluationHelper.createIssue("error", e.getMessage())));
 		}
 	}

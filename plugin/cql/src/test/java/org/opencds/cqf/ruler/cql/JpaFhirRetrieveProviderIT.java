@@ -25,7 +25,7 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.jpa.provider.ValueSetOperationProvider;
 
 @SpringBootTest(classes = { JpaFhirRetrieveProviderIT.class }, properties = { "hapi.fhir.fhir_version=r4" })
-public class JpaFhirRetrieveProviderIT extends DaoIntegrationTest {
+class JpaFhirRetrieveProviderIT extends DaoIntegrationTest {
 
 	@Autowired
 	SearchParameterResolver searchParameterResolver;
@@ -45,7 +45,7 @@ public class JpaFhirRetrieveProviderIT extends DaoIntegrationTest {
 	}
 
 	@Test
-	public void testReadPatient() {
+	void testReadPatient() {
 		this.update(patient());
 
 		JpaFhirRetrieveProvider jfrp = this.createProvider();
@@ -60,7 +60,7 @@ public class JpaFhirRetrieveProviderIT extends DaoIntegrationTest {
 	}
 
 	@Test
-	public void testReadObservation() {
+	void testReadObservation() {
 		this.update(patient());
 		this.update(observation());
 
@@ -77,7 +77,7 @@ public class JpaFhirRetrieveProviderIT extends DaoIntegrationTest {
 	}
 
 	@Test
-	public void testReadObservationByValueSet() {
+	void testReadObservationByValueSet() {
 		this.update(patient());
 		this.update(observation());
 		this.update(valueSet());
