@@ -7,52 +7,52 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.ruler.utility.r5.Parameters.getPartsByName;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newBase64BinaryPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newBooleanPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newCanonicalPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newCodePart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newDatePart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newDateTimePart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newDecimalPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newIdPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newInstantPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newInteger64Part;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newIntegerPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newMarkdownPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newOidPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newPositiveIntPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newStringPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newTimePart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newUnsignedIntPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newUriPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newUrlPart;
-import static org.opencds.cqf.ruler.utility.r5.Parameters.newUuidPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.base64BinaryPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.booleanPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.canonicalPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.codePart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.datePart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.dateTimePart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.decimalPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.idPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.instantPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.integer64Part;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.integerPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.markdownPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.oidPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.positiveIntPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.stringPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.timePart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.unsignedIntPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.uriPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.urlPart;
+import static org.opencds.cqf.ruler.utility.r5.Parameters.uuidPart;
 
 class ParametersTest {
     @Test
     void testParametersPartTypes() {
-        org.hl7.fhir.r5.model.Parameters parameters = newParameters(
-                newBase64BinaryPart("r5Base64BinaryPart", "SGVsbG8gV29ybGQh"),
-                newBooleanPart("r5BooleanPart", true),
-                newCanonicalPart("r5CanonicalPart", "https://example.com/Library/example-library"),
-                newCodePart("r5CodePart", "active"),
-                newDatePart("r5DatePart", "2012-12-31"),
-                newDateTimePart("r5DateTimePart", "2015-02-07T13:28:17-05:00"),
-                newDecimalPart("r5DecimalPart", 72.42),
-                newIdPart("r5IdPart", "example-id"),
-                newInstantPart("r5InstantPart", "2015-02-07T13:28:17.239+02:00"),
-                newIntegerPart("r5IntegerPart", 72),
-                newInteger64Part("r5Integer64Part", 9223372036854775807L),
-                newMarkdownPart("r5MarkdownPart", "## Markdown Title"),
-                newOidPart("r5OidPart", "urn:oid:1.2.3.4.5"),
-                newPositiveIntPart("r5PositiveIntPart", 1),
-                newStringPart("r5StringPart", "example string"),
-                newTimePart("r5TimePart", "12:30:30.500"),
-                newUnsignedIntPart("r5UnsignedIntPart", 0),
-                newUriPart("r5UriPart", "news:comp.infosystems.www.servers.unix"),
-                newUrlPart("r5UrlPart", "https://example.com"),
-                newUuidPart("r5UuidPart", "urn:uuid:c757873d-ec9a-4326-a141-556f43239520"));
+        org.hl7.fhir.r5.model.Parameters parameters = parameters(
+                base64BinaryPart("r5Base64BinaryPart", "SGVsbG8gV29ybGQh"),
+                booleanPart("r5BooleanPart", true),
+                canonicalPart("r5CanonicalPart", "https://example.com/Library/example-library"),
+                codePart("r5CodePart", "active"),
+                datePart("r5DatePart", "2012-12-31"),
+                dateTimePart("r5DateTimePart", "2015-02-07T13:28:17-05:00"),
+                decimalPart("r5DecimalPart", 72.42),
+                idPart("r5IdPart", "example-id"),
+                instantPart("r5InstantPart", "2015-02-07T13:28:17.239+02:00"),
+                integerPart("r5IntegerPart", 72),
+                integer64Part("r5Integer64Part", 9223372036854775807L),
+                markdownPart("r5MarkdownPart", "## Markdown Title"),
+                oidPart("r5OidPart", "urn:oid:1.2.3.4.5"),
+                positiveIntPart("r5PositiveIntPart", 1),
+                stringPart("r5StringPart", "example string"),
+                timePart("r5TimePart", "12:30:30.500"),
+                unsignedIntPart("r5UnsignedIntPart", 0),
+                uriPart("r5UriPart", "s:comp.infosystems.www.servers.unix"),
+                urlPart("r5UrlPart", "https://example.com"),
+                uuidPart("r5UuidPart", "urn:uuid:c757873d-ec9a-4326-a141-556f43239520"));
 
         org.hl7.fhir.r5.model.DataType r5Type = parameters.getParameter("r5Base64BinaryPart");
         assertTrue(r5Type instanceof org.hl7.fhir.r5.model.Base64BinaryType);
@@ -124,7 +124,7 @@ class ParametersTest {
 
         r5Type = parameters.getParameter("r5UriPart");
         assertTrue(r5Type instanceof org.hl7.fhir.r5.model.UriType);
-        assertEquals("news:comp.infosystems.www.servers.unix", ((org.hl7.fhir.r5.model.UriType) r5Type).getValueAsString());
+        assertEquals("s:comp.infosystems.www.servers.unix", ((org.hl7.fhir.r5.model.UriType) r5Type).getValueAsString());
 
         r5Type = parameters.getParameter("r5UrlPart");
         assertTrue(r5Type instanceof org.hl7.fhir.r5.model.UrlType);
@@ -137,18 +137,18 @@ class ParametersTest {
 
     @Test
     void getParameterByNameTest() {
-        org.hl7.fhir.r5.model.Parameters parameters = newParameters(
-                newStringPart("testName", "testValue"),
-                newStringPart("testName1", "testValue1")
+        org.hl7.fhir.r5.model.Parameters parameters = parameters(
+                stringPart("testName", "testValue"),
+                stringPart("testName1", "testValue1")
         );
 
         List<org.hl7.fhir.r5.model.Parameters.ParametersParameterComponent> parts = getPartsByName(parameters, "testName");
         assertEquals(1, parts.size());
 
-        parameters = newParameters(
-                newStringPart("testName", "testValue"),
-                newStringPart("testName", "testValue"),
-                newStringPart("testName1", "testValue1")
+        parameters = parameters(
+                stringPart("testName", "testValue"),
+                stringPart("testName", "testValue"),
+                stringPart("testName1", "testValue1")
         );
 
         parts = getPartsByName(parameters, "testName");
