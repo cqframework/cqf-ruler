@@ -1,0 +1,21 @@
+{
+  "resourceType": "Library",
+  "id": "Html",
+  "version": "0.1",
+  "name": "Html",
+  "status": "active",
+  "type": {
+    "coding": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/library-type",
+        "code": "logic-library"
+      }
+    ]
+  },
+  "content": [
+    {
+      "contentType": "text/cql",
+      "data": "bGlicmFyeSBIdG1sIHZlcnNpb24gJzAuMScKCnVzaW5nIEZISVIgdmVyc2lvbiAnNC4wLjEnCgpjb250ZXh0IFBhdGllbnQKCmRlZmluZSAiSW4gUG9wdWxhdGlvbiI6CiAgdHJ1ZQoKZGVmaW5lICJSZWNvbW1lbmRhdGlvbiI6CiAgJ1RoaXMgY2hhcmFjdGVyIGlzIG5vdCBoYW5kbGVkOiA8YnIgLz4nCgpkZWZpbmUgIlJhdGlvbmFsZSI6CiAgJ05vbmUnCgpkZWZpbmUgIkluZGljYXRvciBTdGF0dXMiOgogICdpbmZvJwo="
+    }
+  ]
+}
