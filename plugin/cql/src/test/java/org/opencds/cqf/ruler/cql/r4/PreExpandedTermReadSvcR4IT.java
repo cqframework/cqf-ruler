@@ -23,10 +23,10 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import ca.uhn.fhir.rest.param.TokenParamModifier;
 
 @SpringBootTest(classes = { PreExpandedTermReadSvcR4IT.class }, properties = { "hapi.fhir.fhir_version=r4" })
-public class PreExpandedTermReadSvcR4IT extends DaoIntegrationTest {
+class PreExpandedTermReadSvcR4IT extends DaoIntegrationTest {
 
 	@Test
-	public void testSearchObservationByComposedValueSet() {
+	void testSearchObservationByComposedValueSet() {
 		this.update(composedValueSet());
 		this.update(patient());
 		this.update(observation());
@@ -38,7 +38,7 @@ public class PreExpandedTermReadSvcR4IT extends DaoIntegrationTest {
 	}
 
 	@Test
-	public void testSearchObservationByExpandedValueSet() {
+	void testSearchObservationByExpandedValueSet() {
 		this.update(expandedValueSet());
 		this.update(patient());
 		this.update(observation());

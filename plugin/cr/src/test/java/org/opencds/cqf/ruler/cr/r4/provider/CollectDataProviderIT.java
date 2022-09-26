@@ -25,13 +25,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
 @SpringBootTest(classes = { CollectDataProviderIT.class }, properties = { "hapi.fhir.fhir_version=r4", })
-public class CollectDataProviderIT extends DaoIntegrationTest {
+class CollectDataProviderIT extends DaoIntegrationTest {
 
 	@Autowired
 	CollectDataProvider collectDataProvider;
 
 	@Test
-	public void testCollectData() {
+	void testCollectData() {
 		// Create test Measure
 		String cql = CqlBuilder.newCqlLibrary("4.0.1")
 				.addExpression(

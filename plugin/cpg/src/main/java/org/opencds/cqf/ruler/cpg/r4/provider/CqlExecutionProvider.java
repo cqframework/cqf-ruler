@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.cpg.r4.provider;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 
 import java.util.Collections;
 import java.util.List;
@@ -223,18 +223,18 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 					"data", "prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint", "content");
 
 			if (outcome != null) {
-				return newParameters(newPart("invalid parameters", (OperationOutcome) outcome));
+				return parameters(part("invalid parameters", (OperationOutcome) outcome));
 			}
 		}
 
 		if (prefetchData != null) {
-			return newParameters(newPart("invalid parameters",
+			return parameters(part("invalid parameters",
 					(OperationOutcome) evaluationHelper.createIssue(
 							"warning", "prefetchData is not yet supported")));
 		}
 
 		if (expression == null && content == null) {
-			return newParameters(newPart("invalid parameters",
+			return parameters(part("invalid parameters",
 					(OperationOutcome) evaluationHelper.createIssue("error",
 							"The $cql operation requires the expression parameter and/or content parameter to exist")));
 		}
@@ -262,7 +262,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 					expression == null ? null : Collections.singleton(expression));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return newParameters(newPart("evaluation error",
+			return parameters(part("evaluation error",
 					(OperationOutcome) evaluationHelper.createIssue("error", e.getMessage())));
 		}
 	}

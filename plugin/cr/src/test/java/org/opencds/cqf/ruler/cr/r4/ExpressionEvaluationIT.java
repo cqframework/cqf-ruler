@@ -1,5 +1,6 @@
 package org.opencds.cqf.ruler.cr.r4;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
@@ -20,7 +21,7 @@ import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 		CrConfig.class, CqlConfig.class }, properties = {
 				"hapi.fhir.fhir_version=r4",
 		})
-public class ExpressionEvaluationIT extends RestIntegrationTest {
+class ExpressionEvaluationIT extends RestIntegrationTest {
 
 	@Autowired
 	private ExpressionEvaluation expressionEvaluation;
@@ -37,7 +38,7 @@ public class ExpressionEvaluationIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testExpressionEvaluationANCIND01MeasureDomain() throws Exception {
+	void testExpressionEvaluationANCIND01MeasureDomain() throws Exception {
 		DomainResource measure = (DomainResource) measures.get("ANCIND01");
 		// Patient First
 		uploadTests("test/measure/ANCIND01/charity-otala-1/Patient");
@@ -46,19 +47,19 @@ public class ExpressionEvaluationIT extends RestIntegrationTest {
 		Object ipResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.\"Initial Population\"",
 				patient.getIdElement().getIdPart(), new SystemRequestDetails());
 		assertTrue(ipResult instanceof Boolean);
-		assertTrue(((Boolean) ipResult).booleanValue());
+		assertTrue((Boolean) ipResult);
 		Object denomResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Denominator",
 				patient.getIdElement().getIdPart(), new SystemRequestDetails());
 		assertTrue(denomResult instanceof Boolean);
-		assertTrue(((Boolean) denomResult).booleanValue());
+		assertTrue((Boolean) denomResult);
 		Object numerResult = expressionEvaluation.evaluateInContext(measure, "ANCIND01.Numerator",
 				patient.getIdElement().getIdPart(), new SystemRequestDetails());
 		assertTrue(numerResult instanceof Boolean);
-		assertTrue(((Boolean) numerResult).booleanValue());
+		assertTrue((Boolean) numerResult);
 	}
 
 	@Test
-	public void testExpressionEvaluationANCDT01PlanDefinitionDomain() throws Exception {
+	void testExpressionEvaluationANCDT01PlanDefinitionDomain() throws Exception {
 		DomainResource planDefinition = (DomainResource) planDefinitions.get("lcs-cds-patient-view");
 		// Patient First
 		uploadTests("test/plandefinition/LungCancerScreening/Former-Smoker/Patient");
@@ -68,11 +69,11 @@ public class ExpressionEvaluationIT extends RestIntegrationTest {
 				"Is former smoker who quit within past 15 years", patient.getIdElement().getIdPart(), true,
 				new SystemRequestDetails());
 		assertTrue(isFormerSmoker instanceof Boolean);
-		assertTrue(((Boolean) isFormerSmoker).booleanValue());
+		assertTrue((Boolean) isFormerSmoker);
 
 		Object isCurrentSmoker = expressionEvaluation.evaluateInContext(planDefinition, "Is current smoker",
 				patient.getIdElement().getIdPart(), true, new SystemRequestDetails());
 		assertTrue(isCurrentSmoker instanceof Boolean);
-		assertTrue((!(Boolean) isCurrentSmoker));
+		assertFalse((Boolean) isCurrentSmoker);
 	}
 }

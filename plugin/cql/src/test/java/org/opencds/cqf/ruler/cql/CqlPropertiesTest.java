@@ -16,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 @EnableConfigurationProperties(CqlProperties.class)
-public class CqlPropertiesTest {
+class CqlPropertiesTest {
 
 	@Autowired
 	CqlProperties cqlProperties;
@@ -24,7 +24,7 @@ public class CqlPropertiesTest {
 	// This tests that all the various cql-related properties are being bound
 	// correctly to the configuration
 	@Test
-	public void cqlPropertiesAreSet() {
+	void cqlPropertiesAreSet() {
 		assertTrue(cqlProperties.isEnabled());
 		assertFalse(cqlProperties.useEmbeddedLibraries());
 

@@ -30,8 +30,8 @@ import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 
 @Configurable
 public class RiskAdjustmentProvider extends DaoRegistryOperationProvider implements MeasureReportUser {
@@ -65,13 +65,12 @@ public class RiskAdjustmentProvider extends DaoRegistryOperationProvider impleme
 				Operations.validateCardinality(requestDetails, "periodEnd", 1);
 				Operations.validateCardinality(requestDetails, "subject", 1);
 			} catch (Exception e) {
-				return newParameters(newPart("Invalid parameters",
-						generateIssue(ERROR, e.getMessage())));
+				return parameters(part("Invalid parameters", generateIssue(ERROR, e.getMessage())));
 			}
 		}
 
 		if (!type.equalsIgnoreCase("report")) {
-			return newParameters(newPart(subject, generateIssue(
+			return parameters(part(subject, generateIssue(
 					ERROR, String.format(
 							"The $risk-adjustment operation is not implemented for %s type parameter on this server",
 							type))));

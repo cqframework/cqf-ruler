@@ -24,8 +24,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RiskAdjustmentProviderIT.class,
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
@@ -83,11 +83,11 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	}
 
 	private Parameters getRequestParameters(String subject) {
-		return newParameters(
-				newPart("periodStart", "2022-01-01"),
-				newPart("periodEnd", "2022-12-31"),
-				newPart("subject", subject),
-				newPart("type", "report"));
+		return parameters(
+				stringPart("periodStart", "2022-01-01"),
+				stringPart("periodEnd", "2022-12-31"),
+				stringPart("subject", subject),
+				stringPart("type", "report"));
 	}
 
 	private Parameters callOperation(Parameters requestParameters) {
