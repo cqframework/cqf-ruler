@@ -30,7 +30,6 @@ import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-import org.springframework.beans.factory.annotation.Configurable;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 
