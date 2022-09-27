@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +63,7 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 		report.setType(MeasureReport.MeasureReportType.DATACOLLECTION);
 		report.setGroup(null);
 
-		Parameters parameters = newParameters(newPart("measureReport", report));
+		Parameters parameters = parameters(part("measureReport", report));
 
 		addEvaluatedResourcesToParameters(report, parameters);
 
@@ -88,6 +88,6 @@ public class CollectDataProvider extends DaoRegistryOperationProvider {
 
 	private void addEvaluatedResourcesToParameters(MeasureReport report, Parameters parameters) {
 		readEvaluatedResources(report)
-				.forEach(resource -> parameters.addParameter(newPart("resource", resource)));
+				.forEach(resource -> parameters.addParameter(part("resource", resource)));
 	}
 }

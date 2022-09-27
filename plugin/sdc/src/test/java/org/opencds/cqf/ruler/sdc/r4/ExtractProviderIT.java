@@ -1,11 +1,10 @@
 package org.opencds.cqf.ruler.sdc.r4;
 
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Parameters;
@@ -25,18 +24,18 @@ import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
 		SDCConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
-public class ExtractProviderIT extends RestIntegrationTest {
+class ExtractProviderIT extends RestIntegrationTest {
 	@Autowired
 	private SDCProperties mySdcProperties;
 
 	@BeforeEach
-	public void beforeEach() {
+	void beforeEach() {
 		String ourServerBase = "http://localhost:" + getPort() + "/fhir/";
 		mySdcProperties.getExtract().setEndpoint(ourServerBase);
 	}
 
 	@Test
-	public void testExtract() throws IOException, URISyntaxException {
+	void testExtract() {
 		String examplePatient = "example_patient.json";
 		String exampleQuestionnaire = "questionnaire_1559.json";
 		String exampleQR = "questionnaire_response_1558.json";
@@ -45,8 +44,9 @@ public class ExtractProviderIT extends RestIntegrationTest {
 		loadResource(exampleQuestionnaire);
 		QuestionnaireResponse questionnaireResponse = (QuestionnaireResponse) loadResource(exampleQR);
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("questionnaireResponse").setResource(questionnaireResponse);
+		Parameters params = parameters(
+				part("questionnaireResponse", questionnaireResponse)
+		);
 
 		Bundle actual = getClient()
 				.operation()
@@ -68,7 +68,7 @@ public class ExtractProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testExtract_noQuestionnaireReference_throwsException() throws IOException {
+	void testExtract_noQuestionnaireReference_throwsException() {
 		QuestionnaireResponse test = (QuestionnaireResponse) getFhirContext().newJsonParser()
 				.parseResource(stringFromResource("mypain-questionnaire-response-no-url.json"));
 

@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.cpg.dstu3.provider;
 
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.part;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +36,9 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.RequestTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import org.springframework.beans.factory.annotation.Configurable;
 
+@Configurable
 public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 
 	@Autowired
@@ -214,18 +216,18 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 					"subject", "expression", "parameters", "library", "useServerData", "data",
 					"prefetchData", "dataEndpoint", "contentEndpoint", "terminologyEndpoint", "content");
 			if (outcome != null) {
-				return newParameters(newPart("error", (OperationOutcome) outcome));
+				return parameters(part("error", (OperationOutcome) outcome));
 			}
 		}
 
 		if (prefetchData != null) {
-			return newParameters(newPart("invalid parameters",
+			return parameters(part("invalid parameters",
 					(OperationOutcome) evaluationHelper.createIssue(
 							"error", "prefetchData is not yet supported")));
 		}
 
 		if (expression == null && content == null) {
-			return newParameters(newPart("invalid parameters",
+			return parameters(part("invalid parameters",
 					(OperationOutcome) evaluationHelper.createIssue("error",
 							"The $cql operation requires the expression parameter and/or content parameter to exist")));
 		}
@@ -253,7 +255,7 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 					expression == null ? null : Collections.singleton(expression));
 		} catch (Exception e) {
 			e.printStackTrace();
-			return newParameters(newPart("evaluation error",
+			return parameters(part("evaluation error",
 					(OperationOutcome) evaluationHelper.createIssue("error", e.getMessage())));
 		}
 	}

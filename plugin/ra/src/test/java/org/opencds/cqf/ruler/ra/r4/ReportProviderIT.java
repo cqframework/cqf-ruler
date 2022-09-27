@@ -4,7 +4,6 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Group;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.ra.RAConfig;
@@ -21,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = { ReportProviderIT.class, RAConfig.class },
@@ -39,10 +38,10 @@ class ReportProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testMissingPeriodStartParam() {
-		Parameters params = newParameters(
-				newPart("periodEnd", new StringType("2021-12-31")),
-				newPart("subject", new StringType("Patient/testReport01")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/testReport01"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
@@ -52,10 +51,10 @@ class ReportProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testMissingPeriodEndParam() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("subject", new StringType("Patient/testReport01")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("subject", "Patient/testReport01"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
@@ -65,10 +64,10 @@ class ReportProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testMissingSubjectParam() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("periodEnd", new StringType("2021-12-31")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
@@ -78,11 +77,11 @@ class ReportProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testStartPeriodBeforeEndPeriod() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("periodEnd", new StringType("2020-12-31")),
-				newPart("subject", new StringType("Patient/testReport01")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2020-12-31"),
+				stringPart("subject", "Patient/testReport01"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
@@ -93,11 +92,11 @@ class ReportProviderIT extends RestIntegrationTest {
 	// TODO: add the count of patients returned
 	@Test
 	void testSubjectPatient() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("periodEnd", new StringType("2021-12-31")),
-				newPart("subject", new StringType("Patient/ra-patient01")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient01"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		loadResource("Patient-ra-patient01.json");
 
@@ -110,11 +109,11 @@ class ReportProviderIT extends RestIntegrationTest {
 	// TODO: add the count of patients returned
 	@Test
 	void testSubjectGroup() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("periodEnd", new StringType("2021-12-31")),
-				newPart("subject", new StringType("Group/ra-group01")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Group/ra-group01"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		loadResource("Patient-ra-patient01.json");
 		loadResource("Group-ra-group01.json");
@@ -127,11 +126,11 @@ class ReportProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testSubjectIsNotPatientOrGroup() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("periodEnd", new StringType("2021-12-31")),
-				newPart("subject", new StringType("ra-patient01")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "ra-patient01"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
 				.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
@@ -141,11 +140,11 @@ class ReportProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testPatientSubjectNotFound() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("periodEnd", new StringType("2021-12-31")),
-				newPart("subject", new StringType("Patient/bad-patient")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/bad-patient"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		assertThrows(ResourceNotFoundException.class, () -> getClient().operation()
 				.onType(MeasureReport.class).named("$report").withParameters(params)
@@ -154,11 +153,11 @@ class ReportProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testGroupSubjectNotFound() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("periodEnd", new StringType("2021-12-31")),
-				newPart("subject", new StringType("Group/bad-group")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Group/bad-group"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		assertThrows(ResourceNotFoundException.class, () -> getClient().operation()
 				.onType(MeasureReport.class).named("$report").withParameters(params)
@@ -169,11 +168,11 @@ class ReportProviderIT extends RestIntegrationTest {
 	// enforce_referential_integrity_on_write: false
 	@Test
 	void testSubjectPatientNotFoundInGroup() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("periodEnd", new StringType("2021-12-31")),
-				newPart("subject", new StringType("Group/ra-group00")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Group/ra-group00"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		loadResource("Group-ra-group00.json");
 		Group group = getClient().read().resource(Group.class).withId("ra-group00").execute();
@@ -188,11 +187,11 @@ class ReportProviderIT extends RestIntegrationTest {
 	// TODO: add the count of patients returned
 	@Test
 	void testSubjectMultiplePatientGroup() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("periodEnd", new StringType("2021-12-31")),
-				newPart("subject", new StringType("Group/ra-group02")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Group/ra-group02"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		loadResource("Patient-ra-patient02.json");
 		loadResource("Patient-ra-patient03.json");
@@ -206,11 +205,11 @@ class ReportProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testSingleSubjectSingleReport() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("periodEnd", new StringType("2021-12-31")),
-				newPart("subject", new StringType("Patient/ra-patient01")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient01"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		loadResource("Patient-ra-patient01.json");
 		loadResource("Condition-ra-condition02pat01.json");
@@ -248,11 +247,11 @@ class ReportProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testReportDoesNotIncludeNonEvaluatedResources() {
-		Parameters params = newParameters(
-				newPart("periodStart", new StringType("2021-01-01")),
-				newPart("periodEnd", new StringType("2021-12-31")),
-				newPart("subject", new StringType("Patient/ra-patient01")),
-				newPart("measureId", new StringType("Measure-RAModelExample01")));
+		Parameters params = parameters(
+				stringPart("periodStart", "2021-01-01"),
+				stringPart("periodEnd", "2021-12-31"),
+				stringPart("subject", "Patient/ra-patient01"),
+				stringPart("measureId", "Measure-RAModelExample01"));
 
 		loadResource("Patient-ra-patient01.json");
 		loadResource("Condition-ra-condition02pat01.json");

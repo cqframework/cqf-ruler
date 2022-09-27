@@ -2,7 +2,6 @@ package org.opencds.cqf.ruler.cpg.dstu3.provider;
 
 import org.hl7.fhir.dstu3.model.BooleanType;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.StringType;
 import org.hl7.fhir.dstu3.model.Parameters;
 import org.hl7.fhir.dstu3.model.OperationOutcome;
 import org.junit.jupiter.api.Test;
@@ -17,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.dstu3.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.dstu3.Parameters.stringPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = { LibraryEvaluationProviderIT.class, CpgConfig.class },
@@ -32,8 +31,8 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		loadResource(packagePrefix + "SimplePatient.json");
 		loadResource(packagePrefix + "SimpleCondition.json");
 		loadResource(packagePrefix + "AsthmaTest.json");
-		Parameters params = newParameters(
-			newPart("subject", new StringType("Patient/SimplePatient")));
+		Parameters params = parameters(
+				stringPart("subject", "Patient/SimplePatient"));
 
 		Parameters result = getClient().operation()
 			.onInstance(new IdType("Library", "AsthmaTest"))
@@ -56,8 +55,8 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		loadResource(packagePrefix + "SimplePatient.json");
 		loadResource(packagePrefix + "SimpleObservation.json");
 		loadResource(packagePrefix + "SimpleDstu3Library.json");
-		Parameters params = newParameters(
-			newPart("subject", new StringType("Patient/SimplePatient")));
+		Parameters params = parameters(
+				stringPart("subject", "Patient/SimplePatient"));
 
 		Parameters result = getClient().operation()
 			.onInstance(new IdType("Library", "SimpleDstu3Library"))
@@ -88,7 +87,7 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		Parameters results = getClient().operation()
 				.onInstance(new IdType("Library", "ErrorLibrary"))
 				.named("$evaluate")
-				.withParameters(newParameters())
+				.withParameters(parameters())
 				.returnResourceType(Parameters.class)
 				.execute();
 

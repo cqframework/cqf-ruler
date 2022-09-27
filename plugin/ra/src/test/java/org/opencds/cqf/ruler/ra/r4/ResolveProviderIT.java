@@ -17,8 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = { ResolveProviderIT.class, RAConfig.class },
@@ -36,11 +36,11 @@ class ResolveProviderIT extends RestIntegrationTest {
 
     @Test
     void testResolveProvider() {
-        Parameters params = newParameters(
-                newPart("periodStart", "2021-01-01"),
-                newPart("periodEnd", "2021-12-31"),
-                newPart("subject", "Patient/ra-patient02"),
-                newPart("measureId", "Measure-RAModelExample01"));
+        Parameters params = parameters(
+                stringPart("periodStart", "2021-01-01"),
+                stringPart("periodEnd", "2021-12-31"),
+                stringPart("subject", "Patient/ra-patient02"),
+                stringPart("measureId", "Measure-RAModelExample01"));
 
         loadTransaction("resolve-test-bundle.json");
 

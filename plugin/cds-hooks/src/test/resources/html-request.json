@@ -1,0 +1,9 @@
+{
+  "hookInstance": "html-test",
+  "fhirServer": "http://localhost:8080/fhir",
+  "hook": "patient-view",
+  "context": {
+    "userId": "Practitioner/example",
+    "patientId": "Patient/example"
+  }
+}

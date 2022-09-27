@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 
 public class ResolveProvider extends DaoRegistryOperationProvider implements MeasureReportUser {
 
@@ -61,8 +61,7 @@ public class ResolveProvider extends DaoRegistryOperationProvider implements Mea
                 Operations.validatePattern("subject", subject, Operations.PATIENT_OR_GROUP_REFERENCE);
                 Operations.validateAtLeastOne(requestDetails, "measureId", "measureIdentifier", "measureUrl");
             } catch (Exception e) {
-                return newParameters(newPart("Invalid parameters",
-                        generateIssue("error", e.getMessage())));
+                return parameters(part("Invalid parameters", generateIssue("error", e.getMessage())));
             }
         }
 
@@ -85,7 +84,7 @@ public class ResolveProvider extends DaoRegistryOperationProvider implements Mea
 
         Parameters result = new Parameters();
         for (Bundle raBundle : raBundles) {
-            result.addParameter(newPart("return", raBundle));
+            result.addParameter(part("return", raBundle));
         }
 
         return result;

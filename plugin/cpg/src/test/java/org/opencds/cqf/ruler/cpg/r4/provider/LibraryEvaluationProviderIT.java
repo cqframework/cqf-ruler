@@ -19,8 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.booleanPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		classes = { LibraryEvaluationProviderIT.class, CpgConfig.class },
@@ -34,8 +36,7 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		loadResource(packagePrefix + "SimplePatient.json");
 		loadResource(packagePrefix + "SimpleCondition.json");
 		loadResource(packagePrefix + "AsthmaTest.json");
-		Parameters params = newParameters(
-			newPart("subject", new StringType("Patient/SimplePatient")));
+		Parameters params = parameters(stringPart("subject", "Patient/SimplePatient"));
 
 		Parameters result = getClient().operation()
 			.onInstance(new IdType("Library", "AsthmaTest"))
@@ -54,8 +55,7 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		loadResource(packagePrefix + "SimplePatient.json");
 		loadResource(packagePrefix + "SimpleObservation.json");
 		loadResource(packagePrefix + "SimpleR4Library.json");
-		Parameters params = newParameters(
-				newPart("subject", new StringType("Patient/SimplePatient")));
+		Parameters params = parameters(stringPart("subject", "Patient/SimplePatient"));
 
 		Parameters result = getClient().operation()
 			.onInstance(new IdType("Library", "SimpleR4Library"))
@@ -77,10 +77,10 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 	void testSimpleLibraryWithBundle() {
 		loadResource(packagePrefix + "SimpleR4Library.json");
 		Bundle data = (Bundle) loadResource(packagePrefix + "SimpleDataBundle.json");
-		Parameters params = newParameters(
-				newPart("subject", "SimplePatient"),
-				newPart("data", data),
-				newPart("useServerData", new BooleanType(false)));
+		Parameters params = parameters(
+				stringPart("subject", "SimplePatient"),
+				part("data", data),
+				booleanPart("useServerData", false));
 
 		Parameters result = getClient().operation()
 			.onInstance(new IdType("Library", "SimpleR4Library"))
@@ -103,9 +103,7 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		loadTransaction(packagePrefix + "OpioidCDSREC10-artifact-bundle.json");
 		loadTransaction(packagePrefix + "OpioidCDSREC10-patient-data-bundle.json");
 
-		Parameters params = newParameters(
-				newPart("subject", new StringType("Patient/example-rec-10-no-screenings"))
-		);
+		Parameters params = parameters(stringPart("subject", "Patient/example-rec-10-no-screenings"));
 
 		Parameters result = getClient().operation()
 			.onInstance(new IdType("Library", "OpioidCDSREC10PatientView"))
@@ -155,7 +153,7 @@ class LibraryEvaluationProviderIT extends RestIntegrationTest {
 		Parameters results = getClient().operation()
 				.onInstance(new IdType("Library", "ErrorLibrary"))
 				.named("$evaluate")
-				.withParameters(newParameters())
+				.withParameters(parameters())
 				.returnResourceType(Parameters.class)
 				.execute();
 

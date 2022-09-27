@@ -34,9 +34,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes =
-	{ Application.class, CdsHooksConfig.class },
-	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = { Application.class, CdsHooksConfig.class },
+		properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
 class CdsHooksServletIT extends RestIntegrationTest {
 	@Autowired
 	CdsServicesCache cdsServicesCache;
@@ -97,7 +97,7 @@ class CdsHooksServletIT extends RestIntegrationTest {
 			cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
 	}
 
-	//@Test
+	@Test
 	void testCdsServicesRequest() {
 		// Server Load
 		loadTransaction("Screening-bundle-r4.json");

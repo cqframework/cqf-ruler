@@ -1,6 +1,5 @@
 package org.opencds.cqf.ruler.devtools;
 
-import org.opencds.cqf.ruler.api.OperationProvider;
 import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,25 +34,25 @@ public class DevToolsConfig {
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public OperationProvider r4CodeSystemUpdateProvider() {
+	public org.opencds.cqf.ruler.devtools.r4.CodeSystemUpdateProvider r4CodeSystemUpdateProvider() {
 		return new org.opencds.cqf.ruler.devtools.r4.CodeSystemUpdateProvider();
 	}
 
 	@Bean
 	@Conditional(OnDSTU3Condition.class)
-	public OperationProvider dstu3CodeSystemUpdateProvider() {
+	public org.opencds.cqf.ruler.devtools.dstu3.CodeSystemUpdateProvider dstu3CodeSystemUpdateProvider() {
 		return new org.opencds.cqf.ruler.devtools.dstu3.CodeSystemUpdateProvider();
 	}
 
 	@Bean
 	@Conditional(OnR4Condition.class)
-	public OperationProvider r4CacheValueSetsProvider() {
+	public org.opencds.cqf.ruler.devtools.r4.CacheValueSetsProvider r4CacheValueSetsProvider() {
 		return new org.opencds.cqf.ruler.devtools.r4.CacheValueSetsProvider();
 	}
 
 	@Bean
 	@Conditional(OnDSTU3Condition.class)
-	public OperationProvider dstu3CacheValueSetsProvider() {
+	public org.opencds.cqf.ruler.devtools.dstu3.CacheValueSetsProvider dstu3CacheValueSetsProvider() {
 		return new org.opencds.cqf.ruler.devtools.dstu3.CacheValueSetsProvider();
 	}
 }

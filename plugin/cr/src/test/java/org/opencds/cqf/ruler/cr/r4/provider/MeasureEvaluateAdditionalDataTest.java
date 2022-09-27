@@ -1,12 +1,14 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
 
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -22,7 +24,7 @@ import org.springframework.test.annotation.DirtiesContext;
 		})
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class MeasureEvaluateAdditionalDataTest extends RestIntegrationTest {
+class MeasureEvaluateAdditionalDataTest extends RestIntegrationTest {
 
 	@Override
 	public void baseAfterAll() {
@@ -36,7 +38,7 @@ public class MeasureEvaluateAdditionalDataTest extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testMeasureEvaluateWithXmlAdditionalData() throws Exception {
+	void testMeasureEvaluateWithXmlAdditionalData() {
 		String mainBundleAsText = stringFromResource("ClientNonPatientBasedMeasureBundle.json");
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(mainBundleAsText);
 		getClient().transaction().withBundle(bundle).execute();
@@ -57,7 +59,7 @@ public class MeasureEvaluateAdditionalDataTest extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testMeasureEvaluateWithAdditionalData() throws Exception {
+	void testMeasureEvaluateWithAdditionalData() {
 
 		String mainBundleAsText = stringFromResource("Exm104FhirR4MeasurePartBundle.json");
 		Bundle bundle = (Bundle) getFhirContext().newJsonParser().parseResource(mainBundleAsText);
@@ -66,13 +68,14 @@ public class MeasureEvaluateAdditionalDataTest extends RestIntegrationTest {
 		String additionalBundleAsText = stringFromResource("Exm104FhirR4MeasureAdditionalData.json");
 		Bundle additionalData = (Bundle) getFhirContext().newJsonParser().parseResource(additionalBundleAsText);
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType("2019-01-01"));
-		params.addParameter().setName("periodEnd").setValue(new StringType("2020-01-01"));
-		params.addParameter().setName("reportType").setValue(new StringType("subject"));
-		params.addParameter().setName("subject").setValue(new StringType("Patient/numer-EXM104"));
-		params.addParameter().setName("lastReceivedOn").setValue(new StringType("2019-12-12"));
-		params.addParameter().setName("additionalData").setResource(additionalData);
+		Parameters params = parameters(
+				stringPart("periodStart", "2019-01-01"),
+				stringPart("periodEnd", "2020-01-01"),
+				stringPart("reportType", "subject"),
+				stringPart("subject", "Patient/numer-EXM104"),
+				stringPart("lastReceivedOn", "2019-12-12"),
+				part("additionalData", additionalData)
+		);
 
 		MeasureReport returnMeasureReport = getClient().operation()
 				.onInstance(new IdType("Measure", "measure-EXM104-8.2.000"))

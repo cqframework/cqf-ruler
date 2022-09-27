@@ -19,13 +19,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 
 @SpringBootTest(classes = { SubmitDataProviderIT.class }, properties = { "hapi.fhir.fhir_version=dstu3", })
-public class SubmitDataProviderIT extends DaoIntegrationTest {
+class SubmitDataProviderIT extends DaoIntegrationTest {
 
 	@Autowired
 	SubmitDataProvider mySubmitDataProvider;
 
 	@Test
-	public void testSubmitData() {
+	void testSubmitData() {
 		// Create a MR and a resource
 		MeasureReport mr = newResource(MeasureReport.class, "test-mr");
 		Observation obs = newResource(Observation.class, "test-obs");
@@ -43,7 +43,7 @@ public class SubmitDataProviderIT extends DaoIntegrationTest {
 	}
 
 	@Test
-	public void testSubmitDataNoId() {
+	void testSubmitDataNoId() {
 		// Create a MR and a resource
 		MeasureReport mr = newResource(MeasureReport.class).setMeasure(new Reference("Measure/123"));
 		Observation obs = newResource(Observation.class).setValue(new StringType("ABC"));

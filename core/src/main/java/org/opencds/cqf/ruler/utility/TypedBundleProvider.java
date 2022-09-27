@@ -22,6 +22,8 @@ public class TypedBundleProvider<T extends IBaseResource> implements IBundleProv
 	}
 
 	private TypedBundleProvider(IBundleProvider theInnerProvider) {
+		checkState(theInnerProvider.getNextPageId() == null,
+				"TypedBundleProvider does not support paging and theInnerProvider has a next page.");
 		myInnerProvider = checkNotNull(theInnerProvider);
 	}
 
@@ -48,6 +50,16 @@ public class TypedBundleProvider<T extends IBaseResource> implements IBundleProv
 	@Override
 	public Integer size() {
 		return myInnerProvider.size();
+	}
+
+	@Override
+	public List<IBaseResource> getAllResources() {
+		var size = size();
+		if (size == null) {
+			return getResources(0, Integer.MAX_VALUE);
+		} else {
+			return getResources(0, size);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

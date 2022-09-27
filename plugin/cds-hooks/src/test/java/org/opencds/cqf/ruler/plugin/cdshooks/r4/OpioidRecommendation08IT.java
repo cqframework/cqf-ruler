@@ -41,7 +41,6 @@ class OpioidRecommendation08IT extends RestIntegrationTest {
         ourCdsBase = "http://localhost:" + getPort() + "/cds-services";
     }
 
-	 /*
     @Test
     void testOpioidRecommendation08OrderSignWithoutPrefetch() {
         loadTransaction("opioidcds-08-order-sign-bundle.json");
@@ -71,7 +70,6 @@ class OpioidRecommendation08IT extends RestIntegrationTest {
     }
 
     @Test
-
     void testOpioidRecommendation08OrderSignWithPrefetch() {
         loadTransaction("opioidcds-08-order-sign-bundle.json");
         loadResource("opioidcds-08-medication.json");
@@ -126,5 +124,4 @@ class OpioidRecommendation08IT extends RestIntegrationTest {
         assertTrue(card.get("links").isJsonArray());
         assertEquals(2, card.get("links").getAsJsonArray().size());
     }
-	  */
 }

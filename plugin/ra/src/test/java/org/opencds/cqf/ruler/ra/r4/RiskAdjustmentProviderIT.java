@@ -1,5 +1,11 @@
 package org.opencds.cqf.ruler.ra.r4;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,12 +26,6 @@ import org.opencds.cqf.ruler.test.utility.Urls;
 import org.opencds.cqf.ruler.utility.Ids;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newParameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.newPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { RiskAdjustmentProviderIT.class,
 		RAConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
@@ -83,17 +83,17 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	}
 
 	private Parameters getRequestParameters(String subject) {
-		return newParameters(
-				newPart("periodStart", "2022-01-01"),
-				newPart("periodEnd", "2022-12-31"),
-				newPart("subject", subject),
-				newPart("type", "report"));
+		return parameters(
+				stringPart("periodStart", "2022-01-01"),
+				stringPart("periodEnd", "2022-12-31"),
+				stringPart("subject", subject),
+				stringPart("type", "report"));
 	}
 
 	private Parameters callOperation(Parameters requestParameters) {
 		return getClient().operation()
 				.onInstance(new IdType("Measure", "ConditionCategoryPOC"))
-				.named("$evaluate-risk-condition-category")
+				.named("$davinci-ra.evaluate-measure")
 				.withParameters(requestParameters)
 				.returnResourceType(Parameters.class)
 				.execute();
@@ -111,7 +111,8 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 	private void validateBundle(Bundle riskAssessmentBundle) {
 		assertTrue(riskAssessmentBundle.hasEntry());
 		List<String> bundleResourceReferences = riskAssessmentBundle.getEntry().stream()
-				.map(entry -> entry.getResource().hasIdElement() ? Ids.simple(entry.getResource().getIdElement()) : null)
+				.map(entry -> entry.getResource().hasIdElement() ? Ids.simple(entry.getResource().getIdElement())
+						: null)
 				.collect(Collectors.toList());
 		validateUniqueBundleEntry(bundleResourceReferences);
 		assertTrue(riskAssessmentBundle.getEntryFirstRep().getResource() instanceof MeasureReport);
@@ -162,8 +163,9 @@ class RiskAdjustmentProviderIT extends RestIntegrationTest {
 		assertEquals("http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-evidenceStatusDate",
 				((CodeableConcept) response.getGroupFirstRep().getExtension().get(2).getValue()).getCodingFirstRep()
 						.getSystem());
-		assertEquals(evidenceStatusDate, ((CodeableConcept) response.getGroupFirstRep().getExtension().get(2).getValue())
-				.getCodingFirstRep().getCode());
+		assertEquals(evidenceStatusDate,
+				((CodeableConcept) response.getGroupFirstRep().getExtension().get(2).getValue())
+						.getCodingFirstRep().getCode());
 		assertTrue(response.getGroupFirstRep().hasCode() && response.getGroupFirstRep().getCode().hasCoding());
 		assertTrue(response.getGroupFirstRep().getCode().getCodingFirstRep().hasSystem());
 		assertEquals("http://terminology.hl7.org/CodeSystem/cmshcc",

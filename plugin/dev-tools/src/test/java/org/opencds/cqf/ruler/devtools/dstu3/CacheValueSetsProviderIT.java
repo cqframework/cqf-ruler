@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.hl7.fhir.dstu3.model.Bundle;
@@ -28,14 +29,15 @@ import ca.uhn.fhir.rest.api.QualifiedParamList;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.param.StringAndListParam;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CacheValueSetsProviderIT.class,
-		DevToolsConfig.class },properties = "hapi.fhir.fhir_version=dstu3")
-public class CacheValueSetsProviderIT extends RestIntegrationTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		classes = { CacheValueSetsProviderIT.class, DevToolsConfig.class },
+		properties = { "hapi.fhir.fhir_version=dstu3" })
+class CacheValueSetsProviderIT extends RestIntegrationTest {
 	@Autowired
 	private CacheValueSetsProvider cacheValueSetsProvider;
 
 	@Test
-	public void testCacheValueSetsEndpointDNE() throws Exception {
+	void testCacheValueSetsEndpointDNE() throws Exception {
 		Endpoint endpoint = new Endpoint();
 		endpoint.setId(new IdType("localhost"));
 		StringAndListParam stringAndListParam = getStringAndListParamFromValueSet("valueset/AcuteInpatient.json");
@@ -47,7 +49,7 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testCacheValueSetsEndpointNull() throws Exception {
+	void testCacheValueSetsEndpointNull() throws Exception {
 		StringAndListParam stringAndListParam = getStringAndListParamFromValueSet("valueset/AcuteInpatient.json");
 		RequestDetails details = Mockito.mock(RequestDetails.class);
 		Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, new Endpoint().getIdElement(),
@@ -56,7 +58,7 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testCacheValueSetsAuthenticationErrorUsername() throws Exception {
+	void testCacheValueSetsAuthenticationErrorUsername() throws Exception {
 		Endpoint endpoint = uploadLocalServerEndpoint();
 		StringAndListParam stringAndListParam = getStringAndListParamFromValueSet("valueset/AcuteInpatient.json");
 		RequestDetails details = Mockito.mock(RequestDetails.class);
@@ -67,7 +69,7 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testCacheValueSetsAuthenticationErrorPassword() throws Exception {
+	void testCacheValueSetsAuthenticationErrorPassword() throws Exception {
 		Endpoint endpoint = uploadLocalServerEndpoint();
 		StringAndListParam stringAndListParam = getStringAndListParamFromValueSet("valueset/AcuteInpatient.json");
 		RequestDetails details = Mockito.mock(RequestDetails.class);
@@ -78,11 +80,11 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testCacheValueSetsValueSetDNE() throws Exception {
+	void testCacheValueSetsValueSetDNE() throws Exception {
 		Endpoint endpoint = uploadLocalServerEndpoint();
 		StringAndListParam stringAndListParam = new StringAndListParam();
 		stringAndListParam.setValuesAsQueryTokens(getFhirContext(), "valueset",
-				Arrays.asList(QualifiedParamList.singleton("dne")));
+				List.of(QualifiedParamList.singleton("dne")));
 		RequestDetails details = Mockito.mock(RequestDetails.class);
 		Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, endpoint.getIdElement(),
 				stringAndListParam, null, null);
@@ -90,11 +92,11 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testCacheValueSetsValueSetNull() throws Exception {
+	void testCacheValueSetsValueSetNull() throws Exception {
 		Endpoint endpoint = uploadLocalServerEndpoint();
 		StringAndListParam stringAndListParam = new StringAndListParam();
 		stringAndListParam.setValuesAsQueryTokens(getFhirContext(), "valueset",
-				Arrays.asList(QualifiedParamList.singleton(new ValueSet().getId())));
+				List.of(QualifiedParamList.singleton(new ValueSet().getId())));
 		RequestDetails details = Mockito.mock(RequestDetails.class);
 		Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details, endpoint.getIdElement(),
 				stringAndListParam, null, null);
@@ -103,7 +105,7 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 	}
 
 	@Test
-	public void testCacheValueSetsNoCompose() throws Exception {
+	void testCacheValueSetsNoCompose() throws Exception {
 		Endpoint endpoint = uploadLocalServerEndpoint();
 		RequestDetails details = Mockito.mock(RequestDetails.class);
 		ValueSet vs = uploadValueSet("valueset/valueset-benzodiazepine-medications.json");
@@ -123,40 +125,39 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 		// assertTrue(resultingValueSet.getVersion().endsWith("-cached"));
 	}
 
-	// Get help with this....
-	// @Test
-	// public void testCacheValueSetsExpandAndAddConcepts() throws Exception {
-	// Endpoint endpoint = uploadLocalServerEndpoint();
-	// RequestDetails details = Mockito.mock(RequestDetails.class);
-	// ValueSet vs =
-	// uploadValueSet("valueset/valueset-buprenorphine-and-methadone-medications.json");
-	// vs.getCompose().getInclude().forEach(include -> {
-	// assertTrue(!include.hasConcept());
-	// });
-	// StringAndListParam stringAndListParam =
-	// getStringAndListParamFromValueSet(vs);
-
-	// IGenericClient localClient = createClient(ourCtx, endpoint);
-	// //
-	// localClient.operation().onServer().named("updateCodeSystems").withNoParameters(Parameters.class).execute();
-	// Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details,
-	// endpoint.getIdElement(), stringAndListParam, null, null);
-	// assertTrue(outcomeResource instanceof Bundle);
-	// Bundle resultBundle = (Bundle) outcomeResource;
-	// assertTrue(resultBundle.getEntry().size() == 1);
-	// BundleEntryComponent entry = resultBundle.getEntry().get(0);
-	// assertTrue(entry.getResponse().getLocation().startsWith("ValueSet/" +
-	// vs.getIdElement().getIdPart()));
-	// assertTrue(entry.getResponse().getStatus().equals("200 OK"));
-	// ValueSet resultingValueSet =
-	// localClient.read().resource(ValueSet.class).withId(vs.getIdElement()).execute();
-	// resultingValueSet.getCompose().getInclude().forEach(include -> {
-	// assertTrue(include.hasConcept());
-	// });
-	// }
+//	TODO Get help with this....
+//	@Test
+//	void testCacheValueSetsExpandAndAddConcepts() throws Exception {
+//		Endpoint endpoint = uploadLocalServerEndpoint();
+//		RequestDetails details = Mockito.mock(RequestDetails.class);
+//		ValueSet vs =
+//				uploadValueSet("valueset/valueset-buprenorphine-and-methadone-medications.json");
+//		vs.getCompose().getInclude().forEach(include -> {
+//			assertFalse(include.hasConcept());
+//		});
+//		StringAndListParam stringAndListParam =
+//				getStringAndListParamFromValueSet(vs);
+//
+//		IGenericClient localClient = getClient();
+//		localClient.operation().onServer().named("updateCodeSystems").withNoParameters(Parameters.class).execute();
+//		Resource outcomeResource = cacheValueSetsProvider.cacheValuesets(details,
+//				endpoint.getIdElement(), stringAndListParam, null, null);
+//		assertTrue(outcomeResource instanceof Bundle);
+//		Bundle resultBundle = (Bundle) outcomeResource;
+//		assertEquals(1, resultBundle.getEntry().size());
+//		BundleEntryComponent entry = resultBundle.getEntry().get(0);
+//		assertTrue(entry.getResponse().getLocation().startsWith("ValueSet/" +
+//				vs.getIdElement().getIdPart()));
+//		assertEquals("200 OK", entry.getResponse().getStatus());
+//		ValueSet resultingValueSet =
+//				localClient.read().resource(ValueSet.class).withId(vs.getIdElement()).execute();
+//		resultingValueSet.getCompose().getInclude().forEach(include -> {
+//			assertTrue(include.hasConcept());
+//		});
+//	}
 
 	@Test
-	public void testCacheValueSetsAlreadyExpanded() throws Exception {
+	void testCacheValueSetsAlreadyExpanded() throws Exception {
 		Endpoint endpoint = uploadLocalServerEndpoint();
 		RequestDetails details = Mockito.mock(RequestDetails.class);
 		ValueSet vs = uploadValueSet("valueset/valueset-benzodiazepine-medications.json");
@@ -176,10 +177,10 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 		return getStringAndListParamFromValueSet(vs);
 	}
 
-	private StringAndListParam getStringAndListParamFromValueSet(ValueSet vs) throws IOException {
+	private StringAndListParam getStringAndListParamFromValueSet(ValueSet vs) {
 		StringAndListParam stringAndListParam = new StringAndListParam();
 		stringAndListParam.setValuesAsQueryTokens(getFhirContext(), "valueset",
-				Arrays.asList(QualifiedParamList.singleton(vs.getIdElement().getIdPart())));
+				List.of(QualifiedParamList.singleton(vs.getIdElement().getIdPart())));
 		return stringAndListParam;
 	}
 
@@ -193,8 +194,8 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 	}
 
 	private ValueSet uploadValueSet(String location) throws IOException {
-		BufferedReader reader = new BufferedReader(
-				new InputStreamReader(CacheValueSetsProvider.class.getResourceAsStream(location)));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				Objects.requireNonNull(CacheValueSetsProvider.class.getResourceAsStream(location))));
 		String resourceString = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 		reader.close();
 		return (ValueSet) loadResource("json", resourceString);
@@ -202,7 +203,7 @@ public class CacheValueSetsProviderIT extends RestIntegrationTest {
 
 	private Endpoint uploadLocalServerEndpoint() throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				CacheValueSetsProvider.class.getResourceAsStream("endpoint/LocalServerEndpoint.json")));
+				Objects.requireNonNull(CacheValueSetsProvider.class.getResourceAsStream("endpoint/LocalServerEndpoint.json"))));
 		String resourceString = reader.lines().collect(Collectors.joining(System.lineSeparator()));
 		reader.close();
 		// Don't want to update during loading because need to setAddress first
