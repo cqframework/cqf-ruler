@@ -2,13 +2,12 @@ package org.opencds.cqf.ruler.utility;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
+import ca.uhn.fhir.rest.api.RequestTypeEnum;
+import ca.uhn.fhir.rest.param.DateRangeParam;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 
@@ -23,61 +22,16 @@ public class Operations {
 	}
 
 	public static final Pattern PATIENT_OR_GROUP_REFERENCE = Pattern
-			.compile("(Patient|Group)\\/[A-Za-z0-9\\-\\.]{1,64}");
+			.compile("(Patient|Group)/[A-Za-z\\d\\-.]{1,64}");
 
 	public static final Pattern PRACTITIONER_REFERENCE = Pattern
-			.compile("Practitioner\\/[A-Za-z0-9\\-\\.]{1,64}");
+			.compile("Practitioner/[A-Za-z\\d\\-.]{1,64}");
 
 	public static final Pattern ORGANIZATION_REFERENCE = Pattern
-			.compile("Organization\\/[A-Za-z0-9\\-\\.]{1,64}");
+			.compile("Organization/[A-Za-z\\d\\-.]{1,64}");
 
 	public static final Pattern FHIR_DATE = Pattern
-			.compile("-?[0-9]{4}(-(0[1-9]|1[0-2])(-(0[0-9]|[1-2][0-9]|3[0-1]))?)?");
-
-	/**
-	 * This function converts a string representation of a FHIR period date to a
-	 * java.util.Date.
-	 * 
-	 * @param date  the date to convert
-	 * @param start whether the date is the start of a period
-	 * @return the FHIR period date as a java.util.Date type
-	 */
-	public static Date resolveRequestDate(String date, boolean start) {
-		// split it up - support dashes or slashes
-		String[] dissect = date.contains("-") ? date.split("-") : date.split("/");
-		List<Integer> dateVals = new ArrayList<>();
-		for (String dateElement : dissect) {
-			dateVals.add(Integer.parseInt(dateElement));
-		}
-
-		if (dateVals.isEmpty()) {
-			throw new IllegalArgumentException("Invalid date");
-		}
-
-		// for now support dates up to day precision
-		Calendar calendar = Calendar.getInstance();
-		calendar.clear();
-		calendar.setTimeZone(TimeZone.getDefault());
-		calendar.set(Calendar.YEAR, dateVals.get(0));
-		if (dateVals.size() > 1) {
-			// java.util.Date months are zero based, hence the negative 1 -- 2014-01 ==
-			// February 2014
-			calendar.set(Calendar.MONTH, dateVals.get(1) - 1);
-		}
-		if (dateVals.size() > 2)
-			calendar.set(Calendar.DAY_OF_MONTH, dateVals.get(2));
-		else {
-			if (start) {
-				calendar.set(Calendar.DAY_OF_MONTH, 1);
-			} else {
-				// get last day of month for end period
-				calendar.add(Calendar.MONTH, 1);
-				calendar.set(Calendar.DAY_OF_MONTH, 1);
-				calendar.add(Calendar.DATE, -1);
-			}
-		}
-		return calendar.getTime();
-	}
+			.compile("-?\\d{4}(-(0[1-9]|1[0-2])(-(0\\d|[1-2]\\d|3[0-1]))?)?");
 
 	/**
 	 * This function returns a fullUrl for a resource.
@@ -126,7 +80,40 @@ public class Operations {
 	 */
 	public static void validateSingularDate(RequestDetails theRequestDetails, String theParameter) {
 		validateCardinality(theRequestDetails, theParameter, 1, 1);
-		validateDate(theParameter, theRequestDetails.getParameters().get(theParameter)[0]);
+		if (theRequestDetails.getRequestType() == RequestTypeEnum.GET) {
+			validateDate(theParameter, theRequestDetails.getParameters().get(theParameter)[0]);
+		}
+		else {
+			Optional<String> theValue = Parameters.getSingularStringPart(
+				theRequestDetails.getFhirContext(), theRequestDetails.getResource(), theParameter);
+			theValue.ifPresent(s -> validateDate(theParameter, s));
+		}
+	}
+
+	/**
+	 * This function returns the number of input parameters for a given request.
+	 *
+	 * @param requestDetails metadata about the current request being processed.
+	 *                       Generally auto-populated by the HAPI FHIR server
+	 *                       framework.
+	 * @param parameter		 the name of the parameter
+	 * @return					 the number of input parameters as an integer
+	 */
+	public static int getNumberOfParametersFromRequest(RequestDetails requestDetails, String parameter) {
+		if (requestDetails.getRequestType() == RequestTypeEnum.POST) {
+			List<?> parameterList = Parameters.getPartsByName(requestDetails.getFhirContext(), requestDetails.getResource(), parameter);
+			if (parameterList == null) {
+				return 0;
+			}
+			return parameterList.size();
+		}
+		else {
+			String[] parameterArr = requestDetails.getParameters().get(parameter);
+			if (parameterArr == null) {
+				return 0;
+			}
+			return parameterArr.length;
+		}
 	}
 
 	/**
@@ -144,8 +131,7 @@ public class Operations {
 	 */
 	public static void validateCardinality(RequestDetails theRequestDetails, String theParameter, int min, int max) {
 		validateCardinality(theRequestDetails, theParameter, min);
-		String[] potentialValue = theRequestDetails.getParameters().get(theParameter);
-		checkArgument(potentialValue == null || potentialValue.length <= max,
+		checkArgument(getNumberOfParametersFromRequest(theRequestDetails, theParameter) <= max,
 				"Parameter '%s' must be provided a maximum of %s time(s).", theParameter,
 				String.valueOf(max));
 	}
@@ -165,8 +151,7 @@ public class Operations {
 		if (min <= 0) {
 			return;
 		}
-		String[] potentialValue = theRequestDetails.getParameters().get(theParameter);
-		checkArgument(potentialValue != null && potentialValue.length >= min,
+		checkArgument(getNumberOfParametersFromRequest(theRequestDetails, theParameter) >= min,
 				"Parameter '%s' must be provided a minimum of %s time(s).", theParameter,
 				String.valueOf(min));
 	}
@@ -186,13 +171,21 @@ public class Operations {
 	 */
 	public static void validatePeriod(RequestDetails theRequestDetails, String theStartParameter,
 			String theEndParameter) {
-		validateSingularDate(theRequestDetails, theStartParameter);
-		validateSingularDate(theRequestDetails, theEndParameter);
-		checkArgument(
-				Operations.resolveRequestDate(theRequestDetails.getParameters().get(theStartParameter)[0], true)
-						.before(Operations.resolveRequestDate(theRequestDetails.getParameters().get(theEndParameter)[0],
-								false)),
-				"Parameter '%s' must be before parameter '%s'.", theStartParameter, theEndParameter);
+		validateCardinality(theRequestDetails, theStartParameter, 1, 1);
+		validateCardinality(theRequestDetails, theEndParameter, 1, 1);
+		if (theRequestDetails.getRequestType() == RequestTypeEnum.GET) {
+			new DateRangeParam(theRequestDetails.getParameters().get(theStartParameter)[0],
+				theRequestDetails.getParameters().get(theEndParameter)[0]);
+		}
+		else {
+			Optional<String> start = Parameters.getSingularStringPart(
+				theRequestDetails.getFhirContext(), theRequestDetails.getResource(), theStartParameter);
+			Optional<String> end = Parameters.getSingularStringPart(
+				theRequestDetails.getFhirContext(), theRequestDetails.getResource(), theEndParameter);
+			if (start.isPresent() && end.isPresent()) {
+				new DateRangeParam(start.get(), end.get());
+			}
+		}
 	}
 
 	/**
@@ -223,11 +216,16 @@ public class Operations {
 	 */
 	public static void validateSingularPattern(RequestDetails theRequestDetails, String theParameter,
 			Pattern thePattern) {
-		String[] potentialValue = theRequestDetails.getParameters().get(theParameter);
-		if (potentialValue == null || potentialValue.length == 0) {
+		if (getNumberOfParametersFromRequest(theRequestDetails, theParameter) == 0) {
 			return;
 		}
-		validatePattern(theParameter, potentialValue[0], thePattern);
+		if (theRequestDetails.getRequestType() == RequestTypeEnum.GET) {
+			validatePattern(theParameter, theRequestDetails.getParameters().get(theParameter)[0], thePattern);
+		}
+		else {
+			Optional<String> theValue = Parameters.getSingularStringPart(theRequestDetails.getFhirContext(), theRequestDetails.getResource(), theParameter);
+			theValue.ifPresent(s -> validatePattern(theParameter, s, thePattern));
+		}
 	}
 
 	/**
@@ -246,18 +244,12 @@ public class Operations {
 	 */
 	public static void validateExclusive(RequestDetails theRequestDetails, String theParameter,
 			String... theExcludedParameters) {
-		String[] potentialValue = theRequestDetails.getParameters().get(theParameter);
-		if (potentialValue == null || potentialValue.length == 0) {
+		if (getNumberOfParametersFromRequest(theRequestDetails, theParameter) == 0) {
 			return;
 		}
-		String[] potentialExcludedValue = null;
 		for (String excludedParameter : theExcludedParameters) {
-			potentialExcludedValue = theRequestDetails.getParameters().get(excludedParameter);
-			if (potentialExcludedValue == null) {
-				continue;
-			}
-			checkArgument(potentialExcludedValue.length <= 0,
-					"Parameter '%s' cannot be included with parameter '%s'.", excludedParameter, theParameter);
+			checkArgument(getNumberOfParametersFromRequest(theRequestDetails, excludedParameter) <= 0,
+				"Parameter '%s' cannot be included with parameter '%s'.", excludedParameter, theParameter);
 		}
 	}
 
@@ -277,15 +269,12 @@ public class Operations {
 	 */
 	public static void validateInclusive(RequestDetails theRequestDetails, String theParameter,
 			String... theIncludedParameters) {
-		String[] potentialValue = theRequestDetails.getParameters().get(theParameter);
-		if (potentialValue == null || potentialValue.length == 0) {
+		if (getNumberOfParametersFromRequest(theRequestDetails, theParameter) == 0) {
 			return;
 		}
 		for (String includedParameter : theIncludedParameters) {
-			checkArgument(
-					theRequestDetails.getParameters().get(includedParameter) != null
-							&& theRequestDetails.getParameters().get(includedParameter).length > 0,
-					"Parameter '%s' must be included with parameter '%s'.", includedParameter, theParameter);
+			checkArgument(getNumberOfParametersFromRequest(theRequestDetails, includedParameter) > 0,
+				"Parameter '%s' must be included with parameter '%s'.", includedParameter, theParameter);
 		}
 	}
 
@@ -304,11 +293,9 @@ public class Operations {
 	 */
 	public static void validateExclusiveOr(RequestDetails theRequestDetails, String theLeftParameter,
 			String theRightParameter) {
-		String[] potentialLeftValue = theRequestDetails.getParameters().get(theLeftParameter);
-		String[] potentialRightValue = theRequestDetails.getParameters().get(theRightParameter);
 		checkArgument(
-				(potentialLeftValue != null && potentialLeftValue.length > 0)
-						^ (potentialRightValue != null && potentialRightValue.length > 0),
+				(getNumberOfParametersFromRequest(theRequestDetails, theLeftParameter) > 0)
+						^ (getNumberOfParametersFromRequest(theRequestDetails, theRightParameter) > 0),
 				"Either one of parameter '%s' or parameter '%s' must be included, but not both.", theLeftParameter,
 				theRightParameter);
 	}
@@ -325,20 +312,14 @@ public class Operations {
 	 * @param theParameters     the set of parameters to validate
 	 */
 	public static void validateAtLeastOne(RequestDetails theRequestDetails, String... theParameters) {
-		String[] potentialValue = null;
 		for (String includedParameter : theParameters) {
-			potentialValue = theRequestDetails.getParameters().get(includedParameter);
-			if (potentialValue == null) {
-				continue;
-			}
-			if (potentialValue.length > 0) {
+			if (getNumberOfParametersFromRequest(theRequestDetails, includedParameter) > 0) {
 				return;
 			}
 		}
 		throw new IllegalArgumentException(String
 				.format("At least one of the following parameters must be included: %s.",
 						StringUtils.join(theParameters, ", ")));
-
 	}
 
 }

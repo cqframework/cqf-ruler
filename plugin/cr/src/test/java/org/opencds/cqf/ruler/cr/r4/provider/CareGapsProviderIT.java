@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.StringType;
@@ -111,7 +112,7 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () ->
+		assertThrows(InvalidRequestException.class, () ->
 				getClient().operation().onType(Measure.class).named("$care-gaps")
 						.withParameters(params)
 						.useHttpGet()
@@ -146,7 +147,7 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () ->
+		assertThrows(InvalidRequestException.class, () ->
 				getClient().operation().onType(Measure.class).named("$care-gaps")
 						.withParameters(params)
 						.useHttpGet()
@@ -164,7 +165,7 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		params.addParameter().setName("status").setValue(new StringType(statusValid));
 		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
 
-		assertThrows(InternalErrorException.class, () ->
+		assertThrows(InvalidRequestException.class, () ->
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
 					.useHttpGet()
