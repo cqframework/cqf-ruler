@@ -8,6 +8,24 @@ spring:
 ---
 hapi:
    fhir:
+      fhir_version: R4
+      server_address: "http://localhost:8080/fhir"
+      allow_external_references: true
+      enforce_referential_integrity_on_delete: false
+      enforce_referential_integrity_on_write: false
+      cors:
+         allow_Credentials: true
+         allowed_origin:
+            - "*"
+      openapi_enabled: true
+      tester_enabled: true
+      tester:
+         home:
+            name: Local Tester
+            server_address: "http://localhost:8080/fhir"
+            refuse_to_fetch_third_party_urls: false
+            fhir_version: R4
+
       ## CQL Settings
       cql:
          # enabled: true
