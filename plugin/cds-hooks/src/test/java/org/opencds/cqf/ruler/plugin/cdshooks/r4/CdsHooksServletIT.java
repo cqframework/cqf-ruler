@@ -1,5 +1,9 @@
 package org.opencds.cqf.ruler.plugin.cdshooks.r4;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.util.Collections;
 
@@ -29,14 +33,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = { Application.class, CdsHooksConfig.class },
-		properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { Application.class,
+		CdsHooksConfig.class }, properties = { "hapi.fhir.fhir_version=r4" })
 class CdsHooksServletIT extends RestIntegrationTest {
 	@Autowired
 	CdsServicesCache cdsServicesCache;
@@ -83,8 +82,8 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		assertEquals(1, cdsServicesCache.getCdsServiceCache().get().size());
 
 		assertEquals(
-			"HelloWorldPatientView",
-			cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
+				"HelloWorldPatientView",
+				cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
 		PlanDefinition updatedP2 = new PlanDefinition();
 		p2.copyValues(updatedP2);
 		updatedP2.setName("HelloWorldPatientView-updated");
@@ -93,8 +92,8 @@ class CdsHooksServletIT extends RestIntegrationTest {
 		rce.setUpdatedResourceIds(Collections.singletonList(updatedP2.getIdElement()));
 		cdsServicesCache.handleChange(rce);
 		assertEquals(
-			"HelloWorldPatientView-updated",
-			cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
+				"HelloWorldPatientView-updated",
+				cdsServicesCache.getCdsServiceCache().get().get(0).getAsJsonObject().get("name").getAsString());
 	}
 
 	@Test
@@ -140,8 +139,8 @@ class CdsHooksServletIT extends RestIntegrationTest {
 			assertNotNull(cards.get(0).getAsJsonObject().get("summary"));
 			String recommendation = cards.get(0).getAsJsonObject().get("summary").getAsString();
 			assertEquals(
-				"HIV Screening Recommended due to patient being at High Risk for HIV and over three months have passed since previous screening.",
-				recommendation);
+					"HIV Screening Recommended due to patient being at High Risk for HIV and over three months have passed since previous screening.",
+					recommendation);
 
 			// Ensure Activity Definition / Suggestions
 			assertNotNull(cards.get(0).getAsJsonObject().get("suggestions"));
@@ -157,7 +156,7 @@ class CdsHooksServletIT extends RestIntegrationTest {
 			assertNotNull(suggestionsActivityResource.get("subject"));
 			String expectedPatientID = ourPatient.getIdElement().getIdPart();
 			String actualPatientID = suggestionsActivityResource.get("subject").getAsJsonObject().get("reference")
-				.getAsString();
+					.getAsString();
 			assertEquals("Patient/" + expectedPatientID, actualPatientID);
 		} catch (IOException ioe) {
 			fail(ioe.getMessage());

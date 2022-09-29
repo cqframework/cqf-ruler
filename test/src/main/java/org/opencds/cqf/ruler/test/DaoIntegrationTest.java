@@ -18,6 +18,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 @EnableAutoConfiguration(exclude = QuartzAutoConfiguration.class)
 @Import(DaoOnlyConfig.class)
 @TestPropertySource(properties = {
+		"spring.datasource.url=jdbc:h2:mem:test",
 		"debug=true",
 		"loader.debug=true",
 		"scheduling_disabled=true",
