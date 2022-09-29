@@ -44,7 +44,7 @@
 // classes = Application.class, properties =
 // {
 // "spring.batch.job.enabled=false",
-// "spring.datasource.url=jdbc:hsqldb:mem:dbr4",
+// "spring.datasource.url=jdbc:h2:mem:dbr4",
 // "hapi.fhir.fhir_version=r4",
 // "hapi.fhir.lastn_enabled=true",
 // "elasticsearch.enabled=true",

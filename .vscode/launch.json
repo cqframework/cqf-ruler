@@ -9,7 +9,26 @@
 			"name": "Launch Application",
 			"request": "launch",
 			"mainClass": "org.opencds.cqf.ruler.Application",
-			"projectName": "cqf-ruler-core"
+			"projectName": "cqf-ruler-core",
+			"vmArgs": [
+				"-XX:TieredStopAtLevel=1",
+				"-Dspring.main.lazy-initialization=true",
+				"-Ddebug=true",
+				"-Dloader.debug=true",
+				"-Dhapi.fhir.bulk_export_enabled=false",
+				"-Dspring.batch.job.enabled=false"
+			],
+			"stepFilters": {
+				"classNameFilters": [
+					"java.*",
+					"javax.*",
+					"com.sun.*",
+					"sun.*",
+					"sunw.*",
+					"org.omg.*",
+					"org.springframework.aop.*"
+				]
+			}
 		},
 		{
 			"type": "java",
@@ -32,7 +51,8 @@
 					"com.sun.*",
 					"sun.*",
 					"sunw.*",
-					"org.omg.*"
+					"org.omg.*",
+					"org.springframework.aop.*"
 				]
 			},
 			"classPaths": [
@@ -62,7 +82,8 @@
 					"com.sun.*",
 					"sun.*",
 					"sunw.*",
-					"org.omg.*"
+					"org.omg.*",
+					"org.springframework.aop.*"
 				]
 			},
 			"classPaths": [
@@ -92,7 +113,8 @@
 					"com.sun.*",
 					"sun.*",
 					"sunw.*",
-					"org.omg.*"
+					"org.omg.*",
+					"org.springframework.aop.*"
 				]
 			},
 			"classPaths": [
@@ -113,7 +135,8 @@
 					"com.sun.*",
 					"sun.*",
 					"sunw.*",
-					"org.omg.*"
+					"org.omg.*",
+					"org.springframework.aop.*"
 				]
 			}
 		},
@@ -129,7 +152,8 @@
 					"com.sun.*",
 					"sun.*",
 					"sunw.*",
-					"org.omg.*"
+					"org.omg.*",
+					"org.springframework.aop.*"
 				]
 			}
 		}
