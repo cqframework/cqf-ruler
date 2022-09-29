@@ -16,13 +16,12 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		classes = Application.class, properties = {
-		"spring.datasource.url=jdbc:hsqldb:mem:dbr3",
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = Application.class, properties = {
+		"spring.datasource.url=jdbc:h2:mem:dbr3",
 		"hapi.fhir.fhir_version=dstu3",
 		"hapi.fhir.subscription.websocket_enabled=true",
 		"hapi.fhir.allow_external_references=true",
-		"hapi.fhir.allow_placeholder_references=true"})
+		"hapi.fhir.allow_placeholder_references=true" })
 class ExampleServerDstu3IT {
 	private IGenericClient ourClient;
 

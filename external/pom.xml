@@ -101,9 +101,15 @@
 										<include name="**/*.*"/>
 									</fileset>
 								</copy>
+								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources/org/opencds/cqf/ruler/external">
+									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/resources">
+										<include name="application.yaml"/>
+									</fileset>
+								</copy>
 								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources">
 									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/resources">
 										<include name="**/*.*"/>
+										<exclude name="application.yaml"/>
 									</fileset>
 								</copy>
 								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/webapp">

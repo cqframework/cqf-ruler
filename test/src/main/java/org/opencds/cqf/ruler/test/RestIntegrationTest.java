@@ -22,6 +22,7 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 @Import(Application.class)
 @TestPropertySource(properties = {
+		"spring.datasource.url=jdbc:h2:mem:test",
 		"debug=true",
 		"loader.debug=true",
 		"scheduling_disabled=true",
