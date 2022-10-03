@@ -11,12 +11,15 @@ import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
 import org.hl7.fhir.r4.model.RelatedArtifact;
-import org.hl7.fhir.r4.model.Resource;
+//import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.opencds.cqf.ruler.utility.Canonicals;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+//import java.util.Arrays;
+import java.util.Arrays;
+//mport java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +28,11 @@ import java.util.Map;
 public class KnowledgeArtifactProcessor  extends DaoRegistryOperationProvider {
 
 	@Autowired
-	private KnowledgeArtifactAdapter adapter;
+	private KnowledgeArtifactAdapter<MetadataResource> adapter;
 
 	public MetadataResource newVersion(MetadataResource resource, FhirDal fhirDal) {
 		MetadataResource newResource = null;
-		adapter = new KnowledgeArtifactAdapter(resource);
+		adapter = new KnowledgeArtifactAdapter<>(resource);
 		newResource = adapter.copy();
 		newResource.setStatus(Enumerations.PublicationStatus.DRAFT);
 		newResource.setVersion(null);
@@ -39,11 +42,11 @@ public class KnowledgeArtifactProcessor  extends DaoRegistryOperationProvider {
 			if (ra.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF) {
 				if(ra.hasUrl()) {
 					// Canonical handling
-					List<IQueryParameterType> list = new ArrayList<>();
+					List<IQueryParameterType> list = new ArrayList<IQueryParameterType>();
 					list.add(new UriParam(ra.getResourceElement().getValueAsString()));
 
-					Map<String, List<IQueryParameterType>> searchParams = new HashMap<String, List<IQueryParameterType>>();
-					searchParams.put("url", list);
+					Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<String, List<List<IQueryParameterType>>>();
+					searchParams.put("url", Arrays.asList(list));
 					Bundle referencedResourceBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(ra.getUrl()), searchParams);
 					if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
 						Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
@@ -54,11 +57,11 @@ public class KnowledgeArtifactProcessor  extends DaoRegistryOperationProvider {
 					}
 				} else if (ra.hasResource()) {
 					CanonicalType canonical = ra.getResourceElement();
-					List<IQueryParameterType> list = new ArrayList<>();
+					List<IQueryParameterType> list = new ArrayList<IQueryParameterType>();
 					list.add(new UriParam(ra.getResourceElement().getValueAsString()));
 
-					Map<String, List<IQueryParameterType>> searchParams = new HashMap<String, List<IQueryParameterType>>();
-					searchParams.put("url", list);
+					Map<String, List<List<IQueryParameterType>>> searchParams = new HashMap<String, List<List<IQueryParameterType>>>();
+					searchParams.put("url", Arrays.asList(list));
 					Bundle referencedResourceBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(canonical), searchParams);
 					if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
 						Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);

@@ -1,8 +1,9 @@
 package org.opencds.cqf.ruler.cql;
 
 import ca.uhn.fhir.model.api.IQueryParameterType;
-import ca.uhn.fhir.rest.api.server.IBundleProvider;
-import org.hl7.fhir.BundleEntry;
+//import ca.uhn.fhir.rest.api.server.IBundleProvider;
+//import org.hl7.fhir.BundleEntry;
+import ca.uhn.fhir.rest.param.DateParam;
 import org.hl7.fhir.instance.model.api.IBaseBundle;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hl7.fhir.instance.model.api.IIdType;
@@ -13,7 +14,7 @@ import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Resource;
 import org.opencds.cqf.ruler.builder.BundleBuilder;
-import org.opencds.cqf.ruler.utility.Operations;
+//import org.opencds.cqf.ruler.utility.Operations;
 
 import java.util.List;
 import java.util.Map;
@@ -55,12 +56,13 @@ public class JpaFhirDal implements FhirDal {
 	}
 
 	@Override
-	public IBaseBundle search(String theResourceType, Map<String, List<IQueryParameterType>> theSearchParameters) {
+	public IBaseBundle search(String theResourceType, Map<String, List<List<IQueryParameterType>>> theSearchParameters) {
 		SearchParameterMap searchParameterMap = new SearchParameterMap();
-		for(Map.Entry<String, List<IQueryParameterType>> entry : theSearchParameters.entrySet()) {
+		for(Map.Entry<String, List<List<IQueryParameterType>>> entry : theSearchParameters.entrySet()) {
 			String keyValue = entry.getKey();
-			for(IQueryParameterType value : entry.getValue()) {
-				searchParameterMap.add(keyValue, value);
+
+			for(List<IQueryParameterType> value : entry.getValue()) {
+				searchParameterMap.add(keyValue, (DateParam) value);
 			}
 		}
 
