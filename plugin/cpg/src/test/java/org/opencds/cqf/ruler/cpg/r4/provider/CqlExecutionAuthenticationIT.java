@@ -6,6 +6,7 @@ import org.hl7.fhir.r4.model.Parameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opencds.cqf.ruler.cpg.CpgConfig;
+import org.opencds.cqf.ruler.security.SecurityConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -16,7 +17,7 @@ import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-	classes = { CqlExecutionProviderIT.class, CpgConfig.class },
+	classes = { CqlExecutionProviderIT.class, CpgConfig.class, SecurityConfig.class},
 	properties = { "hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=true",
 		"hapi.fhir.security.basic_auth.username=admin",
 		"hapi.fhir.security.basic_auth.password=admin" })
