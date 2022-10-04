@@ -88,7 +88,7 @@ public class Server extends BaseJpaRestfulServer {
 			log.info("Registering {} interceptor", o.getClass().getName());
 			this.registerInterceptor(o);
 		}
-		
+
 		log.info("Loading metadata extenders from plugins");
 		Map<String, MetadataExtender> extenders = applicationContext.getBeansOfType(MetadataExtender.class);
 		for (MetadataExtender o : extenders.values()) {

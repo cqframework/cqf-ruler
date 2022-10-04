@@ -23,9 +23,11 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 
+import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
 import ca.uhn.fhir.cql.config.BaseCqlConfig;
 import ca.uhn.fhir.cql.config.CqlDstu3Config;
 import ca.uhn.fhir.cql.config.CqlR4Config;
+import ca.uhn.fhir.jpa.batch2.JpaBatch2Config;
 import ca.uhn.fhir.jpa.subscription.channel.config.SubscriptionChannelConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.SubscriptionProcessorConfig;
 import ca.uhn.fhir.jpa.subscription.match.config.WebsocketDispatcherConfig;
@@ -38,7 +40,9 @@ import ca.uhn.fhir.jpa.subscription.submit.config.SubscriptionSubmitterConfig;
 				StarterCqlDstu3Config.class, CqlR4Config.class, CqlDstu3Config.class, BaseCqlConfig.class }))
 @SpringBootApplication(exclude = { ElasticsearchRestClientAutoConfiguration.class, QuartzAutoConfiguration.class })
 @Import({ SubscriptionSubmitterConfig.class, SubscriptionProcessorConfig.class, SubscriptionChannelConfig.class,
-		WebsocketDispatcherConfig.class, MdmConfig.class, TesterUIConfig.class, BeanFinderConfig.class })
+		WebsocketDispatcherConfig.class, MdmConfig.class, JpaBatch2Config.class, Batch2JobsConfig.class,
+		TesterUIConfig.class,
+		BeanFinderConfig.class })
 public class Application extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
