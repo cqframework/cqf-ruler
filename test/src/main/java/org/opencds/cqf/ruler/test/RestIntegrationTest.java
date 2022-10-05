@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.ruler.Application;
 import org.opencds.cqf.ruler.behavior.IdCreator;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import ca.uhn.fhir.batch2.config.Batch2JobRegisterer;
 import ca.uhn.fhir.context.FhirContext;
@@ -41,6 +43,7 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 		"hapi.fhir.client_id_strategy=ANY",
 })
 @TestInstance(Lifecycle.PER_CLASS)
+@ExtendWith(SpringExtension.class)
 public class RestIntegrationTest
 		implements ResourceLoader, ResourceCreator, IdCreator {
 

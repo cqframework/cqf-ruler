@@ -50,6 +50,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.concurrent.DelegatingSecurityContextExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -345,6 +346,7 @@ public class CqlConfig {
 	}
 
 	@Bean
+	@Lazy(false)
 	public IValidationSupport preExpandedValidationSupport(JpaValidationSupportChain jpaSupportChain,
 			FhirContext fhirContext) {
 		var preExpandedValidationSupport = new PreExpandedValidationSupport(fhirContext);

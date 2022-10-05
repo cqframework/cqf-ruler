@@ -17,7 +17,7 @@ import ca.uhn.fhir.context.FhirContext;
 
 @Configuration
 @ConditionalOnProperty(prefix = "hapi.fhir.cpg", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import({ CqlConfig.class })
+@Import(CqlConfig.class)
 public class CpgConfig {
 	@Bean
 	public CpgProperties cpgProperties() {

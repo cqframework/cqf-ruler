@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import ca.uhn.fhir.batch2.config.Batch2JobRegisterer;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 
@@ -39,6 +40,12 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 @TestInstance(Lifecycle.PER_CLASS)
 @ExtendWith(SpringExtension.class)
 public class DaoIntegrationTest implements ResourceLoader, ResourceCreator, IdCreator {
+
+	// This isn't used directly by the tests, but it forces the Batch2JobRegisterer
+	// to be created even though lazy initialization is set up for Spring
+	@Autowired
+	Batch2JobRegisterer batch2JobRegisterer;
+
 	@Autowired
 	TestDbService myDbService;
 
