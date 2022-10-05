@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.opencds.cqf.ruler</groupId>
@@ -97,12 +98,13 @@
 		<!-- Dependency Versions -->
 		<fhir_core_version>5.6.36</fhir_core_version>
 		<flexmark_version>0.62.2</flexmark_version>
-		<hapi_version>6.0.1</hapi_version>
+		<hapi_version>6.1.1</hapi_version>
 		<javax.version>8.0.1</javax.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring_boot_version>2.5.12</spring_boot_version>
-		<spring_version>5.3.18</spring_version>
+		<spring_boot_version>2.6.7</spring_boot_version>
+		<spring_version>5.3.20</spring_version>
+		<junit_version>5.8.2</junit_version>
 	</properties>
 
 	<dependencyManagement>
@@ -135,7 +137,7 @@
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
-				<version>5.8.2</version>
+				<version>${junit_version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

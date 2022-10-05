@@ -1,8 +1,8 @@
 package org.opencds.cqf.ruler.security;
 
+import org.opencds.cqf.external.annotations.OnDSTU3Condition;
+import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.MetadataExtender;
-import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
-import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.security.interceptor.AuthenticationInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;

@@ -1,15 +1,15 @@
 package org.opencds.cqf.ruler.sdc;
 
+import org.opencds.cqf.external.annotations.OnDSTU3Condition;
+import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
-import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty(prefix = "hapi.fhir.sdc", name ="enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "hapi.fhir.sdc", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class SDCConfig {
 
     @Bean
@@ -29,13 +29,13 @@ public class SDCConfig {
         return new org.opencds.cqf.ruler.sdc.dstu3.ExtractProvider();
     }
 
-	 @Bean
+    @Bean
     @Conditional(OnR4Condition.class)
     public OperationProvider r4TransformProvider() {
         return new org.opencds.cqf.ruler.sdc.r4.TransformProvider();
     }
 
-	 @Bean
+    @Bean
     @Conditional(OnDSTU3Condition.class)
     public OperationProvider dstu3TransformProvider() {
         return new org.opencds.cqf.ruler.sdc.dstu3.TransformProvider();

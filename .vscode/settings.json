@@ -5,8 +5,7 @@
 		{
 			"name": "test-config",
 			"vmArgs": [
-				"-XX:TieredStopAtLevel=1",
-				"-Dspring.main.lazy-initialization=true"
+				"-XX:TieredStopAtLevel=1"
 			]
 		},
 	],
@@ -81,5 +80,5 @@
 	"files.eol": "\r\n",
 	"editor.formatOnSave": true,
 	"thunder-client.saveToWorkspace": true,
-	"java.jdt.ls.vmargs": "-noverify -Xmx2G -XX:+UseG1GC -XX:+UseStringDeduplication"
+	"java.jdt.ls.vmargs": "-Xmx2G -XX:+UseG1GC -XX:+UseStringDeduplication"
 }
