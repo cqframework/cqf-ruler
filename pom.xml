@@ -104,6 +104,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring_boot_version>2.6.7</spring_boot_version>
 		<spring_version>5.3.20</spring_version>
+		<junit_version>5.8.2</junit_version>
 	</properties>
 
 	<dependencyManagement>
@@ -136,7 +137,7 @@
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
-				<version>5.8.2</version>
+				<version>${junit_version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
