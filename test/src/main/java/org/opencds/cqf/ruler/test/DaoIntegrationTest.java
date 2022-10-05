@@ -19,6 +19,7 @@ import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 @Import(DaoOnlyConfig.class)
 @TestPropertySource(properties = {
 		"spring.datasource.url=jdbc:h2:mem:test",
+		"spring.main.allow-circular-references=true",
 		"debug=true",
 		"loader.debug=true",
 		"scheduling_disabled=true",

@@ -2,9 +2,9 @@ package org.opencds.cqf.ruler.cr;
 
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
+import org.opencds.cqf.external.annotations.OnDSTU3Condition;
+import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.cql.CqlConfig;
-import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
-import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;

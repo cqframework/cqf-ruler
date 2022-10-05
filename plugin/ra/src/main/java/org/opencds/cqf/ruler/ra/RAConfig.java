@@ -1,7 +1,7 @@
 package org.opencds.cqf.ruler.ra;
 
+import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.api.OperationProvider;
-import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.ra.r4.AssistedServlet;
 import org.opencds.cqf.ruler.ra.r4.ResolveProvider;
 import org.opencds.cqf.ruler.ra.r4.RiskAdjustmentProvider;

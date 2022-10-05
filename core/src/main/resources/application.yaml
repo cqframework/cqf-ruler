@@ -1,4 +1,4 @@
 spring:
    config:
       import:
-         - classpath:org/opencds/cqf/ruler/external/application.yaml
+         - classpath:org/opencds/cqf/external/application.yaml
