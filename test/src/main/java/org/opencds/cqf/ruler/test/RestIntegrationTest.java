@@ -14,6 +14,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 
+import ca.uhn.fhir.batch2.config.Batch2JobRegisterer;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.dao.IFulltextSearchSvc;
@@ -22,11 +23,13 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 
 @Import(Application.class)
 @TestPropertySource(properties = {
-		"spring.datasource.url=jdbc:h2:mem:test",
-		"spring.main.allow-circular-references=true",
 		"debug=true",
 		"loader.debug=true",
 		"scheduling_disabled=true",
+		"spring.datasource.url=jdbc:h2:mem:test",
+		"spring.flyway.enabled=false",
+		"spring.main.allow-circular-references=true",
+		"spring.main.lazy-initialization=true",
 		"spring.main.allow-bean-definition-overriding=true",
 		"spring.batch.job.enabled=false",
 		// "spring.jpa.properties.hibernate.show_sql=true",
@@ -36,10 +39,15 @@ import ca.uhn.fhir.rest.client.api.ServerValidationModeEnum;
 		"hapi.fhir.enforce_referential_integrity_on_write=false",
 		"hapi.fhir.auto_create_placeholder_reference_targets=true",
 		"hapi.fhir.client_id_strategy=ANY",
-		"spring.main.lazy-initialization=true",
-		"spring.flyway.enabled=false" })
+})
 @TestInstance(Lifecycle.PER_CLASS)
-public class RestIntegrationTest implements ResourceLoader, ResourceCreator, IdCreator {
+public class RestIntegrationTest
+		implements ResourceLoader, ResourceCreator, IdCreator {
+
+	// This isn't used directly by the tests, but it forces the Batch2JobRegisterer
+	// to be created even though lazy initialization is set up for Spring
+	@Autowired
+	Batch2JobRegisterer batch2JobRegisterer;
 
 	@Autowired
 	AppProperties myAppProperties;
@@ -97,9 +105,9 @@ public class RestIntegrationTest implements ResourceLoader, ResourceCreator, IdC
 	public void baseBeforeEach() {
 		myCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
 		myCtx.getRestfulClientFactory().setSocketTimeout(1200 * 1000);
-		myServerBase = "http://localhost:" + myPort + "/fhir/";
-		myAppProperties.setServer_address(myServerBase);
-		myClient = myCtx.newRestfulGenericClient(myServerBase);
+		myServerBase = "http://localhost:" + getPort() + "/fhir/";
+		myAppProperties.setServer_address(getServerBase());
+		myClient = myCtx.newRestfulGenericClient(getServerBase());
 	}
 
 	@AfterAll

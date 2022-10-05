@@ -12,7 +12,6 @@
 			"projectName": "cqf-ruler-core",
 			"vmArgs": [
 				"-XX:TieredStopAtLevel=1",
-				"-Dspring.main.lazy-initialization=true",
 				"-Ddebug=true",
 				"-Dloader.debug=true",
 				"-Dhapi.fhir.bulk_export_enabled=false",
@@ -38,7 +37,6 @@
 			"projectName": "cqf-ruler-server",
 			"vmArgs": [
 				"-XX:TieredStopAtLevel=1",
-				"-Dspring.main.lazy-initialization=true",
 				"-Ddebug=true",
 				"-Dloader.debug=true",
 				"-Dhapi.fhir.bulk_export_enabled=false",
@@ -99,7 +97,6 @@
 			"projectName": "cqf-ruler-server",
 			"vmArgs": [
 				"-XX:TieredStopAtLevel=1",
-				"-Dspring.main.lazy-initialization=true",
 				"-Ddebug=true",
 				"-Dloader.debug=true",
 				"-Dhapi.fhir.fhir_version=DSTU3",
