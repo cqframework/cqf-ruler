@@ -354,4 +354,14 @@ public class CqlConfig {
 		jpaSupportChain.addValidationSupport(0, preExpandedValidationSupport);
 		return preExpandedValidationSupport;
 	}
+
+	@Bean
+	public RepositoryService repositoryService() {
+		return new RepositoryService();
+	}
+
+	@Bean
+	public KnowledgeArtifactProcessor knowledgeArtifactProcessor() {
+		return new KnowledgeArtifactProcessor();
+	}
 }

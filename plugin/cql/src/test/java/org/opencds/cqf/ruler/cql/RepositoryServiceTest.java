@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.ruler.utility.Parameters.newParameters;
 import static org.opencds.cqf.ruler.utility.Parameters.newPart;
 import static org.opencds.cqf.ruler.utility.Parameters.newStringPart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.idPart;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
@@ -68,8 +69,7 @@ public class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void releaseResource_test() {
 
-		Parameters params = parameters(
-			new IdType("Library/ersdv2bundle1-2"));
+		Parameters params = parameters( idPart("iIdtype", "Library/ersdv2bundle1-2"));
 
 		Resource returnResource = getClient().operation()
 			.onServer()
