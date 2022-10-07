@@ -3,13 +3,13 @@ package org.opencds.cqf.ruler.cql;
 import ca.uhn.fhir.model.api.IQueryParameterType;
 import ca.uhn.fhir.rest.param.UriParam;
 import org.cqframework.fhir.api.FhirDal;
-import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CanonicalType;
 import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Library;
 import org.hl7.fhir.r4.model.MetadataResource;
+import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.opencds.cqf.ruler.utility.Canonicals;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -73,53 +73,43 @@ public class KnowledgeArtifactProcessor {
 
 	public MetadataResource releaseVersion(IdType iIdType, FhirDal fhirDal) {
 		MetadataResource resource = (MetadataResource) fhirDal.read(iIdType);
-
-		// Update status
-		// Main spec library
-		// 	PlanDefinition
-		//			Any DEPENDSON update to active
-		// 	ValueSet Library
-		// 		Grouping ValueSets
-		// DEPENDSON - update or validate active status
-
-		// FOR each Library, PlanDefinition, ValueSet Library, Grouping ValueSet
-		//		check status for draft (throw if not draft)
-		// 	update status
-		// 	FOR ALL DEPENDSON
-		//			check status for draft (throw if not draft)
-		//			update status
-
-		fhirDal.update(resource);
-
-		return resource;
-
+		return publishVersion(fhirDal, resource);
 	}
 
-	public MetadataResource publishVersion(IdType iIdType, FhirDal fhirDal, MetadataResource resource) {
-		String resourceVersionId = resource.getMeta().getVersionId();
-		if(!resourceVersionId.contains("draft")) {
-			throw new FHIRException("Resource found by " + iIdType + " is not a draft version.  Please select a draft resource.");
-		}
-		if(!resourceVersionId.startsWith("draft")) {
-			throw new FHIRException("Resource found by " + iIdType + " is not a draft version.  The version does not start with draft.");
-		}
-		String[] resourceIdArray = resourceVersionId.split("draft-");
-		String updatedResourceId = resourceIdArray[1];
-		resource.setId(updatedResourceId);
+	// Update status
+	// Main spec library
+	// 	PlanDefinition
+	//			Any DEPENDSON update to active
+	// 	ValueSet Library
+	// 		Grouping ValueSets
+	// DEPENDSON - update or validate active status
 
-		Bundle bundle = new Bundle();
-		bundle.getEntry().forEach(
-			entry -> {
-				if(entry.hasResource() && entry.getResource() instanceof Library) {
-					Enumerations.PublicationStatus status = ((Library) entry.getResource()).getStatus();
-					if(status.equals(Enumerations.PublicationStatus.ACTIVE)) {
-						fhirDal.create(resource);
-					}
-				}
+	// FOR each Library, PlanDefinition, ValueSet Library, Grouping ValueSet
+	//		check status for draft (throw if not draft)
+	// 	update status
+	// 	FOR ALL DEPENDSON
+	//			check status for draft (throw if not draft)
+	//			update status
+	public MetadataResource publishVersion(FhirDal fhirDal, MetadataResource resource) {
+		List<RelatedArtifact> artifacts = new ArrayList<>();
+		if (resource instanceof Library) {
+			artifacts = ((Library) resource).getRelatedArtifact();
+		}
+		else if (resource instanceof PlanDefinition) {
+			artifacts = ((PlanDefinition) resource).getRelatedArtifact();
+		}
+
+		for (RelatedArtifact relatedArtifact : artifacts) {
+			if (relatedArtifact.hasType() &&
+				(relatedArtifact.getType() == RelatedArtifact.RelatedArtifactType.COMPOSEDOF
+					|| relatedArtifact.getType() == RelatedArtifact.RelatedArtifactType.DEPENDSON)
+				&& relatedArtifact.hasResource()) {
+				publishVersion(fhirDal, (MetadataResource) fhirDal.read(new IdType(relatedArtifact.getResource())));
 			}
-		);
+		}
 
+		resource.setStatus(Enumerations.PublicationStatus.ACTIVE);
+		fhirDal.update(resource);
 		return resource;
-
 	}
 }

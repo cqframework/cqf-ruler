@@ -4,7 +4,6 @@ import ca.uhn.fhir.model.api.annotation.Description;
 import ca.uhn.fhir.rest.annotation.IdParam;
 import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
-import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import org.cqframework.fhir.api.FhirDal;
 import org.hl7.fhir.exceptions.FHIRException;
@@ -24,26 +23,27 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 
 	 @Operation(name = "$draft")
 	 @Description(shortDefinition = "$draft", value = "Create a new draft library version")
-	 public Library draftOperation(RequestDetails requestDetails, @ResourceParam Library library)
+	 public Library draftOperation(RequestDetails requestDetails,
+											 @OperationParam(name = "specification") Library library)
 		 throws FHIRException {
 		 FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
 		 return (Library) this.artifactProcessor.newVersion(library, fhirDal);
 	 }
 
-	@Operation(name = "$release", idempotent = true, type = MetadataResource.class)
+	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)
 	@Description(shortDefinition = "$release", value = "Release an existing draft artifact")
-	public MetadataResource releaseOperation(RequestDetails requestDetails, @IdParam IdType theId)
+	public Library releaseOperation(RequestDetails requestDetails, @IdParam IdType theId)
 		throws FHIRException {
 		FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		return this.artifactProcessor.releaseVersion(theId, fhirDal);
+		return (Library) this.artifactProcessor.releaseVersion(theId, fhirDal);
 	}
 
 	@Operation(name = "$publish")
 	@Description(shortDefinition = "$publish", value = "Post a new artifact with active status")
-	public MetadataResource publishVersion(RequestDetails requestDetails, @IdParam IdType theId,
-														@ResourceParam MetadataResource resource)
+	public Library publishVersion(RequestDetails requestDetails,
+											@OperationParam(name = "specification") Library library)
 		throws FHIRException {
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
-		return this.artifactProcessor.publishVersion(theId, fhirDal, resource);
+		return (Library) this.artifactProcessor.publishVersion(fhirDal, library);
 	}
 }
