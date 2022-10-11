@@ -23,7 +23,7 @@ import java.util.Map;
 // TODO: This belongs in the Evaluator. Only included in Ruler at dev time for shorter cycle.
 public class KnowledgeArtifactProcessor {
 
-	public MetadataResource newVersion(MetadataResource resource, FhirDal fhirDal) {
+	public MetadataResource draft(MetadataResource resource, FhirDal fhirDal) {
 		MetadataResource newResource;
 		KnowledgeArtifactAdapter<MetadataResource> adapter = new KnowledgeArtifactAdapter<>(resource);
 		newResource = adapter.copy();
@@ -45,7 +45,7 @@ public class KnowledgeArtifactProcessor {
 						Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
 						if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
 							MetadataResource referencedResource = (MetadataResource)referencedResourceEntry.getResource();
-							newVersion(referencedResource, fhirDal);
+							draft(referencedResource, fhirDal);
 						}
 					}
 				} else if (ra.hasResource()) {
@@ -60,7 +60,7 @@ public class KnowledgeArtifactProcessor {
 						Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
 						if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
 							MetadataResource referencedResource = (MetadataResource)referencedResourceEntry.getResource();
-							newVersion(referencedResource, fhirDal);
+							draft(referencedResource, fhirDal);
 						}
 					}
 				}
