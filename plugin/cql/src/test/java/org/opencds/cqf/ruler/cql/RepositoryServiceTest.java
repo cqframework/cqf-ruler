@@ -21,16 +21,10 @@ import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 	properties = {"hapi.fhir.fhir_version=r4", "hapi.fhir.security.basic_auth.enabled=false"})
 class RepositoryServiceTest extends RestIntegrationTest {
 
-	//@Test
+	@Test
 	void draftOperation_test() {
-		Library library = new Library();
-		library.setDescription("Test Library");
-		library.setUrl("url");
-		library.setVersion("draft-1");
-		library.setStatus(Enumerations.PublicationStatus.ACTIVE);
-
-		Parameters params = parameters(
-			new IdType("Library/ersdv2bundle1-2"));
+		Library specLibrary = (Library) readResource("ersd-library-example.json");
+		Parameters params = parameters( part("specification", specLibrary) );
 
 		Resource returnResource = getClient().operation()
 			.onServer()
