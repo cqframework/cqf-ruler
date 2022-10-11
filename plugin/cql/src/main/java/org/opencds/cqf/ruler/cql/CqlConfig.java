@@ -133,6 +133,11 @@ public class CqlConfig {
 	}
 
 	@Bean
+	JpaEvalFhirDalFactory jpaEvalFhirDalFactory(DaoRegistry daoRegistry) {
+		return rd -> new JpaEvalFhirDal(daoRegistry, rd);
+	}
+
+	@Bean
 	JpaFhirDalFactory jpaFhirDalFactory(DaoRegistry daoRegistry) {
 		return rd -> new JpaFhirDal(daoRegistry, rd);
 	}
@@ -356,11 +361,13 @@ public class CqlConfig {
 	}
 
 	@Bean
+	@Conditional(OnR4Condition.class)
 	public RepositoryService repositoryService() {
 		return new RepositoryService();
 	}
 
 	@Bean
+	@Conditional(OnR4Condition.class)
 	public KnowledgeArtifactProcessor knowledgeArtifactProcessor() {
 		return new KnowledgeArtifactProcessor();
 	}

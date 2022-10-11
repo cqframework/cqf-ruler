@@ -19,7 +19,7 @@ import org.opencds.cqf.cql.evaluator.fhir.dal.FhirDal;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.cql.JpaDataProviderFactory;
-import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
+import org.opencds.cqf.ruler.cql.JpaEvalFhirDalFactory;
 import org.opencds.cqf.ruler.cql.JpaLibrarySourceProviderFactory;
 import org.opencds.cqf.ruler.cql.JpaTerminologyProviderFactory;
 import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
@@ -48,7 +48,7 @@ public class MeasureEvaluateProvider extends DaoRegistryOperationProvider
 	private JpaLibrarySourceProviderFactory libraryContentProviderFactory;
 
 	@Autowired
-	private JpaFhirDalFactory fhirDalFactory;
+	private JpaEvalFhirDalFactory fhirDalFactory;
 
 	@Autowired
 	private Map<org.cqframework.cql.elm.execution.VersionedIdentifier, org.cqframework.cql.elm.execution.Library> globalLibraryCache;
