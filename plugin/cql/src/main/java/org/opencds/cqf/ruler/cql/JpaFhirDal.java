@@ -62,7 +62,9 @@ public class JpaFhirDal implements FhirDal {
 			String keyValue = entry.getKey();
 
 			for(List<IQueryParameterType> value : entry.getValue()) {
-				searchParameterMap.add(keyValue, (DateParam) value);
+				for (IQueryParameterType query : value) {
+					searchParameterMap.add(keyValue, query);
+				}
 			}
 		}
 

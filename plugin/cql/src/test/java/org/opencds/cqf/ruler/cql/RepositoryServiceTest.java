@@ -24,13 +24,14 @@ class RepositoryServiceTest extends RestIntegrationTest {
 	@Test
 	void draftOperation_test() {
 		Library specLibrary = (Library) readResource("ersd-library-example.json");
+		specLibrary.setStatus(Enumerations.PublicationStatus.ACTIVE);
 		Parameters params = parameters( part("specification", specLibrary) );
 
 		Resource returnResource = getClient().operation()
 			.onServer()
 			.named("$draft")
 			.withParameters(params)
-			.returnResourceType(Resource.class)
+			.returnResourceType(Library.class)
 			.execute();
 
 		assertNotNull(returnResource);
