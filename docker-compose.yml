@@ -1,0 +1,23 @@
+services:
+   # dqm:
+   #    depends_on:
+   #       - postgres
+   #    image: alphora/cqf-ruler:testy
+   #    ports:
+   #       - 8080:8080
+   #    environment:
+   #       - "spring.datasource.url=jdbc:postgresql://postgres:5432/postgres"
+   #       - "spring.datasource.username=postgres"
+   #       - "spring.datasource.password="
+   #       - "spring.datasource.driverClassName=org.postgresql.Driver"
+   #       - "spring.jpa.properties.hibernate.dialect=ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect"
+   #       - "spring.jpa.database-platform=ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect"
+   #       - "hapi.fhir.bulk_export_enabled=false"
+   #       - "spring.batch.job.enabled=false"
+
+   postgres:
+      image: postgres
+      ports:
+         - 5432:5432
+      environment:
+         - "POSTGRES_HOST_AUTH_METHOD=trust"
