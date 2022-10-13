@@ -1,5 +1,10 @@
 {
 	"java.configuration.updateBuildConfiguration": "automatic",
+	"java.debug.settings.stepping.skipClasses": [
+		"$JDK",
+		"java.lang.ClassLoader",
+		"org.springframework.aop.*"
+	],
 	"java.errors.incompleteClasspath.severity": "ignore",
 	"java.test.config": [
 		{
