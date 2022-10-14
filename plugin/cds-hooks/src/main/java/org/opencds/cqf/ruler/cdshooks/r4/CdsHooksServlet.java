@@ -12,23 +12,21 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonParser;
 import org.apache.http.entity.ContentType;
-import org.hl7.fhir.r4.model.PlanDefinition;
-import org.hl7.fhir.r4.model.Library;
-import org.hl7.fhir.r4.model.IdType;
-import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.BooleanType;
-import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Endpoint;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Library;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.PlanDefinition;
 import org.hl7.fhir.r4.model.RelatedArtifact;
 import org.hl7.fhir.r4.model.Type;
 import org.opencds.cqf.cql.engine.debug.DebugMap;
 import org.opencds.cqf.cql.engine.exception.CqlException;
 import org.opencds.cqf.cql.engine.exception.DataProviderException;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
+import org.opencds.cqf.external.AppProperties;
 import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cdshooks.CdsServicesCache;
 import org.opencds.cqf.ruler.cdshooks.providers.ProviderConfiguration;
@@ -40,20 +38,22 @@ import org.opencds.cqf.ruler.cpg.r4.provider.CqlExecutionProvider;
 import org.opencds.cqf.ruler.cpg.r4.provider.LibraryEvaluationProvider;
 import org.opencds.cqf.ruler.cql.CqlProperties;
 import org.opencds.cqf.ruler.cr.r4.provider.ActivityDefinitionApplyProvider;
-import org.opencds.cqf.ruler.external.AppProperties;
 import org.opencds.cqf.ruler.utility.Canonicals;
 import org.opencds.cqf.ruler.utility.Ids;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.partition.SystemRequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
-import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
 public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
@@ -82,6 +82,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 	protected ProviderConfiguration getProviderConfiguration() {
 		return this.providerConfiguration;
 	}
+
 	private final SystemRequestDetails requestDetails = new SystemRequestDetails();
 	private R4CqlExecution cqlExecutor;
 
@@ -185,10 +186,10 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			ErrorHandling.handleError(response, "ERROR: Exception connecting to remote server.", e, myAppProperties);
 			logger.error(e.toString());
 		} catch (DataProviderException e) {
-			ErrorHandling.handleError(response,"ERROR: Exception in DataProvider.", e, myAppProperties);
+			ErrorHandling.handleError(response, "ERROR: Exception in DataProvider.", e, myAppProperties);
 			logger.error(e.toString());
 		} catch (CqlException e) {
-			ErrorHandling.handleError(response,"ERROR: Exception in CQL Execution.", e, myAppProperties);
+			ErrorHandling.handleError(response, "ERROR: Exception in CQL Execution.", e, myAppProperties);
 			logger.error(e.toString());
 		} catch (Exception e) {
 			logger.error(e.toString());
@@ -215,24 +216,26 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 			servicePlan.getRelatedArtifact().forEach(
 					ra -> {
 						Card.Link link = new Card.Link();
-						if (ra.hasDisplay()) link.setLabel(ra.getDisplay());
-						if (ra.hasUrl()) link.setUrl(ra.getUrl());
+						if (ra.hasDisplay())
+							link.setLabel(ra.getDisplay());
+						if (ra.hasUrl())
+							link.setUrl(ra.getUrl());
 						if (ra.hasExtension()) {
 							link.setType(ra.getExtensionFirstRep().getValue().primitiveValue());
-						}
-						else link.setType("absolute"); // default
+						} else
+							link.setType("absolute"); // default
 						links.add(link);
-					}
-			);
+					});
 		}
 		return links;
 	}
 
 	private void resolveServicePlan(List<PlanDefinition.PlanDefinitionActionComponent> actions,
-									Parameters evaluationResults, String patientId, List<Card> cards,
-									List<Card.Link> links) {
+			Parameters evaluationResults, String patientId, List<Card> cards,
+			List<Card.Link> links) {
 		Card card = new Card();
-		if (links != null) card.setLinks(links);
+		if (links != null)
+			card.setLinks(links);
 		actions.forEach(
 				action -> {
 					if (resolveCondition(action, evaluationResults, patientId).get()) {
@@ -261,12 +264,11 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						}
 						cards.add(card);
 					}
-				}
-		);
+				});
 	}
 
 	public AtomicBoolean resolveCondition(PlanDefinition.PlanDefinitionActionComponent action,
-										  Parameters evaluationResults, String patientId) {
+			Parameters evaluationResults, String patientId) {
 		AtomicBoolean conditionMet = new AtomicBoolean(false);
 		if (action.hasCondition()) {
 			action.getCondition().forEach(
@@ -277,20 +279,18 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 							if (condition.getExpression().getLanguage().equals("text/cql.identifier")) {
 								conditionResult = evaluationResults.getParameter(
 										condition.getExpression().getExpression());
-							}
-							else if (condition.getExpression().getLanguage().equals("text/cql")) {
+							} else if (condition.getExpression().getLanguage().equals("text/cql")) {
 								conditionResult = cqlExecutor.getExpressionExecution(cqlExecution,
-												patientId, condition.getExpression().getExpression())
+										patientId, condition.getExpression().getExpression())
 										.getParameter("return");
-							}
-							else conditionResult = new BooleanType(false);
+							} else
+								conditionResult = new BooleanType(false);
 							if (conditionResult != null) {
 								conditionMet.set(conditionResult.isPrimitive()
 										&& Boolean.parseBoolean(conditionResult.primitiveValue()));
 							}
 						}
-					}
-			);
+					});
 		}
 		return conditionMet;
 	}
@@ -314,7 +314,8 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 		Card.Suggestion suggestion = new Card.Suggestion();
 		Card.Suggestion.Action suggAction = new Card.Suggestion.Action();
 		suggAction.fhirContext = getFhirContext();
-		if (action.hasPrefix()) suggestion.setLabel(action.getPrefix());
+		if (action.hasPrefix())
+			suggestion.setLabel(action.getPrefix());
 		boolean hasAction = false;
 		if (action.hasDescription()) {
 			suggAction.setDescription(action.getDescription());
@@ -338,12 +339,13 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 					null, null, null, null));
 			hasAction = true;
 		}
-		if (hasAction) suggestion.setActions(Collections.singletonList(suggAction));
+		if (hasAction)
+			suggestion.setActions(Collections.singletonList(suggAction));
 		return suggestion;
 	}
 
 	public void resolveDynamicActions(PlanDefinition.PlanDefinitionActionComponent action,
-									  Parameters evaluationResults, String patientId, Card card) {
+			Parameters evaluationResults, String patientId, Card card) {
 		action.getDynamicValue().forEach(
 				dv -> {
 					if (dv.hasPath() && dv.hasExpression() && dv.getExpression().hasLanguage()
@@ -352,10 +354,9 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 						if (dv.getExpression().getLanguage().equals("text/cql.identifier")) {
 							dynamicValueResult = evaluationResults.getParameter(
 									dv.getExpression().getExpression());
-						}
-						else {
+						} else {
 							dynamicValueResult = cqlExecutor.getExpressionExecution(cqlExecution,
-											patientId, dv.getExpression().getExpression())
+									patientId, dv.getExpression().getExpression())
 									.getParameter("return");
 						}
 						if (dynamicValueResult != null) {
@@ -379,8 +380,7 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 							}
 						}
 					}
-				}
-		);
+				});
 	}
 
 	private JsonObject getServices() {

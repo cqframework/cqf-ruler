@@ -1,30 +1,32 @@
 package org.opencds.cqf.ruler.cr.r4.provider;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.datePart;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
 import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
-import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Parameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
+import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CareGapsProviderIT.class,
-	CrConfig.class }, properties = {
-	"hapi.fhir.fhir_version=r4", "hapi.fhir.enforce_referential_integrity_on_write=false",
-	"hapi.fhir.enforce_referential_integrity_on_delete=false", "hapi.fhir.cr.enabled=true",
-	"hapi.fhir.cr.measure_report.care_gaps_reporter=Organization/alphora",
-	"hapi.fhir.cr.measure_report.care_gaps_composition_section_author=Organization/alphora-author"
-})
+		CrConfig.class, CqlConfig.class }, properties = {
+				"hapi.fhir.fhir_version=r4", "hapi.fhir.enforce_referential_integrity_on_write=false",
+				"hapi.fhir.enforce_referential_integrity_on_delete=false", "hapi.fhir.cr.enabled=true",
+				"hapi.fhir.cr.measure_report.care_gaps_reporter=Organization/alphora",
+				"hapi.fhir.cr.measure_report.care_gaps_composition_section_author=Organization/alphora-author"
+		})
 class CareGapsProviderIT extends RestIntegrationTest {
 
 	private static final String periodStartValid = "2019-01-01";
@@ -69,19 +71,18 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		beforeEachMeasure();
 
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		assertDoesNotThrow(() -> {
 			getClient().operation().onType(Measure.class).named("$care-gaps")
-				.withParameters(params)
-				.useHttpGet()
-				.returnResourceType(Parameters.class)
-				.execute();
+					.withParameters(params)
+					.useHttpGet()
+					.returnResourceType(Parameters.class)
+					.execute();
 		});
 	}
 
@@ -90,33 +91,31 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		beforeEachMeasure();
 
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			datePart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		assertDoesNotThrow(() -> {
 			getClient().operation().onType(Measure.class).named("$care-gaps")
-				.withParameters(params)
-				.returnResourceType(Parameters.class)
-				.execute();
+					.withParameters(params)
+					.returnResourceType(Parameters.class)
+					.execute();
 		});
 	}
 
 	@Test
 	void testPeriodStartNull() {
 		Parameters params = parameters(
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -124,15 +123,14 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testPeriodStartNullPOST() {
 		Parameters params = parameters(
-			datePart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -140,16 +138,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testPeriodStartInvalid() {
 		Parameters params = parameters(
-			stringPart("periodStart", dateInvalid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", dateInvalid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class);
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class);
 
 		assertThrows(InvalidRequestException.class, request::execute);
 	}
@@ -157,15 +154,14 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testPeriodEndNull() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -173,15 +169,14 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testPeriodEndNullPOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				datePart("periodStart", periodStartValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -189,16 +184,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testPeriodEndInvalid() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", dateInvalid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", dateInvalid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class);
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class);
 
 		assertThrows(InvalidRequestException.class, request::execute);
 	}
@@ -206,16 +200,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testPeriodInvalid() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodEndValid),
-			stringPart("periodEnd", periodStartValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodEndValid),
+				stringPart("periodEnd", periodStartValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -223,16 +216,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testPeriodInvalidPOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodEndValid),
-			datePart("periodEnd", periodStartValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				datePart("periodStart", periodEndValid),
+				datePart("periodEnd", periodStartValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -240,57 +232,54 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testSubjectGroupValid() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectGroupValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectGroupValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		loadResource("gic-gr-1.json");
 
 		assertDoesNotThrow(() -> {
 			getClient().operation().onType(Measure.class).named("$care-gaps")
-				.withParameters(params)
-				.useHttpGet()
-				.returnResourceType(Parameters.class)
-				.execute();
+					.withParameters(params)
+					.useHttpGet()
+					.returnResourceType(Parameters.class)
+					.execute();
 		});
 	}
 
 	@Test
 	void testSubjectGroupValidPOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			datePart("periodEnd", periodEndValid),
-			stringPart("subject", subjectGroupValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectGroupValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		loadResource("gic-gr-1.json");
 
 		assertDoesNotThrow(() -> {
 			getClient().operation().onType(Measure.class).named("$care-gaps")
-				.withParameters(params)
-				.returnResourceType(Parameters.class)
-				.execute();
+					.withParameters(params)
+					.returnResourceType(Parameters.class)
+					.execute();
 		});
 	}
 
 	@Test
 	void testSubjectInvalid() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectInvalid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectInvalid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -298,16 +287,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testSubjectInvalidPOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			datePart("periodEnd", periodEndValid),
-			stringPart("subject", subjectInvalid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectInvalid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -315,16 +303,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testSubjectReferenceInvalid() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectReferenceInvalid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectReferenceInvalid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -332,16 +319,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testSubjectReferenceInvalidPOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			datePart("periodEnd", periodEndValid),
-			stringPart("subject", subjectReferenceInvalid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectReferenceInvalid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -349,17 +335,16 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testSubjectAndPractitioner() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid),
-			stringPart("practitioner", practitionerValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("practitioner", practitionerValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -367,17 +352,16 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testSubjectAndPractitionerPOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			datePart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid),
-			stringPart("practitioner", practitionerValid)
-		);
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("practitioner", practitionerValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -385,17 +369,16 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testSubjectAndOrganization() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid),
-			stringPart("organization", organizationValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("organization", organizationValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -403,17 +386,16 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testSubjectAndOrganizationPOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			datePart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid),
-			stringPart("organization", organizationValid)
-		);
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("organization", organizationValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -421,17 +403,16 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testPractitionerAndOrganization() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid),
-			stringPart("organization", organizationValid),
-			stringPart("practitioner", practitionerValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("organization", organizationValid),
+				stringPart("practitioner", practitionerValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Unsupported configuration"));
 
@@ -448,16 +429,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testOrganizationOnly() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid),
-			stringPart("organization", organizationValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("organization", organizationValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Unsupported configuration"));
 
@@ -474,16 +454,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testPractitionerOnly() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid),
-			stringPart("practitioner", practitionerValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("practitioner", practitionerValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -491,16 +470,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testPractitionerOnlyPOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			datePart("periodEnd", periodEndValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid),
-			stringPart("practitioner", practitionerValid)
-		);
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("practitioner", practitionerValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -508,17 +486,16 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testSubjectMultiple() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("subject", subjectGroupValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("subject", subjectGroupValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -526,17 +503,16 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testSubjectMultiplePOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			datePart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("subject", subjectGroupValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("subject", subjectGroupValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -544,15 +520,14 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testNoMeasure() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -560,15 +535,14 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testNoMeasurePOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			datePart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid)
-		);
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -576,16 +550,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testStatusInvalid() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusInvalid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusInvalid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -593,16 +566,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testStatusInvalidPOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			datePart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusInvalid),
-			stringPart("measureId", measureIdValid)
-		);
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusInvalid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -610,15 +582,14 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testStatusNull() {
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.useHttpGet().returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -626,15 +597,14 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	@Test
 	void testStatusNullPOST() {
 		Parameters params = parameters(
-			datePart("periodStart", periodStartValid),
-			datePart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("measureId", measureIdValid)
-		);
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation()
-			.onType(Measure.class).named("$care-gaps").withParameters(params)
-			.returnResourceType(Parameters.class).execute();
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
 	}
@@ -644,20 +614,19 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		beforeEachMeasure();
 
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("status", statusValidSecond),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("status", statusValidSecond),
+				stringPart("measureId", measureIdValid));
 
 		assertDoesNotThrow(() -> {
 			getClient().operation().onType(Measure.class).named("$care-gaps")
-				.withParameters(params)
-				.useHttpGet()
-				.returnResourceType(Parameters.class)
-				.execute();
+					.withParameters(params)
+					.useHttpGet()
+					.returnResourceType(Parameters.class)
+					.execute();
 		});
 	}
 
@@ -666,21 +635,20 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		beforeEachMultipleMeasures();
 
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectPatientValid),
-			stringPart("status", statusValid),
-			stringPart("status", statusValidSecond),
-			stringPart("measureId", measureIdValid),
-			stringPart("measureUrl", measureUrlValid),
-			stringPart("measureId", "ColorectalCancerScreeningsFHIR")
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("status", statusValidSecond),
+				stringPart("measureId", measureIdValid),
+				stringPart("measureUrl", measureUrlValid),
+				stringPart("measureId", "ColorectalCancerScreeningsFHIR"));
 
 		Parameters result = getClient().operation().onType(Measure.class).named("$care-gaps")
-			.withParameters(params)
-			.useHttpGet()
-			.returnResourceType(Parameters.class)
-			.execute();
+				.withParameters(params)
+				.useHttpGet()
+				.returnResourceType(Parameters.class)
+				.execute();
 
 		assertNotNull(result);
 	}
@@ -690,18 +658,17 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		beforeEachParallelMeasure();
 
 		Parameters params = parameters(
-			stringPart("periodStart", periodStartValid),
-			stringPart("periodEnd", periodEndValid),
-			stringPart("subject", subjectGroupParallelValid),
-			stringPart("status", statusValid),
-			stringPart("measureId", measureIdValid)
-		);
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectGroupParallelValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation().onType(Measure.class).named("$care-gaps")
-			.withParameters(params)
-			.useHttpGet()
-			.returnResourceType(Parameters.class)
-			.execute();
+				.withParameters(params)
+				.useHttpGet()
+				.returnResourceType(Parameters.class)
+				.execute();
 
 		assertNotNull(result);
 	}

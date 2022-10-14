@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.opencds.cqf.ruler</groupId>
 		<artifactId>cqf-ruler</artifactId>
-		<version>0.7.0</version>
+		<version>0.8.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>cqf-ruler-external</artifactId>
@@ -96,12 +97,12 @@
 						<phase>generate-sources</phase>
 						<configuration>
 							<target>
-								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/java/org/opencds/cqf/ruler/external">
+								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/java/org/opencds/cqf/external">
 									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/java/ca/uhn/fhir/jpa/starter">
 										<include name="**/*.*"/>
 									</fileset>
 								</copy>
-								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources/org/opencds/cqf/ruler/external">
+								<copy todir="${project.build.directory}/generated-sources/hapi-fhir-jpaserver-starter/resources/org/opencds/cqf/external">
 									<fileset dir="${project.build.directory}/../hapi-fhir-jpaserver-starter/src/main/resources">
 										<include name="application.yaml"/>
 									</fileset>
@@ -184,11 +185,11 @@
 						It'd be better to share the same namespace to facilitate easier migration of the code to HAPi -->
 						<replacement>
 							<token>^package ca.uhn.fhir.jpa.starter</token>
-							<value>package org.opencds.cqf.ruler.external</value>
+							<value>package org.opencds.cqf.external</value>
 						</replacement>
 						<replacement>
 							<token>^import ca.uhn.fhir.jpa.starter.</token>
-							<value>import org.opencds.cqf.ruler.external.</value>
+							<value>import org.opencds.cqf.external.</value>
 						</replacement>
 						<replacement>
 							<token>^(@SuppressWarnings\(.*?\)\s+)?public class</token>
