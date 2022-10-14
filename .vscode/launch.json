@@ -17,17 +17,6 @@
 				"-Dhapi.fhir.bulk_export_enabled=false",
 				"-Dspring.batch.job.enabled=false"
 			],
-			"stepFilters": {
-				"classNameFilters": [
-					"java.*",
-					"javax.*",
-					"com.sun.*",
-					"sun.*",
-					"sunw.*",
-					"org.omg.*",
-					"org.springframework.aop.*"
-				]
-			}
 		},
 		{
 			"type": "java",
@@ -42,17 +31,6 @@
 				"-Dhapi.fhir.bulk_export_enabled=false",
 				"-Dspring.batch.job.enabled=false"
 			],
-			"stepFilters": {
-				"classNameFilters": [
-					"java.*",
-					"javax.*",
-					"com.sun.*",
-					"sun.*",
-					"sunw.*",
-					"org.omg.*",
-					"org.springframework.aop.*"
-				]
-			},
 			"classPaths": [
 				"$Auto",
 				"$Runtime"
@@ -65,25 +43,17 @@
 			"mainClass": "org.opencds.cqf.ruler.Application",
 			"projectName": "cqf-ruler-server",
 			"vmArgs": [
+				"-XX:TieredStopAtLevel=1",
+				"-Ddebug=true",
+				"-Dloader.debug=true",
 				"-Dspring.datasource.url=jdbc:postgresql://localhost:5432/postgres",
 				"-Dspring.datasource.username=postgres",
 				"-Dspring.datasource.password=",
 				"-Dspring.datasource.driverClassName=org.postgresql.Driver",
-				"-Dspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQL10Dialect",
+				"-Dspring.jpa.properties.hibernate.dialect=ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect",
 				"-Dhapi.fhir.bulk_export_enabled=false",
 				"-Dspring.batch.job.enabled=false"
 			],
-			"stepFilters": {
-				"classNameFilters": [
-					"java.*",
-					"javax.*",
-					"com.sun.*",
-					"sun.*",
-					"sunw.*",
-					"org.omg.*",
-					"org.springframework.aop.*"
-				]
-			},
 			"classPaths": [
 				"$Auto",
 				"$Runtime"
@@ -103,17 +73,6 @@
 				"-Dhapi.fhir.bulk_export_enabled=false",
 				"-Dspring.batch.job.enabled=false"
 			],
-			"stepFilters": {
-				"classNameFilters": [
-					"java.*",
-					"javax.*",
-					"com.sun.*",
-					"sun.*",
-					"sunw.*",
-					"org.omg.*",
-					"org.springframework.aop.*"
-				]
-			},
 			"classPaths": [
 				"$Auto",
 				"$Runtime"
@@ -124,35 +83,13 @@
 			"name": "Attach",
 			"request": "attach",
 			"hostName": "localhost",
-			"port": "5005",
-			"stepFilters": {
-				"classNameFilters": [
-					"java.*",
-					"javax.*",
-					"com.sun.*",
-					"sun.*",
-					"sunw.*",
-					"org.omg.*",
-					"org.springframework.aop.*"
-				]
-			}
+			"port": "5005"
 		},
 		{
 			"type": "java",
 			"name": "Launch Current File",
 			"request": "launch",
 			"mainClass": "${file}",
-			"stepFilters": {
-				"classNameFilters": [
-					"java.*",
-					"javax.*",
-					"com.sun.*",
-					"sun.*",
-					"sunw.*",
-					"org.omg.*",
-					"org.springframework.aop.*"
-				]
-			}
 		}
 	]
 }

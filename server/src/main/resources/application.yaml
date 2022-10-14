@@ -40,10 +40,12 @@ hapi:
 
       ## RA Settings
       ra:
+         #e enabled: true
          report:
             endpoint: ""
 
       sdc:
+         # enabled: true
          extract:
             endpoint: "http://localhost:8080/fhir/"
             username:

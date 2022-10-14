@@ -1,7 +1,6 @@
 package org.opencds.cqf.ruler.config;
 
 import org.opencds.cqf.external.AppProperties;
-import org.opencds.cqf.external.FhirServerConfigCommon;
 import org.springframework.context.annotation.Import;
 
 import ca.uhn.fhir.batch2.jobs.config.Batch2JobsConfig;
