@@ -43,6 +43,7 @@ public class KnowledgeArtifactProcessor {
 					Bundle referencedResourceBundle = (Bundle)fhirDal.search(Canonicals.getResourceType(ra.getUrl()), searchParams);
 					if (!referencedResourceBundle.getEntryFirstRep().isEmpty()) {
 						Bundle.BundleEntryComponent referencedResourceEntry = referencedResourceBundle.getEntry().get(0);
+
 						if (referencedResourceEntry.hasResource() && referencedResourceEntry.getResource() instanceof MetadataResource) {
 							MetadataResource referencedResource = (MetadataResource)referencedResourceEntry.getResource();
 							newVersion(referencedResource, fhirDal);
@@ -65,8 +66,8 @@ public class KnowledgeArtifactProcessor {
 					}
 				}
 			}
-			fhirDal.create(newResource);
 		}
+		fhirDal.create(newResource);
 
 		return newResource;
 	}
