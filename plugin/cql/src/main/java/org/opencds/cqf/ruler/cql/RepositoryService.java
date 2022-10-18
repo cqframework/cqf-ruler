@@ -23,11 +23,10 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 
 	 @Operation(name = "$draft")
 	 @Description(shortDefinition = "$draft", value = "Create a new draft library version")
-	 public Library draftOperation(RequestDetails requestDetails,
-											 @OperationParam(name = "specification") Library library)
+	 public Library draftOperation(RequestDetails requestDetails, @OperationParam(name = "specification") Library library)
 		 throws FHIRException {
 		 FhirDal fhirDal = this.fhirDalFactory.create(requestDetails);
-		 return (Library) this.artifactProcessor.newVersion(library, fhirDal);
+		 return (Library) this.artifactProcessor.draft(library, fhirDal);
 	 }
 
 	@Operation(name = "$release", idempotent = true, global = true, type = MetadataResource.class)
@@ -40,8 +39,7 @@ public class RepositoryService extends DaoRegistryOperationProvider {
 
 	@Operation(name = "$publish")
 	@Description(shortDefinition = "$publish", value = "Post a new artifact with active status")
-	public Library publishVersion(RequestDetails requestDetails,
-											@OperationParam(name = "specification") Library library)
+	public Library publishVersion(RequestDetails requestDetails, @OperationParam(name = "specification") Library library)
 		throws FHIRException {
 		FhirDal fhirDal = fhirDalFactory.create(requestDetails);
 		return (Library) this.artifactProcessor.publishVersion(fhirDal, library);
