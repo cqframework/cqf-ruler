@@ -56,15 +56,12 @@ public class ReportProvider extends DaoRegistryOperationProvider
 	 */
 	@Description(shortDefinition = "$report operation",
 		value = "Implements the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-report.html\">$report</a> operation found in the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/index.html\">Da Vinci Risk Adjustment IG</a>.")
-	@Operation(name = "$report", idempotent = true, type = MeasureReport.class)
+	@Operation(name = "$davinci-ra.report", idempotent = true, type = MeasureReport.class)
 	public Parameters report(
 		RequestDetails requestDetails,
 		@OperationParam(name = RAConstants.PERIOD_START, typeName = "date") IPrimitiveType<Date> periodStart,
 		@OperationParam(name = RAConstants.PERIOD_END, typeName = "date") IPrimitiveType<Date> periodEnd,
-		@OperationParam(name = RAConstants.SUBJECT) String subject,
-		@OperationParam(name = RAConstants.MEASURE_ID) List<String> measureId,
-		@OperationParam(name = RAConstants.MEASURE_IDENTIFIER) List<String> measureIdentifier,
-		@OperationParam(name = RAConstants.MEASURE_URL) List<String> measureUrl) throws FHIRException {
+		@OperationParam(name = RAConstants.SUBJECT) String subject) throws FHIRException {
 
 		try {
 			validateParameters(requestDetails);
@@ -98,8 +95,6 @@ public class ReportProvider extends DaoRegistryOperationProvider
 		Operations.validateCardinality(requestDetails, RAConstants.SUBJECT, 1);
 		Operations.validateSingularPattern(requestDetails, RAConstants.SUBJECT,
 			Operations.PATIENT_OR_GROUP_REFERENCE);
-		Operations.validateAtLeastOne(requestDetails, RAConstants.MEASURE_ID,
-			RAConstants.MEASURE_IDENTIFIER, RAConstants.MEASURE_URL);
 	}
 
 	private Parameters.ParametersParameterComponent patientReport(Patient thePatient, Period thePeriod,
