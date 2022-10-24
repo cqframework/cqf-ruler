@@ -17,7 +17,6 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Endpoint;
 import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.cql.engine.model.ModelResolver;
 import org.opencds.cqf.cql.evaluator.builder.EndpointConverter;
 import org.opencds.cqf.cql.evaluator.builder.EndpointInfo;
@@ -246,15 +245,11 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			}
 
 			if (StringUtils.isBlank(content)) {
-				Endpoint defaultEndpoint = new Endpoint().setAddress(requestDetails.getFhirServerBase())
-						.setHeader(Collections.singletonList(new StringType("Content-Type: application/json")));
 				return (Parameters) evaluationHelper.getExpressionEvaluator().evaluate(expression,
-						parameters == null ? new Parameters() : parameters, subject,
-						evaluationHelper.resolveIncludedLibraries(library),
-						useServerData == null || useServerData.booleanValue(), data, null,
-						dataEndpoint == null ? defaultEndpoint : dataEndpoint,
-						contentEndpoint == null ? defaultEndpoint : contentEndpoint,
-						terminologyEndpoint == null ? defaultEndpoint : terminologyEndpoint);
+					parameters == null ? new Parameters() : parameters, subject,
+					evaluationHelper.resolveIncludedLibraries(library),
+					useServerData == null || useServerData.booleanValue(), data, null,
+					dataEndpoint, contentEndpoint, terminologyEndpoint);
 			}
 
 			return (Parameters) evaluationHelper.getLibraryEvaluator().evaluate(libraryIdentifier,
