@@ -44,10 +44,9 @@ class ReportProviderIT extends RestIntegrationTest {
 	void testMissingPeriodStartParamGET() {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/testReport01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -57,10 +56,9 @@ class ReportProviderIT extends RestIntegrationTest {
 	void testMissingPeriodStartParamPOST() {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/testReport01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -70,10 +68,9 @@ class ReportProviderIT extends RestIntegrationTest {
 	void testMissingPeriodEndParamGET() {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
-			stringPart(RAConstants.SUBJECT, "Patient/testReport01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -83,10 +80,9 @@ class ReportProviderIT extends RestIntegrationTest {
 	void testMissingPeriodEndParamPOST() {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
-			stringPart(RAConstants.SUBJECT, "Patient/testReport01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -97,11 +93,10 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021/01/01"),
 			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/testReport01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-			.onType(MeasureReport.class).named("$report").withParameters(params)
+			.onType(MeasureReport.class).named("$davinci-ra.report").withParameters(params)
 			.useHttpGet().returnResourceType(Parameters.class);
 		assertThrows(InvalidRequestException.class, request::execute);
 	}
@@ -111,11 +106,10 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 			stringPart(RAConstants.PERIOD_END, "2021/12/31"),
-			stringPart(RAConstants.SUBJECT, "Patient/testReport01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-			.onType(MeasureReport.class).named("$report").withParameters(params)
+			.onType(MeasureReport.class).named("$davinci-ra.report").withParameters(params)
 			.useHttpGet().returnResourceType(Parameters.class);
 		assertThrows(InvalidRequestException.class, request::execute);
 	}
@@ -124,10 +118,9 @@ class ReportProviderIT extends RestIntegrationTest {
 	void testMissingSubjectParamGET() {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
-			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.PERIOD_END, "2021-12-31"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
@@ -137,10 +130,9 @@ class ReportProviderIT extends RestIntegrationTest {
 	void testMissingSubjectParamPOST() {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
-			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			datePart(RAConstants.PERIOD_END, "2021-12-31"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
@@ -151,10 +143,9 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 			stringPart(RAConstants.PERIOD_END, "2020-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/testReport01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
@@ -165,10 +156,9 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
 			datePart(RAConstants.PERIOD_END, "2020-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/testReport01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/testReport01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter(RAConstants.INVALID_PARAMETERS_NAME));
@@ -179,12 +169,11 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"));
 
 		loadResource("Patient-ra-patient01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -195,12 +184,11 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
 			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"));
 
 		loadResource("Patient-ra-patient01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -211,13 +199,12 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Group/ra-group01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Group/ra-group01"));
 
 		loadResource("Patient-ra-patient01.json");
 		loadResource("Group-ra-group01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -229,13 +216,12 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
 			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Group/ra-group01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Group/ra-group01"));
 
 		loadResource("Patient-ra-patient01.json");
 		loadResource("Group-ra-group01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -247,10 +233,9 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "ra-patient01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "ra-patient01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -261,10 +246,9 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
 			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "ra-patient01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "ra-patient01"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("Invalid parameters"));
@@ -275,11 +259,10 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/bad-patient"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/bad-patient"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-			.onType(MeasureReport.class).named("$report").withParameters(params)
+			.onType(MeasureReport.class).named("$davinci-ra.report").withParameters(params)
 			.useHttpGet().returnResourceType(Parameters.class);
 		assertThrows(ResourceNotFoundException.class, request::execute);
 	}
@@ -289,11 +272,10 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
 			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/bad-patient"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/bad-patient"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-			.onType(MeasureReport.class).named("$report").withParameters(params)
+			.onType(MeasureReport.class).named("$davinci-ra.report").withParameters(params)
 			.returnResourceType(Parameters.class);
 		assertThrows(ResourceNotFoundException.class, request::execute);
 	}
@@ -303,11 +285,10 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Group/bad-group"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Group/bad-group"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-			.onType(MeasureReport.class).named("$report").withParameters(params)
+			.onType(MeasureReport.class).named("$davinci-ra.report").withParameters(params)
 			.useHttpGet().returnResourceType(Parameters.class);
 		assertThrows(ResourceNotFoundException.class, request::execute);
 	}
@@ -317,11 +298,10 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
 			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Group/bad-group"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Group/bad-group"));
 
 		IOperationUntypedWithInput<Parameters> request = getClient().operation()
-			.onType(MeasureReport.class).named("$report").withParameters(params)
+			.onType(MeasureReport.class).named("$davinci-ra.report").withParameters(params)
 			.returnResourceType(Parameters.class);
 		assertThrows(ResourceNotFoundException.class, request::execute);
 	}
@@ -333,14 +313,13 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Group/ra-group00"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Group/ra-group00"));
 
 		loadResource("Group-ra-group00.json");
 		Group group = getClient().read().resource(Group.class).withId("ra-group00").execute();
 		assertNotNull(group);
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -351,14 +330,13 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
 			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Group/ra-group00"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Group/ra-group00"));
 
 		loadResource("Group-ra-group00.json");
 		Group group = getClient().read().resource(Group.class).withId("ra-group00").execute();
 		assertNotNull(group);
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -369,14 +347,13 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Group/ra-group02"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Group/ra-group02"));
 
 		loadResource("Patient-ra-patient02.json");
 		loadResource("Patient-ra-patient03.json");
 		loadResource("Group-ra-group02.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -388,14 +365,13 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
 			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Group/ra-group02"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Group/ra-group02"));
 
 		loadResource("Patient-ra-patient02.json");
 		loadResource("Patient-ra-patient03.json");
 		loadResource("Group-ra-group02.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertFalse(result.hasParameter("Invalid parameters"));
@@ -407,8 +383,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"));
 
 		loadResource("Patient-ra-patient01.json");
 		loadResource("Condition-ra-condition02pat01.json");
@@ -432,7 +407,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		loadResource("Encounter-ra-encounter44pat01.json");
 		loadResource("MeasureReport-ra-measurereport01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		assertNotNull(result);
@@ -449,8 +424,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
 			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"));
 
 		loadResource("Patient-ra-patient01.json");
 		loadResource("Condition-ra-condition02pat01.json");
@@ -474,7 +448,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		loadResource("Encounter-ra-encounter44pat01.json");
 		loadResource("MeasureReport-ra-measurereport01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertNotNull(result);
@@ -491,8 +465,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			stringPart(RAConstants.PERIOD_START, "2021-01-01"),
 			stringPart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"));
 
 		loadResource("Patient-ra-patient01.json");
 		loadResource("Condition-ra-condition02pat01.json");
@@ -518,7 +491,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		// this is not an evaluatedResource of the report
 		loadResource("Encounter-ra-encounter45pat01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).useHttpGet().returnResourceType(Parameters.class).execute();
 
 		Bundle bundle = (Bundle) result.getParameter().get(0).getResource();
@@ -532,8 +505,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
 			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"),
-			stringPart(RAConstants.MEASURE_ID, "Measure-RAModelExample01"));
+			stringPart(RAConstants.SUBJECT, "Patient/ra-patient01"));
 
 		loadResource("Patient-ra-patient01.json");
 		loadResource("Condition-ra-condition02pat01.json");
@@ -559,7 +531,7 @@ class ReportProviderIT extends RestIntegrationTest {
 		// this is not an evaluatedResource of the report
 		loadResource("Encounter-ra-encounter45pat01.json");
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		Bundle bundle = (Bundle) result.getParameter().get(0).getResource();

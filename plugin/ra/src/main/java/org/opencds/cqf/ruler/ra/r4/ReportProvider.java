@@ -40,7 +40,7 @@ public class ReportProvider extends DaoRegistryOperationProvider
 
 	/**
 	 * Implements the <a href=
-	 * "https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-report.html">$report</a>
+	 * "https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-report.html">$davinci-ra.report</a>
 	 * operation found in the
 	 * <a href="https://build.fhir.org/ig/HL7/davinci-ra/index.html">Da Vinci Risk
 	 * Adjustment IG</a>.
@@ -54,8 +54,8 @@ public class ReportProvider extends DaoRegistryOperationProvider
 	 * @return a Parameters with Bundles of MeasureReports and evaluatedResource
 	 *         Resources
 	 */
-	@Description(shortDefinition = "$report operation",
-		value = "Implements the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-report.html\">$report</a> operation found in the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/index.html\">Da Vinci Risk Adjustment IG</a>.")
+	@Description(shortDefinition = "$davinci-ra.report operation",
+		value = "Implements the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-davinci-ra.report.html\">$davinci-ra.report</a> operation found in the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/index.html\">Da Vinci Risk Adjustment IG</a>.")
 	@Operation(name = "$davinci-ra.report", idempotent = true, type = MeasureReport.class)
 	public Parameters report(
 		RequestDetails requestDetails,
