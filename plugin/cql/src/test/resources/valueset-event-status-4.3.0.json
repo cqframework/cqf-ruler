@@ -1,0 +1,78 @@
+{
+	"resourceType" : "ValueSet",
+	"id" : "event-status-4.3.0",
+	"meta" : {
+		"profile" : ["http://hl7.org/fhir/StructureDefinition/shareablevalueset"]
+	},
+	"url" : "http://example.org/fhir/ValueSet/event-status",
+	"identifier" : [
+		{
+			"system" : "urn:ietf:rfc:3986",
+			"value" : "urn:oid:2.16.840.1.113883.4.642.3.109"
+		}
+	],
+	"version" : "4.3.0",
+	"name" : "EventStatus",
+	"title" : "EventStatus",
+	"status" : "draft",
+	"experimental" : true,
+	"date" : "2022-05-28T12:47:40+10:00",
+	"publisher" : "HL7 (FHIR Project)",
+	"contact" : [
+		{
+			"telecom" : [
+				{
+					"system" : "url",
+					"value" : "http://hl7.org/fhir"
+				},
+				{
+					"system" : "email",
+					"value" : "fhir@lists.hl7.org"
+				}
+			]
+		}
+	],
+	"description" : "Codes identifying the lifecycle stage of an event.",
+	"immutable" : true,
+	"compose" : {
+		"include" : [
+			{
+				"system": "http://example.org/fhir/event-status",
+				"concept": [
+					{
+						"code" : "preparation",
+						"display" : "Preparation"
+					},
+					{
+						"code" : "in-progress",
+						"display" : "In Progress"
+					},
+					{
+						"code" : "not-done",
+						"display" : "Not Done"
+					},
+					{
+						"code" : "on-hold",
+						"display" : "On Hold"
+					},
+					{
+						"code" : "stopped",
+						"display" : "Stopped"
+					},
+					{
+						"code" : "completed",
+						"display" : "Completed"
+					},
+					{
+						"code" : "entered-in-error",
+						"display" : "Entered in Error"
+					},
+					{
+						"code" : "unknown",
+						"display" : "Unknown"
+					}
+				]
+			}
+		]
+	}
+}

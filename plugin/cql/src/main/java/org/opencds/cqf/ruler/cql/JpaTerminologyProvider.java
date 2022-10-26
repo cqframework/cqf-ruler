@@ -19,6 +19,7 @@ import ca.uhn.fhir.context.support.ValueSetExpansionOptions;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvc;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
+import org.opencds.cqf.ruler.utility.Canonicals;
 
 /**
  * This class provides an implementation of the cql-engine's TerminologyProvider
@@ -69,6 +70,11 @@ public class JpaTerminologyProvider implements TerminologyProvider {
 		ValueSetExpansionOptions valueSetExpansionOptions = new ValueSetExpansionOptions();
 		valueSetExpansionOptions.setFailOnMissingCodeSystem(false);
 		valueSetExpansionOptions.setCount(Integer.MAX_VALUE);
+
+		if (valueSet.getVersion() != null && Canonicals.getUrl(valueSet.getId()) != null
+			&& Canonicals.getVersion(valueSet.getId()) == null) {
+			valueSet.setId(valueSet.getId() + "|" + valueSet.getVersion());
+		}
 
 		org.hl7.fhir.r4.model.ValueSet vs =
 			myTerminologySvc.expandValueSet(valueSetExpansionOptions, valueSet.getId());

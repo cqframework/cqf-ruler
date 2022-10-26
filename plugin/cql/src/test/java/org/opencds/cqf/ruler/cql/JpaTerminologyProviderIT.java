@@ -103,6 +103,36 @@ class JpaTerminologyProviderIT extends RestIntegrationTest {
 		assertEquals(0, IterableUtils.size(expandResult));
 	}
 
+	@Test
+	void testMultipleVersions() {
+		Iterable<org.opencds.cqf.cql.engine.runtime.Code> expandResult = getExpansion(
+			"valueset-event-status-4.3.0.json",
+			"http://example.org/fhir/ValueSet/event-status",
+			"4.3.0");
+		assertNotNull(expandResult);
+		assertEquals(8, IterableUtils.size(expandResult));
+		expandResult = getExpansion(
+			"valueset-event-status-3.0.2.json",
+			"http://example.org/fhir/ValueSet/event-status",
+			"3.0.2");
+		assertNotNull(expandResult);
+		assertEquals(7, IterableUtils.size(expandResult));
+		/*
+			The last ValueSet added to the cache will be used when no version is supplied.
+			In theory, this is the desired behavior as the "latest" ValueSet is picked for expansion by default.
+			However, as in this case, the 4.3.0 version of the ValueSet was added to the cache before the 3.0.2 version.
+			Therefore, the latest version of the ValueSet was not picked for expansion.
+			This is not exactly ideal behavior and the FHIR spec states:
+				"Note that if a References to a canonical URL does not have a version, and the server finds
+				multiple versions for the value set, the system using the reference should pick the latest
+				version of the target resource and use that." (http://www.hl7.org/fhir/references.html#canonical)
+			Based on that, this is not a bug in the HAPI code. It is not the preferred approach though.
+		*/
+		ValueSetInfo vsInfo = new ValueSetInfo().withId("http://example.org/fhir/ValueSet/event-status");
+		expandResult = terminologyProvider.expand(vsInfo);
+		assertEquals(7, IterableUtils.size(expandResult));
+	}
+
 	private Iterable<org.opencds.cqf.cql.engine.runtime.Code> getExpansion(
 		String vsFileName, String url, String version) {
 		loadResource(vsFileName);
