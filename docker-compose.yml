@@ -1,23 +1,37 @@
+version: "2.4"
 services:
-   # dqm:
-   #    depends_on:
-   #       - postgres
-   #    image: alphora/cqf-ruler:testy
-   #    ports:
-   #       - 8080:8080
-   #    environment:
-   #       - "spring.datasource.url=jdbc:postgresql://postgres:5432/postgres"
-   #       - "spring.datasource.username=postgres"
-   #       - "spring.datasource.password="
-   #       - "spring.datasource.driverClassName=org.postgresql.Driver"
-   #       - "spring.jpa.properties.hibernate.dialect=ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect"
-   #       - "spring.jpa.database-platform=ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect"
-   #       - "hapi.fhir.bulk_export_enabled=false"
-   #       - "spring.batch.job.enabled=false"
-
    postgres:
-      image: postgres
+      image: "postgres"
       ports:
          - 5432:5432
       environment:
-         - "POSTGRES_HOST_AUTH_METHOD=trust"
+         POSTGRES_HOST_AUTH_METHOD: trust
+      healthcheck:
+         test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+         interval: 10s
+         timeout: 5s
+         retries: 5
+   ruler:
+      image: "alphora/cqf-ruler:0.7.1"
+      depends_on:
+         - postgres
+      ports:
+         - "8080:8080"
+      healthcheck:
+         test:
+            [
+               "CMD",
+               "curl",
+               "-f",
+               "http://localhost:8080/fhir/metadata"
+            ]
+         interval: 90s
+         timeout: 5s
+         retries: 3
+         start_period: 90s
+      environment:
+         - "spring.datasource.url=jdbc:postgresql://postgres:5432/postgres"
+         - "spring.datasource.username=postgres"
+         - "spring.datasource.password="
+         - "spring.datasource.driverClassName=org.postgresql.Driver"
+         - "spring.jpa.properties.hibernate.dialect=ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgres94Dialect"
