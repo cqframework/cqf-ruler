@@ -14,6 +14,14 @@
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.expression</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.library</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
 			<artifactId>evaluator.measure</artifactId>
 		</dependency>
 		<dependency>
@@ -23,6 +31,10 @@
 		<dependency>
 			<groupId>org.opencds.cqf.cql</groupId>
 			<artifactId>evaluator.measure-hapi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.opencds.cqf.cql</groupId>
+			<artifactId>evaluator.plandefinition</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.opencds.cqf.ruler</groupId>

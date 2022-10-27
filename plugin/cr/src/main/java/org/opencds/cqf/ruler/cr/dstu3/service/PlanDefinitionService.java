@@ -1,11 +1,12 @@
-package org.opencds.cqf.ruler.cr.dstu3.provider;
+package org.opencds.cqf.ruler.cr.dstu3.service;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
-import org.hl7.fhir.dstu3.model.ActivityDefinition;
+import org.hl7.fhir.dstu3.model.CarePlan;
 import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.exceptions.FHIRException;
 import org.opencds.cqf.cql.engine.fhir.converter.FhirTypeConverterFactory;
 import org.opencds.cqf.cql.evaluator.activitydefinition.dstu3.ActivityDefinitionProcessor;
 import org.opencds.cqf.cql.evaluator.builder.CqlEvaluatorBuilder;
@@ -19,24 +20,21 @@ import org.opencds.cqf.cql.evaluator.builder.terminology.FhirRestTerminologyProv
 import org.opencds.cqf.cql.evaluator.builder.terminology.TerminologyProviderFactory;
 import org.opencds.cqf.cql.evaluator.builder.terminology.TypedTerminologyProviderFactory;
 import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
+import org.opencds.cqf.cql.evaluator.expression.ExpressionEvaluator;
 import org.opencds.cqf.cql.evaluator.fhir.adapter.dstu3.AdapterFactory;
 import org.opencds.cqf.cql.evaluator.library.CqlFhirParametersConverter;
 import org.opencds.cqf.cql.evaluator.library.LibraryProcessor;
-import org.opencds.cqf.ruler.behavior.ResourceCreator;
+import org.opencds.cqf.cql.evaluator.plandefinition.OperationParametersParser;
+import org.opencds.cqf.cql.evaluator.plandefinition.dstu3.PlanDefinitionProcessor;
+import org.opencds.cqf.ruler.behavior.DaoRegistryUser;
 import org.opencds.cqf.ruler.cql.JpaFhirDalFactory;
-import org.opencds.cqf.ruler.provider.DaoRegistryOperationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.rest.annotation.IdParam;
-import ca.uhn.fhir.rest.annotation.Operation;
-import ca.uhn.fhir.rest.annotation.OperationParam;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-/**
- * Created by Bryn on 1/16/2017.
- */
-public class ActivityDefinitionApplyProvider extends DaoRegistryOperationProvider implements ResourceCreator {
+public class PlanDefinitionService implements DaoRegistryUser {
 
 	@Autowired
 	private DataProviderFactory dataProviderFactory;
@@ -53,7 +51,16 @@ public class ActivityDefinitionApplyProvider extends DaoRegistryOperationProvide
 	@Autowired
 	private FhirContext fhirContext;
 
-	private ActivityDefinitionProcessor createProcessor(RequestDetails requestDetails) {
+	@Autowired
+	private DaoRegistry daoRegistry;
+
+	private RequestDetails requestDetails;
+
+	public void setRequestDetails(RequestDetails requestDetails) {
+		this.requestDetails = requestDetails;
+	}
+
+	private PlanDefinitionProcessor createProcessor() {
 		var adapterFactory = new AdapterFactory();
 		var endpointConverter = new EndpointConverter(adapterFactory);
 		var libraryVersionSelector = new LibraryVersionSelector(adapterFactory);
@@ -72,26 +79,38 @@ public class ActivityDefinitionApplyProvider extends DaoRegistryOperationProvide
 
 		var libraryProcessor = new LibraryProcessor(this.fhirContext, cqlFhirParametersConverter,
 				librarySourceProviderFactory, this.dataProviderFactory, terminologyProviderFactory,
-				endpointConverter, fhirModelResolverFactory, () -> new CqlEvaluatorBuilder());
+				endpointConverter, fhirModelResolverFactory, CqlEvaluatorBuilder::new);
 
-		return new ActivityDefinitionProcessor(this.fhirContext, fhirDal, libraryProcessor);
+		var evaluator = new ExpressionEvaluator(this.fhirContext, cqlFhirParametersConverter,
+				librarySourceProviderFactory, this.dataProviderFactory, terminologyProviderFactory, endpointConverter,
+				fhirModelResolverFactory, CqlEvaluatorBuilder::new);
+
+		var activityDefinitionProcessor = new ActivityDefinitionProcessor(this.fhirContext, fhirDal, libraryProcessor);
+		var operationParametersParser = new OperationParametersParser(adapterFactory, fhirTypeConverter);
+
+		return new PlanDefinitionProcessor(this.fhirContext, fhirDal, libraryProcessor, evaluator,
+				activityDefinitionProcessor, operationParametersParser);
 	}
 
-	@Operation(name = "$apply", idempotent = true, type = ActivityDefinition.class)
-	public Resource apply(RequestDetails theRequest, @IdParam IdType theId,
-			@OperationParam(name = "patient") String patientId,
-			@OperationParam(name = "encounter") String encounterId,
-			@OperationParam(name = "practitioner") String practitionerId,
-			@OperationParam(name = "organization") String organizationId,
-			@OperationParam(name = "userType") String userType,
-			@OperationParam(name = "userLanguage") String userLanguage,
-			@OperationParam(name = "userTaskContext") String userTaskContext,
-			@OperationParam(name = "setting") String setting,
-			@OperationParam(name = "settingContext") String settingContext)
-			throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-		var processor = createProcessor(theRequest);
+	public CarePlan applyPlanDefinition(IdType theId,
+			String patientId,
+			String encounterId,
+			String practitionerId,
+			String organizationId,
+			String userType,
+			String userLanguage,
+			String userTaskContext,
+			String setting,
+			String settingContext)
+			throws IOException, FHIRException {
+		var processor = createProcessor();
 
-		return (Resource) processor.apply(theId, patientId, encounterId, practitionerId, organizationId, userType,
-				userLanguage, userTaskContext, setting, settingContext, null, null, null, null);
+		return processor.apply(theId, patientId, encounterId, practitionerId, organizationId, userType, userLanguage,
+				userTaskContext, setting, settingContext, null, null, null, null, null, null, null, null);
+	}
+
+	@Override
+	public DaoRegistry getDaoRegistry() {
+		return this.daoRegistry;
 	}
 }

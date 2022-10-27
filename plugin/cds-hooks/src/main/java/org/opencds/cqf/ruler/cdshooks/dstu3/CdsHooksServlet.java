@@ -325,9 +325,20 @@ public class CdsHooksServlet extends HttpServlet implements DaoRegistryUser {
 				&& action.getDefinition().getReference().contains("ActivityDefinition")) {
 			suggAction.setType("create");
 			IdType definitionId = new IdType(action.getDefinition().getReference());
-			suggAction.setResource(applyEvaluator.apply(requestDetails, definitionId,
-					patientId, null, null, null, null,
-					null, null, null, null));
+			try {
+				suggAction.setResource(applyEvaluator.apply(requestDetails, definitionId,
+						patientId, null, null, null, null,
+						null, null, null, null));
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			hasAction = true;
 		}
 		if (hasAction)

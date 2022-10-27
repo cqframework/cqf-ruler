@@ -6,13 +6,13 @@
 	"name": "PlanDefinition_Recommendation_10",
 	"title": "PlanDefinition - CDC Opioid Prescribing Guideline Recommendation #10",
 	"type": {
-	  "coding": [
-		 {
-			"system": "http://hl7.org/fhir/plan-definition-type",
-			"code": "eca-rule",
-			"display": "ECA Rule"
-		 }
-	  ]
+		"coding": [
+			{
+				"system": "http://hl7.org/fhir/plan-definition-type",
+				"code": "eca-rule",
+				"display": "ECA Rule"
+			}
+		]
 	},
 	"status": "draft",
 	"publisher": "Centers for Disease Control and Prevention (CDC)",
@@ -20,167 +20,161 @@
 	"purpose": "CDC’s Guideline for Prescribing Opioids for Chronic Pain is intended to improve communication between providers and patients about the risks and benefits of opioid therapy for chronic pain, improve the safety and effectiveness of pain treatment, and reduce the risks associated with long-term opioid therapy, including opioid use disorder and overdose. The Guideline is not intended for patients who are in active cancer treatment, palliative care, or end-of-life care.",
 	"usage": "Providers should be aware if patients are taking other prescription drugs or illicit drugs that might increase their risk of an overdose.",
 	"useContext": [
-	  {
-		 "code": {
-			"system": "http://hl7.org/fhir/usage-context-type",
-			"code": "focus",
-			"display": "Clinical Focus"
-		 },
-		 "valueCodeableConcept": {
-			"coding": [
-			  {
-				 "system": "http://snomed.info/sct",
-				 "code": "182888003",
-				 "display": "Medication requested (situation)"
-			  }
-			]
-		 }
-	  },
-	  {
-		 "code": {
-			"system": "http://hl7.org/fhir/usage-context-type",
-			"code": "focus",
-			"display": "Clinical Focus"
-		 },
-		 "valueCodeableConcept": {
-			"coding": [
-			  {
-				 "system": "http://snomed.info/sct",
-				 "code": "82423001",
-				 "display": "Chronic pain (finding)"
-			  }
-			]
-		 }
-	  }
+		{
+			"code": {
+				"system": "http://hl7.org/fhir/usage-context-type",
+				"code": "focus",
+				"display": "Clinical Focus"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"system": "http://snomed.info/sct",
+						"code": "182888003",
+						"display": "Medication requested (situation)"
+					}
+				]
+			}
+		},
+		{
+			"code": {
+				"system": "http://hl7.org/fhir/usage-context-type",
+				"code": "focus",
+				"display": "Clinical Focus"
+			},
+			"valueCodeableConcept": {
+				"coding": [
+					{
+						"system": "http://snomed.info/sct",
+						"code": "82423001",
+						"display": "Chronic pain (finding)"
+					}
+				]
+			}
+		}
 	],
 	"jurisdiction": [
-	  {
-		 "coding": [
-			{
-			  "system": "urn:iso:std:iso:3166",
-			  "code": "US",
-			  "display": "United States of America"
-			}
-		 ]
-	  }
+		{
+			"coding": [
+				{
+					"system": "urn:iso:std:iso:3166",
+					"code": "US",
+					"display": "United States of America"
+				}
+			]
+		}
 	],
 	"topic": [
-	  {
-		 "text": "Opioid Prescribing"
-	  }
+		{
+			"text": "Opioid Prescribing"
+		}
 	],
 	"contributor": [
-	  {
-		 "type": "author",
-		 "name": "Kensaku Kawamoto, MD, PhD, MHS"
-	  },
-	  {
-		 "type": "author",
-		 "name": "Bryn Rhodes"
-	  },
-	  {
-		 "type": "author",
-		 "name": "Floyd Eisenberg, MD, MPH"
-	  },
-	  {
-		 "type": "author",
-		 "name": "Robert McClure, MD, MPH"
-	  }
+		{
+			"type": "author",
+			"name": "Kensaku Kawamoto, MD, PhD, MHS"
+		},
+		{
+			"type": "author",
+			"name": "Bryn Rhodes"
+		},
+		{
+			"type": "author",
+			"name": "Floyd Eisenberg, MD, MPH"
+		},
+		{
+			"type": "author",
+			"name": "Robert McClure, MD, MPH"
+		}
 	],
 	"copyright": "© CDC 2016+.",
 	"action": [
-	  {
-		 "triggerDefinition": [
-			{
-			  "type": "named-event",
-			  "eventName": "order-select"
-			}
-		 ],
-		 "condition": [
-			{
-			  "kind": "applicability",
-			  "language": "text/cql",
-			  "expression": "true"
-			}
-		 ],
-		 "action": [
-			{
-			  "title": "Annual Urine Screening Check",
-			  "description": "Patient has not had a urine screening in the past 12 months",
-			  "documentation": [
-				 {
-					"type": "documentation",
-					"display": "CDC guideline for prescribing opioids for chronic pain",
-					"url": "https://www.cdc.gov/mmwr/volumes/65/rr/rr6501e1.htm?CDC_AA_refVal=https%3A%2F%2Fwww.cdc.gov%2Fmmwr%2Fvolumes%2F65%2Frr%2Frr6501e1er.htm"
-				 },
-				 {
-					"type": "documentation",
-					"document": {
-					  "extension": [
-						 {
-							"url": "http://hl7.org/fhir/StructureDefinition/cqif-strengthOfRecommendation",
-							"valueCodeableConcept": {
-							  "coding": [
-								 {
-									"system": "http://hl7.org/fhir/recommendation-strength",
-									"code": "weak",
-									"display": "Weak"
-								 }
-							  ]
-							}
-						 },
-						 {
-							"url": "http://hl7.org/fhir/StructureDefinition/cqif-qualityOfEvidence",
-							"valueCodeableConcept": {
-							  "coding": [
-								 {
-									"system": "http://hl7.org/fhir/evidence-quality",
-									"code": "very-low",
-									"display": "Very Low quality"
-								 }
-							  ]
-							}
-						 }
-					  ]
-					}
-				 }
-			  ],
-			  "condition": [
-				 {
+		{
+			"triggerDefinition": [
+				{
+					"type": "named-event",
+					"eventName": "order-select"
+				}
+			],
+			"condition": [
+				{
 					"kind": "applicability",
-					"description": "Patient has not had a urine screening in the past 12 months",
 					"language": "text/cql",
 					"expression": "true"
-				 }
-			  ],
-			  "dynamicValue": [
-				 {
-					"path": "description",
-					"language": "text/cql",
-					"expression": "'No Screening In Last 12 Months Detail'"
-				 },
-				 {
-					"path": "title",
-					"language": "text/cql",
-					"expression": "'No Screening In Last 12 Months Summary'"
-				 },
-				 {
-					"path": "extension",
-					"language": "text/cql",
-					"expression": "'No Screening In Last 12 Months Indicator'"
-				 }
-			  ],
-			  "action": [
-				 {
-					"description": "Will perform urine screening"
-				 },
-				 {
-					"description": "Not for chronic pain management. Snooze 3 months"
-				 }
-			  ]
-			}
-		 ]
-	  }
+				}
+			],
+			"action": [
+				{
+					"title": "Annual Urine Screening Check",
+					"description": "Patient has not had a urine screening in the past 12 months",
+					"documentation": [
+						{
+							"type": "documentation",
+							"display": "CDC guideline for prescribing opioids for chronic pain",
+							"url": "https://www.cdc.gov/mmwr/volumes/65/rr/rr6501e1.htm?CDC_AA_refVal=https%3A%2F%2Fwww.cdc.gov%2Fmmwr%2Fvolumes%2F65%2Frr%2Frr6501e1er.htm"
+						},
+						{
+							"type": "documentation",
+							"document": {
+								"extension": [
+									{
+										"url": "http://hl7.org/fhir/StructureDefinition/cqif-strengthOfRecommendation",
+										"valueCodeableConcept": {
+											"coding": [
+												{
+													"system": "http://hl7.org/fhir/recommendation-strength",
+													"code": "weak",
+													"display": "Weak"
+												}
+											]
+										}
+									},
+									{
+										"url": "http://hl7.org/fhir/StructureDefinition/cqif-qualityOfEvidence",
+										"valueCodeableConcept": {
+											"coding": [
+												{
+													"system": "http://hl7.org/fhir/evidence-quality",
+													"code": "very-low",
+													"display": "Very Low quality"
+												}
+											]
+										}
+									}
+								]
+							}
+						}
+					],
+					"condition": [
+						{
+							"kind": "applicability",
+							"description": "Patient has not had a urine screening in the past 12 months",
+							"language": "text/cql",
+							"expression": "true"
+						}
+					],
+					"dynamicValue": [
+						{
+							"path": "description",
+							"language": "text/cql",
+							"expression": "'No Screening In Last 12 Months Detail'"
+						},
+						{
+							"path": "title",
+							"language": "text/cql",
+							"expression": "'No Screening In Last 12 Months Summary'"
+						}
+					],
+					"action": [
+						{
+							"description": "Will perform urine screening"
+						},
+						{
+							"description": "Not for chronic pain management. Snooze 3 months"
+						}
+					]
+				}
+			]
+		}
 	]
- }
- 
+}

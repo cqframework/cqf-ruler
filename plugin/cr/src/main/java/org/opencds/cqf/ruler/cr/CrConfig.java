@@ -4,6 +4,10 @@ import java.util.function.Function;
 
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
+import org.opencds.cqf.cql.evaluator.builder.library.FhirRestLibrarySourceProviderFactory;
+import org.opencds.cqf.cql.evaluator.builder.terminology.FhirRestTerminologyProviderFactory;
+import org.opencds.cqf.cql.evaluator.cql2elm.util.LibraryVersionSelector;
+import org.opencds.cqf.cql.evaluator.fhir.ClientFactory;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
 import org.opencds.cqf.external.annotations.OnDSTU3Condition;
 import org.opencds.cqf.external.annotations.OnR4Condition;
@@ -126,6 +130,40 @@ public class CrConfig {
 
 	@Bean
 	@Conditional(OnDSTU3Condition.class)
+	public Function<RequestDetails, org.opencds.cqf.ruler.cr.dstu3.service.PlanDefinitionService> dstu3PlanDefinitionServiceFactory() {
+		return r -> {
+			var ps = dstu3PlanDefinitionService();
+			ps.setRequestDetails(r);
+			return ps;
+		};
+	}
+
+	@Bean
+	@Scope("prototype")
+	@Conditional(OnDSTU3Condition.class)
+	public org.opencds.cqf.ruler.cr.dstu3.service.PlanDefinitionService dstu3PlanDefinitionService() {
+		return new org.opencds.cqf.ruler.cr.dstu3.service.PlanDefinitionService();
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public Function<RequestDetails, org.opencds.cqf.ruler.cr.r4.service.PlanDefinitionService> r4PlanDefinitionServiceFactory() {
+		return r -> {
+			var ps = r4planDefinitionService();
+			ps.setRequestDetails(r);
+			return ps;
+		};
+	}
+
+	@Bean
+	@Scope("prototype")
+	@Conditional(OnR4Condition.class)
+	public org.opencds.cqf.ruler.cr.r4.service.PlanDefinitionService r4planDefinitionService() {
+		return new org.opencds.cqf.ruler.cr.r4.service.PlanDefinitionService();
+	}
+
+	@Bean
+	@Conditional(OnDSTU3Condition.class)
 	public org.opencds.cqf.ruler.cr.dstu3.provider.SubmitDataProvider dstu3SubmitDataProvider() {
 		return new org.opencds.cqf.ruler.cr.dstu3.provider.SubmitDataProvider();
 	}
@@ -164,5 +202,35 @@ public class CrConfig {
 	@Conditional(OnR4Condition.class)
 	public org.opencds.cqf.ruler.cr.r4.provider.CareGapsProvider r4CareGapsProvider() {
 		return new org.opencds.cqf.ruler.cr.r4.provider.CareGapsProvider();
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public FhirRestLibrarySourceProviderFactory r4FhirRestLibraryContentProviderFactory() {
+		org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory r4AdapterFactory = new org.opencds.cqf.cql.evaluator.fhir.adapter.r4.AdapterFactory();
+		return new FhirRestLibrarySourceProviderFactory(new ClientFactory(FhirContext.forR4Cached()), r4AdapterFactory,
+				new LibraryVersionSelector(r4AdapterFactory));
+	}
+
+	@Bean
+	@Conditional(OnDSTU3Condition.class)
+	public FhirRestLibrarySourceProviderFactory dstu3FhirRestLibraryContentProviderFactory() {
+		org.opencds.cqf.cql.evaluator.fhir.adapter.dstu3.AdapterFactory stu3AdapterFactory = new org.opencds.cqf.cql.evaluator.fhir.adapter.dstu3.AdapterFactory();
+		return new FhirRestLibrarySourceProviderFactory(new ClientFactory(FhirContext.forDstu3Cached()),
+				stu3AdapterFactory, new LibraryVersionSelector(stu3AdapterFactory));
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public FhirRestTerminologyProviderFactory r4FhirRestTerminologyProviderFactory() {
+		return new FhirRestTerminologyProviderFactory(FhirContext.forR4Cached(),
+				new ClientFactory(FhirContext.forR4Cached()));
+	}
+
+	@Bean
+	@Conditional(OnDSTU3Condition.class)
+	public FhirRestTerminologyProviderFactory dstu3FhirRestTerminologyProviderFactory() {
+		return new FhirRestTerminologyProviderFactory(FhirContext.forDstu3Cached(),
+				new ClientFactory(FhirContext.forDstu3Cached()));
 	}
 }
