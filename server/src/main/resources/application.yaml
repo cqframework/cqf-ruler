@@ -1,6 +1,6 @@
 spring:
    config:
-      import: classpath:org/opencds/cqf/ruler/external/application.yaml
+      import: classpath:org/opencds/cqf/external/application.yaml
 ---
 spring:
    main:
@@ -40,10 +40,12 @@ hapi:
 
       ## RA Settings
       ra:
+         #e enabled: true
          report:
             endpoint: ""
 
       sdc:
+         # enabled: true
          extract:
             endpoint: "http://localhost:8080/fhir/"
             username:

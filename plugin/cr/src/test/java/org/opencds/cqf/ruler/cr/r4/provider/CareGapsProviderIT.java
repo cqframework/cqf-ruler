@@ -3,20 +3,25 @@ package org.opencds.cqf.ruler.cr.r4.provider;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.datePart;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.stringPart;
 
 import org.hl7.fhir.r4.model.Measure;
 import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.StringType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.opencds.cqf.ruler.cql.CqlConfig;
 import org.opencds.cqf.ruler.cr.CrConfig;
 import org.opencds.cqf.ruler.test.RestIntegrationTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import ca.uhn.fhir.rest.server.exceptions.InternalErrorException;
+import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
+import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = { CareGapsProviderIT.class,
-		CrConfig.class }, properties = {
+		CrConfig.class, CqlConfig.class }, properties = {
 				"hapi.fhir.fhir_version=r4", "hapi.fhir.enforce_referential_integrity_on_write=false",
 				"hapi.fhir.enforce_referential_integrity_on_delete=false", "hapi.fhir.cr.enabled=true",
 				"hapi.fhir.cr.measure_report.care_gaps_reporter=Organization/alphora",
@@ -33,9 +38,6 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	private static final String statusValidSecond = "closed-gap";
 	private static final String measureIdValid = "BreastCancerScreeningFHIR";
 	private static final String measureUrlValid = "http://ecqi.healthit.gov/ecqms/Measure/BreastCancerScreeningFHIR";
-	// TODO: spec probably needs to be updated to allow a full identifier, not just
-	// a string
-	private static final String measureIdentifierValid = "80366f35-e0a0-4ba7-a746-ad5760b79e01";
 	private static final String practitionerValid = "gic-pra-1";
 	private static final String organizationValid = "gic-org-1";
 	private static final String dateInvalid = "bad-date";
@@ -68,12 +70,12 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	void testMinimalParametersValid() {
 		beforeEachMeasure();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		assertDoesNotThrow(() -> {
 			getClient().operation().onType(Measure.class).named("$care-gaps")
@@ -84,102 +86,157 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		});
 	}
 
-	@SuppressWarnings("java:S5778")
 	@Test
-	void testPeriodStartNull() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+	void testMinimalParametersValidPOST() {
+		beforeEachMeasure();
 
-		assertThrows(InternalErrorException.class, () ->
-				getClient().operation().onType(Measure.class).named("$care-gaps")
-						.withParameters(params)
-						.useHttpGet()
-						.returnResourceType(Parameters.class)
-						.execute());
-	}
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
-	@SuppressWarnings("java:S5778")
-	@Test
-	void testPeriodStartInvalid() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(dateInvalid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
-
-		assertThrows(InternalErrorException.class, () ->
-				getClient().operation().onType(Measure.class).named("$care-gaps")
-						.withParameters(params)
-						.useHttpGet()
-						.returnResourceType(Parameters.class)
-						.execute());
-	}
-
-	@SuppressWarnings("java:S5778")
-	@Test
-	void testPeriodEndNull() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
-
-		assertThrows(InternalErrorException.class, () ->
-				getClient().operation().onType(Measure.class).named("$care-gaps")
-						.withParameters(params)
-						.useHttpGet()
-						.returnResourceType(Parameters.class)
-						.execute());
-	}
-
-	@SuppressWarnings("java:S5778")
-	@Test
-	void testPeriodEndInvalid() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(dateInvalid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
-
-		assertThrows(InternalErrorException.class, () ->
-				getClient().operation().onType(Measure.class).named("$care-gaps")
-						.withParameters(params)
-						.useHttpGet()
-						.returnResourceType(Parameters.class)
-						.execute());
-	}
-
-	@SuppressWarnings("java:S5778")
-	@Test
-	void testPeriodInvalid() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
-
-		assertThrows(InternalErrorException.class, () ->
+		assertDoesNotThrow(() -> {
 			getClient().operation().onType(Measure.class).named("$care-gaps")
 					.withParameters(params)
-					.useHttpGet()
 					.returnResourceType(Parameters.class)
-					.execute());
+					.execute();
+		});
+	}
+
+	@Test
+	void testPeriodStartNull() {
+		Parameters params = parameters(
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
+	@Test
+	void testPeriodStartNullPOST() {
+		Parameters params = parameters(
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
+	@Test
+	void testPeriodStartInvalid() {
+		Parameters params = parameters(
+				stringPart("periodStart", dateInvalid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		IOperationUntypedWithInput<Parameters> request = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class);
+
+		assertThrows(InvalidRequestException.class, request::execute);
+	}
+
+	@Test
+	void testPeriodEndNull() {
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
+	@Test
+	void testPeriodEndNullPOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
+	@Test
+	void testPeriodEndInvalid() {
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", dateInvalid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		IOperationUntypedWithInput<Parameters> request = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class);
+
+		assertThrows(InvalidRequestException.class, request::execute);
+	}
+
+	@Test
+	void testPeriodInvalid() {
+		Parameters params = parameters(
+				stringPart("periodStart", periodEndValid),
+				stringPart("periodEnd", periodStartValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
+	@Test
+	void testPeriodInvalidPOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodEndValid),
+				datePart("periodEnd", periodStartValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
 	@Test
 	void testSubjectGroupValid() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectGroupValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectGroupValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		loadResource("gic-gr-1.json");
 
@@ -192,96 +249,173 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		});
 	}
 
-	@SuppressWarnings("java:S5778")
+	@Test
+	void testSubjectGroupValidPOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectGroupValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		loadResource("gic-gr-1.json");
+
+		assertDoesNotThrow(() -> {
+			getClient().operation().onType(Measure.class).named("$care-gaps")
+					.withParameters(params)
+					.returnResourceType(Parameters.class)
+					.execute();
+		});
+	}
+
 	@Test
 	void testSubjectInvalid() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectInvalid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectInvalid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
-		assertThrows(InternalErrorException.class, () ->
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute());
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
-	@SuppressWarnings("java:S5778")
+	@Test
+	void testSubjectInvalidPOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectInvalid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
 	@Test
 	void testSubjectReferenceInvalid() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectReferenceInvalid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectReferenceInvalid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
-		assertThrows(InternalErrorException.class, () ->
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute());
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
-	@SuppressWarnings("java:S5778")
+	@Test
+	void testSubjectReferenceInvalidPOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectReferenceInvalid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
 	@Test
 	void testSubjectAndPractitioner() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
-		params.addParameter().setName("practitioner").setValue(new StringType(practitionerValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("practitioner", practitionerValid));
 
-		assertThrows(InternalErrorException.class, () ->
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute());
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
-	@SuppressWarnings("java:S5778")
+	@Test
+	void testSubjectAndPractitionerPOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("practitioner", practitionerValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
 	@Test
 	void testSubjectAndOrganization() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
-		params.addParameter().setName("organization").setValue(new StringType(organizationValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("organization", organizationValid));
 
-		assertThrows(InternalErrorException.class, () ->
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute());
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
+	@Test
+	void testSubjectAndOrganizationPOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("organization", organizationValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
 	@Test
 	void testPractitionerAndOrganization() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
-		params.addParameter().setName("organization").setValue(new StringType(organizationValid));
-		params.addParameter().setName("practitioner").setValue(new StringType(practitionerValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("organization", organizationValid),
+				stringPart("practitioner", practitionerValid));
 
-		assertThrows(InternalErrorException.class, () ->
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute());
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Unsupported configuration"));
+
 		// TODO: implement practitioner and organization
 		// assertDoesNotThrow(() -> {
 		// getClient().operation().onType(Measure.class).named("$care-gaps")
@@ -294,19 +428,19 @@ class CareGapsProviderIT extends RestIntegrationTest {
 
 	@Test
 	void testOrganizationOnly() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
-		params.addParameter().setName("organization").setValue(new StringType(organizationValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("organization", organizationValid));
 
-		assertThrows(InternalErrorException.class, () ->
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute());
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Unsupported configuration"));
+
 		// TODO: implement organization
 		// assertDoesNotThrow(() -> {
 		// getClient().operation().onType(Measure.class).named("$care-gaps")
@@ -317,106 +451,175 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		// });
 	}
 
-	@SuppressWarnings("java:S5778")
 	@Test
 	void testPractitionerOnly() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
-		params.addParameter().setName("practitioner").setValue(new StringType(practitionerValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("practitioner", practitionerValid));
 
-		assertThrows(InternalErrorException.class, () ->
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute());
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
-	@SuppressWarnings("java:S5778")
+	@Test
+	void testPractitionerOnlyPOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid),
+				stringPart("practitioner", practitionerValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
 	@Test
 	void testSubjectMultiple() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectGroupValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("subject", subjectGroupValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
-		assertThrows(InternalErrorException.class, () ->
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute());
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
-	@SuppressWarnings("java:S5778")
+	@Test
+	void testSubjectMultiplePOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("subject", subjectGroupValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
 	@Test
 	void testNoMeasure() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid));
 
-		assertThrows(InternalErrorException.class, () ->
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute());
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
-	@SuppressWarnings("java:S5778")
+	@Test
+	void testNoMeasurePOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
 	@Test
 	void testStatusInvalid() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusInvalid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusInvalid),
+				stringPart("measureId", measureIdValid));
 
-		assertThrows(InternalErrorException.class, () ->
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute());
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
-	@SuppressWarnings("java:S5778")
+	@Test
+	void testStatusInvalidPOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusInvalid),
+				stringPart("measureId", measureIdValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
 	@Test
 	void testStatusNull() {
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("measureId", measureIdValid));
 
-		assertThrows(InternalErrorException.class, () ->
-			getClient().operation().onType(Measure.class).named("$care-gaps")
-					.withParameters(params)
-					.useHttpGet()
-					.returnResourceType(Parameters.class)
-					.execute());
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.useHttpGet().returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
+	}
+
+	@Test
+	void testStatusNullPOST() {
+		Parameters params = parameters(
+				datePart("periodStart", periodStartValid),
+				datePart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("measureId", measureIdValid));
+
+		Parameters result = getClient().operation()
+				.onType(Measure.class).named("$care-gaps").withParameters(params)
+				.returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("Invalid parameters"));
 	}
 
 	@Test
 	void testMultipleStatusValid() {
 		beforeEachMeasure();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValidSecond));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("status", statusValidSecond),
+				stringPart("measureId", measureIdValid));
 
 		assertDoesNotThrow(() -> {
 			getClient().operation().onType(Measure.class).named("$care-gaps")
@@ -431,17 +634,15 @@ class CareGapsProviderIT extends RestIntegrationTest {
 	void testMeasures() {
 		beforeEachMultipleMeasures();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectPatientValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValidSecond));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
-		// params.addParameter().setName("measureIdentifier")
-		// .setValue(new StringType(measureIdentifierValid));
-		params.addParameter().setName("measureUrl").setValue(new StringType(measureUrlValid));
-		params.addParameter().setName("measureId").setValue(new StringType("ColorectalCancerScreeningsFHIR"));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectPatientValid),
+				stringPart("status", statusValid),
+				stringPart("status", statusValidSecond),
+				stringPart("measureId", measureIdValid),
+				stringPart("measureUrl", measureUrlValid),
+				stringPart("measureId", "ColorectalCancerScreeningsFHIR"));
 
 		Parameters result = getClient().operation().onType(Measure.class).named("$care-gaps")
 				.withParameters(params)
@@ -452,17 +653,16 @@ class CareGapsProviderIT extends RestIntegrationTest {
 		assertNotNull(result);
 	}
 
-	@SuppressWarnings("java:S5778")
 	@Test
 	void testParallelMultiSubject() {
 		beforeEachParallelMeasure();
 
-		Parameters params = new Parameters();
-		params.addParameter().setName("periodStart").setValue(new StringType(periodStartValid));
-		params.addParameter().setName("periodEnd").setValue(new StringType(periodEndValid));
-		params.addParameter().setName("subject").setValue(new StringType(subjectGroupParallelValid));
-		params.addParameter().setName("status").setValue(new StringType(statusValid));
-		params.addParameter().setName("measureId").setValue(new StringType(measureIdValid));
+		Parameters params = parameters(
+				stringPart("periodStart", periodStartValid),
+				stringPart("periodEnd", periodEndValid),
+				stringPart("subject", subjectGroupParallelValid),
+				stringPart("status", statusValid),
+				stringPart("measureId", measureIdValid));
 
 		Parameters result = getClient().operation().onType(Measure.class).named("$care-gaps")
 				.withParameters(params)

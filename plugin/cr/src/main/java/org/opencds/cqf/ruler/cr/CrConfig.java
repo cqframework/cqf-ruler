@@ -1,21 +1,25 @@
 package org.opencds.cqf.ruler.cr;
 
+import java.util.function.Function;
+
 import org.opencds.cqf.cql.engine.fhir.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.evaluator.measure.MeasureEvaluationOptions;
+import org.opencds.cqf.external.annotations.OnDSTU3Condition;
+import org.opencds.cqf.external.annotations.OnR4Condition;
 import org.opencds.cqf.ruler.cql.CqlConfig;
-import org.opencds.cqf.ruler.external.annotations.OnDSTU3Condition;
-import org.opencds.cqf.ruler.external.annotations.OnR4Condition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Scope;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 
 @Configuration
-@ConditionalOnBean(CqlConfig.class)
 @ConditionalOnProperty(prefix = "hapi.fhir.cr", name = "enabled", havingValue = "true", matchIfMissing = true)
+@Import(CqlConfig.class)
 public class CrConfig {
 	@Bean
 	public CrProperties crProperties() {
@@ -75,9 +79,43 @@ public class CrConfig {
 	}
 
 	@Bean
+	@Conditional(OnDSTU3Condition.class)
+	public Function<RequestDetails, org.opencds.cqf.ruler.cr.dstu3.service.MeasureService> dstu3MeasureServiceFactory() {
+		return r -> {
+			var ms = dstu3measureService();
+			ms.setRequestDetails(r);
+			return ms;
+		};
+	}
+
+	@Bean
+	@Scope("prototype")
+	@Conditional(OnDSTU3Condition.class)
+	public org.opencds.cqf.ruler.cr.dstu3.service.MeasureService dstu3measureService() {
+		return new org.opencds.cqf.ruler.cr.dstu3.service.MeasureService();
+	}
+
+	@Bean
 	@Conditional(OnR4Condition.class)
 	public org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider r4MeasureEvaluateProvider() {
 		return new org.opencds.cqf.ruler.cr.r4.provider.MeasureEvaluateProvider();
+	}
+
+	@Bean
+	@Conditional(OnR4Condition.class)
+	public Function<RequestDetails, org.opencds.cqf.ruler.cr.r4.service.MeasureService> r4MeasureServiceFactory() {
+		return r -> {
+			var ms = r4measureService();
+			ms.setRequestDetails(r);
+			return ms;
+		};
+	}
+
+	@Bean
+	@Scope("prototype")
+	@Conditional(OnR4Condition.class)
+	public org.opencds.cqf.ruler.cr.r4.service.MeasureService r4measureService() {
+		return new org.opencds.cqf.ruler.cr.r4.service.MeasureService();
 	}
 
 	@Bean
