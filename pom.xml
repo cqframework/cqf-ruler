@@ -126,6 +126,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-text</artifactId>
+				<version>1.10.0</version>
+			</dependency>
+
+			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-bom</artifactId>
 				<version>${hapi_version}</version>
