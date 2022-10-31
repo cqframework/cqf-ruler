@@ -6,6 +6,8 @@ import static org.opencds.cqf.ruler.utility.dstu3.Parameters.part;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cqframework.cql.cql2elm.LibrarySourceProvider;
@@ -239,8 +241,10 @@ public class CqlExecutionProvider extends DaoRegistryOperationProvider {
 			}
 
 			if (StringUtils.isBlank(content)) {
-				Endpoint defaultEndpoint = new Endpoint().setAddress(requestDetails.getFhirServerBase())
-						.setHeader(Collections.singletonList(new StringType("Content-Type: application/json")));
+				List<StringType> headerList = Stream.of(new StringType("Content-Type: application/json"),
+						new StringType("Authorization: " + requestDetails.getHeader("Authorization")))
+					.collect(Collectors.toList());
+				Endpoint defaultEndpoint = new Endpoint().setAddress(requestDetails.getFhirServerBase()).setHeader(headerList);
 				return (Parameters) evaluationHelper.getExpressionEvaluator().evaluate(expression,
 						parameters == null ? new Parameters() : parameters, subject,
 						evaluationHelper.resolveIncludedLibraries(library),
