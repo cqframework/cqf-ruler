@@ -3,6 +3,8 @@ package org.opencds.cqf.ruler.ra.r4;
 import ca.uhn.fhir.rest.gclient.IOperationUntypedWithInput;
 import ca.uhn.fhir.rest.server.exceptions.InvalidRequestException;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Composition;
+import org.hl7.fhir.r4.model.DetectedIssue;
 import org.hl7.fhir.r4.model.Group;
 import org.hl7.fhir.r4.model.MeasureReport;
 import org.hl7.fhir.r4.model.Parameters;
@@ -538,6 +540,35 @@ class ReportProviderIT extends RestIntegrationTest {
 		// all the resources inserted above are in the bundle entry except the one that
 		// was not evaluated
 		assertEquals(21, bundle.getEntry().size());
+	}
+
+	@Test
+	void testUpdatedReportOperation() {
+		loadResource("Organization-ra-payer01.json");
+		loadResource("Observation-ra-obs01pat02.json");
+		loadResource("Encounter-ra-encounter31pat02.json");
+		loadResource("Condition-ra-condition31pat02.json");
+		loadResource("Patient-ra-patient02.json");
+		loadResource("MeasureReport-ra-measurereport03.json");
+		loadResource("DetectedIssue-ra-measurereport03-report-96.json");
+
+		Parameters params = parameters(
+			datePart(RAConstants.PERIOD_START, "2021-01-01"),
+			datePart(RAConstants.PERIOD_END, "2021-12-31"),
+			stringPart(RAConstants.SUBJECT, "Patient/ra-patient02"));
+
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
+			.withParameters(params).returnResourceType(Parameters.class).execute();
+
+		assertTrue(result.hasParameter("return"));
+		Bundle bundle = (Bundle) result.getParameter().get(0).getResource();
+
+		assertNotNull(bundle);
+		assertTrue(bundle.hasEntry());
+		assertEquals(7, bundle.getEntry().size());
+		assertTrue(bundle.getEntryFirstRep().getResource() instanceof Composition);
+		assertTrue(bundle.getEntry().get(1).getResource() instanceof DetectedIssue);
+		assertTrue(bundle.getEntry().get(2).getResource() instanceof MeasureReport);
 	}
 
 	// TODO: create test for single patient, multiple reports
