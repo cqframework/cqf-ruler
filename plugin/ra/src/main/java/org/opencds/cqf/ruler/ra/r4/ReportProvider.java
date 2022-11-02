@@ -1,5 +1,8 @@
 package org.opencds.cqf.ruler.ra.r4;
 
+import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
+import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
+
 import java.util.Date;
 import java.util.List;
 
@@ -22,15 +25,12 @@ import ca.uhn.fhir.rest.annotation.Operation;
 import ca.uhn.fhir.rest.annotation.OperationParam;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 
-import static org.opencds.cqf.ruler.utility.r4.Parameters.parameters;
-import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
-
 public class ReportProvider extends DaoRegistryOperationProvider
-	implements ParameterUser, ResourceCreator, MeasureReportUser, RiskAdjustmentUser {
+		implements ParameterUser, ResourceCreator, MeasureReportUser, RiskAdjustmentUser {
 
 	/**
 	 * Implements the <a href=
-	 * "https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-report.html">$davinci-ra.report</a>
+	 * "https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-report.html">$ra.report</a>
 	 * operation found in the
 	 * <a href="https://build.fhir.org/ig/HL7/davinci-ra/index.html">Da Vinci Risk
 	 * Adjustment IG</a>.
@@ -44,45 +44,42 @@ public class ReportProvider extends DaoRegistryOperationProvider
 	 * @return a Parameters with Bundles of MeasureReports and evaluatedResource
 	 *         Resources
 	 */
-	@Description(shortDefinition = "$davinci-ra.report operation",
-		value = "Implements the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-davinci-ra.report.html\">$davinci-ra.report</a> operation found in the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/index.html\">Da Vinci Risk Adjustment IG</a>.")
-	@Operation(name = "$davinci-ra.report", idempotent = true, type = MeasureReport.class)
+	@Description(shortDefinition = "$ra.report operation", value = "Implements the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/OperationDefinition-davinci-ra.report.html\">$ra.report</a> operation found in the <a href=\"https://build.fhir.org/ig/HL7/davinci-ra/index.html\">Da Vinci Risk Adjustment IG</a>.")
+	@Operation(name = "$ra.report", idempotent = true, type = MeasureReport.class)
 	public Parameters report(
-		RequestDetails requestDetails,
-		@OperationParam(name = RAConstants.PERIOD_START, typeName = "date") IPrimitiveType<Date> periodStart,
-		@OperationParam(name = RAConstants.PERIOD_END, typeName = "date") IPrimitiveType<Date> periodEnd,
-		@OperationParam(name = RAConstants.SUBJECT) String subject) throws FHIRException {
+			RequestDetails requestDetails,
+			@OperationParam(name = RAConstants.PERIOD_START, typeName = "date") IPrimitiveType<Date> periodStart,
+			@OperationParam(name = RAConstants.PERIOD_END, typeName = "date") IPrimitiveType<Date> periodEnd,
+			@OperationParam(name = RAConstants.SUBJECT) String subject) throws FHIRException {
 
 		try {
 			validateParameters(requestDetails);
 		} catch (Exception e) {
 			return parameters(part(RAConstants.INVALID_PARAMETERS_NAME,
-				generateIssue(RAConstants.INVALID_PARAMETERS_SEVERITY, e.getMessage())));
+					generateIssue(RAConstants.INVALID_PARAMETERS_SEVERITY, e.getMessage())));
 		}
 
 		ensureSupplementalDataElementSearchParameter(requestDetails);
 
 		Parameters result = newResource(Parameters.class,
-			subject.replace("/", "-") + RAConstants.REPORT_ID_SUFFIX);
+				subject.replace("/", "-") + RAConstants.REPORT_ID_SUFFIX);
 
 		getPatientListFromSubject(subject).forEach(
-			patient -> {
-				List<MeasureReport> reports = getMeasureReports(
-					patient.getIdElement().getIdPart(), periodStart.getValueAsString(), periodEnd.getValueAsString());
-				if (reports.isEmpty()) {
-					result.addParameter(part(
-						RAConstants.RETURN_PARAM_NAME, buildMissingMeasureReportCodingGapReportBundle(patient)));
-				}
-				else {
-					reports.forEach(report -> {
-						List<DetectedIssue> issues = getOriginalIssue(report.getId());
-						Composition composition = buildComposition(subject, report, issues);
-						Bundle bundle = buildCodingGapReportBundle(composition, issues, report);
-						result.addParameter(part(RAConstants.RETURN_PARAM_NAME, bundle));
-					});
-				}
-			}
-		);
+				patient -> {
+					List<MeasureReport> reports = getMeasureReports(
+							patient.getIdElement().getIdPart(), periodStart.getValueAsString(), periodEnd.getValueAsString());
+					if (reports.isEmpty()) {
+						result.addParameter(part(
+								RAConstants.RETURN_PARAM_NAME, buildMissingMeasureReportCodingGapReportBundle(patient)));
+					} else {
+						reports.forEach(report -> {
+							List<DetectedIssue> issues = getOriginalIssue(report.getId());
+							Composition composition = buildComposition(subject, report, issues);
+							Bundle bundle = buildCodingGapReportBundle(composition, issues, report);
+							result.addParameter(part(RAConstants.RETURN_PARAM_NAME, bundle));
+						});
+					}
+				});
 
 		return result;
 	}
@@ -93,6 +90,6 @@ public class ReportProvider extends DaoRegistryOperationProvider
 		Operations.validatePeriod(requestDetails, RAConstants.PERIOD_START, RAConstants.PERIOD_END);
 		Operations.validateCardinality(requestDetails, RAConstants.SUBJECT, 1);
 		Operations.validateSingularPattern(requestDetails, RAConstants.SUBJECT,
-			Operations.PATIENT_OR_GROUP_REFERENCE);
+				Operations.PATIENT_OR_GROUP_REFERENCE);
 	}
 }
