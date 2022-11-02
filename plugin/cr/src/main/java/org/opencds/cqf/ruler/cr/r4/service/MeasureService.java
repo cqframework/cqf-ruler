@@ -64,6 +64,10 @@ public class MeasureService implements MeasureReportUser {
 		this.requestDetails = requestDetails;
 	}
 
+	public RequestDetails getRequestDetails() {
+		return this.requestDetails;
+	}
+
 	public MeasureReport evaluateMeasure(IdType theId,
 			String periodStart,
 			String periodEnd,
