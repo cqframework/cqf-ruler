@@ -2,6 +2,7 @@ package org.opencds.cqf.ruler.ra;
 
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.Meta;
 
 import java.util.Date;
@@ -29,6 +30,14 @@ public class RAConstants {
 		"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-original-detectedissue";
 	public static final String GROUP_REFERENCE_URL =
 		"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference";
+	public static final String CODING_GAP_TYPE_URL = "http://hl7.org/fhir/us/davinci-ra/StructureDefinition/extension-ra-codingGapType";
+	public static final Extension CODING_GAP_TYPE_EXTENSION =
+		new Extension().addExtension().setUrl(CODING_GAP_TYPE_URL).setValue(
+			new CodeableConcept().addCoding(
+				new Coding().setSystem("http://hl7.org/fhir/us/davinci-ra/CodeSystem/coding-gap-type")
+					.setCode("payer-generated")));
+	public static final CodeableConcept CODING_GAP_CODE = new CodeableConcept().addCoding(
+		new Coding().setSystem("http://terminology.hl7.org/CodeSystem/v3-ActCode").setCode("CODINGGAP").setDisplay("Coding Gaps"));
 
 	// Parameter validation constants
 	public static final String INVALID_PARAMETERS_NAME = "Invalid parameters";
@@ -41,6 +50,5 @@ public class RAConstants {
 	public static final String MEASURE_ID = "measureId";
 	public static final String MEASURE_IDENTIFIER = "measureIdentifier";
 	public static final String MEASURE_URL = "measureUrl";
-
 	public static final String RETURN_PARAM_NAME = "return";
 }

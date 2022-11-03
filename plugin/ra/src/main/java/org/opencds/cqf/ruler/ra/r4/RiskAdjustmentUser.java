@@ -15,6 +15,7 @@ import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
+import org.hl7.fhir.r4.model.StringType;
 import org.opencds.cqf.ruler.behavior.r4.MeasureReportUser;
 import org.opencds.cqf.ruler.ra.RAConstants;
 import org.opencds.cqf.ruler.utility.Ids;
@@ -76,6 +77,58 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 		return issues;
 	}
 
+	default List<Reference> getEvidenceById(String groupId, MeasureReport report) {
+		List<Reference> evidence = new ArrayList<>();
+		if (report.hasEvaluatedResource()) {
+			report.getEvaluatedResource().forEach(
+				resource -> {
+					if (resource.hasExtension()) {
+						resource.getExtensionsByUrl(RAConstants.GROUP_REFERENCE_URL).forEach(
+							extension -> {
+								if (extension.getValue().primitiveValue().equals(groupId)) {
+									evidence.add(resource);
+								}
+							}
+						);
+					}
+				}
+			);
+		}
+		return evidence;
+	}
+
+	default DetectedIssue buildOriginalIssueStart(MeasureReport report, String groupId) {
+		DetectedIssue originalIssue = new DetectedIssue();
+		originalIssue.setIdElement(new IdType(
+			"DetectedIssue", report.getIdElement().getIdPart() + "-" + groupId));
+		originalIssue.setMeta(new Meta().addProfile(
+			RAConstants.ORIGINAL_ISSUE_PROFILE_URL).setLastUpdated(new Date()));
+		originalIssue.addExtension().setUrl(RAConstants.GROUP_REFERENCE_URL).setValue(new StringType(groupId));
+		originalIssue.addModifierExtension(RAConstants.CODING_GAP_TYPE_EXTENSION);
+		originalIssue.setStatus(DetectedIssue.DetectedIssueStatus.PRELIMINARY);
+		originalIssue.setCode(RAConstants.CODING_GAP_CODE);
+		if (report.getSubject().getReference().startsWith("Patient/")) {
+			originalIssue.setPatient(report.getSubject());
+		}
+		originalIssue.addImplicated(new Reference(report.getIdElement()));
+
+		return originalIssue;
+	}
+
+	default List<DetectedIssue> buildOriginalIssues(MeasureReport report) {
+		List<DetectedIssue> issues = new ArrayList<>();
+		if (report.hasGroup()) {
+			report.getGroup().forEach(
+				group -> issues.add(buildOriginalIssueStart(report, group.getId()).setEvidence(
+					getEvidenceById(group.getId(), report).stream().map(
+						ref -> new DetectedIssue.DetectedIssueEvidenceComponent().addDetail(ref))
+						.collect(Collectors.toList())
+				))
+			);
+		}
+		return issues;
+	}
+
 	default List<Bundle> buildCompositionsAndBundles(String subject, Map<MeasureReport, List<DetectedIssue>> issues) {
 		List<Bundle> raBundles = new ArrayList<>();
 		for (Map.Entry<MeasureReport, List<DetectedIssue>> issuesSet : issues.entrySet()) {
@@ -104,7 +157,7 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 								report.getGroup().forEach(
 									group -> {
 										if (group.hasId() && group.getId().equals(extension.getValue().toString())) {
-											section.addEntry(new Reference(issue.getIdElement().getValue()));
+											section.addEntry(new Reference(issue.getIdElement()));
 											if (group.hasCode()) {
 												section.setCode(group.getCode());
 											}

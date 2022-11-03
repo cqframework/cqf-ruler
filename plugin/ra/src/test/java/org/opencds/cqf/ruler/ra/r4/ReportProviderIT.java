@@ -549,8 +549,8 @@ class ReportProviderIT extends RestIntegrationTest {
 		loadResource("Condition-ra-condition31pat02.json");
 		loadResource("Patient-ra-patient02.json");
 		loadResource("MeasureReport-ra-measurereport03.json");
-		loadResource("DetectedIssue-ra-measurereport03-report-96.json");
-		loadResource("DetectedIssue-ra-measurereport03-report-110.json");
+//		loadResource("DetectedIssue-ra-measurereport03-report-96.json");
+//		loadResource("DetectedIssue-ra-measurereport03-report-110.json");
 
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
