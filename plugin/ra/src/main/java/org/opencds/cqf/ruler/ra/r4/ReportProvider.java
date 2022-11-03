@@ -5,6 +5,7 @@ import static org.opencds.cqf.ruler.utility.r4.Parameters.part;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.hl7.fhir.exceptions.FHIRException;
 import org.hl7.fhir.instance.model.api.IPrimitiveType;
@@ -76,7 +77,8 @@ public class ReportProvider extends DaoRegistryOperationProvider
 							List<DetectedIssue> issues = getOriginalIssues(report.getId());
 							Composition composition = buildComposition(subject, report, issues);
 							Bundle bundle = buildCodingGapReportBundle(composition, issues, report);
-							result.addParameter(part(RAConstants.RETURN_PARAM_NAME, bundle));
+							result.addParameter(part(RAConstants.RETURN_PARAM_NAME,
+								bundle.setId("condition-category-report-" + UUID.randomUUID())));
 						});
 					}
 				});
