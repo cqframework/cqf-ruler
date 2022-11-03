@@ -54,7 +54,7 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 			}).collect(Collectors.toList());
 	}
 
-	default List<DetectedIssue> getOriginalIssue(String measureReportReference) {
+	default List<DetectedIssue> getOriginalIssues(String measureReportReference) {
 		return search(DetectedIssue.class, SearchParameterMap.newSynchronous()
 			.add(DetectedIssue.SP_IMPLICATED, new ReferenceParam(measureReportReference))
 			.add("_profile", new UriParam(RAConstants.ORIGINAL_ISSUE_PROFILE_URL)))
@@ -89,19 +89,44 @@ public interface RiskAdjustmentUser extends MeasureReportUser {
 	default Composition buildComposition(String subject, MeasureReport report, List<DetectedIssue> issues) {
 		Composition composition = new Composition();
 		composition.setMeta(RAConstants.COMPOSITION_META);
+		composition.setIdentifier(
+			new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID()));
 		composition.setStatus(Composition.CompositionStatus.PRELIMINARY)
 			.setType(RAConstants.COMPOSITION_TYPE).setSubject(new Reference(subject))
 			.setDate(Date.from(Instant.now()));
-		composition.addSection().setFocus(new Reference(report.getIdElement().getValue()))
-			.setEntry(issues.stream().map(
-				issue -> new Reference(issue.getIdElement().getValue())).collect(Collectors.toList()));
+		issues.forEach(
+			issue -> {
+				Composition.SectionComponent section = new Composition.SectionComponent();
+				if (issue.hasExtension()) {
+					issue.getExtension().forEach(
+						extension -> {
+							if (extension.hasUrl() && extension.getUrl().equals(RAConstants.GROUP_REFERENCE_URL)) {
+								report.getGroup().forEach(
+									group -> {
+										if (group.hasId() && group.getId().equals(extension.getValue().toString())) {
+											section.addEntry(new Reference(issue.getIdElement().getValue()));
+											if (group.hasCode()) {
+												section.setCode(group.getCode());
+											}
+										}
+									}
+								);
+								section.setFocus(new Reference(report.getIdElement().getValue()));
+							}
+						}
+					);
+					composition.addSection(section);
+				}
+			}
+		);
 		return composition;
 	}
 
 	default Bundle startCodingGapReportBundle() {
 		Bundle codingGapReportBundle = new Bundle();
 		codingGapReportBundle.setMeta(new Meta().setProfile(
-			Collections.singletonList(new CanonicalType(RAConstants.CODING_GAP_BUNDLE_URL))));
+			Collections.singletonList(new CanonicalType(RAConstants.CODING_GAP_BUNDLE_URL)))
+			.setLastUpdated(new Date()));
 		codingGapReportBundle.setIdentifier(
 			new Identifier().setSystem("urn:ietf:rfc:3986").setValue("urn:uuid:" + UUID.randomUUID()));
 		codingGapReportBundle.setType(Bundle.BundleType.DOCUMENT);

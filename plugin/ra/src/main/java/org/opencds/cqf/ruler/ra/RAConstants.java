@@ -4,6 +4,8 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Meta;
 
+import java.util.Date;
+
 public class RAConstants {
 
 	private RAConstants() {
@@ -18,13 +20,15 @@ public class RAConstants {
 
 	// Composition constants
 	public static final Meta COMPOSITION_META = new Meta().addProfile(
-		"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-composition");
+		"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-composition").setLastUpdated(new Date());
 	public static final CodeableConcept COMPOSITION_TYPE = new CodeableConcept().addCoding(
 		new Coding().setSystem("http://loinc.org").setCode("96315-7").setDisplay("Gaps in care report"));
 
 	// DetectedIssue constants
 	public static final String ORIGINAL_ISSUE_PROFILE_URL =
 		"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-coding-gap-original-detectedissue";
+	public static final String GROUP_REFERENCE_URL =
+		"http://hl7.org/fhir/us/davinci-ra/StructureDefinition/ra-groupReference";
 
 	// Parameter validation constants
 	public static final String INVALID_PARAMETERS_NAME = "Invalid parameters";

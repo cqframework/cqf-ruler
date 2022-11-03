@@ -73,7 +73,7 @@ public class ReportProvider extends DaoRegistryOperationProvider
 								RAConstants.RETURN_PARAM_NAME, buildMissingMeasureReportCodingGapReportBundle(patient)));
 					} else {
 						reports.forEach(report -> {
-							List<DetectedIssue> issues = getOriginalIssue(report.getId());
+							List<DetectedIssue> issues = getOriginalIssues(report.getId());
 							Composition composition = buildComposition(subject, report, issues);
 							Bundle bundle = buildCodingGapReportBundle(composition, issues, report);
 							result.addParameter(part(RAConstants.RETURN_PARAM_NAME, bundle));

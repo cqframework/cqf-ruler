@@ -550,13 +550,14 @@ class ReportProviderIT extends RestIntegrationTest {
 		loadResource("Patient-ra-patient02.json");
 		loadResource("MeasureReport-ra-measurereport03.json");
 		loadResource("DetectedIssue-ra-measurereport03-report-96.json");
+		loadResource("DetectedIssue-ra-measurereport03-report-110.json");
 
 		Parameters params = parameters(
 			datePart(RAConstants.PERIOD_START, "2021-01-01"),
 			datePart(RAConstants.PERIOD_END, "2021-12-31"),
 			stringPart(RAConstants.SUBJECT, "Patient/ra-patient02"));
 
-		Parameters result = getClient().operation().onType(MeasureReport.class).named("$davinci-ra.report")
+		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
 			.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("return"));
@@ -564,10 +565,11 @@ class ReportProviderIT extends RestIntegrationTest {
 
 		assertNotNull(bundle);
 		assertTrue(bundle.hasEntry());
-		assertEquals(7, bundle.getEntry().size());
+		assertEquals(8, bundle.getEntry().size());
 		assertTrue(bundle.getEntryFirstRep().getResource() instanceof Composition);
 		assertTrue(bundle.getEntry().get(1).getResource() instanceof DetectedIssue);
-		assertTrue(bundle.getEntry().get(2).getResource() instanceof MeasureReport);
+		assertTrue(bundle.getEntry().get(2).getResource() instanceof DetectedIssue);
+		assertTrue(bundle.getEntry().get(3).getResource() instanceof MeasureReport);
 	}
 
 	// TODO: create test for single patient, multiple reports
