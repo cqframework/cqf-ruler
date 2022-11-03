@@ -63,7 +63,7 @@ public class ReportProvider extends DaoRegistryOperationProvider
 		ensureSupplementalDataElementSearchParameter(requestDetails);
 
 		Parameters result = newResource(Parameters.class,
-				subject.replace("/", "-") + RAConstants.REPORT_ID_SUFFIX);
+				RAConstants.REPORT_ID_PREFIX + UUID.randomUUID());
 
 		getPatientListFromSubject(subject).forEach(
 				patient -> {
@@ -78,7 +78,7 @@ public class ReportProvider extends DaoRegistryOperationProvider
 							Composition composition = buildComposition(subject, report, issues);
 							Bundle bundle = buildCodingGapReportBundle(composition, issues, report);
 							result.addParameter(part(RAConstants.RETURN_PARAM_NAME,
-								bundle.setId("condition-category-report-" + UUID.randomUUID())));
+									bundle.setId(UUID.randomUUID().toString())));
 						});
 					}
 				});
