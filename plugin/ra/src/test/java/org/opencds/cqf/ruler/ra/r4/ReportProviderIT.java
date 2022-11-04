@@ -417,7 +417,9 @@ class ReportProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle) result.getParameter().get(0).getResource();
 		assertNotNull(bundle);
 		// all the resources inserted above are in the bundle entry
-		assertEquals(21, bundle.getEntry().size());
+		// plus a DetectedIssue resource for each group in the MeasureReport is in the
+		// bundle entry
+		assertEquals(21 + 10, bundle.getEntry().size());
 	}
 
 	@Test
@@ -458,7 +460,9 @@ class ReportProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle) result.getParameter().get(0).getResource();
 		assertNotNull(bundle);
 		// all the resources inserted above are in the bundle entry
-		assertEquals(21, bundle.getEntry().size());
+		// plus a DetectedIssue resource for each group in the MeasureReport is in the
+		// bundle entry
+		assertEquals(21 + 10, bundle.getEntry().size());
 	}
 
 	@Test
@@ -498,7 +502,9 @@ class ReportProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle) result.getParameter().get(0).getResource();
 		// all the resources inserted above are in the bundle entry except the one that
 		// was not evaluated
-		assertEquals(21, bundle.getEntry().size());
+		// plus a DetectedIssue resource for each group in the MeasureReport is in the
+		// bundle entry
+		assertEquals(21 + 10, bundle.getEntry().size());
 	}
 
 	@Test
@@ -538,7 +544,9 @@ class ReportProviderIT extends RestIntegrationTest {
 		Bundle bundle = (Bundle) result.getParameter().get(0).getResource();
 		// all the resources inserted above are in the bundle entry except the one that
 		// was not evaluated
-		assertEquals(21, bundle.getEntry().size());
+		// plus a DetectedIssue resource for each group in the MeasureReport is in the
+		// bundle entry
+		assertEquals(21 + 10, bundle.getEntry().size());
 	}
 
 	@Test
@@ -549,16 +557,16 @@ class ReportProviderIT extends RestIntegrationTest {
 		loadResource("Condition-ra-condition31pat02.json");
 		loadResource("Patient-ra-patient02.json");
 		loadResource("MeasureReport-ra-measurereport03.json");
-//		loadResource("DetectedIssue-ra-measurereport03-report-96.json");
-//		loadResource("DetectedIssue-ra-measurereport03-report-110.json");
+		// loadResource("DetectedIssue-ra-measurereport03-report-96.json");
+		// loadResource("DetectedIssue-ra-measurereport03-report-110.json");
 
 		Parameters params = parameters(
-			datePart(RAConstants.PERIOD_START, "2021-01-01"),
-			datePart(RAConstants.PERIOD_END, "2021-12-31"),
-			stringPart(RAConstants.SUBJECT, "Patient/ra-patient02"));
+				datePart(RAConstants.PERIOD_START, "2021-01-01"),
+				datePart(RAConstants.PERIOD_END, "2021-12-31"),
+				stringPart(RAConstants.SUBJECT, "Patient/ra-patient02"));
 
 		Parameters result = getClient().operation().onType(MeasureReport.class).named("$ra.report")
-			.withParameters(params).returnResourceType(Parameters.class).execute();
+				.withParameters(params).returnResourceType(Parameters.class).execute();
 
 		assertTrue(result.hasParameter("return"));
 		Bundle bundle = (Bundle) result.getParameter().get(0).getResource();
